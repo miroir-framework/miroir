@@ -22,7 +22,7 @@ import {
   TransformerForBuild_freeObjectTemplate,
   // TransformerForBuild_InnerReference,
   TransformerForBuild_pickFromList,
-  TransformerForBuild_listReducerToIndexObject,
+  TransformerForBuild_indexListBy,
   TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_mapList,
   TransformerForBuild_mustacheStringTemplate,
@@ -45,7 +45,7 @@ import {
   TransformerForRuntime_defaultValueForMLSchema,
   TransformerForRuntime_freeObjectTemplate,
   TransformerForRuntime_pickFromList,
-  TransformerForRuntime_listReducerToIndexObject,
+  TransformerForRuntime_indexListBy,
   TransformerForRuntime_listReducerToSpreadObject,
   TransformerForRuntime_mapList,
   TransformerForRuntime_mustacheStringTemplate,
@@ -90,7 +90,7 @@ import {
   transformer_dataflowObject,
   transformer_freeObjectTemplate,
   transformer_pickFromList,
-  transformer_listReducerToIndexObject,
+  transformer_indexListBy,
   transformer_listReducerToSpreadObject,
   transformer_mapList,
   transformer_menu_addItem,
@@ -131,7 +131,7 @@ export const defaultTransformers = {
   transformer_resolveReference,
   handleTransformer_objectAlter,
   handleTransformer_object_fullTemplate,
-  transformer_object_listReducerToIndexObject_apply,
+  transformer_object_indexListBy_apply,
   transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply,
   transformer_dynamicObjectAccess_apply,
@@ -648,7 +648,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_objectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
   handleTransformer_getFromParameters,
-  transformer_object_listReducerToIndexObject_apply: defaultTransformers.transformer_object_listReducerToIndexObject_apply,
+  transformer_object_indexListBy_apply: defaultTransformers.transformer_object_indexListBy_apply,
   transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
@@ -676,7 +676,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
   pickFromList: transformer_pickFromList,
-  listReducerToIndexObject: transformer_listReducerToIndexObject,
+  indexListBy: transformer_indexListBy,
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
   mapList: transformer_mapList,
   mustacheStringTemplate: transformer_mustacheStringTemplate,
@@ -828,14 +828,14 @@ export function resolveApplyTo_legacy(
   | TransformerForBuild_mapList
   | TransformerForBuild_pickFromList
   | TransformerForBuild_listReducerToSpreadObject
-  | TransformerForBuild_listReducerToIndexObject
+  | TransformerForBuild_indexListBy
   | TransformerForBuild_objectEntries
   | TransformerForBuild_objectValues
   | TransformerForBuild_getUniqueValues
   | TransformerForRuntime_aggregate
   | TransformerForRuntime_mapList 
   | TransformerForRuntime_pickFromList
-  | TransformerForRuntime_listReducerToIndexObject
+  | TransformerForRuntime_indexListBy
   // | TransformerForRuntime_mapper_listToObject 
   | TransformerForRuntime_listReducerToSpreadObject
   | TransformerForRuntime_objectEntries
@@ -1117,20 +1117,20 @@ function transformer_object_listReducerToSpreadObject_apply(
 }
 
 // ################################################################################################
-function transformer_object_listReducerToIndexObject_apply(
+function transformer_object_indexListBy_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer:
-    | TransformerForBuild_listReducerToIndexObject
-    | TransformerForRuntime_listReducerToIndexObject,
+    | TransformerForBuild_indexListBy
+    | TransformerForRuntime_indexListBy,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   // log.info(
-  //   "transformer_object_listReducerToIndexObject_apply called for transformer",
+  //   "transformer_object_indexListBy_apply called for transformer",
   //   transformer,
   //   "queryParams",
   //   JSON.stringify(queryParams, null, 2),
@@ -1153,13 +1153,13 @@ function transformer_object_listReducerToIndexObject_apply(
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
-      failureOrigin: ["transformer_object_listReducerToIndexObject_apply"],
-      queryContext: "transformer_object_listReducerToIndexObject_apply can not apply to failed resolvedReference",
+      failureOrigin: ["transformer_object_indexListBy_apply"],
+      queryContext: "transformer_object_indexListBy_apply can not apply to failed resolvedReference",
       innerError: resolvedReference,
     });
   } else {
     log.info(
-      "transformer_object_listReducerToIndexObject_apply found resolvedReference",
+      "transformer_object_indexListBy_apply found resolvedReference",
       resolvedReference
     );
   }
@@ -1167,8 +1167,8 @@ function transformer_object_listReducerToIndexObject_apply(
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
-      failureOrigin: ["transformer_object_listReducerToIndexObject_apply"],
-      queryContext: "transformer_object_listReducerToIndexObject_apply can not apply to resolvedReference of wrong type",
+      failureOrigin: ["transformer_object_indexListBy_apply"],
+      queryContext: "transformer_object_indexListBy_apply can not apply to resolvedReference of wrong type",
       queryParameters: resolvedReference,
     });
   }

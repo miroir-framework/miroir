@@ -142,7 +142,7 @@ export type TransformerForBuild =
   | TransformerForBuild_dataflowObject
   | TransformerForBuild_freeObjectTemplate
   | TransformerForBuild_pickFromList
-  | TransformerForBuild_listReducerToIndexObject
+  | TransformerForBuild_indexListBy
   | TransformerForBuild_listReducerToSpreadObject
   | TransformerForBuild_mapList
   | TransformerForBuild_mustacheStringTemplate
@@ -194,7 +194,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_dataflowObject,
     transformerForBuild_freeObjectTemplate,
     transformerForBuild_pickFromList,
-    transformerForBuild_listReducerToIndexObject,
+    transformerForBuild_indexListBy,
     transformerForBuild_listReducerToSpreadObject,
     transformerForBuild_mapList,
     transformerForBuild_mustacheStringTemplate,
@@ -225,7 +225,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_dataflowObject
   | TransformerForRuntime_freeObjectTemplate
   | TransformerForRuntime_pickFromList
-  | TransformerForRuntime_listReducerToIndexObject
+  | TransformerForRuntime_indexListBy
   | TransformerForRuntime_listReducerToSpreadObject
   | TransformerForRuntime_mapList
   | TransformerForRuntime_mustacheStringTemplate
@@ -255,7 +255,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_dataflowObject),
   z.lazy(() => transformerForRuntime_freeObjectTemplate),
   z.lazy(() => transformerForRuntime_pickFromList),
-  z.lazy(() => transformerForRuntime_listReducerToIndexObject),
+  z.lazy(() => transformerForRuntime_indexListBy),
   z.lazy(() => transformerForRuntime_listReducerToSpreadObject),
   z.lazy(() => transformerForRuntime_mapList),
   z.lazy(() => transformerForRuntime_mustacheStringTemplate),
@@ -297,7 +297,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_dataflowObject
   | TransformerForBuildPlusRuntime_freeObjectTemplate
   | TransformerForBuildPlusRuntime_pickFromList
-  | TransformerForBuildPlusRuntime_listReducerToIndexObject
+  | TransformerForBuildPlusRuntime_indexListBy
   | TransformerForBuildPlusRuntime_listReducerToSpreadObject
   | TransformerForBuildPlusRuntime_mapList
   | TransformerForBuildPlusRuntime_mustacheStringTemplate
@@ -351,7 +351,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_dataflowObject,
     transformerForBuildPlusRuntime_freeObjectTemplate,
     transformerForBuildPlusRuntime_pickFromList,
-    transformerForBuildPlusRuntime_listReducerToIndexObject,
+    transformerForBuildPlusRuntime_indexListBy,
     transformerForBuildPlusRuntime_listReducerToSpreadObject,
     transformerForBuildPlusRuntime_mapList,
     transformerForBuildPlusRuntime_mustacheStringTemplate,

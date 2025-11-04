@@ -461,7 +461,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           foreignKeyObjectsAttributeDefinition.map((e) => [
             e[1].tag?.value?.selectorParams?.targetEntity,
             {
-              transformerType: "listReducerToIndexObject",
+              transformerType: "indexListBy",
               interpolation: "runtime",
               applyTo: {
                 transformerType: "getFromContext",

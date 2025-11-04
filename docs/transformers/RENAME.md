@@ -189,10 +189,10 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | mustacheStringTemplate | **templateString** |
 | mapperListToList | **OK: mapList** or **transformEachItem** |
 | listPickElement | **OK: pickFromList** |
-| unique | **getUniqueValues** |
-| count | **countItems** or **OK: aggregate** |
-| listReducerToIndexObject | **listToIndexedObject** or **indexListBy** |
-| listReducerToSpreadObject | **mergeListToObject** or **spreadListItems** |
+| unique | **OK: getUniqueValues** |
+| count | **OK: aggregate** |
+| listReducerToIndexObject | OK: **indexListBy** |
+| listReducerToSpreadObject | OK: **spreadListItems** |
 | objectValues | **getObjectValues** |
 | objectEntries | **getObjectEntries** |
 | objectDynamicAccess | **getNestedValue** or **accessPath** |

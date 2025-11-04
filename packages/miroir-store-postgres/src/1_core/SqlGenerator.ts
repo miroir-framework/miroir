@@ -20,7 +20,7 @@ import {
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_freeObjectTemplate,
   TransformerForRuntime_pickFromList,
-  TransformerForRuntime_listReducerToIndexObject,
+  TransformerForRuntime_indexListBy,
   TransformerForRuntime_listReducerToSpreadObject,
   // TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_mapList,
@@ -452,7 +452,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_objectValues
     | TransformerForRuntime_objectEntries
     | TransformerForRuntime_listReducerToSpreadObject
-    | TransformerForRuntime_listReducerToIndexObject
+    | TransformerForRuntime_indexListBy
     | TransformerForRuntime_getUniqueValues
     // | TransformerForRuntime_innerFullObjectTemplate
   ,
@@ -2216,7 +2216,7 @@ function sqlStringForObjectValuesTransformer(
 
 // ################################################################################################
 function sqlStringForListReducerToIndexObjectTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_listReducerToIndexObject,
+  actionRuntimeTransformer: TransformerForRuntime_indexListBy,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2240,10 +2240,10 @@ function sqlStringForListReducerToIndexObjectTransformer(
     return applyTo;
   }
   log.info(
-    "sqlStringForRuntimeTransformer listReducerToIndexObject found definedContextEntries",
+    "sqlStringForRuntimeTransformer indexListBy found definedContextEntries",
     JSON.stringify(definedContextEntries, null, 2)
   );
-  log.info("sqlStringForRuntimeTransformer listReducerToIndexObject found applyTo", JSON.stringify(applyTo, null, 2));
+  log.info("sqlStringForRuntimeTransformer indexListBy found applyTo", JSON.stringify(applyTo, null, 2));
   const applyToLabel = transformerLabel + "_applyTo";
   const applyToLabelElements = applyToLabel + "_elements";
   const applyToLabelPairs = applyToLabel + "_pairs";
@@ -2312,12 +2312,12 @@ function sqlStringForListReducerToIndexObjectTransformer(
         queryFailure: "QueryNotExecutable",
         query: actionRuntimeTransformer as any,
         queryParameters: JSON.stringify(applyTo) as any,
-        failureMessage: "sqlStringForRuntimeTransformer listReducerToIndexObject can not be applied to a json object, it can only be applied to a json array or an array of json objects",
+        failureMessage: "sqlStringForRuntimeTransformer indexListBy can not be applied to a json object, it can only be applied to a json array or an array of json objects",
       });
     }
     case "tableOf1JsonColumn": {
       throw new Error(
-        "sqlStringForRuntimeTransformer listReducerToIndexObject not implemented for applyTo type:" + applyTo.type
+        "sqlStringForRuntimeTransformer indexListBy not implemented for applyTo type:" + applyTo.type
       );
       // const sqlResult =
       //   "SELECT " +
@@ -2368,18 +2368,18 @@ function sqlStringForListReducerToIndexObjectTransformer(
       //   FROM json_objects, jsonb_each(obj)
       // ) AS key_value_pairs;
       throw new Error(
-        "sqlStringForRuntimeTransformer listReducerToIndexObject not implemented for applyTo type:" + applyTo.type
+        "sqlStringForRuntimeTransformer indexListBy not implemented for applyTo type:" + applyTo.type
       );
     }
     case "scalar": {
       throw new Error(
-        "sqlStringForRuntimeTransformer listReducerToIndexObject not implemented for applyTo type:" + applyTo.type
+        "sqlStringForRuntimeTransformer indexListBy not implemented for applyTo type:" + applyTo.type
       );
       break;
     }
     default:
       throw new Error(
-        "sqlStringForRuntimeTransformer listReducerToIndexObject not implemented for applyTo type:" + applyTo.type
+        "sqlStringForRuntimeTransformer indexListBy not implemented for applyTo type:" + applyTo.type
       );
       break;
   }

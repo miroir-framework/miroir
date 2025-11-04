@@ -858,8 +858,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_objectEntries: miroirTransformersForBuild.transformer_objectEntries,
         transformerForBuild_objectValues: miroirTransformersForBuild.transformer_objectValues,
         transformerForBuild_pickFromList: miroirTransformersForBuild.transformer_pickFromList,
-        transformerForBuild_listReducerToIndexObject:
-          miroirTransformersForBuild.transformer_listReducerToIndexObject,
+        transformerForBuild_indexListBy:
+          miroirTransformersForBuild.transformer_indexListBy,
         transformerForBuild_listReducerToSpreadObject:
           miroirTransformersForBuild.transformer_listReducerToSpreadObject,
         transformerForBuild_object_fullTemplate:
@@ -926,8 +926,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_generateUuid: miroirTransformersForRuntime.transformer_generateUuid,
         transformerForRuntime_mustacheStringTemplate:
           miroirTransformersForRuntime.transformer_mustacheStringTemplate,
-        transformerForRuntime_listReducerToIndexObject:
-          miroirTransformersForRuntime.transformer_listReducerToIndexObject,
+        transformerForRuntime_indexListBy:
+          miroirTransformersForRuntime.transformer_indexListBy,
         transformerForRuntime_listReducerToSpreadObject:
           miroirTransformersForRuntime.transformer_listReducerToSpreadObject,
         transformerForRuntime_objectAlter: miroirTransformersForRuntime.transformer_objectAlter,
@@ -1030,8 +1030,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_generateUuid,
         transformerForBuildPlusRuntime_mustacheStringTemplate:
           miroirTransformersForBuildPlusRuntime.transformer_mustacheStringTemplate,
-        transformerForBuildPlusRuntime_listReducerToIndexObject:
-          miroirTransformersForBuildPlusRuntime.transformer_listReducerToIndexObject,
+        transformerForBuildPlusRuntime_indexListBy:
+          miroirTransformersForBuildPlusRuntime.transformer_indexListBy,
         transformerForBuildPlusRuntime_listReducerToSpreadObject:
           miroirTransformersForBuildPlusRuntime.transformer_listReducerToSpreadObject,
         transformerForBuildPlusRuntime_objectAlter:
@@ -3930,7 +3930,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_objectEntries",
     "transformerForBuild_objectValues",
     "transformerForBuild_pickFromList",
-    "transformerForBuild_listReducerToIndexObject",
+    "transformerForBuild_indexListBy",
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",
     "transformerForBuild_getFromParameters",
@@ -4084,7 +4084,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_objectEntries",
     "transformerForBuild_objectValues",
     "transformerForBuild_pickFromList",
-    "transformerForBuild_listReducerToIndexObject",
+    "transformerForBuild_indexListBy",
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",
     "transformerForBuild_getFromParameters",

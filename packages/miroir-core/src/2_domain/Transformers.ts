@@ -12,7 +12,7 @@ import transformer_aggregate_json from '../assets/miroir_data/a557419d-a288-4fb8
 import transformer_dataflowObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/fc7ce040-1653-4cad-842e-99fb0792e728.json';
 import transformer_freeObjectTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e99fec79-162b-49ac-97d6-c058d162d1d8.json';
 import transformer_pickFromList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/64685ad7-1324-4080-9c41-504fcc1972c9.json';
-import transformer_listReducerToIndexObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea.json';
+import transformer_indexListBy_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea.json';
 import transformer_listReducerToSpreadObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/0894ed4f-ca11-4b04-878d-471d1d780fac.json';
 import transformer_mapList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3ec73049-5e54-40aa-bc86-4c4906d00baa.json';
 import transformer_mustacheStringTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b1d69881-c9c4-4eb7-a60b-7af68163d559.json';
@@ -47,7 +47,7 @@ export const transformer_aggregate: TransformerDefinition = transformer_aggregat
 export const transformer_dataflowObject: TransformerDefinition = transformer_dataflowObject_json as TransformerDefinition;
 export const transformer_freeObjectTemplate: TransformerDefinition = transformer_freeObjectTemplate_json as TransformerDefinition;
 export const transformer_pickFromList: TransformerDefinition = transformer_pickFromList_json as TransformerDefinition;
-export const transformer_listReducerToIndexObject: TransformerDefinition = transformer_listReducerToIndexObject_json as TransformerDefinition;
+export const transformer_indexListBy: TransformerDefinition = transformer_indexListBy_json as TransformerDefinition;
 export const transformer_listReducerToSpreadObject: TransformerDefinition = transformer_listReducerToSpreadObject_json as TransformerDefinition;
 export const transformer_mapList: TransformerDefinition = transformer_mapList_json as TransformerDefinition;
 export const transformer_mustacheStringTemplate: TransformerDefinition = transformer_mustacheStringTemplate_json as TransformerDefinition;
@@ -83,7 +83,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_dataflowObject,
   transformer_freeObjectTemplate,
   transformer_pickFromList,
-  transformer_listReducerToIndexObject,
+  transformer_indexListBy,
   transformer_listReducerToSpreadObject,
   transformer_mapList,
   transformer_mustacheStringTemplate,

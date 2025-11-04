@@ -3561,15 +3561,15 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "listReducerToIndexObject",
+            "transformerTestLabel": "indexListBy",
             "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listReducerToIndexObject allows to reduce a returnValue list of objects to an object with dynamic keys and values",
-                "transformerName": "listReducerToIndexObject",
+                "transformerTestLabel": "indexListBy allows to reduce a returnValue list of objects to an object with dynamic keys and values",
+                "transformerName": "indexListBy",
                 "transformer": {
-                  "transformerType": "listReducerToIndexObject",
+                  "transformerType": "indexListBy",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -3601,10 +3601,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values",
-                "transformerName": "listReducerToIndexObject",
+                "transformerTestLabel": "indexListBy allows to reduce a list of objects from parameter to an object with dynamic keys and values",
+                "transformerName": "indexListBy",
                 "transformer": {
-                  "transformerType": "listReducerToIndexObject",
+                  "transformerType": "indexListBy",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -3639,10 +3639,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listReducerToIndexObject fails when input is not a list",
-                "transformerName": "listReducerToIndexObject",
+                "transformerTestLabel": "indexListBy fails when input is not a list",
+                "transformerName": "indexListBy",
                 "transformer": {
-                  "transformerType": "listReducerToIndexObject",
+                  "transformerType": "indexListBy",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",

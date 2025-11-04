@@ -1609,7 +1609,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 },
   //               },
   //               municipalitiesIndexedByUuid: {
-  //                 transformerType: "listReducerToIndexObject",
+  //                 transformerType: "indexListBy",
   //                 interpolation: "runtime",
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
@@ -1623,7 +1623,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 indexAttribute: "uuid",
   //               },
   //               municipalitiesIndexedByName: {
-  //                 transformerType: "listReducerToIndexObject",
+  //                 transformerType: "indexListBy",
   //                 interpolation: "runtime",
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",

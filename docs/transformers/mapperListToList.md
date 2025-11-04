@@ -227,7 +227,7 @@ A field name to sort the result list alphabetically.
 
 ## Related Transformers
 
-- **listReducerToIndexObject**: Convert list to object indexed by a field
+- **indexListBy**: Convert list to object indexed by a field
 - **listReducerToSpreadObject**: Flatten list of objects into a single object
 - **listPickElement**: Pick a single element from a list
 - **getUniqueValues**: Get getUniqueValues values from a list based on a field
