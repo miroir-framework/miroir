@@ -27,7 +27,7 @@ import {
   TransformerForBuild_mapList,
   TransformerForBuild_mustacheStringTemplate,
   TransformerForBuild_generateUuid,
-  TransformerForBuild_object_fullTemplate,
+  TransformerForBuild_createObjectFromPairs,
   TransformerForBuild_objectAlter,
   TransformerForBuild_objectDynamicAccess,
   TransformerForBuild_getObjectEntries,
@@ -50,7 +50,7 @@ import {
   TransformerForRuntime_mapList,
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_generateUuid,
-  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_createObjectFromPairs,
   TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_getObjectEntries,
@@ -96,7 +96,7 @@ import {
   transformer_menu_addItem,
   transformer_mustacheStringTemplate,
   transformer_generateUuid,
-  transformer_object_fullTemplate,
+  transformer_createObjectFromPairs,
   transformer_objectAlter,
   transformer_objectDynamicAccess,
   transformer_getObjectEntries,
@@ -130,7 +130,7 @@ export const defaultTransformers = {
   transformer_InnerReference_resolve,
   transformer_resolveReference,
   handleTransformer_objectAlter,
-  handleTransformer_object_fullTemplate,
+  handleTransformer_createObjectFromPairs,
   transformer_object_indexListBy_apply,
   transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply,
@@ -646,7 +646,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
   handleTransformer_getObjectEntries,
   handleTransformer_getObjectValues,
-  handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
+  handleTransformer_createObjectFromPairs: defaultTransformers.handleTransformer_createObjectFromPairs,
   handleTransformer_getFromParameters,
   transformer_object_indexListBy_apply: defaultTransformers.transformer_object_indexListBy_apply,
   transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
@@ -685,7 +685,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   objectDynamicAccess: transformer_objectDynamicAccess,
   getObjectEntries: transformer_getObjectEntries,
   getObjectValues: transformer_getObjectValues,
-  object_fullTemplate: transformer_object_fullTemplate,
+  createObjectFromPairs: transformer_createObjectFromPairs,
   getFromParameters: transformer_getFromParameters,
   getUniqueValues: transformer_getUniqueValues,
   // MLS
@@ -703,8 +703,8 @@ function resolveApplyTo(
   transformerPath: string[],
   label: string | undefined,
   transformer:
-    | TransformerForBuild_object_fullTemplate
-    | TransformerForRuntime_object_fullTemplate
+    | TransformerForBuild_createObjectFromPairs
+    | TransformerForRuntime_createObjectFromPairs
     | TransformerForBuild_objectAlter
     | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
@@ -1189,19 +1189,19 @@ function transformer_object_indexListBy_apply(
  * 
  */
 // ################################################################################################
-function handleTransformer_object_fullTemplate(
+function handleTransformer_createObjectFromPairs(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer: TransformerForBuild_object_fullTemplate
-    | TransformerForRuntime_object_fullTemplate,
+  transformer: TransformerForBuild_createObjectFromPairs
+    | TransformerForRuntime_createObjectFromPairs,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
-  //   "transformer_object_fullTemplate called with objectName=",
+  //   "transformer_createObjectFromPairs called with objectName=",
   //   objectName,
   //   // "transformerForBuild=",
   //   // // transformerForBuild,
@@ -1222,19 +1222,19 @@ function handleTransformer_object_fullTemplate(
 
   if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
-      "transformer_object_fullTemplate can not apply to failed resolvedApplyTo",
+      "transformer_createObjectFromPairs can not apply to failed resolvedApplyTo",
       resolvedApplyTo
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
-      failureOrigin: ["transformer_object_fullTemplate"],
-      queryContext: "transformer_object_fullTemplate can not apply to failed resolvedApplyTo",
+      failureOrigin: ["transformer_createObjectFromPairs"],
+      queryContext: "transformer_createObjectFromPairs can not apply to failed resolvedApplyTo",
       innerError: resolvedApplyTo
     });
   }
   log.info(
-    "transformer_object_fullTemplate found resolvedApplyTo",
+    "transformer_createObjectFromPairs found resolvedApplyTo",
     JSON.stringify(resolvedApplyTo, null, 2)
   );
   const newContextResults = {
@@ -1275,7 +1275,7 @@ function handleTransformer_object_fullTemplate(
             : rawLeftValue,
       };
       // log.info(
-      //   "transformer_object_fullTemplate innerEntry.attributeKey",
+      //   "transformer_createObjectFromPairs innerEntry.attributeKey",
       //   innerEntry.attributeKey,
       //   "leftValue",
       //   leftValue
@@ -1304,7 +1304,7 @@ function handleTransformer_object_fullTemplate(
             : renderedRightValue,
       };
       // log.info(
-      //   "transformer_object_fullTemplate",
+      //   "transformer_createObjectFromPairs",
       //   step,
       //   "innerEntry",
       //   JSON.stringify(innerEntry, null, 2),
@@ -1330,13 +1330,13 @@ function handleTransformer_object_fullTemplate(
     const fullObjectResult = Object.fromEntries(
       attributeEntries.map((e) => [e[0].finalLeftValue, e[1].finalRightValue])
     );
-    // log.info("transformer_object_fullTemplate for", transformerForBuild, "fullObjectResult", fullObjectResult);
+    // log.info("transformer_createObjectFromPairs for", transformerForBuild, "fullObjectResult", fullObjectResult);
     return fullObjectResult;
   } else {
     return new TransformerFailure({
       queryFailure: "ReferenceNotFound",
       transformerPath, //: [...transformerPath, transformer.transformerType],
-      failureOrigin: ["transformer_object_fullTemplate"],
+      failureOrigin: ["transformer_createObjectFromPairs"],
       queryContext: "FullObjectTemplate error in " +
         objectName,
         innerError: attributeEntries[failureIndex] as any,

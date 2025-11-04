@@ -23,8 +23,8 @@ const buildReferenceMap: Record<string, string> = {
 describe("transformerInterfaceFromDefinition", () => {
   const transformerDefinition: TransformerDefinition = {
     uuid: "16d866c4-bc81-4773-89a4-a47ac7f6549d",
-    name: "object_fullTemplate",
-    defaultLabel: "object_fullTemplate",
+    name: "createObjectFromPairs",
+    defaultLabel: "createObjectFromPairs",
     description: "Create an object from an array of key-value pairs",
     parentUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
     parentDefinitionVersionUuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
@@ -33,7 +33,7 @@ describe("transformerInterfaceFromDefinition", () => {
       transformerParameterSchema: {
         transformerType: {
           type: "literal",
-          definition: "object_fullTemplate",
+          definition: "createObjectFromPairs",
         },
         transformerDefinition: {
           type: "object",
@@ -92,7 +92,7 @@ describe("transformerInterfaceFromDefinition", () => {
     },
     transformerImplementation: {
       transformerImplementationType: "libraryImplementation",
-      inMemoryImplementationFunctionName: "transformer_object_fullTemplate",
+      inMemoryImplementationFunctionName: "transformer_createObjectFromPairs",
       sqlImplementationFunctionName: "sqlStringForListPickElementTransformer",
     },
   };
@@ -124,7 +124,7 @@ describe("transformerInterfaceFromDefinition", () => {
       definition: {
         transformerType: {
           type: "literal",
-          definition: "object_fullTemplate",
+          definition: "createObjectFromPairs",
         },
         applyTo: {
           type: "schemaReference",
@@ -189,7 +189,7 @@ describe("transformerInterfaceFromDefinition", () => {
       definition: {
         transformerType: {
           type: "literal",
-          definition: "object_fullTemplate",
+          definition: "createObjectFromPairs",
         },
         applyTo: {
           type: "schemaReference",

@@ -10,7 +10,7 @@ import {
   transformer_extended_apply_wrapper,
   transformer_resolveReference,
   TransformerForBuild_createObject,
-  TransformerForBuild_object_fullTemplate,
+  TransformerForBuild_createObjectFromPairs,
   TransformerForRuntime,
   TransformerForRuntime_returnValue,
   // TransformerForRuntime_constantArray,
@@ -26,7 +26,7 @@ import {
   TransformerForRuntime_mapList,
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_generateUuid,
-  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_createObjectFromPairs,
   TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_getObjectEntries,
@@ -443,8 +443,8 @@ export function sqlStringForExtractor(
 // ################################################################################################
 function sqlStringForApplyTo(
   actionRuntimeTransformer:
-    | TransformerForBuild_object_fullTemplate
-    | TransformerForRuntime_object_fullTemplate
+    | TransformerForBuild_createObjectFromPairs
+    | TransformerForRuntime_createObjectFromPairs
     | TransformerForRuntime_aggregate
     | TransformerForRuntime_pickFromList
     | TransformerForRuntime_mapList
@@ -1638,8 +1638,8 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 // ################################################################################################
 // TODO: used for build, too, type is incorrect
 function sqlStringForObjectFullTemplateTransformer(
-  // actionRuntimeTransformer: TransformerForBuild_object_fullTemplate | TransformerForRuntime_object_fullTemplate,
-  actionRuntimeTransformer: TransformerForRuntime_object_fullTemplate,
+  // actionRuntimeTransformer: TransformerForBuild_createObjectFromPairs | TransformerForRuntime_createObjectFromPairs,
+  actionRuntimeTransformer: TransformerForRuntime_createObjectFromPairs,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1676,7 +1676,7 @@ function sqlStringForObjectFullTemplateTransformer(
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: actionRuntimeTransformer as any,
-        failureMessage: "sqlStringForObjectFullTemplateTransformer object_fullTemplate resultAccessPath has map: " + JSON.stringify(resolvedApplyTo.resultAccessPath, null, 2),
+        failureMessage: "sqlStringForObjectFullTemplateTransformer createObjectFromPairs resultAccessPath has map: " + JSON.stringify(resolvedApplyTo.resultAccessPath, null, 2),
       });
     }
 
@@ -1722,7 +1722,7 @@ function sqlStringForObjectFullTemplateTransformer(
           // iterateOn, // iterateOn
         );
         log.info(
-          "sqlStringForObjectFullTemplateTransformer object_fullTemplate attributeValue for",
+          "sqlStringForObjectFullTemplateTransformer createObjectFromPairs attributeValue for",
           attributeValueName,
           "=",
           JSON.stringify(attributeValue, null, 2),
@@ -1773,14 +1773,14 @@ function sqlStringForObjectFullTemplateTransformer(
           return [new Domain2ElementFailed({
             queryFailure: "QueryNotExecutable",
             query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForObjectFullTemplateTransformer object_fullTemplate attributeKey is table",
+            failureMessage: "sqlStringForObjectFullTemplateTransformer createObjectFromPairs attributeKey is table",
           })];
         }
         if (!attributeKey.resultAccessPath) {
           return [new Domain2ElementFailed({
             queryFailure: "QueryNotExecutable",
             query: actionRuntimeTransformer as any,
-            failureMessage: "sqlStringForObjectFullTemplateTransformer object_fullTemplate attributeKey has no resultAccessPath",
+            failureMessage: "sqlStringForObjectFullTemplateTransformer createObjectFromPairs attributeKey has no resultAccessPath",
           })];
         }
         if (attributeKey.preparedStatementParameters) {
@@ -1843,25 +1843,25 @@ function sqlStringForObjectFullTemplateTransformer(
         return `"${e.name}"`;
       })
       .join(", ");
-    log.info("sqlStringForObjectFullTemplateTransformer object_fullTemplate extraWidth", JSON.stringify(extraWith,null,2));
+    log.info("sqlStringForObjectFullTemplateTransformer createObjectFromPairs extraWidth", JSON.stringify(extraWith,null,2));
     const sqlResult =
       // flushAndIndent(indentLevel) +
       "SELECT jsonb_build_object(" +
       objectKeyValues +
-      ') AS "object_fullTemplate" ' +
+      ') AS "createObjectFromPairs" ' +
       flushAndIndent(indentLevel) +
       "FROM " +
       objectKeyValues_With_references +
       flushAndIndent(indentLevel) +
       orderBy;
     // const sqlResult = `SELECT jsonb_build_object(${objectAttributes}) AS "innerFullObjectTemplate" FROM ${objectAttributes_With_references} GROUP BY ${objectAttributes} ${orderBy}`;
-    log.info("sqlStringForObjectFullTemplateTransformer object_fullTemplate sqlResult", JSON.stringify(sqlResult));
+    log.info("sqlStringForObjectFullTemplateTransformer createObjectFromPairs sqlResult", JSON.stringify(sqlResult));
     return {
       type: "json",
       sqlStringOrObject: sqlResult,
       preparedStatementParameters,
-      resultAccessPath: [0, "object_fullTemplate"],
-      columnNameContainingJsonValue: "object_fullTemplate",
+      resultAccessPath: [0, "createObjectFromPairs"],
+      columnNameContainingJsonValue: "createObjectFromPairs",
       extraWith: resultExtraWith,
     };
   } else { // topLevelTransformer == false
@@ -1878,7 +1878,7 @@ function sqlStringForObjectFullTemplateTransformer(
     if (resolvedApplyTo instanceof Domain2ElementFailed) {
       return resolvedApplyTo;
     }
-    log.info("sqlStringForObjectFullTemplateTransformer object_fullTemplate resolvedApplyTo", JSON.stringify(resolvedApplyTo, null, 2));
+    log.info("sqlStringForObjectFullTemplateTransformer createObjectFromPairs resolvedApplyTo", JSON.stringify(resolvedApplyTo, null, 2));
 
     let preparedStatementParameters: any[] = resolvedApplyTo.preparedStatementParameters ?? [];
     newPreparedStatementParametersCount += preparedStatementParameters.length;
@@ -1950,15 +1950,15 @@ function sqlStringForObjectFullTemplateTransformer(
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: actionRuntimeTransformer as any,
-        failureMessage: "sqlStringForObjectFullTemplateTransformer object_fullTemplate attributeKey or attributeValue failed: " + JSON.stringify(foundError, null, 2),
+        failureMessage: "sqlStringForObjectFullTemplateTransformer createObjectFromPairs attributeKey or attributeValue failed: " + JSON.stringify(foundError, null, 2),
       });
     }
     log.info(
-      "sqlStringForObjectFullTemplateTransformer object_fullTemplate objectAttributes",
+      "sqlStringForObjectFullTemplateTransformer createObjectFromPairs objectAttributes",
       JSON.stringify(objectAttributes, null, 2)
     );
     log.info(
-      "sqlStringForObjectFullTemplateTransformer object_fullTemplate preparedStatementParameters",
+      "sqlStringForObjectFullTemplateTransformer createObjectFromPairs preparedStatementParameters",
       JSON.stringify(preparedStatementParameters, null, 2)
     );
     const create_object =
@@ -1970,15 +1970,15 @@ function sqlStringForObjectFullTemplateTransformer(
       + flushAndIndent(indentLevel)
       + ")";
     const sqlResult = ""
-      + "SELECT " + create_object + " AS \"object_fullTemplate\""
+      + "SELECT " + create_object + " AS \"createObjectFromPairs\""
       + flushAndIndent(indentLevel)
       + "FROM " + resolvedApplyTo.sqlStringOrObject;
-    log.info("sqlStringForObjectFullTemplateTransformer object_fullTemplate sqlResult", sqlResult);
+    log.info("sqlStringForObjectFullTemplateTransformer createObjectFromPairs sqlResult", sqlResult);
     return {
       type: "json",
       sqlStringOrObject: sqlResult,
       resultAccessPath: undefined,
-      columnNameContainingJsonValue: "object_fullTemplate",
+      columnNameContainingJsonValue: "createObjectFromPairs",
       preparedStatementParameters,
     };
   }
@@ -2028,7 +2028,7 @@ function sqlStringForObjectAlterTransformer(
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForObjectAlterTransformer object_fullTemplate resultAccessPath has map: " + JSON.stringify(applyToSql.resultAccessPath, null, 2),
+      failureMessage: "sqlStringForObjectAlterTransformer createObjectFromPairs resultAccessPath has map: " + JSON.stringify(applyToSql.resultAccessPath, null, 2),
     });
   }
   // #############################################

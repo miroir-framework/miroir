@@ -84,7 +84,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           },
           referenceToOuterObject: "attributeName",
           elementTransformer: {
-            transformerType: "object_fullTemplate",
+            transformerType: "createObjectFromPairs",
             applyTo: {
               transformerType: "getFromContext",
               interpolation: "runtime",

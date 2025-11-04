@@ -2025,7 +2025,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "openStoreAction",
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         configuration: {
-  //           transformerType: "object_fullTemplate",
+  //           transformerType: "createObjectFromPairs",
   //           applyTo: {
   //             referenceType: "referencedTransformer",
   //             reference: {

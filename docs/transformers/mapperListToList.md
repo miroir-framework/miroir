@@ -41,7 +41,7 @@ The list you want to transform. Can be:
 The transformer that will be applied to **each element** of the list. This can be any transformer type:
 
 - `createObject` - Build a simple object
-- `object_fullTemplate` - Build a complex object
+- `createObjectFromPairs` - Build a complex object
 - `objectAlter` - Modify an existing object
 - `returnValue` - Replace with a constant value
 - Any other transformer

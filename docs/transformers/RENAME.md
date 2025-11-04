@@ -181,23 +181,23 @@ Based on my analysis of the transformer descriptions from the code and documenta
 
 | Old Name | New Name |
 |----------|----------|
-| constant | **OK: returnValue** |
-| newUuid | **generateUuid** |
-| contextReference | **OK: getFromContext** |
-| parameterReference | **OK getFromParameters** |
+| constant | OK: **returnValue** |
+| newUuid | OK: **generateUuid** |
+| contextReference | OK: **getFromContext** |
+| parameterReference | OK: **getFromParameters** |
 | constantAsExtractor | **returnAsExtractor** *(testing only)* |
 | mustacheStringTemplate | **templateString** |
-| mapperListToList | **OK: mapList** or **transformEachItem** |
-| listPickElement | **OK: pickFromList** |
-| unique | **OK: getUniqueValues** |
-| count | **OK: aggregate** |
+| mapperListToList | OK: **mapList** |
+| listPickElement | OK: **pickFromList** |
+| unique | OK: **getUniqueValues** |
+| count | OK: **aggregate** |
 | listReducerToIndexObject | OK: **indexListBy** |
 | listReducerToSpreadObject | OK: **spreadListItems** |
 | objectValues | OK: **getObjectValues** |
 | objectEntries | OK: **getObjectEntries** |
-| objectDynamicAccess | **getNestedValue** or **accessPath** |
+| objectDynamicAccess | **accessDynamicPath** |
 | freeObjectTemplate | OK: **createObject** |
-| object_fullTemplate | **createObjectFromPairs** |
+| object_fullTemplate | OK: **createObjectFromPairs** |
 | objectAlter | **mergeIntoObject** |
 | dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |
 | conditional | OK: **ifThenElse** |

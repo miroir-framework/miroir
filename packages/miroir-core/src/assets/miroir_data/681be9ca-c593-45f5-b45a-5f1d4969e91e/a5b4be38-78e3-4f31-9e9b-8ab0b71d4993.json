@@ -2095,15 +2095,15 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "object_fullTemplate",
+            "transformerTestLabel": "createObjectFromPairs",
             "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object from a returnValue object before runtime (unknown keys, unknown values)",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object from a returnValue object before runtime (unknown keys, unknown values)",
                 "transformerName": "fullTemplate",
                 "transformer": {
-                  "transformerType": "object_fullTemplate",
+                  "transformerType": "createObjectFromPairs",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -2160,10 +2160,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object before runtime (unknown keys, unknown values)",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object before runtime (unknown keys, unknown values)",
                 "transformerName": "fullTemplate",
                 "transformer": {
-                  "transformerType": "object_fullTemplate",
+                  "transformerType": "createObjectFromPairs",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -2221,10 +2221,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object during runtime using getFromParameters (unknown keys, unknown values)",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object during runtime using getFromParameters (unknown keys, unknown values)",
                 "transformerName": "fullTemplate",
                 "transformer": {
-                  "transformerType": "object_fullTemplate",
+                  "transformerType": "createObjectFromPairs",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -2282,10 +2282,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object using an extractor",
+                "transformerTestLabel": "createObjectFromPairs allows to dynamically build an object using an extractor",
                 "transformerName": "fullTemplate",
                 "transformer": {
-                  "transformerType": "object_fullTemplate",
+                  "transformerType": "createObjectFromPairs",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
@@ -2994,7 +2994,7 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "mapList maps a list of objects to another list of objects using object_fullTemplate",
+                "transformerTestLabel": "mapList maps a list of objects to another list of objects using createObjectFromPairs",
                 "transformerName": "mapList",
                 "transformer": {
                   "transformerType": "mapList",
@@ -3007,7 +3007,7 @@
                   },
                   "referenceToOuterObject": "country",
                   "elementTransformer": {
-                    "transformerType": "object_fullTemplate",
+                    "transformerType": "createObjectFromPairs",
                     "interpolation": "runtime",
                     "applyTo": {
                       "transformerType": "getFromContext",
@@ -3181,7 +3181,7 @@
                   "target": "newObject",
                   "definition": {
                     "newObject": {
-                      "transformerType": "object_fullTemplate",
+                      "transformerType": "createObjectFromPairs",
                       "interpolation": "runtime",
                       "applyTo": {
                         "transformerType": "getFromContext",
@@ -3249,7 +3249,7 @@
                   "target": "newObject2",
                   "definition": {
                     "newObject": {
-                      "transformerType": "object_fullTemplate",
+                      "transformerType": "createObjectFromPairs",
                       "interpolation": "runtime",
                       "label": "newObject",
                       "applyTo": {
@@ -3291,7 +3291,7 @@
                       ]
                     },
                     "newObject2": {
-                      "transformerType": "object_fullTemplate",
+                      "transformerType": "createObjectFromPairs",
                       "interpolation": "runtime",
                       "label": "newObject2",
                       "applyTo": {
@@ -3361,7 +3361,7 @@
                   "target": "newObject",
                   "definition": {
                     "newObject": {
-                      "transformerType": "object_fullTemplate",
+                      "transformerType": "createObjectFromPairs",
                       "interpolation": "runtime",
                       "applyTo": {
                         "transformerType": "getFromContext",

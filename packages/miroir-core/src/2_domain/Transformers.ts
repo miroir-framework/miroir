@@ -56,7 +56,7 @@ export const transformer_objectAlter: TransformerDefinition = transformer_object
 export const transformer_objectDynamicAccess: TransformerDefinition = transformer_objectDynamicAccess_json as TransformerDefinition;
 export const transformer_getObjectEntries: TransformerDefinition = transformer_getObjectEntries_json as TransformerDefinition;
 export const transformer_getObjectValues: TransformerDefinition = transformer_getObjectValues_json as TransformerDefinition;
-export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
+export const transformer_createObjectFromPairs: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
 export const transformer_getFromParameters: TransformerDefinition = transformer_getFromParameters_json as TransformerDefinition;
 export const transformer_getUniqueValues: TransformerDefinition = transformer_getUniqueValues_json as TransformerDefinition;
 // MLS
@@ -92,7 +92,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_objectDynamicAccess,
   transformer_getObjectEntries,
   transformer_getObjectValues,
-  transformer_object_fullTemplate,
+  transformer_createObjectFromPairs,
   transformer_getFromParameters,
   transformer_getUniqueValues,
   // transformer_constantBigint,

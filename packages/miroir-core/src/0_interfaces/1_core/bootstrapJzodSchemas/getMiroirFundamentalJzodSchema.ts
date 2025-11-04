@@ -862,8 +862,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_indexListBy,
         transformerForBuild_listReducerToSpreadObject:
           miroirTransformersForBuild.transformer_listReducerToSpreadObject,
-        transformerForBuild_object_fullTemplate:
-          miroirTransformersForBuild.transformer_object_fullTemplate,
+        transformerForBuild_createObjectFromPairs:
+          miroirTransformersForBuild.transformer_createObjectFromPairs,
         transformerForBuild_getFromParameters:
           miroirTransformersForBuild.transformer_getFromParameters,
         transformerForBuild_getUniqueValues: miroirTransformersForBuild.transformer_getUniqueValues,
@@ -935,8 +935,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForRuntime.transformer_objectDynamicAccess,
         transformerForRuntime_getObjectEntries: miroirTransformersForRuntime.transformer_getObjectEntries,
         transformerForRuntime_getObjectValues: miroirTransformersForRuntime.transformer_getObjectValues,
-        transformerForRuntime_object_fullTemplate:
-          miroirTransformersForRuntime.transformer_object_fullTemplate,
+        transformerForRuntime_createObjectFromPairs:
+          miroirTransformersForRuntime.transformer_createObjectFromPairs,
         transformerForRuntime_getUniqueValues: miroirTransformersForRuntime.transformer_getUniqueValues,
         // MLS
         ...Object.fromEntries(
@@ -1042,8 +1042,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_getObjectEntries,
         transformerForBuildPlusRuntime_getObjectValues:
           miroirTransformersForBuildPlusRuntime.transformer_getObjectValues,
-        transformerForBuildPlusRuntime_object_fullTemplate:
-          miroirTransformersForBuildPlusRuntime.transformer_object_fullTemplate,
+        transformerForBuildPlusRuntime_createObjectFromPairs:
+          miroirTransformersForBuildPlusRuntime.transformer_createObjectFromPairs,
         transformerForBuildPlusRuntime_getUniqueValues:
           miroirTransformersForBuildPlusRuntime.transformer_getUniqueValues,
         // MLS
@@ -3932,7 +3932,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_pickFromList",
     "transformerForBuild_indexListBy",
     "transformerForBuild_listReducerToSpreadObject",
-    "transformerForBuild_object_fullTemplate",
+    "transformerForBuild_createObjectFromPairs",
     "transformerForBuild_getFromParameters",
     "transformerForBuild_getUniqueValues",
     // "transformerForBuild_InnerReference"
@@ -4086,7 +4086,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_pickFromList",
     "transformerForBuild_indexListBy",
     "transformerForBuild_listReducerToSpreadObject",
-    "transformerForBuild_object_fullTemplate",
+    "transformerForBuild_createObjectFromPairs",
     "transformerForBuild_getFromParameters",
     "transformerForBuild_getUniqueValues",
     // "transformerForBuild_InnerReference"
