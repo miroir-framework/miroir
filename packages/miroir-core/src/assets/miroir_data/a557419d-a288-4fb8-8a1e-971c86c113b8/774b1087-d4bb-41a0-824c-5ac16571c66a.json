@@ -15,7 +15,7 @@
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
-        "definition": "objectAlter"
+        "definition": "mergeIntoObject"
       },
       "transformerDefinition": {
         "type": "object",
@@ -52,7 +52,7 @@
   },
   "transformerImplementation": {
     "transformerImplementationType": "libraryImplementation",
-    "inMemoryImplementationFunctionName": "handleTransformer_objectAlter",
+    "inMemoryImplementationFunctionName": "handleTransformer_mergeIntoObject",
     "sqlImplementationFunctionName": "sqlStringForObjectAlterTransformer"
   }
 }

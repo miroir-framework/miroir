@@ -185,8 +185,6 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | newUuid | OK: **generateUuid** |
 | contextReference | OK: **getFromContext** |
 | parameterReference | OK: **getFromParameters** |
-| constantAsExtractor | **returnAsExtractor** *(testing only)* |
-| mustacheStringTemplate | **templateString** |
 | mapperListToList | OK: **mapList** |
 | listPickElement | OK: **pickFromList** |
 | unique | OK: **getUniqueValues** |
@@ -195,12 +193,15 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | listReducerToSpreadObject | OK: **spreadListItems** |
 | objectValues | OK: **getObjectValues** |
 | objectEntries | OK: **getObjectEntries** |
-| objectDynamicAccess | **accessDynamicPath** |
 | freeObjectTemplate | OK: **createObject** |
 | object_fullTemplate | OK: **createObjectFromPairs** |
-| objectAlter | **mergeIntoObject** |
-| dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |
+| objectAlter | OK: **mergeIntoObject** |
 | conditional | OK: **ifThenElse** |
+|----------|----------|
+| constantAsExtractor | **returnAsExtractor** *(testing only)* |
+| mustacheStringTemplate | **templateString** |
+| dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |
+| objectDynamicAccess | **accessDynamicPath** |
 |----------|----------|
 | jzodTypeCheck | **validateAgainstSchema** |
 | resolveSchemaReferenceInContext | **resolveSchemaReference** |

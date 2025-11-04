@@ -402,7 +402,7 @@ export {
   // TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
   TransformerForRuntime_generateUuid,
   transformerForRuntime_generateUuid,
-  TransformerForRuntime_objectAlter,
+  TransformerForRuntime_mergeIntoObject,
   TransformerForRuntime_createObjectFromPairs,
   transformerForRuntime_createObjectFromPairs,
   TransformerForRuntime_indexListBy,

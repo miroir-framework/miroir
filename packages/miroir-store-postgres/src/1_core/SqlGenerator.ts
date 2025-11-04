@@ -27,7 +27,7 @@ import {
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_generateUuid,
   TransformerForRuntime_createObjectFromPairs,
-  TransformerForRuntime_objectAlter,
+  TransformerForRuntime_mergeIntoObject,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_getObjectEntries,
   TransformerForRuntime_getObjectValues,
@@ -448,7 +448,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_aggregate
     | TransformerForRuntime_pickFromList
     | TransformerForRuntime_mapList
-    | TransformerForRuntime_objectAlter
+    | TransformerForRuntime_mergeIntoObject
     | TransformerForRuntime_getObjectValues
     | TransformerForRuntime_getObjectEntries
     | TransformerForRuntime_listReducerToSpreadObject
@@ -1986,7 +1986,7 @@ function sqlStringForObjectFullTemplateTransformer(
 
 // ################################################################################################
 function sqlStringForObjectAlterTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_objectAlter,
+  actionRuntimeTransformer: TransformerForRuntime_mergeIntoObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2020,7 +2020,7 @@ function sqlStringForObjectAlterTransformer(
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForObjectAlterTransformer objectAlter referenceQuery not json",
+      failureMessage: "sqlStringForObjectAlterTransformer mergeIntoObject referenceQuery not json",
     });
   }
   const accessPathHasMap = applyToSql.resultAccessPath?.find((e: any) => typeof e == "object" && e.type == "map");
@@ -2059,7 +2059,7 @@ function sqlStringForObjectAlterTransformer(
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForObjectAlterTransformer objectAlter attributeValue failed: " + JSON.stringify(subQuery, null, 2),
+      failureMessage: "sqlStringForObjectAlterTransformer mergeIntoObject attributeValue failed: " + JSON.stringify(subQuery, null, 2),
       innerError: subQuery,
     });
   }
@@ -2098,27 +2098,27 @@ function sqlStringForObjectAlterTransformer(
 
   const subQueryWithRowNumber =
     subQuery.type == "tableOf1JsonColumn"
-      ? `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject}.* FROM ${subQuery.sqlStringOrObject}) AS "objectAlter_subQuery"`
-      : `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject} AS "objectAlter_subQueryColumn") AS "objectAlter_subQuery"` // subQuery.type == json
+      ? `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject}.* FROM ${subQuery.sqlStringOrObject}) AS "mergeIntoObject_subQuery"`
+      : `(SELECT ROW_NUMBER() OVER () AS row_num, ${subQuery.sqlStringOrObject} AS "mergeIntoObject_subQueryColumn") AS "mergeIntoObject_subQuery"` // subQuery.type == json
   ;
-  const subQueryColumnName = subQuery.type == "tableOf1JsonColumn"? subQuery.columnNameContainingJsonValue : "objectAlter_subQueryColumn";
+  const subQueryColumnName = subQuery.type == "tableOf1JsonColumn"? subQuery.columnNameContainingJsonValue : "mergeIntoObject_subQueryColumn";
 
   const sqlResult = `SELECT (
 ${indent(indentLevel + 1)}"${applyToName}".${applyToSql.resultAccessPath?.slice(1).map(e=>tokenNameQuote+e+tokenNameQuote).join('->')}
 ${indent(indentLevel + 1)}||
-${indent(indentLevel + 1)}"objectAlter_subQuery"."${subQueryColumnName}"
-${indent(indentLevel)}) AS "objectAlter"
+${indent(indentLevel + 1)}"mergeIntoObject_subQuery"."${subQueryColumnName}"
+${indent(indentLevel)}) AS "mergeIntoObject"
 ${indent(indentLevel)}FROM (SELECT ROW_NUMBER() OVER () AS row_num, "${applyToName}".* FROM "${applyToName}") AS "${applyToName}",
 ${indent(indentLevel + 1)}${subQueryWithRowNumber}
-${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".row_num
+${indent(indentLevel)}WHERE "${applyToName}".row_num = "mergeIntoObject_subQuery".row_num
 `;
 
     const result: SqlStringForTransformerElementValue = {
       type: "json",
       sqlStringOrObject: sqlResult,
       preparedStatementParameters,
-      resultAccessPath: [0, "objectAlter"],
-      columnNameContainingJsonValue: "objectAlter",
+      resultAccessPath: [0, "mergeIntoObject"],
+      columnNameContainingJsonValue: "mergeIntoObject",
       extraWith,
     }
     // log.info("sqlStringForRuntimeTransformer createObject objectAttributes", JSON.stringify(objectAttributes, null, 2));

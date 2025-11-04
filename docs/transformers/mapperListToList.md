@@ -42,7 +42,7 @@ The transformer that will be applied to **each element** of the list. This can b
 
 - `createObject` - Build a simple object
 - `createObjectFromPairs` - Build a complex object
-- `objectAlter` - Modify an existing object
+- `mergeIntoObject` - Modify an existing object
 - `returnValue` - Replace with a constant value
 - Any other transformer
 
@@ -164,7 +164,7 @@ A field name to sort the result list alphabetically.
   },
   "referenceToOuterObject": "user",
   "elementTransformer": {
-    "transformerType": "objectAlter",
+    "transformerType": "mergeIntoObject",
     "applyTo": { 
       "transformerType": "getFromContext", 
       "referenceName": "user" 

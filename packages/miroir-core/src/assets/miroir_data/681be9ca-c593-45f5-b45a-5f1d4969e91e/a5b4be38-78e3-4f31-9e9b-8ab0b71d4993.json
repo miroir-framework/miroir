@@ -2687,10 +2687,10 @@
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectAlter allows to change a returnValue object attribute value",
-                "transformerName": "objectAlter",
+                "transformerTestLabel": "mergeIntoObject allows to change a returnValue object attribute value",
+                "transformerName": "mergeIntoObject",
                 "transformer": {
-                  "transformerType": "objectAlter",
+                  "transformerType": "mergeIntoObject",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -2728,10 +2728,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectAlter allows to change a referenced object attribute value",
-                "transformerName": "objectAlter",
+                "transformerTestLabel": "mergeIntoObject allows to change a referenced object attribute value",
+                "transformerName": "mergeIntoObject",
                 "transformer": {
-                  "transformerType": "objectAlter",
+                  "transformerType": "mergeIntoObject",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromParameters",
@@ -2770,10 +2770,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectAlter should fail when applyTo fails to resolve correctly",
-                "transformerName": "objectAlter",
+                "transformerTestLabel": "mergeIntoObject should fail when applyTo fails to resolve correctly",
+                "transformerName": "mergeIntoObject",
                 "transformer": {
-                  "transformerType": "objectAlter",
+                  "transformerType": "mergeIntoObject",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -2815,10 +2815,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectAlter should fail when definition fails to resolve correctly",
-                "transformerName": "objectAlter",
+                "transformerTestLabel": "mergeIntoObject should fail when definition fails to resolve correctly",
+                "transformerName": "mergeIntoObject",
                 "transformer": {
-                  "transformerType": "objectAlter",
+                  "transformerType": "mergeIntoObject",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromParameters",
@@ -3080,7 +3080,7 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "mapList maps a list of objects to a list of altered objects using objectAlter",
+                "transformerTestLabel": "mapList maps a list of objects to a list of altered objects using mergeIntoObject",
                 "transformerName": "mapList",
                 "transformer": {
                   "transformerType": "mapList",
@@ -3093,7 +3093,7 @@
                   },
                   "referenceToOuterObject": "country2",
                   "elementTransformer": {
-                    "transformerType": "objectAlter",
+                    "transformerType": "mergeIntoObject",
                     "interpolation": "runtime",
                     "applyTo": {
                       "transformerType": "getFromContext",

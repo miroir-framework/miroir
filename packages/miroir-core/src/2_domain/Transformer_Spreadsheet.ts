@@ -115,7 +115,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           },
         },
         completeAttributeDefinitions: {
-          transformerType: "objectAlter",
+          transformerType: "mergeIntoObject",
           applyTo: {
             transformerType: "getFromContext",
             interpolation: "runtime",

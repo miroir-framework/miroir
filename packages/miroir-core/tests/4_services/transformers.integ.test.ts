@@ -296,7 +296,7 @@ if (shouldSkip) {
     //         //   "ifThenElse with parameter reference comparison",
     //         // ]
     //         // "object_alter": [
-    //         //   "objectAlter should fail when definition fails to resolve correctly",
+    //         //   "mergeIntoObject should fail when definition fails to resolve correctly",
     //         // ]
     //       },
     //     },

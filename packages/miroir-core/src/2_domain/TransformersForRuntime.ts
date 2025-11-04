@@ -28,7 +28,7 @@ import {
   TransformerForBuild_mustacheStringTemplate,
   TransformerForBuild_generateUuid,
   TransformerForBuild_createObjectFromPairs,
-  TransformerForBuild_objectAlter,
+  TransformerForBuild_mergeIntoObject,
   TransformerForBuild_objectDynamicAccess,
   TransformerForBuild_getObjectEntries,
   TransformerForBuild_getObjectValues,
@@ -51,7 +51,7 @@ import {
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_generateUuid,
   TransformerForRuntime_createObjectFromPairs,
-  TransformerForRuntime_objectAlter,
+  TransformerForRuntime_mergeIntoObject,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_getObjectEntries,
   TransformerForRuntime_getObjectValues,
@@ -97,7 +97,7 @@ import {
   transformer_mustacheStringTemplate,
   transformer_generateUuid,
   transformer_createObjectFromPairs,
-  transformer_objectAlter,
+  transformer_mergeIntoObject,
   transformer_objectDynamicAccess,
   transformer_getObjectEntries,
   transformer_getObjectValues,
@@ -129,7 +129,7 @@ export const defaultTransformers = {
   transformer_mustacheStringTemplate_apply,
   transformer_InnerReference_resolve,
   transformer_resolveReference,
-  handleTransformer_objectAlter,
+  handleTransformer_mergeIntoObject,
   handleTransformer_createObjectFromPairs,
   transformer_object_indexListBy_apply,
   transformer_object_listReducerToSpreadObject_apply,
@@ -642,7 +642,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_FreeObjectTemplate,
   transformer_mustacheStringTemplate_apply: defaultTransformers.transformer_mustacheStringTemplate_apply,
   handleTransformer_generateUuid,
-  handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
+  handleTransformer_mergeIntoObject: defaultTransformers.handleTransformer_mergeIntoObject,
   transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
   handleTransformer_getObjectEntries,
   handleTransformer_getObjectValues,
@@ -681,7 +681,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   mapList: transformer_mapList,
   mustacheStringTemplate: transformer_mustacheStringTemplate,
   generateUuid: transformer_generateUuid,
-  objectAlter: transformer_objectAlter,
+  mergeIntoObject: transformer_mergeIntoObject,
   objectDynamicAccess: transformer_objectDynamicAccess,
   getObjectEntries: transformer_getObjectEntries,
   getObjectValues: transformer_getObjectValues,
@@ -705,8 +705,8 @@ function resolveApplyTo(
   transformer:
     | TransformerForBuild_createObjectFromPairs
     | TransformerForRuntime_createObjectFromPairs
-    | TransformerForBuild_objectAlter
-    | TransformerForRuntime_objectAlter,
+    | TransformerForBuild_mergeIntoObject
+    | TransformerForRuntime_mergeIntoObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1346,11 +1346,11 @@ function handleTransformer_createObjectFromPairs(
 }
 
 // ################################################################################################
-function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
+function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer: TransformerForBuild_objectAlter | TransformerForRuntime_objectAlter,
+  transformer: TransformerForBuild_mergeIntoObject | TransformerForRuntime_mergeIntoObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1368,14 +1368,14 @@ function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
   );
   if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
-      "transformer_objectAlter can not apply to failed resolvedApplyTo",
+      "transformer_mergeIntoObject can not apply to failed resolvedApplyTo",
       resolvedApplyTo
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath,
-      failureOrigin: ["transformer_objectAlter"],
-      queryContext: "transformer_objectAlter can not apply to failed resolvedApplyTo",
+      failureOrigin: ["transformer_mergeIntoObject"],
+      queryContext: "transformer_mergeIntoObject can not apply to failed resolvedApplyTo",
       innerError: resolvedApplyTo
     });
   }
@@ -1396,19 +1396,19 @@ function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
 
   if (overrideObject instanceof TransformerFailure) {
     log.error(
-      "transformer_objectAlter can not apply to failed overrideObject",
+      "transformer_mergeIntoObject can not apply to failed overrideObject",
       overrideObject
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath,
-      failureOrigin: ["transformer_objectAlter"],
-      queryContext: "transformer_objectAlter can not apply to failed overrideObject",
+      failureOrigin: ["transformer_mergeIntoObject"],
+      queryContext: "transformer_mergeIntoObject can not apply to failed overrideObject",
       innerError: overrideObject
     });
   }
   log.info(
-    "transformer_objectAlter resolvedApplyTo",
+    "transformer_mergeIntoObject resolvedApplyTo",
     resolvedApplyTo,
     "overrideObject",
     overrideObject

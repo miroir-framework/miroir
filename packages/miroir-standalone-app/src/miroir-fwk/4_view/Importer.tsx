@@ -1649,9 +1649,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 },
   //                 // referencedTransformer: "splittedEntityInstances",
   //                 elementTransformer: {
-  //                   transformerType: "objectAlter",
+  //                   transformerType: "mergeIntoObject",
   //                   interpolation: "runtime",
-  //                   referenceToOuterObject: "objectAlterTmpReference",
+  //                   referenceToOuterObject: "mergeIntoObjectTmpReference",
   //                   definition: {
   //                     transformerType: "createObject",
   //                     interpolation: "runtime",
@@ -1672,7 +1672,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                               {
   //                                 transformerType: "getFromContext",
   //                                 interpolation: "runtime",
-  //                                 referenceName: "objectAlterTmpReference",
+  //                                 referenceName: "mergeIntoObjectTmpReference",
   //                               },
   //                               {
   //                                 transformerType: "getFromParameters",

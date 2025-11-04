@@ -852,7 +852,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_generateUuid: miroirTransformersForBuild.transformer_generateUuid,
         transformerForBuild_mustacheStringTemplate:
           miroirTransformersForBuild.transformer_mustacheStringTemplate,
-        transformerForBuild_objectAlter: miroirTransformersForBuild.transformer_objectAlter,
+        transformerForBuild_mergeIntoObject: miroirTransformersForBuild.transformer_mergeIntoObject,
         transformerForBuild_objectDynamicAccess:
           miroirTransformersForBuild.transformer_objectDynamicAccess,
         transformerForBuild_getObjectEntries: miroirTransformersForBuild.transformer_getObjectEntries,
@@ -930,7 +930,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForRuntime.transformer_indexListBy,
         transformerForRuntime_listReducerToSpreadObject:
           miroirTransformersForRuntime.transformer_listReducerToSpreadObject,
-        transformerForRuntime_objectAlter: miroirTransformersForRuntime.transformer_objectAlter,
+        transformerForRuntime_mergeIntoObject: miroirTransformersForRuntime.transformer_mergeIntoObject,
         transformerForRuntime_objectDynamicAccess:
           miroirTransformersForRuntime.transformer_objectDynamicAccess,
         transformerForRuntime_getObjectEntries: miroirTransformersForRuntime.transformer_getObjectEntries,
@@ -1034,8 +1034,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_indexListBy,
         transformerForBuildPlusRuntime_listReducerToSpreadObject:
           miroirTransformersForBuildPlusRuntime.transformer_listReducerToSpreadObject,
-        transformerForBuildPlusRuntime_objectAlter:
-          miroirTransformersForBuildPlusRuntime.transformer_objectAlter,
+        transformerForBuildPlusRuntime_mergeIntoObject:
+          miroirTransformersForBuildPlusRuntime.transformer_mergeIntoObject,
         transformerForBuildPlusRuntime_objectDynamicAccess:
           miroirTransformersForBuildPlusRuntime.transformer_objectDynamicAccess,
         transformerForBuildPlusRuntime_getObjectEntries:
@@ -3925,7 +3925,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_createObject",
     "transformerForBuild_generateUuid",
     "transformerForBuild_mustacheStringTemplate",
-    "transformerForBuild_objectAlter",
+    "transformerForBuild_mergeIntoObject",
     "transformerForBuild_objectDynamicAccess",
     "transformerForBuild_getObjectEntries",
     "transformerForBuild_getObjectValues",
@@ -4079,7 +4079,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_createObject",
     "transformerForBuild_generateUuid",
     "transformerForBuild_mustacheStringTemplate",
-    "transformerForBuild_objectAlter",
+    "transformerForBuild_mergeIntoObject",
     "transformerForBuild_objectDynamicAccess",
     "transformerForBuild_getObjectEntries",
     "transformerForBuild_getObjectValues",
