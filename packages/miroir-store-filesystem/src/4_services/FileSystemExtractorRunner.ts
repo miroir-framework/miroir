@@ -142,7 +142,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
           [],
-          { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
+          { transformerType: "getFromContext", referenceName: querySelectorParams.objectReference },
           "value",
           defaultMiroirModelEnvironment,
           selectorParams.extractor.queryParams,

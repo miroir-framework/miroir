@@ -40,7 +40,7 @@ export function protectedSqlAccessForPath(
 
   const caseWhen =
     checks.length > 0
-      ? `CASE WHEN ${checks.join(" OR ")} THEN '{"queryFailure": "FailedTransformer_contextReference"}'::jsonb ELSE ${resultExpression} END`
+      ? `CASE WHEN ${checks.join(" OR ")} THEN '{"queryFailure": "FailedTransformer_getFromContext"}'::jsonb ELSE ${resultExpression} END`
       : resultExpression;
 
   return caseWhen;

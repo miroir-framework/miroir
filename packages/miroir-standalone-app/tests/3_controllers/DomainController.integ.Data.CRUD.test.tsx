@@ -314,12 +314,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
                     },
                     // referencedTransformer: {
-                    //     transformerType: "contextReference",
+                    //     transformerType: "getFromContext",
                     //     interpolation: "runtime",
                     //     referencePath: ["entityBookList", "books"],
                     //   },
@@ -444,7 +444,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
                     },
@@ -562,7 +562,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
                     },
@@ -679,7 +679,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
                     },
@@ -810,7 +810,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
                     },
@@ -939,7 +939,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["entityBookList", "books"],
                     },

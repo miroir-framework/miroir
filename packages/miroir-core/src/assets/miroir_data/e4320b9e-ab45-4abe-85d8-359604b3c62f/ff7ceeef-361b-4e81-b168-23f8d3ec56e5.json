@@ -21,7 +21,7 @@
       "entityCount": {
         "transformerType": "aggregate",
         "applyTo": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "referenceName": "entities"
         },
         "groupBy": "conceptLevel"

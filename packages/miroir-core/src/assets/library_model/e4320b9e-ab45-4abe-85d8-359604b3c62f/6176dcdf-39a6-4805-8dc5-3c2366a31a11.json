@@ -27,7 +27,7 @@
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectListReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "publishers"
         },
@@ -37,7 +37,7 @@
           "interpolation": "runtime",
           "definition": {
             "publisherName": {
-              "transformerType": "contextReference",
+              "transformerType": "getFromContext",
               "interpolation": "runtime",
               "referencePath": [
                 "referenceObject",
@@ -45,7 +45,7 @@
               ]
             },
             "publisherUuid": {
-              "transformerType": "contextReference",
+              "transformerType": "getFromContext",
               "interpolation": "runtime",
               "referencePath": [
                 "referenceObject",
@@ -53,7 +53,7 @@
               ]
             },
             "bookName": {
-              "transformerType": "contextReference",
+              "transformerType": "getFromContext",
               "interpolation": "runtime",
               "referencePath": [
                 "foreignKeyObject",
@@ -68,7 +68,7 @@
       "00_BookCountByPublisher": {
         "transformerType": "aggregate",
         "applyTo": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "BookWithPublisher"
         },

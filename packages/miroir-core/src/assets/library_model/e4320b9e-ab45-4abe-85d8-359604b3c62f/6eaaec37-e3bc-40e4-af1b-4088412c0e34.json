@@ -27,7 +27,7 @@
           "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
         },
         "objectListReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "countries"
         },
@@ -37,7 +37,7 @@
           "interpolation": "runtime",
           "definition": {
             "countryName": {
-              "transformerType": "contextReference",
+              "transformerType": "getFromContext",
               "interpolation": "runtime",
               "referencePath": [
                 "referenceObject",
@@ -45,7 +45,7 @@
               ]
             },
             "countryUuid": {
-              "transformerType": "contextReference",
+              "transformerType": "getFromContext",
               "interpolation": "runtime",
               "referencePath": [
                 "referenceObject",
@@ -53,7 +53,7 @@
               ]
             },
             "authorName": {
-              "transformerType": "contextReference",
+              "transformerType": "getFromContext",
               "interpolation": "runtime",
               "referencePath": [
                 "foreignKeyObject",
@@ -68,7 +68,7 @@
       "00_AuthorCountByCountry": {
         "transformerType": "aggregate",
         "applyTo": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "AuthorWithCountry"
         },

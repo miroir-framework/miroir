@@ -356,12 +356,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             interpolation: "runtime",
             definition: {
               bookTitle: {
-                transformerType: "contextReference",
+                transformerType: "getFromContext",
                 interpolation: "runtime",
                 referencePath: ["referenceObject", "name"],
               },
               authorName: {
-                transformerType: "contextReference",
+                transformerType: "getFromContext",
                 interpolation: "runtime",
                 referencePath: ["foreignKeyObjects", "author", "name"],
               },
@@ -478,7 +478,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
           objectReference: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "book",
           },
@@ -559,7 +559,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "book",
             },
@@ -569,17 +569,17 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               interpolation: "runtime",
               definition: {
                 bookTitle: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["referenceObject", "name"],
                 },
                 publisherName: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "name"],
                 },
                 publisherUuid: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "uuid"],
                 },
@@ -614,17 +614,17 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               interpolation: "runtime",
               definition: {
                 bookTitle: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["referenceObject", "name"],
                 },
                 publisherName: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "name"],
                 },
                 publisherUuid: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "uuid"],
                 },
@@ -683,7 +683,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "author",
             },
@@ -699,7 +699,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectListReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "booksOfAuthor",
             },
@@ -709,17 +709,17 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               interpolation: "runtime",
               definition: {
                 authorUuid: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["referenceObject", "author"],
                 },
                 publisherName: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "name"],
                 },
                 publisherUuid: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "uuid"],
                 },
@@ -761,17 +761,17 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               interpolation: "runtime",
               definition: {
                 authorUuid: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["referenceObject", "author"],
                 },
                 publisherName: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "name"],
                 },
                 publisherUuid: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "uuid"],
                 },
@@ -982,7 +982,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
           objectReference: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "book",
           },
@@ -999,7 +999,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           objectReference: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "publisher",
           },
@@ -1102,7 +1102,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
           objectReference: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "book",
           },
@@ -1118,7 +1118,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           objectReference: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "publisher",
           },
@@ -1128,7 +1128,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateByExtractorWrapperReturningObject",
           definition: {
             "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "booksOfPublisher",
             },
@@ -1138,12 +1138,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateByExtractorWrapperReturningList",
           definition: [
             {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "booksOfPublisher",
             },
             {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "booksOfPublisher",
             },
@@ -1293,7 +1293,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           objectReference: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "author",
           },
@@ -1394,7 +1394,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "author",
             },
@@ -1404,12 +1404,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               interpolation: "runtime",
               definition: {
                 authorName: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["referenceObject", "name"],
                 },
                 bookTitle: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "name"],
                 },
@@ -1446,12 +1446,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               interpolation: "runtime",
               definition: {
                 authorName: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["referenceObject", "name"],
                 },
                 bookTitle: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["foreignKeyObject", "name"],
                 },
@@ -1650,7 +1650,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           transformerType: "unique",
           interpolation: "runtime",
           applyTo: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             referenceName: "books",
           },
           attribute: "publisher",
@@ -1677,7 +1677,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           transformerType: "unique",
           interpolation: "runtime",
           applyTo: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             referenceName: "books",
           },
           attribute: "publisher",

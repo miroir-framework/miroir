@@ -477,7 +477,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
             type: "schemaReference",
             definition: {
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "transformerForRuntime_contextReference",
+              relativePath: "transformerForRuntime_getFromContext",
             },
             context: {},
           },
@@ -692,7 +692,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //       type: "schemaReference",
       //       definition: {
       //         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-      //         relativePath: "transformerForRuntime_contextReference",
+      //         relativePath: "transformerForRuntime_getFromContext",
       //       },
       //       context: {},
       //     },
@@ -710,7 +710,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       parentName: "Book",
       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
       objectReference: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         interpolation: "runtime",
         referenceName: "author",
       },
@@ -1035,7 +1035,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
                   ],
                   definition: {
                     interpolation: { type: "literal", optional: true, definition: "runtime" },
-                    transformerType: { type: "literal", definition: "contextReference" },
+                    transformerType: { type: "literal", definition: "getFromContext" },
                     referenceName: { optional: true, type: "string" },
                     referencePath: {
                       optional: true,
@@ -1080,7 +1080,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
                               },
                             ],
                             definition: {
-                              transformerType: { type: "literal", definition: "contextReference" },
+                              transformerType: { type: "literal", definition: "getFromContext" },
                               referenceName: { optional: true, type: "string" },
                               referencePath: {
                                 optional: true,
@@ -1118,7 +1118,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
                                       definition: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath:
-                                          "transformerForBuildPlusRuntime_contextReference",
+                                          "transformerForBuildPlusRuntime_getFromContext",
                                       },
                                     },
                                     {

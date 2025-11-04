@@ -19,7 +19,7 @@ export type TransformerFailureType =
   // | "FailedTransformer_constantBoolean"
   // | "FailedTransformer_constantObject"
   | "FailedTransformer_constant"
-  | "FailedTransformer_contextReference"
+  | "FailedTransformer_getFromContext"
   | "FailedTransformer_pickFromList"
   | "FailedTransformer"
   | "ReferenceNotFound"

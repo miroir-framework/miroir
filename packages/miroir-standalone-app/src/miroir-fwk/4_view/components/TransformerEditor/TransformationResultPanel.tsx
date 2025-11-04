@@ -157,7 +157,7 @@ export const TransformationResultPanel: React.FC<{
               </div>
               <div style={{ fontSize: "0.9em", color: "#666" }}>
                 <div style={{ marginBottom: "4px" }}>
-                  Tip: Use contextReference to access the entity instance
+                  Tip: Use getFromContext to access the entity instance
                   {showAllInstances ? "s" : ""}:
                 </div>
               </div>
@@ -165,7 +165,7 @@ export const TransformationResultPanel: React.FC<{
             <ThemedCodeBlock>
               {JSON.stringify(
                 {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   // referenceName: showAllInstances ? "target" : "applyTo",
                   referenceName: defaultTransformerInput,
                 },

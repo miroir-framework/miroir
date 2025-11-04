@@ -61,7 +61,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         firstLine: {
           transformerType: "pickFromList",
           applyTo: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "spreadsheetContents",
           },
@@ -70,7 +70,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         attributeNames: {
           transformerType: "objectValues",
           applyTo: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referencePath: ["firstLine"],
           },
@@ -78,7 +78,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         splitAttributeDefinitions: {
           transformerType: "mapList",
           applyTo: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referencePath: ["attributeNames"],
           },
@@ -86,7 +86,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           elementTransformer: {
             transformerType: "object_fullTemplate",
             applyTo: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referencePath: ["attributeName"],
             },
@@ -94,7 +94,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
             definition: [
               {
                 attributeKey: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
                   referencePath: ["attributeName"],
                 },
@@ -109,7 +109,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         mergedAttributeDefinitions: {
           transformerType: "listReducerToSpreadObject",
           applyTo: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referencePath: ["splitAttributeDefinitions"],
           },
@@ -117,7 +117,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         completeAttributeDefinitions: {
           transformerType: "objectAlter",
           applyTo: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "mergedAttributeDefinitions",
           },
@@ -152,7 +152,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
               value: "object",
             },
             definition: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referencePath: ["completeAttributeDefinitions"],
             },

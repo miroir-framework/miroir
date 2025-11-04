@@ -27,7 +27,6 @@
         {
           "type": "objectInstanceReportSection",
           "definition": {
-            "label": "My Test",
             "parentUuid": "c37625c7-0b35-4d6a-811d-8181eb978301",
             "fetchedDataReference": "elementToDisplay"
           }

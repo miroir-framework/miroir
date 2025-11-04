@@ -190,10 +190,10 @@ export function resolveExtractorTemplate(
         objectReference:
           typeof extractorOrCombinerTemplate.objectReference === "object" &&
           (extractorOrCombinerTemplate.objectReference as any)["transformerType"] ===
-            "contextReference"
+            "getFromContext"
             ? (extractorOrCombinerTemplate.objectReference as any)?.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: objectReference is not a contextReference",
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: objectReference is not a getFromContext",
       };
       break;
     }
@@ -216,10 +216,10 @@ export function resolveExtractorTemplate(
                 contextResults
               ), // TODO: check for failure!
         objectListReference:
-          extractorOrCombinerTemplate.objectListReference.transformerType == "contextReference"
+          extractorOrCombinerTemplate.objectListReference.transformerType == "getFromContext"
             ? extractorOrCombinerTemplate.objectListReference.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR combinerByManyToManyRelationReturningObjectList extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByManyToManyRelationReturningObjectList extractor template: objectReference is not a contextReference",
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByManyToManyRelationReturningObjectList extractor template: objectReference is not a getFromContext",
       };
       break;
     }
@@ -242,10 +242,10 @@ export function resolveExtractorTemplate(
                 contextResults
               ), // TODO: check for failure!
         objectReference:
-          extractorOrCombinerTemplate.objectReference.transformerType == "contextReference"
+          extractorOrCombinerTemplate.objectReference.transformerType == "getFromContext"
             ? extractorOrCombinerTemplate.objectReference.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation extractor template: objectReference is not a contextReference",
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerForObjectByRelation extractor template: objectReference is not a getFromContext",
       };
       break;
     }

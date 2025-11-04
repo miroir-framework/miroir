@@ -323,7 +323,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
                     },
@@ -431,7 +431,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
                     },
@@ -552,7 +552,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
                     },
@@ -689,7 +689,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityListFromLocalCache", "entities"],
                     },
@@ -725,7 +725,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityListFromPersistentStore", "entities"],
                     },
@@ -844,7 +844,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
                     },
@@ -969,12 +969,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityList", "entities"],
                     },
                     // referencedTransformer: {
-                    //   transformerType: "contextReference",
+                    //   transformerType: "getFromContext",
                     //   interpolation: "runtime",
                     //   referencePath: ["libraryEntityList", "entities"],
                     // },
@@ -1137,7 +1137,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
                     },
@@ -1159,7 +1159,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
                     },

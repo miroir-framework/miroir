@@ -384,7 +384,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                         value: {
                           extractorTemplateType: "extractorForObjectByDirectReference",
                           parentName: {
-                            transformerType: "contextReference",
+                            transformerType: "getFromContext",
                             interpolation: "build",
                             referenceName: "newEntityName",
                           },
@@ -397,7 +397,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                             transformerType: "returnValue",
                             interpolation: "runtime",
                             value: {
-                              transformerType: "contextReference",
+                              transformerType: "getFromContext",
                               interpolation: "runtime",
                               referenceName: "instanceUuid",
                             },
@@ -730,7 +730,7 @@ Types of property 'deploymentUuid' are incompatible.
                             transformerType: "pickFromList",
                             interpolation: "runtime",
                             applyTo: {
-                              transformerType: "contextReference",
+                              transformerType: "getFromContext",
                               interpolation: "runtime",
                               referenceName: "menuList",
                             },
@@ -763,12 +763,12 @@ Types of property 'deploymentUuid' are incompatible.
                             transformerType: "transformer_menu_addItem",
                             interpolation: "runtime",
                             menuItemReference: {
-                              transformerType: "contextReference",
+                              transformerType: "getFromContext",
                               interpolation: "runtime",
                               referenceName: "menuItem",
                             },
                             menuReference: {
-                              transformerType: "contextReference",
+                              transformerType: "getFromContext",
                               interpolation: "runtime",
                               referenceName: "menu",
                             },
@@ -807,7 +807,7 @@ Types of property 'deploymentUuid' are incompatible.
                           applicationSection: "model",
                           instances: [
                             {
-                              transformerType: "contextReference",
+                              transformerType: "getFromContext",
                               interpolation: "runtime",
                               referencePath: ["menuUpdateQueryResult", "updatedMenu"],
                             },

@@ -302,19 +302,19 @@ const EntityInstancePanel = React.memo<{
 /**
  * TransformerEditor allows users to create and test transformers on entity instances.
  * 
- * To reference the entity instance(s) in your transformer, use contextReference with one of these names:
+ * To reference the entity instance(s) in your transformer, use getFromContext with one of these names:
  * - "defaultInput" - the standard reference name (single instance or array when showing all)
  * - Or use any property name from the entity instance directly (e.g., "uuid", "name", etc.)
  * 
  * Example transformer that copies the default input:
  * {
- *   "transformerType": "contextReference",
+ *   "transformerType": "getFromContext",
  *   "referenceName": "defaultInput"
  * }
  * 
  * Example transformer that gets the name field from an instance input:
  * {
- *   "transformerType": "contextReference",
+ *   "transformerType": "getFromContext",
  *   "referenceName": "name"
  * }
  * 

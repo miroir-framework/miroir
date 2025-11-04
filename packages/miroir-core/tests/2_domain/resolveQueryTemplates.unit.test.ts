@@ -110,7 +110,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               mlSchema: { type: "record", definition: { type: "any"} },
               interpolation: "build",
               value: {
-                transformerType: "contextReference",
+                transformerType: "getFromContext",
                 interpolation: "runtime",
                 referenceName: "instanceUuid",
               }
@@ -128,7 +128,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "book",
             },
@@ -144,7 +144,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "publisher",
             },
@@ -160,7 +160,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "author",
             },
@@ -176,7 +176,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
             objectListReference: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "booksOfAuthor",
             },
@@ -212,7 +212,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             parentName: "Fountain",
             parentUuid: "yyyyy",
             instanceUuid: {
-              transformerType: "contextReference",
+              transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "instanceUuid",
             },

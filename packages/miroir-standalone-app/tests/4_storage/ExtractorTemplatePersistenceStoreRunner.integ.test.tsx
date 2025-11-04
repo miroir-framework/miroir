@@ -488,7 +488,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     transformerType: "unique",
                     interpolation: "runtime",
                     applyTo: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referenceName: "books",
                     },
@@ -552,7 +552,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   interpolation: "runtime",
                   transformerType: "aggregate",
                   applyTo: {
-                    transformerType: "contextReference",
+                    transformerType: "getFromContext",
                     interpolation: "runtime",
                     referenceName: "books",
                   },
@@ -578,48 +578,49 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runBoxedQueryTemplateAction",
-          actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            applicationSection: applicationSection,
-            query: {
-              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              extractorTemplates: {
-                books: {
-                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                  applicationSection: applicationSection,
-                  parentName: "Book",
-                  parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
-                    interpolation: "build",
-                    value: entityBook.uuid,
+        const queryResult =
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+            actionType: "runBoxedQueryTemplateAction",
+            actionName: "runQuery",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            payload: {
+              applicationSection: applicationSection,
+              query: {
+                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                pageParams: {},
+                queryParams: {},
+                contextResults: {},
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                extractorTemplates: {
+                  books: {
+                    extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                    applicationSection: applicationSection,
+                    parentName: "Book",
+                    parentUuid: {
+                      transformerType: "returnValue",
+                      mlSchema: { type: "uuid" },
+                      interpolation: "build",
+                      value: entityBook.uuid,
+                    },
                   },
                 },
-              },
-              runtimeTransformers: {
-                countBooksByAuthors: {
-                  transformerType: "aggregate",
-                  interpolation: "runtime",
-                  groupBy: "author",
-                  applyTo: {
-                    transformerType: "contextReference",
+                runtimeTransformers: {
+                  countBooksByAuthors: {
+                    transformerType: "aggregate",
                     interpolation: "runtime",
-                    referenceName: "books",
+                    groupBy: "author",
+                    applyTo: {
+                      transformerType: "getFromContext",
+                      interpolation: "runtime",
+                      referenceName: "books",
+                    },
+                    // orderBy: "author",
                   },
-                  // orderBy: "author",
                 },
               },
             },
-          }
-        });
+          });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
@@ -627,11 +628,27 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       undefined, // name to give to result
       undefined,
       [
+        // {
+        //   "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1,
+        //   "ce7b601d-be5f-4bc6-a5af-14091594046a": 2,
+        //   "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2,
+        //   "e4376314-d197-457c-aa5e-d2da5f8d5977": 1,
+        // },
         {
-          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": 1,
-          "ce7b601d-be5f-4bc6-a5af-14091594046a": 2,
-          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": 2,
-          "e4376314-d197-457c-aa5e-d2da5f8d5977": 1,
+          aggregate: 1,
+          author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
+        },
+        {
+          aggregate: 2,
+          author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+        },
+        {
+          aggregate: 2,
+          author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+        },
+        {
+          aggregate: 1,
+          author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
         },
       ]
     );
@@ -794,7 +811,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                     },
                     objectReference: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referenceName: "book",
                     },
@@ -810,7 +827,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                     },
                     objectReference: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       interpolation: "runtime",
                       referenceName: "author",
                     },
@@ -852,6 +869,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
           uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          year: 2014,
         },
       }).sort((a, b) => a.name.localeCompare(b.name))
     );

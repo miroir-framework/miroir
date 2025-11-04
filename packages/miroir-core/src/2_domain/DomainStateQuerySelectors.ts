@@ -322,7 +322,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         [], // transformerPath
         querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
         {
-          transformerType: "contextReference",
+          transformerType: "getFromContext",
           interpolation: "runtime",
           referenceName: querySelectorParams.objectReference,
         },

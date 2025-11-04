@@ -220,7 +220,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                       value: {
                         extractorTemplateType: "extractorForObjectByDirectReference",
                         parentName: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "build",
                           referenceName: "newEntityName",
                         },
@@ -233,7 +233,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                           transformerType: "returnValue",
                           interpolation: "runtime",
                           value: {
-                            transformerType: "contextReference",
+                            transformerType: "getFromContext",
                             interpolation: "runtime",
                             referenceName: "instanceUuid",
                           },
@@ -558,7 +558,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         transformerType: "pickFromList",
                         interpolation: "runtime",
                         applyTo: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referenceName: "menuList",
                         },
@@ -591,12 +591,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         transformerType: "transformer_menu_addItem",
                         interpolation: "runtime",
                         menuItemReference: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referenceName: "menuItem",
                         },
                         menuReference: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referenceName: "menu",
                         },
@@ -635,7 +635,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                       applicationSection: "model",
                       instances: [
                         {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referencePath: ["menuUpdateQueryResult", "updatedMenu"],
                         },

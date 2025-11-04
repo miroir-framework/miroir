@@ -27,7 +27,7 @@
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "author"
         },
@@ -41,7 +41,7 @@
           "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
         "objectListReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "booksOfAuthor"
         },
@@ -55,7 +55,7 @@
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectListReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "publishersOfBooks"
         },

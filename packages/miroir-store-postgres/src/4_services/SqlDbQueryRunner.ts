@@ -521,7 +521,7 @@ export class SqlDbQueryRunner {
     //       "runtime",
     //       [],
     //       {
-    //         transformerType: "contextReference",
+    //         transformerType: "getFromContext",
     //         interpolation: "runtime",
     //         referenceName: querySelectorParams.objectReference,
     //       },

@@ -123,7 +123,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       [], // transformerPath
       querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
       {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         interpolation: "runtime",
         referenceName: querySelectorParams.objectReference,
       },

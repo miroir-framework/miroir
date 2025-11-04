@@ -680,7 +680,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //               applyTo: {
   //   //                 referenceType: "referencedTransformer",
   //   //                 reference: {
-  //   //                   transformerType: "contextReference",
+  //   //                   transformerType: "getFromContext",
   //   //                   interpolation: "runtime",
   //   //                   referenceName: "menuList",
   //   //                 }
@@ -712,12 +712,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //               interpolation: "runtime",
   //   //               transformerDefinition: {
   //   //                 menuItemReference: {
-  //   //                   transformerType: "contextReference",
+  //   //                   transformerType: "getFromContext",
   //   //                   interpolation: "runtime",
   //   //                   referenceName: "menuItem",
   //   //                 },
   //   //                 menuReference: {
-  //   //                   transformerType: "contextReference",
+  //   //                   transformerType: "getFromContext",
   //   //                   interpolation: "runtime",
   //   //                   referenceName: "menu",
   //   //                 },
@@ -751,7 +751,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //                 interpolation: "runtime",
   //   //                 objectAccessPath: [
   //   //                   {
-  //   //                     transformerType: "contextReference",
+  //   //                     transformerType: "getFromContext",
   //   //                     interpolation: "runtime",
   //   //                     referenceName: "menuUpdateQueryResult",
   //   //                   },
@@ -1067,7 +1067,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   transformerType: "constantObject",
   //                   interpolation: "runtime",
   //                   value: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "elementToDisplay",
   //                   },
@@ -1184,7 +1184,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 value: {
   //                   defaultLabel: "Municipality",
   //                   targetEntity: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     referenceName: "splitEntity_newEntityUuid",
   //                   },
   //                 },
@@ -1343,7 +1343,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
   //                   reference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "menuUuidIndex",
   //                   }
@@ -1356,7 +1356,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
   //                   reference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "menuList",
   //                   }
@@ -1388,12 +1388,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 interpolation: "runtime",
   //                 transformerDefinition: {
   //                   menuItemReference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "menuItem",
   //                   },
   //                   menuReference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "menu",
   //                   },
@@ -1438,7 +1438,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                     {
   //                       transformerType: "freeObjectTemplate", // TODO: allow transformer inside inner objectDynamicAccess in Query Templates!
   //                       definition: {
-  //                         transformerType: "contextReference",
+  //                         transformerType: "getFromContext",
   //                         interpolation: "runtime",
   //                         // referenceName: newEntityName,
   //                         referenceName: {
@@ -1523,7 +1523,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   applyTo: {
   //                     referenceType: "referencedTransformer",
   //                     reference: {
-  //                       transformerType: "contextReference",
+  //                       transformerType: "getFromContext",
   //                       interpolation: "runtime",
   //                       referenceName: "SplittedEntityInstances",
   //                     }
@@ -1541,7 +1541,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
   //                   reference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "splittedEntityUuidIndex",
   //                   }
@@ -1556,7 +1556,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   applyTo: {
   //                     referenceType: "referencedTransformer",
   //                     reference: {
-  //                       transformerType: "contextReference",
+  //                       transformerType: "getFromContext",
   //                       interpolation: "runtime",
   //                       referenceName: "uniqueSplittedEntityInstancesSplitAttributeValues",
   //                     }
@@ -1614,7 +1614,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
   //                   reference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "municipalities",
   //                   }
@@ -1628,7 +1628,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
   //                   reference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "municipalities",
   //                   }
@@ -1642,7 +1642,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
   //                   reference: {
-  //                     transformerType: "contextReference",
+  //                     transformerType: "getFromContext",
   //                     interpolation: "runtime",
   //                     referenceName: "splittedEntityInstances",
   //                   }
@@ -1661,7 +1661,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                         interpolation: "runtime",
   //                         objectAccessPath: [
   //                           {
-  //                             transformerType: "contextReference",
+  //                             transformerType: "getFromContext",
   //                             interpolation: "runtime",
   //                             referenceName: "municipalitiesIndexedByName",
   //                           },
@@ -1670,7 +1670,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                             interpolation: "runtime",
   //                             objectAccessPath: [
   //                               {
-  //                                 transformerType: "contextReference",
+  //                                 transformerType: "getFromContext",
   //                                 interpolation: "runtime",
   //                                 referenceName: "objectAlterTmpReference",
   //                               },
@@ -1717,7 +1717,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             },
   //             applicationSection: "data",
   //             instances: {
-  //               transformerType: "contextReference",
+  //               transformerType: "getFromContext",
   //               interpolation: "runtime",
   //               referencePath: ["Municipality", "municipalities"],
   //             },
@@ -1751,7 +1751,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             // parentUuid:splittedEntityDefinition.entityUuid,
   //             applicationSection: "data",
   //             instances: {
-  //               transformerType: "contextReference",
+  //               transformerType: "getFromContext",
   //               interpolation: "runtime",
   //               // referenceName: "municipalities"
   //               referencePath: ["Municipality", "updatedSplittedEntityInstances"],
@@ -2029,7 +2029,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           applyTo: {
   //             referenceType: "referencedTransformer",
   //             reference: {
-  //               transformerType: "contextReference",
+  //               transformerType: "getFromContext",
   //               interpolation: "runtime",
   //               referenceName: "NOT_RELEVANT",
   //             }

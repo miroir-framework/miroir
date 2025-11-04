@@ -94,7 +94,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
 
   switch (querySelectorParams?.extractorOrCombinerType) {
     case "combinerForObjectByRelation": {
-      // TODO: reference object is implicitly a contextReference here, should be made explicit?!
+      // TODO: reference object is implicitly a getFromContext here, should be made explicit?!
       // TODO: gives a condition for "build" resolution to yield value not constantTransformer, this is actually not relevant, the interface must be corrected.
       // const referenceObject = transformer_InnerReference_resolve(
       const referenceObject = transformer_extended_apply(
@@ -102,7 +102,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
         [], // transformerPath
         querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
         {
-          transformerType: "contextReference",
+          transformerType: "getFromContext",
           interpolation: "runtime",
           referenceName: querySelectorParams.objectReference,
         },

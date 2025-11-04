@@ -27,7 +27,7 @@
         "parentName": "Publisher",
         "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
         "objectReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "country"
         },
@@ -41,7 +41,7 @@
           "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
         },
         "objectReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "country"
         },
@@ -55,7 +55,7 @@
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectListReference": {
-          "transformerType": "contextReference",
+          "transformerType": "getFromContext",
           "interpolation": "runtime",
           "referenceName": "authorsOfCountry"
         },

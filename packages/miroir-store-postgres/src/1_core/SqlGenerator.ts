@@ -15,7 +15,7 @@ import {
   TransformerForRuntime_returnValue,
   // TransformerForRuntime_constantArray,
   TransformerForRuntime_constantAsExtractor,
-  TransformerForRuntime_contextReference,
+  TransformerForRuntime_getFromContext,
   TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_freeObjectTemplate,
@@ -151,7 +151,7 @@ function isJson(t:SqlStringForTransformerElementValueType) {
   return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
 }
 // ################################################################################################
-const queryFailureObjectSqlString = `'{"queryFailure": "FailedTransformer_contextReference"}'::jsonb`;
+const queryFailureObjectSqlString = `'{"queryFailure": "FailedTransformer_getFromContext"}'::jsonb`;
 
 // const sqlNameQuote = (name: string) => '"' + name + '"';
 // const sqlTableColumnAccess = (table:string, key: string)=> sqlNameQuote(table) + '.' + sqlNameQuote(key);
@@ -468,7 +468,7 @@ function sqlStringForApplyTo(
   if (!actionRuntimeTransformer.applyTo) {
       return sqlStringForRuntimeTransformer(
         {
-          transformerType: "contextReference",
+          transformerType: "getFromContext",
           interpolation: "runtime",
           referenceName: defaultTransformerInput,
         },
@@ -519,7 +519,7 @@ function sqlStringForApplyTo(
         );
       }
       if (
-        ["constantAsExtractor", "returnValue", "contextReference", "parameterReference"].includes(
+        ["constantAsExtractor", "returnValue", "getFromContext", "parameterReference"].includes(
           actionRuntimeTransformer.applyTo.transformerType || ""
         )
       ) {
@@ -533,7 +533,7 @@ function sqlStringForApplyTo(
           topLevelTransformer
         );
       }
-      // if (actionRuntimeTransformer.applyTo.transformerType != "contextReference") {
+      // if (actionRuntimeTransformer.applyTo.transformerType != "getFromContext") {
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: actionRuntimeTransformer as any,
@@ -2677,7 +2677,7 @@ function sqlStringForDataflowObjectTransformer(
 
 // ################################################################################################
 function sqlStringForContextReferenceTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_contextReference,
+  actionRuntimeTransformer: TransformerForRuntime_getFromContext,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2719,7 +2719,7 @@ function sqlStringForContextReferenceTransformer(
     "definedContextEntries",
     JSON.stringify(definedContextEntries, null, 2),
   );
-  // log.info("sqlStringForRuntimeTransformer contextReference",actionRuntimeTransformer.referencePath,"resultAccessPath", resultAccessPath);
+  // log.info("sqlStringForRuntimeTransformer getFromContext",actionRuntimeTransformer.referencePath,"resultAccessPath", resultAccessPath);
 
 
   const usedReferenceName = definedContextEntry.renameTo??referenceName;
@@ -2792,7 +2792,7 @@ function sqlStringForContextReferenceTransformer(
 
 // ################################################################################################
 function sqlStringForParameterReferenceTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_contextReference,
+  actionRuntimeTransformer: TransformerForRuntime_getFromContext,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -3110,18 +3110,18 @@ function sqlStringForMustacheStringTemplateTransformer(
     // Handle dot notation in placeholder names (e.g., "book.name" -> ["book", "name"])
     const placeholderPath = placeholder.name.split(".");
     const isRuntimeInterpolation = (actionRuntimeTransformer as any)["interpolation"] === "runtime";
-    const placeholderTransformer: TransformerForRuntime_contextReference = isRuntimeInterpolation
+    const placeholderTransformer: TransformerForRuntime_getFromContext = isRuntimeInterpolation
       ? {
-          transformerType: "contextReference",
+          transformerType: "getFromContext",
           interpolation: "runtime",
           referenceName: placeholderPath[0],
-          referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in contextReferenceTransformer)
+          referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in getFromContextTransformer)
         }
       : {
           transformerType: "parameterReference" as any, // Type cast needed for union type
           interpolation: "runtime",
           referenceName: placeholderPath[0],
-          referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in contextReferenceTransformer)
+          referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in getFromContextTransformer)
         };
     
     const resolvedPlaceholder = sqlStringForRuntimeTransformer(

@@ -398,20 +398,20 @@ const createEntityCompositeAction: CompositeAction = {
     createEntity_newEntityDescription,
     createEntity_newEntity: {
       uuid: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         referenceName: "newEntityUuid",
       },
       parentUuid: entityEntity.uuid,
       selfApplication: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         referenceName: "testSelfApplicationUuid",
       },
       description: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         referenceName: "createEntity_newEntityDescription",
       },
       name: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         referenceName: "newEntityName",
       },
     },
@@ -420,7 +420,7 @@ const createEntityCompositeAction: CompositeAction = {
       transformerType: "spreadSheetToJzodSchema",
       interpolation: "runtime",
       spreadsheetContents: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         interpolation: "runtime",
         referenceName: "spreadsheetContents",
       },
@@ -431,38 +431,38 @@ const createEntityCompositeAction: CompositeAction = {
     createEntity_newEntityDetailsReportUuid,
     // createEntity_newEntityDefinition: {
     //   name: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referenceName: "newEntityName",
     //   },
     //   uuid: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referenceName: "newEntityDefinitionUuid",
     //   },
     //   parentName: "EntityDefinition",
     //   parentUuid: entityEntityDefinition.uuid,
     //   entityUuid: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referencePath: ["createEntity_newEntity", "uuid"],
     //   },
     //   conceptLevel: "Model",
     //   defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
     //   jzodSchema: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referenceName: "newEntityJzodSchema",
     //   },
     // },
     // newEntityListReport: {
     //   uuid: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referenceName: "createEntity_newEntityListReportUuid",
     //   },
     //   selfApplication: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referenceName: "testSelfApplicationUuid",
     //   },
@@ -489,7 +489,7 @@ const createEntityCompositeAction: CompositeAction = {
     //       instanceList: {
     //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
     //         parentName: {
-    //           transformerType: "contextReference",
+    //           transformerType: "getFromContext",
     //           interpolation: "runtime",
     //           referenceName: "newEntityName",
     //         },
@@ -521,12 +521,12 @@ const createEntityCompositeAction: CompositeAction = {
     // // Details of an instance Report Definition
     // newEntityDetailsReport: {
     //   uuid: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referenceName: "createEntity_newEntityDetailsReportUuid",
     //   },
     //   selfApplication: {
-    //     transformerType: "contextReference",
+    //     transformerType: "getFromContext",
     //     interpolation: "runtime",
     //     referenceName: "testSelfApplicationUuid",
     //   },
@@ -559,7 +559,7 @@ const createEntityCompositeAction: CompositeAction = {
     //         value: {
     //           extractorTemplateType: "extractorForObjectByDirectReference",
     //           parentName: {
-    //             transformerType: "contextReference",
+    //             transformerType: "getFromContext",
     //             interpolation: "runtime",
     //             referenceName: "newEntityName",
     //           },
@@ -571,7 +571,7 @@ const createEntityCompositeAction: CompositeAction = {
     //           instanceUuid: {
     //             transformerType: "constantObject",
     //             value: {
-    //               transformerType: "contextReference",
+    //               transformerType: "getFromContext",
     //               interpolation: "runtime",
     //               referenceName: "instanceUuid",
     //             },
@@ -810,13 +810,13 @@ const newEntityDetailsReport = {
           transformerType: "returnValue",
           interpolation: "runtime",
           value: {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: "instanceUuid",
           },
         },
         // instanceUuid: {
-        //   transformerType: "contextReference",
+        //   transformerType: "getFromContext",
         //   interpolation: "runtime",
         //   referenceName: "instanceUuid",
         // },
@@ -900,7 +900,7 @@ const createReportsCompositeAction: DomainAction = {
             //         parentName: newEntityName,
             //         parentUuid: newEntityUuid,
             //         instanceUuid: {
-            //           transformerType: "contextReference",
+            //           transformerType: "getFromContext",
             //           interpolation: "runtime",
             //           referenceName: "instanceUuid",
             //         }
@@ -1001,13 +1001,13 @@ const createReportsCompositeActionAssertions: CompositeRunTestAssertion[] = [
                   //   transformerType: "constantObject",
                   //   interpolation: "runtime",
                   //   value: {
-                  //     transformerType: "contextReference",
+                  //     transformerType: "getFromContext",
                   //     interpolation: "runtime",
                   //     referenceName: "instanceUuid",
                   //   },
                   // },
                   instanceUuid: {
-                    transformerType: "contextReference",
+                    transformerType: "getFromContext",
                     interpolation: "runtime",
                     referenceName: "instanceUuid",
                   },
@@ -1145,7 +1145,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                         transformerType: "pickFromList",
                         interpolation: "runtime",
                         applyTo: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referenceName: "menuList",
                         },
@@ -1166,12 +1166,12 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                         transformerType: "transformer_menu_addItem",
                         interpolation: "runtime",
                         menuItemReference: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referenceName: "menuItem",
                         },
                         menuReference: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referenceName: "menu",
                         },
@@ -1198,7 +1198,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                       applicationSection: "model",
                       instances: [
                         {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           interpolation: "runtime",
                           referencePath: ["menuUpdateQueryResult", "updatedMenu"],
                         },
@@ -1442,7 +1442,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //                 transformerType: "pickFromList",
         //                 interpolation: "runtime",
         //                 applyTo: {
-      //                     transformerType: "contextReference",
+      //                     transformerType: "getFromContext",
       //                     interpolation: "runtime",
       //                     referenceName: "menuList",
         //                 },
@@ -1474,12 +1474,12 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //                 transformerType: "transformer_menu_addItem",
         //                 interpolation: "runtime",
         //                 menuItemReference: {
-        //                   transformerType: "contextReference",
+        //                   transformerType: "getFromContext",
         //                   interpolation: "runtime",
         //                   referenceName: "menuItem",
         //                 },
         //                 menuReference: {
-        //                   transformerType: "contextReference",
+        //                   transformerType: "getFromContext",
         //                   interpolation: "runtime",
         //                   referenceName: "menu",
         //                 },
@@ -1510,7 +1510,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //               applicationSection: "model",
         //               instances: [
         //                 {
-        //                   transformerType: "contextReference",
+        //                   transformerType: "getFromContext",
         //                   interpolation: "runtime",
         //                   referencePath: ["menuUpdateQueryResult", "updatedMenu"],
         //                 }

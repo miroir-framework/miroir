@@ -39,7 +39,7 @@ import {
   TransformerForRuntime_returnValue,
   // TransformerForRuntime_constantArray,
   TransformerForRuntime_constants,
-  TransformerForRuntime_contextReference,
+  TransformerForRuntime_getFromContext,
   TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_defaultValueForMLSchema,
@@ -85,7 +85,7 @@ import {
   transformer_conditional,
   transformer_returnValue,
   transformer_constantAsExtractor,
-  transformer_contextReference,
+  transformer_getFromContext,
   transformer_aggregate,
   transformer_dataflowObject,
   transformer_freeObjectTemplate,
@@ -637,7 +637,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_constant,
   // handleTransformer_constantArray,
   handleTransformer_constantAsExtractor,
-  handleTransformer_contextReference,
+  handleTransformer_getFromContext,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
   transformer_mustacheStringTemplate_apply: defaultTransformers.transformer_mustacheStringTemplate_apply,
@@ -672,7 +672,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   )),
   returnValue: transformer_returnValue,
   constantAsExtractor: transformer_constantAsExtractor,
-  contextReference: transformer_contextReference,
+  getFromContext: transformer_getFromContext,
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
   pickFromList: transformer_pickFromList,
@@ -718,7 +718,7 @@ function resolveApplyTo(
       [...transformerPath, "applyTo"],
       label,
       {
-        transformerType: step == "build" ? "parameterReference" : "contextReference",
+        transformerType: step == "build" ? "parameterReference" : "getFromContext",
         referenceName: defaultTransformerInput,
       },
       resolveBuildTransformersTo,
@@ -803,7 +803,7 @@ function resolveApplyTo(
   //   typeof transformerReference == "string"
   //     ? defaultTransformers.transformer_InnerReference_resolve(
   //         step,
-  //         { transformerType: "contextReference", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
+  //         { transformerType: "getFromContext", referenceName: transformerReference }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
   //         resolveBuildTransformersTo,
   //         queryParams,
   //         contextResults
@@ -868,7 +868,7 @@ export function resolveApplyTo_legacy(
       [...transformerPath, "applyTo"],
       label,
       {
-        transformerType: step == "build" ? "parameterReference" : "contextReference",
+        transformerType: step == "build" ? "parameterReference" : "getFromContext",
         referenceName: defaultTransformerInput,
       },
       resolveBuildTransformersTo,
@@ -1529,7 +1529,7 @@ export function transformer_resolveReference(
         bank
       );
       return new TransformerFailure({
-        queryFailure: "FailedTransformer_contextReference",
+        queryFailure: "FailedTransformer_getFromContext",
         transformerPath: [...transformerPath, usedReference],
         failureOrigin: ["transformer_resolveReference"],
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
@@ -1545,7 +1545,7 @@ export function transformer_resolveReference(
 // // ################################################################################################
 // // almost duplicate from QuerySelectors.ts
 // // type defined in function of the types of queryParams and contextResults
-// // contextReference<A> -> A
+// // getFromContext<A> -> A
 // // parameterReference<A> -> A
 // // constantUuid -> Uuid
 // // constantString -> string
@@ -1604,7 +1604,7 @@ export function transformer_InnerReference_resolve(
       );
       break;
     }
-    case "contextReference": {
+    case "getFromContext": {
       if (step == "build") {
         // no resolution in case of build step
         result = transformerInnerReference;
@@ -1612,8 +1612,8 @@ export function transformer_InnerReference_resolve(
         //   queryFailure: "ReferenceNotFound",
         //   failureOrigin: ["transformer_InnerReference_resolve"],
         //   queryReference: transformerInnerReference.referenceName,
-        //   failureMessage: "contextReference not allowed in build step, all context references must be resolved at runtime",
-        //   queryContext: "contextReference not allowed in build step, all context references must be resolved at runtime",
+        //   failureMessage: "getFromContext not allowed in build step, all context references must be resolved at runtime",
+        //   queryContext: "getFromContext not allowed in build step, all context references must be resolved at runtime",
         // });
       } else {
         result = transformer_resolveReference(
@@ -2595,7 +2595,7 @@ export function handleTransformer_conditional(
 //   contextResults?: Record<string, any>
 // ): any {
 //   switch (operand.type) {
-//     case "contextReference":
+//     case "getFromContext":
 //       return contextResults ? safeResolvePathOnObject(contextResults, operand.path || []) : undefined;
 //     case "parameterReference":
 //       return safeResolvePathOnObject(transformerParams, operand.path || []);
@@ -2691,11 +2691,11 @@ export function handleTransformer_constant(
 }
 
 // ################################################################################################
-export function handleTransformer_contextReference(
+export function handleTransformer_getFromContext(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForRuntime_contextReference,
+  transformer: TransformerForRuntime_getFromContext,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,

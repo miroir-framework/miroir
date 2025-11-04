@@ -148,7 +148,7 @@
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "referenceName": "originTransformer"
                   }
                 }
@@ -318,7 +318,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_contextReference"
+              "relativePath": "transformerForRuntime_getFromContext"
             }
           },
           {
@@ -408,7 +408,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_contextReference"
+              "relativePath": "transformerForRuntime_getFromContext"
             }
           },
           {
@@ -438,7 +438,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_contextReference"
+              "relativePath": "transformerForBuildPlusRuntime_getFromContext"
             }
           },
           {

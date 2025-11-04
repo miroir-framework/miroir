@@ -839,13 +839,15 @@ describe("jzodUnion_RecursiveUnfold", () => {
           },
           tag: {
             value: {
-              unfoldSubLevels: 2,
+              display: {
+                unfoldSubLevels: 2,
+              }
             },
           },
           definition: {
             extend: {
               type: "union",
-              discriminator: "type",
+              // discriminator: "type",
               optional: true,
               definition: [
                 {

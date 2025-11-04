@@ -6558,7 +6558,7 @@ const tests: { [k: string]: testFormat } = {
               definition: {
                 transformerType: "mapList",
                 elementTransformer: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   referenceName: "originTransformer",
                 },
               },
@@ -6582,7 +6582,7 @@ const tests: { [k: string]: testFormat } = {
       transformerType: "pickFromList",
       interpolation: "runtime",
       applyTo: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         interpolation: "runtime",
         referenceName: "menuList",
       },
@@ -6616,7 +6616,7 @@ const tests: { [k: string]: testFormat } = {
           definition: {
             transformerType: {
               type: "literal",
-              definition: "contextReference",
+              definition: "getFromContext",
             },
             interpolation: {
               type: "enum",
@@ -6649,7 +6649,7 @@ const tests: { [k: string]: testFormat } = {
                   definition: {
                     transformerType: "mapList",
                     elementTransformer: {
-                      transformerType: "contextReference",
+                      transformerType: "getFromContext",
                       referenceName: "originTransformer",
                     },
                   },
@@ -6672,7 +6672,7 @@ const tests: { [k: string]: testFormat } = {
               definition: {
                 transformerType: "mapList",
                 elementTransformer: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   referenceName: "originTransformer",
                 },
               },
@@ -6779,7 +6779,7 @@ const tests: { [k: string]: testFormat } = {
                       definition: {
                         transformerType: "mapList",
                         elementTransformer: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           referenceName: "originTransformer",
                         },
                       },
@@ -6825,7 +6825,7 @@ const tests: { [k: string]: testFormat } = {
                       definition: {
                         transformerType: "mapList",
                         elementTransformer: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           referenceName: "originTransformer",
                         },
                       },
@@ -6883,7 +6883,7 @@ const tests: { [k: string]: testFormat } = {
                       definition: {
                         transformerType: "mapList",
                         elementTransformer: {
-                          transformerType: "contextReference",
+                          transformerType: "getFromContext",
                           referenceName: "originTransformer",
                         },
                       },
@@ -6908,7 +6908,7 @@ const tests: { [k: string]: testFormat } = {
               definition: {
                 transformerType: "mapList",
                 elementTransformer: {
-                  transformerType: "contextReference",
+                  transformerType: "getFromContext",
                   referenceName: "originTransformer",
                 },
               },
@@ -8970,7 +8970,7 @@ const tests: { [k: string]: testFormat } = {
   //             applyTo: {
   //               referenceType: "referencedTransformer",
   //               reference: {
-  //                 transformerType: "contextReference",
+  //                 transformerType: "getFromContext",
   //                 interpolation: "runtime",
   //                 referenceName: "menuList",
   //               },
@@ -9004,12 +9004,12 @@ const tests: { [k: string]: testFormat } = {
   //             transformerType: "transformer_menu_addItem",
   //             interpolation: "runtime",
   //             menuItemReference: {
-  //               transformerType: "contextReference",
+  //               transformerType: "getFromContext",
   //               interpolation: "runtime",
   //               referenceName: "menuItem",
   //             },
   //             menuReference: {
-  //               transformerType: "contextReference",
+  //               transformerType: "getFromContext",
   //               interpolation: "runtime",
   //               referenceName: "menu",
   //             },
@@ -9087,7 +9087,7 @@ const tests: { [k: string]: testFormat } = {
   //                   "definition": {
   //                     "transformerType": "mapList",
   //                     "elementTransformer": {
-  //                       "transformerType": "contextReference",
+  //                       "transformerType": "getFromContext",
   //                       "referenceName": "originTransformer"
   //                     }
   //                   }
@@ -9136,7 +9136,7 @@ const tests: { [k: string]: testFormat } = {
   //                   "definition": {
   //                     "transformerType": "mapList",
   //                     "elementTransformer": {
-  //                       "transformerType": "contextReference",
+  //                       "transformerType": "getFromContext",
   //                       "referenceName": "originTransformer"
   //                     }
   //                   }
@@ -9197,7 +9197,7 @@ const tests: { [k: string]: testFormat } = {
   //                   "definition": {
   //                     "transformerType": "mapList",
   //                     "elementTransformer": {
-  //                       "transformerType": "contextReference",
+  //                       "transformerType": "getFromContext",
   //                       "referenceName": "originTransformer"
   //                     }
   //                   }
@@ -9222,7 +9222,7 @@ const tests: { [k: string]: testFormat } = {
   //           "definition": {
   //             "transformerType": "mapList",
   //             "elementTransformer": {
-  //               "transformerType": "contextReference",
+  //               "transformerType": "getFromContext",
   //               "referenceName": "originTransformer"
   //             }
   //           }
@@ -9350,7 +9350,7 @@ const tests: { [k: string]: testFormat } = {
                           definition: {
                             transformerType: "mapList",
                             elementTransformer: {
-                              transformerType: "contextReference",
+                              transformerType: "getFromContext",
                               referenceName: "originTransformer",
                             },
                           },
@@ -9410,7 +9410,7 @@ const tests: { [k: string]: testFormat } = {
                                       definition: {
                                         transformerType: "mapList",
                                         elementTransformer: {
-                                          transformerType: "contextReference",
+                                          transformerType: "getFromContext",
                                           referenceName: "originTransformer",
                                         },
                                       },
@@ -9457,7 +9457,7 @@ const tests: { [k: string]: testFormat } = {
                                       definition: {
                                         transformerType: "mapList",
                                         elementTransformer: {
-                                          transformerType: "contextReference",
+                                          transformerType: "getFromContext",
                                           referenceName: "originTransformer",
                                         },
                                       },

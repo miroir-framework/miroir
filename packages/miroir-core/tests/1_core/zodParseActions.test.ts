@@ -588,7 +588,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       parentName: entityMenu.name,
       applicationSection: "model",
       objectReference: {
-        transformerType: "contextReference",
+        transformerType: "getFromContext",
         interpolation: "runtime",
         referenceName: "publisher",
       },

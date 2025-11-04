@@ -354,7 +354,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForRuntime_optional_Abstract",
     "transformerForBuildPlusRuntime_optional_Abstract",
     "transformerForBuild_objectDynamicAccess",
-    "transformerForRuntime_contextReference",
+    "transformerForRuntime_getFromContext",
     "transformerForBuild_parameterReference",
     "transformer_contextOrParameterReferenceTO_REMOVE",
   ];
@@ -841,8 +841,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_returnValue: miroirTransformersForBuild.transformer_returnValue,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
-        transformerForBuild_contextReference:
-          miroirTransformersForBuild.transformer_contextReference,
+        transformerForBuild_getFromContext:
+          miroirTransformersForBuild.transformer_getFromContext,
         transformerForBuild_aggregate: miroirTransformersForBuild.transformer_aggregate,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
         transformerForBuild_mapList:
@@ -912,8 +912,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_returnValue: miroirTransformersForRuntime.transformer_returnValue,
         transformerForRuntime_constantAsExtractor:
           miroirTransformersForRuntime.transformer_constantAsExtractor,
-        transformerForRuntime_contextReference:
-          miroirTransformersForRuntime.transformer_contextReference,
+        transformerForRuntime_getFromContext:
+          miroirTransformersForRuntime.transformer_getFromContext,
         transformerForRuntime_aggregate: miroirTransformersForRuntime.transformer_aggregate,
         transformerForRuntime_dataflowObject:
           miroirTransformersForRuntime.transformer_dataflowObject,
@@ -1012,8 +1012,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_returnValue,
         transformerForBuildPlusRuntime_constantAsExtractor:
           miroirTransformersForBuildPlusRuntime.transformer_constantAsExtractor,
-        transformerForBuildPlusRuntime_contextReference:
-          miroirTransformersForBuildPlusRuntime.transformer_contextReference,
+        transformerForBuildPlusRuntime_getFromContext:
+          miroirTransformersForBuildPlusRuntime.transformer_getFromContext,
         transformerForBuildPlusRuntime_aggregate:
           miroirTransformersForBuildPlusRuntime.transformer_aggregate,
         transformerForBuildPlusRuntime_dataflowObject:
@@ -3918,7 +3918,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_conditional",
     "transformerForBuild_returnValue",
     "transformerForBuild_constantAsExtractor",
-    "transformerForBuild_contextReference",
+    "transformerForBuild_getFromContext",
     "transformerForBuild_aggregate",
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",
@@ -4072,7 +4072,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_conditional",
     "transformerForBuild_returnValue",
     "transformerForBuild_constantAsExtractor",
-    "transformerForBuild_contextReference",
+    "transformerForBuild_getFromContext",
     "transformerForBuild_aggregate",
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",

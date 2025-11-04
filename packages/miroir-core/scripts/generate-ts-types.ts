@@ -220,7 +220,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_menu_addItem
   | TransformerForRuntime_returnValue
   | TransformerForRuntime_constantAsExtractor
-  | TransformerForRuntime_contextReference
+  | TransformerForRuntime_getFromContext
   | TransformerForRuntime_aggregate
   | TransformerForRuntime_dataflowObject
   | TransformerForRuntime_freeObjectTemplate
@@ -250,7 +250,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   // 
   z.lazy(() => transformerForRuntime_returnValue),
   z.lazy(() => transformerForRuntime_constantAsExtractor),
-  z.lazy(() => transformerForRuntime_contextReference),
+  z.lazy(() => transformerForRuntime_getFromContext),
   z.lazy(() => transformerForRuntime_aggregate),
   z.lazy(() => transformerForRuntime_dataflowObject),
   z.lazy(() => transformerForRuntime_freeObjectTemplate),
@@ -308,7 +308,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_objectValues
   | TransformerForBuildPlusRuntime_object_fullTemplate
   | TransformerForBuildPlusRuntime_parameterReference
-  | TransformerForBuildPlusRuntime_contextReference
+  | TransformerForBuildPlusRuntime_getFromContext
   | TransformerForBuildPlusRuntime_unique
   // | TransformerForBuildPlusRuntime_constantBigint
   | TransformerForBuildPlusRuntime_InnerReference
@@ -362,7 +362,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_objectValues,
     transformerForBuildPlusRuntime_object_fullTemplate,
     transformerForBuildPlusRuntime_parameterReference,
-    transformerForBuildPlusRuntime_contextReference,
+    transformerForBuildPlusRuntime_getFromContext,
     transformerForBuildPlusRuntime_unique,
     // transformerForBuildPlusRuntime_constantBigint,
     transformerForBuildPlusRuntime_InnerReference,

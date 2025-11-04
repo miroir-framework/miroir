@@ -33,7 +33,7 @@ Think of it like the JavaScript `.map()` function, but with the power of Miroir'
 The list you want to transform. Can be:
 
 - A direct array: `[item1, item2, item3]`
-- A reference to data: `{ transformerType: "contextReference", referenceName: "myList" }`
+- A reference to data: `{ transformerType: "getFromContext", referenceName: "myList" }`
 - If omitted, uses the default input
 
 ### 2. `elementTransformer` (required)
@@ -70,7 +70,7 @@ A field name to sort the result list alphabetically.
 {
   "transformerType": "mapList",
   "applyTo": { 
-    "transformerType": "contextReference", 
+    "transformerType": "getFromContext", 
     "referenceName": "nameList" 
   },
   "referenceToOuterObject": "name",
@@ -113,7 +113,7 @@ A field name to sort the result list alphabetically.
 {
   "transformerType": "mapList",
   "applyTo": { 
-    "transformerType": "contextReference", 
+    "transformerType": "getFromContext", 
     "referenceName": "countries" 
   },
   "referenceToOuterObject": "country",
@@ -121,11 +121,11 @@ A field name to sort the result list alphabetically.
     "transformerType": "freeObjectTemplate",
     "definition": {
       "id": { 
-        "transformerType": "contextReference", 
+        "transformerType": "getFromContext", 
         "referencePath": ["country", "uuid"] 
       },
       "label": { 
-        "transformerType": "contextReference", 
+        "transformerType": "getFromContext", 
         "referencePath": ["country", "code"] 
       }
     }
@@ -159,14 +159,14 @@ A field name to sort the result list alphabetically.
 {
   "transformerType": "mapList",
   "applyTo": { 
-    "transformerType": "contextReference", 
+    "transformerType": "getFromContext", 
     "referenceName": "users" 
   },
   "referenceToOuterObject": "user",
   "elementTransformer": {
     "transformerType": "objectAlter",
     "applyTo": { 
-      "transformerType": "contextReference", 
+      "transformerType": "getFromContext", 
       "referenceName": "user" 
     },
     "definition": {

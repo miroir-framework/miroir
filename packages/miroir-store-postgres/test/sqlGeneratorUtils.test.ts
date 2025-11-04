@@ -39,25 +39,25 @@ describe("SqlGeneratorUtils", () => {
 
     it("should build correct SQL for two-level path", () => {
       expect(protectedSqlAccessForPath(["foo", "bar"])).toBe(
-        `CASE WHEN NOT ("foo" ? 'bar') THEN '{"queryFailure": "FailedTransformer_contextReference"}'::jsonb ELSE "foo" -> 'bar' END`
+        `CASE WHEN NOT ("foo" ? 'bar') THEN '{"queryFailure": "FailedTransformer_getFromContext"}'::jsonb ELSE "foo" -> 'bar' END`
       );
     });
 
     it('should build correct SQL for three-level path', () => {
       expect(protectedSqlAccessForPath(['foo', 'bar', 'baz'])).toBe(
-        `CASE WHEN NOT ("foo" ? 'bar') OR NOT ("foo" -> 'bar' ? 'baz') THEN '{"queryFailure": "FailedTransformer_contextReference"}'::jsonb ELSE "foo" -> 'bar' -> 'baz' END`
+        `CASE WHEN NOT ("foo" ? 'bar') OR NOT ("foo" -> 'bar' ? 'baz') THEN '{"queryFailure": "FailedTransformer_getFromContext"}'::jsonb ELSE "foo" -> 'bar' -> 'baz' END`
       );
     });
 
     it('should handle numeric path elements', () => {
       expect(protectedSqlAccessForPath(['foo', 0, 'bar'])).toBe(
-        `CASE WHEN NOT ("foo" ? '0') OR NOT ("foo" -> '0' ? 'bar') THEN '{"queryFailure": "FailedTransformer_contextReference"}'::jsonb ELSE "foo" -> '0' -> 'bar' END`
+        `CASE WHEN NOT ("foo" ? '0') OR NOT ("foo" -> '0' ? 'bar') THEN '{"queryFailure": "FailedTransformer_getFromContext"}'::jsonb ELSE "foo" -> '0' -> 'bar' END`
       );
     });
 
     it('should handle mixed string and number path elements', () => {
       expect(protectedSqlAccessForPath([1, 'bar', 2])).toBe(
-        `CASE WHEN NOT ("1" ? 'bar') OR NOT ("1" -> 'bar' ? '2') THEN '{"queryFailure": "FailedTransformer_contextReference"}'::jsonb ELSE "1" -> 'bar' -> '2' END`
+        `CASE WHEN NOT ("1" ? 'bar') OR NOT ("1" -> 'bar' ? '2') THEN '{"queryFailure": "FailedTransformer_getFromContext"}'::jsonb ELSE "1" -> 'bar' -> '2' END`
       );
     });
   });

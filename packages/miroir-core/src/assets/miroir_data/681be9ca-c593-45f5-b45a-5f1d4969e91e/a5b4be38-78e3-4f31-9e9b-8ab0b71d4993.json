@@ -1172,14 +1172,14 @@
               },
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "contextReference",
+                "transformerTestLabel": "getFromContext",
                 "transformerTests": [
                   {
                     "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer contextReference for referenceName",
-                    "transformerName": "contextReferenceForReferenceName",
+                    "transformerTestLabel": "resolve basic transformer getFromContext for referenceName",
+                    "transformerName": "getFromContextForReferenceName",
                     "transformer": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referenceName": "a"
                     },
@@ -1191,10 +1191,10 @@
                   },
                   {
                     "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer contextReference for referencePath",
-                    "transformerName": "contextReferenceForReferencePath",
+                    "transformerTestLabel": "resolve basic transformer getFromContext for referencePath",
+                    "transformerName": "getFromContextForReferencePath",
                     "transformer": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
                         "a",
@@ -1215,9 +1215,9 @@
                   {
                     "transformerTestType": "transformerTest",
                     "transformerTestLabel": "should fail when context referenceName is not found",
-                    "transformerName": "contextReference",
+                    "transformerName": "getFromContext",
                     "transformer": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referenceName": "nonExistentReference"
                     },
@@ -1235,9 +1235,9 @@
                   {
                     "transformerTestType": "transformerTest",
                     "transformerTestLabel": "should fail when context referencePath is invalid",
-                    "transformerName": "contextReference",
+                    "transformerName": "getFromContext",
                     "transformer": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
                         "a",
@@ -1334,7 +1334,7 @@
                   "transformerType": "objectEntries",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testObject1"
                   }
@@ -1423,7 +1423,7 @@
                   "transformerType": "objectValues",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testObject"
                   }
@@ -1447,7 +1447,7 @@
                   "transformerType": "objectValues",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testObject"
                   }
@@ -1524,7 +1524,7 @@
                   "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   },
@@ -1548,7 +1548,7 @@
                   "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   },
@@ -1649,7 +1649,7 @@
                   "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   },
@@ -1673,7 +1673,7 @@
                   "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   },
@@ -1746,7 +1746,7 @@
                   "interpolation": "runtime",
                   "attribute": "a",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   }
@@ -1902,13 +1902,13 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "count returns number of elements in a contextReference object list at runtime",
+                "transformerTestLabel": "count returns number of elements in a getFromContext object list at runtime",
                 "transformerName": "countForObjectListAtRuntime",
                 "transformer": {
                   "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   }
@@ -2012,7 +2012,7 @@
                   "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   },
@@ -2049,7 +2049,7 @@
                   "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "testList"
                   },
@@ -2126,7 +2126,7 @@
                         "value": "uuid"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "newUuid"
                       }
@@ -2139,7 +2139,7 @@
                         "value": "name"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referencePath": [
                           "country",
@@ -2166,7 +2166,7 @@
                   "transformerType": "object_fullTemplate",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "country"
                   },
@@ -2180,7 +2180,7 @@
                         "value": "uuid"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "newUuid"
                       }
@@ -2193,7 +2193,7 @@
                         "value": "name"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referencePath": [
                           "country",
@@ -2227,7 +2227,7 @@
                   "transformerType": "object_fullTemplate",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "country"
                   },
@@ -2241,7 +2241,7 @@
                         "value": "uuid"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "newUuid"
                       }
@@ -2254,7 +2254,7 @@
                         "value": "name"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referencePath": [
                           "country",
@@ -2392,7 +2392,7 @@
                         "value": "uuid"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "newUuid"
                       }
@@ -2405,7 +2405,7 @@
                         "value": "name"
                       },
                       "attributeValue": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referencePath": [
                           "country",
@@ -2483,7 +2483,7 @@
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
                         "country",
@@ -2522,7 +2522,7 @@
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
                         "country",
@@ -2540,7 +2540,7 @@
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
                         "name": {
-                          "transformerType": "contextReference",
+                          "transformerType": "getFromContext",
                           "interpolation": "runtime",
                           "referencePath": [
                             "country",
@@ -2585,7 +2585,7 @@
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
                         "country",
@@ -2629,7 +2629,7 @@
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "name": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
                         "country",
@@ -2647,7 +2647,7 @@
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
                         "name": {
-                          "transformerType": "contextReference",
+                          "transformerType": "getFromContext",
                           "interpolation": "runtime",
                           "referencePath": [
                             "country",
@@ -2776,7 +2776,7 @@
                   "transformerType": "objectAlter",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "nonExistingCountry"
                   },
@@ -2830,7 +2830,7 @@
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referencePath": [
                           "country",
@@ -3001,7 +3001,7 @@
                   "label": "countryListMapperToObjectList",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "countryList"
                   },
@@ -3010,7 +3010,7 @@
                     "transformerType": "object_fullTemplate",
                     "interpolation": "runtime",
                     "applyTo": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referenceName": "country"
                     },
@@ -3036,7 +3036,7 @@
                           "value": "name"
                         },
                         "attributeValue": {
-                          "transformerType": "contextReference",
+                          "transformerType": "getFromContext",
                           "interpolation": "runtime",
                           "referencePath": [
                             "country",
@@ -3087,7 +3087,7 @@
                   "label": "countryListMapperToObjectList",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "countryList"
                   },
@@ -3096,7 +3096,7 @@
                     "transformerType": "objectAlter",
                     "interpolation": "runtime",
                     "applyTo": {
-                      "transformerType": "contextReference",
+                      "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referenceName": "country2"
                     },
@@ -3106,7 +3106,7 @@
                       "interpolation": "runtime",
                       "definition": {
                         "id": {
-                          "transformerType": "contextReference",
+                          "transformerType": "getFromContext",
                           "interpolation": "runtime",
                           "referencePath": [
                             "country3",
@@ -3114,7 +3114,7 @@
                           ]
                         },
                         "name": {
-                          "transformerType": "contextReference",
+                          "transformerType": "getFromContext",
                           "interpolation": "runtime",
                           "referencePath": [
                             "country3",
@@ -3184,7 +3184,7 @@
                       "transformerType": "object_fullTemplate",
                       "interpolation": "runtime",
                       "applyTo": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "country"
                       },
@@ -3198,7 +3198,7 @@
                             "value": "uuid"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referenceName": "newUuid"
                           }
@@ -3211,7 +3211,7 @@
                             "value": "name"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referencePath": [
                               "country2",
@@ -3253,7 +3253,7 @@
                       "interpolation": "runtime",
                       "label": "newObject",
                       "applyTo": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "country"
                       },
@@ -3267,7 +3267,7 @@
                             "value": "uuid"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referenceName": "newUuid"
                           }
@@ -3280,7 +3280,7 @@
                             "value": "name"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referencePath": [
                               "country",
@@ -3295,7 +3295,7 @@
                       "interpolation": "runtime",
                       "label": "newObject2",
                       "applyTo": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "newObject"
                       },
@@ -3309,7 +3309,7 @@
                             "value": "uuid"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referenceName": "newUuid2"
                           }
@@ -3322,7 +3322,7 @@
                             "value": "name"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referencePath": [
                               "newObject",
@@ -3364,7 +3364,7 @@
                       "transformerType": "object_fullTemplate",
                       "interpolation": "runtime",
                       "applyTo": {
-                        "transformerType": "contextReference",
+                        "transformerType": "getFromContext",
                         "interpolation": "runtime",
                         "referenceName": "country"
                       },
@@ -3378,7 +3378,7 @@
                             "value": "uuid"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referenceName": "newUuid"
                           }
@@ -3391,7 +3391,7 @@
                             "value": "name"
                           },
                           "attributeValue": {
-                            "transformerType": "contextReference",
+                            "transformerType": "getFromContext",
                             "interpolation": "runtime",
                             "referencePath": [
                               "country3",
@@ -3469,7 +3469,7 @@
                   "transformerType": "listReducerToSpreadObject",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "objectList"
                   }
@@ -3502,7 +3502,7 @@
                   "transformerType": "listReducerToSpreadObject",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "objectList"
                   }
@@ -3532,7 +3532,7 @@
                   "transformerType": "listReducerToSpreadObject",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "objectList"
                   }
@@ -3607,7 +3607,7 @@
                   "transformerType": "listReducerToIndexObject",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "objectList"
                   },
@@ -3645,7 +3645,7 @@
                   "transformerType": "listReducerToIndexObject",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "contextReference",
+                    "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referenceName": "objectNotList"
                   },

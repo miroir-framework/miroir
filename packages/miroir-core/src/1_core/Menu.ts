@@ -61,7 +61,7 @@ export function handleTransformer_menu_AddItem(
           transformer.label??transformer.transformerType,
           // transformer.menuReference,
           {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: transformer.menuReference,
           },
@@ -93,7 +93,7 @@ export function handleTransformer_menu_AddItem(
           transformerPath,
           transformer.label??transformer.transformerType,
           {
-            transformerType: "contextReference",
+            transformerType: "getFromContext",
             interpolation: "runtime",
             referenceName: transformer.menuItemReference,
           },
