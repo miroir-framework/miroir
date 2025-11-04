@@ -68,7 +68,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           index: 0,
         },
         attributeNames: {
-          transformerType: "objectValues",
+          transformerType: "getObjectValues",
           applyTo: {
             transformerType: "getFromContext",
             interpolation: "runtime",

@@ -150,7 +150,7 @@ export type TransformerForBuild =
   | TransformerForBuild_objectAlter
   | TransformerForBuild_objectDynamicAccess
   | TransformerForBuild_objectEntries
-  | TransformerForBuild_objectValues
+  | TransformerForBuild_getObjectValues
   | TransformerForBuild_object_fullTemplate
   | TransformerForBuild_getFromParameters
   | TransformerForBuild_getUniqueValues
@@ -202,7 +202,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_objectAlter,
     transformerForBuild_objectDynamicAccess,
     transformerForBuild_objectEntries,
-    transformerForBuild_objectValues,
+    transformerForBuild_getObjectValues,
     transformerForBuild_object_fullTemplate,
     transformerForBuild_getFromParameters,
     transformerForBuild_getUniqueValues,
@@ -233,7 +233,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_objectAlter
   | TransformerForRuntime_objectDynamicAccess
   | TransformerForRuntime_objectEntries
-  | TransformerForRuntime_objectValues
+  | TransformerForRuntime_getObjectValues
   | TransformerForRuntime_object_fullTemplate
   | TransformerForRuntime_getUniqueValues
   // | TransformerForRuntime_constantBigint
@@ -263,7 +263,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_objectAlter),
   z.lazy(() => transformerForRuntime_objectDynamicAccess),
   z.lazy(() => transformerForRuntime_objectEntries),
-  z.lazy(() => transformerForRuntime_objectValues),
+  z.lazy(() => transformerForRuntime_getObjectValues),
   z.lazy(() => transformerForRuntime_object_fullTemplate),
   z.lazy(() => transformerForRuntime_getUniqueValues),
   // z.lazy(() => transformerForRuntime_constantBigint),
@@ -305,7 +305,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_objectAlter
   | TransformerForBuildPlusRuntime_objectDynamicAccess
   | TransformerForBuildPlusRuntime_objectEntries
-  | TransformerForBuildPlusRuntime_objectValues
+  | TransformerForBuildPlusRuntime_getObjectValues
   | TransformerForBuildPlusRuntime_object_fullTemplate
   | TransformerForBuildPlusRuntime_getFromParameters
   | TransformerForBuildPlusRuntime_getFromContext
@@ -359,7 +359,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_objectAlter,
     transformerForBuildPlusRuntime_objectDynamicAccess,
     transformerForBuildPlusRuntime_objectEntries,
-    transformerForBuildPlusRuntime_objectValues,
+    transformerForBuildPlusRuntime_getObjectValues,
     transformerForBuildPlusRuntime_object_fullTemplate,
     transformerForBuildPlusRuntime_getFromParameters,
     transformerForBuildPlusRuntime_getFromContext,

@@ -670,7 +670,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //           },
   //   //           runtimeTransformers: {
   //   //             // menuList: {
-  //   //             //   transformerType: "objectValues",
+  //   //             //   transformerType: "getObjectValues",
   //   //             //   interpolation: "runtime",
   //   //             //   referencedTransformer: "menuUuidIndex",
   //   //             // },
@@ -1338,7 +1338,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             },
   //             runtimeTransformers: {
   //               menuList: {
-  //                 transformerType: "objectValues",
+  //                 transformerType: "getObjectValues",
   //                 interpolation: "runtime",
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",
@@ -1536,7 +1536,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 },
   //               } as any as TransformerForRuntime,
   //               splittedEntityInstances: {
-  //                 transformerType: "objectValues",
+  //                 transformerType: "getObjectValues",
   //                 interpolation: "runtime",
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",

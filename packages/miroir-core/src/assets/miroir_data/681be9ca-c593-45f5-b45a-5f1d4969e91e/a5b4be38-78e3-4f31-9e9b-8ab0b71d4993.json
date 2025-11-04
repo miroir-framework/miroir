@@ -1385,15 +1385,15 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "objectValues",
+            "transformerTestLabel": "getObjectValues",
             "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectValues on returnValue object at runtime",
-                "transformerName": "objectValuesBeforeRuntime",
+                "transformerTestLabel": "getObjectValues on returnValue object at runtime",
+                "transformerName": "getObjectValuesBeforeRuntime",
                 "transformer": {
-                  "transformerType": "objectValues",
+                  "transformerType": "getObjectValues",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -1418,9 +1418,9 @@
               {
                 "transformerTestType": "transformerTest",
                 "transformerTestLabel": "object values with reference before runtime",
-                "transformerName": "objectValuesBeforeRuntime",
+                "transformerName": "getObjectValuesBeforeRuntime",
                 "transformer": {
-                  "transformerType": "objectValues",
+                  "transformerType": "getObjectValues",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -1441,10 +1441,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectValues with reference at runtime",
-                "transformerName": "objectValuesAtRuntime",
+                "transformerTestLabel": "getObjectValues with reference at runtime",
+                "transformerName": "getObjectValuesAtRuntime",
                 "transformer": {
-                  "transformerType": "objectValues",
+                  "transformerType": "getObjectValues",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -1467,9 +1467,9 @@
               {
                 "transformerTestType": "transformerTest",
                 "transformerTestLabel": "failed object values for string parameter",
-                "transformerName": "objectValuesFailed",
+                "transformerName": "getObjectValuesFailed",
                 "transformer": {
-                  "transformerType": "objectValues",
+                  "transformerType": "getObjectValues",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",

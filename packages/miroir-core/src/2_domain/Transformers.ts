@@ -21,7 +21,7 @@ import transformer_objectFullTemplate_json from '../assets/miroir_data/a557419d-
 import transformer_objectAlter_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/774b1087-d4bb-41a0-824c-5ac16571c66a.json';
 import transformer_objectDynamicAccess_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d1f9e7ce-4b38-4602-a8cf-9658d63619ed.json';
 import transformer_objectEntries_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b726ac6a-f65e-403a-bba0-e11f0982fc41.json';
-import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
+import transformer_getObjectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
 import transformer_getFromParameters_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
 import transformer_getUniqueValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
 // MLS
@@ -55,7 +55,7 @@ export const transformer_generateUuid: TransformerDefinition = transformer_gener
 export const transformer_objectAlter: TransformerDefinition = transformer_objectAlter_json as TransformerDefinition;
 export const transformer_objectDynamicAccess: TransformerDefinition = transformer_objectDynamicAccess_json as TransformerDefinition;
 export const transformer_objectEntries: TransformerDefinition = transformer_objectEntries_json as TransformerDefinition;
-export const transformer_objectValues: TransformerDefinition = transformer_objectValues_json as TransformerDefinition;
+export const transformer_getObjectValues: TransformerDefinition = transformer_getObjectValues_json as TransformerDefinition;
 export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
 export const transformer_getFromParameters: TransformerDefinition = transformer_getFromParameters_json as TransformerDefinition;
 export const transformer_getUniqueValues: TransformerDefinition = transformer_getUniqueValues_json as TransformerDefinition;
@@ -91,7 +91,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_objectAlter,
   transformer_objectDynamicAccess,
   transformer_objectEntries,
-  transformer_objectValues,
+  transformer_getObjectValues,
   transformer_object_fullTemplate,
   transformer_getFromParameters,
   transformer_getUniqueValues,

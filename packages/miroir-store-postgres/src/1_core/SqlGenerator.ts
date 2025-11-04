@@ -30,7 +30,7 @@ import {
   TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
-  TransformerForRuntime_objectValues,
+  TransformerForRuntime_getObjectValues,
   TransformerForRuntime_getUniqueValues,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
@@ -449,7 +449,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_pickFromList
     | TransformerForRuntime_mapList
     | TransformerForRuntime_objectAlter
-    | TransformerForRuntime_objectValues
+    | TransformerForRuntime_getObjectValues
     | TransformerForRuntime_objectEntries
     | TransformerForRuntime_listReducerToSpreadObject
     | TransformerForRuntime_indexListBy
@@ -2173,7 +2173,7 @@ function sqlStringForObjectEntriesTransformer(
 
 // ################################################################################################
 function sqlStringForObjectValuesTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_objectValues,
+  actionRuntimeTransformer: TransformerForRuntime_getObjectValues,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2200,7 +2200,7 @@ function sqlStringForObjectValuesTransformer(
       sql: applyTo.sqlStringOrObject,
     },
   ];
-  const sqlResult = `SELECT jsonb_agg(value) AS "objectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
+  const sqlResult = `SELECT jsonb_agg(value) AS "getObjectValues" FROM "innerQuery", jsonb_each("innerQuery"."${
     (applyTo as any).resultAccessPath[1]
   }")`;
 
@@ -2208,8 +2208,8 @@ function sqlStringForObjectValuesTransformer(
     type: "json",
     sqlStringOrObject: sqlResult,
     preparedStatementParameters: applyTo.preparedStatementParameters,
-    resultAccessPath: [0, "objectValues"],
-    columnNameContainingJsonValue: "objectValues",
+    resultAccessPath: [0, "getObjectValues"],
+    columnNameContainingJsonValue: "getObjectValues",
     extraWith,
   };
 }

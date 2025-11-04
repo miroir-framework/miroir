@@ -193,7 +193,7 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | count | **OK: aggregate** |
 | listReducerToIndexObject | OK: **indexListBy** |
 | listReducerToSpreadObject | OK: **spreadListItems** |
-| objectValues | **getObjectValues** |
+| objectValues | OK: **getObjectValues** |
 | objectEntries | **getObjectEntries** |
 | objectDynamicAccess | **getNestedValue** or **accessPath** |
 | freeObjectTemplate | **buildObject** or **createObject** |
