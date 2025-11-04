@@ -16,7 +16,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   // it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList", async () => { // TODO: test failure cases!
   //   console.log("convert extractorOrCombinerTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList START")
   //   const newApplicationName = "test";
-  //   const newUuid = uuidv4();
+  //   const generateUuid = uuidv4();
 
   //   const uniqueRuntimeTemplate: BoxedExtractorTemplateReturningObject = {
   //     queryType: "boxedExtractorTemplateReturningObject",

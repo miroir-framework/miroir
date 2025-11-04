@@ -736,7 +736,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //                     },
   //                     attributeValue: {
   //                       interpolation: "runtime",
-  //                       transformerType: "newUuid",
+  //                       transformerType: "generateUuid",
   //                     },
   //                   },
   //                   {

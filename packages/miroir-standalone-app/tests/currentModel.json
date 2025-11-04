@@ -5689,7 +5689,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForRuntime_newUuid"
+                  "relativePath": "transformerForRuntime_generateUuid"
                 }
               }
             ]
@@ -5737,7 +5737,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForBuild_newUuid"
+                  "relativePath": "transformerForBuild_generateUuid"
                 }
               },
               {
@@ -5779,7 +5779,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForRuntime_newUuid"
+                  "relativePath": "transformerForRuntime_generateUuid"
                 }
               },
               {

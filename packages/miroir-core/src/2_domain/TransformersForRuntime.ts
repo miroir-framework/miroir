@@ -26,7 +26,7 @@ import {
   TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_mapList,
   TransformerForBuild_mustacheStringTemplate,
-  TransformerForBuild_newUuid,
+  TransformerForBuild_generateUuid,
   TransformerForBuild_object_fullTemplate,
   TransformerForBuild_objectAlter,
   TransformerForBuild_objectDynamicAccess,
@@ -49,7 +49,7 @@ import {
   TransformerForRuntime_listReducerToSpreadObject,
   TransformerForRuntime_mapList,
   TransformerForRuntime_mustacheStringTemplate,
-  TransformerForRuntime_newUuid,
+  TransformerForRuntime_generateUuid,
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
@@ -95,7 +95,7 @@ import {
   transformer_mapList,
   transformer_menu_addItem,
   transformer_mustacheStringTemplate,
-  transformer_newUuid,
+  transformer_generateUuid,
   transformer_object_fullTemplate,
   transformer_objectAlter,
   transformer_objectDynamicAccess,
@@ -641,7 +641,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
   transformer_mustacheStringTemplate_apply: defaultTransformers.transformer_mustacheStringTemplate_apply,
-  handleTransformer_newUuid,
+  handleTransformer_generateUuid,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
   transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
   handleTransformer_objectEntries,
@@ -680,7 +680,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
   mapList: transformer_mapList,
   mustacheStringTemplate: transformer_mustacheStringTemplate,
-  newUuid: transformer_newUuid,
+  generateUuid: transformer_generateUuid,
   objectAlter: transformer_objectAlter,
   objectDynamicAccess: transformer_objectDynamicAccess,
   objectEntries: transformer_objectEntries,
@@ -1587,7 +1587,7 @@ export function transformer_InnerReference_resolve(
       result = transformerInnerReference.value;
       break;
     }
-    case "newUuid": {
+    case "generateUuid": {
       result = uuidv4();
       break;
     }
@@ -2760,11 +2760,11 @@ export function handleTransformer_constantAsExtractor(
 }
 
 // ################################################################################################
-export function handleTransformer_newUuid(
+export function handleTransformer_generateUuid(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_newUuid | TransformerForRuntime_newUuid,
+  transformer: TransformerForBuild_generateUuid | TransformerForRuntime_generateUuid,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,

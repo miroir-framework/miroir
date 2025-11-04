@@ -849,7 +849,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_mapList,
         transformerForBuild_freeObjectTemplate:
           miroirTransformersForBuild.transformer_freeObjectTemplate,
-        transformerForBuild_newUuid: miroirTransformersForBuild.transformer_newUuid,
+        transformerForBuild_generateUuid: miroirTransformersForBuild.transformer_generateUuid,
         transformerForBuild_mustacheStringTemplate:
           miroirTransformersForBuild.transformer_mustacheStringTemplate,
         transformerForBuild_objectAlter: miroirTransformersForBuild.transformer_objectAlter,
@@ -923,7 +923,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForRuntime.transformer_mapList,
         transformerForRuntime_pickFromList:
           miroirTransformersForRuntime.transformer_pickFromList,
-        transformerForRuntime_newUuid: miroirTransformersForRuntime.transformer_newUuid,
+        transformerForRuntime_generateUuid: miroirTransformersForRuntime.transformer_generateUuid,
         transformerForRuntime_mustacheStringTemplate:
           miroirTransformersForRuntime.transformer_mustacheStringTemplate,
         transformerForRuntime_listReducerToIndexObject:
@@ -1026,8 +1026,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_getFromParameters,
         transformerForBuildPlusRuntime_pickFromList:
           miroirTransformersForBuildPlusRuntime.transformer_pickFromList,
-        transformerForBuildPlusRuntime_newUuid:
-          miroirTransformersForBuildPlusRuntime.transformer_newUuid,
+        transformerForBuildPlusRuntime_generateUuid:
+          miroirTransformersForBuildPlusRuntime.transformer_generateUuid,
         transformerForBuildPlusRuntime_mustacheStringTemplate:
           miroirTransformersForBuildPlusRuntime.transformer_mustacheStringTemplate,
         transformerForBuildPlusRuntime_listReducerToIndexObject:
@@ -3923,7 +3923,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",
     "transformerForBuild_freeObjectTemplate",
-    "transformerForBuild_newUuid",
+    "transformerForBuild_generateUuid",
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_objectAlter",
     "transformerForBuild_objectDynamicAccess",
@@ -4077,7 +4077,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",
     "transformerForBuild_freeObjectTemplate",
-    "transformerForBuild_newUuid",
+    "transformerForBuild_generateUuid",
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_objectAlter",
     "transformerForBuild_objectDynamicAccess",

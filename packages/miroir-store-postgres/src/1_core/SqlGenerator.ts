@@ -25,7 +25,7 @@ import {
   // TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_mapList,
   TransformerForRuntime_mustacheStringTemplate,
-  TransformerForRuntime_newUuid,
+  TransformerForRuntime_generateUuid,
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
@@ -3030,7 +3030,7 @@ function sqlStringForConstantAsExtractorTransformer(
 
 // ################################################################################################
 function sqlStringForNewUuidTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_newUuid,
+  actionRuntimeTransformer: TransformerForRuntime_generateUuid,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -3040,7 +3040,7 @@ function sqlStringForNewUuidTransformer(
   withClauseColumnName?: string,
   iterateOn?: string,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  const columnName = withClauseColumnName ?? 'newUuid';
+  const columnName = withClauseColumnName ?? 'generateUuid';
   return {
     type: "scalar",
     sqlStringOrObject: topLevelTransformer 

@@ -1588,7 +1588,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                           },
   //                           attributeValue: {
   //                             interpolation: "runtime",
-  //                             transformerType: "newUuid",
+  //                             transformerType: "generateUuid",
   //                           },
   //                         },
   //                         {

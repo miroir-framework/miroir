@@ -146,7 +146,7 @@ export type TransformerForBuild =
   | TransformerForBuild_listReducerToSpreadObject
   | TransformerForBuild_mapList
   | TransformerForBuild_mustacheStringTemplate
-  | TransformerForBuild_newUuid
+  | TransformerForBuild_generateUuid
   | TransformerForBuild_objectAlter
   | TransformerForBuild_objectDynamicAccess
   | TransformerForBuild_objectEntries
@@ -198,7 +198,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_listReducerToSpreadObject,
     transformerForBuild_mapList,
     transformerForBuild_mustacheStringTemplate,
-    transformerForBuild_newUuid,
+    transformerForBuild_generateUuid,
     transformerForBuild_objectAlter,
     transformerForBuild_objectDynamicAccess,
     transformerForBuild_objectEntries,
@@ -229,7 +229,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_listReducerToSpreadObject
   | TransformerForRuntime_mapList
   | TransformerForRuntime_mustacheStringTemplate
-  | TransformerForRuntime_newUuid
+  | TransformerForRuntime_generateUuid
   | TransformerForRuntime_objectAlter
   | TransformerForRuntime_objectDynamicAccess
   | TransformerForRuntime_objectEntries
@@ -259,7 +259,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_listReducerToSpreadObject),
   z.lazy(() => transformerForRuntime_mapList),
   z.lazy(() => transformerForRuntime_mustacheStringTemplate),
-  z.lazy(() => transformerForRuntime_newUuid),
+  z.lazy(() => transformerForRuntime_generateUuid),
   z.lazy(() => transformerForRuntime_objectAlter),
   z.lazy(() => transformerForRuntime_objectDynamicAccess),
   z.lazy(() => transformerForRuntime_objectEntries),
@@ -301,7 +301,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_listReducerToSpreadObject
   | TransformerForBuildPlusRuntime_mapList
   | TransformerForBuildPlusRuntime_mustacheStringTemplate
-  | TransformerForBuildPlusRuntime_newUuid
+  | TransformerForBuildPlusRuntime_generateUuid
   | TransformerForBuildPlusRuntime_objectAlter
   | TransformerForBuildPlusRuntime_objectDynamicAccess
   | TransformerForBuildPlusRuntime_objectEntries
@@ -355,7 +355,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_listReducerToSpreadObject,
     transformerForBuildPlusRuntime_mapList,
     transformerForBuildPlusRuntime_mustacheStringTemplate,
-    transformerForBuildPlusRuntime_newUuid,
+    transformerForBuildPlusRuntime_generateUuid,
     transformerForBuildPlusRuntime_objectAlter,
     transformerForBuildPlusRuntime_objectDynamicAccess,
     transformerForBuildPlusRuntime_objectEntries,

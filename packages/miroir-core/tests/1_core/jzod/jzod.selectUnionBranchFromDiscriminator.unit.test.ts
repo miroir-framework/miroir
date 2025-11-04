@@ -959,7 +959,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           value: { type: "string" },
         },
       },
-      // newUuid
+      // generateUuid
       {
         type: "object",
         extend: [
@@ -975,10 +975,10 @@ describe("selectUnionBranchFromDiscriminator", () => {
         ],
         definition: {
           interpolation: { type: "literal", definition: "build" },
-          transformerType: { type: "literal", definition: "newUuid" },
+          transformerType: { type: "literal", definition: "generateUuid" },
         },
       },
-      // newUuid  !!!!!!!!!!!!!
+      // generateUuid  !!!!!!!!!!!!!
       {
         type: "object",
         extend: [
@@ -994,7 +994,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         ],
         definition: {
           interpolation: { type: "literal", definition: "build" },
-          transformerType: { type: "literal", definition: "newUuid" },
+          transformerType: { type: "literal", definition: "generateUuid" },
         },
       },
       // objectDynamicAccess

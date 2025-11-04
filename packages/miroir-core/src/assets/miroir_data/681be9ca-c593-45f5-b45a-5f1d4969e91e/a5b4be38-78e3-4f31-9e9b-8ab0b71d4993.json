@@ -2128,7 +2128,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referenceName": "newUuid"
+                        "referenceName": "generateUuid"
                       }
                     },
                     {
@@ -2151,7 +2151,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                 },
                 "expectedValue": {
                   "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -2182,7 +2182,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referenceName": "newUuid"
+                        "referenceName": "generateUuid"
                       }
                     },
                     {
@@ -2205,7 +2205,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   "country": {
                     "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                     "parentName": "Country",
@@ -2243,7 +2243,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referenceName": "newUuid"
+                        "referenceName": "generateUuid"
                       }
                     },
                     {
@@ -2266,7 +2266,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   "country": {
                     "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                     "parentName": "Country",
@@ -2394,7 +2394,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referenceName": "newUuid"
+                        "referenceName": "generateUuid"
                       }
                     },
                     {
@@ -2417,7 +2417,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   "country": {
                     "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                     "parentName": "Country",
@@ -2905,7 +2905,7 @@
                   }
                 },
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                 },
                 "transformerParams": {},
                 "expectedValue": [
@@ -2972,7 +2972,7 @@
                   }
                 },
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                 },
                 "transformerParams": {},
                 "expectedValue": [
@@ -3048,7 +3048,7 @@
                   }
                 },
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   "countryList": [
                     {
                       "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
@@ -3126,7 +3126,7 @@
                   }
                 },
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   "countryList": [
                     {
                       "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
@@ -3200,7 +3200,7 @@
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referenceName": "newUuid"
+                            "referenceName": "generateUuid"
                           }
                         },
                         {
@@ -3225,7 +3225,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   "country": {
                     "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                     "parentName": "Country",
@@ -3269,7 +3269,7 @@
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referenceName": "newUuid"
+                            "referenceName": "generateUuid"
                           }
                         },
                         {
@@ -3311,7 +3311,7 @@
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referenceName": "newUuid2"
+                            "referenceName": "generateUuid2"
                           }
                         },
                         {
@@ -3336,8 +3336,8 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                  "newUuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
                   "country": {
                     "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                     "parentName": "Country",
@@ -3380,7 +3380,7 @@
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referenceName": "newUuid"
+                            "referenceName": "generateUuid"
                           }
                         },
                         {
@@ -3405,7 +3405,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                   "country": {
                     "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                     "parentName": "Country",
