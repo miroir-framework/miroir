@@ -847,8 +847,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
         transformerForBuild_mapList:
           miroirTransformersForBuild.transformer_mapList,
-        transformerForBuild_freeObjectTemplate:
-          miroirTransformersForBuild.transformer_freeObjectTemplate,
+        transformerForBuild_createObject:
+          miroirTransformersForBuild.transformer_createObject,
         transformerForBuild_generateUuid: miroirTransformersForBuild.transformer_generateUuid,
         transformerForBuild_mustacheStringTemplate:
           miroirTransformersForBuild.transformer_mustacheStringTemplate,
@@ -917,8 +917,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_aggregate: miroirTransformersForRuntime.transformer_aggregate,
         transformerForRuntime_dataflowObject:
           miroirTransformersForRuntime.transformer_dataflowObject,
-        transformerForRuntime_freeObjectTemplate:
-          miroirTransformersForRuntime.transformer_freeObjectTemplate,
+        transformerForRuntime_createObject:
+          miroirTransformersForRuntime.transformer_createObject,
         transformerForRuntime_mapList:
           miroirTransformersForRuntime.transformer_mapList,
         transformerForRuntime_pickFromList:
@@ -1018,8 +1018,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_aggregate,
         transformerForBuildPlusRuntime_dataflowObject:
           miroirTransformersForBuildPlusRuntime.transformer_dataflowObject,
-        transformerForBuildPlusRuntime_freeObjectTemplate:
-          miroirTransformersForBuildPlusRuntime.transformer_freeObjectTemplate,
+        transformerForBuildPlusRuntime_createObject:
+          miroirTransformersForBuildPlusRuntime.transformer_createObject,
         transformerForBuildPlusRuntime_mapList:
           miroirTransformersForBuildPlusRuntime.transformer_mapList,
         transformerForBuildPlusRuntime_getFromParameters:
@@ -3922,7 +3922,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_aggregate",
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",
-    "transformerForBuild_freeObjectTemplate",
+    "transformerForBuild_createObject",
     "transformerForBuild_generateUuid",
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_objectAlter",
@@ -4076,7 +4076,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_aggregate",
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",
-    "transformerForBuild_freeObjectTemplate",
+    "transformerForBuild_createObject",
     "transformerForBuild_generateUuid",
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_objectAlter",

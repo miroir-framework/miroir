@@ -523,7 +523,7 @@ export const ConceptPage: React.FC<any> = (
         //               referenceName: "createEntity_newEntityName",
         //             },
         //             parentUuid: {
-        //               transformerType: "freeObjectTemplate",
+        //               transformerType: "createObject",
         //               definition: {
         //                 transformerType: "constantString",
         //                 value: {

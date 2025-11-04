@@ -5,7 +5,7 @@ import { transformerInterfaceFromDefinition } from "../../src/2_domain/Transform
 const runtimeReferenceMap: Record<string, string> = {
   transformer: "transformerForRuntime",
   // transformer_InnerReference: "transformerForRuntime_InnerReference",
-  transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
+  transformer_createObject: "transformerForRuntime_createObject",
   transformer_getFromContext: "transformerForRuntime_getFromContext",
   transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate",
@@ -14,7 +14,7 @@ const runtimeReferenceMap: Record<string, string> = {
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
   // transformer_InnerReference: "transformerForBuild_InnerReference",
-  transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
+  transformer_createObject: "transformerForBuild_createObject",
   transformer_getFromContext: "transformerForRuntime_getFromContext",
   transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformer_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate

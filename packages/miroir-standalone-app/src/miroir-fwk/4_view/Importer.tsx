@@ -507,7 +507,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //               referenceName: "createEntity_newEntityName",
   //   //             },
   //   //             parentUuid: {
-  //   //               transformerType: "freeObjectTemplate",
+  //   //               transformerType: "createObject",
   //   //               definition: {
   //   //                 transformerType: "constantString",
   //   //                 value: {
@@ -654,7 +654,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //               applicationSection: "model",
   //   //               parentName: "Menu",
   //   //               parentUuid: {
-  //   //                 transformerType: "freeObjectTemplate",
+  //   //                 transformerType: "createObject",
   //   //                 definition: {
   //   //                   transformerType: {
   //   //                     transformerType: "constantString",
@@ -689,7 +689,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //               index: 1,
   //   //             },
   //   //             menuItem: {
-  //   //               transformerType: "freeObjectTemplate",
+  //   //               transformerType: "createObject",
   //   //               definition: {
   //   //                 reportUuid: {
   //   //                   transformerType: "mustacheStringTemplate",
@@ -1029,7 +1029,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 referenceName: "splitEntity_newEntityName",
   //               },
   //               parentUuid: {
-  //                 transformerType: "freeObjectTemplate",
+  //                 transformerType: "createObject",
   //                 definition: {
   //                   transformerType: "constantString",
   //                   value: {
@@ -1318,7 +1318,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 applicationSection: "model",
   //                 parentName: "Menu",
   //                 parentUuid: {
-  //                   transformerType: "freeObjectTemplate",
+  //                   transformerType: "createObject",
   //                   definition: {
   //                     transformerType: {
   //                       transformerType: "constantString",
@@ -1365,7 +1365,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 index: 1,
   //               },
   //               menuItem: {
-  //                 transformerType: "freeObjectTemplate",
+  //                 transformerType: "createObject",
   //                 definition: {
   //                   label: {
   //                     transformerType: "mustacheStringTemplate",
@@ -1436,7 +1436,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   interpolation: "runtime",
   //                   objectAccessPath: [
   //                     {
-  //                       transformerType: "freeObjectTemplate", // TODO: allow transformer inside inner objectDynamicAccess in Query Templates!
+  //                       transformerType: "createObject", // TODO: allow transformer inside inner objectDynamicAccess in Query Templates!
   //                       definition: {
   //                         transformerType: "getFromContext",
   //                         interpolation: "runtime",
@@ -1502,7 +1502,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   referenceName: "splittedEntityName",
   //                 },
   //                 parentUuid: {
-  //                   transformerType: "freeObjectTemplate",
+  //                   transformerType: "createObject",
   //                   definition: {
   //                     transformerType: "constantString",
   //                     value: {
@@ -1516,7 +1516,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             },
   //             runtimeTransformers: {
   //               getUniqueValuesSplittedEntityInstancesSplitAttributeValues: {
-  //                 transformerType: "freeObjectTemplate",
+  //                 transformerType: "createObject",
   //                 definition: {
   //                   transformerType: getUniqueValues,
   //                   interpolation: "runtime",
@@ -1532,7 +1532,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   attribute: {
   //                     transformerType: "getFromParameters",
   //                     referenceName: "splittedEntityAttribute",
-  //                   }, // TODO: allow transformer inside freeObjectTemplate!
+  //                   }, // TODO: allow transformer inside createObject!
   //                 },
   //               } as any as TransformerForRuntime,
   //               splittedEntityInstances: {
@@ -1549,7 +1549,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 // referencedTransformer: "splittedEntityUuidIndex",
   //               },
   //               municipalities: {
-  //                 transformerType: "freeObjectTemplate",
+  //                 transformerType: "createObject",
   //                 definition: {
   //                   transformerType: "mapList",
   //                   interpolation: "runtime",
@@ -1563,7 +1563,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   },
   //                   // referencedTransformer: "getUniqueValuesSplittedEntityInstancesSplitAttributeValues",
   //                   elementTransformer: {
-  //                     transformerType: "freeObjectTemplate",
+  //                     transformerType: "createObject",
   //                     definition: {
   //                       transformerType: "innerFullObjectTemplate", // TODO: innerFullObjectTemplate is not needed, all attributeKeys are constantString, objectTemplate should be enough
   //                       interpolation: "runtime",
@@ -1653,7 +1653,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   interpolation: "runtime",
   //                   referenceToOuterObject: "objectAlterTmpReference",
   //                   definition: {
-  //                     transformerType: "freeObjectTemplate",
+  //                     transformerType: "createObject",
   //                     interpolation: "runtime",
   //                     definition: {
   //                       [newEntityName]: {

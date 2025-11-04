@@ -17,7 +17,7 @@
           "actionName": "sequence",
           "templates": {
             "createEntity_newEntity": {
-              "transformerType": "freeObjectTemplate",
+              "transformerType": "createObject",
               "interpolation": "build",
               "definition": {
                 "uuid": {
@@ -48,7 +48,7 @@
               }
             },
             "createEntity_newEntityDefinition": {
-              "transformerType": "freeObjectTemplate",
+              "transformerType": "createObject",
               "interpolation": "build",
               "definition": {
                 "name": {
@@ -86,7 +86,7 @@
               }
             },
             "newEntityListReport": {
-              "transformerType": "freeObjectTemplate",
+              "transformerType": "createObject",
               "interpolation": "build",
               "definition": {
                 "uuid": {
@@ -122,11 +122,11 @@
                 },
                 "type": "list",
                 "definition": {
-                  "transformerType": "freeObjectTemplate",
+                  "transformerType": "createObject",
                   "interpolation": "build",
                   "definition": {
                     "extractors": {
-                      "transformerType": "freeObjectTemplate",
+                      "transformerType": "createObject",
                       "interpolation": "build",
                       "definition": {
                         "instanceList": {
@@ -145,7 +145,7 @@
                       }
                     },
                     "section": {
-                      "transformerType": "freeObjectTemplate",
+                      "transformerType": "createObject",
                       "interpolation": "build",
                       "definition": {
                         "type": {
@@ -177,7 +177,7 @@
               }
             },
             "newEntityDetailsReport": {
-              "transformerType": "freeObjectTemplate",
+              "transformerType": "createObject",
               "interpolation": "build",
               "definition": {
                 "uuid": {
@@ -565,7 +565,7 @@
                         "index": 0
                       },
                       "menuItem": {
-                        "transformerType": "freeObjectTemplate",
+                        "transformerType": "createObject",
                         "interpolation": "runtime",
                         "definition": {
                           "reportUuid": {

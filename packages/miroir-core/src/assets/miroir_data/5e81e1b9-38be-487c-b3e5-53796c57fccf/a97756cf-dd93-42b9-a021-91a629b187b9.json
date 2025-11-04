@@ -144,7 +144,7 @@
             "editorButton": {
               "label": "Apply Transformer to a List",
               "transformer": {
-                "transformerType": "freeObjectTemplate",
+                "transformerType": "createObject",
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {

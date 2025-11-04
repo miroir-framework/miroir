@@ -9,7 +9,7 @@ import {
   ResultAccessPath,
   transformer_extended_apply_wrapper,
   transformer_resolveReference,
-  TransformerForBuild_freeObjectTemplate,
+  TransformerForBuild_createObject,
   TransformerForBuild_object_fullTemplate,
   TransformerForRuntime,
   TransformerForRuntime_returnValue,
@@ -18,7 +18,7 @@ import {
   TransformerForRuntime_getFromContext,
   TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
-  TransformerForRuntime_freeObjectTemplate,
+  TransformerForRuntime_createObject,
   TransformerForRuntime_pickFromList,
   TransformerForRuntime_indexListBy,
   TransformerForRuntime_listReducerToSpreadObject,
@@ -901,7 +901,7 @@ function getFreeObjectAttributesSql(
             JSON.stringify(e[1], null, 2)
         );
       }
-      return `NOT ("object_freeObjectTemplate_sub"."A${2 * e[1].index + 1}" ? 'queryFailure')`;
+      return `NOT ("object_createObject_sub"."A${2 * e[1].index + 1}" ? 'queryFailure')`;
     }) // we take the expression not the index (thus +1)
     .join(" AND ");
   const attributeElementsJsonBuild = objectAttributes.flatMap((e, index) => {
@@ -933,8 +933,8 @@ function getFreeObjectAttributesSql(
 // ################################################################################################
 function sqlStringForFreeObjectTransformer(
   actionRuntimeTransformer:
-    | TransformerForBuild_freeObjectTemplate
-    | TransformerForRuntime_freeObjectTemplate,
+    | TransformerForBuild_createObject
+    | TransformerForRuntime_createObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -992,12 +992,12 @@ function sqlStringForFreeObjectTransformer(
         case "object": {
           if (Array.isArray(f[1])) {
             throw new Error(
-              "sqlStringForRuntimeTransformer freeObjectTemplate array not implemented"
+              "sqlStringForRuntimeTransformer createObject array not implemented"
             );
           }
           if (f[1] == null) {
             throw new Error(
-              "sqlStringForRuntimeTransformer freeObjectTemplate null not implemented"
+              "sqlStringForRuntimeTransformer createObject null not implemented"
             );
           }
 
@@ -1045,7 +1045,7 @@ function sqlStringForFreeObjectTransformer(
             ];
           }
           throw new Error(
-            "sqlStringForRuntimeTransformer freeObjectTemplate object for " +
+            "sqlStringForRuntimeTransformer createObject object for " +
               f[0] +
               " returning no value for type:" +
               typeof f[1]
@@ -1056,7 +1056,7 @@ function sqlStringForFreeObjectTransformer(
         case "undefined":
         case "function": {
           throw new Error(
-            "sqlStringForRuntimeTransformer freeObjectTemplate for " +
+            "sqlStringForRuntimeTransformer createObject for " +
               f[0] +
               " not implemented for type:" +
               typeof f[1]
@@ -1077,7 +1077,7 @@ function sqlStringForFreeObjectTransformer(
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
       failureMessage:
-        "sqlStringForRuntimeTransformer freeObjectTemplate attributeValue failed: " +
+        "sqlStringForRuntimeTransformer createObject attributeValue failed: " +
         JSON.stringify(attributeError, null, 2),
     });
   }
@@ -1106,7 +1106,7 @@ function sqlStringForFreeObjectTransformer(
   );
 
   log.info(
-    "sqlStringForRuntimeTransformer freeObjectTemplate",
+    "sqlStringForRuntimeTransformer createObject",
     "topLevelTransformer",
     topLevelTransformer,
     "objectAttributes",
@@ -1121,11 +1121,11 @@ function sqlStringForFreeObjectTransformer(
       {
         queryPart: "defineColumn",
         value: getFreeObjectAttributesSql(
-          "object_freeObjectTemplate_sub",
+          "object_createObject_sub",
           castObjectAttributes,
           queryFailureObjectSqlString
         ),
-        as: "object_freeObjectTemplate",
+        as: "object_createObject",
       },
     ],
     from: [
@@ -1178,7 +1178,7 @@ function sqlStringForFreeObjectTransformer(
                 }))
               : undefined,
         },
-        as: "object_freeObjectTemplate_sub",
+        as: "object_createObject_sub",
       },
     ],
   });
@@ -1188,26 +1188,26 @@ function sqlStringForFreeObjectTransformer(
       sqlStringOrObject: sqlNewQuery,
       preparedStatementParameters,
       extraWith: subQueryExtraWith,
-      resultAccessPath: [0, "object_freeObjectTemplate"],
-      columnNameContainingJsonValue: "object_freeObjectTemplate",
+      resultAccessPath: [0, "object_createObject"],
+      columnNameContainingJsonValue: "object_createObject",
     };
   } else {
     log.info(
-      "sqlStringForRuntimeTransformer freeObjectTemplate for !topLevelTransformer");
+      "sqlStringForRuntimeTransformer createObject for !topLevelTransformer");
     return {
       type: "tableOf1JsonColumn",
-      sqlStringOrObject: `"object_subfreeObjectTemplate"`, // TODO: REMOVE DOUBLE QUOTES
+      sqlStringOrObject: `"object_subcreateObject"`, // TODO: REMOVE DOUBLE QUOTES
       extraWith: [
         ...subQueryExtraWith,
         {
-          name: "object_subfreeObjectTemplate",
+          name: "object_subcreateObject",
           sql: sqlNewQuery,
-          sqlResultAccessPath: [0, "object_freeObjectTemplate"],
+          sqlResultAccessPath: [0, "object_createObject"],
         },
       ],
       preparedStatementParameters,
-      resultAccessPath: [0, "object_freeObjectTemplate"],
-      columnNameContainingJsonValue: "object_freeObjectTemplate",
+      resultAccessPath: [0, "object_createObject"],
+      columnNameContainingJsonValue: "object_createObject",
     };
   }
   // break;
@@ -2121,8 +2121,8 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".ro
       columnNameContainingJsonValue: "objectAlter",
       extraWith,
     }
-    // log.info("sqlStringForRuntimeTransformer freeObjectTemplate objectAttributes", JSON.stringify(objectAttributes, null, 2));
-    log.info("sqlStringForObjectAlterTransformer freeObjectTemplate subquery", JSON.stringify(subQuery, null, 2));
+    // log.info("sqlStringForRuntimeTransformer createObject objectAttributes", JSON.stringify(objectAttributes, null, 2));
+    log.info("sqlStringForObjectAlterTransformer createObject subquery", JSON.stringify(subQuery, null, 2));
     log.info("sqlStringForObjectAlterTransformer returning result=", JSON.stringify(result, null, 2));
     // throw new Error("sqlStringForObjectAlterTransformer not implemented ");
     return result;

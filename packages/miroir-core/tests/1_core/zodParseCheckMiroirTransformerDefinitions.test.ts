@@ -31,7 +31,7 @@ const transformerForBuildTest1: TransformerForBuild = {
 };
 
 const transformerForBuildTest2: TransformerForBuild = {
-  transformerType: "freeObjectTemplate",
+  transformerType: "createObject",
   interpolation: "build",
   definition: {
     instanceList: {
@@ -52,7 +52,7 @@ const transformerForBuildTest2: TransformerForBuild = {
 
 const transformerForBuildTest3: TransformerForBuild = {
   extractors: {
-    transformerType: "freeObjectTemplate",
+    transformerType: "createObject",
     interpolation: "build",
     definition: {
       instanceList: {
@@ -73,7 +73,7 @@ const transformerForBuildTest3: TransformerForBuild = {
 };
 
 const transformerForBuildTest4: TransformerForBuild = {
-  transformerType: "freeObjectTemplate",
+  transformerType: "createObject",
   interpolation: "build",
   definition: {
     type: {
@@ -102,11 +102,11 @@ const transformerForBuildTest4: TransformerForBuild = {
 };
 
 const transformerForBuildTest5: TransformerForBuild = {
-  transformerType: "freeObjectTemplate",
+  transformerType: "createObject",
   interpolation: "build",
   definition: {
     extractors: {
-      transformerType: "freeObjectTemplate",
+      transformerType: "createObject",
       interpolation: "build",
       definition: {
         instanceList: {
@@ -125,7 +125,7 @@ const transformerForBuildTest5: TransformerForBuild = {
       },
     },
     section: {
-      transformerType: "freeObjectTemplate",
+      transformerType: "createObject",
       interpolation: "build",
       definition: {
         type: {
@@ -162,7 +162,7 @@ const transformerForBuildPlusRuntimeTest1: TransformerForBuildPlusRuntime = {
 }
 
 const transformerForBuildPlusRuntimeTest2: TransformerForBuildPlusRuntime = {
-  transformerType: "freeObjectTemplate",
+  transformerType: "createObject",
   interpolation: "runtime",
   definition: {
     instanceList: {
@@ -188,7 +188,7 @@ const transformerForBuildPlusRuntimeTest3: TransformerForBuildPlusRuntime = {
   applyTo: [{ a: "a" }, { b: "b" }],
   referenceToOuterObject: "country",
   elementTransformer: {
-    transformerType: "freeObjectTemplate",
+    transformerType: "createObject",
     interpolation: "runtime",
     definition: {
       test: "1",

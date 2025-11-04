@@ -19,7 +19,7 @@ import {
   TransformerForBuild_constantAsExtractor,
   TransformerForBuild_aggregate,
   TransformerForBuild_dataflowObject,
-  TransformerForBuild_freeObjectTemplate,
+  TransformerForBuild_createObject,
   // TransformerForBuild_InnerReference,
   TransformerForBuild_pickFromList,
   TransformerForBuild_indexListBy,
@@ -43,7 +43,7 @@ import {
   TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_defaultValueForMLSchema,
-  TransformerForRuntime_freeObjectTemplate,
+  TransformerForRuntime_createObject,
   TransformerForRuntime_pickFromList,
   TransformerForRuntime_indexListBy,
   TransformerForRuntime_listReducerToSpreadObject,
@@ -88,7 +88,7 @@ import {
   transformer_getFromContext,
   transformer_aggregate,
   transformer_dataflowObject,
-  transformer_freeObjectTemplate,
+  transformer_createObject,
   transformer_pickFromList,
   transformer_indexListBy,
   transformer_listReducerToSpreadObject,
@@ -674,7 +674,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   constantAsExtractor: transformer_constantAsExtractor,
   getFromContext: transformer_getFromContext,
   dataflowObject: transformer_dataflowObject,
-  freeObjectTemplate: transformer_freeObjectTemplate,
+  createObject: transformer_createObject,
   pickFromList: transformer_pickFromList,
   indexListBy: transformer_indexListBy,
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
@@ -2168,15 +2168,15 @@ export function handleTransformer_FreeObjectTemplate(
   transformerPath: string[] = [],
   label: string | undefined,
   transformer:
-  | TransformerForBuild_freeObjectTemplate
-  | TransformerForRuntime_freeObjectTemplate,
+  | TransformerForBuild_createObject
+  | TransformerForRuntime_createObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   log.info(
-    "innerTransformer_apply freeObjectTemplate",
+    "innerTransformer_apply createObject",
     JSON.stringify(transformer, null, 2),
     "step",
     step,
@@ -2203,17 +2203,17 @@ export function handleTransformer_FreeObjectTemplate(
   );
   const hasFailures = Object.values(result).find((e) => e instanceof TransformerFailure);
   if (hasFailures) {
-    log.error("handleTransformer_FreeObjectTemplate freeObjectTemplate hasFailures", hasFailures);
+    log.error("handleTransformer_FreeObjectTemplate createObject hasFailures", hasFailures);
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_FreeObjectTemplate"],
-      queryContext: "freeObjectTemplate hasFailures",
+      queryContext: "createObject hasFailures",
       innerError: hasFailures,
     });
   }
   // log.info(
-  //   "handleTransformer_FreeObjectTemplate freeObjectTemplate for",
+  //   "handleTransformer_FreeObjectTemplate createObject for",
   //   label,
   //   "step",
   //   step,

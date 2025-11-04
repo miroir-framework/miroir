@@ -352,7 +352,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           foreignKeysForTransformer: ["author"],
           applyTransformer: {
-            transformerType: "freeObjectTemplate",
+            transformerType: "createObject",
             interpolation: "runtime",
             definition: {
               bookTitle: {
@@ -565,7 +565,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             },
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
             applyTransformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "runtime",
               definition: {
                 bookTitle: {
@@ -610,7 +610,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             objectReference: "book",
             AttributeOfObjectToCompareToReferenceUuid: "publisher",
             applyTransformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "runtime",
               definition: {
                 bookTitle: {
@@ -705,7 +705,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             },
             objectListReferenceAttribute: "publisher",
             applyTransformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "runtime",
               definition: {
                 authorUuid: {
@@ -757,7 +757,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             objectListReference: "booksOfAuthor",
             objectListReferenceAttribute: "publisher",
             applyTransformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "runtime",
               definition: {
                 authorUuid: {
@@ -1400,7 +1400,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             },
             AttributeOfListObjectToCompareToReferenceUuid: "author",
             applyTransformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "runtime",
               definition: {
                 authorName: {
@@ -1442,7 +1442,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             objectReference: "author",
             AttributeOfListObjectToCompareToReferenceUuid: "author",
             applyTransformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "runtime",
               definition: {
                 authorName: {

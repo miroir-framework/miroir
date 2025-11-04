@@ -1339,7 +1339,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                   instanceUuid: book1.uuid,
                   foreignKeysForTransformer: ["author"],
                   applyTransformer: {
-                    transformerType: "freeObjectTemplate",
+                    transformerType: "createObject",
                     interpolation: "runtime",
                     definition: {
                       bookTitle: {

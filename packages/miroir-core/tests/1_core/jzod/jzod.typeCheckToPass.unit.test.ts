@@ -6554,7 +6554,7 @@ const tests: { [k: string]: testFormat } = {
           editorButton: {
             label: "Apply Transformer to a List",
             transformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               definition: {
                 transformerType: "mapList",
                 elementTransformer: {
@@ -6645,7 +6645,7 @@ const tests: { [k: string]: testFormat } = {
               editorButton: {
                 label: "Apply Transformer to a List",
                 transformer: {
-                  transformerType: "freeObjectTemplate",
+                  transformerType: "createObject",
                   definition: {
                     transformerType: "mapList",
                     elementTransformer: {
@@ -6668,7 +6668,7 @@ const tests: { [k: string]: testFormat } = {
           editorButton: {
             label: "Apply Transformer to a List",
             transformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               definition: {
                 transformerType: "mapList",
                 elementTransformer: {
@@ -6683,7 +6683,7 @@ const tests: { [k: string]: testFormat } = {
     },
     expectedKeyMap: undefined,
   },
-  // runtime freeObjectTemplate with inner build transformer
+  // runtime createObject with inner build transformer
   test620: {
     testSchema: {
       type: "schemaReference",
@@ -6693,7 +6693,7 @@ const tests: { [k: string]: testFormat } = {
       },
     },
     testValueObject: {
-      transformerType: "freeObjectTemplate",
+      transformerType: "createObject",
       interpolation: "runtime",
       definition: {
         reportUuid: {
@@ -6720,7 +6720,7 @@ const tests: { [k: string]: testFormat } = {
       definition: {
         transformerType: {
           type: "literal",
-          definition: "freeObjectTemplate",
+          definition: "createObject",
         },
         interpolation: {
           type: "enum",
@@ -6775,7 +6775,7 @@ const tests: { [k: string]: testFormat } = {
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
-                      transformerType: "freeObjectTemplate",
+                      transformerType: "createObject",
                       definition: {
                         transformerType: "mapList",
                         elementTransformer: {
@@ -6821,7 +6821,7 @@ const tests: { [k: string]: testFormat } = {
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
-                      transformerType: "freeObjectTemplate",
+                      transformerType: "createObject",
                       definition: {
                         transformerType: "mapList",
                         elementTransformer: {
@@ -6879,7 +6879,7 @@ const tests: { [k: string]: testFormat } = {
                   editorButton: {
                     label: "Apply Transformer to a List",
                     transformer: {
-                      transformerType: "freeObjectTemplate",
+                      transformerType: "createObject",
                       definition: {
                         transformerType: "mapList",
                         elementTransformer: {
@@ -6904,7 +6904,7 @@ const tests: { [k: string]: testFormat } = {
           editorButton: {
             label: "Apply Transformer to a List",
             transformer: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               definition: {
                 transformerType: "mapList",
                 elementTransformer: {
@@ -8978,7 +8978,7 @@ const tests: { [k: string]: testFormat } = {
   //             index: 0,
   //           },
   //           menuItem: {
-  //             transformerType: "freeObjectTemplate",
+  //             transformerType: "createObject",
   //             interpolation: "runtime",
   //             definition: {
   //               reportUuid: {
@@ -9022,7 +9022,7 @@ const tests: { [k: string]: testFormat } = {
   //   "definition": {
   //     "transformerType": {
   //       "type": "literal",
-  //       "definition": "freeObjectTemplate"
+  //       "definition": "createObject"
   //     },
   //     "interpolation": {
   //       "type": "enum",
@@ -9083,7 +9083,7 @@ const tests: { [k: string]: testFormat } = {
   //               "editorButton": {
   //                 "label": "Apply Transformer to a List",
   //                 "transformer": {
-  //                   "transformerType": "freeObjectTemplate",
+  //                   "transformerType": "createObject",
   //                   "definition": {
   //                     "transformerType": "mapList",
   //                     "elementTransformer": {
@@ -9132,7 +9132,7 @@ const tests: { [k: string]: testFormat } = {
   //               "editorButton": {
   //                 "label": "Apply Transformer to a List",
   //                 "transformer": {
-  //                   "transformerType": "freeObjectTemplate",
+  //                   "transformerType": "createObject",
   //                   "definition": {
   //                     "transformerType": "mapList",
   //                     "elementTransformer": {
@@ -9193,7 +9193,7 @@ const tests: { [k: string]: testFormat } = {
   //               "editorButton": {
   //                 "label": "Apply Transformer to a List",
   //                 "transformer": {
-  //                   "transformerType": "freeObjectTemplate",
+  //                   "transformerType": "createObject",
   //                   "definition": {
   //                     "transformerType": "mapList",
   //                     "elementTransformer": {
@@ -9218,7 +9218,7 @@ const tests: { [k: string]: testFormat } = {
   //       "editorButton": {
   //         "label": "Apply Transformer to a List",
   //         "transformer": {
-  //           "transformerType": "freeObjectTemplate",
+  //           "transformerType": "createObject",
   //           "definition": {
   //             "transformerType": "mapList",
   //             "elementTransformer": {
@@ -9346,7 +9346,7 @@ const tests: { [k: string]: testFormat } = {
                       editorButton: {
                         label: "Apply Transformer to a List",
                         transformer: {
-                          transformerType: "freeObjectTemplate",
+                          transformerType: "createObject",
                           definition: {
                             transformerType: "mapList",
                             elementTransformer: {
@@ -9406,7 +9406,7 @@ const tests: { [k: string]: testFormat } = {
                                   editorButton: {
                                     label: "Apply Transformer to a List",
                                     transformer: {
-                                      transformerType: "freeObjectTemplate",
+                                      transformerType: "createObject",
                                       definition: {
                                         transformerType: "mapList",
                                         elementTransformer: {
@@ -9453,7 +9453,7 @@ const tests: { [k: string]: testFormat } = {
                                   editorButton: {
                                     label: "Apply Transformer to a List",
                                     transformer: {
-                                      transformerType: "freeObjectTemplate",
+                                      transformerType: "createObject",
                                       definition: {
                                         transformerType: "mapList",
                                         elementTransformer: {

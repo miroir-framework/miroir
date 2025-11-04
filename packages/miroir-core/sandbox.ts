@@ -18,7 +18,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
           actionName: "sequence",
           templates: {
             createEntity_newEntity: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "build",
               definition: {
                 uuid: {
@@ -49,7 +49,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               },
             },
             createEntity_newEntityDefinition: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "build",
               definition: {
                 name: {
@@ -87,7 +87,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               },
             },
             newEntityListReport: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "build",
               definition: {
                 uuid: {
@@ -123,11 +123,11 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 },
                 type: "list",
                 definition: {
-                  transformerType: "freeObjectTemplate",
+                  transformerType: "createObject",
                   interpolation: "build",
                   definition: {
                     extractors: {
-                      transformerType: "freeObjectTemplate",
+                      transformerType: "createObject",
                       interpolation: "build",
                       definition: {
                         instanceList: {
@@ -146,7 +146,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                       },
                     },
                     section: {
-                      transformerType: "freeObjectTemplate",
+                      transformerType: "createObject",
                       interpolation: "build",
                       definition: {
                         type: {
@@ -178,7 +178,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               },
             },
             newEntityDetailsReport: {
-              transformerType: "freeObjectTemplate",
+              transformerType: "createObject",
               interpolation: "build",
               definition: {
                 uuid: {
@@ -565,7 +565,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         index: 0,
                       },
                       menuItem: {
-                        transformerType: "freeObjectTemplate",
+                        transformerType: "createObject",
                         interpolation: "runtime",
                         definition: {
                           reportUuid: {

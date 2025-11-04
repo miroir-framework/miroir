@@ -1324,7 +1324,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //                 index: 0,
         //               },
         //               menuItem: {
-        //                 transformerType: "freeObjectTemplate",
+        //                 transformerType: "createObject",
         //                 definition: {
         //                   reportUuid: {
         //                     transformerType: "mustacheStringTemplate",

@@ -33,7 +33,7 @@
         },
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher",
         "applyTransformer": {
-          "transformerType": "freeObjectTemplate",
+          "transformerType": "createObject",
           "interpolation": "runtime",
           "definition": {
             "publisherName": {

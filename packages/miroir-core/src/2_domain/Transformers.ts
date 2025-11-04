@@ -10,7 +10,7 @@ import transformer_constantAsExtractor_json from '../assets/miroir_data/a557419d
 import transformer_getFromContext_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/dab2932a-8eb3-4620-9f90-0d8d4fcc441a.json';
 import transformer_aggregate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ee5c863-5ade-4706-92bd-1fc2d89c3766.json';
 import transformer_dataflowObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/fc7ce040-1653-4cad-842e-99fb0792e728.json';
-import transformer_freeObjectTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e99fec79-162b-49ac-97d6-c058d162d1d8.json';
+import transformer_createObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e99fec79-162b-49ac-97d6-c058d162d1d8.json';
 import transformer_pickFromList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/64685ad7-1324-4080-9c41-504fcc1972c9.json';
 import transformer_indexListBy_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea.json';
 import transformer_listReducerToSpreadObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/0894ed4f-ca11-4b04-878d-471d1d780fac.json';
@@ -45,7 +45,7 @@ export const transformer_constantAsExtractor: TransformerDefinition = transforme
 export const transformer_getFromContext: TransformerDefinition = transformer_getFromContext_json as TransformerDefinition;
 export const transformer_aggregate: TransformerDefinition = transformer_aggregate_json as TransformerDefinition;
 export const transformer_dataflowObject: TransformerDefinition = transformer_dataflowObject_json as TransformerDefinition;
-export const transformer_freeObjectTemplate: TransformerDefinition = transformer_freeObjectTemplate_json as TransformerDefinition;
+export const transformer_createObject: TransformerDefinition = transformer_createObject_json as TransformerDefinition;
 export const transformer_pickFromList: TransformerDefinition = transformer_pickFromList_json as TransformerDefinition;
 export const transformer_indexListBy: TransformerDefinition = transformer_indexListBy_json as TransformerDefinition;
 export const transformer_listReducerToSpreadObject: TransformerDefinition = transformer_listReducerToSpreadObject_json as TransformerDefinition;
@@ -81,7 +81,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_getFromContext,
   transformer_aggregate,
   transformer_dataflowObject,
-  transformer_freeObjectTemplate,
+  transformer_createObject,
   transformer_pickFromList,
   transformer_indexListBy,
   transformer_listReducerToSpreadObject,
@@ -123,7 +123,7 @@ export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformer
 const runtimeReferenceMap: Record<string, string> = {
   transformer: "transformerForRuntime",
   // transformer_InnerReference: "transformerForRuntime_InnerReference",
-  transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
+  transformer_createObject: "transformerForRuntime_createObject",
   transformer_getFromContext: "transformerForRuntime_getFromContext",
   transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate",
@@ -132,11 +132,11 @@ const runtimeReferenceMap: Record<string, string> = {
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
   // transformer_InnerReference: "transformerForBuild_InnerReference",
-  transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
+  transformer_createObject: "transformerForBuild_createObject",
   transformer_getFromContext: "transformerForBuild_getFromParameters",
   transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
-  // transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
+  // transformer_createObject: "transformerForBuildPlusRuntime_createObject",
   // transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
   // transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",
   // transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
@@ -145,7 +145,7 @@ const buildReferenceMap: Record<string, string> = {
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
   // transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapList, transformer_objectAlter
-  transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
+  transformer_createObject: "transformerForBuildPlusRuntime_createObject",
   transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
   transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate

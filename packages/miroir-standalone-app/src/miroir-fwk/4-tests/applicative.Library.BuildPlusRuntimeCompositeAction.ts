@@ -737,7 +737,7 @@ Types of property 'deploymentUuid' are incompatible.
                             index: 0,
                           },
                           menuItem: {
-                            transformerType: "freeObjectTemplate",
+                            transformerType: "createObject",
                             interpolation: "runtime",
                             definition: {
                               reportUuid: {

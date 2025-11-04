@@ -1692,7 +1692,7 @@ export const miroirFundamentalJzodSchema = {
             "editorButton": {
               "label": "Apply Transformer to a List",
               "transformer": {
-                "transformerType": "freeObjectTemplate",
+                "transformerType": "createObject",
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {
@@ -3345,7 +3345,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuild_freeObjectTemplate": {
+      "transformerForBuild_createObject": {
         "type": "object",
         "extend": [
           {
@@ -3361,7 +3361,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "freeObjectTemplate"
+            "definition": "createObject"
           },
           "definition": {
             "type": "record",
@@ -3485,7 +3485,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_freeObjectTemplate"
+              "relativePath": "transformerForBuild_createObject"
             }
           }
         }
@@ -4269,7 +4269,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_freeObjectTemplate"
+              "relativePath": "transformerForBuild_createObject"
             }
           },
           {
@@ -4724,7 +4724,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForRuntime_freeObjectTemplate": {
+      "transformerForRuntime_createObject": {
         "type": "object",
         "extend": [
           {
@@ -4740,7 +4740,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "freeObjectTemplate"
+            "definition": "createObject"
           },
           "definition": {
             "type": "record",
@@ -5022,7 +5022,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_freeObjectTemplate"
+              "relativePath": "transformerForRuntime_createObject"
             }
           }
         }
@@ -5670,7 +5670,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_freeObjectTemplate"
+              "relativePath": "transformerForRuntime_createObject"
             }
           },
           {
@@ -6138,7 +6138,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuildPlusRuntime_freeObjectTemplate": {
+      "transformerForBuildPlusRuntime_createObject": {
         "type": "object",
         "extend": [
           {
@@ -6154,7 +6154,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "freeObjectTemplate"
+            "definition": "createObject"
           },
           "definition": {
             "type": "record",
@@ -6467,7 +6467,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_freeObjectTemplate"
+              "relativePath": "transformerForBuildPlusRuntime_createObject"
             }
           }
         }
@@ -7118,7 +7118,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_freeObjectTemplate"
+              "relativePath": "transformerForBuildPlusRuntime_createObject"
             }
           },
           {
@@ -24503,7 +24503,7 @@ export const miroirFundamentalJzodSchema = {
             "editorButton": {
               "label": "Apply Transformer to a List",
               "transformer": {
-                "transformerType": "freeObjectTemplate",
+                "transformerType": "createObject",
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {
@@ -33587,7 +33587,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate"
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject"
             }
           },
           {
@@ -33916,7 +33916,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate"
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject"
             }
           },
           {
@@ -39543,7 +39543,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject": {
         "type": "union",
         "definition": [
           {
@@ -39570,7 +39570,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "freeObjectTemplate"
+                    "definition": "createObject"
                   },
                   {
                     "type": "schemaReference",
@@ -40089,7 +40089,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate"
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject"
                     },
                     "context": {}
                   },
@@ -42181,7 +42181,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject": {
         "type": "union",
         "definition": [
           {
@@ -42208,7 +42208,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "freeObjectTemplate"
+                    "definition": "createObject"
                   },
                   {
                     "type": "schemaReference",
@@ -42727,7 +42727,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate"
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject"
                     },
                     "context": {}
                   },
@@ -47121,7 +47121,7 @@ export const miroirFundamentalJzodSchema = {
             "editorButton": {
               "label": "Apply Transformer to a List",
               "transformer": {
-                "transformerType": "freeObjectTemplate",
+                "transformerType": "createObject",
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {
@@ -47160,7 +47160,7 @@ export const miroirFundamentalJzodSchema = {
                 "editorButton": {
                   "label": "Apply Transformer to a List",
                   "transformer": {
-                    "transformerType": "freeObjectTemplate",
+                    "transformerType": "createObject",
                     "definition": {
                       "transformerType": "mapList",
                       "elementTransformer": {
@@ -52701,7 +52701,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_createObject": {
         "type": "union",
         "definition": [
           {
@@ -52728,7 +52728,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "freeObjectTemplate"
+                    "definition": "createObject"
                   },
                   {
                     "type": "schemaReference",
@@ -52914,7 +52914,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate"
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_createObject"
                     },
                     "context": {}
                   },
@@ -55278,7 +55278,7 @@ export const miroirFundamentalJzodSchema = {
             "editorButton": {
               "label": "Apply Transformer to a List",
               "transformer": {
-                "transformerType": "freeObjectTemplate",
+                "transformerType": "createObject",
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {
@@ -59900,7 +59900,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate"
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject"
             }
           },
           {
@@ -60155,7 +60155,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate"
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject"
             }
           },
           {
@@ -60539,11 +60539,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_dataflowObject"
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_freeObjectTemplate"
+          "relativePath": "transformerForBuildPlusRuntime_createObject"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_pickFromList": {
@@ -60943,11 +60943,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForRuntime_dataflowObject"
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_freeObjectTemplate"
+          "relativePath": "transformerForRuntime_createObject"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_pickFromList": {
@@ -62132,11 +62132,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuild_mapList"
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_freeObjectTemplate"
+          "relativePath": "transformerForBuild_createObject"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_generateUuid": {
@@ -64028,7 +64028,7 @@ export const miroirFundamentalJzodSchema = {
             "editorButton": {
               "label": "Apply Transformer to a List",
               "transformer": {
-                "transformerType": "freeObjectTemplate",
+                "transformerType": "createObject",
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {
@@ -68609,7 +68609,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject"
             }
           },
           {
@@ -68864,7 +68864,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject"
             }
           },
           {
@@ -69248,11 +69248,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_dataflowObject"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_freeObjectTemplate"
+          "relativePath": "transformerForBuildPlusRuntime_createObject"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_pickFromList": {
@@ -69652,11 +69652,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForRuntime_dataflowObject"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_freeObjectTemplate"
+          "relativePath": "transformerForRuntime_createObject"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_pickFromList": {
@@ -70839,11 +70839,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuild_mapList"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_freeObjectTemplate"
+          "relativePath": "transformerForBuild_createObject"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_generateUuid": {
@@ -72738,7 +72738,7 @@ export const miroirFundamentalJzodSchema = {
             "editorButton": {
               "label": "Apply Transformer to a List",
               "transformer": {
-                "transformerType": "freeObjectTemplate",
+                "transformerType": "createObject",
                 "definition": {
                   "transformerType": "mapList",
                   "elementTransformer": {
@@ -77360,7 +77360,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject"
             }
           },
           {
@@ -77615,7 +77615,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject"
             }
           },
           {
@@ -77999,11 +77999,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_dataflowObject"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_freeObjectTemplate": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_freeObjectTemplate"
+          "relativePath": "transformerForBuildPlusRuntime_createObject"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_pickFromList": {
@@ -78403,11 +78403,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForRuntime_dataflowObject"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_freeObjectTemplate": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_freeObjectTemplate"
+          "relativePath": "transformerForRuntime_createObject"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_pickFromList": {
@@ -79592,11 +79592,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuild_mapList"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_freeObjectTemplate": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_createObject": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_freeObjectTemplate"
+          "relativePath": "transformerForBuild_createObject"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_generateUuid": {
@@ -79716,7 +79716,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_freeObjectTemplate"
+              "relativePath": "transformerForBuild_createObject"
             }
           },
           {
@@ -79915,7 +79915,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_freeObjectTemplate"
+              "relativePath": "transformerForBuild_createObject"
             }
           },
           {
@@ -80121,7 +80121,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_freeObjectTemplate"
+              "relativePath": "transformerForBuildPlusRuntime_createObject"
             }
           },
           {

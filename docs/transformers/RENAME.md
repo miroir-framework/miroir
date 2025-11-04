@@ -196,9 +196,9 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | objectValues | OK: **getObjectValues** |
 | objectEntries | OK: **getObjectEntries** |
 | objectDynamicAccess | **getNestedValue** or **accessPath** |
-| freeObjectTemplate | **buildObject** or **createObject** |
-| object_fullTemplate | **buildObjectAdvanced** or **buildObjectFromPairs** |
-| objectAlter | **updateObject** or **mergeIntoObject** |
+| freeObjectTemplate | OK: **createObject** |
+| object_fullTemplate | **createObjectFromPairs** |
+| objectAlter | **mergeIntoObject** |
 | dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |
 | conditional | OK: **ifThenElse** |
 |----------|----------|

@@ -1152,7 +1152,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                         index: 0,
                       },
                       menuItem: {
-                        transformerType: "freeObjectTemplate",
+                        transformerType: "createObject",
                         interpolation: "runtime",
                         definition: {
                           reportUuid: createEntity_newEntityListReportUuid,
@@ -1449,7 +1449,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //                 index: 0,
         //               },
         //               menuItem: {
-        //                 transformerType: "freeObjectTemplate",
+        //                 transformerType: "createObject",
         //                 definition: {
         //                   reportUuid: {
         //                     transformerType: "mustacheStringTemplate",

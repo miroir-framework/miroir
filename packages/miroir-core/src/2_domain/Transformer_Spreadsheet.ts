@@ -145,7 +145,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           },
         },
         schema: {
-          transformerType: "freeObjectTemplate",
+          transformerType: "createObject",
           definition: {
             type: {
               transformerType: "returnValue",

@@ -40,7 +40,7 @@ The list you want to transform. Can be:
 
 The transformer that will be applied to **each element** of the list. This can be any transformer type:
 
-- `freeObjectTemplate` - Build a simple object
+- `createObject` - Build a simple object
 - `object_fullTemplate` - Build a complex object
 - `objectAlter` - Modify an existing object
 - `returnValue` - Replace with a constant value
@@ -75,7 +75,7 @@ A field name to sort the result list alphabetically.
   },
   "referenceToOuterObject": "name",
   "elementTransformer": {
-    "transformerType": "freeObjectTemplate",
+    "transformerType": "createObject",
     "definition": {
       "greeting": { 
         "transformerType": "mustacheStringTemplate",
@@ -118,7 +118,7 @@ A field name to sort the result list alphabetically.
   },
   "referenceToOuterObject": "country",
   "elementTransformer": {
-    "transformerType": "freeObjectTemplate",
+    "transformerType": "createObject",
     "definition": {
       "id": { 
         "transformerType": "getFromContext", 
@@ -170,7 +170,7 @@ A field name to sort the result list alphabetically.
       "referenceName": "user" 
     },
     "definition": {
-      "transformerType": "freeObjectTemplate",
+      "transformerType": "createObject",
       "definition": {
         "id": { 
           "transformerType": "newUuid" 

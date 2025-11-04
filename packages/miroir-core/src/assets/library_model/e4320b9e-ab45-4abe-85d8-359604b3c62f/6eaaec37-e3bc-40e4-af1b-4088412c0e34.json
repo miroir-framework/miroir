@@ -33,7 +33,7 @@
         },
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "country",
         "applyTransformer": {
-          "transformerType": "freeObjectTemplate",
+          "transformerType": "createObject",
           "interpolation": "runtime",
           "definition": {
             "countryName": {

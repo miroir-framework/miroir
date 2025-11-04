@@ -2435,15 +2435,15 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "freeObjectTemplate",
+            "transformerTestLabel": "createObject",
             "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "freeObjectTemplate allows to build a simple object with static values",
-                "transformerName": "freeObjectTemplate",
+                "transformerTestLabel": "createObject allows to build a simple object with static values",
+                "transformerName": "createObject",
                 "transformer": {
-                  "transformerType": "freeObjectTemplate",
+                  "transformerType": "createObject",
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -2470,10 +2470,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "freeObjectTemplate allows to build a simple object with dynamic values",
-                "transformerName": "freeObjectTemplate",
+                "transformerTestLabel": "createObject allows to build a simple object with dynamic values",
+                "transformerName": "createObject",
                 "transformer": {
-                  "transformerType": "freeObjectTemplate",
+                  "transformerType": "createObject",
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
@@ -2509,10 +2509,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "freeObjectTemplate allows to build a 2-level object with dynamic values",
-                "transformerName": "freeObjectTemplate",
+                "transformerTestLabel": "createObject allows to build a 2-level object with dynamic values",
+                "transformerName": "createObject",
                 "transformer": {
-                  "transformerType": "freeObjectTemplate",
+                  "transformerType": "createObject",
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
@@ -2530,7 +2530,7 @@
                       ]
                     },
                     "country": {
-                      "transformerType": "freeObjectTemplate",
+                      "transformerType": "createObject",
                       "interpolation": "runtime",
                       "definition": {
                         "uuid": {
@@ -2572,10 +2572,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "freeObjectTemplate should fail when definition fails to resolve correctly",
-                "transformerName": "freeObjectTemplate",
+                "transformerTestLabel": "createObject should fail when definition fails to resolve correctly",
+                "transformerName": "createObject",
                 "transformer": {
-                  "transformerType": "freeObjectTemplate",
+                  "transformerType": "createObject",
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
@@ -2616,10 +2616,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "freeObjectTemplate should fail when sub-definition fails to resolve correctly",
-                "transformerName": "freeObjectTemplate",
+                "transformerTestLabel": "createObject should fail when sub-definition fails to resolve correctly",
+                "transformerName": "createObject",
                 "transformer": {
-                  "transformerType": "freeObjectTemplate",
+                  "transformerType": "createObject",
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
@@ -2637,7 +2637,7 @@
                       ]
                     },
                     "country": {
-                      "transformerType": "freeObjectTemplate",
+                      "transformerType": "createObject",
                       "interpolation": "runtime",
                       "definition": {
                         "uuid": {
@@ -2705,7 +2705,7 @@
                   },
                   "referenceToOuterObject": "country",
                   "definition": {
-                    "transformerType": "freeObjectTemplate",
+                    "transformerType": "createObject",
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
@@ -2739,7 +2739,7 @@
                   },
                   "referenceToOuterObject": "country",
                   "definition": {
-                    "transformerType": "freeObjectTemplate",
+                    "transformerType": "createObject",
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
@@ -2782,7 +2782,7 @@
                   },
                   "referenceToOuterObject": "country",
                   "definition": {
-                    "transformerType": "freeObjectTemplate",
+                    "transformerType": "createObject",
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
@@ -2826,7 +2826,7 @@
                   },
                   "referenceToOuterObject": "country",
                   "definition": {
-                    "transformerType": "freeObjectTemplate",
+                    "transformerType": "createObject",
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
@@ -2897,7 +2897,7 @@
                   },
                   "referenceToOuterObject": "country",
                   "elementTransformer": {
-                    "transformerType": "freeObjectTemplate",
+                    "transformerType": "createObject",
                     "interpolation": "runtime",
                     "definition": {
                       "test": "1"
@@ -2947,12 +2947,12 @@
                   },
                   "referenceToOuterObject": "country",
                   "elementTransformer": {
-                    "transformerType": "freeObjectTemplate",
+                    "transformerType": "createObject",
                     "interpolation": "runtime",
                     "definition": {
                       "test": "1",
                       "subObject": {
-                        "transformerType": "freeObjectTemplate",
+                        "transformerType": "createObject",
                         "interpolation": "runtime",
                         "definition": {
                           "uuid": {
@@ -3102,7 +3102,7 @@
                     },
                     "referenceToOuterObject": "country3",
                     "definition": {
-                      "transformerType": "freeObjectTemplate",
+                      "transformerType": "createObject",
                       "interpolation": "runtime",
                       "definition": {
                         "id": {
