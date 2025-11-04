@@ -73,6 +73,9 @@ import {
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 import { defaultMiroirModelEnvironment } from 'miroir-core';
+import { unNullify } from 'miroir-core';
+import { removeUndefinedProperties } from 'miroir-core';
+import { ignorePostgresExtraAttributes } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -241,28 +244,38 @@ beforeEach(
   }
 )
 
-// ################################################################################################
-afterEach(
-  async () => {
-    await resetApplicationDeployments(deploymentConfigurations, domainController, localCache);
-  }
-)
+// // ################################################################################################
+// afterEach(
+//   async () => {
+//     await resetApplicationDeployments(deploymentConfigurations, domainController, localCache);
+//   }
+// )
 
-// ################################################################################################
-afterAll(
-  async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-    try {
-      await localMiroirPersistenceStoreController.close();
-      await localAppPersistenceStoreController.close();
-    } catch (error) {
-      console.error('Error afterAll',error);
-    }
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-  }
-)
+// // ################################################################################################
+// afterAll(
+//   async () => {
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+//     try {
+//       await localMiroirPersistenceStoreController.close();
+//       await localAppPersistenceStoreController.close();
+//     } catch (error) {
+//       console.error('Error afterAll',error);
+//     }
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+//   }
+// )
 
 
+const resultHandler = (a: any, ignoreAttributes?: string[]) =>
+  removeUndefinedProperties(
+    unNullify(
+      ignorePostgresExtraAttributes(a, [
+        "createdAt",
+        "updatedAt",
+        ...(ignoreAttributes ?? []),
+      ])
+    )
+  );
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
@@ -275,47 +288,56 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       "ExtractorTemplatePersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
       {},
       async () => {
-        const applicationSection:ApplicationSection = "model";
+        const applicationSection: ApplicationSection = "model";
         const queryResult: Action2ReturnType =
-          await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY({
-            actionType: "runBoxedExtractorTemplateAction",
-            actionName: "runQuery",
-            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-            // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            payload: {
-              applicationSection: applicationSection,
-              query: {
-                queryType: "boxedExtractorTemplateReturningObject",
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                select: {
-                  extractorTemplateType: "extractorForObjectByDirectReference",
-                  applicationSection: "model",
-                  parentName: "Entity",
-                  parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
-                    interpolation: "build",
-                    value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  },
-                  instanceUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
-                    interpolation: "build",
-                    value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(
+            {
+              actionType: "runBoxedExtractorTemplateAction",
+              actionName: "runQuery",
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                applicationSection: applicationSection,
+                query: {
+                  queryType: "boxedExtractorTemplateReturningObject",
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  select: {
+                    extractorTemplateType: "extractorForObjectByDirectReference",
+                    applicationSection: "model",
+                    parentName: "Entity",
+                    parentUuid: {
+                      transformerType: "returnValue",
+                      mlSchema: { type: "uuid" },
+                      interpolation: "build",
+                      value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    },
+                    instanceUuid: {
+                      transformerType: "returnValue",
+                      mlSchema: { type: "uuid" },
+                      interpolation: "build",
+                      value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    },
                   },
                 },
               },
             }
-          });
+          );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"]),
+      (a: any) => resultHandler(a.returnedDomainElement, ["author"]),
+      // resultHandler,
+      // (a) =>
+      //   removeUndefinedProperties(
+      //     unNullify(
+      //       ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"])
+      //     )
+      //   ),
       // undefined, // expected result transformation
       undefined, // name to give to result
       undefined,
@@ -360,24 +382,25 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     applicationSection: applicationSection,
                     parentName: entityEntity.name,
                     parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+                      transformerType: "returnValue",
+                      mlSchema: { type: "uuid" },
                       interpolation: "build",
                       value: entityEntity.uuid,
                     },
                   },
                 },
               },
-            }
+            },
           });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
-      (a) =>
-        ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
-          ["author"]
-        ),
+      (a: any) => resultHandler(a.returnedDomainElement.entities).sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      // (a) =>
+      //   ignorePostgresExtraAttributesOnList(
+      //     (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      //     ["author"]
+      //   ),
       undefined, // name to give to result
       undefined,
       [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
@@ -411,16 +434,16 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     applicationSection: applicationSection,
                     parentName: "Entity",
                     parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+                      transformerType: "returnValue",
+                      mlSchema: { type: "uuid" },
                       interpolation: "build",
                       value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     },
                     filter: {
                       attributeName: "name",
                       value: {
-            transformerType: "returnValue",
-            mlSchema: { type: "string" },
+                        transformerType: "returnValue",
+                        mlSchema: { type: "string" },
                         interpolation: "build",
                         // value: "or",
                         value: "en",
@@ -429,16 +452,17 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   },
                 },
               },
-            }
+            },
           });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) =>
-        ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
-          ["author"]
-        ),
+      (a: any) => resultHandler(a.returnedDomainElement.entities).sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      // (a) =>
+      //   ignorePostgresExtraAttributesOnList(
+      //     (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      //     ["author"]
+      //   ),
       undefined, // name to give to result
       undefined,
       [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
@@ -475,8 +499,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     applicationSection: applicationSection,
                     parentName: "Book",
                     parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+                      transformerType: "returnValue",
+                      mlSchema: { type: "uuid" },
                       interpolation: "build",
                       // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       value: entityBook.uuid,
@@ -502,7 +526,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      (a: any) => resultHandler(a.returnedDomainElement.uniqueAuthors),
+      // .sort((a: any, b: any) => a.author.localeCompare(b.name)),
+      // (a) => (a as any).returnedDomainElement.uniqueAuthors,
       undefined, // name to give to result
       undefined,
       [
@@ -521,50 +547,52 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       {},
       async () => {
         const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-          actionType: "runBoxedQueryTemplateAction",
-          actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            applicationSection: applicationSection,
-            query: {
-              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              extractorTemplates: {
-                books: {
-                  extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                  applicationSection: applicationSection,
-                  parentName: "Book",
-                  parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
-                    interpolation: "build",
-                    value: entityBook.uuid,
+        const queryResult =
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
+            actionType: "runBoxedQueryTemplateAction",
+            actionName: "runQuery",
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            payload: {
+              applicationSection: applicationSection,
+              query: {
+                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                pageParams: {},
+                queryParams: {},
+                contextResults: {},
+                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                extractorTemplates: {
+                  books: {
+                    extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                    applicationSection: applicationSection,
+                    parentName: "Book",
+                    parentUuid: {
+                      transformerType: "returnValue",
+                      mlSchema: { type: "uuid" },
+                      interpolation: "build",
+                      value: entityBook.uuid,
+                    },
                   },
                 },
-              },
-              runtimeTransformers: {
-                uniqueAuthors: {
-                  interpolation: "runtime",
-                  transformerType: "aggregate",
-                  applyTo: {
-                    transformerType: "getFromContext",
+                runtimeTransformers: {
+                  uniqueAuthors: {
                     interpolation: "runtime",
-                    referenceName: "books",
+                    transformerType: "aggregate",
+                    applyTo: {
+                      transformerType: "getFromContext",
+                      interpolation: "runtime",
+                      referenceName: "books",
+                    },
                   },
                 },
               },
             },
-          }
-        });
+          });
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      (a: any) => resultHandler(a.returnedDomainElement.uniqueAuthors).sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      // (a) => (a as any).returnedDomainElement.uniqueAuthors,
       undefined, // name to give to result
       undefined,
       [{aggregate: 6}],
@@ -624,7 +652,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.countBooksByAuthors,
+      (a: any) => resultHandler(a.returnedDomainElement.countBooksByAuthors).sort((a: any, b: any) => a.author.localeCompare(b.author)),
+      // (a) => (a as any).returnedDomainElement.countBooksByAuthors,
       undefined, // name to give to result
       undefined,
       [
@@ -636,19 +665,19 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         // },
         {
           aggregate: 1,
-          author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
-        },
-        {
-          aggregate: 2,
-          author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+          author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
         },
         {
           aggregate: 2,
           author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
         },
         {
+          aggregate: 2,
+          author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+        },
+        {
           aggregate: 1,
-          author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+          author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
         },
       ]
     );
@@ -841,26 +870,18 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         return queryResult;
       },
       // (a) => (a as any).returnedDomainElement.booksOfAuthor,
-      (a) => {
-        // console.log("ICI!!!");
-        const result = ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name))
-        );
-        console.log("CORRECTED result", JSON.stringify(result, null, 2));
-        return result;
-      },
+      (a: any) => resultHandler(a.returnedDomainElement.booksOfAuthor).sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      // (a) => {
+      //   // console.log("ICI!!!");
+      //   const result = ignorePostgresExtraAttributesOnList(
+      //     (a as any).returnedDomainElement.booksOfAuthor.sort((a: any, b: any) => a.name.localeCompare(b.name))
+      //   );
+      //   console.log("CORRECTED result", JSON.stringify(result, null, 2));
+      //   return result;
+      // },
       undefined, // name to give to result
       undefined,
       Object.values({
-        "c6852e89-3c3c-447f-b827-4b5b9d830975": {
-          author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
-          conceptLevel: "Data",
-          name: "Le Pain et le Cirque",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-          uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
-        },
         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
           author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
           conceptLevel: "Data",
@@ -870,6 +891,15 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
           uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           year: 2014,
+        },
+        "c6852e89-3c3c-447f-b827-4b5b9d830975": {
+          author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+          conceptLevel: "Data",
+          name: "Le Pain et le Cirque",
+          parentName: "Book",
+          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+          uuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
         },
       }).sort((a, b) => a.name.localeCompare(b.name))
     );

@@ -412,9 +412,12 @@ export function sqlStringForExtractor(
       break;
     }
     case "extractorByEntityReturningObjectList": {
-      return `SELECT * FROM "${schema}"."${extractor.parentName}"` + (extractor.filter
-        ? ` WHERE "${extractor.filter?.attributeName}" ILIKE '%${extractor.filter?.value}%'`
-        : "");
+      return (
+        `SELECT * FROM "${schema}"."${extractor.parentName}"` +
+        (extractor.filter
+          ? ` WHERE "${extractor.filter?.attributeName}" ILIKE '%${extractor.filter?.value}%'`
+          : "")
+      );
       break;
     }
     case "extractorWrapperReturningObject":
@@ -678,6 +681,22 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
 
       }
     }
+    case "tableOf1JsonColumn":
+//       {
+//       const transformerSqlQuery = actionRuntimeTransformer.groupBy
+//         ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+//             GROUP BY "${actionRuntimeTransformer.groupBy}"
+// `
+//         : `SELECT COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+// `;
+//       log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
+//       return {
+//         type: "table",
+//         sqlStringOrObject: transformerSqlQuery,
+//         resultAccessPath: undefined,
+//         preparedStatementParameters: referenceQuery.preparedStatementParameters,
+//       };
+//     }
     case "table": {
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
         ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
@@ -1516,11 +1535,28 @@ function sqlStringForListPickElementTransformer(
     let sqlResult;
     switch (sqlForApplyTo.type) {
       case "tableOf1JsonColumn": {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForListPickElementTransformer pickFromList referenceQuery result is tableOf1JsonColumn",
-        });
+        // return new Domain2ElementFailed({
+        //   queryFailure: "QueryNotExecutable",
+        //   query: actionRuntimeTransformer as any,
+        //   failureMessage: "sqlStringForListPickElementTransformer pickFromList referenceQuery result is tableOf1JsonColumn",
+        // });
+        if (actionRuntimeTransformer.orderBy) {
+          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "pickFromList" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
+        } else {
+          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "pickFromList" LIMIT 1 OFFSET ${limit}`;
+        }
+        return {
+          type: "json",
+          sqlStringOrObject: sqlResult,
+          preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
+          // resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+          // resultAccessPath: [ 0 ],
+          resultAccessPath: sqlForApplyTo.columnNameContainingJsonValue
+            ? [0, sqlForApplyTo.columnNameContainingJsonValue]
+            : [0],
+          columnNameContainingJsonValue: "pickFromList",
+        };
+
       }
       case "json_array":
       case "json": {
@@ -1569,8 +1605,9 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
           type: "json",
           sqlStringOrObject: sqlResult,
           preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
-          resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+          // resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
           // resultAccessPath: [ 0, "value" ],
+          resultAccessPath: [ 0 ],
           columnNameContainingJsonValue: "pickFromList",
         };
         break;
@@ -2954,10 +2991,13 @@ function sqlStringForConstantAsExtractorTransformer(
         // const sqlTargetType = (jzodToPostgresTypeMap as any)[actionRuntimeTransformer.valueJzodSchema.type].sqlTargetType;
         if (Array.isArray(actionRuntimeTransformer.value)) {
           return {
-            type: "table",
+            // type: "table",
+            type: "tableOf1JsonColumn",
             sqlStringOrObject: `SELECT * FROM jsonb_array_elements($${paramIndex}::jsonb) AS ${actionRuntimeTransformer.transformerType}`,
             preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
-            resultAccessPath: ["value"],
+            // resultAccessPath: ["value"],
+            resultAccessPath: [],
+            columnNameContainingJsonValue: "value",
           };
         } else {
           return {

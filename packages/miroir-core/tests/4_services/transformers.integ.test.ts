@@ -266,15 +266,19 @@ if (shouldSkip) {
     //   testList: {
     //     miroirCoreTransformers: {
     //       runtimeTransformerTests: {
-    //         // "aggregate": [
-    //         //   // "count returns number of elements in an object list at runtime",
-    //         //   // "count returns number of elements in an object list with a group at runtime",
-    //         //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
-    //         //   "count returns number of elements in a string list from an extractor at runtime",
-    //         // ],
+    //         "aggregate": [
+    //           // "count returns number of elements in an object list at runtime",
+    //           // "count returns number of elements in an object list with a group at runtime",
+    //           // "count returns number of elements in an object list with a multiple groupBy at runtime",
+    //           "count returns number of elements in a string list from an extractor at runtime",
+    //         ],
     //         // "pickFromList": [
+    //         //   "pickFromList selects wanted element from a returnValue string list before runtime",
+    //         //   "pickFromList selects wanted element from a string list parameter reference before runtime",
+    //         //   "pickFromList selects wanted object from a pre-sorted object list before runtime",
     //         //   "pickFromList from extractor selects wanted element from string list context reference at runtime",
-    //         //   // "pickFromList from extractor selects wanted element from object ordered list at runtime"
+    //         //   "pickFromList from extractor selects wanted element from object ordered list at runtime",
+    //         //   "pickFromList returns null when index is out of bounds before runtime",
     //         // ],
     //         // conditional: [
     //         //   "conditional equality true - basic string comparison",
@@ -291,9 +295,9 @@ if (shouldSkip) {
     //         //   "conditional greater than or equal false - number comparison",
     //         //   "conditional with parameter reference comparison",
     //         // ]
-    //         "object_alter": [
-    //           "objectAlter should fail when definition fails to resolve correctly",
-    //         ]
+    //         // "object_alter": [
+    //         //   "objectAlter should fail when definition fails to resolve correctly",
+    //         // ]
     //       },
     //     },
     //   },
