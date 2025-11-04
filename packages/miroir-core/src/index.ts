@@ -371,8 +371,8 @@ export {
   TransformerForBuild_objectValues,
   TransformerForBuild_constantAsExtractor,
   transformerForBuild_constantAsExtractor,
-  TransformerForBuild_parameterReference,
-  transformerForBuild_parameterReference,
+  TransformerForBuild_getFromParameters,
+  transformerForBuild_getFromParameters,
   transformerForBuild_unique,
   // 
   TransformerForBuildPlusRuntime_conditional,

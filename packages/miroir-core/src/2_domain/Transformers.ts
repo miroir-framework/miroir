@@ -22,7 +22,7 @@ import transformer_objectAlter_json from '../assets/miroir_data/a557419d-a288-4f
 import transformer_objectDynamicAccess_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d1f9e7ce-4b38-4602-a8cf-9658d63619ed.json';
 import transformer_objectEntries_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b726ac6a-f65e-403a-bba0-e11f0982fc41.json';
 import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
-import transformer_parameterReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
+import transformer_getFromParameters_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
 import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
 // MLS
 import transformer_defaultValueForMLSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3026a4f6-9f4b-4f1a-97bb-ecda4df35309.json';
@@ -57,7 +57,7 @@ export const transformer_objectDynamicAccess: TransformerDefinition = transforme
 export const transformer_objectEntries: TransformerDefinition = transformer_objectEntries_json as TransformerDefinition;
 export const transformer_objectValues: TransformerDefinition = transformer_objectValues_json as TransformerDefinition;
 export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
-export const transformer_parameterReference: TransformerDefinition = transformer_parameterReference_json as TransformerDefinition;
+export const transformer_getFromParameters: TransformerDefinition = transformer_getFromParameters_json as TransformerDefinition;
 export const transformer_unique: TransformerDefinition = transformer_unique_json as TransformerDefinition;
 // MLS
 export const transformer_defaultValueForMLSchema: TransformerDefinition = transformer_defaultValueForMLSchema_json as TransformerDefinition;
@@ -93,7 +93,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_objectEntries,
   transformer_objectValues,
   transformer_object_fullTemplate,
-  transformer_parameterReference,
+  transformer_getFromParameters,
   transformer_unique,
   // transformer_constantBigint,
   // MLS
@@ -109,7 +109,7 @@ export const transformerForBuildNames = Object.keys(miroirTransformers)
   .map((e) => e.replace("transformer_", "transformerForBuild_"));
 
 export const transformerForRuntimeNames = Object.keys(miroirTransformers)
-.filter((e) => e != "transformer_parameterReference")
+.filter((e) => e != "transformer_getFromParameters")
 .map((e) =>
   e.replace("transformer_", "transformerForRuntime_")
 );
@@ -133,7 +133,7 @@ const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
   // transformer_InnerReference: "transformerForBuild_InnerReference",
   transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
-  transformer_getFromContext: "transformerForBuild_parameterReference",
+  transformer_getFromContext: "transformerForBuild_getFromParameters",
   transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
   // transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
@@ -158,7 +158,7 @@ export const miroirTransformersForRuntime: Record<string, JzodElement> = Object.
       transformer,
       "runtime",
       runtimeReferenceMap,
-      ["transformer_getFromContext", "transformer_parameterReference"].includes(key)
+      ["transformer_getFromContext", "transformer_getFromParameters"].includes(key)
     ),
   ])
 );
@@ -170,7 +170,7 @@ export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> 
       transformer,
       "buildPlusRuntime",
       buildPlusRuntimeReferenceMap,
-      true, // ["transformer_getFromContext", "transformer_parameterReference"].includes(key)
+      true, // ["transformer_getFromContext", "transformer_getFromParameters"].includes(key)
     ),
   ])
 );
@@ -182,7 +182,7 @@ export const miroirTransformersForBuild: Record<string, JzodElement> = Object.fr
       transformer,
       "build",
       buildReferenceMap,
-      key == "transformer_parameterReference"
+      key == "transformer_getFromParameters"
     ),
   ])
 );

@@ -222,73 +222,73 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
               templates: {
                 createEntity_newEntity: {
                   uuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "newEntityUuid",
                   },
                   parentUuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referencePath: ["entityEntity", "uuid"],
                   },
                   selfApplication: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "testSelfApplicationUuid",
                   },
                   description: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "createEntity_newEntityDescription",
                   },
                   name: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "newEntityName",
                   },
                 },
                 createEntity_newEntityDefinition: {
                   name: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "newEntityName",
                   },
                   uuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "newEntityDefinitionUuid",
                   },
                   parentName: "EntityDefinition",
                   parentUuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referencePath: ["entityEntityDefinition", "uuid"],
                   },
                   entityUuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referencePath: ["createEntity_newEntity", "uuid"],
                   },
                   conceptLevel: "Model",
                   defaultInstanceDetailsReportUuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "defaultInstanceDetailsReportUuid",
                   },
                   jzodSchema: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "newEntityJzodSchema",
                   },
                 },
                 newEntityListReport: {
                   uuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "createEntity_newEntityListReportUuid",
                   },
                   selfApplication: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "testSelfApplicationUuid",
                   },
@@ -315,7 +315,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                       instanceList: {
                         extractorOrCombinerType: "extractorByEntityReturningObjectList",
                         parentName: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityName",
                         },
@@ -346,12 +346,12 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 },
                 newEntityDetailsReport: {
                   uuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "createEntity_newEntityDetailsReportUuid",
                   },
                   selfApplication: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "testSelfApplicationUuid",
                   },
@@ -437,14 +437,14 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   // TODO: correct deploymentUuid usage
                   /**
                    * The types of 'compositeAction.definition' are incompatible between these types.
-Type '{ actionType: "createEntity"; actionLabel: string; deploymentUuid: { transformerType: "parameterReference"; interpolation: "build"; referenceName: string; }; endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"; payload: { ...; }; }' is not assignable to type 'BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | ... 4 more ... | { ...; }'.
+Type '{ actionType: "createEntity"; actionLabel: string; deploymentUuid: { transformerType: "getFromParameters"; interpolation: "build"; referenceName: string; }; endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"; payload: { ...; }; }' is not assignable to type 'BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | ... 4 more ... | { ...; }'.
 Types of property 'deploymentUuid' are incompatible.
-  Type '{ transformerType: "parameterReference"; interpolation: "build"; referenceName: string; }' is not assignable to type 'string | TransformerForBuildPlusRuntimeCarryOnObject'.
+  Type '{ transformerType: "getFromParameters"; interpolation: "build"; referenceName: string; }' is not assignable to type 'string | TransformerForBuildPlusRuntimeCarryOnObject'.
 	Types of property 'transformerType' are incompatible.
-	  Type '"parameterReference"' is not assignable to type '"defaultValueForMLSchema" | "resolveConditionalSchema" | "resolveSchemaReferenceInContext" | "unfoldSchemaOnce" | "jzodTypeCheck"'.ts(2634)
+	  Type '"getFromParameters"' is not assignable to type '"defaultValueForMLSchema" | "resolveConditionalSchema" | "resolveSchemaReferenceInContext" | "unfoldSchemaOnce" | "jzodTypeCheck"'.ts(2634)
                    */
                   deploymentUuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "testDeploymentUuid",
                   },
@@ -452,12 +452,12 @@ Types of property 'deploymentUuid' are incompatible.
                     entities: [
                       {
                         entity: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "createEntity_newEntity",
                         },
                         entityDefinition: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "createEntity_newEntityDefinition",
                         },
@@ -471,7 +471,7 @@ Types of property 'deploymentUuid' are incompatible.
                   instanceAction: {
                     actionType: "createInstance",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -481,24 +481,24 @@ Types of property 'deploymentUuid' are incompatible.
                       objects: [
                         {
                           parentName: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referencePath: ["newEntityListReport", "parentName"],
                           },
                           parentUuid: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referencePath: ["newEntityListReport", "parentUuid"],
                           },
                           applicationSection: "model",
                           instances: [
                             {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referenceName: "newEntityListReport",
                             },
                             {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referenceName: "newEntityDetailsReport",
                             },
@@ -513,7 +513,7 @@ Types of property 'deploymentUuid' are incompatible.
                   actionLabel: "commit",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "testDeploymentUuid",
                   },
@@ -527,7 +527,7 @@ Types of property 'deploymentUuid' are incompatible.
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -536,13 +536,13 @@ Types of property 'deploymentUuid' are incompatible.
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         deploymentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
                         pageParams: {
                           currentDeploymentUuid: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "testDeploymentUuid",
                           },
@@ -554,12 +554,12 @@ Types of property 'deploymentUuid' are incompatible.
                             extractorOrCombinerType: "extractorByEntityReturningObjectList",
                             applicationSection: "model",
                             parentName: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityEntityDefinition", "name"],
                             },
                             parentUuid: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityEntityDefinition", "uuid"],
                             },
@@ -582,7 +582,7 @@ Types of property 'deploymentUuid' are incompatible.
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -591,13 +591,13 @@ Types of property 'deploymentUuid' are incompatible.
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         deploymentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
                         pageParams: {
                           currentDeploymentUuid: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "testDeploymentUuid",
                           },
@@ -609,12 +609,12 @@ Types of property 'deploymentUuid' are incompatible.
                             extractorOrCombinerType: "extractorByEntityReturningObjectList",
                             applicationSection: "model",
                             parentName: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityEntity", "name"],
                             },
                             parentUuid: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityEntity", "uuid"],
                             },
@@ -637,7 +637,7 @@ Types of property 'deploymentUuid' are incompatible.
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -646,13 +646,13 @@ Types of property 'deploymentUuid' are incompatible.
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         deploymentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
                         pageParams: {
                           currentDeploymentUuid: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "testDeploymentUuid",
                           },
@@ -665,12 +665,12 @@ Types of property 'deploymentUuid' are incompatible.
                             extractorOrCombinerType: "extractorByEntityReturningObjectList",
                             applicationSection: "model",
                             parentName: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityReport", "name"],
                             },
                             parentUuid: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityReport", "uuid"],
                             },
@@ -693,7 +693,7 @@ Types of property 'deploymentUuid' are incompatible.
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -702,7 +702,7 @@ Types of property 'deploymentUuid' are incompatible.
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         deploymentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
@@ -714,12 +714,12 @@ Types of property 'deploymentUuid' are incompatible.
                             extractorOrCombinerType: "extractorByEntityReturningObjectList",
                             applicationSection: "model",
                             parentName: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityMenu", "name"],
                             },
                             parentUuid: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityMenu", "uuid"],
                             },
@@ -741,7 +741,7 @@ Types of property 'deploymentUuid' are incompatible.
                             interpolation: "runtime",
                             definition: {
                               reportUuid: {
-                                transformerType: "parameterReference",
+                                transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referenceName: "createEntity_newEntityListReportUuid",
                               },
@@ -752,7 +752,7 @@ Types of property 'deploymentUuid' are incompatible.
                               },
                               section: "data",
                               selfApplication: {
-                                transformerType: "parameterReference",
+                                transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referencePath: ["adminConfigurationDeploymentParis", "uuid"],
                               },
@@ -785,7 +785,7 @@ Types of property 'deploymentUuid' are incompatible.
                   instanceAction: {
                     actionType: "updateInstance",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -795,12 +795,12 @@ Types of property 'deploymentUuid' are incompatible.
                       objects: [
                         {
                           parentName: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referencePath: ["entityMenu", "name"],
                           },
                           parentUuid: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referencePath: ["entityMenu", "uuid"],
                           },
@@ -822,7 +822,7 @@ Types of property 'deploymentUuid' are incompatible.
                   actionLabel: "commit",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "testDeploymentUuid",
                   },
@@ -836,7 +836,7 @@ Types of property 'deploymentUuid' are incompatible.
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -845,7 +845,7 @@ Types of property 'deploymentUuid' are incompatible.
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         deploymentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "testDeploymentUuid",
                         },
@@ -858,7 +858,7 @@ Types of property 'deploymentUuid' are incompatible.
                             applicationSection: "model",
                             parentName: "Menu",
                             parentUuid: {
-                              transformerType: "parameterReference",
+                              transformerType: "getFromParameters",
                               interpolation: "build",
                               referencePath: ["entityMenu", "uuid"],
                             },
@@ -889,27 +889,27 @@ Types of property 'deploymentUuid' are incompatible.
                     expectedValue: [
                       {
                         uuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityUuid",
                         },
                         parentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityEntity", "uuid"],
                         },
                         selfApplication: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "testSelfApplicationUuid",
                         },
                         description: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "createEntity_newEntityDescription",
                         },
                         name: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityName",
                         },
@@ -939,34 +939,34 @@ Types of property 'deploymentUuid' are incompatible.
                     expectedValue: [
                       {
                         name: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityName",
                         },
                         uuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityDefinitionUuid",
                         },
                         parentName: "EntityDefinition",
                         parentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityEntityDefinition", "uuid"],
                         },
                         entityUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["newEntityUuid"],
                         },
                         conceptLevel: "Model",
                         defaultInstanceDetailsReportUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "defaultInstanceDetailsReportUuid",
                         },
                         jzodSchema: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityJzodSchema",
                         },
@@ -987,12 +987,12 @@ Types of property 'deploymentUuid' are incompatible.
                     ignoreAttributes: ["author", "parentDefinitionVersionUuid", "type"],
                     expectedValue: [
                       {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referenceName: "newEntityListReport",
                       },
                       {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referenceName: "newEntityDetailsReport",
                       },
@@ -1083,7 +1083,7 @@ Types of property 'deploymentUuid' are incompatible.
                                 },
                                 {
                                   reportUuid: {
-                                    transformerType: "parameterReference",
+                                    transformerType: "getFromParameters",
                                     interpolation: "build",
                                     referenceName: "createEntity_newEntityListReportUuid",
                                   },
@@ -1094,7 +1094,7 @@ Types of property 'deploymentUuid' are incompatible.
                                   },
                                   section: "data",
                                   selfApplication: {
-                                    transformerType: "parameterReference",
+                                    transformerType: "getFromParameters",
                                     interpolation: "build",
                                     referencePath: ["adminConfigurationDeploymentParis", "uuid"],
                                   },

@@ -183,11 +183,11 @@ Based on my analysis of the transformer descriptions from the code and documenta
 |----------|----------|
 | constant | **OK: returnValue** |
 | newUuid | **generateUuid** |
-| contextReference | **getFromContext** |
-| parameterReference | **getFromParameters** |
+| contextReference | **OK: getFromContext** |
+| parameterReference | **OK getFromParameters** |
 | constantAsExtractor | **returnAsExtractor** *(testing only)* |
 | mustacheStringTemplate | **templateString** |
-| mapList | **OK: mapList** or **transformEachItem** |
+| mapperListToList | **OK: mapList** or **transformEachItem** |
 | listPickElement | **OK: pickFromList** |
 | unique | **getUniqueValues** |
 | count | **countItems** or **OK: aggregate** |

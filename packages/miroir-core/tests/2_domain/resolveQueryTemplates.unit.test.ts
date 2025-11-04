@@ -36,7 +36,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   //           value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   //         },
   //         instanceUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "instanceUuid",
   //         },
   //     },
@@ -92,7 +92,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              transformerType: "parameterReference",
+              transformerType: "getFromParameters",
               interpolation: "build",
               referenceName: "instanceUuid",
             },
@@ -101,7 +101,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorTemplateType: "extractorForObjectByDirectReference",
             parentName: "Fountain",
             parentUuid: {
-              transformerType: "parameterReference",
+              transformerType: "getFromParameters",
               interpolation: "build",
               referenceName: "parentUuid",
             },

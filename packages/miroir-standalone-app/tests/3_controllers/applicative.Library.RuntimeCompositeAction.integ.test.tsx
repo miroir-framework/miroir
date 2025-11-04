@@ -752,7 +752,7 @@ const createEntityCompositeActionAssertions: CompositeRunTestAssertion[] = [
             jzodSchema: newEntityJzodSchema,
           },
           // {
-          //   transformerType: "parameterReference",
+          //   transformerType: "getFromParameters",
           //   referenceName: "createEntity_newEntityDefinition",
           // },
         ],
@@ -1103,7 +1103,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: testAdminConfigurationDeploymentUuid,
                 // deploymentUuid: {
-                //   transformerType: "parameterReference",
+                //   transformerType: "getFromParameters",
                 //   interpolation: "build",
                 //   referenceName: "testAdminConfigurationDeploymentUuid",
                 // },
@@ -1369,7 +1369,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //         actionLabel: "commit",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1383,7 +1383,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //         actionLabel: "rollback",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1393,7 +1393,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //         actionName: "remoteLocalCacheRollback",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1410,14 +1410,14 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         //           applicationSection: "model",
         //           deploymentUuid: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             interpolation: "build",
         //             referenceName: "testAdminConfigurationDeploymentUuid",
         //           },
         //           query: {
         //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         //             deploymentUuid: {
-        //               transformerType: "parameterReference",
+        //               transformerType: "getFromParameters",
         //               interpolation: "build",
         //               referenceName: "testAdminConfigurationDeploymentUuid",
         //             },
@@ -1498,7 +1498,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //           actionName: "updateInstance",
         //           applicationSection: "model",
         //           deploymentUuid: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             interpolation: "build",
         //             referenceName: "testAdminConfigurationDeploymentUuid",
         //           },
@@ -1526,7 +1526,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //         actionLabel: "commit",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1543,14 +1543,14 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         //           applicationSection: "model",
         //           deploymentUuid: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             interpolation: "build",
         //             referenceName: "testAdminConfigurationDeploymentUuid",
         //           },
         //           query: {
         //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         //             deploymentUuid: {
-        //               transformerType: "parameterReference",
+        //               transformerType: "getFromParameters",
         //               interpolation: "build",
         //               referenceName: "testAdminConfigurationDeploymentUuid",
         //             },

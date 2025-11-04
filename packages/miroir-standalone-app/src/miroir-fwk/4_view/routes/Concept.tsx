@@ -406,11 +406,11 @@ export const ConceptPage: React.FC<any> = (
         //   templates: {
         //     newEntityDefinition: {
         //       name: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "createEntity_newEntityName",
         //       },
         //       uuid: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "createEntity_newEntityDefinitionUuid",
         //       },
         //       parentName: "EntityDefinition",
@@ -424,22 +424,22 @@ export const ConceptPage: React.FC<any> = (
         //       },
         //       conceptLevel: "Model",
         //       defaultInstanceDetailsReportUuid: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "createEntity_newEntityDetailsReportUuid",
         //       },
         //       jzodSchema: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "jzodSchema",
         //       },
         //     },
         //     // list of instances Report Definition
         //     newEntityListReport: {
         //       uuid: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "createEntity_newEntityListReportUuid",
         //       },
         //       selfApplication: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "currentApplicationUuid",
         //       },
         //       parentName: "Report",
@@ -462,7 +462,7 @@ export const ConceptPage: React.FC<any> = (
         //           instanceList: {
         //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
         //             parentName: {
-        //               transformerType: "parameterReference",
+        //               transformerType: "getFromParameters",
         //               referenceName: "createEntity_newEntityName",
         //             },
         //             parentUuid: {
@@ -490,11 +490,11 @@ export const ConceptPage: React.FC<any> = (
         //     // Details of an instance Report Definition
         //     newEntityDetailsReport: {
         //       uuid: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "createEntity_newEntityDetailsReportUuid",
         //       },
         //       selfApplication: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "currentApplicationUuid",
         //       },
         //       parentName: {
@@ -519,7 +519,7 @@ export const ConceptPage: React.FC<any> = (
         //           elementToDisplay: {
         //             extractorTemplateType: "extractorForObjectByDirectReference",
         //             parentName: {
-        //               transformerType: "parameterReference",
+        //               transformerType: "getFromParameters",
         //               referenceName: "createEntity_newEntityName",
         //             },
         //             parentUuid: {
@@ -535,7 +535,7 @@ export const ConceptPage: React.FC<any> = (
         //             instanceUuid: {
         //               transformerType: "constantObject",
         //               value: {
-        //                 transformerType: "parameterReference",
+        //                 transformerType: "getFromParameters",
         //                 referenceName: "instanceUuid",
         //               },
         //             },
@@ -570,18 +570,18 @@ export const ConceptPage: React.FC<any> = (
         //       actionName: "createEntity",
         //       actionLabel: "createEntity",
         //       deploymentUuid: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "currentDeploymentUuid",
         //       },
         //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //       entities: [
         //         {
         //           entity: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             referenceName: "createEntity_newEntity",
         //           },
         //           entityDefinition: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             referenceName: "newEntityDefinition",
         //           },
         //         },
@@ -600,7 +600,7 @@ export const ConceptPage: React.FC<any> = (
         //           entityReport.uuid
         //         ),
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           referenceName: "currentDeploymentUuid",
         //         },
         //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -621,11 +621,11 @@ export const ConceptPage: React.FC<any> = (
         //             ),
         //             instances: [
         //               {
-        //                 transformerType: "parameterReference",
+        //                 transformerType: "getFromParameters",
         //                 referenceName: "newEntityListReport",
         //               },
         //               {
-        //                 transformerType: "parameterReference",
+        //                 transformerType: "getFromParameters",
         //                 referenceName: "newEntityDetailsReport",
         //               },
         //             ],
@@ -640,7 +640,7 @@ export const ConceptPage: React.FC<any> = (
         //       actionLabel: "commit",
         //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //       deploymentUuid: {
-        //         transformerType: "parameterReference",
+        //         transformerType: "getFromParameters",
         //         referenceName: "currentDeploymentUuid",
         //       },
         //     },

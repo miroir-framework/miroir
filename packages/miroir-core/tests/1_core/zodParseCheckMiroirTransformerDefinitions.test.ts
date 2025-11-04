@@ -19,7 +19,7 @@ import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "../../src/as
 const transformerForBuildTest1: TransformerForBuild = {
   extractorOrCombinerType: "extractorByEntityReturningObjectList",
   parentName: {
-    transformerType: "parameterReference",
+    transformerType: "getFromParameters",
     interpolation: "build",
     referenceName: "newEntityName",
   },
@@ -37,7 +37,7 @@ const transformerForBuildTest2: TransformerForBuild = {
     instanceList: {
       extractorOrCombinerType: "extractorByEntityReturningObjectList",
       parentName: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: "newEntityName",
       },
@@ -58,7 +58,7 @@ const transformerForBuildTest3: TransformerForBuild = {
       instanceList: {
         extractorOrCombinerType: "extractorByEntityReturningObjectList",
         parentName: {
-          transformerType: "parameterReference",
+          transformerType: "getFromParameters",
           interpolation: "build",
           referenceName: "newEntityName",
         },
@@ -112,7 +112,7 @@ const transformerForBuildTest5: TransformerForBuild = {
         instanceList: {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
           parentName: {
-            transformerType: "parameterReference",
+            transformerType: "getFromParameters",
             interpolation: "build",
             referenceName: "newEntityName",
           },
@@ -168,7 +168,7 @@ const transformerForBuildPlusRuntimeTest2: TransformerForBuildPlusRuntime = {
     instanceList: {
       extractorOrCombinerType: "extractorByEntityReturningObjectList",
       parentName: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: "newEntityName",
       },

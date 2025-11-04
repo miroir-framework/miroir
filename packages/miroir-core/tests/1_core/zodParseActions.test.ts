@@ -568,7 +568,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       extractorTemplateType: "extractorTemplateForObjectListByEntity",
       parentUuid: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: entityMenu.uuid,
       },
@@ -581,7 +581,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       extractorTemplateType: "combinerByRelationReturningObjectList",
       parentUuid: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: entityMenu.uuid,
       },

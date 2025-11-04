@@ -878,7 +878,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           value: { type: "any" },
         },
       },
-      // parameterReference
+      // getFromParameters
       {
         type: "object",
         extend: [
@@ -894,7 +894,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         ],
         definition: {
           interpolation: { type: "literal", optional: true, definition: "build" },
-          transformerType: { type: "literal", definition: "parameterReference" },
+          transformerType: { type: "literal", definition: "getFromParameters" },
           referenceName: { optional: true, type: "string" },
           referencePath: { optional: true, type: "array", definition: { type: "string" } },
         },

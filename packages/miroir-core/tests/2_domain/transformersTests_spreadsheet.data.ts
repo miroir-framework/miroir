@@ -83,7 +83,7 @@ export const transformerTestSuite_spreadsheet: TransformerTestSuite = {
             transformer: {
               transformerType: "spreadSheetToJzodSchema",
               spreadsheetContents: {
-                transformerType: "parameterReference",
+                transformerType: "getFromParameters",
                 interpolation: "build",
                 referenceName: "spreadsheetContents",
               }

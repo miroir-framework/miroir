@@ -6697,7 +6697,7 @@ const tests: { [k: string]: testFormat } = {
       interpolation: "runtime",
       definition: {
         reportUuid: {
-          transformerType: "parameterReference",
+          transformerType: "getFromParameters",
           interpolation: "build",
           referenceName: "createEntity_newEntityListReportUuid",
         },
@@ -6708,7 +6708,7 @@ const tests: { [k: string]: testFormat } = {
         },
         section: "data",
         selfApplication: {
-          transformerType: "parameterReference",
+          transformerType: "getFromParameters",
           interpolation: "build",
           referencePath: ["adminConfigurationDeploymentParis", "uuid"],
         },
@@ -6746,7 +6746,7 @@ const tests: { [k: string]: testFormat } = {
               definition: {
                 transformerType: {
                   type: "literal",
-                  definition: "parameterReference",
+                  definition: "getFromParameters",
                 },
                 interpolation: {
                   type: "enum",
@@ -6842,7 +6842,7 @@ const tests: { [k: string]: testFormat } = {
               definition: {
                 transformerType: {
                   type: "literal",
-                  definition: "parameterReference",
+                  definition: "getFromParameters",
                 },
                 interpolation: {
                   type: "enum",
@@ -8937,7 +8937,7 @@ const tests: { [k: string]: testFormat } = {
   //         queryType: "boxedQueryWithExtractorCombinerTransformer",
   //         deploymentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
   //         // deploymentUuid: {
-  //         //   transformerType: "parameterReference",
+  //         //   transformerType: "getFromParameters",
   //         //   interpolation: "build",
   //         //   referenceName: "testDeploymentUuid",
   //         // },
@@ -8950,14 +8950,14 @@ const tests: { [k: string]: testFormat } = {
   //             applicationSection: "model",
   //             parentName: "Menu",
   //             // parentName: {
-  //             //   transformerType: "parameterReference",
+  //             //   transformerType: "getFromParameters",
   //             //   interpolation: "build",
   //             //   referencePath: ["entityMenu", "name"],
   //             // },
   //             parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
   //             // parentUuid: "0000000-0000-0000-0000-000000000000",
   //             // parentUuid: {
-  //             //   transformerType: "parameterReference",
+  //             //   transformerType: "getFromParameters",
   //             //   interpolation: "build",
   //             //   referencePath: ["entityMenu", "uuid"],
   //             // },
@@ -8982,7 +8982,7 @@ const tests: { [k: string]: testFormat } = {
   //             interpolation: "runtime",
   //             definition: {
   //               reportUuid: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 interpolation: "build",
   //                 referenceName: "createEntity_newEntityListReportUuid",
   //               },
@@ -8993,7 +8993,7 @@ const tests: { [k: string]: testFormat } = {
   //               },
   //               section: "data",
   //               selfApplication: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 interpolation: "build",
   //                 referencePath: ["adminConfigurationDeploymentParis", "uuid"],
   //               },
@@ -9051,7 +9051,7 @@ const tests: { [k: string]: testFormat } = {
   //           "definition": {
   //             "transformerType": {
   //               "type": "literal",
-  //               "definition": "parameterReference"
+  //               "definition": "getFromParameters"
   //             },
   //             "interpolation": {
   //               "type": "enum",
@@ -9153,7 +9153,7 @@ const tests: { [k: string]: testFormat } = {
   //           "definition": {
   //             "transformerType": {
   //               "type": "literal",
-  //               "definition": "parameterReference"
+  //               "definition": "getFromParameters"
   //             },
   //             "interpolation": {
   //               "type": "enum",
@@ -9254,7 +9254,7 @@ const tests: { [k: string]: testFormat } = {
           actionType: "createEntity",
           actionLabel: "createEntity",
           deploymentUuid: {
-            transformerType: "parameterReference",
+            transformerType: "getFromParameters",
             interpolation: "build",
             referenceName: "testDeploymentUuid",
           },
@@ -9263,12 +9263,12 @@ const tests: { [k: string]: testFormat } = {
             entities: [
               {
                 entity: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "createEntity_newEntity",
                 },
                 entityDefinition: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "createEntity_newEntityDefinition",
                 },
@@ -9317,7 +9317,7 @@ const tests: { [k: string]: testFormat } = {
                   definition: {
                     transformerType: {
                       type: "literal",
-                      definition: "parameterReference",
+                      definition: "getFromParameters",
                     },
                     interpolation: {
                       type: "enum",
@@ -9377,7 +9377,7 @@ const tests: { [k: string]: testFormat } = {
                               definition: {
                                 transformerType: {
                                   type: "literal",
-                                  definition: "parameterReference",
+                                  definition: "getFromParameters",
                                 },
                                 interpolation: {
                                   type: "enum",
@@ -9424,7 +9424,7 @@ const tests: { [k: string]: testFormat } = {
                               definition: {
                                 transformerType: {
                                   type: "literal",
-                                  definition: "parameterReference",
+                                  definition: "getFromParameters",
                                 },
                                 interpolation: {
                                   type: "enum",

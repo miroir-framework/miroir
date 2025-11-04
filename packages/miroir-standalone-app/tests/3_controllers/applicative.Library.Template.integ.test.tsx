@@ -649,7 +649,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       actionType: "createEntity",
       actionLabel: "createEntity",
       deploymentUuid: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: "testAdminConfigurationDeploymentUuid",
       },
@@ -658,12 +658,12 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
         entities: [
           {
             entity: {
-              transformerType: "parameterReference",
+              transformerType: "getFromParameters",
               interpolation: "build",
               referenceName: "createEntity_newEntity",
             },
             entityDefinition: {
-              transformerType: "parameterReference",
+              transformerType: "getFromParameters",
               interpolation: "build",
               referenceName: "createEntity_newEntityDefinition",
             },
@@ -686,20 +686,20 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: "testAdminConfigurationDeploymentUuid",
       },
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         deploymentUuid: {
-          transformerType: "parameterReference",
+          transformerType: "getFromParameters",
           interpolation: "build",
           referenceName: "testAdminConfigurationDeploymentUuid",
         },
         pageParams: {
           currentDeploymentUuid: {
-            transformerType: "parameterReference",
+            transformerType: "getFromParameters",
             interpolation: "build",
             referenceName: "testAdminConfigurationDeploymentUuid",
           },
@@ -732,20 +732,20 @@ const createEntityCompositeActionTemplatePrepActions: any[] = [
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: "testAdminConfigurationDeploymentUuid",
       },
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         deploymentUuid: {
-          transformerType: "parameterReference",
+          transformerType: "getFromParameters",
           interpolation: "build",
           referenceName: "testAdminConfigurationDeploymentUuid",
         },
         pageParams: {
           currentDeploymentUuid: {
-            transformerType: "parameterReference",
+            transformerType: "getFromParameters",
             interpolation: "build",
             referenceName: "testAdminConfigurationDeploymentUuid",
           },
@@ -817,7 +817,7 @@ const createEntityCompositeActionTemplateAssertions = [
             jzodSchema: newEntityJzodSchema,
           },
           // {
-          //   transformerType: "parameterReference",
+          //   transformerType: "getFromParameters",
           //   referenceName: "createEntity_newEntityDefinition",
           // },
         ],
@@ -835,7 +835,7 @@ const createReportsCompositeActionTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1
     actionName: "createInstance",
     applicationSection: "model",
     deploymentUuid: {
-      transformerType: "parameterReference",
+      transformerType: "getFromParameters",
       interpolation: "build",
       referenceName: "testAdminConfigurationDeploymentUuid",
     },
@@ -1003,12 +1003,12 @@ const createReportsCompositeActionTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1
             },
           },
           // {
-          //   transformerType: "parameterReference",
+          //   transformerType: "getFromParameters",
           //   interpolation: "build",
           //   referenceName: "newEntityListReport",
           // },
           // {
-          //   transformerType: "parameterReference",
+          //   transformerType: "getFromParameters",
           //   interpolation: "build",
           //   referenceName: "newEntityDetailsReport",
           // },
@@ -1030,20 +1030,20 @@ const createReportsCompositeActionPrepActions: any[] = [
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: "testAdminConfigurationDeploymentUuid",
       },
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         deploymentUuid: {
-          transformerType: "parameterReference",
+          transformerType: "getFromParameters",
           interpolation: "build",
           referenceName: "testAdminConfigurationDeploymentUuid",
         },
         pageParams: {
           currentDeploymentUuid: {
-            transformerType: "parameterReference",
+            transformerType: "getFromParameters",
             interpolation: "build",
             referenceName: "testAdminConfigurationDeploymentUuid",
           },
@@ -1078,7 +1078,7 @@ const createReportsCompositeActionPrepActions: any[] = [
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: {
-        transformerType: "parameterReference",
+        transformerType: "getFromParameters",
         interpolation: "build",
         referenceName: "testAdminConfigurationDeploymentUuid",
       },
@@ -1086,13 +1086,13 @@ const createReportsCompositeActionPrepActions: any[] = [
         queryType: "boxedQueryWithExtractorCombinerTransformer",
 
         deploymentUuid: {
-          transformerType: "parameterReference",
+          transformerType: "getFromParameters",
           interpolation: "build",
           referenceName: "testAdminConfigurationDeploymentUuid",
         },
         pageParams: {
           currentDeploymentUuid: {
-            transformerType: "parameterReference",
+            transformerType: "getFromParameters",
             interpolation: "build",
             referenceName: "testAdminConfigurationDeploymentUuid",
           },
@@ -1197,7 +1197,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
                 actionLabel: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testAdminConfigurationDeploymentUuid",
                 },
@@ -1244,7 +1244,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //         actionLabel: "commit",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1258,7 +1258,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //         actionLabel: "rollback",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1268,7 +1268,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //         actionName: "remoteLocalCacheRollback",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1285,14 +1285,14 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         //           applicationSection: "model",
         //           deploymentUuid: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             interpolation: "build",
         //             referenceName: "testAdminConfigurationDeploymentUuid",
         //           },
         //           query: {
         //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         //             deploymentUuid: {
-        //               transformerType: "parameterReference",
+        //               transformerType: "getFromParameters",
         //               interpolation: "build",
         //               referenceName: "testAdminConfigurationDeploymentUuid",
         //             },
@@ -1373,7 +1373,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //           actionName: "updateInstance",
         //           applicationSection: "model",
         //           deploymentUuid: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             interpolation: "build",
         //             referenceName: "testAdminConfigurationDeploymentUuid",
         //           },
@@ -1401,7 +1401,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //         actionLabel: "commit",
         //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         //         deploymentUuid: {
-        //           transformerType: "parameterReference",
+        //           transformerType: "getFromParameters",
         //           interpolation: "build",
         //           referenceName: "testAdminConfigurationDeploymentUuid",
         //         },
@@ -1418,14 +1418,14 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         //           applicationSection: "model",
         //           deploymentUuid: {
-        //             transformerType: "parameterReference",
+        //             transformerType: "getFromParameters",
         //             interpolation: "build",
         //             referenceName: "testAdminConfigurationDeploymentUuid",
         //           },
         //           query: {
         //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         //             deploymentUuid: {
-        //               transformerType: "parameterReference",
+        //               transformerType: "getFromParameters",
         //               interpolation: "build",
         //               referenceName: "testAdminConfigurationDeploymentUuid",
         //             },

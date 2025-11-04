@@ -16,7 +16,7 @@
           "value": "681be9ca-c593-45f5-b45a-5f1d4969e91e"
         },
         "instanceUuid": {
-          "transformerType": "parameterReference",
+          "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"
         }
       }

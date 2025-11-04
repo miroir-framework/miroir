@@ -22,27 +22,27 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               interpolation: "build",
               definition: {
                 uuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "newEntityUuid",
                 },
                 parentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referencePath: ["entityEntity", "uuid"],
                 },
                 selfApplication: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testSelfApplicationUuid",
                 },
                 description: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "createEntity_newEntityDescription",
                 },
                 name: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "newEntityName",
                 },
@@ -53,34 +53,34 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               interpolation: "build",
               definition: {
                 name: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "newEntityName",
                 },
                 uuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "newEntityDefinitionUuid",
                 },
                 parentName: "EntityDefinition",
                 parentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referencePath: ["entityEntityDefinition", "uuid"],
                 },
                 entityUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referencePath: ["createEntity_newEntity", "uuid"],
                 },
                 conceptLevel: "Model",
                 defaultInstanceDetailsReportUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "defaultInstanceDetailsReportUuid",
                 },
                 jzodSchema: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "newEntityJzodSchema",
                 },
@@ -91,12 +91,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               interpolation: "build",
               definition: {
                 uuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "createEntity_newEntityListReportUuid",
                 },
                 selfApplication: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testSelfApplicationUuid",
                 },
@@ -133,7 +133,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         instanceList: {
                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
                           parentName: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "newEntityName",
                           },
@@ -182,12 +182,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               interpolation: "build",
               definition: {
                 uuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "createEntity_newEntityDetailsReportUuid",
                 },
                 selfApplication: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testSelfApplicationUuid",
                 },
@@ -271,7 +271,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               actionType: "createEntity",
               actionLabel: "createEntity",
               deploymentUuid: {
-                transformerType: "parameterReference",
+                transformerType: "getFromParameters",
                 interpolation: "build",
                 referenceName: "testDeploymentUuid",
               },
@@ -280,12 +280,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 entities: [
                   {
                     entity: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "createEntity_newEntity",
                     },
                     entityDefinition: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "createEntity_newEntityDefinition",
                     },
@@ -299,7 +299,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               instanceAction: {
                 actionType: "createInstance",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testDeploymentUuid",
                 },
@@ -309,24 +309,24 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                   objects: [
                     {
                       parentName: {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referencePath: ["newEntityListReport", "parentName"],
                       },
                       parentUuid: {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referencePath: ["newEntityListReport", "parentUuid"],
                       },
                       applicationSection: "model",
                       instances: [
                         {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityListReport",
                         },
                         {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityDetailsReport",
                         },
@@ -341,7 +341,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               actionLabel: "commit",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: {
-                transformerType: "parameterReference",
+                transformerType: "getFromParameters",
                 interpolation: "build",
                 referenceName: "testDeploymentUuid",
               },
@@ -355,7 +355,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 actionName: "runQuery",
                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testDeploymentUuid",
                 },
@@ -364,13 +364,13 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
                     pageParams: {
                       currentDeploymentUuid: {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referenceName: "testDeploymentUuid",
                       },
@@ -382,12 +382,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         extractorOrCombinerType: "extractorByEntityReturningObjectList",
                         applicationSection: "model",
                         parentName: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityEntityDefinition", "name"],
                         },
                         parentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityEntityDefinition", "uuid"],
                         },
@@ -410,7 +410,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 actionName: "runQuery",
                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testDeploymentUuid",
                 },
@@ -419,13 +419,13 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
                     pageParams: {
                       currentDeploymentUuid: {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referenceName: "testDeploymentUuid",
                       },
@@ -437,12 +437,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         extractorOrCombinerType: "extractorByEntityReturningObjectList",
                         applicationSection: "model",
                         parentName: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityEntity", "name"],
                         },
                         parentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityEntity", "uuid"],
                         },
@@ -465,7 +465,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 actionName: "runQuery",
                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testDeploymentUuid",
                 },
@@ -474,13 +474,13 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
                     pageParams: {
                       currentDeploymentUuid: {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referenceName: "testDeploymentUuid",
                       },
@@ -493,12 +493,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         extractorOrCombinerType: "extractorByEntityReturningObjectList",
                         applicationSection: "model",
                         parentName: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityReport", "name"],
                         },
                         parentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityReport", "uuid"],
                         },
@@ -521,7 +521,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 actionName: "runQuery",
                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testDeploymentUuid",
                 },
@@ -530,7 +530,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -542,12 +542,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         extractorOrCombinerType: "extractorByEntityReturningObjectList",
                         applicationSection: "model",
                         parentName: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityMenu", "name"],
                         },
                         parentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityMenu", "uuid"],
                         },
@@ -569,7 +569,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         interpolation: "runtime",
                         definition: {
                           reportUuid: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "createEntity_newEntityListReportUuid",
                           },
@@ -580,7 +580,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                           },
                           section: "data",
                           selfApplication: {
-                            transformerType: "parameterReference",
+                            transformerType: "getFromParameters",
                             interpolation: "build",
                             referencePath: ["adminConfigurationDeploymentParis", "uuid"],
                           },
@@ -613,7 +613,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               instanceAction: {
                 actionType: "updateInstance",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testDeploymentUuid",
                 },
@@ -623,12 +623,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                   objects: [
                     {
                       parentName: {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referencePath: ["entityMenu", "name"],
                       },
                       parentUuid: {
-                        transformerType: "parameterReference",
+                        transformerType: "getFromParameters",
                         interpolation: "build",
                         referencePath: ["entityMenu", "uuid"],
                       },
@@ -650,7 +650,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
               actionLabel: "commit",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: {
-                transformerType: "parameterReference",
+                transformerType: "getFromParameters",
                 interpolation: "build",
                 referenceName: "testDeploymentUuid",
               },
@@ -664,7 +664,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 actionName: "runQuery",
                 endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                 deploymentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "testDeploymentUuid",
                 },
@@ -673,7 +673,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                   query: {
                     queryType: "boxedQueryWithExtractorCombinerTransformer",
                     deploymentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testDeploymentUuid",
                     },
@@ -686,7 +686,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                         applicationSection: "model",
                         parentName: "Menu",
                         parentUuid: {
-                          transformerType: "parameterReference",
+                          transformerType: "getFromParameters",
                           interpolation: "build",
                           referencePath: ["entityMenu", "uuid"],
                         },
@@ -717,27 +717,27 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 expectedValue: [
                   {
                     uuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "newEntityUuid",
                     },
                     parentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referencePath: ["entityEntity", "uuid"],
                     },
                     selfApplication: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "testSelfApplicationUuid",
                     },
                     description: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "createEntity_newEntityDescription",
                     },
                     name: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "newEntityName",
                     },
@@ -767,34 +767,34 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 expectedValue: [
                   {
                     name: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "newEntityName",
                     },
                     uuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "newEntityDefinitionUuid",
                     },
                     parentName: "EntityDefinition",
                     parentUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referencePath: ["entityEntityDefinition", "uuid"],
                     },
                     entityUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referencePath: ["newEntityUuid"],
                     },
                     conceptLevel: "Model",
                     defaultInstanceDetailsReportUuid: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "defaultInstanceDetailsReportUuid",
                     },
                     jzodSchema: {
-                      transformerType: "parameterReference",
+                      transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "newEntityJzodSchema",
                     },
@@ -815,12 +815,12 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                 ignoreAttributes: ["author", "parentDefinitionVersionUuid", "type"],
                 expectedValue: [
                   {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "newEntityListReport",
                   },
                   {
-                    transformerType: "parameterReference",
+                    transformerType: "getFromParameters",
                     interpolation: "build",
                     referenceName: "newEntityDetailsReport",
                   },
@@ -911,7 +911,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                             },
                             {
                               reportUuid: {
-                                transformerType: "parameterReference",
+                                transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referenceName: "createEntity_newEntityListReportUuid",
                               },
@@ -922,7 +922,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu: Test = {
                               },
                               section: "data",
                               selfApplication: {
-                                transformerType: "parameterReference",
+                                transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referencePath: ["adminConfigurationDeploymentParis", "uuid"],
                               },

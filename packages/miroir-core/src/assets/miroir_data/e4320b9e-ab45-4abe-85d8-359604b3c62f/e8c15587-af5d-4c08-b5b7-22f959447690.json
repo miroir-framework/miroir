@@ -18,7 +18,7 @@
           "parentName": "ApplicationVersion",
           "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
           "instanceUuid": {
-            "transformerType": "parameterReference",
+            "transformerType": "getFromParameters",
             "interpolation": "build",
             "referenceName": "applicationVersion"
           }
@@ -62,7 +62,7 @@
             "query": {
               "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
               "parentUuid": {
-                "transformerType": "parameterReference",
+                "transformerType": "getFromParameters",
                 "interpolation": "build",
                 "referenceName": "uuid"
               }

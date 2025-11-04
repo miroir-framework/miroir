@@ -32,7 +32,7 @@ import {
   TransformerForBuild_objectDynamicAccess,
   TransformerForBuild_objectEntries,
   TransformerForBuild_objectValues,
-  TransformerForBuild_parameterReference,
+  TransformerForBuild_getFromParameters,
   TransformerForBuild_unique,
   TransformerForBuildPlusRuntime,
   TransformerForRuntime,
@@ -101,7 +101,7 @@ import {
   transformer_objectDynamicAccess,
   transformer_objectEntries,
   transformer_objectValues,
-  transformer_parameterReference,
+  transformer_getFromParameters,
   transformer_unique,
   type ResolveBuildTransformersTo,
   type Step,
@@ -647,7 +647,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_objectEntries,
   handleTransformer_objectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
-  handleTransformer_parameterReference,
+  handleTransformer_getFromParameters,
   transformer_object_listReducerToIndexObject_apply: defaultTransformers.transformer_object_listReducerToIndexObject_apply,
   transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply:
@@ -686,7 +686,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   objectEntries: transformer_objectEntries,
   objectValues: transformer_objectValues,
   object_fullTemplate: transformer_object_fullTemplate,
-  parameterReference: transformer_parameterReference,
+  getFromParameters: transformer_getFromParameters,
   unique: transformer_unique,
   // MLS
   ...Object.fromEntries(
@@ -718,7 +718,7 @@ function resolveApplyTo(
       [...transformerPath, "applyTo"],
       label,
       {
-        transformerType: step == "build" ? "parameterReference" : "getFromContext",
+        transformerType: step == "build" ? "getFromParameters" : "getFromContext",
         referenceName: defaultTransformerInput,
       },
       resolveBuildTransformersTo,
@@ -868,7 +868,7 @@ export function resolveApplyTo_legacy(
       [...transformerPath, "applyTo"],
       label,
       {
-        transformerType: step == "build" ? "parameterReference" : "getFromContext",
+        transformerType: step == "build" ? "getFromParameters" : "getFromContext",
         referenceName: defaultTransformerInput,
       },
       resolveBuildTransformersTo,
@@ -1430,7 +1430,7 @@ export function transformer_resolveReference(
   transformerPath: string[] = [],
   transformerInnerReference:
     | Transformer_contextOrParameterReferenceTO_REMOVE
-    | TransformerForBuild_parameterReference,
+    | TransformerForBuild_getFromParameters,
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -1546,7 +1546,7 @@ export function transformer_resolveReference(
 // // almost duplicate from QuerySelectors.ts
 // // type defined in function of the types of queryParams and contextResults
 // // getFromContext<A> -> A
-// // parameterReference<A> -> A
+// // getFromParameters<A> -> A
 // // constantUuid -> Uuid
 // // constantString -> string
 export function transformer_InnerReference_resolve(
@@ -1627,7 +1627,7 @@ export function transformer_InnerReference_resolve(
       }
       break;
     }
-    case "parameterReference": {
+    case "getFromParameters": {
       // RESOLVING EVERYTHING AT RUNTIME
       result = transformer_resolveReference(
         step,
@@ -2597,7 +2597,7 @@ export function handleTransformer_conditional(
 //   switch (operand.type) {
 //     case "getFromContext":
 //       return contextResults ? safeResolvePathOnObject(contextResults, operand.path || []) : undefined;
-//     case "parameterReference":
+//     case "getFromParameters":
 //       return safeResolvePathOnObject(transformerParams, operand.path || []);
 //     case "returnValue":
 //       return operand.value;
@@ -2718,11 +2718,11 @@ export function handleTransformer_getFromContext(
 }
 
 // ################################################################################################
-export function handleTransformer_parameterReference(
+export function handleTransformer_getFromParameters(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_parameterReference,
+  transformer: TransformerForBuild_getFromParameters,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,

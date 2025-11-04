@@ -175,18 +175,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         //       definition: [
   //         //         {
   //         //           attributeKey: {
-  //         //             transformerType: "parameterReference",
+  //         //             transformerType: "getFromParameters",
   //         //             referenceName: "newDeploymentUuid",
   //         //           },
   //         //           attributeValue: {
-  //         //             transformerType: "parameterReference",
+  //         //             transformerType: "getFromParameters",
   //         //             referenceName: "newDeploymentStoreConfiguration",
   //         //           }
   //         //         }
   //         //       ],
   //         //     },
   //         //     deploymentUuid: {
-  //         //       transformerType: "parameterReference",
+  //         //       transformerType: "getFromParameters",
   //         //       referenceName: "newDeploymentUuid",
   //         //     },
   //         //   }
@@ -194,49 +194,49 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         // {
   //         //   actionType: "domainAction",
   //         //   domainAction: {
-  //         //     transformerType: "parameterReference",
+  //         //     transformerType: "getFromParameters",
   //         //     referenceName: "createStoreAction",
   //         //   }
   //         // },
   //         // {
   //         //   actionType: "domainAction",
   //         //   domainAction: {
-  //         //     transformerType: "parameterReference",
+  //         //     transformerType: "getFromParameters",
   //         //     referenceName: "resetAndInitAction",
   //         //   }
   //         // },
   //         // {
   //         //   actionType: "domainAction",
   //         //   domainAction: {
-  //         //     transformerType: "parameterReference",
+  //         //     transformerType: "getFromParameters",
   //         //     referenceName: "createSelfApplicationAction",
   //         //   }
   //         // },
   //         // {
   //         //   actionType: "domainAction",
   //         //   domainAction: {
-  //         //     transformerType: "parameterReference",
+  //         //     transformerType: "getFromParameters",
   //         //     referenceName: "createApplicationForAdminAction",
   //         //   }
   //         // },
   //         // {
   //         //   actionType: "domainAction",
   //         //   domainAction: {
-  //         //     transformerType: "parameterReference",
+  //         //     transformerType: "getFromParameters",
   //         //     referenceName: "createAdminDeploymentAction",
   //         //   }
   //         // },
   //         // {
   //         //   actionType: "domainAction",
   //         //   domainAction: {
-  //         //     transformerType: "parameterReference",
+  //         //     transformerType: "getFromParameters",
   //         //     referenceName: "createNewApplicationMenuAction",
   //         //   }
   //         // },
   //         // {
   //         //   actionType: "domainAction",
   //         //   domainAction: {
-  //         //     transformerType: "parameterReference",
+  //         //     transformerType: "getFromParameters",
   //         //     referenceName: "commitAction",
   //         //   }
   //         // },
@@ -390,11 +390,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //   templates: {
   //   //     newEntityDefinition: {
   //   //       name: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "createEntity_newEntityName",
   //   //       },
   //   //       uuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "createEntity_newEntityDefinitionUuid",
   //   //       },
   //   //       parentName: "EntityDefinition",
@@ -408,22 +408,22 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       },
   //   //       conceptLevel: "Model",
   //   //       defaultInstanceDetailsReportUuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "createEntity_newEntityDetailsReportUuid",
   //   //       },
   //   //       jzodSchema: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "jzodSchema",
   //   //       },
   //   //     },
   //   //     // list of instances Report Definition
   //   //     newEntityListReport: {
   //   //       uuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "createEntity_newEntityListReportUuid",
   //   //       },
   //   //       selfApplication: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "currentApplicationUuid",
   //   //       },
   //   //       parentName: "Report",
@@ -446,7 +446,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //           instanceList: {
   //   //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
   //   //             parentName: {
-  //   //               transformerType: "parameterReference",
+  //   //               transformerType: "getFromParameters",
   //   //               referenceName: "createEntity_newEntityName",
   //   //             },
   //   //             parentUuid: {
@@ -474,11 +474,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //     // Details of an instance Report Definition
   //   //     newEntityDetailsReport: {
   //   //       uuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "createEntity_newEntityDetailsReportUuid",
   //   //       },
   //   //       selfApplication: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "currentApplicationUuid",
   //   //       },
   //   //       parentName: {
@@ -503,7 +503,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //           elementToDisplay: {
   //   //             extractorTemplateType: "extractorForObjectByDirectReference",
   //   //             parentName: {
-  //   //               transformerType: "parameterReference",
+  //   //               transformerType: "getFromParameters",
   //   //               referenceName: "createEntity_newEntityName",
   //   //             },
   //   //             parentUuid: {
@@ -519,7 +519,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //             instanceUuid: {
   //   //               transformerType: "constantObject",
   //   //               value: {
-  //   //                 transformerType: "parameterReference",
+  //   //                 transformerType: "getFromParameters",
   //   //                 referenceName: "instanceUuid",
   //   //               },
   //   //             },
@@ -554,18 +554,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       actionName: "createEntity",
   //   //       actionLabel: "createEntity",
   //   //       deploymentUuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "currentDeploymentUuid",
   //   //       },
   //   //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //   //       entities: [
   //   //         {
   //   //           entity: {
-  //   //             transformerType: "parameterReference",
+  //   //             transformerType: "getFromParameters",
   //   //             referenceName: "createEntity_newEntity",
   //   //           },
   //   //           entityDefinition: {
-  //   //             transformerType: "parameterReference",
+  //   //             transformerType: "getFromParameters",
   //   //             referenceName: "newEntityDefinition",
   //   //           },
   //   //         },
@@ -580,7 +580,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //         actionName: "createInstance",
   //   //         applicationSection: "model",
   //   //         deploymentUuid: {
-  //   //           transformerType: "parameterReference",
+  //   //           transformerType: "getFromParameters",
   //   //           referenceName: "currentDeploymentUuid",
   //   //         },
   //   //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -597,11 +597,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //             applicationSection: "model",
   //   //             instances: [
   //   //               {
-  //   //                 transformerType: "parameterReference",
+  //   //                 transformerType: "getFromParameters",
   //   //                 referenceName: "newEntityListReport",
   //   //               },
   //   //               {
-  //   //                 transformerType: "parameterReference",
+  //   //                 transformerType: "getFromParameters",
   //   //                 referenceName: "newEntityDetailsReport",
   //   //               },
   //   //             ],
@@ -616,11 +616,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       actionLabel: "commit",
   //   //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //   //       deploymentUuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "currentDeploymentUuid",
   //   //       },
   //   //       // action: {
-  //   //       //   transformerType: "parameterReference",
+  //   //       //   transformerType: "getFromParameters",
   //   //       //   referenceName: "commitAction",
   //   //       // },
   //   //     },
@@ -635,13 +635,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   //   //         applicationSection: "model",
   //   //         deploymentUuid: {
-  //   //           transformerType: "parameterReference",
+  //   //           transformerType: "getFromParameters",
   //   //           referenceName: "currentDeploymentUuid",
   //   //         },
   //   //         query: {
   //   //           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   //   //           deploymentUuid: {
-  //   //             transformerType: "parameterReference",
+  //   //             transformerType: "getFromParameters",
   //   //             referenceName: "currentDeploymentUuid",
   //   //           },
   //   //           // runAsSql: true,
@@ -736,7 +736,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //         actionName: "updateInstance",
   //   //         applicationSection: "model",
   //   //         deploymentUuid: {
-  //   //           transformerType: "parameterReference",
+  //   //           transformerType: "getFromParameters",
   //   //           referenceName: "currentDeploymentUuid",
   //   //         },
   //   //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -770,7 +770,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       actionLabel: "commit",
   //   //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //   //       deploymentUuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "currentDeploymentUuid",
   //   //       },
   //   //     },
@@ -780,7 +780,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       actionName: "createInstance",
   //   //       applicationSection: "data",
   //   //       deploymentUuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "currentDeploymentUuid",
   //   //       },
   //   //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -806,7 +806,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       actionLabel: "rollback",
   //   //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //   //       deploymentUuid: {
-  //   //         transformerType: "parameterReference",
+  //   //         transformerType: "getFromParameters",
   //   //         referenceName: "currentDeploymentUuid",
   //   //       },
   //   //     },
@@ -876,15 +876,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     templates: {
   //       splitEntity_newEntity: {
   //         uuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityUuid",
   //         },
   //         name: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityName",
   //         },
   //         description: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityDescription",
   //         },
   //         parentName: "Entity",
@@ -893,7 +893,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           definition: "{{entityEntity.uuid}}",
   //         },
   //         selfApplication: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentApplicationUuid",
   //         },
   //       },
@@ -916,12 +916,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //       },
   //       splitEntity_newEntityDefinition: {
   //         name: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityName",
   //         },
   //         // uuid: actionSplitFountainEntityParams.splitEntity_newEntityDefinitionUuid,
   //         uuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityDefinitionUuid",
   //         },
   //         parentName: "EntityDefinition",
@@ -935,22 +935,22 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         },
   //         conceptLevel: "Model",
   //         defaultInstanceDetailsReportUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityDetailsReportUuid",
   //         },
   //         jzodSchema: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityJzodSchema",
   //         },
   //       },
   //       splitEntity_newEntityListReport: {
   //         uuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityListReportUuid",
   //         },
   //         // uuid: actionSplitFountainEntityParams.splitEntity_newEntityListReportUuid,
   //         selfApplication: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentApplicationUuid",
   //         },
   //         parentName: "Report",
@@ -970,7 +970,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             listReportSectionElements: {
   //               extractorOrCombinerType: "extractorByEntityReturningObjectList",
   //               parentName: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "splitEntity_newEntityName",
   //               },
   //               parentUuid: {
@@ -999,11 +999,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //       // TODO: use template / concat for uuid, name, defaultLabel
   //       splitEntity_newEntityDetailsReport: {
   //         uuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityDetailsReportUuid",
   //         },
   //         selfApplication: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentApplicationUuid",
   //         },
   //         parentName: "Report",
@@ -1025,7 +1025,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             elementToDisplay: {
   //               extractorTemplateType: "extractorForObjectByDirectReference",
   //               parentName: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "splitEntity_newEntityName",
   //               },
   //               parentUuid: {
@@ -1033,13 +1033,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 definition: {
   //                   transformerType: "constantString",
   //                   value: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "splitEntity_newEntityUuid",
   //                   },
   //                 },
   //               },
   //               // parentUuid: {
-  //               //   transformerType: "parameterReference",
+  //               //   transformerType: "getFromParameters",
   //               //   referenceName: "splitEntity_newEntityUuid",
   //               // },
   //               instanceUuid: {
@@ -1048,7 +1048,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   transformerType: "constantObject",
   //                   interpolation: "runtime",
   //                   value: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "instanceUuid",
   //                   },
   //                 },
@@ -1058,7 +1058,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               extractorTemplateType: "combinerByRelationReturningObjectList",
   //               parentName: "Fountain",
   //               parentUuid: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "splittedEntityUuid",
   //               },
   //               objectReference: {
@@ -1076,7 +1076,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               AttributeOfListObjectToCompareToReferenceUuid: {
   //                 transformerType: "constantObject",
   //                 value: {
-  //                   transformerType: "parameterReference",
+  //                   transformerType: "getFromParameters",
   //                   interpolation: "runtime",
   //                   referenceName: "splitEntity_newEntityName",
   //                 },
@@ -1092,7 +1092,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 definition: {
   //                   label: "My " + newEntityName,
   //                   parentUuid: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "splitEntity_newEntityUuid",
   //                   },
   //                   fetchedDataReference: "elementToDisplay",
@@ -1106,11 +1106,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                     definition: "{{splitEntity_newEntityName}}'s (${elementToDisplay.name}) {{splittedEntityName}}s",
   //                   },
   //                   parentName: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "splittedEntityName",
   //                   },
   //                   parentUuid: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "splittedEntityUuid",
   //                   },
   //                   fetchedDataReference: "fountainsOfMunicipality",
@@ -1129,18 +1129,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionName: "createEntity",
   //         actionLabel: "splitEntity_createEntity",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //         entities: [
   //           {
   //             entity: {
-  //               transformerType: "parameterReference",
+  //               transformerType: "getFromParameters",
   //               referenceName: "splitEntity_newEntity",
   //             },
   //             entityDefinition: {
-  //               transformerType: "parameterReference",
+  //               transformerType: "getFromParameters",
   //               referenceName: "splitEntity_newEntityDefinition",
   //             },
   //           },
@@ -1152,28 +1152,28 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionName: "alterEntityAttribute",
   //         actionLabel: "splitEntity_updateSplittedEntityAction",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //         entityName: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splittedEntityName",
   //         },
   //         entityUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splittedEntityUuid",
   //         },
   //         // entityUuid: splittedEntityUuid,
   //         entityDefinitionUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "splittedEntityDefinitionUuid",
   //         },
   //         // entityDefinitionUuid: splittedEntityDefinitionUuid,
   //         addColumns: [
   //           {
   //             name: {
-  //               transformerType: "parameterReference",
+  //               transformerType: "getFromParameters",
   //               referenceName: "splitEntity_newEntityName",
   //             },
   //             definition: {
@@ -1200,7 +1200,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "splitEntity_updateSplittedEntityAction_commit",
   //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //       },
@@ -1213,7 +1213,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           actionName: "createInstance",
   //           applicationSection: "model",
   //           deploymentUuid: {
-  //             transformerType: "parameterReference",
+  //             transformerType: "getFromParameters",
   //             referenceName: "currentDeploymentUuid",
   //           },
   //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -1230,11 +1230,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               applicationSection: "model",
   //               instances: [
   //                 {
-  //                   transformerType: "parameterReference",
+  //                   transformerType: "getFromParameters",
   //                   referenceName: "splitEntity_newEntityListReport",
   //                 },
   //                 {
-  //                   transformerType: "parameterReference",
+  //                   transformerType: "getFromParameters",
   //                   referenceName: "splitEntity_newEntityDetailsReport",
   //                 },
   //               ],
@@ -1249,7 +1249,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "splitEntity_createReports_commit",
   //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //       },
@@ -1260,7 +1260,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "splitEntity_refresh",
   //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //       },
@@ -1299,14 +1299,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           // applicationSection: "data",
   //           applicationSection: "model", // TODO: give only selfApplication section in individual queries?
   //           deploymentUuid: {
-  //             transformerType: "parameterReference",
+  //             transformerType: "getFromParameters",
   //             referenceName: "currentDeploymentUuid",
   //           },
   //           query: {
   //             // queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   //             deploymentUuid: {
-  //               transformerType: "parameterReference",
+  //               transformerType: "getFromParameters",
   //               referenceName: "currentDeploymentUuid",
   //             },
   //             pageParams,
@@ -1377,7 +1377,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                     definition: "{{adminConfigurationDeploymentParis.uuid}}",
   //                   }, // TODO: replace with selfApplication uuid, this is a deployment at the moment
   //                   reportUuid: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "splitEntity_newEntityListReportUuid",
   //                   },
   //                   icon: "location_on",
@@ -1414,7 +1414,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           actionName: "updateInstance",
   //           applicationSection: "model",
   //           deploymentUuid: {
-  //             transformerType: "parameterReference",
+  //             transformerType: "getFromParameters",
   //             referenceName: "currentDeploymentUuid",
   //           },
   //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -1442,7 +1442,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                         interpolation: "runtime",
   //                         // referenceName: newEntityName,
   //                         referenceName: {
-  //                           transformerType: "parameterReference",
+  //                           transformerType: "getFromParameters",
   //                           referenceName: "splitEntity_newEntityName",
   //                         },
   //                       },
@@ -1462,7 +1462,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "insertMunicipalities_commitForUpdateMenu",
   //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //       },
@@ -1480,13 +1480,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           applicationSection: "data",
   //           // applicationSection: "model", // TODO: give only selfApplication section in individual queries?
   //           deploymentUuid: {
-  //             transformerType: "parameterReference",
+  //             transformerType: "getFromParameters",
   //             referenceName: "currentDeploymentUuid",
   //           },
   //           query: {
   //             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   //             deploymentUuid: {
-  //               transformerType: "parameterReference",
+  //               transformerType: "getFromParameters",
   //               referenceName: "currentDeploymentUuid",
   //             },
   //             pageParams,
@@ -1498,7 +1498,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
   //                 applicationSection: "data",
   //                 parentName: {
-  //                   transformerType: "parameterReference",
+  //                   transformerType: "getFromParameters",
   //                   referenceName: "splittedEntityName",
   //                 },
   //                 parentUuid: {
@@ -1530,7 +1530,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   },
   //                     // referencedTransformer: "splittedEntityUuidIndex",
   //                   attribute: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "splittedEntityAttribute",
   //                   }, // TODO: allow transformer inside freeObjectTemplate!
   //                 },
@@ -1576,7 +1576,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                             value: "parentUuid",
   //                           },
   //                           attributeValue: {
-  //                             transformerType: "parameterReference",
+  //                             transformerType: "getFromParameters",
   //                             referenceName: "splitEntity_newEntityUuid",
   //                           },
   //                         },
@@ -1675,7 +1675,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                                 referenceName: "objectAlterTmpReference",
   //                               },
   //                               {
-  //                                 transformerType: "parameterReference",
+  //                                 transformerType: "getFromParameters",
   //                                 referenceName: "splittedEntityAttribute",
   //                               },
   //                               // splittedEntityAttribute,
@@ -1701,7 +1701,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "insertMunicipalities",
   //         applicationSection: "data",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -1731,7 +1731,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "updateFountains",
   //         applicationSection: "data",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "currentDeploymentUuid",
   //         },
   //         // deploymentUuid: currentDeploymentUuid,
@@ -1739,12 +1739,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         objects: [
   //           {
   //             parentName: {
-  //               transformerType: "parameterReference",
+  //               transformerType: "getFromParameters",
   //               referenceName: "splittedEntityName",
   //             },
   //             // parentName: splittedEntityName,
   //             parentUuid: {
-  //               transformerType: "parameterReference",
+  //               transformerType: "getFromParameters",
   //               referenceName: "splittedEntityUuid",
   //             },
   //             // parentUuid: splittedEntityUuid,
@@ -1859,7 +1859,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //       },
   //       newApplicationForAdmin: {
   //         uuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newAdminAppApplicationUuid",
   //         },
   //         parentName: {
@@ -1871,7 +1871,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           definition: "{{entityApplicationForAdmin.uuid}}",
   //         },
   //         name: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newApplicationName",
   //         },
   //         defaultLabel: {
@@ -1883,19 +1883,19 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           definition: "This selfApplication contains the {{newApplicationName}} model and data",
   //         },
   //         selfApplication: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newSelfApplicationUuid",
   //         },
   //       },
   //       newSelfApplication: {
   //         uuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newSelfApplicationUuid",
   //         },
   //         parentName: "SelfApplication",
   //         parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
   //         name: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newApplicationName",
   //         },
   //         defaultLabel: {
@@ -1907,13 +1907,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           definition: "This selfApplication contains the {{newApplicationName}} model and data",
   //         },
   //         selfApplication: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newSelfApplicationUuid",
   //         },
   //       },
   //       DeploymentConfiguration: {
   //         uuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentUuid",
   //         },
   //         parentName: {
@@ -1941,7 +1941,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           definition: "The default Sql Deployment for SelfApplication {{newApplicationName}}",
   //         },
   //         configuration: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentStoreConfiguration",
   //         },
   //       },
@@ -1964,11 +1964,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           definition: [
   //             {
   //               title: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "newApplicationName",
   //               },
   //               label: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "newApplicationName",
   //               },
   //               items: [
@@ -1979,7 +1979,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   },
   //                   section: "model",
   //                   selfApplication: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "newDeploymentUuid",
   //                   },
   //                   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
@@ -1992,7 +1992,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   },
   //                   section: "model",
   //                   selfApplication: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "newDeploymentUuid",
   //                   },
   //                   reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
@@ -2005,7 +2005,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                   },
   //                   section: "model",
   //                   selfApplication: {
-  //                     transformerType: "parameterReference",
+  //                     transformerType: "getFromParameters",
   //                     referenceName: "newDeploymentUuid",
   //                   },
   //                   reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
@@ -2038,18 +2038,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           definition: [
   //             {
   //               attributeKey: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "newDeploymentUuid",
   //               },
   //               attributeValue: {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "newDeploymentStoreConfiguration",
   //               },
   //             },
   //           ],
   //         },
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentUuid",
   //         },
   //       },
@@ -2060,15 +2060,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "createStoreAction",
   //         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentUuid",
   //         },
   //         configuration: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentStoreConfiguration",
   //         },
   //         // action: {
-  //         //   transformerType: "parameterReference",
+  //         //   transformerType: "getFromParameters",
   //         //   referenceName: "createStoreAction",
   //         // }
   //       },
@@ -2081,12 +2081,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         deploymentUuid: "",
   //         deployments: [
   //           {
-  //             transformerType: "parameterReference",
+  //             transformerType: "getFromParameters",
   //             referenceName: "DeploymentConfiguration",
   //           },
   //         ],
   //         // action: {
-  //         //   transformerType: "parameterReference",
+  //         //   transformerType: "getFromParameters",
   //         //   referenceName: "resetAndInitAction",
   //         // }
   //       },
@@ -2097,7 +2097,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "createSelfApplicationAction",
   //         applicationSection: "model",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentUuid",
   //         },
   //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -2114,7 +2114,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             applicationSection: "model",
   //             instances: [
   //               {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "newSelfApplication",
   //               },
   //             ],
@@ -2145,14 +2145,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             applicationSection: "data",
   //             instances: [
   //               {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "newApplicationForAdmin",
   //               },
   //             ],
   //           },
   //         ],
   //         // action: {
-  //         //   transformerType: "parameterReference",
+  //         //   transformerType: "getFromParameters",
   //         //   referenceName: "createApplicationForAdminAction",
   //         // }
   //       },
@@ -2180,14 +2180,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             applicationSection: "data",
   //             instances: [
   //               {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "DeploymentConfiguration",
   //               },
   //             ],
   //           },
   //         ],
   //         // action: {
-  //         //   transformerType: "parameterReference",
+  //         //   transformerType: "getFromParameters",
   //         //   referenceName: "createAdminDeploymentAction",
   //         // }
   //       },
@@ -2198,7 +2198,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "createNewApplicationMenuAction",
   //         applicationSection: "model",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentUuid",
   //         },
   //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -2215,14 +2215,14 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             applicationSection: "model",
   //             instances: [
   //               {
-  //                 transformerType: "parameterReference",
+  //                 transformerType: "getFromParameters",
   //                 referenceName: "newApplicationMenu",
   //               },
   //             ],
   //           },
   //         ],
   //         // action: {
-  //         //   transformerType: "parameterReference",
+  //         //   transformerType: "getFromParameters",
   //         //   referenceName: "createNewApplicationMenuAction",
   //         // }
   //       },
@@ -2233,11 +2233,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         actionLabel: "commitAction",
   //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //         deploymentUuid: {
-  //           transformerType: "parameterReference",
+  //           transformerType: "getFromParameters",
   //           referenceName: "newDeploymentUuid",
   //         },
   //         // action: {
-  //         //   transformerType: "parameterReference",
+  //         //   transformerType: "getFromParameters",
   //         //   referenceName: "commitAction",
   //         // }
   //       },

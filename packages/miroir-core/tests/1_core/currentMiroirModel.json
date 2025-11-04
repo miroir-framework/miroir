@@ -5627,7 +5627,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForBuild_parameterReference"
+                  "relativePath": "transformerForBuild_getFromParameters"
                 }
               }
             ]
@@ -5717,7 +5717,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForBuild_parameterReference"
+                  "relativePath": "transformerForBuild_getFromParameters"
                 }
               },
               {
@@ -6042,7 +6042,7 @@
               "value": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
             },
             "instanceUuid": {
-              "transformerType": "parameterReference",
+              "transformerType": "getFromParameters",
               "referenceName": "instanceUuid"
             }
           }
@@ -6358,7 +6358,7 @@
               "value": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
             },
             "instanceUuid": {
-              "transformerType": "parameterReference",
+              "transformerType": "getFromParameters",
               "referenceName": "instanceUuid"
             }
           }
@@ -6460,7 +6460,7 @@
               "value": "c37625c7-0b35-4d6a-811d-8181eb978301"
             },
             "instanceUuid": {
-              "transformerType": "parameterReference",
+              "transformerType": "getFromParameters",
               "referenceName": "instanceUuid"
             }
           }
@@ -6562,7 +6562,7 @@
               "value": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
             },
             "instanceUuid": {
-              "transformerType": "parameterReference",
+              "transformerType": "getFromParameters",
               "referenceName": "instanceUuid"
             }
           }

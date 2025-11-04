@@ -408,7 +408,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "parameterReference",
+            transformerType: "getFromParameters",
             interpolation: "build",
             referenceName: "wantedBookUuid",
           },
@@ -1550,7 +1550,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               query: {
                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
                 parentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "uuid",
                 },
@@ -1593,7 +1593,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               query: {
                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
                 parentUuid: {
-                  transformerType: "parameterReference",
+                  transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "uuid",
                 },

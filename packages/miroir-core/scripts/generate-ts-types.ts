@@ -152,7 +152,7 @@ export type TransformerForBuild =
   | TransformerForBuild_objectEntries
   | TransformerForBuild_objectValues
   | TransformerForBuild_object_fullTemplate
-  | TransformerForBuild_parameterReference
+  | TransformerForBuild_getFromParameters
   | TransformerForBuild_unique
   // | TransformerForBuild_constantBigint
   | TransformerForBuild_InnerReference
@@ -204,7 +204,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_objectEntries,
     transformerForBuild_objectValues,
     transformerForBuild_object_fullTemplate,
-    transformerForBuild_parameterReference,
+    transformerForBuild_getFromParameters,
     transformerForBuild_unique,
     // transformerForBuild_constantBigint,
     transformerForBuild_InnerReference,
@@ -307,7 +307,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_objectEntries
   | TransformerForBuildPlusRuntime_objectValues
   | TransformerForBuildPlusRuntime_object_fullTemplate
-  | TransformerForBuildPlusRuntime_parameterReference
+  | TransformerForBuildPlusRuntime_getFromParameters
   | TransformerForBuildPlusRuntime_getFromContext
   | TransformerForBuildPlusRuntime_unique
   // | TransformerForBuildPlusRuntime_constantBigint
@@ -361,7 +361,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_objectEntries,
     transformerForBuildPlusRuntime_objectValues,
     transformerForBuildPlusRuntime_object_fullTemplate,
-    transformerForBuildPlusRuntime_parameterReference,
+    transformerForBuildPlusRuntime_getFromParameters,
     transformerForBuildPlusRuntime_getFromContext,
     transformerForBuildPlusRuntime_unique,
     // transformerForBuildPlusRuntime_constantBigint,

@@ -37,7 +37,7 @@
                 "initializeTo": {
                   "initializeToType": "transformer",
                   "transformer": {
-                    "transformerType": "parameterReference",
+                    "transformerType": "getFromParameters",
                     "interpolation": "build",
                     "referenceName": "deploymentUuid"
                   }
@@ -112,7 +112,7 @@
                           "initializeTo": {
                             "initializeToType": "transformer",
                             "transformer": {
-                              "transformerType": "parameterReference",
+                              "transformerType": "getFromParameters",
                               "interpolation": "build",
                               "referencePath": [ "rootObject", "payload", "parentUuid" ]
                             }

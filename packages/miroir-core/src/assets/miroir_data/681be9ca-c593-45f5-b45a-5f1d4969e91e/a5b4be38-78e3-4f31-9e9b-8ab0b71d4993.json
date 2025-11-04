@@ -158,11 +158,11 @@
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "resolve basic build transformer parameterReference",
-                "transformerName": "parameterReference",
+                "transformerTestLabel": "resolve basic build transformer getFromParameters",
+                "transformerName": "getFromParameters",
                 "runTestStep": "build",
                 "transformer": {
-                  "transformerType": "parameterReference",
+                  "transformerType": "getFromParameters",
                   "referenceName": "fileData"
                 },
                 "transformerParams": {
@@ -253,7 +253,7 @@
                   "transformerType": "aggregate",
                   "interpolation": "build",
                   "applyTo": {
-                    "transformerType": "parameterReference",
+                    "transformerType": "getFromParameters",
                     "referenceName": "fileData"
                   }
                 },
@@ -279,7 +279,7 @@
                   "transformerType": "aggregate",
                   "interpolation": "build",
                   "applyTo": {
-                    "transformerType": "parameterReference",
+                    "transformerType": "getFromParameters",
                     "referenceName": "smallStringArray"
                   }
                 },
@@ -1058,7 +1058,7 @@
                   "transformerType": "==",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "parameterReference",
+                    "transformerType": "getFromParameters",
                     "interpolation": "runtime",
                     "referenceName": "userType"
                   },
@@ -1095,14 +1095,14 @@
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "parameterReference",
+                "transformerTestLabel": "getFromParameters",
                 "transformerTests": [
                   {
                     "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer parameterReference",
-                    "transformerName": "parameterReference",
+                    "transformerTestLabel": "resolve basic transformer getFromParameters",
+                    "transformerName": "getFromParameters",
                     "transformer": {
-                      "transformerType": "parameterReference",
+                      "transformerType": "getFromParameters",
                       "interpolation": "build",
                       "referenceName": "a"
                     },
@@ -1113,10 +1113,10 @@
                   },
                   {
                     "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer parameterReference for referencePath",
-                    "transformerName": "parameterReferenceForReferencePath",
+                    "transformerTestLabel": "resolve basic transformer getFromParameters for referencePath",
+                    "transformerName": "getFromParametersForReferencePath",
                     "transformer": {
-                      "transformerType": "parameterReference",
+                      "transformerType": "getFromParameters",
                       "referencePath": [
                         "a",
                         "b",
@@ -1135,9 +1135,9 @@
                   {
                     "transformerTestType": "transformerTest",
                     "transformerTestLabel": "should fail when parameter referenceName is not found",
-                    "transformerName": "parameterReference",
+                    "transformerName": "getFromParameters",
                     "transformer": {
-                      "transformerType": "parameterReference",
+                      "transformerType": "getFromParameters",
                       "referenceName": "nonExistentReference"
                     },
                     "transformerParams": {},
@@ -1151,9 +1151,9 @@
                   {
                     "transformerTestType": "transformerTest",
                     "transformerTestLabel": "should fail when parameter referencePath is invalid",
-                    "transformerName": "parameterReference",
+                    "transformerName": "getFromParameters",
                     "transformer": {
-                      "transformerType": "parameterReference",
+                      "transformerType": "getFromParameters",
                       "referencePath": [
                         "invalidPath"
                       ]
@@ -1305,7 +1305,7 @@
                   "transformerType": "objectEntries",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "parameterReference",
+                    "transformerType": "getFromParameters",
                     "referenceName": "testObject1"
                   }
                 },
@@ -2221,7 +2221,7 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)",
+                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object during runtime using getFromParameters (unknown keys, unknown values)",
                 "transformerName": "fullTemplate",
                 "transformer": {
                   "transformerType": "object_fullTemplate",
@@ -2734,7 +2734,7 @@
                   "transformerType": "objectAlter",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "parameterReference",
+                    "transformerType": "getFromParameters",
                     "referenceName": "country"
                   },
                   "referenceToOuterObject": "country",
@@ -2821,7 +2821,7 @@
                   "transformerType": "objectAlter",
                   "interpolation": "runtime",
                   "applyTo": {
-                    "transformerType": "parameterReference",
+                    "transformerType": "getFromParameters",
                     "referenceName": "country"
                   },
                   "referenceToOuterObject": "country",

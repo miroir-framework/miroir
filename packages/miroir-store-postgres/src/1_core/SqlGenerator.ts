@@ -522,7 +522,7 @@ function sqlStringForApplyTo(
         );
       }
       if (
-        ["constantAsExtractor", "returnValue", "getFromContext", "parameterReference"].includes(
+        ["constantAsExtractor", "returnValue", "getFromContext", "getFromParameters"].includes(
           actionRuntimeTransformer.applyTo.transformerType || ""
         )
       ) {
@@ -3158,7 +3158,7 @@ function sqlStringForMustacheStringTemplateTransformer(
           referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in getFromContextTransformer)
         }
       : {
-          transformerType: "parameterReference" as any, // Type cast needed for union type
+          transformerType: "getFromParameters" as any, // Type cast needed for union type
           interpolation: "runtime",
           referenceName: placeholderPath[0],
           referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in getFromContextTransformer)

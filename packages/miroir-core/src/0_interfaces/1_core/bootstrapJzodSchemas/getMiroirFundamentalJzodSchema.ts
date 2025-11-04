@@ -355,7 +355,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForBuildPlusRuntime_optional_Abstract",
     "transformerForBuild_objectDynamicAccess",
     "transformerForRuntime_getFromContext",
-    "transformerForBuild_parameterReference",
+    "transformerForBuild_getFromParameters",
     "transformer_contextOrParameterReferenceTO_REMOVE",
   ];
   // log.info("getExtendedSchemas result", JSON.stringify(result, null, 2));
@@ -864,8 +864,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_listReducerToSpreadObject,
         transformerForBuild_object_fullTemplate:
           miroirTransformersForBuild.transformer_object_fullTemplate,
-        transformerForBuild_parameterReference:
-          miroirTransformersForBuild.transformer_parameterReference,
+        transformerForBuild_getFromParameters:
+          miroirTransformersForBuild.transformer_getFromParameters,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         // MLS
         ...Object.fromEntries(
@@ -1022,8 +1022,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_freeObjectTemplate,
         transformerForBuildPlusRuntime_mapList:
           miroirTransformersForBuildPlusRuntime.transformer_mapList,
-        transformerForBuildPlusRuntime_parameterReference:
-          miroirTransformersForBuildPlusRuntime.transformer_parameterReference,
+        transformerForBuildPlusRuntime_getFromParameters:
+          miroirTransformersForBuildPlusRuntime.transformer_getFromParameters,
         transformerForBuildPlusRuntime_pickFromList:
           miroirTransformersForBuildPlusRuntime.transformer_pickFromList,
         transformerForBuildPlusRuntime_newUuid:
@@ -3913,7 +3913,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_Abstract", 
     "transformerForBuild_optional_Abstract",
     "transformerForBuild_objectDynamicAccess",
-    "transformerForBuild_parameterReference",
+    "transformerForBuild_getFromParameters",
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_conditional",
     "transformerForBuild_returnValue",
@@ -3933,7 +3933,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_listReducerToIndexObject",
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",
-    "transformerForBuild_parameterReference",
+    "transformerForBuild_getFromParameters",
     "transformerForBuild_unique",
     // "transformerForBuild_InnerReference"
   ].forEach((key) => {
@@ -4067,7 +4067,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_Abstract", 
     "transformerForBuild_optional_Abstract",
     "transformerForBuild_objectDynamicAccess",
-    "transformerForBuild_parameterReference",
+    "transformerForBuild_getFromParameters",
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_conditional",
     "transformerForBuild_returnValue",
@@ -4087,7 +4087,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_listReducerToIndexObject",
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",
-    "transformerForBuild_parameterReference",
+    "transformerForBuild_getFromParameters",
     "transformerForBuild_unique",
     // "transformerForBuild_InnerReference"
   ].forEach((key) => {

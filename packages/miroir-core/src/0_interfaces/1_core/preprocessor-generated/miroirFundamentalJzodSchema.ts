@@ -1897,7 +1897,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_parameterReference",
+              "relativePath": "transformerForBuild_getFromParameters",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -1957,7 +1957,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_parameterReference",
+              "relativePath": "transformerForBuild_getFromParameters",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -3518,7 +3518,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "transformerForBuild_parameterReference"
+                    "relativePath": "transformerForBuild_getFromParameters"
                   }
                 },
                 {
@@ -3799,7 +3799,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuild_parameterReference": {
+      "transformerForBuild_getFromParameters": {
         "type": "object",
         "extend": [
           {
@@ -3815,7 +3815,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "parameterReference"
+            "definition": "getFromParameters"
           },
           "referenceName": {
             "optional": true,
@@ -4353,7 +4353,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_parameterReference"
+              "relativePath": "transformerForBuild_getFromParameters"
             }
           },
           {
@@ -6248,7 +6248,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuildPlusRuntime_parameterReference": {
+      "transformerForBuildPlusRuntime_getFromParameters": {
         "type": "object",
         "extend": [
           {
@@ -6264,7 +6264,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "parameterReference"
+            "definition": "getFromParameters"
           },
           "referenceName": {
             "optional": true,
@@ -7202,7 +7202,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_parameterReference"
+              "relativePath": "transformerForBuildPlusRuntime_getFromParameters"
             }
           },
           {
@@ -17276,7 +17276,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -17351,7 +17351,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -17567,7 +17567,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -17642,7 +17642,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -24603,7 +24603,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference"
+                        "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters"
                       }
                     },
                     {
@@ -24718,7 +24718,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend": {
         "type": "object",
         "extend": [
           {
@@ -24736,7 +24736,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               {
                 "type": "literal",
-                "definition": "parameterReference"
+                "definition": "getFromParameters"
               },
               {
                 "type": "schemaReference",
@@ -24811,7 +24811,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -28267,7 +28267,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -28292,7 +28292,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -28463,7 +28463,7 @@ export const miroirFundamentalJzodSchema = {
                                           "initializeTo": {
                                             "initializeToType": "transformer",
                                             "transformer": {
-                                              "transformerType": "parameterReference",
+                                              "transformerType": "getFromParameters",
                                               "interpolation": "build",
                                               "referencePath": [
                                                 "rootObject",
@@ -28492,7 +28492,7 @@ export const miroirFundamentalJzodSchema = {
                                               "initializeTo": {
                                                 "initializeToType": "transformer",
                                                 "transformer": {
-                                                  "transformerType": "parameterReference",
+                                                  "transformerType": "getFromParameters",
                                                   "interpolation": "build",
                                                   "referencePath": [
                                                     "rootObject",
@@ -29719,7 +29719,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -29744,7 +29744,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -29915,7 +29915,7 @@ export const miroirFundamentalJzodSchema = {
                                           "initializeTo": {
                                             "initializeToType": "transformer",
                                             "transformer": {
-                                              "transformerType": "parameterReference",
+                                              "transformerType": "getFromParameters",
                                               "interpolation": "build",
                                               "referencePath": [
                                                 "rootObject",
@@ -29944,7 +29944,7 @@ export const miroirFundamentalJzodSchema = {
                                               "initializeTo": {
                                                 "initializeToType": "transformer",
                                                 "transformer": {
-                                                  "transformerType": "parameterReference",
+                                                  "transformerType": "getFromParameters",
                                                   "interpolation": "build",
                                                   "referencePath": [
                                                     "rootObject",
@@ -33671,7 +33671,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters"
             }
           },
           {
@@ -40449,7 +40449,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters": {
         "type": "union",
         "definition": [
           {
@@ -40476,7 +40476,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "parameterReference"
+                    "definition": "getFromParameters"
                   },
                   {
                     "type": "schemaReference",
@@ -51732,7 +51732,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -51744,7 +51744,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters": {
         "type": "union",
         "definition": [
           {
@@ -51771,7 +51771,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "parameterReference"
+                    "definition": "getFromParameters"
                   },
                   {
                     "type": "schemaReference",
@@ -51985,7 +51985,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference"
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters"
                           }
                         },
                         {
@@ -55340,7 +55340,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference"
+                    "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters"
                   }
                 },
                 {
@@ -55395,7 +55395,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend": {
         "type": "object",
         "extend": [
           {
@@ -55410,7 +55410,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "parameterReference"
+            "definition": "getFromParameters"
           },
           "referenceName": {
             "optional": true,
@@ -55442,7 +55442,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend",
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -56494,7 +56494,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -56523,7 +56523,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -56634,7 +56634,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -56667,7 +56667,7 @@ export const miroirFundamentalJzodSchema = {
                                   "initializeTo": {
                                     "initializeToType": "transformer",
                                     "transformer": {
-                                      "transformerType": "parameterReference",
+                                      "transformerType": "getFromParameters",
                                       "interpolation": "build",
                                       "referencePath": [
                                         "rootObject",
@@ -57325,7 +57325,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -57354,7 +57354,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -57465,7 +57465,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -57498,7 +57498,7 @@ export const miroirFundamentalJzodSchema = {
                                   "initializeTo": {
                                     "initializeToType": "transformer",
                                     "transformer": {
-                                      "transformerType": "parameterReference",
+                                      "transformerType": "getFromParameters",
                                       "interpolation": "build",
                                       "referencePath": [
                                         "rootObject",
@@ -59984,7 +59984,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters"
             }
           },
           {
@@ -60623,11 +60623,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_parameterReference"
+          "relativePath": "transformerForBuildPlusRuntime_getFromParameters"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_unique": {
@@ -62041,11 +62041,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_parameterReference"
+          "relativePath": "transformerForBuild_getFromParameters"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_optional_Abstract": {
@@ -64090,7 +64090,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference"
+                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters"
                   }
                 },
                 {
@@ -64145,7 +64145,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend": {
         "type": "object",
         "extend": [
           {
@@ -64160,7 +64160,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "parameterReference"
+            "definition": "getFromParameters"
           },
           "referenceName": {
             "optional": true,
@@ -64192,7 +64192,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -65232,7 +65232,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -65261,7 +65261,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -65370,7 +65370,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -65403,7 +65403,7 @@ export const miroirFundamentalJzodSchema = {
                                   "initializeTo": {
                                     "initializeToType": "transformer",
                                     "transformer": {
-                                      "transformerType": "parameterReference",
+                                      "transformerType": "getFromParameters",
                                       "interpolation": "build",
                                       "referencePath": [
                                         "rootObject",
@@ -66052,7 +66052,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -66081,7 +66081,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -66190,7 +66190,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -66223,7 +66223,7 @@ export const miroirFundamentalJzodSchema = {
                                   "initializeTo": {
                                     "initializeToType": "transformer",
                                     "transformer": {
-                                      "transformerType": "parameterReference",
+                                      "transformerType": "getFromParameters",
                                       "interpolation": "build",
                                       "referencePath": [
                                         "rootObject",
@@ -68693,7 +68693,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters"
             }
           },
           {
@@ -69332,11 +69332,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_parameterReference"
+          "relativePath": "transformerForBuildPlusRuntime_getFromParameters"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_unique": {
@@ -70748,11 +70748,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_parameterReference"
+          "relativePath": "transformerForBuild_getFromParameters"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_optional_Abstract": {
@@ -72800,7 +72800,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference"
+                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters"
                   }
                 },
                 {
@@ -72855,7 +72855,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend": {
         "type": "object",
         "extend": [
           {
@@ -72870,7 +72870,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "parameterReference"
+            "definition": "getFromParameters"
           },
           "referenceName": {
             "optional": true,
@@ -72902,7 +72902,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference_extend",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters_extend",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           }
@@ -73954,7 +73954,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -73983,7 +73983,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -74094,7 +74094,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -74127,7 +74127,7 @@ export const miroirFundamentalJzodSchema = {
                                   "initializeTo": {
                                     "initializeToType": "transformer",
                                     "transformer": {
-                                      "transformerType": "parameterReference",
+                                      "transformerType": "getFromParameters",
                                       "interpolation": "build",
                                       "referencePath": [
                                         "rootObject",
@@ -74785,7 +74785,7 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "transformerType": "parameterReference",
+                        "transformerType": "getFromParameters",
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
@@ -74814,7 +74814,7 @@ export const miroirFundamentalJzodSchema = {
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
-                            "transformerType": "parameterReference",
+                            "transformerType": "getFromParameters",
                             "interpolation": "build",
                             "referenceName": "deploymentUuid"
                           }
@@ -74925,7 +74925,7 @@ export const miroirFundamentalJzodSchema = {
                               "initializeTo": {
                                 "initializeToType": "transformer",
                                 "transformer": {
-                                  "transformerType": "parameterReference",
+                                  "transformerType": "getFromParameters",
                                   "interpolation": "build",
                                   "referencePath": [
                                     "rootObject",
@@ -74958,7 +74958,7 @@ export const miroirFundamentalJzodSchema = {
                                   "initializeTo": {
                                     "initializeToType": "transformer",
                                     "transformer": {
-                                      "transformerType": "parameterReference",
+                                      "transformerType": "getFromParameters",
                                       "interpolation": "build",
                                       "referencePath": [
                                         "rootObject",
@@ -77444,7 +77444,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters"
             }
           },
           {
@@ -78083,11 +78083,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_getFromParameters": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_parameterReference"
+          "relativePath": "transformerForBuildPlusRuntime_getFromParameters"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_unique": {
@@ -79501,11 +79501,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_parameterReference": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_getFromParameters": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_parameterReference"
+          "relativePath": "transformerForBuild_getFromParameters"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_optional_Abstract": {
@@ -79800,7 +79800,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_parameterReference"
+              "relativePath": "transformerForBuild_getFromParameters"
             }
           },
           {
@@ -79999,7 +79999,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_parameterReference"
+              "relativePath": "transformerForBuild_getFromParameters"
             }
           },
           {
@@ -80205,7 +80205,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_parameterReference"
+              "relativePath": "transformerForBuildPlusRuntime_getFromParameters"
             }
           },
           {
