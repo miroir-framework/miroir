@@ -295,7 +295,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   
   count++;
 
-  // Create a unique key for this component instance
+  // Create a getUniqueValues key for this component instance
   const componentKey = `JzodElementEditor-${props.rootLessListKey || 'ROOT'}`;
 
   const currentKeyMap = props.typeCheckKeyMap?.[props.rootLessListKey];

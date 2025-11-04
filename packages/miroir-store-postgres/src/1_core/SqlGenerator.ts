@@ -31,7 +31,7 @@ import {
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
+  TransformerForRuntime_getUniqueValues,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type TransformerForBuildPlusRuntime_conditional,
@@ -453,7 +453,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_objectEntries
     | TransformerForRuntime_listReducerToSpreadObject
     | TransformerForRuntime_listReducerToIndexObject
-    | TransformerForRuntime_unique
+    | TransformerForRuntime_getUniqueValues
     // | TransformerForRuntime_innerFullObjectTemplate
   ,
   preparedStatementParametersIndex: number,
@@ -1214,7 +1214,7 @@ function sqlStringForFreeObjectTransformer(
 }
 // ################################################################################################
 function sqlStringForUniqueTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_unique,
+  actionRuntimeTransformer: TransformerForRuntime_getUniqueValues,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1243,26 +1243,26 @@ function sqlStringForUniqueTransformer(
       return {
         type: "json",
         sqlStringOrObject: `
-SELECT jsonb_agg(t."unique_applyTo_array") AS "unique_objects"
+SELECT jsonb_agg(t."getUniqueValues_applyTo_array") AS "getUniqueValues_objects"
 FROM (
-SELECT DISTINCT ON ("unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}') "unique_applyTo_array"
-FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo", 
-LATERAL jsonb_array_elements("unique_applyTo"."${
+SELECT DISTINCT ON ("getUniqueValues_applyTo_array"->>'${actionRuntimeTransformer.attribute}') "getUniqueValues_applyTo_array"
+FROM (${referenceQuery.sqlStringOrObject}) AS "getUniqueValues_applyTo", 
+LATERAL jsonb_array_elements("getUniqueValues_applyTo"."${
 (referenceQuery as any).resultAccessPath[1]
-}") AS "unique_applyTo_array"
-ORDER BY "unique_applyTo_array"->>'${actionRuntimeTransformer.attribute}'
+}") AS "getUniqueValues_applyTo_array"
+ORDER BY "getUniqueValues_applyTo_array"->>'${actionRuntimeTransformer.attribute}'
 ) t
 `,
         preparedStatementParameters: referenceQuery.preparedStatementParameters,
-        resultAccessPath: [0, "unique_objects"],
-        columnNameContainingJsonValue: "unique_objects",
+        resultAccessPath: [0, "getUniqueValues_objects"],
+        columnNameContainingJsonValue: "getUniqueValues_objects",
       };
       break;
     }
     case "table": {
       const transformerSqlQuery = `
-SELECT DISTINCT ON ("unique_applyTo"."${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" 
-FROM (${referenceQuery.sqlStringOrObject}) AS "unique_applyTo"
+SELECT DISTINCT ON ("getUniqueValues_applyTo"."${actionRuntimeTransformer.attribute}") "${actionRuntimeTransformer.attribute}" 
+FROM (${referenceQuery.sqlStringOrObject}) AS "getUniqueValues_applyTo"
 ${orderBy}
 `;
       return {
@@ -1277,13 +1277,13 @@ ${orderBy}
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: actionRuntimeTransformer as any,
-        failureMessage: "sqlStringForRuntimeTransformer unique referenceQuery result is scalar, not json",
+        failureMessage: "sqlStringForRuntimeTransformer getUniqueValues referenceQuery result is scalar, not json",
       });
       break;
     }
     default: {
       throw new Error(
-        "sqlStringForRuntimeTransformer unique referenceQuery result type is not known: " +
+        "sqlStringForRuntimeTransformer getUniqueValues referenceQuery result type is not known: " +
           referenceQuery.type
       );
       break;

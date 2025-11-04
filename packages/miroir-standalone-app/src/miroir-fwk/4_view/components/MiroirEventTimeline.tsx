@@ -109,7 +109,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
   }, [trackedEvents, filters, context.miroirContext.miroirActivityTracker, componentId]);
 
   // ##############################################################################################
-  // Get unique action types for filter dropdown
+  // Get getUniqueValues action types for filter dropdown
   const actionTypes = useMemo(() => {
       // log.debug(`MiroirEventTimeLine [${componentId}] - Computing actionTypes from ${actions.length} actions`);
       
@@ -120,13 +120,13 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     const types = new Set(allActionTypes);
     const result = Array.from(types).sort();
     
-    // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} unique action types:`, result);
+    // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} getUniqueValues action types:`, result);
     
     return result;
   }, [trackedEvents.length, componentId]);
 
   // ##############################################################################################
-  // Get unique tracking types for filter dropdown
+  // Get getUniqueValues tracking types for filter dropdown
   const trackingTypes = useMemo(() => {
     // log.debug(`MiroirEventTimeLine [${componentId}] - Computing trackingTypes from ${actions.length} actions`);
     
@@ -137,7 +137,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     const types = new Set(allTrackingTypes);
     const result = Array.from(types).sort();
     
-    // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} unique tracking types:`, result);
+    // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} getUniqueValues tracking types:`, result);
     
     return result;
   }, [trackedEvents.length, componentId]);

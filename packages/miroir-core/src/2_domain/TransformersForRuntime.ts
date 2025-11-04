@@ -33,7 +33,7 @@ import {
   TransformerForBuild_objectEntries,
   TransformerForBuild_objectValues,
   TransformerForBuild_getFromParameters,
-  TransformerForBuild_unique,
+  TransformerForBuild_getUniqueValues,
   TransformerForBuildPlusRuntime,
   TransformerForRuntime,
   TransformerForRuntime_returnValue,
@@ -55,7 +55,7 @@ import {
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
+  TransformerForRuntime_getUniqueValues,
   type TransformerForBuild_InnerReference,
   type TransformerForRuntime_conditional,
   type TransformerForRuntime_InnerReference
@@ -102,7 +102,7 @@ import {
   transformer_objectEntries,
   transformer_objectValues,
   transformer_getFromParameters,
-  transformer_unique,
+  transformer_getUniqueValues,
   type ResolveBuildTransformersTo,
   type Step,
 } from "./Transformers";
@@ -687,7 +687,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   objectValues: transformer_objectValues,
   object_fullTemplate: transformer_object_fullTemplate,
   getFromParameters: transformer_getFromParameters,
-  unique: transformer_unique,
+  getUniqueValues: transformer_getUniqueValues,
   // MLS
   ...Object.fromEntries(
     Object.entries(mlsTransformers).map(([key, value]) => [
@@ -831,7 +831,7 @@ export function resolveApplyTo_legacy(
   | TransformerForBuild_listReducerToIndexObject
   | TransformerForBuild_objectEntries
   | TransformerForBuild_objectValues
-  | TransformerForBuild_unique
+  | TransformerForBuild_getUniqueValues
   | TransformerForRuntime_aggregate
   | TransformerForRuntime_mapList 
   | TransformerForRuntime_pickFromList
@@ -840,7 +840,7 @@ export function resolveApplyTo_legacy(
   | TransformerForRuntime_listReducerToSpreadObject
   | TransformerForRuntime_objectEntries
   | TransformerForRuntime_objectValues
-  | TransformerForRuntime_unique
+  | TransformerForRuntime_getUniqueValues
   ,
   step: Step,
   transformerPath: string[],
@@ -1924,7 +1924,7 @@ export function handleCountTransformer(
       ? transformer.groupBy
       : [transformer.groupBy];
     
-    // Use a Map with composite key (JSON stringified) to track unique combinations
+    // Use a Map with composite key (JSON stringified) to track getUniqueValues combinations
     const groupByMap = new Map<string, { attributes: Record<string, any>; aggregate: number }>();
     
     for (const entry of resolvedReference) {
@@ -1978,8 +1978,8 @@ export function handleUniqueTransformer(
   transformerPath: string[],
   label: string | undefined,
   transformer:
-  | TransformerForBuild_unique
-  | TransformerForRuntime_unique,
+  | TransformerForBuild_getUniqueValues
+  | TransformerForRuntime_getUniqueValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -1997,7 +1997,7 @@ export function handleUniqueTransformer(
     label
   );
   // log.info(
-  //   "handleUniqueTransformer extractorTransformer unique",
+  //   "handleUniqueTransformer extractorTransformer getUniqueValues",
   //   label,
   //   "resolvedReference",
   //   resolvedReference
@@ -2005,21 +2005,21 @@ export function handleUniqueTransformer(
 
   if (resolvedReference instanceof TransformerFailure) {
     log.error(
-      "handleUniqueTransformer extractorTransformer unique can not apply to resolvedReference",
+      "handleUniqueTransformer extractorTransformer getUniqueValues can not apply to resolvedReference",
       resolvedReference
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleUniqueTransformer"],
-      queryContext: "unique can not apply to resolvedReference",
+      queryContext: "getUniqueValues can not apply to resolvedReference",
       innerError: resolvedReference,
     });
   }
 
   if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
     log.error(
-      "handleUniqueTransformer extractorTransformer unique referencedExtractor can not apply to resolvedReference",
+      "handleUniqueTransformer extractorTransformer getUniqueValues referencedExtractor can not apply to resolvedReference",
       resolvedReference
     );
     return new TransformerFailure({
@@ -2027,7 +2027,7 @@ export function handleUniqueTransformer(
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleUniqueTransformer"],
       queryContext:
-        "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
+        "getUniqueValues can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
       queryParameters: resolvedReference,
     });
   }
@@ -2048,7 +2048,7 @@ export function handleUniqueTransformer(
     [...result].map((e) => ({ [transformer.attribute]: e }))
   );
   // log.info(
-  //   "handleUniqueTransformer extractorTransformer unique",
+  //   "handleUniqueTransformer extractorTransformer getUniqueValues",
   //   label,
   //   "result",
   //   resultDomainElement

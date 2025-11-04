@@ -866,7 +866,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_object_fullTemplate,
         transformerForBuild_getFromParameters:
           miroirTransformersForBuild.transformer_getFromParameters,
-        transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
+        transformerForBuild_getUniqueValues: miroirTransformersForBuild.transformer_getUniqueValues,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -937,7 +937,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_objectValues: miroirTransformersForRuntime.transformer_objectValues,
         transformerForRuntime_object_fullTemplate:
           miroirTransformersForRuntime.transformer_object_fullTemplate,
-        transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
+        transformerForRuntime_getUniqueValues: miroirTransformersForRuntime.transformer_getUniqueValues,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -1044,8 +1044,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_objectValues,
         transformerForBuildPlusRuntime_object_fullTemplate:
           miroirTransformersForBuildPlusRuntime.transformer_object_fullTemplate,
-        transformerForBuildPlusRuntime_unique:
-          miroirTransformersForBuildPlusRuntime.transformer_unique,
+        transformerForBuildPlusRuntime_getUniqueValues:
+          miroirTransformersForBuildPlusRuntime.transformer_getUniqueValues,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -3934,7 +3934,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",
     "transformerForBuild_getFromParameters",
-    "transformerForBuild_unique",
+    "transformerForBuild_getUniqueValues",
     // "transformerForBuild_InnerReference"
   ].forEach((key) => {
     oldCompositeActionDependencySet.add(key);
@@ -4088,7 +4088,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",
     "transformerForBuild_getFromParameters",
-    "transformerForBuild_unique",
+    "transformerForBuild_getUniqueValues",
     // "transformerForBuild_InnerReference"
   ].forEach((key) => {
     domainActionDependencySet.add(key);

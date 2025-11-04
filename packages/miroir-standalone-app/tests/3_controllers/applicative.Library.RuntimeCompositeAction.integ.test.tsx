@@ -727,7 +727,7 @@ const createEntityCompositeActionAssertions: CompositeRunTestAssertion[] = [
     nameGivenToResult: "checkEntityDefinitionList",
     testAssertion: {
       testType: "testAssertion",
-      testLabel: "checkEntityDefinitions", // TODO: index testCompositeActionAssertions in an object, ensuring unique keys
+      testLabel: "checkEntityDefinitions", // TODO: index testCompositeActionAssertions in an object, ensuring getUniqueValues keys
       definition: {
         resultAccessPath: ["newApplicationEntityDefinitionList", "entityDefinitions"],
         ignoreAttributes: [

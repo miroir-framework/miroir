@@ -134,7 +134,7 @@ export class RenderPerformanceMetrics {
 
     if (totalRenders === 0) return <div key="no-stats">No stats yet!</div>;
 
-    // Create a unique key based on current metrics
+    // Create a getUniqueValues key based on current metrics
     const metricsKey = `metrics-${totalRenders}-${totalTime.toFixed(2)}`;
 
     const summaryStyles = css({

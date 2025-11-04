@@ -1693,15 +1693,15 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "unique",
+            "transformerTestLabel": "getUniqueValues",
             "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "unique returns list of unique objects from returnValue array at runtime",
-                "transformerName": "uniqueForReferenceAtRuntime",
+                "transformerTestLabel": "getUniqueValues returns list of getUniqueValues objects from returnValue array at runtime",
+                "transformerName": "getUniqueValuesForReferenceAtRuntime",
                 "transformer": {
-                  "transformerType": "unique",
+                  "transformerType": "getUniqueValues",
                   "interpolation": "runtime",
                   "attribute": "a",
                   "applyTo": {
@@ -1739,10 +1739,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "unique returns list of unique objects from reference at runtime",
-                "transformerName": "uniqueForReferenceAtRuntime",
+                "transformerTestLabel": "getUniqueValues returns list of getUniqueValues objects from reference at runtime",
+                "transformerName": "getUniqueValuesForReferenceAtRuntime",
                 "transformer": {
-                  "transformerType": "unique",
+                  "transformerType": "getUniqueValues",
                   "interpolation": "runtime",
                   "attribute": "a",
                   "applyTo": {
@@ -1782,10 +1782,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "unique returns list of unique objects from extractor at runtime",
-                "transformerName": "uniqueForExtractorAtRuntime",
+                "transformerTestLabel": "getUniqueValues returns list of getUniqueValues objects from extractor at runtime",
+                "transformerName": "getUniqueValuesForExtractorAtRuntime",
                 "transformer": {
-                  "transformerType": "unique",
+                  "transformerType": "getUniqueValues",
                   "interpolation": "runtime",
                   "attribute": "a",
                   "applyTo": {

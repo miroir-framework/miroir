@@ -153,7 +153,7 @@ export type TransformerForBuild =
   | TransformerForBuild_objectValues
   | TransformerForBuild_object_fullTemplate
   | TransformerForBuild_getFromParameters
-  | TransformerForBuild_unique
+  | TransformerForBuild_getUniqueValues
   // | TransformerForBuild_constantBigint
   | TransformerForBuild_InnerReference
   | TransformerForBuild_dataflowSequence
@@ -205,7 +205,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_objectValues,
     transformerForBuild_object_fullTemplate,
     transformerForBuild_getFromParameters,
-    transformerForBuild_unique,
+    transformerForBuild_getUniqueValues,
     // transformerForBuild_constantBigint,
     transformerForBuild_InnerReference,
     transformerForBuild_dataflowSequence,
@@ -235,7 +235,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_objectEntries
   | TransformerForRuntime_objectValues
   | TransformerForRuntime_object_fullTemplate
-  | TransformerForRuntime_unique
+  | TransformerForRuntime_getUniqueValues
   // | TransformerForRuntime_constantBigint
   | TransformerForRuntime_InnerReference
   | TransformerForRuntime_dataflowSequence
@@ -265,7 +265,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_objectEntries),
   z.lazy(() => transformerForRuntime_objectValues),
   z.lazy(() => transformerForRuntime_object_fullTemplate),
-  z.lazy(() => transformerForRuntime_unique),
+  z.lazy(() => transformerForRuntime_getUniqueValues),
   // z.lazy(() => transformerForRuntime_constantBigint),
   z.lazy(() => transformerForRuntime_InnerReference),
   z.lazy(() => transformerForRuntime_dataflowSequence),
@@ -309,7 +309,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_object_fullTemplate
   | TransformerForBuildPlusRuntime_getFromParameters
   | TransformerForBuildPlusRuntime_getFromContext
-  | TransformerForBuildPlusRuntime_unique
+  | TransformerForBuildPlusRuntime_getUniqueValues
   // | TransformerForBuildPlusRuntime_constantBigint
   | TransformerForBuildPlusRuntime_InnerReference
   | TransformerForBuildPlusRuntime_dataflowSequence
@@ -363,7 +363,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_object_fullTemplate,
     transformerForBuildPlusRuntime_getFromParameters,
     transformerForBuildPlusRuntime_getFromContext,
-    transformerForBuildPlusRuntime_unique,
+    transformerForBuildPlusRuntime_getUniqueValues,
     // transformerForBuildPlusRuntime_constantBigint,
     transformerForBuildPlusRuntime_InnerReference,
     transformerForBuildPlusRuntime_dataflowSequence,
@@ -615,7 +615,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         Date.now() - startGenerateZodSchemaFileFromZodSchema,
         "ms"
       );
-      // const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_unique;
+      // const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_getUniqueValues;
       const newTransformer = miroirTransformersForBuild.transformer_menu_addItem;
       // console.log(
       //   "old transformer", 

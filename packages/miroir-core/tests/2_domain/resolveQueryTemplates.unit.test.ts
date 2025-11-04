@@ -18,7 +18,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   //   const newApplicationName = "test";
   //   const generateUuid = uuidv4();
 
-  //   const uniqueRuntimeTemplate: BoxedExtractorTemplateReturningObject = {
+  //   const getUniqueValuesRuntimeTemplate: BoxedExtractorTemplateReturningObject = {
   //     queryType: "boxedExtractorTemplateReturningObject",
   //     deploymentUuid: "xxxxx",
   //     pageParams: {
@@ -42,7 +42,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   //     },
   //   };
 
-  //   const testResult = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(uniqueRuntimeTemplate); // uuid value is ignored
+  //   const testResult = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(getUniqueValuesRuntimeTemplate); // uuid value is ignored
   //   console.log(
   //     "################################ converted queryTemplate to query with resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList testResults",
   //     JSON.stringify(testResult, null, 2)
@@ -71,7 +71,7 @@ describe("resolveQueryTemplates.unit.test", () => {
   // ################################################################################################
   it("convert extractorOrCombinerTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer", async () => { // TODO: test failure cases!
       console.log("convert queryTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer START")
-      const uniqueRuntimeTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = {
+      const getUniqueValuesRuntimeTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         deploymentUuid: "xxxxx",
         pageParams: {
@@ -185,7 +185,7 @@ describe("resolveQueryTemplates.unit.test", () => {
         },
       };
 
-      const testResult = resolveQueryTemplateWithExtractorCombinerTransformer(uniqueRuntimeTemplate, defaultMiroirModelEnvironment); // uuid value is ignored
+      const testResult = resolveQueryTemplateWithExtractorCombinerTransformer(getUniqueValuesRuntimeTemplate, defaultMiroirModelEnvironment); // uuid value is ignored
       console.log(
         "################################ converted extractorOrCombinerTemplate to query with resolveQueryTemplateWithExtractorCombinerTransformer testResults",
         JSON.stringify(testResult, null, 2)

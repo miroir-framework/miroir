@@ -1647,7 +1647,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       runtimeTransformers: {
         publishers: {
-          transformerType: "unique",
+          transformerType: "getUniqueValues",
           interpolation: "runtime",
           applyTo: {
             transformerType: "getFromContext",
@@ -1674,7 +1674,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       runtimeTransformers: {
         publishers: {
-          transformerType: "unique",
+          transformerType: "getUniqueValues",
           interpolation: "runtime",
           applyTo: {
             transformerType: "getFromContext",

@@ -481,7 +481,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       break;
     }
     case "union": {
-      // TODO: accumulate returned environment into unique object
+      // TODO: accumulate returned environment into getUniqueValues object
       const subConvertedSchemas = baseSchema.definition.map((e) =>
         applyLimitedCarryOnSchemaOnLevel(
           e,

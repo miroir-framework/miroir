@@ -781,8 +781,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 },
               },
               runtimeTransformers: {
-                uniqueAuthors: {
-                  transformerType: "unique",
+                getUniqueValuesAuthors: {
+                  transformerType: "getUniqueValues",
                   interpolation: "runtime",
                   applyTo: {
                     transformerType: "getFromContext",
@@ -800,7 +800,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      (a) => (a as any).returnedDomainElement.getUniqueValuesAuthors,
       undefined, // name to give to result
       undefined,
       [
@@ -842,7 +842,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 },
               },
               runtimeTransformers: {
-                uniqueAuthors: {
+                getUniqueValuesAuthors: {
                   interpolation: "runtime",
                   transformerType: "aggregate",
                   applyTo: {
@@ -859,8 +859,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      // (a) => (a as any).returnedDomainElement.uniqueAuthors,
-      (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      // (a) => (a as any).returnedDomainElement.getUniqueValuesAuthors,
+      (a) => (a as any).returnedDomainElement.getUniqueValuesAuthors,
       undefined, // name to give to result
       undefined,
       // 3,

@@ -230,7 +230,7 @@ A field name to sort the result list alphabetically.
 - **listReducerToIndexObject**: Convert list to object indexed by a field
 - **listReducerToSpreadObject**: Flatten list of objects into a single object
 - **listPickElement**: Pick a single element from a list
-- **unique**: Get unique values from a list based on a field
+- **getUniqueValues**: Get getUniqueValues values from a list based on a field
 
 ## See Also
 

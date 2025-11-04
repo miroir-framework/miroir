@@ -23,7 +23,7 @@ import transformer_objectDynamicAccess_json from '../assets/miroir_data/a557419d
 import transformer_objectEntries_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b726ac6a-f65e-403a-bba0-e11f0982fc41.json';
 import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
 import transformer_getFromParameters_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
-import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
+import transformer_getUniqueValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
 // MLS
 import transformer_defaultValueForMLSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3026a4f6-9f4b-4f1a-97bb-ecda4df35309.json';
 import transformer_resolveConditionalSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/70f5e617-2aa3-4dc4-b897-4cc3cffa3405.json';
@@ -58,7 +58,7 @@ export const transformer_objectEntries: TransformerDefinition = transformer_obje
 export const transformer_objectValues: TransformerDefinition = transformer_objectValues_json as TransformerDefinition;
 export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
 export const transformer_getFromParameters: TransformerDefinition = transformer_getFromParameters_json as TransformerDefinition;
-export const transformer_unique: TransformerDefinition = transformer_unique_json as TransformerDefinition;
+export const transformer_getUniqueValues: TransformerDefinition = transformer_getUniqueValues_json as TransformerDefinition;
 // MLS
 export const transformer_defaultValueForMLSchema: TransformerDefinition = transformer_defaultValueForMLSchema_json as TransformerDefinition;
 export const transformer_resolveConditionalSchema: TransformerDefinition = transformer_resolveConditionalSchema_json as TransformerDefinition;
@@ -94,7 +94,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_objectValues,
   transformer_object_fullTemplate,
   transformer_getFromParameters,
-  transformer_unique,
+  transformer_getUniqueValues,
   // transformer_constantBigint,
   // MLS
   ...mlsTransformers,

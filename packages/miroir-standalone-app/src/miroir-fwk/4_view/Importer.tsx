@@ -1286,7 +1286,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     actionLabel: "insertMunicipalities",
   //     actionName: "sequence",
   //     definition: [
-  //       // find unique municipalities from fountains
+  //       // find getUniqueValues municipalities from fountains
   //       {
   //         // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
   //         actionType: "compositeRunBoxedQueryTemplateAction",
@@ -1515,10 +1515,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               },
   //             },
   //             runtimeTransformers: {
-  //               uniqueSplittedEntityInstancesSplitAttributeValues: {
+  //               getUniqueValuesSplittedEntityInstancesSplitAttributeValues: {
   //                 transformerType: "freeObjectTemplate",
   //                 definition: {
-  //                   transformerType: "unique",
+  //                   transformerType: getUniqueValues,
   //                   interpolation: "runtime",
   //                   applyTo: {
   //                     referenceType: "referencedTransformer",
@@ -1558,10 +1558,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                     reference: {
   //                       transformerType: "getFromContext",
   //                       interpolation: "runtime",
-  //                       referenceName: "uniqueSplittedEntityInstancesSplitAttributeValues",
+  //                       referenceName: "getUniqueValuesSplittedEntityInstancesSplitAttributeValues",
   //                     }
   //                   },
-  //                   // referencedTransformer: "uniqueSplittedEntityInstancesSplitAttributeValues",
+  //                   // referencedTransformer: "getUniqueValuesSplittedEntityInstancesSplitAttributeValues",
   //                   elementTransformer: {
   //                     transformerType: "freeObjectTemplate",
   //                     definition: {

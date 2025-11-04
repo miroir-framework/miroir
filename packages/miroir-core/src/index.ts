@@ -373,7 +373,7 @@ export {
   transformerForBuild_constantAsExtractor,
   TransformerForBuild_getFromParameters,
   transformerForBuild_getFromParameters,
-  transformerForBuild_unique,
+  transformerForBuild_getUniqueValues,
   // 
   TransformerForBuildPlusRuntime_conditional,
   transformerForBuildPlusRuntime_conditional,
@@ -413,7 +413,7 @@ export {
   TransformerForRuntime_objectValues,
   // TransformerForRuntime_orderedTransformer,
   // transformerForRuntime_orderedTransformer,
-  TransformerForRuntime_unique,
+  TransformerForRuntime_getUniqueValues,
   TestCompositeActionParams,
   testCompositeActionParams,
   UndoRedoAction,

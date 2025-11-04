@@ -508,8 +508,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   },
                 },
                 runtimeTransformers: {
-                  uniqueAuthors: {
-                    transformerType: "unique",
+                  getUniqueValuesAuthors: {
+                    transformerType: "getUniqueValues",
                     interpolation: "runtime",
                     applyTo: {
                       transformerType: "getFromContext",
@@ -526,9 +526,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a: any) => resultHandler(a.returnedDomainElement.uniqueAuthors),
+      (a: any) => resultHandler(a.returnedDomainElement.getUniqueValuesAuthors),
       // .sort((a: any, b: any) => a.author.localeCompare(b.name)),
-      // (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      // (a) => (a as any).returnedDomainElement.getUniqueValuesAuthors,
       undefined, // name to give to result
       undefined,
       [
@@ -575,7 +575,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   },
                 },
                 runtimeTransformers: {
-                  uniqueAuthors: {
+                  getUniqueValuesAuthors: {
                     interpolation: "runtime",
                     transformerType: "aggregate",
                     applyTo: {
@@ -591,8 +591,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
-      (a: any) => resultHandler(a.returnedDomainElement.uniqueAuthors).sort((a: any, b: any) => a.name.localeCompare(b.name)),
-      // (a) => (a as any).returnedDomainElement.uniqueAuthors,
+      (a: any) => resultHandler(a.returnedDomainElement.getUniqueValuesAuthors).sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      // (a) => (a as any).returnedDomainElement.getUniqueValuesAuthors,
       undefined, // name to give to result
       undefined,
       [{aggregate: 6}],
