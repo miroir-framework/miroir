@@ -533,14 +533,6 @@ export {
   SelectUnionBranchFromDiscriminatorReturnTypeOK,
 } from "./0_interfaces/1_core/jzodTypeCheckInterface";
 export {
-  EntityDefinitionEntityDefinition,
-  EntityDefinitionEntityDefinitionAttribute,
-  EntityDefinitionEntityDefinitionAttributeNew,
-  entityDefinitionEntityDefinitionAttributeNewSchema,
-  entityDefinitionEntityDefinitionAttributeSchema,
-  entityDefinitionEntityDefinitionSchema,
-} from "./0_interfaces/1_core/writtenByHandSchema.js";
-export {
   defaultTransformerInput,
   ITransformerHandler,
   MiroirModelEnvironment

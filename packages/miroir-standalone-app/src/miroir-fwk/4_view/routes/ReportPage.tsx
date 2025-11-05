@@ -58,17 +58,17 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export const lastSubmitButtonClicked = "lastSubmitButtonClicked";
 
-const miroirExpression: JzodElement = {
-  type: "object",
-  definition: {
-    root: {
-      type: "string",
-    },
-    attribute: {
-      type: "string",
-    },
-  },
-};
+// const miroirExpression: JzodElement = {
+//   type: "object",
+//   definition: {
+//     root: {
+//       type: "string",
+//     },
+//     attribute: {
+//       type: "string",
+//     },
+//   },
+// };
 
 // export const deployments = [
 //   adminConfigurationDeploymentMiroir,

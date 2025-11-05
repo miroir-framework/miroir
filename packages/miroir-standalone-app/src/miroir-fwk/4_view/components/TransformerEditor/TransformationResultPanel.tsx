@@ -1,60 +1,26 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Formik, FormikProps } from 'formik';
+import React from 'react';
 
 import {
+  EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
-  EntityInstance,
-  type JzodElement,
-  TransformerForRuntime,
   Uuid,
-  jzodTypeCheck,
-  ResolvedJzodSchemaReturnType,
-  entityDefinitionTransformerDefinition,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
-  type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap,
-  adminConfigurationDeploymentMiroir,
-  miroirFundamentalJzodSchema,
-  type JzodSchema,
-  type MetaModel,
-  type MiroirModelEnvironment,
-  getEntityInstancesUuidIndexNonHook,
-  transformer_extended_apply_wrapper,
-  type Domain2QueryReturnType,
-  type Entity,
-  type EntityDefinition,
-  type EntityDefinitionEntityDefinition,
-  type TransformerReturnType,
-  type TransformerFailure,
-  getInnermostTransformerError,
   defaultTransformerInput,
   safeStringify,
+  type JzodElement,
+  type TransformerReturnType
 } from 'miroir-core';
-import { valueToJzod } from '@miroir-framework/jzod';
 
 
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
-import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor';
-import { useMiroirContextService } from '../../MiroirContextReactProvider';
-import { useCurrentModel } from '../../ReduxHooks';
+import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import {
   ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
-  ThemedText,
-  ThemedTitle,
-} from "../Themes/index"
-import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInstance';
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
-import { useSelector } from 'react-redux';
-import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
-import { TransformerEventsPanel } from './TransformerEventsPanel';
-import { useReportPageContext } from '../Reports/ReportPageContext';
-import type { FoldedStateTree } from '../Reports/FoldedStateTreeUtils';
-import type { TransformerForBuildOrRuntime } from 'miroir-core';
-import type { TransformerForBuildPlusRuntime } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+  ThemedTitle
+} from "../Themes/index";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
