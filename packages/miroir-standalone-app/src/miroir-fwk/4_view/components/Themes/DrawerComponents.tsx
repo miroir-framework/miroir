@@ -40,7 +40,7 @@ export const ThemedDrawer: React.FC<ThemedComponentProps & {
     left: 0,
     height: '100vh',
     zIndex: 1200,
-    overflow: 'scroll',
+    overflow: 'hidden',
     maxWidth: open ? `${width}px` : '0px',
   });
 

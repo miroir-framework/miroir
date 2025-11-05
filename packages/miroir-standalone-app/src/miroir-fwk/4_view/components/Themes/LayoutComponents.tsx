@@ -409,25 +409,16 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
   
   const scrollableStyles = css({
     flex: 1,
-    overflow: 'auto',
+    overflowY: 'scroll',
+    overflowX: 'hidden',
     padding: currentTheme.spacing.md,
     backgroundColor: currentTheme.colors.background,
     
-    // Custom scrollbar styling
+    // Hide scrollbars but keep scroll functionality
+    scrollbarWidth: 'none', // Firefox
+    msOverflowStyle: 'none', // IE and Edge
     '&::-webkit-scrollbar': {
-      width: '8px',
-      height: '8px',
-    },
-    '&::-webkit-scrollbar-track': {
-      background: currentTheme.colors.surface,
-      borderRadius: '4px',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: currentTheme.colors.border,
-      borderRadius: '4px',
-      '&:hover': {
-        background: currentTheme.colors.textSecondary,
-      },
+      display: 'none', // Chrome, Safari, Opera
     },
   });
 
