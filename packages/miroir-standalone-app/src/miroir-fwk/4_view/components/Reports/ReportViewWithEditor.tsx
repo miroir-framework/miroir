@@ -1,7 +1,9 @@
 import { Box } from '@mui/material';
 import {
+  adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnvironment,
   Domain2ElementFailed,
+  entityEntityDefinition,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -417,7 +419,16 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // const reportSectionPathAsString = reportSectionPath?.join("_") || "";
   const onEditValueObjectFormSubmit = useCallback(
     async (data: any) => {
-      log.info("onEditValueObjectFormSubmit called with new object value", data);
+      log.info(
+        "onEditValueObjectFormSubmit called on deployment",
+        props.deploymentUuid,
+        "miroir deployment is",
+        adminConfigurationDeploymentMiroir.uuid,
+        "with new object value",
+        data,
+        "props:",
+        props
+      );
       // TODO: use action queue
       if (props.deploymentUuid) {
         if (!data || !data[lastSubmitButtonClicked]) {
@@ -438,12 +449,26 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         }
 
         if (!data[data[lastSubmitButtonClicked]].parentUuid) {
-          throw new Error("onEditValueObjectFormSubmit called with object missing parentUuid: " + Object.keys(data[data[lastSubmitButtonClicked]]));
+          throw new Error(
+            "onEditValueObjectFormSubmit called with object missing parentUuid: " +
+              Object.keys(data[data[lastSubmitButtonClicked]])
+          );
         }
         const currentInstance = data[data[lastSubmitButtonClicked]];
         const applicationSection = getApplicationSection(props.deploymentUuid, currentInstance.parentUuid);
 
-        if (applicationSection == "model") {
+        if (props.deploymentUuid === adminConfigurationDeploymentMiroir.uuid && applicationSection === "model") {
+          throw new Error("Editing model definitions in the miroir admin deployment is not allowed.");
+        }
+
+        if (applicationSection === "model" && currentInstance.parentUuid === entityEntityDefinition.uuid) {
+          throw new Error("Editing entity definitions in the model section is not allowed.");
+        }
+        
+        if (
+          props.deploymentUuid == adminConfigurationDeploymentMiroir.uuid ||
+          applicationSection == "model"
+        ) {
           await domainController.handleAction(
             {
               actionType: "transactionalInstanceAction",
@@ -455,7 +480,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   applicationSection: "model",
                   objects: [
                     {
-                      parentName: currentInstance.name,
+                      parentName: currentInstance.parentName,
                       parentUuid: currentInstance.parentUuid,
                       applicationSection: props.applicationSection,
                       instances: [currentInstance],

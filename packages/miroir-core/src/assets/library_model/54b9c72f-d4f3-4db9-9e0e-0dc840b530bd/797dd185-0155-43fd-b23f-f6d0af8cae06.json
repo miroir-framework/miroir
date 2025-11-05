@@ -73,7 +73,7 @@
         "tag": {
           "value": {
             "id": 4,
-            "defaultLabel": "Name",
+            "defaultLabel": "Book Title",
             "editable": true
           }
         }
