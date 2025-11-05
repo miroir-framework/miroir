@@ -1200,6 +1200,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               > */}
               {displayAsCodeEditor ? (
                 <JzodElementEditorReactCodeMirror
+                  formikRootLessListKey={formikRootLessListKey}
                   initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
                   codeMirrorValue={codeMirrorValue}
                   setCodeMirrorValue={setCodeMirrorValue}

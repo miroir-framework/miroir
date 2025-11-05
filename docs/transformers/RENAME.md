@@ -197,8 +197,8 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | object_fullTemplate | OK: **createObjectFromPairs** |
 | objectAlter | OK: **mergeIntoObject** |
 | conditional | OK: **ifThenElse** |
+| objectDynamicAccess | OK: **accessDynamicPath** |
 |----------|----------|
-| objectDynamicAccess | **accessDynamicPath** |
 | constantAsExtractor | **returnAsExtractor** *(testing only)* |
 | mustacheStringTemplate | **templateString** |
 | dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |

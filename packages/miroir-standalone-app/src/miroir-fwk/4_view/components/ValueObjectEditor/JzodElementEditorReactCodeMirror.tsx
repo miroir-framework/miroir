@@ -15,6 +15,7 @@ import {
   ThemedCodeBlock,
   ThemedOnScreenHelper
 } from "../Themes/index";
+import { useFormikContext } from "formik";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -29,6 +30,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
   props: JzodElementEditorReactCodeMirrorProps
 ) => {
   const {
+    formikRootLessListKey,
     initialValue,
     codeMirrorValue,
     setCodeMirrorValue,
@@ -40,6 +42,8 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     jzodSchemaTooltip,
     readOnly
   } = props;
+
+  const formikContext = useFormikContext<any>();
 
   if (props.isUnderTest) {
     // For testing purposes, return a simple div with the value
@@ -100,19 +104,23 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     }
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
-  const handleChange = useCallback((value: string) => {
-    // log.info(
-    //   "handleChange CodeMirror value changed:",
-    //   value
-    // );
-    try {
-      JSON.parse(value);
-      setCodeMirrorIsValidJson(true);
-    } catch {
-      setCodeMirrorIsValidJson(false);
-    }
-    setCodeMirrorValue(value);
-  }, [setCodeMirrorIsValidJson, setCodeMirrorValue]);
+  const handleChange = useCallback(
+    (value: string) => {
+      // log.info(
+      //   "handleChange CodeMirror value changed:",
+      //   value
+      // );
+      try {
+        const objectValue = JSON.parse(value);
+        setCodeMirrorIsValidJson(true);
+        formikContext.setFieldValue(formikRootLessListKey, objectValue);
+      } catch {
+        setCodeMirrorIsValidJson(false);
+      }
+      setCodeMirrorValue(value);
+    },
+    [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey]
+  );
 
   const handleCheck = useCallback(() => {
     try {
@@ -148,53 +156,49 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           borderRadius: "4px",
           padding: "2px",
           minWidth: "40ch",
-          position: "relative",
-          display: !hidden && !insideAny ? "inline-block" : "none" // control visibility
+          display: !hidden && !insideAny ? "inline-flex" : "none", // control visibility with flex
+          flexDirection: "column"
         }}
       >
-        {props.displayAsStructuredElementSwitch && (
-          <ThemedSpan style={{ marginBottom: "10px" }}>{displayAsStructuredElementSwitch}</ThemedSpan>
-        )}
-        <ThemedStyledButton
-          aria-label="Format JSON"
-          style={{
-            position: "absolute",
-            top: "4px",
-            right: "36px",
-            zIndex: 2,
-            background: "#eee",
-            border: "1px solid #ccc",
-            borderRadius: "3px",
-            padding: "2px 6px",
-            cursor: "pointer",
-            fontWeight: "bold"
-          }}
-          onClick={handleFormat}
-          title="Format JSON"
-        >
-          {"{}"}
-        </ThemedStyledButton>
-        <ThemedStyledButton
-          aria-label="Check and Apply JSON"
-          style={{
-            position: "absolute",
-            top: "4px",
-            right: "4px",
-            zIndex: 2,
-            background: "#eee",
-            border: "1px solid #ccc",
-            borderRadius: "3px",
-            padding: "2px 6px",
-            cursor: codeMirrorIsValidJson ? "pointer" : "not-allowed",
-            fontWeight: "bold",
-            color: codeMirrorIsValidJson ? "green" : "gray"
-          }}
-          onClick={handleCheck}
-          title="Check and Apply JSON"
-          disabled={!codeMirrorIsValidJson}
-        >
-          ✓
-        </ThemedStyledButton>
+        <ThemedSpan style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+          {props.displayAsStructuredElementSwitch && (
+            <ThemedSpan>{displayAsStructuredElementSwitch}</ThemedSpan>
+          )}
+          <ThemedSpan style={{ display: "flex", gap: "4px", marginLeft: "auto" }}>
+            <ThemedStyledButton
+              aria-label="Format JSON"
+              style={{
+                background: "#eee",
+                border: "1px solid #ccc",
+                borderRadius: "3px",
+                padding: "2px 6px",
+                cursor: "pointer",
+                fontWeight: "bold"
+              }}
+              onClick={handleFormat}
+              title="Format JSON"
+            >
+              {"{}"}
+            </ThemedStyledButton>
+            <ThemedStyledButton
+              aria-label="Check and Apply JSON"
+              style={{
+                background: "#eee",
+                border: "1px solid #ccc",
+                borderRadius: "3px",
+                padding: "2px 6px",
+                cursor: codeMirrorIsValidJson ? "pointer" : "not-allowed",
+                fontWeight: "bold",
+                color: codeMirrorIsValidJson ? "green" : "gray"
+              }}
+              onClick={handleCheck}
+              title="Check and Apply JSON"
+              disabled={!codeMirrorIsValidJson}
+            >
+              ✓
+            </ThemedStyledButton>
+          </ThemedSpan>
+        </ThemedSpan>
         <ReactCodeMirror
           value={codeMirrorValue}
           extensions={extensions}

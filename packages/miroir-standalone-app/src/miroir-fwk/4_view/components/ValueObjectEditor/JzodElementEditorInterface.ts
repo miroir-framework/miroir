@@ -103,6 +103,7 @@ export type JzodElementEditorReactCodeMirrorProps = {
   initialValue: any;
   // rawJzodSchema: JzodElement;
   // formik: any; // Formik instance
+  formikRootLessListKey: string;
   codeMirrorValue: string;
   setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
   codeMirrorIsValidJson: boolean;
