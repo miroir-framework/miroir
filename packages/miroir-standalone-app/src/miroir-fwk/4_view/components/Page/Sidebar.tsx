@@ -8,13 +8,14 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentParis,
   LoggerInterface,
   menuDefaultAdmin,
   menuDefaultLibrary,
   menuDefaultMiroir,
   MiroirLoggerFactory
 } from "miroir-core";
-import { adminConfigurationDeploymentParis, defaultMenuParisUuid, packageName } from '../../../../constants.js';
+import { defaultMenuParisUuid, packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { SidebarSection } from './SidebarSection.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';

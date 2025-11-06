@@ -50,9 +50,10 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
-  type MiroirEventTrackerInterface
+  type MiroirActivityTrackerInterface
 } from "miroir-core";
 import {
   LocalCache,
@@ -250,7 +251,12 @@ export function createDeploymentCompositeAction(
   deploymentUuid: Uuid,
   deploymentConfiguration: StoreUnitConfiguration,
 ): CompositeAction {
-  log.info("createDeploymentCompositeAction deploymentConfiguration", deploymentUuid, deploymentConfiguration);
+  log.info("createDeploymentCompositeAction deploymentConfiguration", 
+    "deploymentUuid:", 
+    deploymentUuid, 
+    "deploymentConfiguration:",
+    deploymentConfiguration
+  );
   return {
     actionType: "compositeAction",
     actionLabel: "beforeAll",
@@ -312,13 +318,13 @@ export function resetAndinitializeDeploymentCompositeAction(
       },
       {
         actionType: "rollback",
-        actionLabel: "refreshLocalCacheForLibraryStore",
+        actionLabel: "refreshLocalCacheForApplication",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid: deploymentUuid,
       },
       {
         actionType: "createEntity",
-        actionLabel: "CreateLibraryStoreEntities",
+        actionLabel: "CreateApplicationStoreEntities",
         deploymentUuid: deploymentUuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
@@ -327,13 +333,13 @@ export function resetAndinitializeDeploymentCompositeAction(
       },
       {
         actionType: "commit",
-        actionLabel: "CommitLibraryStoreEntities",
+        actionLabel: "CommitApplicationStoreEntities",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         deploymentUuid: deploymentUuid,
       },
       {
         actionType: "createInstance",
-        actionLabel: "CreateLibraryStoreInstances",
+        actionLabel: "CreateApplicationStoreInstances",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         deploymentUuid: deploymentUuid,
         payload: {
@@ -389,25 +395,25 @@ export async function addEntitiesAndInstancesForRealServer(
 
   if (act) {
     await (act as any)(async () => {
-      await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
+      await domainController.handleAction(createAction, localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid));
       await domainController.handleAction(
         {
           actionType: "commit",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         },
-        localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+        localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
       );
     });
   } else {
-    await domainController.handleAction(createAction, localCache.currentModel(adminConfigurationDeploymentLibrary.uuid));
+    await domainController.handleAction(createAction, localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid));
     await domainController.handleAction(
       {
         actionType: "commit",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       },
-      localCache.currentModel(adminConfigurationDeploymentLibrary.uuid)
+      localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
     );
   }
 
@@ -609,12 +615,19 @@ export async function createDeploymentGetPersistenceStoreController(
     );
     const createDeploymentResult = await domainController.handleCompositeAction(
       createLocalDeploymentCompositeAction,
-      defaultMiroirMetaModel
+      defaultMiroirModelEnvironment,
+      {}
     );
 
     if (createDeploymentResult.status != "ok") {
-      console.error('Error createDeploymentGetPersistenceStoreController',JSON.stringify(createDeploymentResult, null, 2));
-      throw new Error('Error createDeploymentGetPersistenceStoreController could not create Miroir Deployment: ' + JSON.stringify(createDeploymentResult, null, 2));
+      console.error(
+        "Error createDeploymentGetPersistenceStoreController",
+        JSON.stringify(createDeploymentResult, null, 2)
+      );
+      throw new Error(
+        "Error createDeploymentGetPersistenceStoreController could not create Miroir Deployment: " +
+          JSON.stringify(createDeploymentResult, null, 2)
+      );
     }
     log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll_createDeploymentGetPersistenceController DONE');
     log.info("createDeploymentGetPersistenceStoreController set persistenceStoreControllerManager on manager DONE");
@@ -670,7 +683,7 @@ export async function resetApplicationDeployments(
       actionType: "resetModel",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: d.adminConfigurationDeployment.uuid,
-    }, localCache?localCache.currentModel(d.adminConfigurationDeployment.uuid):defaultMiroirMetaModel);
+    }, localCache?localCache.currentModelEnvironment(d.adminConfigurationDeployment.uuid):defaultMiroirModelEnvironment);
   }
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
   return Promise.resolve();
@@ -728,7 +741,7 @@ export async function runTestOrTestSuite(
   // localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   testAction: TestCompositeActionParams,
-  miroirActivityTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
+  miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
   testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
@@ -745,7 +758,8 @@ export async function runTestOrTestSuite(
           "running test testCompositeActionSuite",
           fullTestName,
           "with params",
-          JSON.stringify(newParams, null, 2)
+          newParams,
+          // JSON.stringify(newParams, null, 2)
         );
         const queryResult: Action2ReturnType = await miroirActivityTracker.trackTestSuite(
           fullTestName,
@@ -753,8 +767,8 @@ export async function runTestOrTestSuite(
           undefined, // parentTrackId
           async() => await domainController.handleTestCompositeActionSuite(
             testAction.testCompositeAction as any, // TODO: remove cast
+            domainController.currentModelEnvironment(testAction.deploymentUuid),
             newParams,
-            domainController.currentModel(testAction.deploymentUuid)
           )
         ) 
         // const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
@@ -788,8 +802,8 @@ export async function runTestOrTestSuite(
           async () =>
             await domainController.handleTestCompositeAction(
               testAction.testCompositeAction as any, // TODO: remove cast
+              domainController.currentModelEnvironment(testAction.deploymentUuid),
               {},
-              domainController.currentModel(testAction.deploymentUuid)
             )
         );
         // const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
@@ -814,8 +828,8 @@ export async function runTestOrTestSuite(
           miroirActivityTracker.getCurrentActivityId(),
           async() => await domainController.handleTestCompositeActionTemplateSuite(
             testAction.testCompositeActionSuite,
+            domainController.currentModelEnvironment(testAction.deploymentUuid),
             testActionParamValues??{},
-            domainController.currentModel(testAction.deploymentUuid)
           )
         )
         // const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(

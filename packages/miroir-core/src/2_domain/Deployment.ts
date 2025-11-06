@@ -149,7 +149,9 @@ export function getBasicApplicationConfiguration(
 
   return {
     dataStoreType:
-      adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+      adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid
+        ? "miroir"
+        : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
     metaModel: defaultMiroirMetaModel,
     // adminApplicationDeploymentConfiguration: {
     //   ...typedAdminConfigurationDeploymentLibrary,

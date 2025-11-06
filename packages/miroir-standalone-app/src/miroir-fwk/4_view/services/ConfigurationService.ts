@@ -22,10 +22,11 @@ import {
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentLibrary,
   defaultMiroirModelEnvironment,
+  adminConfigurationDeploymentParis,
 } from "miroir-core";
 import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
-import { adminConfigurationDeploymentParis, packageName } from '../../../constants.js';
+import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { logStartupError } from './ErrorLogService.js';
 

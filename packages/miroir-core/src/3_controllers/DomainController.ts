@@ -221,6 +221,11 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
+  currentModelEnvironment(uuid: string): MiroirModelEnvironment {
+    return this.localCache.currentModelEnvironment(uuid);
+  }
+
+  // ##############################################################################################
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {
     return this.localCache.currentTransaction();
   }

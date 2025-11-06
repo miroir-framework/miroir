@@ -914,7 +914,7 @@ export const testSuites = (transformerTestSuite: TransformerTestSuite): string[]
 //   expect: any, // vitest.expect
 //   currentTestSuiteName: string,
 //   currentTestSuitePath: TestAssertionPath,
-//   miroirActivityTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
+//   miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
 // ) {
 //   throw new Error("displayTestSuiteResults is not implemented yet");
 // }

@@ -23,6 +23,7 @@ import {
   TestCompositeActionParams,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentParis,
   defaultLibraryModelEnvironment,
   defaultMetaModelEnvironment,
   displayTestSuiteResultsDetails,
@@ -50,7 +51,7 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRed
 //   Entity,
 //   TestSuiteResult
 // } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
+import { applicationParis, packageName } from "../../../constants.js";
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
 import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
@@ -338,6 +339,7 @@ export const ToolsPage: React.FC<any> = (
             // localCache,
             domainController,
             testSuite,
+            context.miroirContext.miroirActivityTracker,
             (testSuite as any)["testParams"]
           );
           log.info(
@@ -352,34 +354,33 @@ export const ToolsPage: React.FC<any> = (
           }
         }
 
-        // const deleteNewApplicationResult = await domainController.handleCompositeActionTemplate(
-        const deleteNewApplicationResult = await domainController.handleCompositeAction(
-          testOnLibrary_deleteLibraryDeployment({
-          miroirConfigType: "client",
-          client: {
-            emulateServer: true,
-            rootApiUrl: "http://localhost:3080",
-            deploymentStorageConfig: {
-              [actionCreateSchemaParamValues.newDeploymentUuid]:testDeploymentStorageConfiguration
-              },
-            }}, actionCreateSchemaParamValues.newDeploymentUuid),
-          paramsForTemplates,
-          defaultLibraryModelEnvironment // TODO: use real model environment for current deployment
-        );
-
-        log.info(
-          "store deleted with uuid",
-          actionCreateSchemaParamValues.newDeploymentUuid,
-          JSON.stringify(deleteNewApplicationResult, null, 2)
-        );
-        // not needed in the GUI, the admin and miroir models stay there.
-        // await deleteAndCloseApplicationDeployments(
-        //   miroirConfig,
-        //   domainController,
-        //   [
-        //     typedAdminConfigurationDeploymentMiroir
-        //   ],
+        // const deleteNewApplicationResult = await domainController.handleCompositeAction(
+        //   testOnLibrary_deleteLibraryDeployment({
+        //   miroirConfigType: "client",
+        //   client: {
+        //     emulateServer: true,
+        //     rootApiUrl: "http://localhost:3080",
+        //     deploymentStorageConfig: {
+        //       [actionCreateSchemaParamValues.newDeploymentUuid]:testDeploymentStorageConfiguration
+        //       },
+        //     }}, actionCreateSchemaParamValues.newDeploymentUuid),
+        //   paramsForTemplates,
+        //   defaultLibraryModelEnvironment // TODO: use real model environment for current deployment
         // );
+
+        // log.info(
+        //   "store deleted with uuid",
+        //   actionCreateSchemaParamValues.newDeploymentUuid,
+        //   JSON.stringify(deleteNewApplicationResult, null, 2)
+        // );
+        // // not needed in the GUI, the admin and miroir models stay there.
+        // // await deleteAndCloseApplicationDeployments(
+        // //   miroirConfig,
+        // //   domainController,
+        // //   [
+        // //     typedAdminConfigurationDeploymentMiroir
+        // //   ],
+        // // );
     
         const testSuitePath = [{ testSuite: Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]}]
         const globalTestSuiteResults = context.miroirContext.miroirActivityTracker.getTestSuiteResult(
@@ -450,20 +451,8 @@ export const ToolsPage: React.FC<any> = (
 
           <div>Hello World!</div>
 
-          {/* resolveConditionalSchema Test Button */}
-          {/* <div style={{ margin: "20px 0" }}>
-            <RunTransformerTestSuiteButton
-              transformerTestSuite={transformerTestSuite_resolveConditionalSchema}
-              testSuiteKey={testSuiteKey}
-              useSnackBar={true}
-              onTestComplete={(testSuiteKey, structuredResults) => {
-                setResolveConditionalSchemaResultsData(structuredResults);
-              }}
-            />
-          </div> */}
-
           {/* Test Results Display */}
-          {/* {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
+          {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
             <div style={{ margin: "20px 0" }}>
               <h3>resolveConditionalSchema Test Results:</h3>
               <ValueObjectGrid
@@ -488,7 +477,7 @@ export const ToolsPage: React.FC<any> = (
                 gridType="ag-grid"
               />
             </div>
-          )} */}
+          )}
             <Formik
               enableReinitialize={true}
               initialValues={formState}

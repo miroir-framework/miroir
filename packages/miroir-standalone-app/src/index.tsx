@@ -50,6 +50,7 @@ import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
 import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
 import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
 import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
+import { AdminPage } from "./miroir-fwk/4_view/routes/Admin.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -148,6 +149,11 @@ const router = createBrowserRouter([
       {
         path: "concept",
         element: <ConceptPage />,
+        // errorElement: <ErrorPage />,
+      },
+      {
+        path: "admin",
+        element: <AdminPage />,
         // errorElement: <ErrorPage />,
       },
       {

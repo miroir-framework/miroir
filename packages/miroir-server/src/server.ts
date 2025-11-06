@@ -28,6 +28,7 @@ import {
   adminConfigurationDeploymentMiroir,
   circularReplacer,
   // adminConfigurationDeploymentTest1,
+  adminConfigurationDeploymentParis,
   defaultLevels,
   defaultLibraryAppModel,
   defaultMiroirMetaModel,
@@ -71,6 +72,7 @@ const configurations = {
   [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
   [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
   [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.configuration as StoreUnitConfiguration,
+  [adminConfigurationDeploymentParis.uuid]: adminConfigurationDeploymentParis.configuration as StoreUnitConfiguration,
   // [adminConfigurationDeploymentTest1.uuid]: adminConfigurationDeploymentTest1.configuration as StoreUnitConfiguration,
 }
 

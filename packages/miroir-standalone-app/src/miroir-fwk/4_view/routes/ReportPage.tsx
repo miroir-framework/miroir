@@ -8,6 +8,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentParis,
   ApplicationSection,
   Domain2ElementFailed,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
@@ -30,7 +31,6 @@ import {
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider.js";
 
 import {
-  adminConfigurationDeploymentParis,
   deployments,
   packageName,
   ReportUrlParamKeys,
@@ -151,52 +151,52 @@ export const ReportPage = () => {
 
   // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
 
-  const deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping =
-    useMemo(
-      () => ({
-        [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentAdmin.uuid,
-          miroirMetaModel,
-          adminAppModel
-        ),
-        [adminConfigurationDeploymentMiroir.uuid]:
-          getReportsAndEntitiesDefinitionsForDeploymentUuid(
-            adminConfigurationDeploymentMiroir.uuid,
-            miroirMetaModel,
-            miroirMetaModel
-          ),
-        [adminConfigurationDeploymentLibrary.uuid]:
-          getReportsAndEntitiesDefinitionsForDeploymentUuid(
-            adminConfigurationDeploymentLibrary.uuid,
-            miroirMetaModel,
-            libraryAppModel
-          ),
-        // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentTest1.uuid,
-        //   miroirMetaModel,
-        //   test1AppModel,
-        // ),
-        // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentTest4.uuid,
-        //   miroirMetaModel,
-        //   test4AppModel,
-        // ),
-        [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentParis.uuid,
-          miroirMetaModel,
-          parisAppModel
-        ),
-      }),
-      // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
-      // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel ]
-      [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
-    );
+  // const deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping =
+  //   useMemo(
+  //     () => ({
+  //       [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //         adminConfigurationDeploymentAdmin.uuid,
+  //         miroirMetaModel,
+  //         adminAppModel
+  //       ),
+  //       [adminConfigurationDeploymentMiroir.uuid]:
+  //         getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //           adminConfigurationDeploymentMiroir.uuid,
+  //           miroirMetaModel,
+  //           miroirMetaModel
+  //         ),
+  //       [adminConfigurationDeploymentLibrary.uuid]:
+  //         getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //           adminConfigurationDeploymentLibrary.uuid,
+  //           miroirMetaModel,
+  //           libraryAppModel
+  //         ),
+  //       // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //       //   adminConfigurationDeploymentTest1.uuid,
+  //       //   miroirMetaModel,
+  //       //   test1AppModel,
+  //       // ),
+  //       // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //       //   adminConfigurationDeploymentTest4.uuid,
+  //       //   miroirMetaModel,
+  //       //   test4AppModel,
+  //       // ),
+  //       [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //         adminConfigurationDeploymentParis.uuid,
+  //         miroirMetaModel,
+  //         parisAppModel
+  //       ),
+  //     }),
+  //     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
+  //     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel ]
+  //     [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
+  //   );
 
-  useEffect(() =>
-    context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(
-      deploymentUuidToReportsEntitiesDefinitionsMapping
-    )
-  );
+  // useEffect(() =>
+  //   context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(
+  //     deploymentUuidToReportsEntitiesDefinitionsMapping
+  //   )
+  // );
 
   useEffect(() => {
     // Only reset metrics if we're navigating to a different deployment

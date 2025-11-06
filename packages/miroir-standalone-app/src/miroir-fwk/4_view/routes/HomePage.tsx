@@ -13,6 +13,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentParis,
   ApplicationSection,
   // adminConfigurationDeploymentTest1,
   defaultMiroirMetaModel,
@@ -45,7 +46,6 @@ import { usePageConfiguration } from "../services/index.js";
 
 // import entityPublisher from "../../assets/library_model/";
 import {
-  adminConfigurationDeploymentParis,
   deployments,
   packageName,
   ReportUrlParamKeys,
@@ -144,48 +144,48 @@ export const HomePage = (props: RootComponentProps) => {
     displayedApplicationSection
   );
 
-  const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
-    () => (
-      {
-        [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentAdmin.uuid,
-          miroirMetaModel, 
-          adminAppModel,
-        ),
-        [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentMiroir.uuid,
-          miroirMetaModel, 
-          miroirMetaModel, 
-        ),
-        [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentLibrary.uuid,
-          miroirMetaModel, 
-          libraryAppModel,
-        ),
-        // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentTest1.uuid,
-        //   miroirMetaModel, 
-        //   test1AppModel,
-        // ),
-        // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentTest4.uuid,
-        //   miroirMetaModel, 
-        //   test4AppModel,
-        // ),
-        [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentParis.uuid,
-          miroirMetaModel, 
-          parisAppModel,
-        ),
-      }
-    ),
-    // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
-    [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
-  );
+  // const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
+  //   () => (
+  //     {
+  //       [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //         adminConfigurationDeploymentAdmin.uuid,
+  //         miroirMetaModel, 
+  //         adminAppModel,
+  //       ),
+  //       [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //         adminConfigurationDeploymentMiroir.uuid,
+  //         miroirMetaModel, 
+  //         miroirMetaModel, 
+  //       ),
+  //       [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //         adminConfigurationDeploymentLibrary.uuid,
+  //         miroirMetaModel, 
+  //         libraryAppModel,
+  //       ),
+  //       // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //       //   adminConfigurationDeploymentTest1.uuid,
+  //       //   miroirMetaModel, 
+  //       //   test1AppModel,
+  //       // ),
+  //       // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //       //   adminConfigurationDeploymentTest4.uuid,
+  //       //   miroirMetaModel, 
+  //       //   test4AppModel,
+  //       // ),
+  //       [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+  //         adminConfigurationDeploymentParis.uuid,
+  //         miroirMetaModel, 
+  //         parisAppModel,
+  //       ),
+  //     }
+  //   ),
+  //   // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
+  //   [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
+  // );
 
-  useEffect(() =>
-    context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
-  );
+  // useEffect(() =>
+  //   context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
+  // );
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
@@ -519,7 +519,7 @@ export const HomePage = (props: RootComponentProps) => {
         currentModel={currentModel}
         // currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
         // currentDeploymentUuid="f97cce64-78e9-419f-a4bd-5cbf52833ede" // test4
-        // currentDeploymentUuid="f1b74341-129b-474c-affa-e910d6cba01d" // Paris
+        // currentDeploymentUuid="3d15b8c8-a74c-48ce-81d5-c76853803b90" // Paris
         currentDeploymentUuid={adminConfigurationDeploymentParis.uuid}
         // currentApplicationUuid={test1SelfApplication.uuid}
         // currentApplicationUuid="478d3a5d-d866-41c8-944c-121aca3ab87f" // test4

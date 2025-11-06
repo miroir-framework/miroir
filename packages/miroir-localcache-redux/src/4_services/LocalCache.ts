@@ -31,7 +31,8 @@ import {
   miroirFundamentalJzodSchema,
   defaultMiroirMetaModel,
   type JzodSchema,
-  defaultMetaModelEnvironment
+  defaultMetaModelEnvironment,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
@@ -41,7 +42,6 @@ import {
   ReduxStoreWithUndoRedo,
 } from "./localCache/localCacheReduxSliceInterface.js";
 import {
-  currentModel,
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
   localCacheStateToDomainState
@@ -50,6 +50,7 @@ import {
   createUndoRedoReducer,
 } from "./localCache/UndoRedoReducer.js";
 import PersistenceReduxSaga from './persistence/PersistenceReduxSaga.js';
+import { currentModel, currentModelEnvironment } from './localCache/Model.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -178,6 +179,24 @@ export class LocalCache implements LocalCacheInterface {
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
     return currentModel(deploymentUuid,reduxState);
+  }
+
+  // ###############################################################################
+  // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
+  public currentModelEnvironment(deploymentUuid: string): MiroirModelEnvironment {
+    log.info(
+      "called currentModelEnvironment(",
+      deploymentUuid,")"
+    );
+    log.trace(
+      "called currentModelEnvironment(",
+      deploymentUuid,
+      ") from state:",
+      this.innerReduxStore.getState().presentModelSnapshot
+    );
+    const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
+
+    return currentModelEnvironment(deploymentUuid,reduxState);
   }
 
   // ###############################################################################

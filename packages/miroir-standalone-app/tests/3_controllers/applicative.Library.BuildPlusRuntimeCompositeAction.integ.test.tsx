@@ -47,6 +47,7 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
+import { defaultMiroirModelEnvironment } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -146,7 +147,8 @@ const beforeAll = async () => {
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
-    defaultMiroirMetaModel
+    defaultMiroirModelEnvironment,
+    {}
   );
 
   if (createDeploymentResult.status !== "ok") {
@@ -203,7 +205,7 @@ const afterAll = (
     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
-    displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
+    displayTestSuiteResultsDetails(Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0], [], miroirActivityTracker);
     LoggerGlobalContext.setTest(undefined);
   }
 )

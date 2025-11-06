@@ -1,4 +1,8 @@
 import { Box } from '@mui/material';
+import { useCallback, useMemo } from 'react';
+
+import { Formik } from 'formik';
+
 import {
   adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnvironment,
@@ -25,9 +29,6 @@ import {
   type ReportSection,
   type Uuid
 } from "miroir-core";
-import { useCallback, useMemo } from 'react';
-
-import { Formik } from 'formik';
 import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
@@ -457,6 +458,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         const currentInstance = data[data[lastSubmitButtonClicked]];
         const applicationSection = getApplicationSection(props.deploymentUuid, currentInstance.parentUuid);
 
+        log.info("onEditValueObjectFormSubmit currentInstance", currentInstance, "applicationSection", applicationSection);
+        
         if (props.deploymentUuid === adminConfigurationDeploymentMiroir.uuid && applicationSection === "model") {
           throw new Error("Editing model definitions in the miroir admin deployment is not allowed.");
         }
@@ -465,6 +468,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           throw new Error("Editing entity definitions in the model section is not allowed.");
         }
         
+        // update entityDefinition instance
         if (
           props.deploymentUuid == adminConfigurationDeploymentMiroir.uuid ||
           applicationSection == "model"

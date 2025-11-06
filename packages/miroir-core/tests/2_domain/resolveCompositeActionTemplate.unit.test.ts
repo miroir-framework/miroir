@@ -24,7 +24,7 @@ import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateS
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 const adminConfigurationDeploymentParis = {
-  uuid: "f1b74341-129b-474c-affa-e910d6cba01d",
+  uuid: "3d15b8c8-a74c-48ce-81d5-c76853803b90",
   parentName: "Deployment",
   parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
   name: "ParisApplicationSqlDeployment",

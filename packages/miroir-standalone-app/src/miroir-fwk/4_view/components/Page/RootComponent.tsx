@@ -24,6 +24,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentParis,
   AppTheme,
   defaultAdminViewParams,
   defaultMiroirMetaModel,
@@ -35,6 +36,7 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   EntityInstancesUuidIndex,
   getQueryRunnerParamsForReduxDeploymentsState,
+  getReportsAndEntitiesDefinitionsForDeploymentUuid,
   LoggerInterface,
   MetaModel,
   miroirFundamentalJzodSchema,
@@ -155,6 +157,63 @@ export const RootComponent = (props: RootComponentProps) => {
     );
   }
 
+  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+
+  const currentAppModel: MetaModel = useCurrentModel(context.deploymentUuid);
+  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+
+  // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
+  // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
+  const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
+
+  const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
+    () => (
+      {
+        [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentAdmin.uuid,
+          miroirMetaModel, 
+          adminAppModel,
+        ),
+        [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentMiroir.uuid,
+          miroirMetaModel, 
+          miroirMetaModel, 
+        ),
+        [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentLibrary.uuid,
+          miroirMetaModel, 
+          libraryAppModel,
+        ),
+        // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        //   adminConfigurationDeploymentTest1.uuid,
+        //   miroirMetaModel, 
+        //   test1AppModel,
+        // ),
+        // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        //   adminConfigurationDeploymentTest4.uuid,
+        //   miroirMetaModel, 
+        //   test4AppModel,
+        // ),
+        [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminConfigurationDeploymentParis.uuid,
+          miroirMetaModel, 
+          parisAppModel,
+        ),
+      }
+    ),
+    // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
+    [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
+  );
+
+  useEffect(() =>
+    context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
+  );
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // ##############################################################################################
   // Stable references to prevent unnecessary re-renders
   const displayedDeploymentUuid = useMemo(() => context.deploymentUuid, [context.deploymentUuid]);

@@ -172,6 +172,7 @@ export interface DomainControllerInterface {
    */
   // TODO: currentTransaction should not depend on localCache types?! Use DomainActions instead?
   currentModel(uuid: string): MetaModel;
+  currentModelEnvironment(uuid: string): MiroirModelEnvironment;
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[];
   currentLocalCacheInfo(): LocalCacheInfo;
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface;

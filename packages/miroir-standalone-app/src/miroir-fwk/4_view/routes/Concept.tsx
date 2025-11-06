@@ -28,10 +28,11 @@ import {
   entityMenu,
   entityReport,
   getApplicationSection,
-  jzodTypeCheck
+  jzodTypeCheck,
+  adminConfigurationDeploymentParis
 } from "miroir-core";
 
-import { adminConfigurationDeploymentParis, deployments, packageName } from "../../../constants.js";
+import { deployments, packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
   useErrorLogService,

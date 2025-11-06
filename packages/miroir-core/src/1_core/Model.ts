@@ -102,6 +102,7 @@ export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(
   (e: MetaEntity) => e?.conceptLevel != "MetaModel"
 );
 
+// #################################################################################################
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
   storedQueries: [],
