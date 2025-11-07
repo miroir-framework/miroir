@@ -1,41 +1,38 @@
-import { v4 as uuidv4 } from 'uuid';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Formik } from "formik";
-import { useState } from "react";
-import { useCallback, useMemo } from 'react';
+import { useMemo, useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 // import { z } from "zod";
 
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import type { DomainControllerInterface, Entity, EntityDefinition, InitApplicationParameters, ModelAction, StoreUnitConfiguration } from "miroir-core";
 import {
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
   defaultMiroirModelEnvironment,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getBasicApplicationConfiguration,
+  getBasicStoreUnitConfiguration,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resolvePathOnObject,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-  transformer_extended_apply_wrapper,
-  transformerForBuild,
-  zodErrorFirstIssueLeaf,
-  ZodParseError,
-  ZodParseErrorIssue,
   type JzodElement,
   type JzodSchema,
   type LoggerInterface,
   type MetaModel,
-  type MiroirModelEnvironment,
+  type MiroirModelEnvironment
 } from "miroir-core";
-import type { DomainControllerInterface, Entity, EntityDefinition, ModelAction, TransformerForBuildPlusRuntime } from "miroir-core";
-import { PageContainer } from "../components/Page/PageContainer.js";
-import { usePageConfiguration } from "../services/index.js";
 import { packageName } from "../../../constants.js";
+import { createDeploymentCompositeAction, resetAndinitializeDeploymentCompositeAction } from '../../4-tests/tests-utils.js';
+import { PageContainer } from "../components/Page/PageContainer.js";
+import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
+import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../constants.js";
 import { useDomainControllerService, useMiroirContextService } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { ThemedOnScreenHelper, ThemedPreformattedText } from "../components/Themes/BasicComponents.js";
-import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
-import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
+import { usePageConfiguration } from "../services/index.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -58,6 +55,18 @@ const testSubPart = resolvePathOnObject(
 );
 
 const pageLabel = "Admin";
+
+// ################################################################################################
+function formatYYYYMMDD_HHMMSS(date = new Date()) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  const MM = pad(date.getMonth() + 1);
+  const dd = pad(date.getDate());
+  const HH = pad(date.getHours());
+  const mm = pad(date.getMinutes());
+  const ss = pad(date.getSeconds());
+  return `${yyyy}${MM}${dd}_${HH}${mm}${ss}`;
+}
 
 // ################################################################################################
 export const AdminPage: React.FC<any> = (
@@ -123,7 +132,21 @@ export const AdminPage: React.FC<any> = (
   const formMlSchema: JzodElement = {
     type: "object",
     definition: {
-      root: {
+      createApplicationAndDeployment: {
+        type: "object",
+        definition: {
+          applicationName: {
+            type: "string",
+            tag: {
+              value: {
+                defaultLabel: "Application Name",
+                editable: true,
+              },
+            },
+          },
+        }
+      },
+      createEntity: {
         type: "object",
         definition: {
           entity: entityDefinitionEntity.jzodSchema,
@@ -166,8 +189,17 @@ export const AdminPage: React.FC<any> = (
     //   "value" // resolveBuildTransformersTo
     // )
     const entityUuid = uuidv4();
-    const result: { root: { entity: Entity; entityDefinition: EntityDefinition } } = {
-      root: {
+    const result: {
+      createApplicationAndDeployment: {
+        applicationName: string;
+      };
+      createEntity: { entity: Entity; entityDefinition: EntityDefinition };
+    } = {
+      createApplicationAndDeployment: {
+        // applicationName: "test_application_" + new Date().toISOString(),
+        applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+      },
+      createEntity: {
         entity: {
           uuid: entityUuid,
           parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -254,74 +286,203 @@ export const AdminPage: React.FC<any> = (
         <br />
         path: {testSubPartPathArray.join(".")}
         <br />
-        <Formik
-          enableReinitialize={true}
-          // initialValues={formInitialValue}
-          initialValues={initialReportSectionsFormValue}
-          onSubmit={async (values, { setSubmitting, setErrors }) => {
-            try {
-              
-              const createAction: ModelAction = {
-                actionType: "createEntity",
-                actionLabel: "createEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid: deploymentUuid,
-                payload: {
-                  entities: [
-                    {
-                      entity: values.root.entity,
-                      entityDefinition: values.root.entityDefinition,
+        <Accordion style={{ marginBottom: 12 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <div style={{ fontWeight: 500 }}>Create Application & Deployment</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Formik
+              enableReinitialize={true}
+              // initialValues={formInitialValue}
+              initialValues={initialReportSectionsFormValue}
+              onSubmit={async (values, { setSubmitting, setErrors }) => {
+                try {
+                  const newApplicationName = values.createApplicationAndDeployment.applicationName;
+
+                  log.info("Admin onSubmit createApplicationAndDeployment formik values", values, newApplicationName);
+
+                  const testSelfApplicationUuid = uuidv4();
+                  const testDeploymentUuid = uuidv4();
+                  const testApplicationModelBranchUuid = uuidv4();
+                  const testApplicationVersionUuid = uuidv4();
+
+                  const testDeploymentStorageConfiguration: StoreUnitConfiguration =
+                    getBasicStoreUnitConfiguration(newApplicationName, {
+                      emulatedServerType: "sql",
+                      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                    });
+
+                  log.info("Admin onSubmit createApplicationAndDeployment testDeploymentStorageConfiguration", testDeploymentStorageConfiguration);
+                  const initParametersForTest: InitApplicationParameters =
+                    getBasicApplicationConfiguration(
+                      newApplicationName,
+                      testSelfApplicationUuid,
+                      testDeploymentUuid,
+                      testApplicationModelBranchUuid,
+                      testApplicationVersionUuid
+                    );
+
+                  log.info("Admin onSubmit createApplicationAndDeployment initParametersForTest", initParametersForTest);
+                  // const createAction: ModelAction = {
+                  //   actionType: "createEntity",
+                  //   actionLabel: "createEntity",
+                  //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  //   deploymentUuid: deploymentUuid,
+                  //   payload: {
+                  //     entities: [
+                  //       {
+                  //         entity: values.createEntity.entity,
+                  //         entityDefinition: values.createEntity.entityDefinition,
+                  //       },
+                  //     ],
+                  //   },
+                  // };
+
+
+                  const  localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
+                    testDeploymentUuid,
+                    testDeploymentStorageConfiguration
+                  );
+                  log.info(
+                    "Admin onSubmit createApplicationAndDeployment localCreateDeploymentCompositeAction",
+                    localCreateDeploymentCompositeAction
+                  );
+                  const localResetAndinitializeDeploymentCompositeAction = resetAndinitializeDeploymentCompositeAction(
+                    testDeploymentUuid,
+                    initParametersForTest,
+                    []
+                  );
+                  log.info(
+                    "Admin onSubmit createApplicationAndDeployment localResetAndinitializeDeploymentCompositeAction",
+                    localResetAndinitializeDeploymentCompositeAction
+                  );
+                  await domainController.handleCompositeAction(
+                    localCreateDeploymentCompositeAction,
+                    currentMiroirModelEnvironment,
+                    {}
+                  );
+                  await domainController.handleCompositeAction(
+                    localResetAndinitializeDeploymentCompositeAction,
+                    currentMiroirModelEnvironment,
+                    {}
+                  );
+
+                  // await domainController.handleAction(createAction, defaultMiroirModelEnvironment);
+                  // await domainController.handleAction(
+                  //   {
+                  //     actionType: "commit",
+                  //     actionLabel: "commit",
+                  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  //     deploymentUuid,
+                  //   },
+                  //   defaultMiroirModelEnvironment
+                  // );
+                } catch (e) {
+                  log.error(e);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              validateOnChange={false}
+              validateOnBlur={false}
+            >
+              {/* <ThemedOnScreenHelper
+                label={"Initial Report Sections Form Value"}
+                data={initialReportSectionsFormValue}
+              /> */}
+              <TypedValueObjectEditor
+                labelElement={<h2>Admin Configuration Editor</h2>}
+                deploymentUuid={deploymentUuid}
+                applicationSection="model"
+                formValueMLSchema={formMlSchema}
+                formikValuePathAsString="createApplicationAndDeployment"
+                //
+                formLabel="Create Application & Deployment"
+                zoomInPath=""
+                maxRenderDepth={Infinity} // Always render fully for editor
+              />
+
+              {/* {JSON.stringify(initialReportSectionsFormValue, null, 2)} */}
+              {/* </ThemedOnScreenHelper> */}
+            </Formik>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion style={{ marginBottom: 12 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <div style={{ fontWeight: 500 }}>Create Entity</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Formik
+              enableReinitialize={true}
+              // initialValues={formInitialValue}
+              initialValues={initialReportSectionsFormValue}
+              onSubmit={async (values, { setSubmitting, setErrors }) => {
+                try {
+                  
+                  const createAction: ModelAction = {
+                    actionType: "createEntity",
+                    actionLabel: "createEntity",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    deploymentUuid: deploymentUuid,
+                    payload: {
+                      entities: [
+                        {
+                          entity: values.createEntity.entity,
+                          entityDefinition: values.createEntity.entityDefinition,
+                        },
+                      ],
                     },
-                  ],
-                },
-              };
-              log.info("Admin onSubmit formik values", values, createAction);
+                  };
+                  log.info("Admin onSubmit formik values", values, createAction);
 
-              await domainController.handleAction(createAction, defaultMiroirModelEnvironment);
-              await domainController.handleAction(
-                {
-                  actionType: "commit",
-                  actionLabel: "commit",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid,
-                },
-                defaultMiroirModelEnvironment
-              );
-              // Handle zoom case: merge changes back into the full object for submission
-              // const finalValues = hasZoomPath
-              //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
-              //   : values;
+                  await domainController.handleAction(createAction, defaultMiroirModelEnvironment);
+                  await domainController.handleAction(
+                    {
+                      actionType: "commit",
+                      actionLabel: "commit",
+                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      deploymentUuid,
+                    },
+                    defaultMiroirModelEnvironment
+                  );
+                  // Handle zoom case: merge changes back into the full object for submission
+                  // const finalValues = hasZoomPath
+                  //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
+                  //   : values;
 
-              // await onSubmit(values);
-              // await onEditValueObjectFormSubmit(values); // TODO: make it return Promise, no await because handler should return immediately
-            } catch (e) {
-              log.error(e);
-            } finally {
-              setSubmitting(false);
-            }
-          }}
-          validateOnChange={false}
-          validateOnBlur={false}
-        >
-          {/* <ThemedOnScreenHelper
-            label={"Initial Report Sections Form Value"}
-            data={initialReportSectionsFormValue}
-          /> */}
-          <TypedValueObjectEditor
-            labelElement={<h2>Admin Configuration Editor</h2>}
-            deploymentUuid={deploymentUuid}
-            applicationSection="model"
-            formValueMLSchema={formMlSchema}
-            formikValuePathAsString="root"
-            //
-            formLabel="Admin Configuration Editor2"
-            zoomInPath=""
-            maxRenderDepth={Infinity} // Always render fully for editor
-          />
+                  // await onSubmit(values);
+                  // await onEditValueObjectFormSubmit(values); // TODO: make it return Promise, no await because handler should return immediately
+                } catch (e) {
+                  log.error(e);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              validateOnChange={false}
+              validateOnBlur={false}
+            >
+              {/* <ThemedOnScreenHelper
+                label={"Initial Report Sections Form Value"}
+                data={initialReportSectionsFormValue}
+              /> */}
+              <TypedValueObjectEditor
+                labelElement={<h2>Admin Configuration Editor</h2>}
+                deploymentUuid={deploymentUuid}
+                applicationSection="model"
+                formValueMLSchema={formMlSchema}
+                formikValuePathAsString="createEntity"
+                //
+                formLabel="Admin Configuration Editor2"
+                zoomInPath=""
+                maxRenderDepth={Infinity} // Always render fully for editor
+              />
 
-          {/* {JSON.stringify(initialReportSectionsFormValue, null, 2)} */}
-          {/* </ThemedOnScreenHelper> */}
-        </Formik>
+              {/* {JSON.stringify(initialReportSectionsFormValue, null, 2)} */}
+              {/* </ThemedOnScreenHelper> */}
+            </Formik>
+          </AccordionDetails>
+        </Accordion>
+
         {/* {testResult} */}
         {/* <span style={{ color: "red" }}>{testResult}</span> */}
         {/* <div>

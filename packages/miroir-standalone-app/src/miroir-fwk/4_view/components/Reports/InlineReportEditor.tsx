@@ -1,4 +1,7 @@
 import React from 'react';
+import { useFormikContext } from 'formik';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 
 import {
   ApplicationSection,
@@ -10,12 +13,9 @@ import {
   type JzodObject
 } from "miroir-core";
 
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
-import { useFormikContext } from 'formik';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -73,25 +73,25 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
       </div>
 
       {/* {reportDefinition.definition && ( */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Runtime Environment (Read-Only)</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <ReportSectionEntityInstance
-              deploymentUuid={deploymentUuid}
-              applicationSection="model"
-              entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema
-              formValueMLSchema={formValueMLSchema}
-              formikValuePath={formikValuePath}
-              // formikReportDefinitionPathString={formikReportDefinitionPathString}
-              // reportSectionPath={[]}
-              // formikAlreadyAvailable={false}
-              formikAlreadyAvailable={formikAlreadyAvailable}
-              initialInstanceValueDEFUNCT={formikReportDefinition} // DEFUNCT when formikAlreadyAvailable=true
-            />
-          </AccordionDetails>
-        </Accordion>
+      <Accordion style={{ marginBottom: 12 }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <div style={{ fontWeight: 500 }}>Runtime Environment (Read-Only)</div>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ReportSectionEntityInstance
+            deploymentUuid={deploymentUuid}
+            applicationSection="model"
+            entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema
+            formValueMLSchema={formValueMLSchema}
+            formikValuePath={formikValuePath}
+            // formikReportDefinitionPathString={formikReportDefinitionPathString}
+            // reportSectionPath={[]}
+            // formikAlreadyAvailable={false}
+            formikAlreadyAvailable={formikAlreadyAvailable}
+            initialInstanceValueDEFUNCT={formikReportDefinition} // DEFUNCT when formikAlreadyAvailable=true
+          />
+        </AccordionDetails>
+      </Accordion>
       {/* )} */}
       {/* <div style={{ marginTop: 12, fontSize: "12px", color: "#666", fontStyle: "italic" }}>
         {hasValidationErrors
