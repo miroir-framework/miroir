@@ -8,21 +8,17 @@ import {
   Action2Error,
   Action2ReturnType,
   adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentParis,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   Domain2ElementFailed,
-  MiroirConfigForRestClient,
   DomainControllerInterface,
   entityDeployment,
   LoggerInterface,
   MiroirConfigClient,
+  MiroirConfigForRestClient,
   MiroirLoggerFactory,
-  StoreOrBundleAction,
-  StoreUnitConfiguration,
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentLibrary,
-  defaultMiroirModelEnvironment,
-  adminConfigurationDeploymentParis,
+  StoreUnitConfiguration
 } from "miroir-core";
 import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 

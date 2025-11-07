@@ -1,0 +1,28 @@
+{
+  "uuid": "951d74b2-a3e9-4e07-8850-1d7d12909f11",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name":"ApplicationList",
+  "defaultLabel": "Admin Applications",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "applications": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "parentName": "Application",
+        "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b"
+      }
+    },
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "label": "Admin Applications",
+        "parentName": "Application",
+        "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+        "fetchedDataReference": "applications",
+        "sortByAttribute": "name"
+      }
+    }
+  }
+}

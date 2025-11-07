@@ -34,13 +34,9 @@ import {
   selfApplicationVersionInitialMiroirVersion,
   selfApplicationVersionLibraryInitialVersion,
   Uuid,
+  type ApplicationEntitiesAndInstances,
 } from "miroir-core";
 
-export type ApplicationEntitiesAndInstances = {
-  entity: MetaEntity;
-  entityDefinition: EntityDefinition;
-  instances: EntityInstance[];
-}[];
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
     entity: entityAuthor as MetaEntity,

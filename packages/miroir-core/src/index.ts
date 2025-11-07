@@ -700,6 +700,12 @@ export {
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export { ACTION_OK, MAX_BLOB_FILE_SIZE, BLOB_SIZE_WARNING_THRESHOLD } from "./1_core/constants.js";
+export {
+  createApplicationCompositeAction,
+  createDeploymentCompositeAction,
+  ApplicationEntitiesAndInstances,
+  resetAndinitializeDeploymentCompositeAction,
+} from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
 export {

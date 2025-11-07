@@ -11,18 +11,14 @@ import { Provider } from 'react-redux';
 
 // As a basic setup, import your same slice reducers
 import {
-  Action2Error,
   Action2ReturnType,
   AdminApplicationDeploymentConfiguration,
-  CompositeAction,
   ConfigurationService,
   DeploymentConfiguration,
   DomainAction,
   DomainControllerInterface,
-  DomainElementType,
   EntityDefinition,
   EntityInstance,
-  InitApplicationParameters,
   InstanceAction,
   LocalCacheInterface,
   LoggerInterface,
@@ -42,19 +38,18 @@ import {
   RestPersistenceClientAndRestClientInterface,
   SelfApplicationDeploymentConfiguration,
   StoreUnitConfiguration,
-  TestCompositeAction,
-  TestCompositeActionSuite,
-  TestCompositeActionTemplate,
-  TestCompositeActionTemplateSuite,
   Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  defaultMiroirMetaModel,
+  createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
   type MiroirActivityTrackerInterface
 } from "miroir-core";
+import {
+  TestCompositeActionParams
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   LocalCache,
   ReduxStoreWithUndoRedo,
@@ -64,15 +59,6 @@ import {
 import { packageName } from '../../constants';
 import { MiroirContextReactProvider } from '../4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../4_view/constants';
-import { ApplicationEntitiesAndInstances } from "./tests-utils-testOnLibrary";
-import {
-  JzodElement,
-  TestBuildPlusRuntimeCompositeAction,
-  TestBuildPlusRuntimeCompositeActionSuite,
-  TestCompositeActionParams,
-  TestRuntimeCompositeAction,
-  TestRuntimeCompositeActionSuite,
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -247,116 +233,6 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ############################################################################################################
 // ############################################################################################################
 // ############################################################################################################
-export function createDeploymentCompositeAction(
-  deploymentUuid: Uuid,
-  deploymentConfiguration: StoreUnitConfiguration,
-): CompositeAction {
-  log.info("createDeploymentCompositeAction deploymentConfiguration", 
-    "deploymentUuid:", 
-    deploymentUuid, 
-    "deploymentConfiguration:",
-    deploymentConfiguration
-  );
-  return {
-    actionType: "compositeAction",
-    actionLabel: "beforeAll",
-    actionName: "sequence",
-    definition: [
-      {
-        // actionType: "storeManagementAction",
-        actionType: "storeManagementAction_openStore",
-        actionLabel: "storeManagementAction_openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        deploymentUuid: deploymentUuid,
-        configuration: {
-          [deploymentUuid]: deploymentConfiguration,
-        },
-      },
-      {
-        // actionType: "storeManagementAction",
-        actionType: "storeManagementAction_createStore",
-        actionLabel: "storeManagementAction_createStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        deploymentUuid: deploymentUuid,
-        configuration: deploymentConfiguration,
-      },
-    ],
-  };
-}
-
-// ################################################################################################
-export function resetAndinitializeDeploymentCompositeAction(
-  adminApplicationDeploymentUuid: Uuid,
-  initApplicationParameters: InitApplicationParameters,
-  appEntitesAndInstances: ApplicationEntitiesAndInstances
-): CompositeAction {
-  // const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
-
-  // const deploymentUuid = initApplicationParameters.selfApplicationDeploymentConfiguration.uuid;
-  const deploymentUuid = adminApplicationDeploymentUuid;
-
-  log.info("createDeploymentCompositeAction deploymentConfiguration", adminApplicationDeploymentUuid);
-  return {
-    actionType: "compositeAction",
-    actionLabel: "beforeEach",
-    actionName: "sequence",
-    definition: [
-      {
-        actionType: "resetModel",
-        actionLabel: "resetApplicationStore",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: deploymentUuid,
-      },
-      {
-        actionType: "initModel",
-        actionLabel: "initStore",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: deploymentUuid,
-        payload: {
-          params: initApplicationParameters,
-        }
-      },
-      {
-        actionType: "rollback",
-        actionLabel: "refreshLocalCacheForApplication",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: deploymentUuid,
-      },
-      {
-        actionType: "createEntity",
-        actionLabel: "CreateApplicationStoreEntities",
-        deploymentUuid: deploymentUuid,
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        payload: {
-          entities: appEntitesAndInstances,
-        }
-      },
-      {
-        actionType: "commit",
-        actionLabel: "CommitApplicationStoreEntities",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: deploymentUuid,
-      },
-      {
-        actionType: "createInstance",
-        actionLabel: "CreateApplicationStoreInstances",
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        deploymentUuid: deploymentUuid,
-        payload: {
-          applicationSection: "data",
-          objects: appEntitesAndInstances.map((e) => {
-            return {
-              parentName: e.entity.name,
-              parentUuid: e.entity.uuid,
-              applicationSection: "data",
-              instances: e.instances,
-            };
-          }),
-        }
-      },
-    ],
-  };
-}
 
 
 // ################################################################################################

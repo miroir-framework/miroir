@@ -27,6 +27,13 @@
             "icon": "category"
           },
           {
+            "label": "Admin Applications",
+            "section": "data",
+            "selfApplication": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "reportUuid": "951d74b2-a3e9-4e07-8850-1d7d12909f11",
+            "icon": "list"
+          },
+          {
             "label": "Admin Reports",
             "section": "model",
             "selfApplication": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",

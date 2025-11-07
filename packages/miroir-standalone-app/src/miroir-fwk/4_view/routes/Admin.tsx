@@ -5,10 +5,20 @@ import { v4 as uuidv4 } from 'uuid';
 // import { z } from "zod";
 
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-import type { DomainControllerInterface, Entity, EntityDefinition, InitApplicationParameters, ModelAction, StoreUnitConfiguration } from "miroir-core";
+import type {
+  DomainControllerInterface,
+  Entity,
+  EntityDefinition,
+  InitApplicationParameters,
+  ModelAction,
+  StoreUnitConfiguration,
+} from "miroir-core";
 import {
+  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
+  createApplicationCompositeAction,
+  createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
@@ -16,6 +26,7 @@ import {
   getBasicStoreUnitConfiguration,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
+  resetAndinitializeDeploymentCompositeAction,
   resolvePathOnObject,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
   type JzodElement,
@@ -25,7 +36,6 @@ import {
   type MiroirModelEnvironment
 } from "miroir-core";
 import { packageName } from "../../../constants.js";
-import { createDeploymentCompositeAction, resetAndinitializeDeploymentCompositeAction } from '../../4-tests/tests-utils.js';
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
@@ -312,7 +322,10 @@ export const AdminPage: React.FC<any> = (
                       connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
                     });
 
-                  log.info("Admin onSubmit createApplicationAndDeployment testDeploymentStorageConfiguration", testDeploymentStorageConfiguration);
+                  log.info(
+                    "Admin onSubmit createApplicationAndDeployment testDeploymentStorageConfiguration",
+                    testDeploymentStorageConfiguration
+                  );
                   const initParametersForTest: InitApplicationParameters =
                     getBasicApplicationConfiguration(
                       newApplicationName,
@@ -322,7 +335,10 @@ export const AdminPage: React.FC<any> = (
                       testApplicationVersionUuid
                     );
 
-                  log.info("Admin onSubmit createApplicationAndDeployment initParametersForTest", initParametersForTest);
+                  log.info(
+                    "Admin onSubmit createApplicationAndDeployment initParametersForTest",
+                    initParametersForTest
+                  );
                   // const createAction: ModelAction = {
                   //   actionType: "createEntity",
                   //   actionLabel: "createEntity",
@@ -338,8 +354,24 @@ export const AdminPage: React.FC<any> = (
                   //   },
                   // };
 
-
+                  // create application in the admin store
+                  const localCreateApplicationCompositeAction = createApplicationCompositeAction(
+                    adminConfigurationDeploymentAdmin.uuid,
+                    testSelfApplicationUuid,
+                    testSelfApplicationUuid,
+                    newApplicationName,
+                    testDeploymentStorageConfiguration
+                    // testSelfApplicationUuid,
+                    // testApplicationModelBranchUuid,
+                    // testApplicationVersionUuid
+                  );
+                  log.info(
+                    "Admin onSubmit createApplicationAndDeployment localCreateApplicationCompositeAction",
+                    localCreateApplicationCompositeAction
+                  );
+                  // create deployment
                   const  localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
+                    newApplicationName,
                     testDeploymentUuid,
                     testDeploymentStorageConfiguration
                   );
@@ -356,6 +388,14 @@ export const AdminPage: React.FC<any> = (
                     "Admin onSubmit createApplicationAndDeployment localResetAndinitializeDeploymentCompositeAction",
                     localResetAndinitializeDeploymentCompositeAction
                   );
+
+                  // run actions
+                  await domainController.handleCompositeAction(
+                    localCreateApplicationCompositeAction,
+                    currentMiroirModelEnvironment,
+                    {}
+                  )
+
                   await domainController.handleCompositeAction(
                     localCreateDeploymentCompositeAction,
                     currentMiroirModelEnvironment,
