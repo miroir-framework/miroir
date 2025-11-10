@@ -584,6 +584,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
   // ##############################################################################################
   async deleteStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
+    log.info(this.logHeader, "deleteStore, adminStore.getStoreName()=", this.adminStore.getStoreName());
     return this.adminStore.deleteStore(config);
   }
 

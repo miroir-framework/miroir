@@ -9,8 +9,9 @@
   "adminApplication": "170af752-3dc0-490e-b43f-466c14507934",
   "configuration": {
     "admin": {
-      "emulatedServerType": "filesystem",
-      "directory": "../miroir-core/src/assets/admin"
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroirAdmin"
     },
     "model": {
       "emulatedServerType": "sql",

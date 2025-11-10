@@ -240,7 +240,7 @@ export function deleteApplicationAndDeploymentCompositeAction(
     definition: [
       {
         actionType: "storeManagementAction_deleteStore",
-        actionLabel: "deleteLibraryStore",
+        actionLabel: "deleteStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid,
         configuration: miroirConfig.client.emulateServer

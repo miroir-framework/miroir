@@ -170,8 +170,11 @@ export async function storeActionOrBundleActionStoreRunner(
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
       const appModelStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.configuration.model);
+      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.deploymentUuid, "model store deleted");
+      
       const appDataStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.configuration.data);
+      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.deploymentUuid, "data store deleted");
 
       if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
         return new Action2Error(

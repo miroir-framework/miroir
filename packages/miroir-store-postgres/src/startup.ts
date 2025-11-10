@@ -31,8 +31,9 @@ export function miroirPostgresStoreSectionStartup() {
     async (config: StoreSectionConfiguration): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
+        const logHeader = "SqlDbAdminStore " + sqlDbStoreName;
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
-        return Promise.resolve(new SqlDbAdminStore("data", sqlDbStoreName, config.connectionString, config.schema)) // TODO: fix selfApplication section, should be admin?
+        return Promise.resolve(new SqlDbAdminStore("admin", sqlDbStoreName, config.connectionString, config.schema, logHeader))
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }

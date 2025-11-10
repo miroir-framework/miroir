@@ -55,7 +55,8 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
         schemas
       );
 
-      await this.sequelize.dropSchema(config.schema, {});
+      // await this.sequelize.dropSchema(config.schema, {});
+      await this.sequelize.query(`DROP SCHEMA IF EXISTS "${config.schema}" CASCADE;`);
     } catch (error) {
       return Promise.resolve(new Action2Error("FailedToDeleteStore", error as string));
     }
