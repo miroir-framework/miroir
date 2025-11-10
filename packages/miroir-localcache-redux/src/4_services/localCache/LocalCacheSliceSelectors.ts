@@ -1,4 +1,3 @@
-
 //#########################################################################################
 // SELECTORS
 //#########################################################################################
@@ -39,6 +38,7 @@ import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { selectDomainStateFromlocalCacheEntityZone } from "./LocalCacheSlice.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
+import { useSelector } from "react-redux";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -86,6 +86,12 @@ export const selectCurrentReduxDeploymentsStateFromReduxState = (
 ): ReduxDeploymentsState => {
   return reduxState.presentModelSnapshot.current;
 };
+
+// export const useReduxState = (): ReduxDeploymentsState => {
+//   return useSelector<ReduxStateWithUndoRedo, ReduxDeploymentsState>(
+//     selectCurrentReduxDeploymentsStateFromReduxState
+//   );
+// };
 
 // ################################################################################################
 export const selectReduxDeploymentsStateSelectorForQueryTemplateParams /*: DomainStateSelectorParamsSelector<Q> */ = <QueryType extends BoxedQueryTemplateWithExtractorCombinerTransformer>(

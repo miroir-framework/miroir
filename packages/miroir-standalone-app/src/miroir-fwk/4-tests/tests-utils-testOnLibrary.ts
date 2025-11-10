@@ -64,7 +64,7 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
 
 
 export function testOnLibrary_resetLibraryDeployment(
-  miroirConfig: MiroirConfigClient,
+  // miroirConfig: MiroirConfigClient,
   deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
 ): CompositeAction {
   return {

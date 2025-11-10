@@ -49,7 +49,9 @@ export function resolveConditionalSchemaTransformer(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined,
+  deploymentUuid?: Uuid,
 ): ResolveConditionalSchemaResult {
   return resolveConditionalSchema(
     // activityTracker,
@@ -173,6 +175,7 @@ export function resolveConditionalSchema(
           modelEnvironment,
           queryParams,
           contextResults,
+          reduxDeploymentsState
         ) as Uuid;
       }
       else {

@@ -478,25 +478,25 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   //   localResolvedElementJzodSchemaBasedOnValue,
   // )
 
-  // Check if we should show code editor
-  const shouldShowCodeEditor = useMemo(() => 
-    !isUnderTest &&
-    displayAsCodeEditor
-    // (
-    //   currentKeyMap?.resolvedSchema?.type == "object" ||
-    //   currentKeyMap?.resolvedSchema?.type == "record" ||
-    //   currentKeyMap?.resolvedSchema?.type == "array" ||
-    //   currentKeyMap?.resolvedSchema?.type == "tuple" ||
-    //   currentKeyMap?.resolvedSchema?.type == "any"
-    // )
-    ,
-    [
-      isUnderTest,
-      displayAsCodeEditor,
-      currentKeyMap?.resolvedSchema?.type,
-      // props.resolvedElementJzodSchema?.type
-    ]
-  );
+  // // Check if we should show code editor
+  // const shouldShowCodeEditor = useMemo(() => 
+  //   !isUnderTest &&
+  //   displayAsCodeEditor
+  //   // (
+  //   //   currentKeyMap?.resolvedSchema?.type == "object" ||
+  //   //   currentKeyMap?.resolvedSchema?.type == "record" ||
+  //   //   currentKeyMap?.resolvedSchema?.type == "array" ||
+  //   //   currentKeyMap?.resolvedSchema?.type == "tuple" ||
+  //   //   currentKeyMap?.resolvedSchema?.type == "any"
+  //   // )
+  //   ,
+  //   [
+  //     isUnderTest,
+  //     displayAsCodeEditor,
+  //     currentKeyMap?.resolvedSchema?.type,
+  //     // props.resolvedElementJzodSchema?.type
+  //   ]
+  // );
 
   // Check if this element type supports nesting (should have alternating background)
   // These are the container types that can hold other JzodElements
@@ -826,34 +826,41 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             }));
 
             return (
-              <ThemedLabeledEditor
-                labelElement={enhancedLabelElement}
-                editor={
-                  props.readOnly ? (
-                    <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
-                  ) : (
-                    <ThemedSelectWithPortal
-                      id={props.rootLessListKey}
-                      key={props.rootLessListKey}
-                      data-testid="miroirInput"
-                      aria-label={props.rootLessListKey}
-                      variant="standard"
-                      minWidth="200px"
-                      maxWidth="400px"
-                      filterable={true}
-                      options={selectOptions}
-                      placeholder="Select an option..."
-                      filterPlaceholder="Type to filter..."
-                      value={currentValueObjectAtKey || ""}
-                      onChange={(e) => {
-                        formik.setFieldValue(formikRootLessListKey, e.target.value);
-                      }}
-                      name={formikRootLessListKey}
-                      // error={hasPathError}
-                    />
-                  )
-                }
-              />
+              <>
+                {/* <ThemedOnScreenHelper
+                  name={`Uuid: ${props.rootLessListKey}`}
+                  data={(props.typeCheckKeyMap as any)?.[props.rootLessListKey]}
+                /> */}
+                <ThemedLabeledEditor
+                  labelElement={enhancedLabelElement}
+                  editor={
+                    props.readOnly ? (
+                      <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
+                    ) : (
+                      <ThemedSelectWithPortal
+                        id={props.rootLessListKey}
+                        key={props.rootLessListKey}
+                        data-testid="miroirInput"
+                        aria-label={props.rootLessListKey}
+                        variant="standard"
+                        minWidth="200px"
+                        maxWidth="400px"
+                        filterable={true}
+                        options={selectOptions}
+                        placeholder="Select an option..."
+                        filterPlaceholder="Type to filter..."
+                        // {...formik.getFieldProps(formikRootLessListKey)}
+                        value={currentValueObjectAtKey || ""}
+                        onChange={(e) => {
+                          formik.setFieldValue(formikRootLessListKey, e.target.value);
+                        }}
+                        name={formikRootLessListKey}
+                        // error={hasPathError}
+                      />
+                    )
+                  }
+                />
+              </>
             );
           } else {
               // const currentUuidValue = formik.values[props.rootLessListKey] || "";
@@ -951,6 +958,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "undefined":
         case "any": {
           return (
+            <>
+            {/* <ThemedOnScreenHelper
+              name={`This field allows any type of value. ${props.rootLessListKey}`}
+              data={(props.typeCheckKeyMap as any)?.[props.rootLessListKey]}
+            /> */}
             <JzodAnyEditor
               name={props.name}
               labelElement={props.labelElement}
@@ -967,6 +979,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               readOnly={props.readOnly}
               displayError={props.displayError}
             />
+            </>
           );
         }
         case "date": {
@@ -1272,6 +1285,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 flexGrow: 1,
               }}
             >
+              {/* <ThemedOnScreenHelper
+                name={`${props.rootLessListKey}: ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
+                data={(props.typeCheckKeyMap as any)?.[props.rootLessListKey]}
+              /> */}
               {mainElement}
             </span>
           </span>

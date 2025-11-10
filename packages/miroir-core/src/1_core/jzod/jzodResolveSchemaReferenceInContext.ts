@@ -3,10 +3,12 @@ import {
   JzodObject,
   JzodReference,
   JzodSchema,
-  MetaModel
+  MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
 import { Step, ResolveBuildTransformersTo } from "../../2_domain/Transformers";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
+import type { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 
 // ################################################################################################
 export function resolveSchemaReferenceInContextTransformer<T extends MiroirModelEnvironment>(
@@ -16,7 +18,10 @@ export function resolveSchemaReferenceInContextTransformer<T extends MiroirModel
   transformer: any, // Use any for now until transformer types are generated
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: T,
-  contextResults?: Record<string, any>
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined,
+  deploymentUuid?: Uuid,
 ): JzodElement {
   return resolveJzodSchemaReferenceInContext(
     transformer.jzodReference,

@@ -4,6 +4,9 @@ import {
   JzodSchema,
   MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
+import type { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
+import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
@@ -652,8 +655,11 @@ export function unfoldSchemaOnceTransformer(
   label: string | undefined,
   transformer: any, // TransformerForBuild_unfoldSchemaOnce | TransformerForRuntime_unfoldSchemaOnce | TransformerForBuildPlusRuntime_unfoldSchemaOnce,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined,
+  deploymentUuid?: Uuid,
 ): UnfoldJzodSchemaOnceReturnType {
   return unfoldJzodSchemaOnce(
     transformer.miroirFundamentalJzodSchema,

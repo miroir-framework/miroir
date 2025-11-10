@@ -39,8 +39,6 @@ import {
   testSuiteNameForBuildPlusRuntimeCompositeAction,
 } from "../../src/miroir-fwk/4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
 import {
-  createDeploymentCompositeAction,
-  deleteAndCloseApplicationDeployments,
   runTestOrTestSuite,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
@@ -48,6 +46,7 @@ import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
 import { defaultMiroirModelEnvironment } from 'miroir-core';
+import { createDeploymentCompositeAction } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -142,6 +141,7 @@ const beforeAll = async () => {
   miroirContext = localmiroirContext;
 
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    typedAdminConfigurationDeploymentMiroir.name,
     typedAdminConfigurationDeploymentMiroir.uuid,
     typedAdminConfigurationDeploymentMiroir.configuration,
   );

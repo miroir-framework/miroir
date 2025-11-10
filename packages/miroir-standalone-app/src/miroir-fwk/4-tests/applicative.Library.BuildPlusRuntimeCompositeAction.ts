@@ -55,6 +55,7 @@ export const testSuiteNameForBuildPlusRuntimeCompositeAction: string =
   "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test";
 // ################################################################################################
 
+const testApplicationName: string = "test";
 const testSelfApplicationUuid: Uuid = uuidv4();
 // const testDeploymentUuid: Uuid = uuidv4();
 const testDeploymentUuid: Uuid = "3c7ae605-e938-419d-8110-99d0e3b31ac2";
@@ -62,7 +63,7 @@ const testApplicationModelBranchUuid: Uuid = uuidv4();
 const testApplicationVersionUuid: Uuid = uuidv4();
 
 const testDeploymentStorageConfiguration: StoreUnitConfiguration = getBasicStoreUnitConfiguration(
-  "test",
+  testApplicationName,
   {
     emulatedServerType: "sql",
     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
@@ -70,7 +71,7 @@ const testDeploymentStorageConfiguration: StoreUnitConfiguration = getBasicStore
 );
 
 const initParametersForTest: InitApplicationParameters = getBasicApplicationConfiguration(
-  "Test",
+  testApplicationName,
   testSelfApplicationUuid,
   testDeploymentUuid,
   testApplicationModelBranchUuid,
@@ -185,6 +186,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
         testType: "testBuildPlusRuntimeCompositeActionSuite",
         testLabel: testSuiteNameForBuildPlusRuntimeCompositeAction,
         beforeAll: createDeploymentCompositeAction(
+          testApplicationName,
           testDeploymentUuid,
           testDeploymentStorageConfiguration
         ),

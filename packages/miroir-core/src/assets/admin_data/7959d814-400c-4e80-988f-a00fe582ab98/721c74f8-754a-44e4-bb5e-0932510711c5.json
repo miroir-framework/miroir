@@ -1,0 +1,27 @@
+{
+  "uuid": "721c74f8-754a-44e4-bb5e-0932510711c5",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "Deployment of application test_application_20251110_162112",
+  "defaultLabel": "The deployment of application test_application_20251110_162112",
+  "description": "The description of deployment of application test_application_20251110_162112",
+  "bundle": "721c74f8-754a-44e4-bb5e-0932510711c5",
+  "adminApplication": "170af752-3dc0-490e-b43f-466c14507934",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory": "../miroir-core/src/assets/admin"
+    },
+    "model": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "test_application_20251110_162112"
+    },
+    "data": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "test_application_20251110_162112"
+    }
+  }
+
+}

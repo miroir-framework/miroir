@@ -161,10 +161,17 @@ export async function storeActionOrBundleActionStoreRunner(
             persistenceStoreControllerManager.getPersistenceStoreControllers()
         );
       }
-
+      log.info(
+        "storeActionOrBundleActionStoreRunner deleteStore for deployment",
+        action.deploymentUuid,
+        "configuration",
+        JSON.stringify(action.configuration, null, 2)
+      );
       // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
-      const appModelStoreDeleted: Action2ReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.model)
-      const appDataStoreDeleted: Action2ReturnType = await localAppPersistenceStoreController.deleteStore(action.configuration.data)
+      const appModelStoreDeleted: Action2ReturnType =
+        await localAppPersistenceStoreController.deleteStore(action.configuration.model);
+      const appDataStoreDeleted: Action2ReturnType =
+        await localAppPersistenceStoreController.deleteStore(action.configuration.data);
 
       if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
         return new Action2Error(

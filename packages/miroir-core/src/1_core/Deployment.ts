@@ -1,6 +1,6 @@
 import { adminConfigurationDeploymentAdmin, entityApplicationForAdmin, entityDeployment } from "..";
 import type { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import type { AdminApplication, CompositeAction, Deployment, EntityDefinition, EntityInstance, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { AdminApplication, CompositeAction, Deployment, EntityDefinition, EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -62,6 +62,8 @@ export function createApplicationCompositeAction(
   log.info("createApplicationCompositeAction result =", result);
   return result;
 }
+
+// ################################################################################################
 export function createDeploymentCompositeAction(
   applicationName: string,
   deploymentUuid: Uuid,
@@ -216,6 +218,34 @@ export function resetAndinitializeDeploymentCompositeAction(
             };
           }),
         }
+      },
+    ],
+  };
+}
+
+// ################################################################################################
+export function deleteApplicationAndDeploymentCompositeAction(
+  miroirConfig: MiroirConfigClient,
+  deploymentUuid: Uuid 
+): CompositeAction {
+  console.log(
+    "deleteApplicationAndDeploymentCompositeAction",
+    deploymentUuid,
+    JSON.stringify(miroirConfig, null, 2)
+  );
+  return {
+    actionType: "compositeAction",
+    actionLabel: "deleteApplicationAndDeployment",
+    actionName: "sequence",
+    definition: [
+      {
+        actionType: "storeManagementAction_deleteStore",
+        actionLabel: "deleteLibraryStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        deploymentUuid,
+        configuration: miroirConfig.client.emulateServer
+          ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
+          : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
       },
     ],
   };

@@ -81,16 +81,18 @@ export const handleDiscriminatorChange = (
         newJzodSchemaWithOptional,
         formik.values,
         rootLessListKey,
-        undefined,
-        [],
-        undefined,
-        true,
+        undefined, // currentDefaultValue
+        [], // currentValuePath
+        true, // forceOptional
         currentDeploymentUuid,
         {
           miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-        }
+        },
+        {}, // transformerParams
+        undefined, // contextResults
+        undefined, // reduxDeploymentsState
       )
     : undefined;
 

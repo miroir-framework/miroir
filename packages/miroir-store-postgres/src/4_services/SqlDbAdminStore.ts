@@ -47,6 +47,14 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
       if (config.emulatedServerType !== "sql") {
         throw new Error("SqlDbAdminStore deleteStore failed for serverType " + config.emulatedServerType);
       }
+      const schemas = await this.sequelize.showAllSchemas({});
+      log.info(
+        "SqlDbAdminStore storeManagementAction deleteStore",
+        JSON.stringify(config),
+        "schemas:",
+        schemas
+      );
+
       await this.sequelize.dropSchema(config.schema, {});
     } catch (error) {
       return Promise.resolve(new Action2Error("FailedToDeleteStore", error as string));

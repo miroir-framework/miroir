@@ -460,6 +460,9 @@ export {
   graphReportSection,
   GraphConfig,
   graphConfig,
+  // 
+  Deployment,
+  deployment,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -701,9 +704,10 @@ export {
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export { ACTION_OK, MAX_BLOB_FILE_SIZE, BLOB_SIZE_WARNING_THRESHOLD } from "./1_core/constants.js";
 export {
+  ApplicationEntitiesAndInstances,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
-  ApplicationEntitiesAndInstances,
+  deleteApplicationAndDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";

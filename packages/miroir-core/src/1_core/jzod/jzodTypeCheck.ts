@@ -17,6 +17,7 @@ import {
   type ResolvedJzodSchemaReturnTypeError,
   KeyMapEntry,
   type JzodRecord,
+  type TransformerForBuildPlusRuntime_jzodTypeCheck,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
@@ -41,6 +42,7 @@ import type {
   JzodUnionResolvedTypeForObjectReturnTypeOK,
 } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
+import { defaultMiroirModelEnvironment } from "../Model";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -1977,7 +1979,8 @@ export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: any,
+  // transformer: any,
+  transformer: TransformerForBuildPlusRuntime_jzodTypeCheck,
   resolveBuildTransformersTo: any,
   // queryParams: Record<string, any>,
   queryParams: T,
@@ -2006,6 +2009,7 @@ export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
     // miroirFundamentalJzodSchema,
     // currentModel,
     // miroirMetaModel,
+    defaultMiroirModelEnvironment, // TODO: use proper model environment
     relativeReferenceJzodContext,
     currentDefaultValue,
     reduxDeploymentsState,

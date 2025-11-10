@@ -36,7 +36,12 @@ import {
   miroirFundamentalJzodSchema,
   restServerDefaultHandlers,
   type JzodSchema,
-  type MiroirModelEnvironment} from "miroir-core";
+  type MiroirModelEnvironment,
+  type InstanceAction,
+  entityDeployment,
+  defaultMetaModelEnvironment,
+  Action2Error,
+  type Deployment} from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
@@ -68,7 +73,7 @@ const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterfac
 //   specificLoggerOptions,
 // );
 
-const configurations = {
+const configurations: Record<string, StoreUnitConfiguration> = {
   [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
   [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
   // [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.configuration as StoreUnitConfiguration,
@@ -222,6 +227,68 @@ for (const c of Object.entries(configurations)) {
   await domainController.handleAction(openStoreAction)
 }
 
+// const fetchDeploymentsAction: InstanceAction = {
+//   actionType: "getInstances",
+//   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+//   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+//   payload: {
+//     applicationSection: "data",
+//     parentUuid: entityDeployment.uuid,
+//   }
+// }
+
+// const deployments = await domainController.handleAction(fetchDeploymentsAction);
+const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
+  actionType: "runBoxedExtractorOrQueryAction",
+  actionName: "runQuery",
+  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  payload: {
+    applicationSection: "data",
+    queryExecutionStrategy: "storage",
+    query: {
+      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      pageParams: {},
+      queryParams: {},
+      contextResults: {},
+      // runAsSql: true,
+      extractors: {
+        deployments: {
+          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          parentUuid: entityDeployment.uuid,
+        }
+      }
+    },
+  }
+}, defaultMetaModelEnvironment);
+
+if (deploymentsQueryResults instanceof Action2Error) {
+  throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
+}
+
+const deployments: Deployment[] = deploymentsQueryResults.returnedDomainElement.deployments;
+
+myLogger.info(`Deployments fetched: ${JSON.stringify(deployments, circularReplacer(), 2)}`);
+
+const deploymentsToOpen: [string, StoreUnitConfiguration][] = deployments
+  .filter((d) => !configurations[d.uuid.toString()])
+  .map((d) => [d.uuid.toString(), d.configuration as StoreUnitConfiguration]);
+
+myLogger.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
+
+for (const c of deploymentsToOpen) {
+  const openStoreAction: StoreOrBundleAction = {
+    // actionType: "storeManagementAction",
+    actionType: "storeManagementAction_openStore",
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+    configuration: {
+      [c[0]]: c[1] as StoreUnitConfiguration,
+    },
+    deploymentUuid: c[0],
+  };
+  await domainController.handleAction(openStoreAction)
+}
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS

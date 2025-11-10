@@ -4,14 +4,22 @@ import { useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 // import { z } from "zod";
 
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, FormControl, InputLabel, Select, type SelectChangeEvent } from '@mui/material';
 import type {
+  ApplicationSection,
+  BoxedQueryWithExtractorCombinerTransformer,
+  CompositeAction,
+  Domain2QueryReturnType,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
   InitApplicationParameters,
   ModelAction,
+  ReduxDeploymentsState,
   StoreUnitConfiguration,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunnerParams,
+  Uuid,
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
@@ -20,15 +28,23 @@ import {
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
+  deleteApplicationAndDeploymentCompositeAction,
+  Domain2ElementFailed,
+  entityApplicationForAdmin,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
+  entityDeployment,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
+  getQueryRunnerParamsForReduxDeploymentsState,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resetAndinitializeDeploymentCompositeAction,
   resolvePathOnObject,
+  runBoxedQueryAction,
+  runQuery,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
+  transformer_extended_apply_wrapper,
   type JzodElement,
   type JzodSchema,
   type LoggerInterface,
@@ -41,8 +57,11 @@ import { ReportPageContextProvider } from "../components/Reports/ReportPageConte
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../constants.js";
 import { useDomainControllerService, useMiroirContextService } from "../MiroirContextReactProvider.js";
-import { useCurrentModel } from "../ReduxHooks.js";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from "../ReduxHooks.js";
 import { usePageConfiguration } from "../services/index.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, selectCurrentReduxDeploymentsStateFromReduxState, useReduxState, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
+import { useSelector } from 'react-redux';
+import { ThemedOnScreenHelper } from '../components/Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -139,6 +158,32 @@ export const AdminPage: React.FC<any> = (
   //   }
   // };
 
+
+  const deploymentUuid = adminConfigurationDeploymentParis.uuid;
+  const context = useMiroirContextService();
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentModel = useCurrentModel(deploymentUuid);
+  const domainController: DomainControllerInterface = useDomainControllerService();
+
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema:
+        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+      miroirMetaModel: miroirMetaModel,
+      currentModel: currentModel,
+    };
+  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
+
+  // const displayedApplicationSection = context.applicationSection;
+  // const setDisplayedApplicationSection = context.setApplicationSection;
+  // const handleChangeDisplayedApplicationSection = (event: SelectChangeEvent) => {
+  //   event.stopPropagation();
+  //   setDisplayedApplicationSection(event.target.value as ApplicationSection);
+  //   // setDisplayedReportUuid("");
+  // };
+
+  // const currentTransformerDefinition: TransformerForBuildPlusRuntime = useMemo(() => {
+  // }, []);
   const formMlSchema: JzodElement = {
     type: "object",
     definition: {
@@ -156,6 +201,28 @@ export const AdminPage: React.FC<any> = (
           },
         }
       },
+      deleteApplicationAndDeployment: {
+        type: "object",
+        definition: {
+          application: {
+            type: "uuid",
+            nullable: true,
+            tag: {
+              value: {
+                defaultLabel: "Application",
+                editable: true,
+                selectorParams: {
+                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                  // targetApplicationUuid: "data",
+                  // targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b", // Admin Application
+                  targetEntity: entityApplicationForAdmin.uuid,
+                  targetEntityOrderInstancesBy: "name",
+                }
+              },
+            },
+          },
+        }
+      },
       createEntity: {
         type: "object",
         definition: {
@@ -165,24 +232,9 @@ export const AdminPage: React.FC<any> = (
       }
     }
   };
-
-  const deploymentUuid = adminConfigurationDeploymentParis.uuid;
-  const context = useMiroirContextService();
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const currentModel = useCurrentModel(deploymentUuid);
-  const domainController: DomainControllerInterface = useDomainControllerService();
-
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-      miroirMetaModel: miroirMetaModel,
-      currentModel: currentModel,
-    };
-  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
-
-  // const currentTransformerDefinition: TransformerForBuildPlusRuntime = useMemo(() => {
-  // }, []);
+  const reduxState: ReduxDeploymentsState = useSelector<ReduxStateWithUndoRedo, ReduxDeploymentsState>(
+    selectCurrentReduxDeploymentsStateFromReduxState
+  );
   const initialReportSectionsFormValue = useMemo(() => {
     // const result = transformer_extended_apply_wrapper(
     //   context.miroirContext.miroirActivityTracker, // activityTracker
@@ -203,12 +255,37 @@ export const AdminPage: React.FC<any> = (
       createApplicationAndDeployment: {
         applicationName: string;
       };
+      deleteApplicationAndDeployment: {
+        application: Uuid;
+      } | undefined;
       createEntity: { entity: Entity; entityDefinition: EntityDefinition };
     } = {
       createApplicationAndDeployment: {
         // applicationName: "test_application_" + new Date().toISOString(),
         applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
       },
+      deleteApplicationAndDeployment: reduxState && Object.keys(reduxState).length > 0
+        ? {
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5" as any
+        }
+        // transformer_extended_apply_wrapper(
+        //     context.miroirContext.miroirActivityTracker, // activityTracker
+        //     "runtime", // step
+        //     ["rootTransformer"], // transformerPath
+        //     "TransformerEditor", // label
+        //     {
+        //       transformerType: "defaultValueForMLSchema",
+        //       mlSchema: formMlSchema.definition.deleteApplicationAndDeployment as JzodElement,
+        //       interpolation: "build",
+        //     }, // transformer
+        //     currentMiroirModelEnvironment,
+        //     {}, // transformerParams,
+        //     {}, // contextResults - pass the instance to transform
+        //     "value", // resolveBuildTransformersTo
+        //     reduxState,
+        //     deploymentUuid,
+        //   )
+        : undefined,
       createEntity: {
         entity: {
           uuid: entityUuid,
@@ -283,11 +360,73 @@ export const AdminPage: React.FC<any> = (
         },
       },
     };
-
     return result;
-  }, [context, formMlSchema, currentMiroirModelEnvironment]);
+  }, [context, reduxState, formMlSchema, currentMiroirModelEnvironment]);
+
+  
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+  useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
+  
+  // const [deleteApplicationAndDeploymentCompositeAction_application, setDeleteApplicationAndDeploymentCompositeAction_application] = useState<Uuid | undefined>(undefined);
+  // const deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(() => {
+  //   if (initialReportSectionsFormValue.deleteApplicationAndDeployment?.application) {
+  //     const result: BoxedQueryWithExtractorCombinerTransformer = {
+  //       queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //       deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  //       extractors: {
+  //         deployments: {
+  //           label: "deployments of the application",
+  //           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+  //           parentUuid: entityDeployment.uuid,
+  //           parentName: entityDeployment.name,
+  //           applicationSection: "data",
+  //           filter: {
+  //             attributeName: "adminApplication",
+  //             value: deploymentUuid
+  //           }
+  //         }
+  //       },
+  //     }
+  //     return result;
+  //   }
+  //   return {
+  //     queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //     deploymentUuid: "",
+  //     pageParams: props.pageParams,
+  //     queryParams: {},
+  //     contextResults: {},
+  //     extractors: {},
+  //   };
+
+  // }, [initialReportSectionsFormValue, reduxState]);
+
+  // const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
+  //   useMemo(
+  //     () =>
+  //       getQueryRunnerParamsForReduxDeploymentsState(
+  //         deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery,
+  //         deploymentEntityStateSelectorMap
+  //       ),
+  //     [deploymentEntityStateSelectorMap, deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery]
+  //   );
+  // const reportData: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> =
+  //   useReduxDeploymentsStateQuerySelector(
+  //     deploymentEntityStateSelectorMap.runQuery,
+  //     deploymentEntityStateFetchQueryParams
+  //   );
+    
+  // const deleteApplicationAndDeploymentCompositeAction_deploymentUuid = useMemo(() => {
+  //   if (initialReportSectionsFormValue.deleteApplicationAndDeployment?.application) {
+  //     const applicationUuid = initialReportSectionsFormValue.deleteApplicationAndDeployment.application;
+
+  //     return deploymentUuid;
+  //   }
+  //   return undefined;
+  // }, [initialReportSectionsFormValue, reduxState]);
+  // log.info("deleteApplicationAndDeploymentCompositeAction_application", deleteApplicationAndDeploymentCompositeAction_application);
 
   log.info("initialReportSectionsFormValue", initialReportSectionsFormValue);
+
   return (
     <ReportPageContextProvider>
       <PageContainer>
@@ -296,6 +435,7 @@ export const AdminPage: React.FC<any> = (
         <br />
         path: {testSubPartPathArray.join(".")}
         <br />
+        {/* Create Application & Deployment */}
         <Accordion style={{ marginBottom: 12 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <div style={{ fontWeight: 500 }}>Create Application & Deployment</div>
@@ -309,7 +449,11 @@ export const AdminPage: React.FC<any> = (
                 try {
                   const newApplicationName = values.createApplicationAndDeployment.applicationName;
 
-                  log.info("Admin onSubmit createApplicationAndDeployment formik values", values, newApplicationName);
+                  log.info(
+                    "Admin onSubmit createApplicationAndDeployment formik values",
+                    values,
+                    newApplicationName
+                  );
 
                   const testSelfApplicationUuid = uuidv4();
                   const testDeploymentUuid = uuidv4();
@@ -370,7 +514,7 @@ export const AdminPage: React.FC<any> = (
                     localCreateApplicationCompositeAction
                   );
                   // create deployment
-                  const  localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
+                  const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
                     newApplicationName,
                     testDeploymentUuid,
                     testDeploymentStorageConfiguration
@@ -379,11 +523,12 @@ export const AdminPage: React.FC<any> = (
                     "Admin onSubmit createApplicationAndDeployment localCreateDeploymentCompositeAction",
                     localCreateDeploymentCompositeAction
                   );
-                  const localResetAndinitializeDeploymentCompositeAction = resetAndinitializeDeploymentCompositeAction(
-                    testDeploymentUuid,
-                    initParametersForTest,
-                    []
-                  );
+                  const localResetAndinitializeDeploymentCompositeAction =
+                    resetAndinitializeDeploymentCompositeAction(
+                      testDeploymentUuid,
+                      initParametersForTest,
+                      []
+                    );
                   log.info(
                     "Admin onSubmit createApplicationAndDeployment localResetAndinitializeDeploymentCompositeAction",
                     localResetAndinitializeDeploymentCompositeAction
@@ -394,7 +539,7 @@ export const AdminPage: React.FC<any> = (
                     localCreateApplicationCompositeAction,
                     currentMiroirModelEnvironment,
                     {}
-                  )
+                  );
 
                   await domainController.handleCompositeAction(
                     localCreateDeploymentCompositeAction,
@@ -447,6 +592,233 @@ export const AdminPage: React.FC<any> = (
             </Formik>
           </AccordionDetails>
         </Accordion>
+        {/* Delete Application & Deployment */}
+        <Accordion style={{ marginBottom: 12 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <div style={{ fontWeight: 500 }}>Delete Application & Deployment</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            {/* <div>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={context.deploymentUuid}
+                  label="displayedDeploymentUuid"
+                  onChange={handleChangeDisplayedDeployment}
+                >
+                  {deployments.map((deployment) => {
+                    return (
+                      <MenuItem key={deployment.name} value={deployment.uuid}>
+                        {deployment.description}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </div> */}
+
+            <Formik
+              enableReinitialize={true}
+              // initialValues={formInitialValue}
+              initialValues={initialReportSectionsFormValue}
+              onSubmit={async (values, { setSubmitting, setErrors }) => {
+                try {
+                  const applicationUuid = values.deleteApplicationAndDeployment?.application;
+
+                  log.info(
+                    "Admin onSubmit deleteApplicationAndDeployment formik values",
+                    values,
+                    applicationUuid
+                  );
+                  const deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery: BoxedQueryWithExtractorCombinerTransformer =
+                    {
+                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                      pageParams: {},
+                      queryParams: {},
+                      contextResults: {},
+                      extractors: {
+                        deployments: {
+                          label: "deployments of the application",
+                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                          parentUuid: entityDeployment.uuid,
+                          parentName: entityDeployment.name,
+                          applicationSection: "data",
+                          filter: {
+                            // attributeName: "selfApplication",
+                            attributeName: "adminApplication",
+                            value: applicationUuid,
+                          },
+                        },
+                      },
+                    };
+
+                  const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
+                    getQueryRunnerParamsForReduxDeploymentsState(
+                      deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery,
+                      deploymentEntityStateSelectorMap
+                    );
+                  const deployments = runQuery(
+                    reduxState,
+                    deploymentEntityStateFetchQueryParams,
+                    defaultMiroirModelEnvironment // TODO: use real environment
+                    // deploymentEntityStateSelectorMap,
+                  );
+                  log.info(
+                    "Admin onSubmit deleteApplicationAndDeployment deployments for application",
+                    applicationUuid,
+                    "reduxState",
+                    reduxState,
+                    // "deploymentsQueryParams",
+                    // deploymentEntityStateFetchQueryParams,
+                    "deployments",
+                    deployments
+                  );
+                  // lookup deploymentUuid to delete from application uuid
+
+                  if (deployments instanceof Domain2ElementFailed) {
+                    throw deployments;
+                  }
+                  if (deployments.deployments.length !== 1) {
+                    throw new Error(
+                      `Expected exactly one deployment for application ${applicationUuid}, but found ${deployments.deployments.length}`
+                    );
+                  }
+                  // const testDeploymentStorageConfiguration: StoreUnitConfiguration =
+                  //   getBasicStoreUnitConfiguration(newApplicationName, {
+                  //     emulatedServerType: "sql",
+                  //     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                  //   });
+
+                  const deleteAction: CompositeAction = deleteApplicationAndDeploymentCompositeAction(
+                    {
+                      miroirConfigType: "client",
+                      client: {
+                        emulateServer: false,
+                        serverConfig: {
+                          rootApiUrl: "http://localhost:3000/api",
+                          storeSectionConfiguration: {
+                            [deployments.deployments[0].uuid]: deployments.deployments[0].configuration,
+                          }
+                        }
+                      }
+                    },
+                    deployments.deployments[0].uuid,
+                  );
+
+                  log.info(
+                    "Admin onSubmit deleteApplicationAndDeployment deleteAction",
+                    JSON.stringify(deleteAction, null, 2)
+                  );
+                  // // create application in the admin store
+                  // const localCreateApplicationCompositeAction = createApplicationCompositeAction(
+                  //   adminConfigurationDeploymentAdmin.uuid,
+                  //   testSelfApplicationUuid,
+                  //   testSelfApplicationUuid,
+                  //   newApplicationName,
+                  //   testDeploymentStorageConfiguration
+                  //   // testSelfApplicationUuid,
+                  //   // testApplicationModelBranchUuid,
+                  //   // testApplicationVersionUuid
+                  // );
+                  // log.info(
+                  //   "Admin onSubmit createApplicationAndDeployment localCreateApplicationCompositeAction",
+                  //   localCreateApplicationCompositeAction
+                  // );
+                  // create deployment
+                  // const  localCreateDeploymentCompositeAction = deleteApplicationAndDeploymentCompositeAction(
+                  //   testDeploymentUuid,
+                  //   testDeploymentStorageConfiguration
+                  //   // newApplicationName,
+                  // );
+                  // log.info(
+                  //   "Admin onSubmit createApplicationAndDeployment localCreateDeploymentCompositeAction",
+                  //   localCreateDeploymentCompositeAction
+                  // );
+                  // const localResetAndinitializeDeploymentCompositeAction = resetAndinitializeDeploymentCompositeAction(
+                  //   testDeploymentUuid,
+                  //   initParametersForTest,
+                  //   []
+                  // );
+                  // log.info(
+                  //   "Admin onSubmit createApplicationAndDeployment localResetAndinitializeDeploymentCompositeAction",
+                  //   localResetAndinitializeDeploymentCompositeAction
+                  // );
+
+                  // run actions
+                  await domainController.handleCompositeAction(
+                    deleteAction,
+                    currentMiroirModelEnvironment,
+                    {}
+                  )
+
+                  // await domainController.handleCompositeAction(
+                  //   localCreateDeploymentCompositeAction,
+                  //   currentMiroirModelEnvironment,
+                  //   {}
+                  // );
+                  // await domainController.handleCompositeAction(
+                  //   localResetAndinitializeDeploymentCompositeAction,
+                  //   currentMiroirModelEnvironment,
+                  //   {}
+                  // );
+                } catch (e) {
+                  log.error(e);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              // onChange={async (
+              //   values: any,
+              //   { setSubmitting, setErrors }: { setSubmitting: any; setErrors: any }
+              // ) => {
+              //   try {
+              //     const applicationToDelete = values.deleteApplicationAndDeployment?.application;
+
+              //     log.info(
+              //       "Admin onChange deleteApplicationAndDeployment formik values",
+              //       values,
+              //       applicationToDelete
+              //     );
+              //     setDeleteApplicationAndDeploymentCompositeAction_application(applicationToDelete);
+              //   } catch (e) {
+              //     log.error(e);
+              //   } finally {
+              //     setSubmitting(false);
+              //   }
+              // }}
+              validateOnChange={false}
+              validateOnBlur={false}
+            >
+              <>
+                {/* <ThemedOnScreenHelper
+                  label={"Initial Report Sections Form Value"}
+                  data={initialReportSectionsFormValue.deleteApplicationAndDeployment}
+                />
+                <ThemedOnScreenHelper
+                  label={"Initial Report Sections schema"}
+                  data={formMlSchema.definition.deleteApplicationAndDeployment}
+                /> */}
+                <TypedValueObjectEditor
+                  labelElement={<h2>Admin Configuration Editor</h2>}
+                  deploymentUuid={deploymentUuid}
+                  applicationSection="model"
+                  formValueMLSchema={formMlSchema}
+                  formikValuePathAsString="deleteApplicationAndDeployment"
+                  //
+                  formLabel="Delete Application & Deployment"
+                  zoomInPath=""
+                  maxRenderDepth={Infinity} // Always render fully for editor
+                />
+              </>
+              {/* {JSON.stringify(initialReportSectionsFormValue, null, 2)} */}
+              {/* </ThemedOnScreenHelper> */}
+            </Formik>
+          </AccordionDetails>
+        </Accordion>
+        {/* create entity */}
         <Accordion style={{ marginBottom: 12 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <div style={{ fontWeight: 500 }}>Create Entity</div>
@@ -458,7 +830,6 @@ export const AdminPage: React.FC<any> = (
               initialValues={initialReportSectionsFormValue}
               onSubmit={async (values, { setSubmitting, setErrors }) => {
                 try {
-                  
                   const createAction: ModelAction = {
                     actionType: "createEntity",
                     actionLabel: "createEntity",
@@ -522,7 +893,6 @@ export const AdminPage: React.FC<any> = (
             </Formik>
           </AccordionDetails>
         </Accordion>
-
         {/* {testResult} */}
         {/* <span style={{ color: "red" }}>{testResult}</span> */}
         {/* <div>
@@ -545,6 +915,5 @@ export const AdminPage: React.FC<any> = (
         </div> */}
       </PageContainer>
     </ReportPageContextProvider>
-    
   );
 };

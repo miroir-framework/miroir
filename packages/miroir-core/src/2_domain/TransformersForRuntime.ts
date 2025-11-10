@@ -1,8 +1,8 @@
-import mustache from 'mustache';
-import { serializeError } from 'serialize-error';
+import mustache from "mustache";
+import { serializeError } from "serialize-error";
 // import Mustache from "mustache";
-import { v4 as uuidv4 } from 'uuid';
-import { Uuid } from '../0_interfaces/1_core/EntityDefinition';
+import { v4 as uuidv4 } from "uuid";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   DomainElementInstanceArray,
   DomainElementString,
@@ -58,27 +58,39 @@ import {
   TransformerForRuntime_getUniqueValues,
   type TransformerForBuild_InnerReference,
   type TransformerForRuntime_ifThenElse,
-  type TransformerForRuntime_InnerReference
+  type TransformerForRuntime_InnerReference,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { defaultTransformerInput, type ITransformerHandler, type MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
+import {
+  defaultTransformerInput,
+  type ITransformerHandler,
+  type MiroirModelEnvironment,
+} from "../0_interfaces/1_core/Transformer";
 import {
   Action2Error,
   TransformerFailure,
-  type TransformerReturnType
+  type TransformerReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
-import { ReduxDeploymentsState } from '../0_interfaces/2_domain/ReduxDeploymentsStateInterface';
+import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { resolveJzodSchemaReferenceInContext, resolveSchemaReferenceInContextTransformer } from "../1_core/jzod/jzodResolveSchemaReferenceInContext";
-import { jzodTypeCheckTransformer, resolveObjectExtendClauseAndDefinition } from "../1_core/jzod/jzodTypeCheck";
-import { unfoldSchemaOnceTransformer } from '../1_core/jzod/JzodUnfoldSchemaOnce';
-import { resolveConditionalSchema, resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
+import {
+  resolveJzodSchemaReferenceInContext,
+  resolveSchemaReferenceInContextTransformer,
+} from "../1_core/jzod/jzodResolveSchemaReferenceInContext";
+import {
+  jzodTypeCheckTransformer,
+  resolveObjectExtendClauseAndDefinition,
+} from "../1_core/jzod/jzodTypeCheck";
+import { unfoldSchemaOnceTransformer } from "../1_core/jzod/JzodUnfoldSchemaOnce";
+import {
+  resolveConditionalSchema,
+  resolveConditionalSchemaTransformer,
+} from "../1_core/jzod/resolveConditionalSchema";
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-import { TransformerGlobalContext } from '../4_services/TransformerContext';
 import { packageName } from "../constants";
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { getEntityInstancesUuidIndexNonHook } from './ReduxDeploymentsStateQueryExecutor';
+import { getEntityInstancesUuidIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
@@ -106,8 +118,7 @@ import {
   type ResolveBuildTransformersTo,
   type Step,
 } from "./Transformers";
-import type { MiroirActivityTrackerInterface } from '../0_interfaces/3_controllers/MiroirActivityTrackerInterface';
-import type { M, R } from 'vitest/dist/chunks/environment.d.cL3nLXbE';
+import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -115,13 +126,14 @@ export type { ResolveBuildTransformersTo, Step } from "./Transformers";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerForRuntime")
-).then((logger: LoggerInterface) => {log = logger});
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 // TODO: keep this??
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
 };
-
 
 // ################################################################################################
 export const defaultTransformers = {
@@ -137,7 +149,7 @@ export const defaultTransformers = {
   transformer_dynamicObjectAccess_apply,
   // ##############################
   handleTransformer_menu_AddItem: handleTransformer_menu_AddItem,
-}
+};
 
 // ################################################################################################
 // Default value for Jzod Schema functions - moved here to avoid circular dependency
@@ -149,16 +161,14 @@ export function getDefaultValueForJzodSchemaWithResolution(
   rootLessListKey: string,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
-  reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined = undefined,
   miroirEnvironment: MiroirModelEnvironment,
-  params: Record<string, any> = {},
+  transformerParams: Record<string, any> = {},
   contextResults?: Record<string, any>,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement },
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined,
+  relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): any {
-
-
   let effectiveSchemaOrError = resolveConditionalSchema(
     step,
     [], // transformerPath
@@ -166,27 +176,35 @@ export function getDefaultValueForJzodSchemaWithResolution(
     rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
     currentValuePath,
     miroirEnvironment,
-    params,
+    transformerParams,
     contextResults,
     reduxDeploymentsState,
     deploymentUuid,
-    'defaultValue' // Specify this is for default value generation
+    "defaultValue" // Specify this is for default value generation
   );
 
   log.info(
     "getDefaultValueForJzodSchemaWithResolution called with",
-    "step", step,
-    "jzodSchema", jzodSchema,
-    "rootObject", rootObject,
-    "currentValuePath", currentValuePath,
-    "reduxDeploymentsState", reduxDeploymentsState,
-    "deploymentUuid", deploymentUuid,
-    "forceOptional", forceOptional,
-    "effectiveSchemaOrError", effectiveSchemaOrError,
+    "step",
+    step,
+    "jzodSchema",
+    jzodSchema,
+    "rootObject",
+    rootObject,
+    "currentValuePath",
+    currentValuePath,
+    "reduxDeploymentsState",
+    reduxDeploymentsState,
+    "deploymentUuid",
+    deploymentUuid,
+    "forceOptional",
+    forceOptional,
+    "effectiveSchemaOrError",
+    effectiveSchemaOrError
   );
-  
+
   // if (Object.hasOwn(effectiveSchemaOrError, 'error')) {
-  if (!effectiveSchemaOrError || Object.hasOwn(effectiveSchemaOrError, 'error')) {
+  if (!effectiveSchemaOrError || Object.hasOwn(effectiveSchemaOrError, "error")) {
     log.error(
       "getDefaultValueForJzodSchemaWithResolution: resolveConditionalSchema returned error",
       effectiveSchemaOrError
@@ -236,19 +254,21 @@ export function getDefaultValueForJzodSchemaWithResolution(
     //   "jzodSchema.tag.value.initializeTo.transformer",
     //   effectiveSchema.tag.value.initializeTo.transformer
     // );
-    const result = transformer_extended_apply_wrapper( // TODO: transformer_extended_apply instead
+    const result = transformer_extended_apply_wrapper(
+      // TODO: transformer_extended_apply instead
       undefined, // activityTracker
       "build",
-      [...currentValuePath, 'initializeTo'],
+      [...currentValuePath, "initializeTo"],
       undefined, // label
       effectiveSchema.tag.value.initializeTo.transformer,
       miroirEnvironment,
       {
         deploymentUuid,
-        rootObject
+        rootObject,
       }, // parameters
       {}, // runtimeContext
-      "value"
+      "value",
+      reduxDeploymentsState,
     );
     // log.info(
     //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning",
@@ -259,7 +279,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     // );
     return result;
   }
-  
+
   // log.info(
   //   "getDefaultValueForJzodSchemaWithResolution called with",
   //   "currentValuePath",
@@ -295,10 +315,12 @@ export function getDefaultValueForJzodSchemaWithResolution(
             rootLessListKey,
             result,
             currentValuePath.concat([a[0]]),
-            reduxDeploymentsState,
             forceOptional,
             deploymentUuid,
             miroirEnvironment,
+            transformerParams,
+            contextResults,
+            reduxDeploymentsState,
             relativeReferenceJzodContext,
           );
           result[attributeName] = attributeValue;
@@ -359,18 +381,20 @@ export function getDefaultValueForJzodSchemaWithResolution(
         //   "jzodSchema.tag.value.initializeTo.transformer",
         //   effectiveSchema.tag.value.initializeTo.transformer
         // );
-        const result = transformer_extended_apply_wrapper( //TODO: transformer_extended_apply instead
+        const result = transformer_extended_apply_wrapper(
+          //TODO: transformer_extended_apply instead
           undefined, // activityTracker
           "build",
-          [...currentValuePath, 'initializeTo'],
+          [...currentValuePath, "initializeTo"],
           undefined,
           effectiveSchema.tag.value.initializeTo.transformer,
           miroirEnvironment,
           {
-            deploymentUuid
+            deploymentUuid,
           }, // parameters
           {}, // runtimeContext
-          "value"
+          "value",
+          reduxDeploymentsState,
         );
         // log.info(
         //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from transformer",
@@ -445,12 +469,14 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return {};
     }
     case "schemaReference": {
-      const localContext = effectiveSchema.context?{...relativeReferenceJzodContext, ...effectiveSchema.context}:relativeReferenceJzodContext
+      const localContext = effectiveSchema.context
+        ? { ...relativeReferenceJzodContext, ...effectiveSchema.context }
+        : relativeReferenceJzodContext;
 
       const resolvedReference = resolveJzodSchemaReferenceInContext(
         effectiveSchema,
         localContext,
-        miroirEnvironment,
+        miroirEnvironment
         // miroirFundamentalJzodSchema,
         // currentModel,
         // miroirMetaModel,
@@ -462,10 +488,12 @@ export function getDefaultValueForJzodSchemaWithResolution(
         rootLessListKey,
         currentDefaultValue,
         currentValuePath,
-        reduxDeploymentsState,
         forceOptional,
         deploymentUuid,
         miroirEnvironment,
+        transformerParams,
+        contextResults,
+        reduxDeploymentsState,
         localContext,
       );
     }
@@ -486,10 +514,12 @@ export function getDefaultValueForJzodSchemaWithResolution(
           rootLessListKey,
           currentDefaultValue,
           currentValuePath,
-          reduxDeploymentsState,
           forceOptional,
           deploymentUuid,
           miroirEnvironment,
+          transformerParams,
+          contextResults,
+          reduxDeploymentsState,
           relativeReferenceJzodContext,
         );
       }
@@ -529,16 +559,17 @@ export function getDefaultValueForJzodSchemaWithResolution(
 export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
   step: Step,
   jzodSchema: JzodElement,
-  rootObject: any = undefined, 
+  rootObject: any = undefined,
   rootLessListKey: string,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
-  reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined,
   miroirEnvironment: T,
+  transformerParams: Record<string, any> = {},
   contextResults?: Record<string, any>,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement },
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined,
+  relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): any {
   // log.info(
   //   "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
@@ -567,10 +598,12 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
       rootLessListKey,
       currentDefaultValue,
       currentValuePath,
-      undefined, // reduxDeploymentsState
       forceOptional,
       undefined, // deploymentUuid
       miroirEnvironment,
+      {},
+      contextResults,
+      reduxDeploymentsState,
       relativeReferenceJzodContext,
     );
   }
@@ -582,23 +615,28 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     rootLessListKey,
     currentDefaultValue,
     currentValuePath,
-    reduxDeploymentsState,
     forceOptional,
     deploymentUuid,
     miroirEnvironment,
+    {},
+    contextResults,
+    reduxDeploymentsState,
     relativeReferenceJzodContext,
   );
 }
 
 // ################################################################################################
-export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironment>(
+export function defaultValueForMLSchemaTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForRuntime_defaultValueForMLSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
-  contextResults?: Record<string, any>
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // somewhat redundant with modelEnvironment
+  deploymentUuid?: Uuid,
 ): any {
   const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
     step,
@@ -607,29 +645,37 @@ export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironm
     "", // rootLessListKey
     undefined, // currentDefaultValue
     [], // currentValuePath
-    undefined, // reduxDeploymentsState
     false, // forceOptional
-    undefined, // deploymentUuid
-    transformerParams, // miroirEnvironment
+    deploymentUuid, // deploymentUuid
+    modelEnvironment, // miroirEnvironment
+    {}, // transformerParams (empty for this use case)
     contextResults,
-    undefined, // relativeReferenceJzodContext
+    reduxDeploymentsState,
+    undefined // relativeReferenceJzodContext
   );
   log.info(
     "defaultValueForMLSchemaTransformer called with",
-    "step", step,
-    "label", label,
-    "transformer", transformer,
-    "resolveBuildTransformersTo", resolveBuildTransformersTo,
-    "transformerParams", transformerParams,
-    "contextResults", contextResults,
-    "result", result
+    "step",
+    step,
+    "label",
+    label,
+    "transformer",
+    transformer,
+    "resolveBuildTransformersTo",
+    resolveBuildTransformersTo,
+    "transformerParams",
+    transformerParams,
+    "contextResults",
+    contextResults,
+    "result",
+    result
   );
   return result;
 }
 
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   handleTransformer_menu_AddItem: defaultTransformers.handleTransformer_menu_AddItem,
-  // 
+  //
   handleCountTransformer,
   handleListPickElementTransformer,
   handleUniqueTransformer,
@@ -640,24 +686,27 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_getFromContext,
   handleTransformer_dataflowObject,
   handleTransformer_FreeObjectTemplate,
-  transformer_mustacheStringTemplate_apply: defaultTransformers.transformer_mustacheStringTemplate_apply,
+  transformer_mustacheStringTemplate_apply:
+    defaultTransformers.transformer_mustacheStringTemplate_apply,
   handleTransformer_generateUuid,
   handleTransformer_mergeIntoObject: defaultTransformers.handleTransformer_mergeIntoObject,
   transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
   handleTransformer_getObjectEntries,
   handleTransformer_getObjectValues,
-  handleTransformer_createObjectFromPairs: defaultTransformers.handleTransformer_createObjectFromPairs,
+  handleTransformer_createObjectFromPairs:
+    defaultTransformers.handleTransformer_createObjectFromPairs,
   handleTransformer_getFromParameters,
   transformer_object_indexListBy_apply: defaultTransformers.transformer_object_indexListBy_apply,
-  transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
+  transformer_object_listReducerToSpreadObject_apply:
+    defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
   // MLS
-  "transformer_defaultValueForMLSchema": defaultValueForMLSchemaTransformer,
-  "transformer_resolveConditionalSchema": resolveConditionalSchemaTransformer,
-  "transformer_resolveSchemaReferenceInContext": resolveSchemaReferenceInContextTransformer,
-  "transformer_unfoldSchemaOnce": unfoldSchemaOnceTransformer,
-  "transformer_jzodTypeCheck": jzodTypeCheckTransformer,
+  transformer_defaultValueForMLSchema: defaultValueForMLSchemaTransformer,
+  transformer_resolveConditionalSchema: resolveConditionalSchemaTransformer,
+  transformer_resolveSchemaReferenceInContext: resolveSchemaReferenceInContextTransformer,
+  transformer_unfoldSchemaOnce: unfoldSchemaOnceTransformer,
+  transformer_jzodTypeCheck: jzodTypeCheckTransformer,
 };
 
 // transformer_defaultValueForMLSchema
@@ -667,9 +716,12 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   aggregate: transformer_aggregate,
-  ...Object.fromEntries((transformer_ifThenElse.transformerInterface.transformerParameterSchema.transformerType.definition as string[]).map(
-    (t: string) => ([t, transformer_ifThenElse])
-  )),
+  ...Object.fromEntries(
+    (
+      transformer_ifThenElse.transformerInterface.transformerParameterSchema.transformerType
+        .definition as string[]
+    ).map((t: string) => [t, transformer_ifThenElse])
+  ),
   returnValue: transformer_returnValue,
   constantAsExtractor: transformer_constantAsExtractor,
   getFromContext: transformer_getFromContext,
@@ -710,7 +762,8 @@ function resolveApplyTo(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ) {
   if (!transformer.applyTo) {
     return defaultTransformers.transformer_extended_apply(
@@ -728,15 +781,18 @@ function resolveApplyTo(
     );
   }
   switch (typeof transformer.applyTo) {
-    case 'string':
-    case 'number':
-    case 'bigint':
-    case 'boolean':
-    case 'undefined': {
+    case "string":
+    case "number":
+    case "bigint":
+    case "boolean":
+    case "undefined": {
       return transformer.applyTo;
     }
-    case 'object': {
-      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "transformerType")) {
+    case "object": {
+      if (
+        Array.isArray(transformer.applyTo) ||
+        !Object.hasOwn(transformer.applyTo, "transformerType")
+      ) {
         return transformer.applyTo;
       }
       // if (transformer.applyTo.referenceType == "referencedExtractor") {
@@ -749,9 +805,9 @@ function resolveApplyTo(
       //     queryParameters: queryParams as any,
       //   });
       // }
-    
+
       // const transformerReference = transformer.applyTo.reference;
-    
+
       const resolvedReference = defaultTransformers.transformer_extended_apply(
         step,
         [...transformerPath, "applyTo"],
@@ -777,15 +833,16 @@ function resolveApplyTo(
       return resolvedReference;
       break;
     }
-    case 'symbol':
-    case 'function':
+    case "symbol":
+    case "function":
     default: {
       // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
         transformerPath: [...transformerPath, "applyTo"],
         failureOrigin: ["resolveApplyTo"],
-        failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
+        failureMessage:
+          "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
         queryContext: JSON.stringify(transformer),
         queryParameters: queryParams as any,
       });
@@ -815,7 +872,7 @@ function resolveApplyTo(
   //         resolveBuildTransformersTo,
   //         queryParams,
   //         contextResults,
-          
+
   //       );
   // return resolvedReference;
 }
@@ -823,25 +880,24 @@ function resolveApplyTo(
 // ################################################################################################
 // TODO: identical to resolveApplyTo, should be merged?
 export function resolveApplyTo_legacy(
-  transformer: 
-  | TransformerForBuild_aggregate
-  | TransformerForBuild_mapList
-  | TransformerForBuild_pickFromList
-  | TransformerForBuild_listReducerToSpreadObject
-  | TransformerForBuild_indexListBy
-  | TransformerForBuild_getObjectEntries
-  | TransformerForBuild_getObjectValues
-  | TransformerForBuild_getUniqueValues
-  | TransformerForRuntime_aggregate
-  | TransformerForRuntime_mapList 
-  | TransformerForRuntime_pickFromList
-  | TransformerForRuntime_indexListBy
-  // | TransformerForRuntime_mapper_listToObject 
-  | TransformerForRuntime_listReducerToSpreadObject
-  | TransformerForRuntime_getObjectEntries
-  | TransformerForRuntime_getObjectValues
-  | TransformerForRuntime_getUniqueValues
-  ,
+  transformer:
+    | TransformerForBuild_aggregate
+    | TransformerForBuild_mapList
+    | TransformerForBuild_pickFromList
+    | TransformerForBuild_listReducerToSpreadObject
+    | TransformerForBuild_indexListBy
+    | TransformerForBuild_getObjectEntries
+    | TransformerForBuild_getObjectValues
+    | TransformerForBuild_getUniqueValues
+    | TransformerForRuntime_aggregate
+    | TransformerForRuntime_mapList
+    | TransformerForRuntime_pickFromList
+    | TransformerForRuntime_indexListBy
+    // | TransformerForRuntime_mapper_listToObject
+    | TransformerForRuntime_listReducerToSpreadObject
+    | TransformerForRuntime_getObjectEntries
+    | TransformerForRuntime_getObjectValues
+    | TransformerForRuntime_getUniqueValues,
   step: Step,
   transformerPath: string[],
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
@@ -849,7 +905,8 @@ export function resolveApplyTo_legacy(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults: Record<string, any> | undefined,
-  label: string | undefined
+  label: string | undefined,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ) {
   // log.info(
   //   "resolveApplyTo_legacy",
@@ -874,19 +931,23 @@ export function resolveApplyTo_legacy(
       resolveBuildTransformersTo,
       modelEnvironment,
       queryParams,
-      contextResults
+      contextResults,
+      reduxDeploymentsState
     );
   }
   switch (typeof transformer.applyTo) {
-    case 'string':
-    case 'number':
-    case 'bigint':
-    case 'boolean':
-    case 'undefined': {
+    case "string":
+    case "number":
+    case "bigint":
+    case "boolean":
+    case "undefined": {
       return transformer.applyTo;
     }
-    case 'object': {
-      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "transformerType")) {
+    case "object": {
+      if (
+        Array.isArray(transformer.applyTo) ||
+        !Object.hasOwn(transformer.applyTo, "transformerType")
+      ) {
         return transformer.applyTo;
       }
       // if (transformer.applyTo.referenceType == "referencedExtractor") {
@@ -899,9 +960,9 @@ export function resolveApplyTo_legacy(
       //     queryParameters: queryParams as any,
       //   });
       // }
-    
+
       // const transformerReference = transformer.applyTo.reference;
-    
+
       const resolvedReference = defaultTransformers.transformer_extended_apply(
         step,
         [...transformerPath, "applyTo"],
@@ -910,7 +971,8 @@ export function resolveApplyTo_legacy(
         resolveBuildTransformersTo,
         modelEnvironment,
         queryParams,
-        contextResults
+        contextResults,
+        reduxDeploymentsState
       );
       // log.info(
       //   "resolveApplyTo_legacy resolved for transformer",
@@ -925,15 +987,16 @@ export function resolveApplyTo_legacy(
       return resolvedReference;
       break;
     }
-    case 'symbol':
-    case 'function':
+    case "symbol":
+    case "function":
     default: {
       // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
         transformerPath: [...transformerPath, "applyTo"],
         failureOrigin: ["resolveApplyTo_legacy"],
-        failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
+        failureMessage:
+          "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
         queryContext: JSON.stringify(transformer),
         queryParameters: queryParams as any,
       });
@@ -952,6 +1015,7 @@ function transformerForBuild_list_listMapperToList_apply(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any[]> {
   const resolvedApplyTo = resolveApplyTo_legacy(
     transformer,
@@ -984,7 +1048,7 @@ function transformerForBuild_list_listMapperToList_apply(
       innerError: resolvedApplyTo,
     });
   }
-  const resultArray:any[] = [];
+  const resultArray: any[] = [];
 
   if (Array.isArray(resolvedApplyTo)) {
     for (const element of resolvedApplyTo) {
@@ -999,12 +1063,14 @@ function transformerForBuild_list_listMapperToList_apply(
           queryParams,
           {
             ...contextResults,
-            [transformer.referenceToOuterObject??defaultTransformerInput]: element,
-          } // inefficient!
+            [transformer.referenceToOuterObject ?? defaultTransformerInput]: element,
+          }, // inefficient!
+          reduxDeploymentsState
         )
       ); // TODO: constrain type of transformer
     }
-  } else { // allow this?  or should it be an error?
+  } else {
+    // allow this?  or should it be an error?
     if (typeof resolvedApplyTo == "object") {
       for (const element of Object.entries(resolvedApplyTo)) {
         resultArray.push(
@@ -1018,30 +1084,35 @@ function transformerForBuild_list_listMapperToList_apply(
             queryParams,
             {
               ...contextResults,
-              [transformer.referenceToOuterObject??defaultTransformerInput]: element[1],
-            }
+              [transformer.referenceToOuterObject ?? defaultTransformerInput]: element[1],
+            },
+            reduxDeploymentsState
           )
         ); // TODO: constrain type of transformer
       }
     } else {
-      log.error("transformerForBuild_list_listMapperToList_apply extractorTransformer can not work on resolvedReference", resolvedApplyTo);
+      log.error(
+        "transformerForBuild_list_listMapperToList_apply extractorTransformer can not work on resolvedReference",
+        resolvedApplyTo
+      );
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
         transformerPath, //: [...transformerPath, transformer.transformerType],
         failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
         failureMessage:
-          "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedApplyTo, null, 2),
+          "resolved reference is not instanceUuidIndex or object " +
+          JSON.stringify(resolvedApplyTo, null, 2),
       });
     }
   }
   const sortByAttribute = transformer.orderBy
-  ? (a: any[]) =>
-      a.sort((a, b) =>
-        a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
-          sensitivity: "base",
-        })
-      )
-  : (a: any[]) => a;
+    ? (a: any[]) =>
+        a.sort((a, b) =>
+          a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
+            sensitivity: "base",
+          })
+        )
+    : (a: any[]) => a;
 
   const sortedResultArray = sortByAttribute(resultArray);
   return sortedResultArray;
@@ -1052,11 +1123,14 @@ function transformer_object_listReducerToSpreadObject_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_listReducerToSpreadObject | TransformerForRuntime_listReducerToSpreadObject,
+  transformer:
+    | TransformerForBuild_listReducerToSpreadObject
+    | TransformerForRuntime_listReducerToSpreadObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // log.info(
   //   "transformer_object_listReducerToSpreadObject_apply called for transformer",
@@ -1086,12 +1160,15 @@ function transformer_object_listReducerToSpreadObject_apply(
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
-      queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to failed resolvedReference",
+      queryContext:
+        "transformer_object_listReducerToSpreadObject_apply can not apply to failed resolvedReference",
       innerError: resolvedReference,
     });
   }
 
-  const isListOfObjects = Array.isArray(resolvedReference) && resolvedReference.every((entry) => typeof entry == "object" && !Array.isArray(entry));
+  const isListOfObjects =
+    Array.isArray(resolvedReference) &&
+    resolvedReference.every((entry) => typeof entry == "object" && !Array.isArray(entry));
 
   if (!isListOfObjects) {
     log.error(
@@ -1102,7 +1179,8 @@ function transformer_object_listReducerToSpreadObject_apply(
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
-      queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to resolvedReference of wrong type",
+      queryContext:
+        "transformer_object_listReducerToSpreadObject_apply can not apply to resolvedReference of wrong type",
       queryParameters: resolvedReference,
     });
   }
@@ -1121,13 +1199,12 @@ function transformer_object_indexListBy_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-    | TransformerForBuild_indexListBy
-    | TransformerForRuntime_indexListBy,
+  transformer: TransformerForBuild_indexListBy | TransformerForRuntime_indexListBy,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // log.info(
   //   "transformer_object_indexListBy_apply called for transformer",
@@ -1154,21 +1231,20 @@ function transformer_object_indexListBy_apply(
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_indexListBy_apply"],
-      queryContext: "transformer_object_indexListBy_apply can not apply to failed resolvedReference",
+      queryContext:
+        "transformer_object_indexListBy_apply can not apply to failed resolvedReference",
       innerError: resolvedReference,
     });
   } else {
-    log.info(
-      "transformer_object_indexListBy_apply found resolvedReference",
-      resolvedReference
-    );
+    log.info("transformer_object_indexListBy_apply found resolvedReference", resolvedReference);
   }
   if (!Array.isArray(resolvedReference)) {
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_indexListBy_apply"],
-      queryContext: "transformer_object_indexListBy_apply can not apply to resolvedReference of wrong type",
+      queryContext:
+        "transformer_object_indexListBy_apply can not apply to resolvedReference of wrong type",
       queryParameters: resolvedReference,
     });
   }
@@ -1186,19 +1262,21 @@ function transformer_object_indexListBy_apply(
  * For dynamic attributes the actual type of the attribute is not known, until runtime.
  * Build-time consistency check of the action is not possible.
  * Any stuctural inconsitency in the action will be detected only at runtime and result in an error.
- * 
+ *
  */
 // ################################################################################################
 function handleTransformer_createObjectFromPairs(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer: TransformerForBuild_createObjectFromPairs
+  transformer:
+    | TransformerForBuild_createObjectFromPairs
     | TransformerForRuntime_createObjectFromPairs,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
   //   "transformer_createObjectFromPairs called with objectName=",
@@ -1230,7 +1308,7 @@ function handleTransformer_createObjectFromPairs(
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_createObjectFromPairs"],
       queryContext: "transformer_createObjectFromPairs can not apply to failed resolvedApplyTo",
-      innerError: resolvedApplyTo
+      innerError: resolvedApplyTo,
     });
   }
   log.info(
@@ -1239,16 +1317,25 @@ function handleTransformer_createObjectFromPairs(
   );
   const newContextResults = {
     ...contextResults,
-    [transformer.referenceToOuterObject??defaultTransformerInput]: resolvedApplyTo,
-  }
+    [transformer.referenceToOuterObject ?? defaultTransformerInput]: resolvedApplyTo,
+  };
 
   const attributeEntries = transformer.definition.map(
-    (innerEntry: {
-      attributeKey: TransformerForBuild | TransformerForRuntime | string;
-      attributeValue: TransformerForBuild | TransformerForRuntime;
-    }, index): [
-      { rawLeftValue: TransformerReturnType<DomainElementSuccess>; finalLeftValue: TransformerReturnType<DomainElementSuccess> },
-      { renderedRightValue: TransformerReturnType<DomainElementSuccess>; finalRightValue: TransformerReturnType<DomainElementSuccess> }
+    (
+      innerEntry: {
+        attributeKey: TransformerForBuild | TransformerForRuntime | string;
+        attributeValue: TransformerForBuild | TransformerForRuntime;
+      },
+      index
+    ): [
+      {
+        rawLeftValue: TransformerReturnType<DomainElementSuccess>;
+        finalLeftValue: TransformerReturnType<DomainElementSuccess>;
+      },
+      {
+        renderedRightValue: TransformerReturnType<DomainElementSuccess>;
+        finalRightValue: TransformerReturnType<DomainElementSuccess>;
+      }
     ] => {
       const rawLeftValue: TransformerReturnType<DomainElementSuccess> =
         typeof innerEntry.attributeKey == "object" &&
@@ -1264,8 +1351,11 @@ function handleTransformer_createObjectFromPairs(
               newContextResults
             )
           : innerEntry.attributeKey;
-      const leftValue: { rawLeftValue: TransformerReturnType<any>; finalLeftValue: TransformerReturnType<any> } = {
-      // const leftValue: { rawLeftValue: TransformerReturnType<DomainElementSuccess>; finalLeftValue: TransformerReturnType<DomainElementSuccess> } = {
+      const leftValue: {
+        rawLeftValue: TransformerReturnType<any>;
+        finalLeftValue: TransformerReturnType<any>;
+      } = {
+        // const leftValue: { rawLeftValue: TransformerReturnType<DomainElementSuccess>; finalLeftValue: TransformerReturnType<DomainElementSuccess> } = {
         rawLeftValue,
         finalLeftValue:
           !(rawLeftValue instanceof Action2Error) &&
@@ -1281,17 +1371,19 @@ function handleTransformer_createObjectFromPairs(
       //   leftValue
       // );
 
-      const renderedRightValue: TransformerReturnType<DomainElementSuccess> = defaultTransformers.transformer_extended_apply(
-        // TODO: use actionRuntimeTransformer_apply or merge the two functions
-        step,
-        [...transformerPath, transformer.transformerType, "attributeValue" + index],
-        leftValue.finalLeftValue as any as string,
-        innerEntry.attributeValue as any, // TODO: wrong type in the case of runtime transformer
-        resolveBuildTransformersTo,
-        modelEnvironment,
-        queryParams,
-        newContextResults
-      ); // TODO: check for failure!
+      const renderedRightValue: TransformerReturnType<DomainElementSuccess> =
+        defaultTransformers.transformer_extended_apply(
+          // TODO: use actionRuntimeTransformer_apply or merge the two functions
+          step,
+          [...transformerPath, transformer.transformerType, "attributeValue" + index],
+          leftValue.finalLeftValue as any as string,
+          innerEntry.attributeValue as any, // TODO: wrong type in the case of runtime transformer
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          queryParams,
+          newContextResults,
+          reduxDeploymentsState
+        ); // TODO: check for failure!
       const rightValue: {
         renderedRightValue: TransformerReturnType<DomainElementSuccess>;
         finalRightValue: TransformerReturnType<DomainElementSuccess>;
@@ -1324,7 +1416,8 @@ function handleTransformer_createObjectFromPairs(
   );
 
   const failureIndex = attributeEntries.findIndex(
-    (e) => e[0].finalLeftValue.elementType == "failure" || e[1].finalRightValue.elementType == "failure"
+    (e) =>
+      e[0].finalLeftValue.elementType == "failure" || e[1].finalRightValue.elementType == "failure"
   );
   if (failureIndex == -1) {
     const fullObjectResult = Object.fromEntries(
@@ -1337,10 +1430,9 @@ function handleTransformer_createObjectFromPairs(
       queryFailure: "ReferenceNotFound",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_createObjectFromPairs"],
-      queryContext: "FullObjectTemplate error in " +
-        objectName,
-        innerError: attributeEntries[failureIndex] as any,
-        // JSON.stringify(attributeEntries[failureIndex], null, 2),
+      queryContext: "FullObjectTemplate error in " + objectName,
+      innerError: attributeEntries[failureIndex] as any,
+      // JSON.stringify(attributeEntries[failureIndex], null, 2),
     });
   }
 }
@@ -1355,6 +1447,7 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedApplyTo = resolveApplyTo(
     step,
@@ -1376,7 +1469,7 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
       transformerPath,
       failureOrigin: ["transformer_mergeIntoObject"],
       queryContext: "transformer_mergeIntoObject can not apply to failed resolvedApplyTo",
-      innerError: resolvedApplyTo
+      innerError: resolvedApplyTo,
     });
   }
   // TODO: test if resolvedReference is an object
@@ -1390,21 +1483,19 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
     queryParams,
     {
       ...contextResults,
-      [transformer.referenceToOuterObject??defaultTransformerInput]: resolvedApplyTo,
-    }
+      [transformer.referenceToOuterObject ?? defaultTransformerInput]: resolvedApplyTo,
+    },
+    reduxDeploymentsState
   );
 
   if (overrideObject instanceof TransformerFailure) {
-    log.error(
-      "transformer_mergeIntoObject can not apply to failed overrideObject",
-      overrideObject
-    );
+    log.error("transformer_mergeIntoObject can not apply to failed overrideObject", overrideObject);
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath,
       failureOrigin: ["transformer_mergeIntoObject"],
       queryContext: "transformer_mergeIntoObject can not apply to failed overrideObject",
-      innerError: overrideObject
+      innerError: overrideObject,
     });
   }
   log.info(
@@ -1421,7 +1512,7 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
 }
 
 /**
- * names for transformer functions are not satisfactory or consistent, this indicates that Transformer could 
+ * names for transformer functions are not satisfactory or consistent, this indicates that Transformer could
  * be a class somehow.
  */
 // ################################################################################################
@@ -1434,6 +1525,7 @@ export function transformer_resolveReference(
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // ReferenceNotFound
   const bank: Record<string, any> =
@@ -1460,10 +1552,7 @@ export function transformer_resolveReference(
     );
     return new TransformerFailure({
       queryFailure: "ReferenceNotFound",
-      transformerPath: [
-        ...transformerPath,
-        usedReference,
-      ],
+      transformerPath: [...transformerPath, usedReference],
       failureOrigin: ["transformer_resolveReference"],
       queryReference: transformerInnerReference.referenceName,
       failureMessage: "no contextResults",
@@ -1534,13 +1623,14 @@ export function transformer_resolveReference(
         failureOrigin: ["transformer_resolveReference"],
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
         failureMessage:
-          "no referencePath " + transformerInnerReference.referencePath.join(".") + " found in queryContext",
+          "no referencePath " +
+          transformerInnerReference.referencePath.join(".") +
+          " found in queryContext",
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }
   }
 }
-
 
 // // ################################################################################################
 // // almost duplicate from QuerySelectors.ts
@@ -1560,7 +1650,8 @@ export function transformer_InnerReference_resolve(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // TODO: copy / paste (almost?) from query parameter lookup!
   // log.info(
@@ -1573,7 +1664,10 @@ export function transformer_InnerReference_resolve(
   // );
   const localQueryParams = transformerParams ?? {};
   const localContextResults = contextResults ?? {};
-  if (step == "build" && (((transformerInnerReference as any).interpolation??"build") == "runtime")) {
+  if (
+    step == "build" &&
+    ((transformerInnerReference as any).interpolation ?? "build") == "runtime"
+  ) {
     log.warn(
       "transformer_InnerReference_resolve called for runtime interpolation in build step",
       transformerInnerReference
@@ -1682,7 +1776,7 @@ export function transformer_InnerReference_resolve(
   //   JSON.stringify(result, null, 2),
   // );
   return result;
-};
+}
 
 // ################################################################################################
 // string -> string
@@ -1692,11 +1786,14 @@ export function transformer_mustacheStringTemplate_apply(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
+  transformer:
+    | TransformerForBuild_mustacheStringTemplate
+    | TransformerForRuntime_mustacheStringTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   try {
     log.info(
@@ -1705,11 +1802,11 @@ export function transformer_mustacheStringTemplate_apply(
       "queryParams",
       JSON.stringify(Object.keys(queryParams), null, 2),
       "contextResults",
-      JSON.stringify(Object.keys(contextResults??{}), null, 2)
+      JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
     );
     const result = mustache.render(
       transformer.definition,
-      ((transformer as any)["interpolation"]??"build") == "runtime" ? contextResults : queryParams
+      ((transformer as any)["interpolation"] ?? "build") == "runtime" ? contextResults : queryParams
     );
     log.info("transformer_mustacheStringTemplate_apply result", result);
     return result;
@@ -1746,8 +1843,10 @@ export function transformer_dynamicObjectAccess_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
-  const result = (transformer.objectAccessPath.reduce as any)( // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
+  const result = (transformer.objectAccessPath.reduce as any)(
+    // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
     ((acc: any, currentPathElement: any): any => {
       switch (typeof currentPathElement) {
         case "string": {
@@ -1757,10 +1856,12 @@ export function transformer_dynamicObjectAccess_apply(
               transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
-              queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
+              queryContext:
+                "error in transformer_dynamicObjectAccess_apply, could not find key: " +
+                JSON.stringify(currentPathElement, null, 2),
             });
           }
-          const innerResult = acc[currentPathElement]
+          const innerResult = acc[currentPathElement];
           // log.info(
           //   "innerTransformer_apply transformer_dynamicObjectAccess_apply (string) for",
           //   transformer,
@@ -1783,7 +1884,9 @@ export function transformer_dynamicObjectAccess_apply(
               transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: transformer as any,
-              queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
+              queryContext:
+                "error in transformer_dynamicObjectAccess_apply, could not find key: " +
+                JSON.stringify(currentPathElement, null, 2),
             });
           }
           if (!currentPathElement.transformerType) {
@@ -1793,7 +1896,9 @@ export function transformer_dynamicObjectAccess_apply(
               transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: transformer as any,
-              queryContext: "error in transformer_dynamicObjectAccess_apply, could not find attribute transformerType in: " + JSON.stringify(currentPathElement, null, 2),
+              queryContext:
+                "error in transformer_dynamicObjectAccess_apply, could not find attribute transformerType in: " +
+                JSON.stringify(currentPathElement, null, 2),
             });
           }
           const key = defaultTransformers.transformer_extended_apply(
@@ -1804,7 +1909,8 @@ export function transformer_dynamicObjectAccess_apply(
             resolveBuildTransformersTo,
             modelEnvironment,
             transformerParams,
-            contextResults
+            contextResults,
+            reduxDeploymentsState
           );
           if (key instanceof TransformerFailure) {
             return new TransformerFailure({
@@ -1813,10 +1919,11 @@ export function transformer_dynamicObjectAccess_apply(
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
               queryContext:
-                "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(key, null, 2),
+                "error in transformer_dynamicObjectAccess_apply, could not find key: " +
+                JSON.stringify(key, null, 2),
             });
           }
-          const innerResult = acc?acc[key]:key;
+          const innerResult = acc ? acc[key] : key;
           // log.info(
           //   "innerTransformer_apply transformer_dynamicObjectAccess_apply (object) for",
           //   transformer,
@@ -1840,10 +1947,12 @@ export function transformer_dynamicObjectAccess_apply(
           // throw new Error("transformer_dynamicObjectAccess_apply can not handle " + typeof currentPathElement);
           return new TransformerFailure({
             queryFailure: "FailedTransformer_dynamicObjectAccess",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+            transformerPath, //: [...transformerPath, transformer.transformerType],
             failureOrigin: ["transformer_dynamicObjectAccess_apply"],
             query: transformer as any,
-            queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
+            queryContext:
+              "error in transformer_dynamicObjectAccess_apply, could not find key: " +
+              JSON.stringify(currentPathElement, null, 2),
             queryParameters: currentPathElement,
           });
         }
@@ -1852,7 +1961,6 @@ export function transformer_dynamicObjectAccess_apply(
     undefined // !?! this can not work, it must be the object to be accessed
   );
   return result;
-
 }
 
 // ################################################################################################
@@ -1860,14 +1968,13 @@ export function handleCountTransformer(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_aggregate
-  | TransformerForRuntime_aggregate,
+  transformer: TransformerForBuild_aggregate | TransformerForRuntime_aggregate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -1923,20 +2030,20 @@ export function handleCountTransformer(
     const groupByArray: string[] = Array.isArray(transformer.groupBy)
       ? transformer.groupBy
       : [transformer.groupBy];
-    
+
     // Use a Map with composite key (JSON stringified) to track getUniqueValues combinations
     const groupByMap = new Map<string, { attributes: Record<string, any>; aggregate: number }>();
-    
+
     for (const entry of resolvedReference) {
       // Build the grouping key from all groupBy attributes
       const attributes: Record<string, any> = {};
       for (const attr of groupByArray) {
         attributes[attr] = (entry as any)[attr];
       }
-      
+
       // Create a composite key for this combination
       const compositeKey = JSON.stringify(attributes);
-      
+
       if (groupByMap.has(compositeKey)) {
         const existing = groupByMap.get(compositeKey)!;
         existing.aggregate++;
@@ -1944,20 +2051,20 @@ export function handleCountTransformer(
         groupByMap.set(compositeKey, { attributes, aggregate: 1 });
       }
     }
-    
+
     // log.info(
     //   "handleCountTransformer extractorTransformer count with groupBy resolvedReference",
     //   resolvedReference.length,
     //   "groupByMap",
     //   Array.from(groupByMap.entries())
     // );
-    
+
     // Convert map to result array with attributes spread and count
     const result = Array.from(groupByMap.values()).map(({ attributes, aggregate }) => ({
       ...attributes,
-      aggregate
+      aggregate,
     }));
-    
+
     // log.info(
     //   "handleCountTransformer extractorTransformer count with groupBy result",
     //   result
@@ -1977,14 +2084,13 @@ export function handleUniqueTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_getUniqueValues
-  | TransformerForRuntime_getUniqueValues,
+  transformer: TransformerForBuild_getUniqueValues | TransformerForRuntime_getUniqueValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -2027,7 +2133,8 @@ export function handleUniqueTransformer(
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleUniqueTransformer"],
       queryContext:
-        "getUniqueValues can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
+        "getUniqueValues can not apply to resolvedReference, wrong type: " +
+        typeof resolvedReference,
       queryParameters: resolvedReference,
     });
   }
@@ -2061,13 +2168,12 @@ export function handleListPickElementTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_pickFromList
-  | TransformerForRuntime_pickFromList,
+  transformer: TransformerForBuild_pickFromList | TransformerForRuntime_pickFromList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -2103,8 +2209,7 @@ export function handleListPickElementTransformer(
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["innerTransformer_apply"],
       queryContext:
-        "pickFromList can not apply to resolvedReference, wrong type: " +
-        typeof resolvedReference,
+        "pickFromList can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
       queryParameters: resolvedReference,
     });
   }
@@ -2122,10 +2227,11 @@ export function handleListPickElementTransformer(
   try {
     const resolvedReferenceCopy = [...resolvedReference];
     const sortedResultArray = sortByAttribute(resolvedReferenceCopy);
-    const accessIndex = transformer.index < 0? sortedResultArray.length - transformer.index: transformer.index;
+    const accessIndex =
+      transformer.index < 0 ? sortedResultArray.length - transformer.index : transformer.index;
     // if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
-      //   // return undefined;
-      //   return new TransformerFailure({
+    //   // return undefined;
+    //   return new TransformerFailure({
     //     queryFailure: "FailedTransformer_pickFromList",
     //     failureOrigin: ["innerTransformer_apply"],
     //     queryContext: "pickFromList index out of bounds",
@@ -2136,23 +2242,20 @@ export function handleListPickElementTransformer(
       return undefined;
     }
     const result = sortedResultArray[transformer.index];
-      // log.info(
-      //   "handleListPickElementTransformer extractorTransformer pickFromList sorted resolvedReference",
-      //   sortedResultArray,
-      //   "index",
-      //   transformer.index,
-      //   "result",
-      //   result,
-      //   "transformer",
-      //   JSON.stringify(transformer, null, 2)
-      // );
+    // log.info(
+    //   "handleListPickElementTransformer extractorTransformer pickFromList sorted resolvedReference",
+    //   sortedResultArray,
+    //   "index",
+    //   transformer.index,
+    //   "result",
+    //   result,
+    //   "transformer",
+    //   JSON.stringify(transformer, null, 2)
+    // );
     return result;
     // }
   } catch (error) {
-    log.error(
-      "innerTransformer_apply extractorTransformer pickFromList failed",
-      error
-    )
+    log.error("innerTransformer_apply extractorTransformer pickFromList failed", error);
     return new TransformerFailure({
       queryFailure: "FailedTransformer_pickFromList",
       failureOrigin: ["innerTransformer_apply"],
@@ -2167,13 +2270,12 @@ export function handleTransformer_FreeObjectTemplate(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_createObject
-  | TransformerForRuntime_createObject,
+  transformer: TransformerForBuild_createObject | TransformerForRuntime_createObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   log.info(
     "innerTransformer_apply createObject",
@@ -2181,7 +2283,7 @@ export function handleTransformer_FreeObjectTemplate(
     "step",
     step,
     "contextResults",
-    JSON.stringify(Object.keys(contextResults??{}), null, 2)
+    JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
     // JSON.stringify(contextResults, null, 2)
   );
   const result = Object.fromEntries(
@@ -2197,6 +2299,7 @@ export function handleTransformer_FreeObjectTemplate(
           modelEnvironment,
           transformerParams,
           contextResults,
+          reduxDeploymentsState
         ),
       ];
     })
@@ -2228,13 +2331,12 @@ export function handleTransformer_getObjectEntries(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_getObjectEntries
-  | TransformerForRuntime_getObjectEntries,
+  transformer: TransformerForBuild_getObjectEntries | TransformerForRuntime_getObjectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -2272,10 +2374,7 @@ export function handleTransformer_getObjectEntries(
       // queryParameters: JSON.stringify(resolvedReference, null, 2),
       queryParameters: resolvedReference,
     });
-    log.error(
-      "handleTransformer_getObjectEntries resolvedReference",
-      resolvedReference
-    );
+    log.error("handleTransformer_getObjectEntries resolvedReference", resolvedReference);
     return failure;
   }
   // log.info(
@@ -2290,13 +2389,12 @@ export function handleTransformer_getObjectValues(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_getObjectValues
-  | TransformerForRuntime_getObjectValues,
+  transformer: TransformerForBuild_getObjectValues | TransformerForRuntime_getObjectValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -2332,7 +2430,8 @@ export function handleTransformer_getObjectValues(
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_getObjectValues"],
       queryContext:
-        "handleTransformer_getObjectValues resolvedReference is not an object: " + typeof resolvedReference,
+        "handleTransformer_getObjectValues resolvedReference is not an object: " +
+        typeof resolvedReference,
     });
   }
   // log.info(
@@ -2347,13 +2446,12 @@ export function handleTransformer_dataflowObject(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_dataflowObject
-  | TransformerForRuntime_dataflowObject,
+  transformer: TransformerForBuild_dataflowObject | TransformerForRuntime_dataflowObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resultObject: Record<string, any> = {};
   for (const [key, value] of Object.entries(transformer.definition)) {
@@ -2378,6 +2476,7 @@ export function handleTransformer_dataflowObject(
       modelEnvironment,
       queryParams,
       currentContext,
+      reduxDeploymentsState
     );
   }
   // return resultObject
@@ -2399,30 +2498,32 @@ export function handleTransformer_ifThenElse(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
-  
   // const results = transformer.conditions.map(condition => {
   const leftValue = defaultTransformers.transformer_extended_apply(
-      step,
-      [...transformerPath, "left"],
-      transformer.label? transformer.label + "_left" : "left",
-      transformer.left,
-      resolveBuildTransformersTo,
-      modelEnvironment,
-      transformerParams,
-      contextResults,
-    );
+    step,
+    [...transformerPath, "left"],
+    transformer.label ? transformer.label + "_left" : "left",
+    transformer.left,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    transformerParams,
+    contextResults,
+    reduxDeploymentsState
+  );
   const rightValue = defaultTransformers.transformer_extended_apply(
-      step,
-      [...transformerPath, "right"],
-      transformer.label? transformer.label + "_right" : "right",
-      transformer.right,
-      resolveBuildTransformersTo,
-      modelEnvironment,
-      transformerParams,
-      contextResults,
-    );
+    step,
+    [...transformerPath, "right"],
+    transformer.label ? transformer.label + "_right" : "right",
+    transformer.right,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    transformerParams,
+    contextResults,
+    reduxDeploymentsState
+  );
   switch (transformer.transformerType) {
     case "==": {
       if (leftValue == rightValue) {
@@ -2434,7 +2535,8 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       } else {
         return defaultTransformers.transformer_extended_apply(
@@ -2445,12 +2547,13 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       }
       break;
     }
-    case '!=': {
+    case "!=": {
       if (leftValue != rightValue) {
         return defaultTransformers.transformer_extended_apply(
           step,
@@ -2460,7 +2563,8 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       } else {
         return defaultTransformers.transformer_extended_apply(
@@ -2471,11 +2575,12 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       }
     }
-    case '<': {
+    case "<": {
       if (leftValue < rightValue) {
         return defaultTransformers.transformer_extended_apply(
           step,
@@ -2485,7 +2590,8 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       } else {
         return defaultTransformers.transformer_extended_apply(
@@ -2496,11 +2602,12 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       }
     }
-    case '<=': {
+    case "<=": {
       if (leftValue <= rightValue) {
         return defaultTransformers.transformer_extended_apply(
           step,
@@ -2510,7 +2617,8 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       } else {
         return defaultTransformers.transformer_extended_apply(
@@ -2521,11 +2629,12 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       }
     }
-    case '>': {
+    case ">": {
       if (leftValue > rightValue) {
         return defaultTransformers.transformer_extended_apply(
           step,
@@ -2535,7 +2644,8 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       } else {
         return defaultTransformers.transformer_extended_apply(
@@ -2546,11 +2656,12 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       }
     }
-    case '>=': {
+    case ">=": {
       if (leftValue >= rightValue) {
         return defaultTransformers.transformer_extended_apply(
           step,
@@ -2560,7 +2671,8 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       } else {
         return defaultTransformers.transformer_extended_apply(
@@ -2571,21 +2683,22 @@ export function handleTransformer_ifThenElse(
           resolveBuildTransformersTo,
           modelEnvironment,
           transformerParams,
-          contextResults
+          contextResults,
+          reduxDeploymentsState
         );
       }
     }
   }
   // const leftValue = resolveOperand(transformer.left, transformerParams, contextResults);
   // const rightValue = resolveOperand(transformer.right, transformerParams, contextResults);
-    
-    // return evaluateCondition(leftValue, condition.operator, rightValue);
+
+  // return evaluateCondition(leftValue, condition.operator, rightValue);
   // });
-  
-  // const finalResult = transformer.logic === "and" 
+
+  // const finalResult = transformer.logic === "and"
   //   ? results.every(r => r)
   //   : results.some(r => r);
-    
+
   // return { transformerReturnType: "success", returnedValue: finalResult };
 }
 
@@ -2641,13 +2754,12 @@ export function handleTransformer_constant(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-  | TransformerForBuild_returnValue
-  | TransformerForRuntime_returnValue,
+  transformer: TransformerForBuild_returnValue | TransformerForRuntime_returnValue,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   switch (typeof transformer.value) {
     case "string":
@@ -2671,7 +2783,7 @@ export function handleTransformer_constant(
     case "function": {
       return new TransformerFailure({
         queryFailure: "FailedTransformer_constant",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+        transformerPath, //: [...transformerPath, transformer.transformerType],
         failureOrigin: ["handleTransformer_constant"],
         queryContext: "constantValue is not a string, number, bigint, boolean, or object",
       });
@@ -2680,7 +2792,7 @@ export function handleTransformer_constant(
     default: {
       return new TransformerFailure({
         queryFailure: "FailedTransformer_constant",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+        transformerPath, //: [...transformerPath, transformer.transformerType],
         failureOrigin: ["handleTransformer_constant"],
         queryContext: "constantValue could not be handled",
       });
@@ -2699,7 +2811,8 @@ export function handleTransformer_getFromContext(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
@@ -2727,7 +2840,8 @@ export function handleTransformer_getFromParameters(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
@@ -2754,7 +2868,8 @@ export function handleTransformer_constantAsExtractor(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   return transformer.value;
 }
@@ -2769,7 +2884,8 @@ export function handleTransformer_generateUuid(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
@@ -2795,7 +2911,7 @@ export function handleTransformer_generateUuid(
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// innerFullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object
 export function innerTransformer_plainObject_apply(
   step: Step,
   transformerPath: string[],
@@ -2805,6 +2921,8 @@ export function innerTransformer_plainObject_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   // log.info(
   //   "innerTransformer_plainObject_apply called for object labeled",
@@ -2822,24 +2940,26 @@ export function innerTransformer_plainObject_apply(
   //   "contextResults elements",
   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
-  const attributeEntries: [string, TransformerReturnType<DomainElementSuccess>][] = Object.entries(transformer).map(
-    (objectTemplateEntry: [string, any]) => {
-      // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
-      return [
+  const attributeEntries: [string, TransformerReturnType<DomainElementSuccess>][] = Object.entries(
+    transformer
+  ).map((objectTemplateEntry: [string, any]) => {
+    // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
+    return [
+      objectTemplateEntry[0],
+      defaultTransformers.transformer_extended_apply(
+        step,
+        [...transformerPath, objectTemplateEntry[0]],
         objectTemplateEntry[0],
-        defaultTransformers.transformer_extended_apply(
-          step,
-          [...transformerPath, objectTemplateEntry[0]],
-          objectTemplateEntry[0],
-          objectTemplateEntry[1],
-          resolveBuildTransformersTo,
-          modelEnvironment,
-          transformerParams,
-          contextResults,
-        ),
-      ];
-    }
-  );
+        objectTemplateEntry[1],
+        resolveBuildTransformersTo,
+        modelEnvironment,
+        transformerParams,
+        contextResults,
+        reduxDeploymentsState,
+        deploymentUuid,
+      ),
+    ];
+  });
   const failureIndex = attributeEntries.findIndex(
     (e) =>
       typeof e[1] == "object" &&
@@ -2848,9 +2968,7 @@ export function innerTransformer_plainObject_apply(
       e[1].elementType == "failure"
   );
   if (failureIndex == -1) {
-    const result = Object.fromEntries(
-      attributeEntries.map((e) => [e[0], e[1]])
-    )
+    const result = Object.fromEntries(attributeEntries.map((e) => [e[0], e[1]]));
     return result;
   } else {
     // log.info(
@@ -2869,7 +2987,7 @@ export function innerTransformer_plainObject_apply(
       failureOrigin: ["innerTransformer_plainObject_apply"],
       innerError: attributeEntries[failureIndex][1] as any, // TODO: type!
       queryContext: "error in attribute: " + attributeEntries[failureIndex][0],
-    })
+    });
     // log.info(
     //   "innerTransformer_plainObject_apply failed converting plain object, errorToReturn",
     //   JSON.stringify(errorToReturn, null, 2)
@@ -2881,7 +2999,7 @@ export function innerTransformer_plainObject_apply(
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// innerFullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object
 export function innerTransformer_array_apply(
   step: Step,
   transformerPath: string[] = [],
@@ -2891,6 +3009,8 @@ export function innerTransformer_array_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   // log.info(
   //   "innerTransformer_array_apply called for object named",
@@ -2918,6 +3038,8 @@ export function innerTransformer_array_apply(
       modelEnvironment,
       transformerParams,
       contextResults,
+      reduxDeploymentsState,
+      deploymentUuid,
     )
   );
   const failureIndex = subObject.findIndex(
@@ -2972,11 +3094,10 @@ export function innerTransformer_array_apply(
   }
 }
 
-
 // ################################################################################################
 // <A>[] -> <A>[]
 // object -> object
-// innerFullObjectTemplate { a: A, b: B } -> object 
+// innerFullObjectTemplate { a: A, b: B } -> object
 export function transformer_extended_apply(
   step: Step,
   transformerPath: string[] = [],
@@ -2991,6 +3112,8 @@ export function transformer_extended_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   log.info(
     "transformer_extended_apply called for label",
@@ -3008,7 +3131,7 @@ export function transformer_extended_apply(
     Object.keys(transformerParams ?? {}),
     // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
     "contextResults elements",
-    Object.keys(contextResults??{})
+    Object.keys(contextResults ?? {})
     // contextResults
     // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
   );
@@ -3025,6 +3148,8 @@ export function transformer_extended_apply(
         modelEnvironment,
         transformerParams,
         contextResults,
+        reduxDeploymentsState,
+        deploymentUuid,
       );
       // log.info(
       //   "transformer_extended_apply innerTransformer_array_apply result",
@@ -3034,12 +3159,12 @@ export function transformer_extended_apply(
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
         // ((transformer as any)["interpolation"]??"build" == "build") &&
-        ((transformer as any)["interpolation"]??"build" == step) &&
+        ((transformer as any)["interpolation"] ?? "build" == step) &&
         resolveBuildTransformersTo == "constantTransformer"
           ? "value" // HACK!
           : resolveBuildTransformersTo;
       if (transformer["transformerType"] != undefined) {
-        if (step == "runtime" || (((transformer as any)["interpolation"]??"build") == "build")) {
+        if (step == "runtime" || ((transformer as any)["interpolation"] ?? "build") == "build") {
           // log.info("transformer_extended_apply interpreting transformer!");
           let preResult;
           const foundApplicationTransformer =
@@ -3179,7 +3304,9 @@ export function transformer_extended_apply(
                 newResolveBuildTransformersTo,
                 modelEnvironment,
                 transformerParams,
-                contextResults
+                contextResults,
+                reduxDeploymentsState,
+                deploymentUuid,
               );
               // log.info(
               //   "transformer_extended_apply called transformerFunction",
@@ -3237,7 +3364,9 @@ export function transformer_extended_apply(
                         resolveBuildTransformersTo,
                         modelEnvironment,
                         transformerParams,
-                        contextResults
+                        contextResults,
+                        reduxDeploymentsState,
+                        deploymentUuid,
                       ),
                     ];
                   })
@@ -3250,7 +3379,9 @@ export function transformer_extended_apply(
                   newResolveBuildTransformersTo,
                   modelEnvironment,
                   transformerParams,
-                  { ...contextResults, ...evaluatedParams }
+                  { ...contextResults, ...evaluatedParams },
+                  reduxDeploymentsState,
+                  deploymentUuid,
                 );
               }
               // }
@@ -3294,7 +3425,7 @@ export function transformer_extended_apply(
             return preResult;
           } else {
             if (
-              ((transformer as any)["interpolation"]??"build" == "build") &&
+              ((transformer as any)["interpolation"] ?? "build" == "build") &&
               resolveBuildTransformersTo == "constantTransformer"
             ) {
               const value = preResult;
@@ -3325,6 +3456,8 @@ export function transformer_extended_apply(
             modelEnvironment,
             transformerParams,
             contextResults,
+            reduxDeploymentsState,
+            deploymentUuid,
           );
           // log.info(
           //   "transformer_extended_apply called for",
@@ -3344,6 +3477,8 @@ export function transformer_extended_apply(
           modelEnvironment,
           transformerParams,
           contextResults,
+          reduxDeploymentsState,
+          deploymentUuid,
         );
         // log.info(
         //   "transformer_extended_apply called for",
@@ -3404,11 +3539,17 @@ export function transformer_extended_apply_wrapper(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
-  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
+  transformer:
+    | TransformerForBuild
+    | TransformerForRuntime
+    | ExtendedTransformerForRuntime
+    | TransformerForBuildPlusRuntime,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>, // includes queryParams
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   // Start transformer tracking
   // const eventTracker = TransformerGlobalContext.getEventTracker();
@@ -3418,6 +3559,8 @@ export function transformer_extended_apply_wrapper(
     label,
     "step",
     step,
+    "reduxDeploymentsState",
+    reduxDeploymentsState,
     activityTracker ? "with activityTracker" : "without activityTracker",
     "isTransformerTrackingEnabled():",
     activityTracker?.isTransformerTrackingEnabled()
@@ -3448,6 +3591,8 @@ export function transformer_extended_apply_wrapper(
       modelEnvironment,
       transformerParams,
       contextResults,
+      reduxDeploymentsState,
+      deploymentUuid,
     );
     // log.info(
     //   "transformer_extended_apply_wrapper called for",
@@ -3455,14 +3600,14 @@ export function transformer_extended_apply_wrapper(
     //   "transformer_extended_apply result",
     //   result
     //   // JSON.stringify(result, null, 2),
-    // );  
+    // );
     // if (result instanceof TransformerFailure) {
     if (result instanceof TransformerFailure) {
       // End transformer tracking with error
-      
+
       log.error(
         "transformer_extended_apply_wrapper failed for",
-        label??(transformer as any)["transformerType"],
+        label ?? (transformer as any)["transformerType"],
         "step",
         step,
         "transformer",
@@ -3487,7 +3632,7 @@ export function transformer_extended_apply_wrapper(
       // if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
       //   activityTracker.endTransformer(trackingId, result);
       // }
-      
+
       // log.info(
       //   "transformer_extended_apply_wrapper called for",
       //   label,
@@ -3498,7 +3643,7 @@ export function transformer_extended_apply_wrapper(
     }
   } catch (e) {
     // End transformer tracking with error
-    
+
     log.error(
       "transformer_extended_apply_wrapper failed for",
       label,
@@ -3522,15 +3667,19 @@ export function transformer_extended_apply_wrapper(
   }
 }
 // ################################################################################################
-export function applyTransformer(t: Transformer, o: any):any {
+export function applyTransformer(t: Transformer, o: any): any {
   switch (t.transformerType) {
-    case "recordOfTransformers": { // build object from record of transformers
-      const result =  Object.fromEntries(Object.entries(t.definition).map(e=>[e[0],applyTransformer(e[1],o)]))
+    case "recordOfTransformers": {
+      // build object from record of transformers
+      const result = Object.fromEntries(
+        Object.entries(t.definition).map((e) => [e[0], applyTransformer(e[1], o)])
+      );
       // log.info("applyTransformer",t, "parameter", o, "return", result)
-      return result
+      return result;
     }
-    case "objectTransformer": { // access object attribute
-      const result = o[t.attributeName]
+    case "objectTransformer": {
+      // access object attribute
+      const result = o[t.attributeName];
       return result;
       break;
     }
@@ -3567,4 +3716,3 @@ export function getInnermostTransformerError(error: TransformerFailure): Transfo
   }
   return error;
 }
-

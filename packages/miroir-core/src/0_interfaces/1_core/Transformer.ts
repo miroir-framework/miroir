@@ -1,5 +1,6 @@
 import type { Step, ResolveBuildTransformersTo } from "../../2_domain/Transformers";
 import type { Domain2QueryReturnType } from "../2_domain/DomainElement";
+import type { ReduxDeploymentsState } from "../2_domain/ReduxDeploymentsStateInterface";
 import type { Uuid } from "./EntityDefinition";
 import type { JzodSchema, MetaModel, TransformerForBuild, TransformerForRuntime } from "./preprocessor-generated/miroirFundamentalType";
 
@@ -26,7 +27,9 @@ export type ITransformerHandler<
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  deploymentUuid?: Uuid,
 ) => Domain2QueryReturnType<any>;
 
 // ################################################################################################
