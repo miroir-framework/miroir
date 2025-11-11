@@ -35,6 +35,7 @@ import { packageName } from "../../../../constants.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -47,15 +48,14 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export interface DeleteApplicationToolProps {
   deploymentUuid: string;
-  currentMiroirModelEnvironment: MiroirModelEnvironment;
 }
 
 // ################################################################################################
 export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
   deploymentUuid,
-  currentMiroirModelEnvironment,
 }) => {
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
   const formMlSchema: JzodElement = useMemo(
     () => ({

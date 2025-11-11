@@ -14,12 +14,14 @@ import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   JzodElement,
   JzodPlainAttribute,
+  JzodSchema,
   JzodSchemaQuerySelector,
   JzodSchemaQueryTemplateSelector,
   LocalCacheExtractor,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  MiroirModelEnvironment,
   MiroirQuery,
   MiroirQueryTemplate,
   QueryJzodSchemaParams,
@@ -30,7 +32,9 @@ import {
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
   Uuid,
+  adminConfigurationDeploymentMiroir,
   defaultMetaModelEnvironment,
+  miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
 } from "miroir-core";
 import {
@@ -51,6 +55,7 @@ import {
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
+import { useMiroirContextService } from "./MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -286,6 +291,28 @@ export function useCurrentModelEnvironmentNOT_IMPLEMENTED(deploymentUuid: string
     localSelectModelForDeployment(state, selectorParams)
   );
 }
+
+// ################################################################################################
+/**
+ * Returns the current MiroirModelEnvironment for a given deployment
+ * @param deploymentUuid - The deployment UUID to get the model environment for
+ * @returns MiroirModelEnvironment containing the fundamental schema, meta model, and current model
+ */
+export function useCurrentModelEnvironment(deploymentUuid: Uuid | undefined): MiroirModelEnvironment {
+  const context = useMiroirContextService();
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentModel: MetaModel = useCurrentModel(deploymentUuid);
+
+  return useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema:
+        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+      miroirMetaModel: miroirMetaModel,
+      currentModel: currentModel,
+    };
+  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
+}
+
 // ################################################################################################
 export function useEntityInstanceUuidIndexFromLocalCache(
   params: LocalCacheExtractor

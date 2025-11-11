@@ -421,7 +421,6 @@ export const AdminPage: React.FC<any> = (
           <AccordionDetails>
             <CreateApplicationTool
               deploymentUuid={deploymentUuid}
-              currentMiroirModelEnvironment={currentMiroirModelEnvironment}
             />
           </AccordionDetails>
         </Accordion>
@@ -433,7 +432,6 @@ export const AdminPage: React.FC<any> = (
           <AccordionDetails>
             <DeleteApplicationTool
               deploymentUuid={deploymentUuid}
-              currentMiroirModelEnvironment={currentMiroirModelEnvironment}
             />
           </AccordionDetails>
         </Accordion>
@@ -445,7 +443,6 @@ export const AdminPage: React.FC<any> = (
           <AccordionDetails>
             <CreateEntityTool
               deploymentUuid={deploymentUuid}
-              currentMiroirModelEnvironment={currentMiroirModelEnvironment}
             />
           </AccordionDetails>
         </Accordion>

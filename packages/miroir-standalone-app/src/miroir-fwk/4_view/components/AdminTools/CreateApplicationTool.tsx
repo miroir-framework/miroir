@@ -24,6 +24,7 @@ import { packageName } from "../../../../constants.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -45,15 +46,14 @@ function formatYYYYMMDD_HHMMSS(date = new Date()) {
 // ################################################################################################
 export interface CreateApplicationToolProps {
   deploymentUuid: string;
-  currentMiroirModelEnvironment: MiroirModelEnvironment;
 }
 
 // ################################################################################################
 export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
   deploymentUuid,
-  currentMiroirModelEnvironment,
 }) => {
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
   const formMlSchema: JzodElement = useMemo(() => ({
     type: "object",
