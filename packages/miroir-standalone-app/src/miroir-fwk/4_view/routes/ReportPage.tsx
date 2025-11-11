@@ -326,9 +326,9 @@ export const ReportPage = () => {
                 </span>
               </>
             )}
-            {(errorLog as any)?.errorLogs.length !== 0 && (
+            {/* {(errorLog as any)?.errorLogs.length !== 0 && (
               <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-            )}
+            )} */}
           </ThemedBox>
           <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
             {pageParams.deploymentUuid &&

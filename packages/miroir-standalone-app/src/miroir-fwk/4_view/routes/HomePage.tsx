@@ -510,9 +510,9 @@ export const HomePage = (props: RootComponentProps) => {
       <p /> */}
       <span>Applications: {}</span>
       <p />
-      <div>
+      {/* <div>
         <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-      </div>
+      </div> */}
       {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
       <Importer
         filename=""

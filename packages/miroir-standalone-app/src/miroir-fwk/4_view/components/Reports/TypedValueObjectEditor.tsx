@@ -156,15 +156,15 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   //   // WRONG!! the value path is in general different from the type path! It may be true only after ReferenceSchema resolution
   //   ? getSchemaAtPath(valueObjectMMLSchema, zoomInPath) 
   //   : valueObjectMMLSchema;
-  log.info(
-    "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ TypedValueObjectEditor render", ++count,
-    "valueObjectMMLSchema", formValueMLSchema,
-    "formik.values", formik.values,
-    "reportSectionPathAsString", formikValuePathAsString,
-    // "zoomInPath", zoomInPath,
-    // "zoomedInValueObject_DEFUNCT", zoomedInValueObject_DEFUNCT,
-    // "zoomedInDisplaySchema", zoomedInDisplaySchema
-  );
+  // log.info(
+  //   "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ TypedValueObjectEditor render", ++count,
+  //   "valueObjectMMLSchema", formValueMLSchema,
+  //   "formik.values", formik.values,
+  //   "reportSectionPathAsString", formikValuePathAsString,
+  //   // "zoomInPath", zoomInPath,
+  //   // "zoomedInValueObject_DEFUNCT", zoomedInValueObject_DEFUNCT,
+  //   // "zoomedInDisplaySchema", zoomedInDisplaySchema
+  // );
   // Log zoom functionality usage
   // if (hasZoomPath) {
   //   log.info(
@@ -385,6 +385,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       foreignKeyObjectsFetchQueryParams
     ) || {};
 
+  log.info(
+    "TypedValueObjectEditor foreignKeyObjects fetched for",
+    formikValuePathAsString,
+    "foreignKeyObjects",
+    foreignKeyObjects,
+    "keys", Object.keys(foreignKeyObjects)
+  );
+
   const submitButton = useActionButton ? (
     <ActionButton
       onAction={async () => {
@@ -413,15 +421,30 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       {formLabel}
     </ThemedStyledButton>
   );
+  const resolvedElementJzodSchema =
+    jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.resolvedSchema : undefined;
+
   const result = (
     <>
       <div>
         {typeError ? "typeError: " : ""}
         {typeError}
       </div>
-      {/* <ThemedOnScreenHelper label="formikValuePathAsString" data={formikValuePathAsString} />
-      <ThemedOnScreenHelper label="formik.values" data={formik.values} />
-      <ThemedOnScreenHelper label="formValueMLSchema" data={formValueMLSchema} /> */}
+      {/* <ThemedOnScreenHelper
+        label={`TypedValueObjectEditor: "${formikValuePathAsString}"`}
+        data={{
+          resolvedElementJzodSchema,
+          // formValueMLSchema,
+          formik: formik.values,
+          valueObject,
+          foreignKeyObjects,
+          error:
+            jzodTypeCheckResult && jzodTypeCheckResult.status != "ok"
+              ? getInnermostTypeCheckError(jzodTypeCheckResult as any)
+              : undefined,
+        }}
+      /> */}
+
       {readonly ? (
         // Readonly mode: just display the editor without form
         <div>
@@ -461,7 +484,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               indentLevel={0}
               currentDeploymentUuid={deploymentUuid}
               currentApplicationSection={applicationSection}
-              resolvedElementJzodSchema={
+              resolvedElementJzodSchemaDEFUNCT={
                 jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.resolvedSchema : undefined
               }
               hasTypeError={typeError != undefined}
@@ -478,8 +501,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       ) : (
         // Editable mode: wrap in form
         // TODO: is form actually needed here, since we have formik context already?
-        <form 
-          id={"form." + formLabel} 
+        <form
+          id={"form." + formLabel}
           onSubmit={(e) => {
             // When using ActionButton, prevent default form submission
             // since we handle submission programmatically via the button
@@ -513,6 +536,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 />
               )}
             >
+              {/* <ThemedOnScreenHelper
+                label={`TypedValueObjectEditor: ${formikValuePathAsString}`}
+                data={formValueMLSchema}
+              /> */}
               <JzodElementEditor
                 // name={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
                 // isTopLevel={true}
@@ -529,11 +556,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 indentLevel={0}
                 currentDeploymentUuid={deploymentUuid}
                 currentApplicationSection={applicationSection}
-                resolvedElementJzodSchema={
-                  jzodTypeCheckResult?.status == "ok"
-                    ? jzodTypeCheckResult.resolvedSchema
-                    : undefined
-                }
+                resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
                 hasTypeError={typeError != undefined}
                 typeCheckKeyMap={
                   jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}

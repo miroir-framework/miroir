@@ -448,8 +448,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     !currentKeyMap ||
     !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement ||
-    currentKeyMap?.rawSchema?.type == "any" ||
-    ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
+    currentKeyMap?.rawSchema?.type == "any"
+    // ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type)
+  ;
 
   // const hideSubJzodEditor = false; 
   const hideSubJzodEditor = useMemo(
@@ -624,7 +625,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               reportSectionPathAsString={props.reportSectionPathAsString}
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
-              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               foreignKeyObjects={props.foreignKeyObjects}
               readOnly={props.readOnly}
@@ -645,7 +646,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
               reportSectionPathAsString={props.reportSectionPathAsString}
-              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
@@ -671,7 +672,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKeyArray={props.rootLessListKeyArray}
               rootLessListKey={props.rootLessListKey}
               reportSectionPathAsString={props.reportSectionPathAsString}
-              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
               itemsOrder={itemsOrder}
@@ -803,18 +804,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "uuid": {
-          // log.info(
-          //   "JzodElementEditor: Rendering UUID input for rootLessListKey",
-          //   props.rootLessListKey,
-          //   "formik",
-          //   formik,
-          //   "with value",
-          //   currentValue,
-          //   "MLS tag",
-          //   localResolvedElementJzodSchemaBasedOnValue.tag,
-          //   "foreignKeyObjects",
-          //   foreignKeyObjects
-          // );
+          log.info(
+            "JzodElementEditor: Rendering UUID input for rootLessListKey",
+            props.rootLessListKey,
+            "currentValueObjectAtKey",
+            currentValueObjectAtKey,
+            "formik.values",
+            formik.values,
+            "MLS tag",
+            localResolvedElementJzodSchemaBasedOnValue.tag,
+            "foreignKeyObjects",
+            foreignKeyObjects,
+            "stringSelectList",
+            stringSelectList
+          );
           if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity) {
             // Convert stringSelectList to options format for ThemedSelectWithPortal
             const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({
@@ -829,8 +832,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             return (
               <>
                 {/* <ThemedOnScreenHelper
-                  name={`Uuid: ${props.rootLessListKey}`}
+                  label={`Uuid: ${props.rootLessListKey}`}
                   data={(props.typeCheckKeyMap as any)?.[props.rootLessListKey]}
+                /> */}
+                {/* <ThemedOnScreenHelper
+                  label={`select options: ${props.rootLessListKey}`}
+                  data={selectOptions}
                 /> */}
                 <ThemedLabeledEditor
                   labelElement={enhancedLabelElement}
@@ -851,9 +858,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         placeholder="Select an option..."
                         filterPlaceholder="Type to filter..."
                         // {...formik.getFieldProps(formikRootLessListKey)}
-                        value={currentValueObjectAtKey || ""}
+                        value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
                         onChange={(e) => {
-                          formik.setFieldValue(formikRootLessListKey, e.target.value);
+                          const newValue = e.target.value === "" ? undefined : e.target.value;
+                          log.info("JzodElementEditor UUID selector onChange", formikRootLessListKey, "newValue", newValue);
+                          formik.setFieldValue(formikRootLessListKey, newValue);
                         }}
                         name={formikRootLessListKey}
                         // error={hasPathError}
@@ -870,33 +879,39 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               const estimatedWidth = Math.max(200, Math.min(400, currentUuidValue.length * 8 + 40));
               
               return (
-                <ThemedLabeledEditor
-                  labelElement={enhancedLabelElement}
-                  editor={
-                    props.readOnly ? (
-                      <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
-                    ) : (
-                      <ThemedTextEditor
-                        variant="standard"
-                        data-testid="miroirInput"
-                        id={props.rootLessListKey}
-                        key={props.rootLessListKey}
-                        aria-label={props.rootLessListKey}
-                        type="text"
-                        style={{
-                          width: `${estimatedWidth}px`,
-                          minWidth: "200px",
-                          maxWidth: "400px",
-                          boxSizing: "border-box",
-                        }}
-                        {...formik.getFieldProps(formikRootLessListKey)}
-                        // value={currentValue} // TODO: get other formik.getFieldProps: name, value, onChange, onBlur
-                        // name={formikRootLessListKey}
-                        error={hasPathError}
-                      />
-                    )
-                  }
-                />
+                <>
+                  {/* <ThemedOnScreenHelper
+                    label={`Uuid: ${props.rootLessListKey}`}
+                    data={localResolvedElementJzodSchemaBasedOnValue}
+                  /> */}
+                  <ThemedLabeledEditor
+                    labelElement={enhancedLabelElement}
+                    editor={
+                      props.readOnly ? (
+                        <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
+                      ) : (
+                        <ThemedTextEditor
+                          variant="standard"
+                          data-testid="miroirInput"
+                          id={props.rootLessListKey}
+                          key={props.rootLessListKey}
+                          aria-label={props.rootLessListKey}
+                          type="text"
+                          style={{
+                            width: `${estimatedWidth}px`,
+                            minWidth: "200px",
+                            maxWidth: "400px",
+                            boxSizing: "border-box",
+                          }}
+                          {...formik.getFieldProps(formikRootLessListKey)}
+                          // value={currentValue} // TODO: get other formik.getFieldProps: name, value, onChange, onBlur
+                          // name={formikRootLessListKey}
+                          error={hasPathError}
+                        />
+                      )
+                    }
+                  />
+                </>
               );
           }
         }
@@ -914,7 +929,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 reportSectionPathAsString={props.reportSectionPathAsString}
                 foreignKeyObjects={props.foreignKeyObjects}
                 // rawJzodSchema={props.rawJzodSchema as JzodLiteral}
-                resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+                resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 insideAny={props.insideAny}
@@ -941,7 +956,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 rootLessListKeyArray={props.rootLessListKeyArray}
                 reportSectionPathAsString={props.reportSectionPathAsString}
                 // rawJzodSchema={props.rawJzodSchema as any}
-                resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+                resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 foreignKeyObjects={props.foreignKeyObjects}
@@ -961,7 +976,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           return (
             <>
             {/* <ThemedOnScreenHelper
-              name={`This field allows any type of value. ${props.rootLessListKey}`}
+              label={`This field allows any type of value. ${props.rootLessListKey}`}
               data={(props.typeCheckKeyMap as any)?.[props.rootLessListKey]}
             /> */}
             <JzodAnyEditor
@@ -975,7 +990,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={props.foreignKeyObjects}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
-              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               readOnly={props.readOnly}
               displayError={props.displayError}
@@ -1143,14 +1158,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   return (
     <>
       {/* {props.isTopLevel && (
-        <span>
-          <pre>
-            shouldShowCodeEditor: {JSON.stringify(shouldShowCodeEditor)} displayAsCodeEditor:{" "}
-            {JSON.stringify(displayAsCodeEditor)} hideSubJzodEditor:{" "}
-            {JSON.stringify(hideSubJzodEditor)} objectOrArrayOrAny:{" "}
-            {JSON.stringify(objectOrArrayOrAny)}{" "}
-          </pre>
-        </span>
+        <>
+          <ThemedOnScreenHelper
+            label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
+            data={{displayAsCodeEditor, values: formik.values, localResolvedElementJzodSchemaBasedOnValue}}
+          />
+        </>
       )} */}
       <div>
         {/* <ThemedOnScreenHelper
@@ -1205,7 +1218,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 // alignItems: "center",
                 // padding: "5px",
               }}
-            >
+            > 
               {props.submitButton}
               {displayAsCodeEditor ? (
                 <JzodElementEditorReactCodeMirror
@@ -1281,10 +1294,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 flexGrow: 1,
               }}
             >
-              {/* <ThemedOnScreenHelper
-                name={`${props.rootLessListKey}: ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
-                data={(props.typeCheckKeyMap as any)?.[props.rootLessListKey]}
-              /> */}
               {mainElement}
             </span>
           </span>

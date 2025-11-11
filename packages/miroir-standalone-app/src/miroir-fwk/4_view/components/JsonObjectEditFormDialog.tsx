@@ -361,12 +361,13 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                       listKey={"ROOT"}
                       rootLessListKey=""
                       rootLessListKeyArray={[]}
+                      reportSectionPathAsString=""
                       labelElement={labelElement}
                       currentDeploymentUuid={currentDeploymentUuid}
                       currentApplicationSection={currentApplicationSection}
                       // rawJzodSchema={entityDefinitionJzodSchema}
                       // localRootLessListKeyMap={{}}
-                      resolvedElementJzodSchema={
+                      resolvedElementJzodSchemaDEFUNCT={
                         resolvedJzodSchemaForFormik?.status == "ok"
                           ? (resolvedJzodSchemaForFormik as any).resolvedSchema
                           : undefined

@@ -336,7 +336,7 @@ const ProgressiveAttribute: FC<{
             currentDeploymentUuid={currentDeploymentUuid}
             typeCheckKeyMap={typeCheckKeyMap}
             currentApplicationSection={currentApplicationSection}
-            resolvedElementJzodSchema={currentAttributeDefinition}
+            resolvedElementJzodSchemaDEFUNCT={currentAttributeDefinition}
             foreignKeyObjects={foreignKeyObjects}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
@@ -997,7 +997,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               />
             ))}
       </div>
-    );}, [
+    );
+  }, [
     itemsOrder,
     formik.values,
     rootLessListKey,
@@ -1020,13 +1021,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentModel,
     miroirMetaModel,
     measuredUnfoldJzodSchemaOnce,
-    reportContext.foldedObjectAttributeOrArrayItems // This is the key addition!
+    reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
   ]);
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      {/* <span>JzodObjectEditor: {count}</span> */}
-      {/* {props.isTopLevel?JSON.stringify(reportContext.foldedObjectAttributeOrArrayItems):""} */}
+      {/* <ThemedOnScreenHelper
+        label={`JzodObjectEditor: ${rootLessListKey}`}
+        data={{ rootLessListKey, formikRootLessListKey, currentValueObjectAtKey }}
+      /> */}
       <div>
         {/* Performance statistics */}
         <ThemedFlexRow justify="start" align="center">
@@ -1163,7 +1166,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               </span>
             )}
           {/* extra buttons */}
-          { props.extraToolsButtons && (<span>{props.extraToolsButtons}</span>)}
+          {props.extraToolsButtons && <span>{props.extraToolsButtons}</span>}
           <ThemedDeleteButtonContainer>
             {deleteButtonElement ?? <></>}
             {displayAsStructuredElementSwitch ?? <></>}

@@ -89,8 +89,8 @@ export const AdminPage: React.FC<any> = (
     actionName: "check page configuration fetch"
   });
   
-  const [testInput, setTestInput] = useState<string>("");
-  const [testResult, setTestResult] = useState<JSX.Element>(<></>);
+  // const [testInput, setTestInput] = useState<string>("");
+  // const [testResult, setTestResult] = useState<JSX.Element>(<></>);
 
   // const checkTestDefinition = (event: React.FormEvent<HTMLFormElement>) => {
   //   event.preventDefault();
@@ -139,18 +139,18 @@ export const AdminPage: React.FC<any> = (
 
 
   const deploymentUuid = adminConfigurationDeploymentParis.uuid;
-  const context = useMiroirContextService();
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const currentModel = useCurrentModel(deploymentUuid);
+  // const context = useMiroirContextService();
+  // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  // const currentModel = useCurrentModel(deploymentUuid);
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-      miroirMetaModel: miroirMetaModel,
-      currentModel: currentModel,
-    };
-  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema:
+  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //     miroirMetaModel: miroirMetaModel,
+  //     currentModel: currentModel,
+  //   };
+  // }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
 
   // const displayedApplicationSection = context.applicationSection;
   // const setDisplayedApplicationSection = context.setApplicationSection;
@@ -162,188 +162,189 @@ export const AdminPage: React.FC<any> = (
 
   // const currentTransformerDefinition: TransformerForBuildPlusRuntime = useMemo(() => {
   // }, []);
-  const formMlSchema: JzodElement = {
-    type: "object",
-    definition: {
-      createApplicationAndDeployment: {
-        type: "object",
-        definition: {
-          applicationName: {
-            type: "string",
-            tag: {
-              value: {
-                defaultLabel: "Application Name",
-                editable: true,
-              },
-            },
-          },
-        }
-      },
-      deleteApplicationAndDeployment: {
-        type: "object",
-        definition: {
-          application: {
-            type: "uuid",
-            nullable: true,
-            tag: {
-              value: {
-                defaultLabel: "Application",
-                editable: true,
-                selectorParams: {
-                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                  // targetApplicationUuid: "data",
-                  // targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b", // Admin Application
-                  targetEntity: entityApplicationForAdmin.uuid,
-                  targetEntityOrderInstancesBy: "name",
-                }
-              },
-            },
-          },
-        }
-      },
-      createEntity: {
-        type: "object",
-        definition: {
-          entity: entityDefinitionEntity.jzodSchema,
-          entityDefinition: entityDefinitionEntityDefinition.jzodSchema,
-        }
-      }
-    }
-  };
-  const reduxState: ReduxDeploymentsState = useSelector<ReduxStateWithUndoRedo, ReduxDeploymentsState>(
-    selectCurrentReduxDeploymentsStateFromReduxState
-  );
-  const initialReportSectionsFormValue = useMemo(() => {
-    // const result = transformer_extended_apply_wrapper(
-    //   context.miroirContext.miroirActivityTracker, // activityTracker
-    //   "runtime", // step
-    //   ["rootTransformer"], // transformerPath
-    //   "TransformerEditor", // label
-    //   {
-    //     transformerType: "defaultValueForMLSchema",
-    //     mlSchema: formMlSchema,
-    //   }, // transformer
-    //   currentMiroirModelEnvironment,
-    //   {}, // transformerParams,
-    //   {}, // contextResults - pass the instance to transform
-    //   "value" // resolveBuildTransformersTo
-    // )
-    const entityUuid = uuidv4();
-    const result: {
-      createApplicationAndDeployment: {
-        applicationName: string;
-      };
-      deleteApplicationAndDeployment: {
-        application: Uuid;
-      } | undefined;
-      createEntity: { entity: Entity; entityDefinition: EntityDefinition };
-    } = {
-      createApplicationAndDeployment: {
-        // applicationName: "test_application_" + new Date().toISOString(),
-        applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
-      },
-      deleteApplicationAndDeployment: reduxState && Object.keys(reduxState).length > 0
-        ? {
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5" as any
-        }
-        // transformer_extended_apply_wrapper(
-        //     context.miroirContext.miroirActivityTracker, // activityTracker
-        //     "runtime", // step
-        //     ["rootTransformer"], // transformerPath
-        //     "TransformerEditor", // label
-        //     {
-        //       transformerType: "defaultValueForMLSchema",
-        //       mlSchema: formMlSchema.definition.deleteApplicationAndDeployment as JzodElement,
-        //       interpolation: "build",
-        //     }, // transformer
-        //     currentMiroirModelEnvironment,
-        //     {}, // transformerParams,
-        //     {}, // contextResults - pass the instance to transform
-        //     "value", // resolveBuildTransformersTo
-        //     reduxState,
-        //     deploymentUuid,
-        //   )
-        : undefined,
-      createEntity: {
-        entity: {
-          uuid: entityUuid,
-          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          parentName: "Entity",
-          parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-          name: "",
-        },
-        entityDefinition: {
-          uuid: uuidv4(),
-          parentName: "EntityDefinition",
-          parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-          parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
-          name: "",
-          entityUuid: entityUuid,
-          jzodSchema: {
-            type: "object",
-            definition: {
-              uuid: {
-                type: "uuid",
-                tag: {
-                  value: {
-                    id: 1,
-                    defaultLabel: "Uuid",
-                    editable: false,
-                  },
-                },
-              },
-              parentName: {
-                type: "string",
-                optional: true,
-                tag: {
-                  value: {
-                    id: 2,
-                    defaultLabel: "Entity Name",
-                    editable: false,
-                  },
-                },
-              },
-              parentUuid: {
-                type: "uuid",
-                tag: {
-                  value: {
-                    id: 3,
-                    defaultLabel: "Entity Uuid",
-                    editable: false,
-                  },
-                },
-              },
-              parentDefinitionVersionUuid: {
-                type: "uuid",
-                optional: true,
-                tag: {
-                  value: {
-                    id: 4,
-                    defaultLabel: "Entity Definition Version Uuid",
-                    editable: false,
-                  },
-                },
-              },
-              name: {
-                type: "string",
-                tag: {
-                  value: {
-                    defaultLabel: "Name",
-                    editable: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    };
-    return result;
-  }, [context, reduxState, formMlSchema, currentMiroirModelEnvironment]);
+  // const formMlSchema: JzodElement = {
+  //   type: "object",
+  //   definition: {
+  //     createApplicationAndDeployment: {
+  //       type: "object",
+  //       definition: {
+  //         applicationName: {
+  //           type: "string",
+  //           tag: {
+  //             value: {
+  //               defaultLabel: "Application Name",
+  //               editable: true,
+  //             },
+  //           },
+  //         },
+  //       }
+  //     },
+  //     deleteApplicationAndDeployment: {
+  //       type: "object",
+  //       definition: {
+  //         application: {
+  //           type: "uuid",
+  //           nullable: true,
+  //           tag: {
+  //             value: {
+  //               defaultLabel: "Application",
+  //               editable: true,
+  //               selectorParams: {
+  //                 targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  //                 // targetApplicationUuid: "data",
+  //                 // targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b", // Admin Application
+  //                 targetEntity: entityApplicationForAdmin.uuid,
+  //                 targetEntityOrderInstancesBy: "name",
+  //               }
+  //             },
+  //           },
+  //         },
+  //       }
+  //     },
+  //     createEntity: {
+  //       type: "object",
+  //       definition: {
+  //         entity: entityDefinitionEntity.jzodSchema,
+  //         entityDefinition: entityDefinitionEntityDefinition.jzodSchema,
+  //       }
+  //     }
+  //   }
+  // };
+  // const reduxState: ReduxDeploymentsState = useSelector<ReduxStateWithUndoRedo, ReduxDeploymentsState>(
+  //   selectCurrentReduxDeploymentsStateFromReduxState
+  // );
+  // const initialReportSectionsFormValue = useMemo(() => {
+  //   // const result = transformer_extended_apply_wrapper(
+  //   //   context.miroirContext.miroirActivityTracker, // activityTracker
+  //   //   "runtime", // step
+  //   //   ["rootTransformer"], // transformerPath
+  //   //   "TransformerEditor", // label
+  //   //   {
+  //   //     transformerType: "defaultValueForMLSchema",
+  //   //     mlSchema: formMlSchema,
+  //   //   }, // transformer
+  //   //   currentMiroirModelEnvironment,
+  //   //   {}, // transformerParams,
+  //   //   {}, // contextResults - pass the instance to transform
+  //   //   "value" // resolveBuildTransformersTo
+  //   // )
+  //   const entityUuid = uuidv4();
+  //   const result: {
+  //     createApplicationAndDeployment: {
+  //       applicationName: string;
+  //     };
+  //     deleteApplicationAndDeployment: {
+  //       application: Uuid | undefined;
+  //     } | undefined;
+  //     createEntity: { entity: Entity; entityDefinition: EntityDefinition };
+  //   } = {
+  //     createApplicationAndDeployment: {
+  //       // applicationName: "test_application_" + new Date().toISOString(),
+  //       applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+  //     },
+  //     deleteApplicationAndDeployment: reduxState && Object.keys(reduxState).length > 0
+  //       ? {
+  //         // application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5" as any
+  //         application: undefined
+  //       }
+  //       // transformer_extended_apply_wrapper(
+  //       //     context.miroirContext.miroirActivityTracker, // activityTracker
+  //       //     "runtime", // step
+  //       //     ["rootTransformer"], // transformerPath
+  //       //     "TransformerEditor", // label
+  //       //     {
+  //       //       transformerType: "defaultValueForMLSchema",
+  //       //       mlSchema: formMlSchema.definition.deleteApplicationAndDeployment as JzodElement,
+  //       //       interpolation: "build",
+  //       //     }, // transformer
+  //       //     currentMiroirModelEnvironment,
+  //       //     {}, // transformerParams,
+  //       //     {}, // contextResults - pass the instance to transform
+  //       //     "value", // resolveBuildTransformersTo
+  //       //     reduxState,
+  //       //     deploymentUuid,
+  //       //   )
+  //       : undefined,
+  //     createEntity: {
+  //       entity: {
+  //         uuid: entityUuid,
+  //         parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //         parentName: "Entity",
+  //         parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  //         name: "",
+  //       },
+  //       entityDefinition: {
+  //         uuid: uuidv4(),
+  //         parentName: "EntityDefinition",
+  //         parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  //         parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
+  //         name: "",
+  //         entityUuid: entityUuid,
+  //         jzodSchema: {
+  //           type: "object",
+  //           definition: {
+  //             uuid: {
+  //               type: "uuid",
+  //               tag: {
+  //                 value: {
+  //                   id: 1,
+  //                   defaultLabel: "Uuid",
+  //                   editable: false,
+  //                 },
+  //               },
+  //             },
+  //             parentName: {
+  //               type: "string",
+  //               optional: true,
+  //               tag: {
+  //                 value: {
+  //                   id: 2,
+  //                   defaultLabel: "Entity Name",
+  //                   editable: false,
+  //                 },
+  //               },
+  //             },
+  //             parentUuid: {
+  //               type: "uuid",
+  //               tag: {
+  //                 value: {
+  //                   id: 3,
+  //                   defaultLabel: "Entity Uuid",
+  //                   editable: false,
+  //                 },
+  //               },
+  //             },
+  //             parentDefinitionVersionUuid: {
+  //               type: "uuid",
+  //               optional: true,
+  //               tag: {
+  //                 value: {
+  //                   id: 4,
+  //                   defaultLabel: "Entity Definition Version Uuid",
+  //                   editable: false,
+  //                 },
+  //               },
+  //             },
+  //             name: {
+  //               type: "string",
+  //               tag: {
+  //                 value: {
+  //                   defaultLabel: "Name",
+  //                   editable: true,
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   };
+  //   return result;
+  // }, [context, reduxState, formMlSchema, currentMiroirModelEnvironment]);
 
   
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-  useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
+  // const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+  // useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
   
   // const [deleteApplicationAndDeploymentCompositeAction_application, setDeleteApplicationAndDeploymentCompositeAction_application] = useState<Uuid | undefined>(undefined);
   // const deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(() => {
@@ -403,7 +404,7 @@ export const AdminPage: React.FC<any> = (
   // }, [initialReportSectionsFormValue, reduxState]);
   // log.info("deleteApplicationAndDeploymentCompositeAction_application", deleteApplicationAndDeploymentCompositeAction_application);
 
-  log.info("initialReportSectionsFormValue", initialReportSectionsFormValue);
+  // log.info("initialReportSectionsFormValue", initialReportSectionsFormValue);
 
   return (
     <ReportPageContextProvider>

@@ -360,18 +360,14 @@ export const InstanceEditorOutline: React.FC<DocumentOutlineProps> = ({
   // Build tree structure from data with stable reference
   const treeNodes = useMemo(() => {
     try {
-      log.info("Outline: ##############################################################");
-      log.info("Outline: ##############################################################");
-      log.info("Outline: ##############################################################");
-      log.info("Outline: ##############################################################");
-      log.info(
-        "Outline: Rebuilding tree structure from data:",
-        "outlineContext.reportInstance",
-        outlineContext.reportInstance,
-        "rootObjectKey:", rootObjectKey,
-        "typeCheckKeyMap:",
-        outlineContext.typeCheckKeyMap
-      );
+      // log.info(
+      //   "Outline: Rebuilding tree structure from data:",
+      //   "outlineContext.reportInstance",
+      //   outlineContext.reportInstance,
+      //   "rootObjectKey:", rootObjectKey,
+      //   "typeCheckKeyMap:",
+      //   outlineContext.typeCheckKeyMap
+      // );
       // return buildTreeFromObject(outlineContext.outlineData, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
       return buildTreeFromObject(outlineContext.reportInstance, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
     } catch (error) {

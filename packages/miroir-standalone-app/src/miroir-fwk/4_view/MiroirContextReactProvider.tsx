@@ -276,11 +276,12 @@ export function MiroirContextReactProvider(props: {
     () => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
       try {
         const result = await action();
+        log.info(`handleAsyncAction for ${actionName}:`, result);
 
         // Check if the result is an Action2Error (server error)
         if (result && typeof result === "object" && result.status === "error") {
           // Log server errors to global error service
-          const errorEntry = logServerError(
+          logServerError(
             result.errorMessage || result.errorType || "Unknown server error",
             {
               actionName,
@@ -289,7 +290,6 @@ export function MiroirContextReactProvider(props: {
             }
           );
 
-          log.error(`Server error in ${actionName}:`, result);
           startTransition(() => {
             if (result.isServerError && result.errorMessage) {
               showSnackbar(`Server error: ${result.errorMessage}`, "error");

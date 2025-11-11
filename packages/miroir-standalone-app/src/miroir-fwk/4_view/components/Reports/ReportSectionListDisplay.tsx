@@ -720,11 +720,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               "", // rootLessListKey,
               undefined, // No need to pass currentDefaultValue here
               [], // currentPath on value is root
-              deploymentEntityState,
               false, // forceOptional
               props.deploymentUuid,
               currentMiroirModelEnvironment,
-              {}, // relativeReferenceJzodContext
+              {}, // transformerParams
+              {}, // contextResults
+              deploymentEntityState,
             )
           : undefined;
 

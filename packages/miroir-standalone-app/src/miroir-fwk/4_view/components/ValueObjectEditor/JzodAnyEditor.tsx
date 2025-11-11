@@ -48,7 +48,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
-    resolvedElementJzodSchema, // handleSelectLiteralChange,
+    resolvedElementJzodSchemaDEFUNCT: resolvedElementJzodSchema, // handleSelectLiteralChange,
     labelElement,
     insideAny,
     typeCheckKeyMap,
@@ -129,7 +129,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           reportSectionPathAsString={reportSectionPathAsString}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
-          resolvedElementJzodSchema={resolvedElementJzodSchema}
+          resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
           typeCheckKeyMap={typeCheckKeyMap}
           labelElement={<></>}
           foreignKeyObjects={foreignKeyObjects}

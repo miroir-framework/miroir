@@ -181,7 +181,6 @@ export function useJzodElementEditorHooks(
   // ################################################################################################
   // ################################################################################################
   // value schema
-  // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(() => {
     const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
       typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
         ? typeCheckKeyMap[rootLessListKey]?.resolvedSchema

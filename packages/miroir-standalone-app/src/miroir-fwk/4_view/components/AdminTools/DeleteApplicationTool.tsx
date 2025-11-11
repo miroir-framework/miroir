@@ -1,4 +1,4 @@
-import { Formik } from "formik";
+import { ErrorMessage, Formik } from "formik";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
@@ -36,6 +36,8 @@ import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { ThemedOnScreenHelper } from "../Themes/BasicComponents.js";
+import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -79,8 +81,8 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
                 },
               },
             },
-          },
-        },
+          }
+        }
       },
     }),
     []
@@ -95,199 +97,194 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
   const initialFormValue = useMemo(() => {
-    return reduxState && Object.keys(reduxState).length > 0
-      ? {
-          deleteApplicationAndDeployment: {
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5" as Uuid,
-            // application: undefined,
-          },
-        }
-      : {
-          deleteApplicationAndDeployment: {
-            application: undefined,
-          },
-        };
-  }, [reduxState]);
+    return {
+      deleteApplicationAndDeployment: {
+        application: noValue.uuid,
+      },
+    };
+  }, []);
 
   return (
     <Formik
       enableReinitialize={true}
       initialValues={initialFormValue}
-      onSubmit={async (values, { setSubmitting, setErrors }) => {
-        try {
-          const applicationUuid = values.deleteApplicationAndDeployment?.application;
+      onSubmit={async (values, { setSubmitting, setErrors, setFieldValue }) => {
+        const applicationUuid = values.deleteApplicationAndDeployment?.application;
+        // const applicationUuid = values.application;
 
-          log.info(
-            "DeleteApplicationTool onSubmit formik values",
-            values,
-            applicationUuid
-          );
-          if (!applicationUuid) {
-            throw new Error("No application selected to delete");
-          }
-
-          const deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery: BoxedQueryWithExtractorCombinerTransformer =
-            {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              extractors: {
-                deployments: {
-                  label: "deployments of the application",
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  parentUuid: entityDeployment.uuid,
-                  parentName: entityDeployment.name,
-                  applicationSection: "data",
-                  filter: {
-                    attributeName: "adminApplication",
-                    value: applicationUuid,
-                  },
-                },
-              },
-            };
-
-          const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
-            getQueryRunnerParamsForReduxDeploymentsState(
-              deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery,
-              deploymentEntityStateSelectorMap
-            );
-          const deployments = runQuery(
-            reduxState,
-            deploymentEntityStateFetchQueryParams,
-            defaultMiroirModelEnvironment // TODO: use real environment
-          );
-          log.info(
-            "DeleteApplicationTool onSubmit deployments for application",
-            applicationUuid,
-            "reduxState",
-            reduxState,
-            "deployments",
-            deployments
-          );
-
-          if (deployments instanceof Domain2ElementFailed) {
-            throw deployments;
-          }
-          if (deployments.deployments.length !== 1) {
-            throw new Error(
-              `Expected exactly one deployment for application ${applicationUuid}, but found ${deployments.deployments.length}`
-            );
-          }
-
-          const dropStorageAction: CompositeAction =
-            deleteApplicationAndDeploymentCompositeAction(
-              {
-                miroirConfigType: "client",
-                client: {
-                  emulateServer: false,
-                  serverConfig: {
-                    rootApiUrl: "http://localhost:3000/api",
-                    storeSectionConfiguration: {
-                      [deployments.deployments[0].uuid]:
-                        deployments.deployments[0].configuration,
-                    },
-                  },
-                },
-              },
-              deployments.deployments[0].uuid
-            );
-
-          log.info(
-            "DeleteApplicationTool onSubmit dropStorageAction",
-            JSON.stringify(dropStorageAction, null, 2)
-          );
-
-          const deleteAdminApplication: InstanceAction = {
-            actionType: "deleteInstance",
-            actionLabel: "deleteDeployment",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-            payload: {
-              applicationSection: "data",
-              objects: [
-                {
-                  parentUuid: entityApplicationForAdmin.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    {
-                      parentUuid: entityApplicationForAdmin.uuid,
-                      uuid: applicationUuid,
-                    },
-                  ],
-                },
-              ],
-            },
-          };
-
-          log.info(
-            "DeleteApplicationTool onSubmit deleteAdminApplication action",
-            deleteAdminApplication
-          );
-
-          const deleteDeploymentAction: InstanceAction = {
-            actionType: "deleteInstance",
-            actionLabel: "deleteDeployment",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-            payload: {
-              applicationSection: "data",
-              objects: [
-                {
-                  parentUuid: entityDeployment.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    {
-                      parentUuid: entityDeployment.uuid,
-                      uuid: deployments.deployments[0].uuid,
-                    },
-                  ],
-                },
-              ],
-            },
-          };
-
-          log.info(
-            "DeleteApplicationTool onSubmit deleteDeploymentAction action",
-            deleteDeploymentAction
-          );
-
-          // run actions
-          await domainController.handleCompositeAction(
-            dropStorageAction,
-            currentMiroirModelEnvironment,
-            {}
-          );
-
-          await domainController.handleAction(
-            deleteDeploymentAction,
-            currentMiroirModelEnvironment
-          );
-          await domainController.handleAction(
-            deleteAdminApplication,
-            currentMiroirModelEnvironment
-          );
-        } catch (e) {
-          log.error(e);
-        } finally {
-          setSubmitting(false);
+        log.info("DeleteApplicationTool onSubmit formik values", values, applicationUuid);
+        
+        if (!applicationUuid || applicationUuid === noValue.uuid) {
+          throw new Error("DeleteApplicationTool: No application selected to delete");
         }
+
+        const deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery: BoxedQueryWithExtractorCombinerTransformer =
+          {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractors: {
+              deployments: {
+                label: "deployments of the application",
+                extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                parentUuid: entityDeployment.uuid,
+                parentName: entityDeployment.name,
+                applicationSection: "data",
+                filter: {
+                  attributeName: "adminApplication",
+                  value: applicationUuid,
+                },
+              },
+            },
+          };
+
+        const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
+          getQueryRunnerParamsForReduxDeploymentsState(
+            deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery,
+            deploymentEntityStateSelectorMap
+          );
+        const deployments = runQuery(
+          reduxState,
+          deploymentEntityStateFetchQueryParams,
+          defaultMiroirModelEnvironment // TODO: use real environment
+        );
+        log.info(
+          "DeleteApplicationTool onSubmit deployments for application",
+          applicationUuid,
+          "reduxState",
+          reduxState,
+          "deployments",
+          deployments
+        );
+
+        if (deployments instanceof Domain2ElementFailed) {
+          throw deployments;
+        }
+        if (deployments.deployments.length !== 1) {
+          throw new Error(
+            `Expected exactly one deployment for application ${applicationUuid}, but found ${deployments.deployments.length}`
+          );
+        }
+
+        const dropStorageAction: CompositeAction = deleteApplicationAndDeploymentCompositeAction(
+          {
+            miroirConfigType: "client",
+            client: {
+              emulateServer: false,
+              serverConfig: {
+                rootApiUrl: "http://localhost:3000/api",
+                storeSectionConfiguration: {
+                  [deployments.deployments[0].uuid]: deployments.deployments[0].configuration,
+                },
+              },
+            },
+          },
+          deployments.deployments[0].uuid
+        );
+
+        log.info(
+          "DeleteApplicationTool onSubmit dropStorageAction",
+          JSON.stringify(dropStorageAction, null, 2)
+        );
+
+        const deleteAdminApplication: InstanceAction = {
+          actionType: "deleteInstance",
+          actionLabel: "deleteDeployment",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          payload: {
+            applicationSection: "data",
+            objects: [
+              {
+                parentUuid: entityApplicationForAdmin.uuid,
+                applicationSection: "data",
+                instances: [
+                  {
+                    parentUuid: entityApplicationForAdmin.uuid,
+                    uuid: applicationUuid,
+                  },
+                ],
+              },
+            ],
+          },
+        };
+
+        log.info(
+          "DeleteApplicationTool onSubmit deleteAdminApplication action",
+          deleteAdminApplication
+        );
+
+        const deleteDeploymentAction: InstanceAction = {
+          actionType: "deleteInstance",
+          actionLabel: "deleteDeployment",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          payload: {
+            applicationSection: "data",
+            objects: [
+              {
+                parentUuid: entityDeployment.uuid,
+                applicationSection: "data",
+                instances: [
+                  {
+                    parentUuid: entityDeployment.uuid,
+                    uuid: deployments.deployments[0].uuid,
+                  },
+                ],
+              },
+            ],
+          },
+        };
+
+        log.info(
+          "DeleteApplicationTool onSubmit deleteDeploymentAction action",
+          deleteDeploymentAction
+        );
+
+        // run actions
+        await domainController.handleCompositeAction(
+          dropStorageAction,
+          currentMiroirModelEnvironment,
+          {}
+        );
+
+        await domainController.handleAction(
+          deleteDeploymentAction,
+          currentMiroirModelEnvironment
+        );
+        await domainController.handleAction(
+          deleteAdminApplication,
+          currentMiroirModelEnvironment
+        );
+
+        // Reset form after successful deletion
+        setFieldValue("deleteApplicationAndDeployment.application", noValue.uuid);
       }}
       validateOnChange={false}
       validateOnBlur={false}
     >
-      <TypedValueObjectEditor
-        labelElement={<h2>Delete Application & Deployment</h2>}
-        deploymentUuid={deploymentUuid}
-        applicationSection="model"
-        formValueMLSchema={formMlSchema}
-        formikValuePathAsString="deleteApplicationAndDeployment"
-        formLabel="Delete Application & Deployment"
-        zoomInPath=""
-        maxRenderDepth={Infinity}
-        useActionButton={true}
-      />
+      {(formik) =>  (
+        <>
+          {/* <ThemedOnScreenHelper
+            label={`DeleteApplicationTool: ${deploymentUuid}`}
+            data={{form: JSON.stringify(formik.values), formMlSchema}}
+          /> */}
+          <TypedValueObjectEditor
+            labelElement={<h2>Delete Application & Deployment</h2>}
+            deploymentUuid={deploymentUuid}
+            applicationSection="model"
+            formValueMLSchema={formMlSchema}
+            formikValuePathAsString="deleteApplicationAndDeployment"
+            // formikValuePathAsString="application"
+            formLabel="Delete Application & Deployment"
+            zoomInPath=""
+            maxRenderDepth={Infinity}
+            useActionButton={true}
+          />
+        </>
+      )}
     </Formik>
   );
 };

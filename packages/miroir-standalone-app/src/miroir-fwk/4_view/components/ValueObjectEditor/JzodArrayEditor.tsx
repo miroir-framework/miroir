@@ -268,7 +268,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 }
                 rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
                 reportSectionPathAsString={reportSectionPathAsString}
-                resolvedElementJzodSchema={
+                resolvedElementJzodSchemaDEFUNCT={
                   resolvedElementJzodSchema?.type == "array"
                     ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
                     : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
@@ -304,7 +304,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     rootLessListKey,
     rootLessListKeyArray,
     reportSectionPathAsString,
-    resolvedElementJzodSchema,
+    resolvedElementJzodSchemaDEFUNCT: resolvedElementJzodSchema,
     typeCheckKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -515,10 +515,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         rootLessListKey,
         undefined, // currentDefaultValue is not known yet, this is what this call will determine
         [], // currentPath on value is root
-        deploymentEntityState, // deploymentEntityState is not needed here
         false,
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
+        {}, // transformerParams
+        {}, // contextResults
+        deploymentEntityState, // deploymentEntityState is not needed here
         // context.miroirFundamentalJzodSchema,
         // currentModel,
         // miroirMetaModel,
