@@ -65,6 +65,7 @@
       },
       "bundle": {
         "type": "uuid",
+        "optional": true,
         "tag": { "value": { 
           "id": 8,
           "defaultLabel": "Bundle",

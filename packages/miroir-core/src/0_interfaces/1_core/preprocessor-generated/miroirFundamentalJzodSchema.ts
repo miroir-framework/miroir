@@ -9085,6 +9085,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "bundle": {
             "type": "uuid",
+            "optional": true,
             "tag": {
               "value": {
                 "id": 8,
@@ -34516,6 +34517,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "bundle": {
                 "type": "union",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 8,
@@ -34529,6 +34531,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 8,

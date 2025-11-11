@@ -446,32 +446,32 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const reportContext = useReportPageContext();
 
-  log.info("JzodObjectEditor",
-    count,
-    "Rendering JzodObjectEditor for props.rootLessListKeyArray",
-    rootLessListKeyArray,
-    "rootLessListKey",
-    rootLessListKey,
-    // "formik.values",
-    // JSON.stringify(formik.values, null, 2),
-    // "currentValueObject",
-    // JSON.stringify(currentValueObject, null, 2),
-    "foreignKeyObjects",
-    foreignKeyObjects,
-    "itemsOrder",
-    itemsOrder,
-    // "typeCheckKeyMap[rootLessListKey]",
-    // typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined,
-    // "typeCheckKeyMap",
-    // typeCheckKeyMap,
-    // "currentReportSectionFormikValues",
-    // currentReportSectionFormikValues,
-    // "props",
-    // props,
-    // reportContext.isNodeFolded(props.rootLessListKeyArray),
-    // "reportContext.foldedObjectAttributeOrArrayItems",
-    // reportContext.foldedObjectAttributeOrArrayItems,
-  );
+  // log.info("JzodObjectEditor",
+  //   count,
+  //   "Rendering JzodObjectEditor for props.rootLessListKeyArray",
+  //   rootLessListKeyArray,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   // "formik.values",
+  //   // JSON.stringify(formik.values, null, 2),
+  //   // "currentValueObject",
+  //   // JSON.stringify(currentValueObject, null, 2),
+  //   "foreignKeyObjects",
+  //   foreignKeyObjects,
+  //   "itemsOrder",
+  //   itemsOrder,
+  //   // "typeCheckKeyMap[rootLessListKey]",
+  //   // typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined,
+  //   // "typeCheckKeyMap",
+  //   // typeCheckKeyMap,
+  //   // "currentReportSectionFormikValues",
+  //   // currentReportSectionFormikValues,
+  //   // "props",
+  //   // props,
+  //   // reportContext.isNodeFolded(props.rootLessListKeyArray),
+  //   // "reportContext.foldedObjectAttributeOrArrayItems",
+  //   // reportContext.foldedObjectAttributeOrArrayItems,
+  // );
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
@@ -717,15 +717,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           rootLessListKey,
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
           [], // currentPath on value is root
-          deploymentEntityState,
           true, // force optional attributes to receive a default value
           currentDeploymentUuid,
           {
             miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-          },
-          {}
+          }, // miroirEnvironment
+          {}, // transformerParams
+          {}, // contextResults
+          deploymentEntityState,
           // Object.hasOwn(formik.values,"")?formik.values[""]:{}, // rootObject
         )
       : undefined;
@@ -792,15 +793,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             rootLessListKey,
             undefined, // currentDefaultValue is not known yet, this is what this call will determine
             [], // currentPath on value is root
-            deploymentEntityState,
             true, // force optional attributes to receive a default value
             currentDeploymentUuid,
             {
               miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
               currentModel,
               miroirMetaModel,
-            },
-            {} // relativeReferenceJzodContext
+            }, // miroirEnvironment
+            {}, // transformerParams
+            {}, // contextResults
+            deploymentEntityState,
           )
         : undefined;
 

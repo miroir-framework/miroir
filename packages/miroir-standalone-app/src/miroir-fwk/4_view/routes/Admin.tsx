@@ -14,6 +14,7 @@ import type {
   Entity,
   EntityDefinition,
   InitApplicationParameters,
+  InstanceAction,
   ModelAction,
   ReduxDeploymentsState,
   StoreUnitConfiguration,
@@ -517,6 +518,7 @@ export const AdminPage: React.FC<any> = (
                   const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
                     newApplicationName,
                     testDeploymentUuid,
+                    testSelfApplicationUuid,
                     testDeploymentStorageConfiguration
                   );
                   log.info(
@@ -632,6 +634,10 @@ export const AdminPage: React.FC<any> = (
                     values,
                     applicationUuid
                   );
+                  if (!applicationUuid) {
+                    throw new Error("No application selected to delete");
+                  }
+
                   const deleteApplicationAndDeploymentCompositeAction_deploymentUuidQuery: BoxedQueryWithExtractorCombinerTransformer =
                     {
                       queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -692,7 +698,7 @@ export const AdminPage: React.FC<any> = (
                   //     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
                   //   });
 
-                  const deleteAction: CompositeAction = deleteApplicationAndDeploymentCompositeAction(
+                  const dropStorageAction: CompositeAction = deleteApplicationAndDeploymentCompositeAction(
                     {
                       miroirConfigType: "client",
                       client: {
@@ -709,9 +715,83 @@ export const AdminPage: React.FC<any> = (
                   );
 
                   log.info(
-                    "Admin onSubmit deleteApplicationAndDeployment deleteAction",
-                    JSON.stringify(deleteAction, null, 2)
+                    "Admin onSubmit deleteApplicationAndDeployment dropStorageAction",
+                    JSON.stringify(dropStorageAction, null, 2)
                   );
+
+                  const deleteAdminApplication: InstanceAction = {
+                    // actionType: "deleteInstanceWithCascade",
+                    actionType: "deleteInstance",
+                    actionLabel: "deleteDeployment",
+                    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                    // deploymentUuid: deployments.deployments[0].uuid,
+                    payload: {
+                      applicationSection: "data",
+                      objects: [
+                        {
+                          parentUuid: entityApplicationForAdmin.uuid,
+                          applicationSection: "data",
+                          instances: [
+                            {
+                              parentUuid: entityApplicationForAdmin.uuid,
+                              uuid: applicationUuid,
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                  };
+
+                  log.info(
+                    "Admin onSubmit deleteApplicationAndDeployment deleteAdminApplication action",
+                    deleteAdminApplication
+                  );
+
+                  const deleteDeploymentAction: InstanceAction = {
+                    // actionType: "deleteInstanceWithCascade",
+                    actionType: "deleteInstance",
+                    actionLabel: "deleteDeployment",
+                    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                    // deploymentUuid: deployments.deployments[0].uuid,
+                    payload: {
+                      applicationSection: "data",
+                      objects: [
+                        {
+                          parentUuid: entityDeployment.uuid,
+                          applicationSection: "data",
+                          instances: [
+                            {
+                              parentUuid: entityDeployment.uuid,
+                              uuid: deployments.deployments[0].uuid,
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                  };
+
+                  log.info(
+                    "Admin onSubmit deleteApplicationAndDeployment deleteDeploymentAction action",
+                    deleteDeploymentAction
+                  );
+                  // run actions
+                  await domainController.handleCompositeAction(
+                    dropStorageAction,
+                    currentMiroirModelEnvironment,
+                    {}
+                  )
+
+                  await domainController.handleAction(
+                    deleteDeploymentAction,
+                    currentMiroirModelEnvironment
+                  );
+                  await domainController.handleAction(
+                    deleteAdminApplication,
+                    currentMiroirModelEnvironment
+                  );
+
                   // // create application in the admin store
                   // const localCreateApplicationCompositeAction = createApplicationCompositeAction(
                   //   adminConfigurationDeploymentAdmin.uuid,
@@ -747,12 +827,6 @@ export const AdminPage: React.FC<any> = (
                   //   localResetAndinitializeDeploymentCompositeAction
                   // );
 
-                  // run actions
-                  await domainController.handleCompositeAction(
-                    deleteAction,
-                    currentMiroirModelEnvironment,
-                    {}
-                  )
 
                   // await domainController.handleCompositeAction(
                   //   localCreateDeploymentCompositeAction,

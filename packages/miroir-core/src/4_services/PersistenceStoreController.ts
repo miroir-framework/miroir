@@ -397,7 +397,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         }
         break;
       }
-      case "deleteInstanceWithCascade":
+      case "deleteInstanceWithCascade": {
+        throw new Error(
+          "PersistenceStoreController handleAction can not handle deleteInstanceWithCascade action!"
+        );
+      }
       case "loadNewInstancesInLocalCache": {
         throw new Error(
           "PersistenceStoreController handleAction can not handle loadNewInstancesInLocalCache action!"

@@ -307,10 +307,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       jzodTypeCheckResult.keyMap
       // context.typeCheckKeyMap !== jzodTypeCheckResult.keyMap
     ) {
-      log.info(
-        "Outline: TypedValueObjectEditor updating context typeCheckKeyMap",
-        jzodTypeCheckResult.keyMap
-      );
+      // log.info(
+      //   "Outline: TypedValueObjectEditor updating context typeCheckKeyMap",
+      //   jzodTypeCheckResult.keyMap
+      // );
       if (context.setTypeCheckKeyMap) {
         context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
       } else {

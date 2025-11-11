@@ -232,7 +232,7 @@ const handleDiscriminatorChange = (
         rootLessListKey,
         undefined,
         [],
-        undefined,
+        // undefined,
         true,
         currentDeploymentUuid,
         modelEnvironment
@@ -452,18 +452,18 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     }
     return [];
   }, [isDiscriminator, currentDiscriminatorValues]);
-  log.info(
-    "JzodLiteralEditor render",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    JSON.stringify(rootLessListKey),
-    "currentValue",
-    JSON.stringify(currentValue),
-    "currentDiscriminatorValues",
-    JSON.stringify(currentDiscriminatorValues),
-    "discriminatorSelectOptions",
-    JSON.stringify(discriminatorSelectOptions)
-  );
+  // log.info(
+  //   "JzodLiteralEditor render",
+  //   JzodLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   JSON.stringify(rootLessListKey),
+  //   "currentValue",
+  //   JSON.stringify(currentValue),
+  //   "currentDiscriminatorValues",
+  //   JSON.stringify(currentDiscriminatorValues),
+  //   "discriminatorSelectOptions",
+  //   JSON.stringify(discriminatorSelectOptions)
+  // );
   // Memoize discriminator values for better rendering performance
 
   // log.info(

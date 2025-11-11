@@ -67,6 +67,7 @@ export function createApplicationCompositeAction(
 export function createDeploymentCompositeAction(
   applicationName: string,
   deploymentUuid: Uuid,
+  adminApplicationUuid: Uuid,
   deploymentConfiguration: StoreUnitConfiguration,
 ): CompositeAction {
   log.info("createDeploymentCompositeAction deploymentConfiguration", 
@@ -132,6 +133,8 @@ export function createDeploymentCompositeAction(
                   name: `Deployment of application ${applicationName}`,
                   defaultLabel: `The deployment of application ${applicationName}`,
                   description: `The description of deployment of application ${applicationName}`,
+                  adminApplication: adminApplicationUuid,
+                  configuration: deploymentConfiguration,
                 } as Deployment,
               ],
             },
