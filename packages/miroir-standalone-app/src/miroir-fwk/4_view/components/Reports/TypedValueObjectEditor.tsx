@@ -478,7 +478,19 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       ) : (
         // Editable mode: wrap in form
         // TODO: is form actually needed here, since we have formik context already?
-        <form id={"form." + formLabel} onSubmit={formik.handleSubmit}>
+        <form 
+          id={"form." + formLabel} 
+          onSubmit={(e) => {
+            // When using ActionButton, prevent default form submission
+            // since we handle submission programmatically via the button
+            if (useActionButton) {
+              e.preventDefault();
+              log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
+              return false;
+            }
+            formik.handleSubmit(e);
+          }}
+        >
           <div>
             <ErrorBoundary
               FallbackComponent={({ error, resetErrorBoundary }) => (

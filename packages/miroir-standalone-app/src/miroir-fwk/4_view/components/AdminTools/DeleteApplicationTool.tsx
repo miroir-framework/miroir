@@ -99,6 +99,7 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
       ? {
           deleteApplicationAndDeployment: {
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5" as Uuid,
+            // application: undefined,
           },
         }
       : {
