@@ -95,6 +95,7 @@ export interface TypedValueObjectEditorProps {
     errorPath: string[]; // Path to element that should be highlighted with red border due to error
     errorMessage: string; // Error message to display as tooltip or title
   };
+  displaySubmitButton?: "onTop" | "onFirstLine";
   // navigationCount: number;
 }
  let count = 0;
@@ -128,7 +129,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // error highlighting
   displayError,
   // 
-  formLabel: pageLabel, // TODO: remove
+  formLabel, // TODO: remove
+  displaySubmitButton,
+  // navigationCount,
+  ...props
 }) => {
   const renderStartTime = performance.now();
   const context = useMiroirContextService();
@@ -378,6 +382,18 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       foreignKeyObjectsFetchQueryParams
     ) || {};
 
+  const submitButton =                   (<ThemedStyledButton
+                    type="submit"
+                    variant="contained"
+                    style={{ maxWidth: "300px" }}
+                    onClick={(e) => {
+                      log.info("TypedValueObjectEditor submit button clicked", e);
+                      formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
+                    }}
+                  >
+                    {/* Submit {formLabel} */}
+                    {formLabel}
+                  </ThemedStyledButton>);
   const result = (
     <>
       <div>
@@ -443,7 +459,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       ) : (
         // Editable mode: wrap in form
         // TODO: is form actually needed here, since we have formik context already?
-        <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
+        <form id={"form." + formLabel} onSubmit={formik.handleSubmit}>
           <div>
             <ErrorBoundary
               FallbackComponent={({ error, resetErrorBoundary }) => (
@@ -495,18 +511,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 maxRenderDepth={maxRenderDepth} // always 1
                 displayError={displayError}
                 submitButton={
-                  <ThemedStyledButton
-                    type="submit"
-                    variant="contained"
-                    style={{ maxWidth: "300px" }}
-                    onClick={(e) => {
-                      log.info("TypedValueObjectEditor submit button clicked", e);
-                      formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
-                    }}
-                  >
-                    Submit {pageLabel}
-                  </ThemedStyledButton>
+                  !displaySubmitButton || displaySubmitButton === "onTop" ? submitButton : <></>
                 }
+                extraToolsButtons={displaySubmitButton === "onFirstLine" ? submitButton : <></>}
               />
             </ErrorBoundary>
           </div>

@@ -58,6 +58,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   unresolvedJzodSchema?: JzodElement | undefined;
   indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
+  extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
@@ -90,12 +91,24 @@ export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
 }
 
 // #################################################################################################
+/**
+ * @interface JzodObjectEditorProps
+ * Props for the JzodObjectEditor component.
+ * @extends JzodEditorPropsRoot
+ * @property {number} [indentLevel] - Optional indent level for nested objects.
+ * @property {JSX.Element} [deleteButtonElement] - Optional delete button element to display in the editor.
+ * @property {JSX.Element} [displayAsStructuredElementSwitch] - Optional switch element to toggle structured display.
+ * @property {JSX.Element} [jzodSchemaTooltip] - Optional tooltip element to display the raw Jzod schema.
+ * @property {number} [maxRenderDepth] - Optional max depth for initial rendering, default is 1.
+ * @property {JSX.Element} [extraToolsButtons] - Optional extra tool buttons to display on the title line.
+ */
 export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
   indentLevel?: number;
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
   jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
+  extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
 }
 
 // #####################################################################################################

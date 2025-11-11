@@ -63,6 +63,7 @@ import { usePageConfiguration } from "../services/index.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, selectCurrentReduxDeploymentsStateFromReduxState, useReduxState, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
 import { ThemedOnScreenHelper } from '../components/Themes/BasicComponents.js';
+import { CreateApplicationTool } from '../components/AdminTools/CreateApplicationTool.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -442,156 +443,10 @@ export const AdminPage: React.FC<any> = (
             <div style={{ fontWeight: 500 }}>Create Application & Deployment</div>
           </AccordionSummary>
           <AccordionDetails>
-            <Formik
-              enableReinitialize={true}
-              // initialValues={formInitialValue}
-              initialValues={initialReportSectionsFormValue}
-              onSubmit={async (values, { setSubmitting, setErrors }) => {
-                try {
-                  const newApplicationName = values.createApplicationAndDeployment.applicationName;
-
-                  log.info(
-                    "Admin onSubmit createApplicationAndDeployment formik values",
-                    values,
-                    newApplicationName
-                  );
-
-                  const testSelfApplicationUuid = uuidv4();
-                  const testDeploymentUuid = uuidv4();
-                  const testApplicationModelBranchUuid = uuidv4();
-                  const testApplicationVersionUuid = uuidv4();
-
-                  const testDeploymentStorageConfiguration: StoreUnitConfiguration =
-                    getBasicStoreUnitConfiguration(newApplicationName, {
-                      emulatedServerType: "sql",
-                      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                    });
-
-                  log.info(
-                    "Admin onSubmit createApplicationAndDeployment testDeploymentStorageConfiguration",
-                    testDeploymentStorageConfiguration
-                  );
-                  const initParametersForTest: InitApplicationParameters =
-                    getBasicApplicationConfiguration(
-                      newApplicationName,
-                      testSelfApplicationUuid,
-                      testDeploymentUuid,
-                      testApplicationModelBranchUuid,
-                      testApplicationVersionUuid
-                    );
-
-                  log.info(
-                    "Admin onSubmit createApplicationAndDeployment initParametersForTest",
-                    initParametersForTest
-                  );
-                  // const createAction: ModelAction = {
-                  //   actionType: "createEntity",
-                  //   actionLabel: "createEntity",
-                  //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  //   deploymentUuid: deploymentUuid,
-                  //   payload: {
-                  //     entities: [
-                  //       {
-                  //         entity: values.createEntity.entity,
-                  //         entityDefinition: values.createEntity.entityDefinition,
-                  //       },
-                  //     ],
-                  //   },
-                  // };
-
-                  // create application in the admin store
-                  const localCreateApplicationCompositeAction = createApplicationCompositeAction(
-                    adminConfigurationDeploymentAdmin.uuid,
-                    testSelfApplicationUuid,
-                    testSelfApplicationUuid,
-                    newApplicationName,
-                    testDeploymentStorageConfiguration
-                    // testSelfApplicationUuid,
-                    // testApplicationModelBranchUuid,
-                    // testApplicationVersionUuid
-                  );
-                  log.info(
-                    "Admin onSubmit createApplicationAndDeployment localCreateApplicationCompositeAction",
-                    localCreateApplicationCompositeAction
-                  );
-                  // create deployment
-                  const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
-                    newApplicationName,
-                    testDeploymentUuid,
-                    testSelfApplicationUuid,
-                    testDeploymentStorageConfiguration
-                  );
-                  log.info(
-                    "Admin onSubmit createApplicationAndDeployment localCreateDeploymentCompositeAction",
-                    localCreateDeploymentCompositeAction
-                  );
-                  const localResetAndinitializeDeploymentCompositeAction =
-                    resetAndinitializeDeploymentCompositeAction(
-                      testDeploymentUuid,
-                      initParametersForTest,
-                      []
-                    );
-                  log.info(
-                    "Admin onSubmit createApplicationAndDeployment localResetAndinitializeDeploymentCompositeAction",
-                    localResetAndinitializeDeploymentCompositeAction
-                  );
-
-                  // run actions
-                  await domainController.handleCompositeAction(
-                    localCreateApplicationCompositeAction,
-                    currentMiroirModelEnvironment,
-                    {}
-                  );
-
-                  await domainController.handleCompositeAction(
-                    localCreateDeploymentCompositeAction,
-                    currentMiroirModelEnvironment,
-                    {}
-                  );
-                  await domainController.handleCompositeAction(
-                    localResetAndinitializeDeploymentCompositeAction,
-                    currentMiroirModelEnvironment,
-                    {}
-                  );
-
-                  // await domainController.handleAction(createAction, defaultMiroirModelEnvironment);
-                  // await domainController.handleAction(
-                  //   {
-                  //     actionType: "commit",
-                  //     actionLabel: "commit",
-                  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  //     deploymentUuid,
-                  //   },
-                  //   defaultMiroirModelEnvironment
-                  // );
-                } catch (e) {
-                  log.error(e);
-                } finally {
-                  setSubmitting(false);
-                }
-              }}
-              validateOnChange={false}
-              validateOnBlur={false}
-            >
-              {/* <ThemedOnScreenHelper
-                label={"Initial Report Sections Form Value"}
-                data={initialReportSectionsFormValue}
-              /> */}
-              <TypedValueObjectEditor
-                labelElement={<h2>Admin Configuration Editor</h2>}
-                deploymentUuid={deploymentUuid}
-                applicationSection="model"
-                formValueMLSchema={formMlSchema}
-                formikValuePathAsString="createApplicationAndDeployment"
-                //
-                formLabel="Create Application & Deployment"
-                zoomInPath=""
-                maxRenderDepth={Infinity} // Always render fully for editor
-              />
-
-              {/* {JSON.stringify(initialReportSectionsFormValue, null, 2)} */}
-              {/* </ThemedOnScreenHelper> */}
-            </Formik>
+            <CreateApplicationTool
+              deploymentUuid={deploymentUuid}
+              currentMiroirModelEnvironment={currentMiroirModelEnvironment}
+            />
           </AccordionDetails>
         </Accordion>
         {/* Delete Application & Deployment */}
@@ -698,21 +553,23 @@ export const AdminPage: React.FC<any> = (
                   //     connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
                   //   });
 
-                  const dropStorageAction: CompositeAction = deleteApplicationAndDeploymentCompositeAction(
-                    {
-                      miroirConfigType: "client",
-                      client: {
-                        emulateServer: false,
-                        serverConfig: {
-                          rootApiUrl: "http://localhost:3000/api",
-                          storeSectionConfiguration: {
-                            [deployments.deployments[0].uuid]: deployments.deployments[0].configuration,
-                          }
-                        }
-                      }
-                    },
-                    deployments.deployments[0].uuid,
-                  );
+                  const dropStorageAction: CompositeAction =
+                    deleteApplicationAndDeploymentCompositeAction(
+                      {
+                        miroirConfigType: "client",
+                        client: {
+                          emulateServer: false,
+                          serverConfig: {
+                            rootApiUrl: "http://localhost:3000/api",
+                            storeSectionConfiguration: {
+                              [deployments.deployments[0].uuid]:
+                                deployments.deployments[0].configuration,
+                            },
+                          },
+                        },
+                      },
+                      deployments.deployments[0].uuid
+                    );
 
                   log.info(
                     "Admin onSubmit deleteApplicationAndDeployment dropStorageAction",
@@ -736,10 +593,10 @@ export const AdminPage: React.FC<any> = (
                             {
                               parentUuid: entityApplicationForAdmin.uuid,
                               uuid: applicationUuid,
-                            }
-                          ]
-                        }
-                      ]
+                            },
+                          ],
+                        },
+                      ],
                     },
                   };
 
@@ -765,10 +622,10 @@ export const AdminPage: React.FC<any> = (
                             {
                               parentUuid: entityDeployment.uuid,
                               uuid: deployments.deployments[0].uuid,
-                            }
-                          ]
-                        }
-                      ]
+                            },
+                          ],
+                        },
+                      ],
                     },
                   };
 
@@ -781,7 +638,7 @@ export const AdminPage: React.FC<any> = (
                     dropStorageAction,
                     currentMiroirModelEnvironment,
                     {}
-                  )
+                  );
 
                   await domainController.handleAction(
                     deleteDeploymentAction,
@@ -826,7 +683,6 @@ export const AdminPage: React.FC<any> = (
                   //   "Admin onSubmit createApplicationAndDeployment localResetAndinitializeDeploymentCompositeAction",
                   //   localResetAndinitializeDeploymentCompositeAction
                   // );
-
 
                   // await domainController.handleCompositeAction(
                   //   localCreateDeploymentCompositeAction,

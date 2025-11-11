@@ -655,6 +655,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
+              extraToolsButtons={props.extraToolsButtons}
               displayError={props.displayError}
             />
           );
@@ -1206,11 +1207,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               }}
             >
               {props.submitButton}
-              {/* <span
-                style={{
-                  display: !displayAsCodeEditor ? "none" : "inline-block",
-                }}
-              > */}
               {displayAsCodeEditor ? (
                 <JzodElementEditorReactCodeMirror
                   formikRootLessListKey={formikRootLessListKey}

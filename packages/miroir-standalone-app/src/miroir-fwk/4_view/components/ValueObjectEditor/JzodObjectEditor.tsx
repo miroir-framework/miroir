@@ -1060,20 +1060,18 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               unfoldingDepth={Infinity}
             ></FoldUnfoldObjectOrArray>
             {!reportContext.isNodeFolded(rootLessListKeyArray) &&
-            itemsOrder.length >= 2 &&
-            foldableItemsCount > 1 ? (
-              <FoldUnfoldAllObjectAttributesOrArrayItems
-                listKey={listKey}
-                rootLessListKeyArray={rootLessListKeyArray}
-                itemsOrder={itemsOrder}
-                maxDepth={maxRenderDepth ?? 1}
-              ></FoldUnfoldAllObjectAttributesOrArrayItems>
-            ) : (
-              <></>
-            )}
+              itemsOrder.length >= 2 &&
+              foldableItemsCount > 1 && (
+                <FoldUnfoldAllObjectAttributesOrArrayItems
+                  listKey={listKey}
+                  rootLessListKeyArray={rootLessListKeyArray}
+                  itemsOrder={itemsOrder}
+                  maxDepth={maxRenderDepth ?? 1}
+                ></FoldUnfoldAllObjectAttributesOrArrayItems>
+              )}
           </span>
+          {/* add record attribute button for records */}
           <span>
-            {/* add record attribute button for records */}
             {!readOnly &&
             currentTypeCheckKeyMap?.rawSchema.type == "record" &&
             !reportContext.isNodeFolded(rootLessListKeyArray) ? (
@@ -1089,41 +1087,40 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               <></>
             )}
           </span>
+          {/* add optional attributes buttons */}
           <span>
-            {/* add optional attributes buttons */}
             {!readOnly &&
-            currentTypeCheckKeyMap?.rawSchema.type != "record" &&
-            undefinedOptionalAttributes.length > 0 &&
-            !reportContext.isNodeFolded(rootLessListKeyArray) ? (
-              <>
-                <ThemedOptionalAttributeContainer>
-                  {undefinedOptionalAttributes.map((attributeName) => (
-                    <ThemedOptionalAttributeItem key={attributeName}>
-                      <ThemedSizedButton
-                        aria-label={
-                          formikRootLessListKey + ".addObjectOptionalAttribute." + attributeName
-                        }
-                        onClick={() => addObjectOptionalAttribute(attributeName)}
-                        title={`Add optional attribute: ${attributeName}`}
-                      >
-                        <ThemedAddIcon />
-                      </ThemedSizedButton>
-                      <ThemedAttributeName>{attributeName}</ThemedAttributeName>
-                    </ThemedOptionalAttributeItem>
-                  ))}
-                </ThemedOptionalAttributeContainer>
-              </>
-            ) : (
-              <></>
-            )}
+              currentTypeCheckKeyMap?.rawSchema.type != "record" &&
+              undefinedOptionalAttributes.length > 0 &&
+              !reportContext.isNodeFolded(rootLessListKeyArray) && (
+                <>
+                  <ThemedOptionalAttributeContainer>
+                    {undefinedOptionalAttributes.map((attributeName) => (
+                      <ThemedOptionalAttributeItem key={attributeName}>
+                        <ThemedSizedButton
+                          aria-label={
+                            formikRootLessListKey + ".addObjectOptionalAttribute." + attributeName
+                          }
+                          onClick={() => addObjectOptionalAttribute(attributeName)}
+                          title={`Add optional attribute: ${attributeName}`}
+                        >
+                          <ThemedAddIcon />
+                        </ThemedSizedButton>
+                        <ThemedAttributeName>{attributeName}</ThemedAttributeName>
+                      </ThemedOptionalAttributeItem>
+                    ))}
+                  </ThemedOptionalAttributeContainer>
+                </>
+              )}
           </span>
+          {/* custom transformer for transformers (transform Entity Instance Transformer to an Entity Instance List Transformer) */}
           {currentTypeCheckKeyMap?.resolvedSchema &&
             currentTypeCheckKeyMap?.resolvedSchema.tag &&
             currentTypeCheckKeyMap.resolvedSchema.tag.value &&
             currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton && (
               <span>
                 {(() => {
-                  // log.info("JzodObjectEditor rendering editorButton", 
+                  // log.info("JzodObjectEditor rendering editorButton",
                   //   "rootLessListKey", rootLessListKey,
                   //   "editorButton", currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
                   //   "tag.value", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema.tag.value)
@@ -1134,7 +1131,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                   "tag undefined!"} */}
                 <button
                   type="button"
-                  onClick={(e:any) => {
+                  onClick={(e: any) => {
                     e.preventDefault();
                     e.stopPropagation();
                     log.info("editorButton transformer button clicked", e);
@@ -1154,7 +1151,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       log.error("editorButton transformer error:", result.message);
                       console.error("editorButton transformer error:", result.message);
                     } else {
-                      formik.setFieldValue(reportSectionPathAsString,result);
+                      formik.setFieldValue(reportSectionPathAsString, result);
                     }
                     log.info("editorButton transformer button clicked, result:", result);
                   }}
@@ -1165,6 +1162,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 </button>
               </span>
             )}
+          {/* extra buttons */}
+          { props.extraToolsButtons && (<span>{props.extraToolsButtons}</span>)}
           <ThemedDeleteButtonContainer>
             {deleteButtonElement ?? <></>}
             {displayAsStructuredElementSwitch ?? <></>}
