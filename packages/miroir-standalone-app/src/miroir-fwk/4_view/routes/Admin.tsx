@@ -1,70 +1,46 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Formik } from "formik";
 import { useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 // import { z } from "zod";
 
-import { Accordion, AccordionDetails, AccordionSummary, FormControl, InputLabel, Select, type SelectChangeEvent } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import type {
-  ApplicationSection,
-  BoxedQueryWithExtractorCombinerTransformer,
-  CompositeAction,
-  Domain2QueryReturnType,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
-  InitApplicationParameters,
-  InstanceAction,
-  ModelAction,
   ReduxDeploymentsState,
-  StoreUnitConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunnerParams,
-  Uuid,
+  Uuid
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
-  createApplicationCompositeAction,
-  createDeploymentCompositeAction,
-  defaultMiroirModelEnvironment,
-  deleteApplicationAndDeploymentCompositeAction,
-  Domain2ElementFailed,
   entityApplicationForAdmin,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
-  entityDeployment,
-  getBasicApplicationConfiguration,
-  getBasicStoreUnitConfiguration,
-  getQueryRunnerParamsForReduxDeploymentsState,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
-  resetAndinitializeDeploymentCompositeAction,
   resolvePathOnObject,
-  runBoxedQueryAction,
-  runQuery,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-  transformer_extended_apply_wrapper,
   type JzodElement,
   type JzodSchema,
   type LoggerInterface,
   type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
+import { getMemoizedReduxDeploymentsStateSelectorMap, selectCurrentReduxDeploymentsStateFromReduxState, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
+import { useSelector } from 'react-redux';
 import { packageName } from "../../../constants.js";
+import { CreateApplicationTool } from '../components/AdminTools/CreateApplicationTool.js';
+import { CreateEntityTool } from '../components/AdminTools/CreateEntityTool.js';
+import { DeleteApplicationTool } from '../components/AdminTools/DeleteApplicationTool.js';
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
-import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../constants.js";
 import { useDomainControllerService, useMiroirContextService } from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from "../ReduxHooks.js";
+import { useCurrentModel } from "../ReduxHooks.js";
 import { usePageConfiguration } from "../services/index.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, selectCurrentReduxDeploymentsStateFromReduxState, useReduxState, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
-import { useSelector } from 'react-redux';
-import { ThemedOnScreenHelper } from '../components/Themes/BasicComponents.js';
-import { CreateApplicationTool } from '../components/AdminTools/CreateApplicationTool.js';
-import { DeleteApplicationTool } from '../components/AdminTools/DeleteApplicationTool.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -166,7 +142,6 @@ export const AdminPage: React.FC<any> = (
   const context = useMiroirContextService();
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel = useCurrentModel(deploymentUuid);
-  const domainController: DomainControllerInterface = useDomainControllerService();
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
@@ -468,73 +443,10 @@ export const AdminPage: React.FC<any> = (
             <div style={{ fontWeight: 500 }}>Create Entity</div>
           </AccordionSummary>
           <AccordionDetails>
-            <Formik
-              enableReinitialize={true}
-              // initialValues={formInitialValue}
-              initialValues={initialReportSectionsFormValue}
-              onSubmit={async (values, { setSubmitting, setErrors }) => {
-                try {
-                  const createAction: ModelAction = {
-                    actionType: "createEntity",
-                    actionLabel: "createEntity",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    deploymentUuid: deploymentUuid,
-                    payload: {
-                      entities: [
-                        {
-                          entity: values.createEntity.entity,
-                          entityDefinition: values.createEntity.entityDefinition,
-                        },
-                      ],
-                    },
-                  };
-                  log.info("Admin onSubmit formik values", values, createAction);
-
-                  await domainController.handleAction(createAction, defaultMiroirModelEnvironment);
-                  await domainController.handleAction(
-                    {
-                      actionType: "commit",
-                      actionLabel: "commit",
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      deploymentUuid,
-                    },
-                    defaultMiroirModelEnvironment
-                  );
-                  // Handle zoom case: merge changes back into the full object for submission
-                  // const finalValues = hasZoomPath
-                  //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
-                  //   : values;
-
-                  // await onSubmit(values);
-                  // await onEditValueObjectFormSubmit(values); // TODO: make it return Promise, no await because handler should return immediately
-                } catch (e) {
-                  log.error(e);
-                } finally {
-                  setSubmitting(false);
-                }
-              }}
-              validateOnChange={false}
-              validateOnBlur={false}
-            >
-              {/* <ThemedOnScreenHelper
-                label={"Initial Report Sections Form Value"}
-                data={initialReportSectionsFormValue}
-              /> */}
-              <TypedValueObjectEditor
-                labelElement={<h2>Admin Configuration Editor</h2>}
-                deploymentUuid={deploymentUuid}
-                applicationSection="model"
-                formValueMLSchema={formMlSchema}
-                formikValuePathAsString="createEntity"
-                //
-                formLabel="Admin Configuration Editor2"
-                zoomInPath=""
-                maxRenderDepth={Infinity} // Always render fully for editor
-              />
-
-              {/* {JSON.stringify(initialReportSectionsFormValue, null, 2)} */}
-              {/* </ThemedOnScreenHelper> */}
-            </Formik>
+            <CreateEntityTool
+              deploymentUuid={deploymentUuid}
+              currentMiroirModelEnvironment={currentMiroirModelEnvironment}
+            />
           </AccordionDetails>
         </Accordion>
         {/* {testResult} */}
