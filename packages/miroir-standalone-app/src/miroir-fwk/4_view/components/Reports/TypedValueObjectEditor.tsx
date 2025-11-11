@@ -56,6 +56,7 @@ import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
+import { ActionButton } from '../Page/ActionButton.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -96,6 +97,7 @@ export interface TypedValueObjectEditorProps {
     errorMessage: string; // Error message to display as tooltip or title
   };
   displaySubmitButton?: "onTop" | "onFirstLine";
+  useActionButton?: boolean; // Whether to use ActionButton (async) instead of ThemedStyledButton
   // navigationCount: number;
 }
  let count = 0;
@@ -131,6 +133,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // 
   formLabel, // TODO: remove
   displaySubmitButton,
+  useActionButton = false,
   // navigationCount,
   ...props
 }) => {
@@ -382,18 +385,34 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       foreignKeyObjectsFetchQueryParams
     ) || {};
 
-  const submitButton =                   (<ThemedStyledButton
-                    type="submit"
-                    variant="contained"
-                    style={{ maxWidth: "300px" }}
-                    onClick={(e) => {
-                      log.info("TypedValueObjectEditor submit button clicked", e);
-                      formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
-                    }}
-                  >
-                    {/* Submit {formLabel} */}
-                    {formLabel}
-                  </ThemedStyledButton>);
+  const submitButton = useActionButton ? (
+    <ActionButton
+      onAction={async () => {
+        log.info("TypedValueObjectEditor async submit button clicked", formikValuePathAsString);
+        formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
+        await formik.submitForm();
+      }}
+      successMessage={`${formLabel} completed successfully`}
+      label={formLabel}
+      actionName={formLabel}
+      type="button"
+      variant="contained"
+      style={{ maxWidth: "300px" }}
+    />
+  ) : (
+    <ThemedStyledButton
+      type="submit"
+      variant="contained"
+      style={{ maxWidth: "300px" }}
+      onClick={(e) => {
+        log.info("TypedValueObjectEditor submit button clicked", e);
+        formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
+      }}
+    >
+      {/* Submit {formLabel} */}
+      {formLabel}
+    </ThemedStyledButton>
+  );
   const result = (
     <>
       <div>

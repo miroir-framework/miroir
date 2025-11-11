@@ -188,6 +188,7 @@ export const CreateEntityTool: React.FC<CreateEntityToolProps> = ({
         formLabel="Create Entity"
         zoomInPath=""
         maxRenderDepth={Infinity}
+        useActionButton={true}
       />
     </Formik>
   );

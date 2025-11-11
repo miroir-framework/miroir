@@ -1,5 +1,6 @@
 import React from 'react';
 import { ThemedButton } from '../Themes/index';
+import { useSnackbar } from '../../MiroirContextReactProvider';
 
 interface ActionButtonProps {
   onAction: () => Promise<void>;
@@ -25,9 +26,19 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
   actionName,
   ...buttonProps
 }) => {
+  const {
+    // snackbarOpen,
+    // snackbarMessage,
+    // snackbarSeverity,
+    // showSnackbar,
+    // handleSnackbarClose,
+    handleAsyncAction: _handleAsyncAction,
+  } = useSnackbar();
+  
+  const actualHandleAsyncAction = handleAsyncAction || _handleAsyncAction;
   return (
     <ThemedButton
-      onClick={() => handleAsyncAction?handleAsyncAction(onAction, successMessage, actionName):undefined}
+      onClick={() => actualHandleAsyncAction?actualHandleAsyncAction(onAction, successMessage, actionName):undefined}
       {...buttonProps}
     >
       {label}

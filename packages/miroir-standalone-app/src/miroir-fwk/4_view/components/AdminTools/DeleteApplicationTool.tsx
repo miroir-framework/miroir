@@ -285,6 +285,7 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
         formLabel="Delete Application & Deployment"
         zoomInPath=""
         maxRenderDepth={Infinity}
+        useActionButton={true}
       />
     </Formik>
   );

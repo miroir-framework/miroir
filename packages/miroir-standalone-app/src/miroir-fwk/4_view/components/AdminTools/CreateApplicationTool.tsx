@@ -194,6 +194,7 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
         zoomInPath=""
         maxRenderDepth={Infinity}
         displaySubmitButton="onFirstLine"
+        useActionButton={true}
       />
     </Formik>
   );

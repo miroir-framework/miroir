@@ -777,79 +777,9 @@ export const RootComponent = (props: RootComponentProps) => {
                 </ThemedMUISelect>
               </ThemedFormControl> */}
               <span>
-                {/* <ThemedButton
-                        onClick={() =>
-                          handleAsyncAction(
-                            async () => {
-                              log.info(
-                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                              );
-                              if (!miroirConfig) {
-                                throw new Error(
-                                  "no miroirConfig given, it has to be given on the command line starting the server!"
-                                );
-                              }
-                              const configurations = miroirConfig.client.emulateServer
-                                ? miroirConfig.client.deploymentStorageConfig
-                                : miroirConfig.client.serverConfig.storeSectionConfiguration;
-
-                              // Batch all store open operations to reduce re-renders
-                              const openStoreActions = Object.entries(configurations).map(
-                                ([deploymentUuid, config]) => ({
-                                  actionType: "storeManagementAction_openStore" as const,
-                                  endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
-                                  configuration: {
-                                    [deploymentUuid]: config as StoreUnitConfiguration,
-                                  },
-                                  deploymentUuid,
-                                })
-                              );
-
-                              await Promise.all(
-                                openStoreActions.map((action) =>
-                                  domainController.handleAction(action)
-                                )
-                              );
-
-                              log.info(
-                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                              );
-                            },
-                            "Database opened successfully",
-                            "open database"
-                          )
-                        }
-                      >
-                        Open database
-                      </ThemedButton> */}
                 <ThemedButton onClick={fetchConfigurations}>
                   fetch Miroir & App configurations from database
                 </ThemedButton>
-                {/* <ThemedButton
-                        onClick={() =>
-                          handleAsyncAction(
-                            async () => {
-                              log.info(
-                                "fetching instances from datastore for deployment",
-                                adminConfigurationDeploymentMiroir
-                              );
-                              await domainController.handleAction(
-                                {
-                                  // actionType: "modelAction",
-                                  actionType: "rollback",
-                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                },
-                                defaultMiroirMetaModel
-                              );
-                            },
-                            "Admin configuration fetched successfully",
-                            "fetch admin configuration"
-                          )
-                        }
-                      >
-                        fetch Admin configuration from database
-                      </ThemedButton> */}
                 {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
