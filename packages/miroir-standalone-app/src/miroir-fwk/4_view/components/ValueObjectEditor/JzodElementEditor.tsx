@@ -804,20 +804,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "uuid": {
-          log.info(
-            "JzodElementEditor: Rendering UUID input for rootLessListKey",
-            props.rootLessListKey,
-            "currentValueObjectAtKey",
-            currentValueObjectAtKey,
-            "formik.values",
-            formik.values,
-            "MLS tag",
-            localResolvedElementJzodSchemaBasedOnValue.tag,
-            "foreignKeyObjects",
-            foreignKeyObjects,
-            "stringSelectList",
-            stringSelectList
-          );
+          // log.info(
+          //   "JzodElementEditor: Rendering UUID input for rootLessListKey",
+          //   props.rootLessListKey,
+          //   "currentValueObjectAtKey",
+          //   currentValueObjectAtKey,
+          //   "formik.values",
+          //   formik.values,
+          //   "MLS tag",
+          //   localResolvedElementJzodSchemaBasedOnValue.tag,
+          //   "foreignKeyObjects",
+          //   foreignKeyObjects,
+          //   "stringSelectList",
+          //   stringSelectList
+          // );
           if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity) {
             // Convert stringSelectList to options format for ThemedSelectWithPortal
             const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({

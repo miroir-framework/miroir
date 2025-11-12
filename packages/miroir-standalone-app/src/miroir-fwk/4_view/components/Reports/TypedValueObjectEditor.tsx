@@ -296,16 +296,16 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     reduxDeploymentsState,
     valueObject,
   ]);
-  log.info(
-    "TypedValueObjectEditor jzodTypeCheck done for render",
-    navigationCount,
-    "formik.values",
-    formik.values,
-    "zoomedInDisplaySchema",
-    zoomedInDisplaySchema,
-    "jzodTypeCheckResult",
-    jzodTypeCheckResult
-  );
+  // log.info(
+  //   "TypedValueObjectEditor jzodTypeCheck done for render",
+  //   navigationCount,
+  //   "formik.values",
+  //   formik.values,
+  //   "zoomedInDisplaySchema",
+  //   zoomedInDisplaySchema,
+  //   "jzodTypeCheckResult",
+  //   jzodTypeCheckResult
+  // );
   // extruding typeCheckKeyMap to context for Outline usage
   useEffect(() => {
     if (

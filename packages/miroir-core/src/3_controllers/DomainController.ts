@@ -1626,8 +1626,8 @@ export class DomainController implements DomainControllerInterface {
           case "compositeRunBoxedQueryAction": {
             actionResult = await this.handleCompositeRunBoxedQueryAction(
               currentAction,
-              actionResult,
-              modelEnvironment,
+              // actionResult,
+              // modelEnvironment,
               localContext,
             );
 
@@ -1645,7 +1645,7 @@ export class DomainController implements DomainControllerInterface {
             actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
               currentAction,
               actionParamValues,
-              actionResult,
+              // actionResult,
               localContext
             );
             break;
@@ -1913,8 +1913,8 @@ export class DomainController implements DomainControllerInterface {
               // currentAction as any,
               resolvedActionWithProtectedRuntimeTranformers,
               // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
-              actionResult,
-              modelEnvironment,
+              // actionResult,
+              // modelEnvironment,
               localContext
             );
 
@@ -1952,7 +1952,7 @@ export class DomainController implements DomainControllerInterface {
               resolvedActionWithProtectedRuntimeTranformers,
               // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
               actionParamValues,
-              actionResult,
+              // actionResult,
               localContext
             );
             break;
@@ -2342,7 +2342,7 @@ export class DomainController implements DomainControllerInterface {
       query: RunBoxedExtractorOrQueryAction;
     },
     actionParamValues: Record<string, any>,
-    actionResult: Action2ReturnType | undefined,
+    // actionResult: Action2ReturnType | undefined,
     localContext: Record<string, any>
   ) {
     log.info(
@@ -2352,7 +2352,7 @@ export class DomainController implements DomainControllerInterface {
       actionParamValues
     );
 
-    actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.query); // TODO: pass the current model
+    const actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.query); // TODO: pass the current model
     if (actionResult instanceof Action2Error) {
       log.error(
         "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
@@ -2389,8 +2389,8 @@ export class DomainController implements DomainControllerInterface {
       nameGivenToResult: string;
       queryTemplate: RunBoxedQueryAction;
     },
-    actionResult: Action2ReturnType | undefined,
-    modelEnvironment: MiroirModelEnvironment,
+    // actionResult: Action2ReturnType | undefined,
+    // modelEnvironment: MiroirModelEnvironment,
     localContext: Record<string, any>
   ) {
     if (currentAction.queryTemplate == undefined) {
@@ -2398,7 +2398,7 @@ export class DomainController implements DomainControllerInterface {
     }
 
     // actionResult = await this.handleQueryTemplateActionForServerONLY(
-    actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.queryTemplate); // TODO: pass the current model
+    const actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.queryTemplate); // TODO: pass the current model
     if (actionResult instanceof Action2Error) {
       log.error(
         "Error on handleCompositeAction with nameGivenToResult",
@@ -2647,106 +2647,69 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        // case "compositeRunBoxedQueryTemplateAction": {
-        //   // const actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
-        //   //   currentAction,
-        //   //   actionParamValues,
-        //   //   // actionResult,
-        //   //   localContext
-        //   // );
-        //   log.info(
-        //     "handleCompositeActionTemplate",
-        //     actionLabel,
-        //     "resolved query action",
-        //     currentAction,
-        //     "with actionParamValues",
-        //     actionParamValues
-        //   );
+        case "compositeRunBoxedQueryAction": {
+          const actionResult = await this.handleCompositeRunBoxedQueryAction(
+            currentAction,
+            localContext,
+            // modelEnvironment,
+            // actionParamValues,
+            // actionResult,
+          );
+          log.info(
+            "handleCompositeActionTemplate",
+            actionLabel,
+            "resolved query action",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues,
+            "resulting context",
+            localContext
+          );
+          // return actionResult;
+          break;
+        }
+        case "compositeRunBoxedExtractorOrQueryAction": {
+          // const resolvedActionTemplate = transformer_extended_apply(
+          //   "runtime",
+          //   [],
+          //   currentAction.actionLabel ?? "NO NAME",
+          //   currentAction as any as TransformerForRuntime, // TODO: correct type
+          //   "value",
+          //   modelEnvironment,
+          //   localActionParams,
+          //   localContext
+          // ) as InstanceAction;
+          // log.info(
+          //   "handleCompositeActionTemplate compositeRunBoxedExtractorOrQueryAction",
+          //   currentAction.actionLabel ?? "without step name",
+          //   "resolved action Template",
+          //   JSON.stringify(resolvedActionTemplate, null, 2)
+          // );
 
-        //   const actionResult = await this.handleQueryTemplateActionForServerONLY(
-        //     currentAction.queryTemplate
-        //   );
-        //   if (actionResult instanceof Action2Error) {
-        //     log.error(
-        //       "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
-        //       JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-        //         "actionResult" +
-        //         JSON.stringify(actionResult, null, 2)
-        //     );
-        //   } else {
-        //     if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-        //       log.error(
-        //         "handleCompositeActionTemplate compositeRunBoxedQueryTemplateAction error on action",
-        //         JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-        //           "actionResult" +
-        //           JSON.stringify(actionResult, null, 2)
-        //       );
-        //     } else {
-        //       log.info(
-        //         "handleCompositeActionTemplate",
-        //         actionLabel,
-        //         "query adding result to context as",
-        //         currentAction.nameGivenToResult,
-        //         "value",
-        //         actionResult
-        //       );
-        //       localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-        //     }
-        //   }
-        //   break;
-        // }
-        // case "compositeRunBoxedExtractorTemplateAction": {
-        //   const actionResult = await this.handleCompositeRunBoxedExtractorTemplateAction(
-        //     currentAction,
-        //     actionParamValues,
-        //     // actionResult,
-        //     localContext
-        //   );
-
-        //   // log.info(
-        //   //   "handleCompositeActionTemplate",
-        //   //   actionLabel,
-        //   //   "resolved query action",
-        //   //   currentAction,
-        //   //   "with actionParamValues",
-        //   //   actionParamValues
-        //   // );
-
-        //   // const actionResult = await this.handleBoxedExtractorTemplateActionForServerONLY(
-        //   //   currentAction.queryTemplate
-        //   // );
-        //   // if (actionResult instanceof Action2Error) {
-        //   //   log.error(
-        //   //     "handleCompositeActionTemplate Error on compositeRunBoxedExtractorTemplateAction with nameGivenToResult",
-        //   //     currentAction.nameGivenToResult,
-        //   //     "query=",
-        //   //     JSON.stringify(actionResult, null, 2)
-        //   //   );
-        //   // } else {
-        //   //   if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-        //   //     log.error(
-        //   //       "handleCompositeActionTemplate Error on compositeRunBoxedExtractorTemplateAction with nameGivenToResult",
-        //   //       currentAction.nameGivenToResult,
-        //   //       "query=",
-        //   //       JSON.stringify(actionResult, null, 2)
-        //   //     );
-        //   //   } else {
-        //   //     log.info(
-        //   //       "handleCompositeActionTemplate compositeRunBoxedExtractorTemplateAction",
-        //   //       actionLabel,
-        //   //       "query adding result to context as",
-        //   //       currentAction.nameGivenToResult,
-        //   //       "value",
-        //   //       actionResult
-        //   //     );
-        //   //     localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-        //   //   }
-        //   // }
-        //   break;
-        // }
-        case "compositeRunBoxedQueryAction":
+          // TODO: resolve runtime transformers here. Use the "main" case, since it's the same implementation?
+          const actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
+            currentAction,
+            actionParamValues,
+            // actionResult,
+            localContext,
+            // modelEnvironment,
+            // actionParamValues,
+            // actionResult,
+          );
+          log.info(
+            "handleCompositeActionTemplate",
+            actionLabel,
+            "resolved extractor or query action",
+            currentAction,
+            "with actionParamValues",
+            actionParamValues, 
+            "resulting context",
+            localContext
+          );
+          // return actionResult;
+          break;
+        }
         case "compositeRunBoxedExtractorAction":
-        case "compositeRunBoxedExtractorOrQueryAction":
         case "compositeRunTestAssertion":
         default: {
           log.error(
