@@ -2,8 +2,12 @@ import { Formik, FormikHelpers } from "formik";
 import type { ReactElement } from "react";
 
 import type {
+  CompositeAction,
+  CompositeActionTemplate,
+  DomainControllerInterface,
   JzodObject,
   LoggerInterface,
+  MiroirModelEnvironment,
 } from "miroir-core";
 import {
   MiroirLoggerFactory,
@@ -11,6 +15,8 @@ import {
 import { packageName } from "../../../../constants.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../../constants.js";
+import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -21,11 +27,26 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 // ################################################################################################
+type ActionPadAction<T = any> =
+  | {
+      actionType: "onSubmit";
+      onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => void | Promise<void>;
+    }
+  | {
+      actionType: "compositeAction";
+      compositeAction: CompositeAction;
+    }
+  | {
+      actionType: "compositeActionTemplate";
+      compositeActionTemplate: CompositeActionTemplate;
+    };
+
+// ################################################################################################
 export interface ActionPadProps<T = any> {
   deploymentUuid: string;
   formMlSchema: JzodObject;
   initialFormValue: T;
-  onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => void | Promise<void>;
+  action: ActionPadAction<T>;
   labelElement?: ReactElement;
   formikValuePathAsString: string;
   formLabel: string;
@@ -41,7 +62,7 @@ export const ActionPad = <T extends Record<string, any> = any>({
   deploymentUuid,
   formMlSchema,
   initialFormValue,
-  onSubmit,
+  action,
   labelElement,
   formikValuePathAsString,
   formLabel,
@@ -51,11 +72,49 @@ export const ActionPad = <T extends Record<string, any> = any>({
   validateOnBlur = false,
   enableReinitialize = true,
 }: ActionPadProps<T>) => {
+  const domainController: DomainControllerInterface = useDomainControllerService();
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+
+  const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
+    log.info("ActionPad handleSubmit", action.actionType, "values", values);
+
+    switch (action.actionType) {
+      case "onSubmit": {
+        await action.onSubmit(values, formikHelpers);
+        break;
+      }
+      case "compositeAction": {
+        log.info("ActionPad handleSubmit compositeAction", action.compositeAction);
+        await domainController.handleCompositeAction(
+          action.compositeAction,
+          currentMiroirModelEnvironment,
+          values as Record<string, any>
+        );
+        formikHelpers.setSubmitting(false);
+        break;
+      }
+      case "compositeActionTemplate": {
+        log.info("ActionPad handleSubmit compositeActionTemplate", action.compositeActionTemplate);
+        await domainController.handleCompositeActionTemplate(
+          action.compositeActionTemplate,
+          currentMiroirModelEnvironment,
+          values as Record<string, any>
+        );
+        formikHelpers.setSubmitting(false);
+        break;
+      }
+      default: {
+        const exhaustiveCheck: never = action;
+        throw new Error(`Unhandled action type: ${JSON.stringify(exhaustiveCheck)}`);
+      }
+    }
+  };
+
   return (
     <Formik
       enableReinitialize={enableReinitialize}
       initialValues={initialFormValue}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       validateOnChange={validateOnChange}
       validateOnBlur={validateOnBlur}
     >

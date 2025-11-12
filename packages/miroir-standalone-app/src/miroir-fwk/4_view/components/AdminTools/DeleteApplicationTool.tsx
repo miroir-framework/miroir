@@ -262,7 +262,10 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}
       initialFormValue={initialFormValue}
-      onSubmit={onSubmit}
+      action={{
+        actionType: "onSubmit",
+        onSubmit,
+      }}
       labelElement={<h2>Delete Application & Deployment</h2>}
       formikValuePathAsString="deleteApplicationAndDeployment"
       formLabel="Delete Application & Deployment"

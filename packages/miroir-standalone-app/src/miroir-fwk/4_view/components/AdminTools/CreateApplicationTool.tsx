@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
+  CompositeAction,
   DomainControllerInterface,
   InitApplicationParameters,
   JzodObject,
@@ -80,109 +81,77 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
     }
   }), []);
 
-  const onSubmit = async (values: typeof initialFormValue, { setSubmitting, setErrors }: any) => {
-    try {
-      const newApplicationName = values.createApplicationAndDeployment.applicationName;
+  const createApplicationAction = useMemo((): CompositeAction => {
+    const testSelfApplicationUuid = uuidv4();
+    const testDeploymentUuid = uuidv4();
+    const testApplicationModelBranchUuid = uuidv4();
+    const testApplicationVersionUuid = uuidv4();
 
-      log.info(
-        "CreateApplicationTool onSubmit formik values",
-        values,
-        newApplicationName
-      );
+    // The applicationName will come from form values at runtime
+    // For now, we use a placeholder that will be replaced by ActionPad
+    const placeholderApplicationName = "PLACEHOLDER_APP_NAME";
 
-      const testSelfApplicationUuid = uuidv4();
-      const testDeploymentUuid = uuidv4();
-      const testApplicationModelBranchUuid = uuidv4();
-      const testApplicationVersionUuid = uuidv4();
+    const testDeploymentStorageConfiguration: StoreUnitConfiguration =
+      getBasicStoreUnitConfiguration(placeholderApplicationName, {
+        emulatedServerType: "sql",
+        connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      });
 
-      const testDeploymentStorageConfiguration: StoreUnitConfiguration =
-        getBasicStoreUnitConfiguration(newApplicationName, {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-        });
-
-      log.info(
-        "CreateApplicationTool onSubmit testDeploymentStorageConfiguration",
-        testDeploymentStorageConfiguration
-      );
-      const initParametersForTest: InitApplicationParameters =
-        getBasicApplicationConfiguration(
-          newApplicationName,
-          testSelfApplicationUuid,
-          testDeploymentUuid,
-          testApplicationModelBranchUuid,
-          testApplicationVersionUuid
-        );
-
-      log.info(
-        "CreateApplicationTool onSubmit initParametersForTest",
-        initParametersForTest
-      );
-
-      // create application in the admin store
-      const localCreateApplicationCompositeAction = createApplicationCompositeAction(
-        adminConfigurationDeploymentAdmin.uuid,
+    const initParametersForTest: InitApplicationParameters =
+      getBasicApplicationConfiguration(
+        placeholderApplicationName,
         testSelfApplicationUuid,
-        testSelfApplicationUuid,
-        newApplicationName,
-        testDeploymentStorageConfiguration
-      );
-      log.info(
-        "CreateApplicationTool onSubmit localCreateApplicationCompositeAction",
-        localCreateApplicationCompositeAction
-      );
-      // create deployment
-      const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
-        newApplicationName,
         testDeploymentUuid,
-        testSelfApplicationUuid,
-        testDeploymentStorageConfiguration
-      );
-      log.info(
-        "CreateApplicationTool onSubmit localCreateDeploymentCompositeAction",
-        localCreateDeploymentCompositeAction
-      );
-      const localResetAndinitializeDeploymentCompositeAction =
-        resetAndinitializeDeploymentCompositeAction(
-          testDeploymentUuid,
-          initParametersForTest,
-          []
-        );
-      log.info(
-        "CreateApplicationTool onSubmit localResetAndinitializeDeploymentCompositeAction",
-        localResetAndinitializeDeploymentCompositeAction
+        testApplicationModelBranchUuid,
+        testApplicationVersionUuid
       );
 
-      // run actions
-      await domainController.handleCompositeAction(
-        localCreateApplicationCompositeAction,
-        currentMiroirModelEnvironment,
-        {}
+    const localCreateApplicationCompositeAction = createApplicationCompositeAction(
+      adminConfigurationDeploymentAdmin.uuid,
+      testSelfApplicationUuid,
+      testSelfApplicationUuid,
+      placeholderApplicationName,
+      testDeploymentStorageConfiguration
+    );
+
+    const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
+      placeholderApplicationName,
+      testDeploymentUuid,
+      testSelfApplicationUuid,
+      testDeploymentStorageConfiguration
+    );
+
+    const localResetAndinitializeDeploymentCompositeAction =
+      resetAndinitializeDeploymentCompositeAction(
+        testDeploymentUuid,
+        initParametersForTest,
+        []
       );
 
-      await domainController.handleCompositeAction(
-        localCreateDeploymentCompositeAction,
-        currentMiroirModelEnvironment,
-        {}
-      );
-      await domainController.handleCompositeAction(
-        localResetAndinitializeDeploymentCompositeAction,
-        currentMiroirModelEnvironment,
-        {}
-      );
-    } catch (e) {
-      log.error(e);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    // Combine all three composite actions into one
+    const combinedCompositeAction: CompositeAction = {
+      actionType: "compositeAction",
+      actionLabel: "createApplicationAndDeployment",
+      actionName: "sequence",
+      definition: [
+        ...localCreateApplicationCompositeAction.definition,
+        ...localCreateDeploymentCompositeAction.definition,
+        ...localResetAndinitializeDeploymentCompositeAction.definition,
+      ],
+    };
+
+    return combinedCompositeAction;
+  }, []);
 
   return (
     <ActionPad
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}
       initialFormValue={initialFormValue}
-      onSubmit={onSubmit}
+      action={{
+        actionType: "compositeAction",
+        compositeAction: createApplicationAction,
+      }}
       labelElement={<h2>Application Creator</h2>}
       formikValuePathAsString="createApplicationAndDeployment"
       formLabel="Create Application & Deployment"
