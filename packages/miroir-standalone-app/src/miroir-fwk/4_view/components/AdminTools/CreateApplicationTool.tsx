@@ -1,11 +1,10 @@
-import { Formik } from "formik";
 import { useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
   DomainControllerInterface,
   InitApplicationParameters,
-  JzodElement,
+  JzodObject,
   LoggerInterface,
   MetaModel,
   MiroirModelEnvironment,
@@ -21,10 +20,10 @@ import {
   resetAndinitializeDeploymentCompositeAction,
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
-import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { ActionPad } from "./ActionPad.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -55,7 +54,7 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
-  const formMlSchema: JzodElement = useMemo(() => ({
+  const formMlSchema: JzodObject = useMemo(() => ({
     type: "object",
     definition: {
       createApplicationAndDeployment: {
@@ -81,121 +80,114 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
     }
   }), []);
 
+  const onSubmit = async (values: typeof initialFormValue, { setSubmitting, setErrors }: any) => {
+    try {
+      const newApplicationName = values.createApplicationAndDeployment.applicationName;
+
+      log.info(
+        "CreateApplicationTool onSubmit formik values",
+        values,
+        newApplicationName
+      );
+
+      const testSelfApplicationUuid = uuidv4();
+      const testDeploymentUuid = uuidv4();
+      const testApplicationModelBranchUuid = uuidv4();
+      const testApplicationVersionUuid = uuidv4();
+
+      const testDeploymentStorageConfiguration: StoreUnitConfiguration =
+        getBasicStoreUnitConfiguration(newApplicationName, {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+        });
+
+      log.info(
+        "CreateApplicationTool onSubmit testDeploymentStorageConfiguration",
+        testDeploymentStorageConfiguration
+      );
+      const initParametersForTest: InitApplicationParameters =
+        getBasicApplicationConfiguration(
+          newApplicationName,
+          testSelfApplicationUuid,
+          testDeploymentUuid,
+          testApplicationModelBranchUuid,
+          testApplicationVersionUuid
+        );
+
+      log.info(
+        "CreateApplicationTool onSubmit initParametersForTest",
+        initParametersForTest
+      );
+
+      // create application in the admin store
+      const localCreateApplicationCompositeAction = createApplicationCompositeAction(
+        adminConfigurationDeploymentAdmin.uuid,
+        testSelfApplicationUuid,
+        testSelfApplicationUuid,
+        newApplicationName,
+        testDeploymentStorageConfiguration
+      );
+      log.info(
+        "CreateApplicationTool onSubmit localCreateApplicationCompositeAction",
+        localCreateApplicationCompositeAction
+      );
+      // create deployment
+      const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
+        newApplicationName,
+        testDeploymentUuid,
+        testSelfApplicationUuid,
+        testDeploymentStorageConfiguration
+      );
+      log.info(
+        "CreateApplicationTool onSubmit localCreateDeploymentCompositeAction",
+        localCreateDeploymentCompositeAction
+      );
+      const localResetAndinitializeDeploymentCompositeAction =
+        resetAndinitializeDeploymentCompositeAction(
+          testDeploymentUuid,
+          initParametersForTest,
+          []
+        );
+      log.info(
+        "CreateApplicationTool onSubmit localResetAndinitializeDeploymentCompositeAction",
+        localResetAndinitializeDeploymentCompositeAction
+      );
+
+      // run actions
+      await domainController.handleCompositeAction(
+        localCreateApplicationCompositeAction,
+        currentMiroirModelEnvironment,
+        {}
+      );
+
+      await domainController.handleCompositeAction(
+        localCreateDeploymentCompositeAction,
+        currentMiroirModelEnvironment,
+        {}
+      );
+      await domainController.handleCompositeAction(
+        localResetAndinitializeDeploymentCompositeAction,
+        currentMiroirModelEnvironment,
+        {}
+      );
+    } catch (e) {
+      log.error(e);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <Formik
-      enableReinitialize={true}
-      initialValues={initialFormValue}
-      onSubmit={async (values, { setSubmitting, setErrors }) => {
-        try {
-          const newApplicationName = values.createApplicationAndDeployment.applicationName;
-
-          log.info(
-            "CreateApplicationTool onSubmit formik values",
-            values,
-            newApplicationName
-          );
-
-          const testSelfApplicationUuid = uuidv4();
-          const testDeploymentUuid = uuidv4();
-          const testApplicationModelBranchUuid = uuidv4();
-          const testApplicationVersionUuid = uuidv4();
-
-          const testDeploymentStorageConfiguration: StoreUnitConfiguration =
-            getBasicStoreUnitConfiguration(newApplicationName, {
-              emulatedServerType: "sql",
-              connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-            });
-
-          log.info(
-            "CreateApplicationTool onSubmit testDeploymentStorageConfiguration",
-            testDeploymentStorageConfiguration
-          );
-          const initParametersForTest: InitApplicationParameters =
-            getBasicApplicationConfiguration(
-              newApplicationName,
-              testSelfApplicationUuid,
-              testDeploymentUuid,
-              testApplicationModelBranchUuid,
-              testApplicationVersionUuid
-            );
-
-          log.info(
-            "CreateApplicationTool onSubmit initParametersForTest",
-            initParametersForTest
-          );
-
-          // create application in the admin store
-          const localCreateApplicationCompositeAction = createApplicationCompositeAction(
-            adminConfigurationDeploymentAdmin.uuid,
-            testSelfApplicationUuid,
-            testSelfApplicationUuid,
-            newApplicationName,
-            testDeploymentStorageConfiguration
-          );
-          log.info(
-            "CreateApplicationTool onSubmit localCreateApplicationCompositeAction",
-            localCreateApplicationCompositeAction
-          );
-          // create deployment
-          const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
-            newApplicationName,
-            testDeploymentUuid,
-            testSelfApplicationUuid,
-            testDeploymentStorageConfiguration
-          );
-          log.info(
-            "CreateApplicationTool onSubmit localCreateDeploymentCompositeAction",
-            localCreateDeploymentCompositeAction
-          );
-          const localResetAndinitializeDeploymentCompositeAction =
-            resetAndinitializeDeploymentCompositeAction(
-              testDeploymentUuid,
-              initParametersForTest,
-              []
-            );
-          log.info(
-            "CreateApplicationTool onSubmit localResetAndinitializeDeploymentCompositeAction",
-            localResetAndinitializeDeploymentCompositeAction
-          );
-
-          // run actions
-          await domainController.handleCompositeAction(
-            localCreateApplicationCompositeAction,
-            currentMiroirModelEnvironment,
-            {}
-          );
-
-          await domainController.handleCompositeAction(
-            localCreateDeploymentCompositeAction,
-            currentMiroirModelEnvironment,
-            {}
-          );
-          await domainController.handleCompositeAction(
-            localResetAndinitializeDeploymentCompositeAction,
-            currentMiroirModelEnvironment,
-            {}
-          );
-        } catch (e) {
-          log.error(e);
-        } finally {
-          setSubmitting(false);
-        }
-      }}
-      validateOnChange={false}
-      validateOnBlur={false}
-    >
-      <TypedValueObjectEditor
-        labelElement={<h2>Application Creator</h2>}
-        deploymentUuid={deploymentUuid}
-        applicationSection="model"
-        formValueMLSchema={formMlSchema}
-        formikValuePathAsString="createApplicationAndDeployment"
-        formLabel="Create Application & Deployment"
-        zoomInPath=""
-        maxRenderDepth={Infinity}
-        displaySubmitButton="onFirstLine"
-        useActionButton={true}
-      />
-    </Formik>
+    <ActionPad
+      deploymentUuid={deploymentUuid}
+      formMlSchema={formMlSchema}
+      initialFormValue={initialFormValue}
+      onSubmit={onSubmit}
+      labelElement={<h2>Application Creator</h2>}
+      formikValuePathAsString="createApplicationAndDeployment"
+      formLabel="Create Application & Deployment"
+      displaySubmitButton="onFirstLine"
+      useActionButton={true}
+    />
   );
 };
