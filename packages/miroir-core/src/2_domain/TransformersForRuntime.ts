@@ -1811,16 +1811,16 @@ export function transformer_mustacheStringTemplate_apply(
     log.info("transformer_mustacheStringTemplate_apply result", result);
     return result;
   } catch (error: any) {
-    // log.error(
-    //   "transformer_mustacheStringTemplate_apply error for",
-    //   transformer,
-    //   "queryParams",
-    //   JSON.stringify(queryParams, null, 2),
-    //   "contextResults",
-    //   JSON.stringify(contextResults, null, 2),
-    //   "error:",
-    //   error
-    // );
+    log.error(
+      "transformer_mustacheStringTemplate_apply error for",
+      transformer,
+      "queryParams",
+      JSON.stringify(queryParams, null, 2),
+      "contextResults",
+      JSON.stringify(contextResults, null, 2),
+      "error:",
+      error
+    );
     return new TransformerFailure({
       queryFailure: "FailedTransformer_mustache",
       transformerPath, //: [...transformerPath, transformer.transformerType],
@@ -3115,26 +3115,26 @@ export function transformer_extended_apply(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
-  log.info(
-    "transformer_extended_apply called for label",
-    label,
-    "step:",
-    step,
-    "transformer.interpolation:",
-    (transformer as any)?.interpolation ?? "build",
-    " step==transformer.interpolation ",
-    ((transformer as any)?.interpolation ?? "build") == step,
-    typeof transformer,
-    "transformer",
-    JSON.stringify(transformer, null, 2),
-    "queryParams elements",
-    Object.keys(transformerParams ?? {}),
-    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-    "contextResults elements",
-    Object.keys(contextResults ?? {})
-    // contextResults
-    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  );
+  // log.info(
+  //   "transformer_extended_apply called for label",
+  //   label,
+  //   "step:",
+  //   step,
+  //   "transformer.interpolation:",
+  //   (transformer as any)?.interpolation ?? "build",
+  //   " step==transformer.interpolation ",
+  //   ((transformer as any)?.interpolation ?? "build") == step,
+  //   typeof transformer,
+  //   "transformer",
+  //   JSON.stringify(transformer, null, 2),
+  //   "queryParams elements",
+  //   Object.keys(transformerParams ?? {}),
+  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+  //   "contextResults elements",
+  //   Object.keys(contextResults ?? {})
+  //   // contextResults
+  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  // );
   let result: TransformerReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {

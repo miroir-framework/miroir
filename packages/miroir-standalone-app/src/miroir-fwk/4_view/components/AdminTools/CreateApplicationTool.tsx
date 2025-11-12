@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type {
   CompositeAction,
+  CompositeActionTemplate,
+  Deployment,
   DomainControllerInterface,
   InitApplicationParameters,
   JzodObject,
@@ -10,21 +12,31 @@ import type {
   MetaModel,
   MiroirModelEnvironment,
   StoreUnitConfiguration,
+  TransformerForBuildPlusRuntime,
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
+  adminConfigurationDeploymentMiroir,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
+  defaultMiroirMetaModel,
+  entityApplicationForAdmin,
+  entityDeployment,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
   MiroirLoggerFactory,
   resetAndinitializeDeploymentCompositeAction,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { ActionPad } from "./ActionPad.js";
+import { transformer, type AdminApplication, type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -49,37 +61,42 @@ export interface CreateApplicationToolProps {
 }
 
 // ################################################################################################
-export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
-  deploymentUuid,
-}) => {
+export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({ deploymentUuid }) => {
   const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment =
+    useCurrentModelEnvironment(deploymentUuid);
 
-  const formMlSchema: JzodObject = useMemo(() => ({
-    type: "object",
-    definition: {
-      createApplicationAndDeployment: {
-        type: "object",
-        definition: {
-          applicationName: {
-            type: "string",
-            tag: {
-              value: {
-                defaultLabel: "Application Name",
-                editable: true,
+  const formMlSchema: JzodObject = useMemo(
+    () => ({
+      type: "object",
+      definition: {
+        createApplicationAndDeployment: {
+          type: "object",
+          definition: {
+            applicationName: {
+              type: "string",
+              tag: {
+                value: {
+                  defaultLabel: "Application Name",
+                  editable: true,
+                },
               },
             },
           },
-        }
-      }
-    }
-  }), []);
+        },
+      },
+    }),
+    []
+  );
 
-  const initialFormValue = useMemo(() => ({
-    createApplicationAndDeployment: {
-      applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
-    }
-  }), []);
+  const initialFormValue = useMemo(
+    () => ({
+      createApplicationAndDeployment: {
+        applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+      },
+    }),
+    []
+  );
 
   const createApplicationAction = useMemo((): CompositeAction => {
     const testSelfApplicationUuid = uuidv4();
@@ -97,14 +114,13 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
         connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
       });
 
-    const initParametersForTest: InitApplicationParameters =
-      getBasicApplicationConfiguration(
-        placeholderApplicationName,
-        testSelfApplicationUuid,
-        testDeploymentUuid,
-        testApplicationModelBranchUuid,
-        testApplicationVersionUuid
-      );
+    const initParametersForTest: InitApplicationParameters = getBasicApplicationConfiguration(
+      placeholderApplicationName,
+      testSelfApplicationUuid,
+      testDeploymentUuid,
+      testApplicationModelBranchUuid,
+      testApplicationVersionUuid
+    );
 
     const localCreateApplicationCompositeAction = createApplicationCompositeAction(
       adminConfigurationDeploymentAdmin.uuid,
@@ -122,11 +138,7 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
     );
 
     const localResetAndinitializeDeploymentCompositeAction =
-      resetAndinitializeDeploymentCompositeAction(
-        testDeploymentUuid,
-        initParametersForTest,
-        []
-      );
+      resetAndinitializeDeploymentCompositeAction(testDeploymentUuid, initParametersForTest, []);
 
     // Combine all three composite actions into one
     const combinedCompositeAction: CompositeAction = {
@@ -143,14 +155,347 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({
     return combinedCompositeAction;
   }, []);
 
+  const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
+    const testSelfApplicationUuid = uuidv4();
+    const testDeploymentUuid = uuidv4();
+    const testApplicationModelBranchUuid = uuidv4();
+    const testApplicationVersionUuid = uuidv4();
+
+    const serverConfig: any = {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+    };
+
+    let testDeploymentStorageConfiguration: TransformerForBuildPlusRuntime = {} as any;
+    switch (serverConfig.emulatedServerType as any) {
+      case "filesystem": {
+        testDeploymentStorageConfiguration = {
+          admin: {
+            emulatedServerType: "filesystem",
+            directory: `${serverConfig.rootDirectory}/admin`,
+          },
+          model: {
+            emulatedServerType: "filesystem",
+            directory: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "build",
+              definition: `${serverConfig.rootDirectory}/{{createApplicationAndDeployment.applicationName}}_model`,
+            },
+          },
+          data: {
+            emulatedServerType: "filesystem",
+            directory: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "build",
+              definition: `${serverConfig.rootDirectory}/{{createApplicationAndDeployment.applicationName}}_data`,
+            },
+          },
+        };
+        break;
+      }
+      case "sql": {
+        testDeploymentStorageConfiguration = {
+          admin: {
+            emulatedServerType: "sql",
+            connectionString: serverConfig.connectionString,
+            schema: "miroirAdmin",
+          },
+          model: {
+            emulatedServerType: "sql",
+            connectionString: serverConfig.connectionString,
+            schema: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "build",
+              definition: "{{createApplicationAndDeployment.applicationName}}",
+            }, // TODO: separate model and data schemas
+          },
+          data: {
+            emulatedServerType: "sql",
+            connectionString: serverConfig.connectionString,
+            schema: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "build",
+              definition: "{{createApplicationAndDeployment.applicationName}}",
+            }, // TODO: separate model and data schemas
+          },
+        };
+        break;
+      }
+      case "indexedDb": {
+        testDeploymentStorageConfiguration = {
+          admin: {
+            emulatedServerType: "indexedDb",
+            indexedDbName: `${serverConfig.rootIndexDbName}_admin`,
+          },
+          model: {
+            emulatedServerType: "indexedDb",
+            indexedDbName: `${serverConfig.rootIndexDbName}_model`,
+          },
+          data: {
+            emulatedServerType: "indexedDb",
+            indexedDbName: `${serverConfig.rootIndexDbName}_data`,
+          },
+        };
+        break;
+      }
+    }
+    const initParametersForTest: InitApplicationParameters = {
+      dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+      metaModel: defaultMiroirMetaModel,
+      selfApplication: {
+        ...selfApplicationLibrary,
+        uuid: testSelfApplicationUuid,
+        name: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition: "{{createApplicationAndDeployment.applicationName}}",
+        },
+        defaultLabel: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition: "The {{createApplicationAndDeployment.applicationName}} selfApplication",
+        },
+        description: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition:
+            "The model and data of the {{createApplicationAndDeployment.applicationName}} selfApplication",
+        },
+      },
+      // selfApplicationDeploymentConfiguration: {
+      //   ...selfApplicationDeploymentLibrary,
+      //   selfApplication: selfApplicationUuid,
+      //   uuid: adminConfigurationDeploymentUuid,
+      // },
+      applicationModelBranch: {
+        ...selfApplicationModelBranchLibraryMasterBranch,
+        uuid: testApplicationModelBranchUuid,
+        selfApplication: testSelfApplicationUuid,
+        headVersion: testApplicationVersionUuid,
+        description: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition:
+            "The master branch of the {{createApplicationAndDeployment.applicationName}} SelfApplication",
+        },
+      } as any,
+      // applicationStoreBasedConfiguration: {
+      //   ...selfApplicationStoreBasedConfigurationLibrary,
+      //   defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
+      // } as any,
+      applicationVersion: {
+        ...selfApplicationVersionLibraryInitialVersion,
+        uuid: testApplicationVersionUuid,
+        selfApplication: testSelfApplicationUuid,
+        branch: testApplicationModelBranchUuid,
+        description: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition:
+            "Initial {{createApplicationAndDeployment.applicationName}} selfApplication version",
+        },
+      } as any,
+    };
+
+    const localCreateApplicationCompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionLabel: "beforeAll",
+      actionName: "sequence",
+      definition: [
+        {
+          actionType: "createInstance",
+          actionLabel: "createApplicationForAdminAction",
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            applicationSection: "data",
+            objects: [
+              {
+                parentName: entityApplicationForAdmin.name,
+                parentUuid: entityApplicationForAdmin.uuid,
+                applicationSection: "data",
+                instances: [
+                  {
+                    uuid: testSelfApplicationUuid,
+                    parentName: entityApplicationForAdmin.name,
+                    parentUuid: entityApplicationForAdmin.uuid,
+                    // name: placeholderApplicationName,
+                    name: {
+                      transformerType: "mustacheStringTemplate",
+                      interpolation: "build",
+                      definition: `{{createApplicationAndDeployment.applicationName}}`,
+                    } as any,
+                    defaultLabel: {
+                      transformerType: "mustacheStringTemplate",
+                      interpolation: "build",
+                      definition: `The {{createApplicationAndDeployment.applicationName}} Admin Application.`,
+                    } as any,
+                    description: {
+                      transformerType: "mustacheStringTemplate",
+                      interpolation: "build",
+                      definition: `This Admin Application contains the {{createApplicationAndDeployment.applicationName}} model and data.`,
+                    } as any,
+                    selfApplication: testSelfApplicationUuid,
+                  } as AdminApplication,
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    const localCreateDeploymentCompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionLabel: "beforeAll",
+      actionName: "sequence",
+      definition: [
+        {
+          // actionType: "storeManagementAction",
+          actionType: "storeManagementAction_openStore",
+          actionLabel: "storeManagementAction_openStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid: testDeploymentUuid,
+          configuration: {
+            [testDeploymentUuid]: testDeploymentStorageConfiguration as any,
+          },
+        },
+        {
+          // actionType: "storeManagementAction",
+          actionType: "storeManagementAction_createStore",
+          actionLabel: "storeManagementAction_createStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid: testDeploymentUuid,
+          configuration: testDeploymentStorageConfiguration as any,
+        },
+        {
+          actionType: "createInstance",
+          actionLabel: "CreateDeploymentInstances",
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            applicationSection: "data",
+            objects: [
+              {
+                parentName: "Deployment",
+                parentUuid: testDeploymentUuid,
+                applicationSection: "data",
+                instances: [
+                  {
+                    uuid: testDeploymentUuid,
+                    parentName: "Deployment",
+                    parentUuid: entityDeployment.uuid,
+                    name: {
+                      transformerType: "mustacheStringTemplate",
+                      interpolation: "build",
+                      definition: `Deployment of application {{createApplicationAndDeployment.applicationName}}`,
+                    } as any,
+                    defaultLabel: {
+                      transformerType: "mustacheStringTemplate",
+                      interpolation: "build",
+                      definition: `The deployment of application {{createApplicationAndDeployment.applicationName}}`,
+                    } as any,
+                    description: {
+                      transformerType: "mustacheStringTemplate",
+                      interpolation: "build",
+                      definition: `The description of deployment of application {{createApplicationAndDeployment.applicationName}}`,
+                    } as any,
+                    adminApplication: testSelfApplicationUuid,
+                    configuration: testDeploymentStorageConfiguration,
+                  } as Deployment,
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    const appEntitesAndInstances: any[] = [];
+    const localResetAndinitializeDeploymentCompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionLabel: "beforeEach",
+      actionName: "sequence",
+      definition: [
+        {
+          actionType: "resetModel",
+          actionLabel: "resetApplicationStore",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: testDeploymentUuid,
+        },
+        {
+          actionType: "initModel",
+          actionLabel: "initStore",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: testDeploymentUuid,
+          payload: {
+            params: initParametersForTest,
+          },
+        },
+        {
+          actionType: "rollback",
+          actionLabel: "refreshLocalCacheForApplication",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: testDeploymentUuid,
+        },
+        {
+          actionType: "createEntity",
+          actionLabel: "CreateApplicationStoreEntities",
+          deploymentUuid: testDeploymentUuid,
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          payload: {
+            entities: appEntitesAndInstances,
+          },
+        },
+        {
+          actionType: "commit",
+          actionLabel: "CommitApplicationStoreEntities",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: testDeploymentUuid,
+        },
+        {
+          actionType: "createInstance",
+          actionLabel: "CreateApplicationStoreInstances",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          deploymentUuid: testDeploymentUuid,
+          payload: {
+            applicationSection: "data",
+            objects: appEntitesAndInstances.map((e) => {
+              return {
+                parentName: e.entity.name,
+                parentUuid: e.entity.uuid,
+                applicationSection: "data",
+                instances: e.instances,
+              };
+            }),
+          },
+        },
+      ],
+    };
+
+    // Combine all three composite actions into one
+    const combinedCompositeActionTemplate: CompositeActionTemplate = {
+      actionType: "compositeAction",
+      actionLabel: "createApplicationAndDeployment",
+      actionName: "sequence",
+      definition: [
+        ...(localCreateApplicationCompositeActionTemplate.definition as any),
+        ...localCreateDeploymentCompositeActionTemplate.definition,
+        ...localResetAndinitializeDeploymentCompositeActionTemplate.definition,
+      ],
+    };
+
+    return combinedCompositeActionTemplate;
+  }, []);
+
   return (
     <ActionPad
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}
       initialFormValue={initialFormValue}
       action={{
-        actionType: "compositeAction",
-        compositeAction: createApplicationAction,
+        actionType: "compositeActionTemplate",
+        compositeActionTemplate: createApplicationActionTemplate,
       }}
       labelElement={<h2>Application Creator</h2>}
       formikValuePathAsString="createApplicationAndDeployment"
