@@ -382,7 +382,7 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({ de
             objects: [
               {
                 parentName: "Deployment",
-                parentUuid: testDeploymentUuid,
+                parentUuid: entityDeployment.uuid,
                 applicationSection: "data",
                 instances: [
                   {

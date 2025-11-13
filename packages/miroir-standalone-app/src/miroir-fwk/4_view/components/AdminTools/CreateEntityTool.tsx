@@ -15,6 +15,7 @@ import {
   entityApplicationForAdmin,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
+  entityDeployment,
   MiroirLoggerFactory,
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
@@ -164,36 +165,67 @@ export const CreateEntityTool: React.FC<CreateEntityToolProps> = ({
       actionLabel: "createEntity",
       actionName: "sequence",
       definition: [
+        // Step 1: Query to get the deployment UUID from the selected application
+        {
+          actionType: "compositeRunBoxedExtractorOrQueryAction",
+          actionLabel: "getDeploymentForApplication",
+          nameGivenToResult: "deploymentInfo",
+          query: {
+            actionType: "runBoxedExtractorOrQueryAction",
+            actionName: "runQuery",
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            payload: {
+              applicationSection: "data",
+              query: {
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                pageParams: {},
+                queryParams: {},
+                contextResults: {},
+                extractors: {
+                  deployments: {
+                    label: "deployments of the application",
+                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    parentUuid: entityDeployment.uuid,
+                    parentName: entityDeployment.name,
+                    applicationSection: "data",
+                    filter: {
+                      attributeName: "adminApplication",
+                      value: {
+                        transformerType: "mustacheStringTemplate",
+                        interpolation: "build",
+                        definition: "{{createEntity.application}}",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        // createEntity action
         {
           actionType: "createEntity",
           actionLabel: "createEntity",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: localDeploymentUuid,
+          deploymentUuid: {
+            transformerType: "mustacheStringTemplate",
+            interpolation: "runtime",
+            definition: "{{deploymentInfo.deployments.0.uuid}}",
+          } as any,
           payload: {
             entities: [
               {
-                // entity: {
-                //   transformerType: "mustacheStringTemplate",
-                //   interpolation: "build",
-                //   definition: "{{createEntity.entity}}",
-                // } as any,
-                // entityDefinition: {
-                //   transformerType: "mustacheStringTemplate",
-                //   interpolation: "build",
-                //   definition: "{{createEntity.entityDefinition}}",
-                // } as any,
                 entity: {
                   transformerType: "getFromParameters",
                   interpolation: "build",
-                  // definition: "{{createEntity.entity}}",
-                  referencePath: ["createEntity","entity"],
+                  referencePath: ["createEntity", "entity"],
                 } as any,
                 entityDefinition: {
-                  // transformerType: "mustacheStringTemplate",
                   transformerType: "getFromParameters",
                   interpolation: "build",
-                  // definition: "{{createEntity.entityDefinition}}",
-                  referencePath: ["createEntity","entityDefinition"],
+                  referencePath: ["createEntity", "entityDefinition"],
                 } as any,
               },
             ],
@@ -203,12 +235,12 @@ export const CreateEntityTool: React.FC<CreateEntityToolProps> = ({
           actionType: "commit",
           actionLabel: "commit",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: localDeploymentUuid
-          // deploymentUuid: {
-          //   transformerType: "mustacheStringTemplate",
-          //   interpolation: "build",
-          //   definition: deploymentUuid,
-          // } as any,
+          // deploymentUuid: localDeploymentUuid,
+          deploymentUuid: {
+            transformerType: "mustacheStringTemplate",
+            interpolation: "runtime",
+            definition: "{{deploymentInfo.deployments.0.uuid}}",
+          } as any,
         },
       ],
     };
