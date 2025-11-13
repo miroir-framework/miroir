@@ -47,9 +47,7 @@ import {
 
 import {
   adminApplicationDeploymentConfigurations,
-  createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
@@ -62,7 +60,6 @@ import { miroirAppStartup } from "../../src/startup.js";
 
 // import { packageName } from "miroir-core/src/constants.js";
 import {
-  ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
   testOnLibrary_resetLibraryDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
@@ -73,6 +70,7 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 import { defaultMiroirModelEnvironment } from "miroir-core";
+import { createDeploymentCompositeAction } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);

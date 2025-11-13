@@ -1,27 +1,28 @@
-import { Formik } from "formik";
 import { useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import type {
+  CompositeActionTemplate,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
-  JzodElement,
+  JzodObject,
   LoggerInterface,
   MiroirModelEnvironment,
-  ModelAction,
 } from "miroir-core";
 import {
-  defaultMiroirModelEnvironment,
+  adminConfigurationDeploymentAdmin,
+  entityApplicationForAdmin,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
   MiroirLoggerFactory,
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
-import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
+import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -40,16 +41,34 @@ export interface CreateEntityToolProps {
 export const CreateEntityTool: React.FC<CreateEntityToolProps> = ({
   deploymentUuid,
 }) => {
-  const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+  // const domainController: DomainControllerInterface = useDomainControllerService();
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
-  const formMlSchema: JzodElement = useMemo(
+  // const localDeploymentUuid = deploymentUuid;
+  // const localDeploymentUuid = "1b3f973b-a000-4a85-9d42-2639ecd0c473"; // WRONG, it's the application's uuid
+  const localDeploymentUuid = "c0569263-bf2e-428a-af4b-37b7d3953f4b";
+  const formMlSchema: JzodObject = useMemo(
     () => ({
       type: "object",
       definition: {
         createEntity: {
           type: "object",
           definition: {
+            application: {
+              type: "uuid",
+              nullable: true,
+              tag: {
+                value: {
+                  defaultLabel: "Application",
+                  editable: true,
+                  selectorParams: {
+                    targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                    targetEntity: entityApplicationForAdmin.uuid,
+                    targetEntityOrderInstancesBy: "name",
+                  },
+                },
+              },
+            },
             entity: entityDefinitionEntity.jzodSchema,
             entityDefinition: entityDefinitionEntityDefinition.jzodSchema,
           },
@@ -63,6 +82,7 @@ export const CreateEntityTool: React.FC<CreateEntityToolProps> = ({
     const entityUuid = uuidv4();
     return {
       createEntity: {
+        application: noValue.uuid,
         entity: {
           uuid: entityUuid,
           parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -138,58 +158,76 @@ export const CreateEntityTool: React.FC<CreateEntityToolProps> = ({
     };
   }, []);
 
-  return (
-    <Formik
-      enableReinitialize={true}
-      initialValues={initialFormValue}
-      onSubmit={async (values, { setSubmitting, setErrors }) => {
-        try {
-          const createAction: ModelAction = {
-            actionType: "createEntity",
-            actionLabel: "createEntity",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: deploymentUuid,
-            payload: {
-              entities: [
-                {
-                  entity: values.createEntity.entity,
-                  entityDefinition: values.createEntity.entityDefinition,
-                },
-              ],
-            },
-          };
-          log.info("CreateEntityTool onSubmit formik values", values, createAction);
+  const createEntityActionTemplate = useMemo((): CompositeActionTemplate => {
+    return {
+      actionType: "compositeAction",
+      actionLabel: "createEntity",
+      actionName: "sequence",
+      definition: [
+        {
+          actionType: "createEntity",
+          actionLabel: "createEntity",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: localDeploymentUuid,
+          payload: {
+            entities: [
+              {
+                // entity: {
+                //   transformerType: "mustacheStringTemplate",
+                //   interpolation: "build",
+                //   definition: "{{createEntity.entity}}",
+                // } as any,
+                // entityDefinition: {
+                //   transformerType: "mustacheStringTemplate",
+                //   interpolation: "build",
+                //   definition: "{{createEntity.entityDefinition}}",
+                // } as any,
+                entity: {
+                  transformerType: "getFromParameters",
+                  interpolation: "build",
+                  // definition: "{{createEntity.entity}}",
+                  referencePath: ["createEntity","entity"],
+                } as any,
+                entityDefinition: {
+                  // transformerType: "mustacheStringTemplate",
+                  transformerType: "getFromParameters",
+                  interpolation: "build",
+                  // definition: "{{createEntity.entityDefinition}}",
+                  referencePath: ["createEntity","entityDefinition"],
+                } as any,
+              },
+            ],
+          } as any,
+        },
+        {
+          actionType: "commit",
+          actionLabel: "commit",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: localDeploymentUuid
+          // deploymentUuid: {
+          //   transformerType: "mustacheStringTemplate",
+          //   interpolation: "build",
+          //   definition: deploymentUuid,
+          // } as any,
+        },
+      ],
+    };
+  }, [localDeploymentUuid]);
 
-          await domainController.handleAction(createAction, defaultMiroirModelEnvironment);
-          await domainController.handleAction(
-            {
-              actionType: "commit",
-              actionLabel: "commit",
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              deploymentUuid,
-            },
-            defaultMiroirModelEnvironment
-          );
-        } catch (e) {
-          log.error(e);
-        } finally {
-          setSubmitting(false);
-        }
+  return (
+    <RunnerView
+      deploymentUuid={deploymentUuid}
+      formMlSchema={formMlSchema}
+      initialFormValue={initialFormValue}
+      action={{
+        actionType: "compositeActionTemplate",
+        compositeActionTemplate: createEntityActionTemplate,
       }}
-      validateOnChange={false}
-      validateOnBlur={false}
-    >
-      <TypedValueObjectEditor
-        labelElement={<h2>Entity Creator</h2>}
-        deploymentUuid={deploymentUuid}
-        applicationSection="model"
-        formValueMLSchema={formMlSchema}
-        formikValuePathAsString="createEntity"
-        formLabel="Create Entity"
-        zoomInPath=""
-        maxRenderDepth={Infinity}
-        useActionButton={true}
-      />
-    </Formik>
+      labelElement={<h2>Entity Creator</h2>}
+      formikValuePathAsString="createEntity"
+      formLabel="Create Entity"
+      displaySubmitButton="onFirstLine"
+      useActionButton={true}
+    />
   );
 };

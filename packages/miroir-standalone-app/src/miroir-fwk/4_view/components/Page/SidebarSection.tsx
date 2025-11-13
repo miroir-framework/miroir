@@ -103,7 +103,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]
   );
 
-  log.info("SidebarSection fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
+  // log.info("SidebarSection fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useReduxDeploymentsStateQuerySelector(
@@ -111,19 +111,19 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     fetchDeploymentMenusQueryParams
   );
 
-  log.info("SidebarSection deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
-  console.log(
-    "SidebarSection refresh",
-    count++,
-    "props.deploymentUuid",
-    props.deploymentUuid,
-    "props.menuUuid",
-    props.menuUuid,
-    "found miroir menu miroirMenusDomainElementObject result",
-    miroirMenusDomainElementObject.elementType == "failure",
-    miroirMenusDomainElementObject,
-    // miroirMenusDomainElementObject?.elementValue
-  );
+  // log.info("SidebarSection deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
+  // console.log(
+  //   "SidebarSection refresh",
+  //   count++,
+  //   "props.deploymentUuid",
+  //   props.deploymentUuid,
+  //   "props.menuUuid",
+  //   props.menuUuid,
+  //   "found miroir menu miroirMenusDomainElementObject result",
+  //   miroirMenusDomainElementObject.elementType == "failure",
+  //   miroirMenusDomainElementObject,
+  //   // miroirMenusDomainElementObject?.elementValue
+  // );
   // const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   return (
     <>

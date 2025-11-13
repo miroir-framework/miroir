@@ -190,15 +190,18 @@ export type ActionErrorType =
 | "FailedToTeardownTest"
 ;
 
-export class Action2Error {
+export class Action2Error extends Error {
   public status: string = "error";
 
   constructor(
     public errorType: ActionErrorType,
     public errorMessage?: string | undefined,
     public errorStack?: (string | undefined)[] | undefined,
-    public innerError?: Action2Error | ActionError | Domain2ElementFailed | undefined
-  ){};
+    public innerError?: Action2Error | Action2Error[] | ActionError | Domain2ElementFailed | undefined,
+    public errorContext?: Record<string, any> | undefined
+  ){
+    super(errorMessage);
+  };
 }
 
   

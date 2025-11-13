@@ -338,86 +338,152 @@ function handleInstanceAction(
   try {
     // switch (instanceAction.actionName) {
     switch (instanceAction.actionType) {
-    case "createInstance": {
-      for (let instanceCollection of instanceAction.payload.objects ?? ([] as EntityInstanceCollection[])) {
-        const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
-          instanceAction.deploymentUuid,
-          instanceAction.payload.applicationSection,
-          instanceCollection.parentUuid
-        );
-        log.debug(
-          "create for entity",
-          instanceCollection.parentName,
-          instanceCollection.parentUuid,
-          "instances",
-          JSON.stringify(instanceCollection.instances, null, 2)
-          // JSON.stringify(state)
-        );
-
-        if (!instanceAction.payload.applicationSection) {
-          throw new Error(
-            "createInstance action called without applicationSection in payload: " +
-              JSON.stringify(instanceAction.payload)
-          );
-        }
-        const sliceEntityAdapter:EntityAdapter<EntityInstance, string> = initializeLocalCacheSliceStateWithEntityAdapter(
-          instanceAction.deploymentUuid,
-          instanceAction.payload.applicationSection,
-          instanceCollection.parentUuid,
-          "current",
-          state
-        );
-
-        // log.info('localCacheSliceObject handleInstanceAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state before insert',JSON.stringify(state));
-
-        sliceEntityAdapter.addMany(state.current[instanceCollectionEntityIndex], instanceCollection.instances);
-
-        // log.info('localCacheSliceObject handleInstanceAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
-
-        if (instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {
-          // TODO: does it work? How?
-          // log.info('localCacheSliceObject handleInstanceAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
-
-          instanceCollection.instances.forEach((i: EntityInstance) => {
-            if (!instanceAction.payload.applicationSection) {
-              throw new Error(
-                "createInstance action called without applicationSection in payload: " +
-                  JSON.stringify(instanceAction.payload)
-              );
-            }
-            return initializeLocalCacheSliceStateWithEntityAdapter(
-              instanceAction.deploymentUuid,
-              instanceAction.payload.applicationSection,
-              i["uuid"],
-              "current",
-              state
-            )
-          }
-          );
-        }
-        log.info('create done',JSON.stringify(state.current[instanceCollectionEntityIndex], null, 2));
-      }
-      break;
-    }
-    case "deleteInstance": {
-      for (let instanceCollection of instanceAction.payload.objects) {
-        try {
-          log.debug(
-            "localCacheSliceObject handleInstanceAction delete called for instanceCollection",
-            instanceCollection
-          );
-
+      case "createInstance": {
+        for (let instanceCollection of instanceAction.payload.objects ??
+          ([] as EntityInstanceCollection[])) {
           const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
             instanceAction.deploymentUuid,
             instanceAction.payload.applicationSection,
             instanceCollection.parentUuid
           );
+          log.info(
+            "create for entity",
+            instanceCollection.parentName,
+            instanceCollection.parentUuid,
+            "instances",
+            JSON.stringify(instanceCollection.instances, null, 2)
+            // JSON.stringify(state)
+          );
 
-          // log.debug(
-          //   "localCacheSliceObject handleInstanceAction delete received instanceCollectionEntityIndex",
-          //   instanceCollectionEntityIndex
-          // );
+          if (!instanceAction.payload.applicationSection) {
+            throw new Error(
+              "createInstance action called without applicationSection in payload: " +
+                JSON.stringify(instanceAction.payload)
+            );
+          }
 
+          const illFormedInstances = instanceCollection.instances.filter(
+            (i) => !i.uuid || i.parentUuid !== instanceCollection.parentUuid
+          );
+          if (illFormedInstances.length > 0) {
+            throw new Error(
+              "createInstance action called with ill formed instances (missing uuid or bad parentUuid) : " +
+                JSON.stringify(illFormedInstances, null, 2)
+            );
+          }
+
+          const sliceEntityAdapter: EntityAdapter<EntityInstance, string> =
+            initializeLocalCacheSliceStateWithEntityAdapter(
+              instanceAction.deploymentUuid,
+              instanceAction.payload.applicationSection,
+              instanceCollection.parentUuid,
+              "current",
+              state
+            );
+
+          // log.info('localCacheSliceObject handleInstanceAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state before insert',JSON.stringify(state));
+
+          const result = sliceEntityAdapter.addMany(
+            state.current[instanceCollectionEntityIndex],
+            instanceCollection.instances
+          );
+
+          // log.info('localCacheSliceObject handleInstanceAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
+          log.info(
+            "localCacheSliceObject handleInstanceAction createInstance result",
+            JSON.stringify(result, null, 2)
+          );
+
+          if (instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {
+            // TODO: does it work? How?
+            // log.info('localCacheSliceObject handleInstanceAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
+
+            instanceCollection.instances.forEach((i: EntityInstance) => {
+              if (!instanceAction.payload.applicationSection) {
+                throw new Error(
+                  "createInstance action called without applicationSection in payload: " +
+                    JSON.stringify(instanceAction.payload)
+                );
+              }
+              return initializeLocalCacheSliceStateWithEntityAdapter(
+                instanceAction.deploymentUuid,
+                instanceAction.payload.applicationSection,
+                i["uuid"],
+                "current",
+                state
+              );
+            });
+          }
+          log.info(
+            "create done",
+            JSON.stringify(state.current[instanceCollectionEntityIndex], null, 2)
+          );
+        }
+        break;
+      }
+      case "deleteInstance": {
+        for (let instanceCollection of instanceAction.payload.objects) {
+          try {
+            log.debug(
+              "localCacheSliceObject handleInstanceAction delete called for instanceCollection",
+              instanceCollection
+            );
+
+            const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
+              instanceAction.deploymentUuid,
+              instanceAction.payload.applicationSection,
+              instanceCollection.parentUuid
+            );
+
+            // log.debug(
+            //   "localCacheSliceObject handleInstanceAction delete received instanceCollectionEntityIndex",
+            //   instanceCollectionEntityIndex
+            // );
+
+            const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
+              instanceAction.deploymentUuid,
+              instanceAction.payload.applicationSection,
+              instanceCollection.parentUuid,
+              "current",
+              state
+            );
+            // log.trace(
+            //   "localCacheSliceObject handleInstanceAction delete received sliceEntityAdapter",
+            //   sliceEntityAdapter,
+            //   "for instanceCollection",
+            //   instanceCollection,
+            //   "state",
+            //   JSON.stringify(state[instanceCollectionEntityIndex])
+            // );
+
+            sliceEntityAdapter.removeMany(
+              state.current[instanceCollectionEntityIndex],
+              instanceCollection.instances.map((i: EntityInstance) => i.uuid)
+            );
+            log.info(
+              "localCacheSliceObject handleInstanceAction delete state after removeMany for instanceCollection",
+              instanceCollection,
+              "state",
+              JSON.stringify(state.current[instanceCollectionEntityIndex])
+            );
+          } catch (error) {
+            log.error(
+              "localCacheSliceObject handleInstanceAction delete for instanceCollection",
+              instanceCollection,
+              "received error",
+              error
+            );
+          }
+        }
+        break;
+      }
+      case "updateInstance": {
+        for (let instanceCollection of instanceAction.payload.objects) {
+          const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
+            instanceAction.deploymentUuid,
+            instanceAction.payload.applicationSection,
+            instanceCollection.parentUuid
+          );
           const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
             instanceAction.deploymentUuid,
             instanceAction.payload.applicationSection,
@@ -425,79 +491,35 @@ function handleInstanceAction(
             "current",
             state
           );
-          // log.trace(
-          //   "localCacheSliceObject handleInstanceAction delete received sliceEntityAdapter",
-          //   sliceEntityAdapter,
-          //   "for instanceCollection",
-          //   instanceCollection,
-          //   "state",
-          //   JSON.stringify(state[instanceCollectionEntityIndex])
-          // );
-
-          sliceEntityAdapter.removeMany(
-            state.current[instanceCollectionEntityIndex],
-            instanceCollection.instances.map((i:EntityInstance) => i.uuid)
-          );
-          log.info(
-            "localCacheSliceObject handleInstanceAction delete state after removeMany for instanceCollection",
-            instanceCollection,
-            "state",
-            JSON.stringify(state.current[instanceCollectionEntityIndex])
-          );
-        } catch (error) {
-          log.error(
-            "localCacheSliceObject handleInstanceAction delete for instanceCollection",
-            instanceCollection,
-            "received error",
-            error
+          // log.info("localCacheSliceObject handleInstanceAction for index", instanceCollectionEntityIndex, sliceEntityAdapter)
+          const updates = instanceCollection.instances.map((i: EntityInstance) => ({
+            id: i.uuid,
+            changes: i,
+          }));
+          // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
+          sliceEntityAdapter.updateMany(state.current[instanceCollectionEntityIndex], updates);
+        }
+        break;
+      }
+      case "loadNewInstancesInLocalCache": {
+        // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
+        for (const instanceCollection of instanceAction.payload.objects) {
+          loadNewEntityInstancesInLocalCache(
+            instanceAction.deploymentUuid,
+            instanceCollection.applicationSection,
+            state,
+            instanceCollection
           );
         }
+        break;
       }
-      break;
+      default:
+        log.warn(
+          "localCacheSliceObject handleInstanceAction action could not be taken into account, unkown action",
+          instanceAction
+        );
     }
-    case "updateInstance": {
-      for (let instanceCollection of instanceAction.payload.objects) {
-        const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
-          instanceAction.deploymentUuid,
-          instanceAction.payload.applicationSection,
-          instanceCollection.parentUuid
-        );
-        const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
-          instanceAction.deploymentUuid,
-          instanceAction.payload.applicationSection,
-          instanceCollection.parentUuid,
-          "current",
-          state
-        );
-        // log.info("localCacheSliceObject handleInstanceAction for index", instanceCollectionEntityIndex, sliceEntityAdapter)
-        const updates = instanceCollection.instances.map((i:EntityInstance) => ({ id: i.uuid, changes: i }));
-        // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
-        sliceEntityAdapter.updateMany(
-          state.current[instanceCollectionEntityIndex],
-          updates,
-        );
-      }
-      break;
-    }
-    case "loadNewInstancesInLocalCache": {
-      // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
-      for (const instanceCollection of instanceAction.payload.objects) {
-        loadNewEntityInstancesInLocalCache(
-          instanceAction.deploymentUuid,
-          instanceCollection.applicationSection,
-          state,
-          instanceCollection
-        );
-      }
-      break;
-    }
-    default:
-      log.warn(
-        "localCacheSliceObject handleInstanceAction action could not be taken into account, unkown action",
-        instanceAction
-      );
-  }
-} catch (error) {
+  } catch (error) {
     log.error(
       "localCacheSliceObject handleInstanceAction action could not be taken into account, error",
       instanceAction,
@@ -506,12 +528,13 @@ function handleInstanceAction(
     );
     return new Action2Error(
       "FailedToHandleAction",
-      "localCacheSliceObject handleInstanceAction action could not be taken into account, error" + JSON.stringify(instanceAction),
+      "localCacheSliceObject handleInstanceAction action could not be taken into account, error" +
+        JSON.stringify(instanceAction),
       ["handleInstanceAction"],
       error as any
     );
   }
-return ACTION_OK
+  return ACTION_OK;
 }
 
 
@@ -568,9 +591,25 @@ function handleModelAction(
           action,
           currentModel(action.deploymentUuid, state)
         );
-    
-      for (const localInstanceAction of localInstanceActions) {
-        handleInstanceAction(state, localInstanceAction);
+      log.info(
+        "localCacheSliceObject handleModelAction generated instanceActions",
+        JSON.stringify(localInstanceActions, undefined, 2)
+      );
+      // for (const localInstanceAction of localInstanceActions) {
+      //   handleInstanceAction(state, localInstanceAction);
+      // }
+      const handleInstanceActionsResult = localInstanceActions.map((ia) =>
+        handleInstanceAction(state, ia)
+      );
+      const errors = handleInstanceActionsResult.filter((r) => r instanceof Action2Error);
+      if (errors.length > 0) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          "localCacheSliceObject handleModelAction could not handle some instance actions generated from model action",
+          ["handleModelAction"],
+          errors as any,
+          {action},
+        );
       }
       break;
     }
@@ -677,7 +716,9 @@ function handleAction(
 
 function actionReturnTypeToException(a:Action2ReturnType) {
   if (a instanceof Action2Error) {
-    throw new Error("caught error on return value " + JSON.stringify(a, undefined, 2));
+    // throw new Error("caught error on return value " + JSON.stringify(a, undefined, 2));
+    // throw new Error("caught error on return value " + JSON.stringify(a, undefined, 2), a);
+    throw a;
   }
 }
 

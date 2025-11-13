@@ -246,12 +246,18 @@ export class LocalCache implements LocalCacheInterface {
          break;
      }
      if (queryResult instanceof Domain2ElementFailed) {
-      return {
-        status: "error",
-        errorType: "FailedToRunBoxedExtractorOrQueryAction", // TODO: correct errorType
-        errorMessage: queryResult.failureMessage,
-        errorStack: queryResult.errorStack
-      }
+      // return {
+      //   status: "error",
+      //   errorType: "FailedToRunBoxedExtractorOrQueryAction", // TODO: correct errorType
+      //   errorMessage: queryResult.failureMessage,
+      //   errorStack: queryResult.errorStack
+      // }
+      return new Action2Error(
+        "FailedToRunBoxedExtractorOrQueryAction",
+        queryResult.failureMessage,
+        queryResult.errorStack,
+        queryResult
+      );
      } else {
        const result:Action2ReturnType = {
          status: "ok",

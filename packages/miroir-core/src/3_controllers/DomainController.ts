@@ -971,18 +971,35 @@ export class DomainController implements DomainControllerInterface {
           if (modelAction.payload.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
             log.warn("handleModelAction running for non-transactional action!");
-            await this.callUtil.callPersistenceAction(
+            const result = await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
               modelAction
             );
+            if (result instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "handleModelAction non-transactional action failed",
+                [],
+                result
+              );
+            }
             log.info("handleModelAction running for non-transactional action DONE!");
           }
-          await this.callUtil.callLocalCacheAction(
+
+          const result = await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
             modelAction
           );
+          if (result instanceof Action2Error) {
+            return new Action2Error(
+              "FailedToHandleAction",
+              "handleModelAction localCache action failed",
+              [],
+              result
+            );
+          }
           break;
         }
         case "resetModel":
@@ -1223,12 +1240,19 @@ export class DomainController implements DomainControllerInterface {
         deploymentUuid,
         "action",
         modelAction,
+        "error instanceof Action2Error=",
+        error instanceof Action2Error,
         "exception",
         error
       );
+      if (error instanceof Action2Error) {
+        return error;
+      }
       return new Action2Error(
-        "FailedToCommit",
-        "DomainController handleModelAction caught error: " + JSON.stringify(error, null, 2)
+        "FailedToHandleAction",
+        "DomainController handleModelAction caught error:" + (error instanceof Error ? error.message : "Action2Error"),
+        [],
+        error as any
       );
     }
     log.info(
@@ -1263,15 +1287,15 @@ export class DomainController implements DomainControllerInterface {
     domainAction: DomainAction,
     currentModelEnvironment?: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
-    await this.miroirContext.miroirActivityTracker.trackAction(
+    return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,
       (async () => {
-        await this.handleActionInternal(domainAction, currentModelEnvironment);
-        return Promise.resolve();
+        return this.handleActionInternal(domainAction, currentModelEnvironment);
+        // return Promise.resolve();
       }).bind(this)
     );
-    return Promise.resolve(ACTION_OK);
+    // return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -1477,6 +1501,9 @@ export class DomainController implements DomainControllerInterface {
       return Promise.resolve(ACTION_OK);
     } catch (error) {
       log.error("DomainController handleAction caught error", error);
+      if (error instanceof Action2Error) {
+        return error;
+      }
       return new Action2Error(
         "FailedToHandleAction",
         "DomainController handleAction caught error: " + JSON.stringify(error, null, 2)
@@ -2634,15 +2661,25 @@ export class DomainController implements DomainControllerInterface {
           if (actionResult instanceof Action2Error) {
             log.error(
               "handleCompositeActionTemplate compositeInstanceAction error on action",
-              JSON.stringify(resolveCompositeActionTemplate, null, 2) +
+              JSON.stringify(currentAction, null, 2) +
                 "actionResult" +
                 JSON.stringify(actionResult, null, 2)
             );
-            throw new Error(
-              "handleCompositeActionTemplate compositeInstanceAction error on action" +
-                JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-                "actionResult" +
-                JSON.stringify(actionResult, null, 2)
+            // throw new Error(
+            //   "handleCompositeActionTemplate compositeInstanceAction error on action" +
+            //     JSON.stringify(resolveCompositeActionTemplate, null, 2) +
+            //     "actionResult" +
+            //     JSON.stringify(actionResult, null, 2)
+            // );
+            return new Action2Error(
+              "FailedToHandleAction",
+              "handleCompositeActionTemplate compositeInstanceAction error: " +
+                JSON.stringify(actionResult, null, 2),
+              [
+                currentAction.actionLabel ?? currentAction.actionType,
+                ...(actionResult.errorStack ?? ([] as any)),
+              ],
+              actionResult
             );
           }
           break;
@@ -2665,6 +2702,9 @@ export class DomainController implements DomainControllerInterface {
             "resulting context",
             localContext
           );
+          if (actionResult instanceof Action2Error) {
+            return actionResult;
+          }
           // return actionResult;
           break;
         }

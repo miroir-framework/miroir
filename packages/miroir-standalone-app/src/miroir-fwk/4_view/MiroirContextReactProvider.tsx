@@ -496,7 +496,7 @@ export function MiroirContextReactProvider(props: {
 
   //   return unsubscribe;
   // }, [showSnackbar]);
-  log.info("MiroirContextReactProvider rendered with toolsPageState:", toolsPageState);
+  // log.info("MiroirContextReactProvider rendered with toolsPageState:", toolsPageState);
   return (
     <miroirReactContext.Provider value={value}>
       {props.children}

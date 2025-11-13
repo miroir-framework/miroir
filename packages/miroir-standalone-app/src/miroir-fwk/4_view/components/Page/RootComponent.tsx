@@ -140,13 +140,13 @@ export const RootComponent = (props: RootComponentProps) => {
   const currentNavigationKey = `${context.deploymentUuid}-${context.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("RootComponent", currentNavigationKey);
 
-  log.info(
-    "##################################### rendering root component",
-    "totalRenderCount",
-    totalCount,
-    "navigationRenderCount",
-    navigationCount
-  );
+  // log.info(
+  //   "##################################### rendering root component",
+  //   "totalRenderCount",
+  //   totalCount,
+  //   "navigationRenderCount",
+  //   navigationCount
+  // );
 
   // Memoize current model to prevent unnecessary re-renders
   const currentModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
@@ -523,11 +523,11 @@ export const RootComponent = (props: RootComponentProps) => {
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
 
-  log.info(
-    "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
-    defaultViewParamsFromAdminStorage,
-    defaultViewParamsFromAdminStorageFetchQueryResults
-  );
+  // log.info(
+  //   "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
+  //   defaultViewParamsFromAdminStorage,
+  //   defaultViewParamsFromAdminStorageFetchQueryResults
+  // );
 
   // Get the database sidebar width value with stable reference
   const dbSidebarWidth = useMemo(

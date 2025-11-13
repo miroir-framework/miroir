@@ -18,7 +18,7 @@ import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { ActionPad } from "./ActionPad.js";
+import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -85,7 +85,6 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
       definition: [
         // Step 1: Query to get the deployment UUID from the selected application
         {
-          // actionType: "compositeRunBoxedExtractorOrQueryAction",
           actionType: "compositeRunBoxedExtractorOrQueryAction",
           actionLabel: "getDeploymentForApplication",
           nameGivenToResult: "deploymentInfo",
@@ -197,7 +196,7 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
   }, []);
 
   return (
-    <ActionPad
+    <RunnerView
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}
       initialFormValue={initialFormValue}

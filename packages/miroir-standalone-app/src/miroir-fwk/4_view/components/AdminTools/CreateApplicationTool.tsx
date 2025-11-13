@@ -35,8 +35,12 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { ActionPad } from "./ActionPad.js";
-import { transformer, type AdminApplication, type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { RunnerView } from "./RunnerView.js";
+import {
+  transformer,
+  type AdminApplication,
+  type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction,
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -105,7 +109,7 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({ de
     const testApplicationVersionUuid = uuidv4();
 
     // The applicationName will come from form values at runtime
-    // For now, we use a placeholder that will be replaced by ActionPad
+    // For now, we use a placeholder that will be replaced by RunnerView
     const placeholderApplicationName = "PLACEHOLDER_APP_NAME";
 
     const testDeploymentStorageConfiguration: StoreUnitConfiguration =
@@ -489,7 +493,7 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({ de
   }, []);
 
   return (
-    <ActionPad
+    <RunnerView
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}
       initialFormValue={initialFormValue}

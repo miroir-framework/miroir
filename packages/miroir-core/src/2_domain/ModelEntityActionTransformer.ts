@@ -31,8 +31,7 @@ export class ModelEntityActionTransformer{
     modelAction:ModelAction,
     currentModel: MetaModel,
   ):InstanceAction[] {
-    log.info("modelActionToLocalCacheInstanceAction called ", deploymentUuid, modelAction)
-    // switch (modelAction.actionName) {
+    // log.info("modelActionToInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionType) {
       case "createEntity": {
         return [
@@ -97,11 +96,11 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        log.info("modelActionToLocalCacheInstanceAction currentModel ", JSON.stringify(currentModel));
+        log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
-        log.info("modelActionToLocalCacheInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
+        log.info("modelActionToInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.payload.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.payload.targetValue});
         if (currentEntity && currentEntityDefinition) {
@@ -130,22 +129,22 @@ export class ModelEntityActionTransformer{
               }
             },
           ];
-          log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
+          log.info("modelActionToInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
 
           return result;
         } else {
-          log.error('modelActionToLocalCacheInstanceAction renameEntity could not rename',modelAction);
+          log.error('modelActionToInstanceAction renameEntity could not rename',modelAction);
           return [];
         }
         break;
       }
       case "alterEntityAttribute": {
-        log.info("modelActionToLocalCacheInstanceAction currentModel ", JSON.stringify(currentModel));
+        log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
         // log.info(
-        //   "modelActionToLocalCacheInstanceAction alterEntityAttribute found currentEntity ",
+        //   "modelActionToInstanceAction alterEntityAttribute found currentEntity ",
         //   currentEntity,
         //   "currentEntityDefinition",
         //   currentEntityDefinition
@@ -192,7 +191,7 @@ export class ModelEntityActionTransformer{
             },
           ];
           log.info(
-            "modelActionToLocalCacheInstanceAction returning for ",
+            "modelActionToInstanceAction returning for ",
             deploymentUuid,
             modelAction,
             "result=",
@@ -201,7 +200,7 @@ export class ModelEntityActionTransformer{
 
           return result;
         } else {
-          log.error('modelActionToLocalCacheInstanceAction alterEntityAttribute could not rename',modelAction);
+          log.error('modelActionToInstanceAction alterEntityAttribute could not rename',modelAction);
           return [];
         }
       }
@@ -211,11 +210,11 @@ export class ModelEntityActionTransformer{
       case "rollback":
       case "resetModel":
       case "resetData": {
-        log.warn("modelActionToLocalCacheInstanceAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
+        log.warn("modelActionToInstanceAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
         return []
       }
       default: {
-        throw new Error("modelActionToLocalCacheInstanceAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
+        throw new Error("modelActionToInstanceAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
         break;
       }
     }

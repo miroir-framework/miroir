@@ -385,20 +385,22 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       foreignKeyObjectsFetchQueryParams
     ) || {};
 
-  log.info(
-    "TypedValueObjectEditor foreignKeyObjects fetched for",
-    formikValuePathAsString,
-    "foreignKeyObjects",
-    foreignKeyObjects,
-    "keys", Object.keys(foreignKeyObjects)
-  );
+  // log.info(
+  //   "TypedValueObjectEditor foreignKeyObjects fetched for",
+  //   formikValuePathAsString,
+  //   "foreignKeyObjects",
+  //   foreignKeyObjects,
+  //   "keys", Object.keys(foreignKeyObjects)
+  // );
 
   const submitButton = useActionButton ? (
     <ActionButton
       onAction={async () => {
         log.info("TypedValueObjectEditor async submit button clicked", formikValuePathAsString);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
-        await formik.submitForm();
+        const result = await formik.submitForm();
+        log.info("TypedValueObjectEditor async submit button action done", result);
+        return result;
       }}
       successMessage={`${formLabel} completed successfully`}
       label={formLabel}

@@ -216,7 +216,8 @@ function handleModelAction(
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<ModelAction>
 ): ReduxStateWithUndoRedo {
-  log.info("reduceWithUndoRedo handleModelAction treating action", JSON.stringify(action.payload, null, 2));
+  // log.info("reduceWithUndoRedo handleModelAction treating action", JSON.stringify(action.payload, null, 2));
+  log.info("reduceWithUndoRedo handleModelAction treating action", action.payload);
   const {
     currentTransaction,
     previousModelSnapshot,

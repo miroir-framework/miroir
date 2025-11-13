@@ -10,6 +10,7 @@ import type {
   MiroirModelEnvironment,
 } from "miroir-core";
 import {
+  Action2Error,
   MiroirLoggerFactory,
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
@@ -20,7 +21,7 @@ import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionPad"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
@@ -58,7 +59,7 @@ export interface ActionPadProps<T = any> {
 }
 
 // ################################################################################################
-export const ActionPad = <T extends Record<string, any> = any>({
+export const RunnerView = <T extends Record<string, any> = any>({
   deploymentUuid,
   formMlSchema,
   initialFormValue,
@@ -76,36 +77,43 @@ export const ActionPad = <T extends Record<string, any> = any>({
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
   const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
-    log.info("ActionPad handleSubmit", action.actionType, "values", values);
+    log.info("RunnerView handleSubmit", action.actionType, "values", values);
 
     switch (action.actionType) {
       case "onSubmit": {
-        await action.onSubmit(values, formikHelpers);
+        return action.onSubmit(values, formikHelpers);
         break;
       }
       case "compositeAction": {
-        log.info("ActionPad handleSubmit compositeAction", action.compositeAction);
-        await domainController.handleCompositeAction(
+        log.info("RunnerView handleSubmit compositeAction", action.compositeAction);
+        const result = await domainController.handleCompositeAction(
           action.compositeAction,
           currentMiroirModelEnvironment,
           values as Record<string, any>
         );
         formikHelpers.setSubmitting(false);
+        return result;
         break;
       }
       case "compositeActionTemplate": {
-        log.info("ActionPad handleSubmit compositeActionTemplate", action.compositeActionTemplate);
-        await domainController.handleCompositeActionTemplate(
+        const result = await domainController.handleCompositeActionTemplate(
           action.compositeActionTemplate,
           currentMiroirModelEnvironment,
           values as Record<string, any>
         );
+        log.info("RunnerView handleSubmit compositeActionTemplate", action.compositeActionTemplate, "result", result);
         formikHelpers.setSubmitting(false);
+        return result;
         break;
       }
       default: {
         const exhaustiveCheck: never = action;
-        throw new Error(`Unhandled action type: ${JSON.stringify(exhaustiveCheck)}`);
+        // throw new Error(`Unhandled action type: ${JSON.stringify(exhaustiveCheck)}`);
+        return new Action2Error(
+          "FailedToHandleAction",
+          `Unhandled action type: ${JSON.stringify(exhaustiveCheck)}`
+        );
+        break;
       }
     }
   };
