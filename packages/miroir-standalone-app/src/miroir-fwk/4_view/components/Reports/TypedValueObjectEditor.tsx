@@ -429,6 +429,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const result = (
     <>
       <div>
+        {/* <ThemedOnScreenHelper
+          label={`TypedValueObjectEditor for ${formikValuePathAsString} (navigationCount: ${navigationCount}, totalCount: ${totalCount})`}
+          data={formValueMLSchema}
+        /> */}
+        {/* <ThemedOnScreenHelper
+          label={`TypedValueObjectEditor for ${formikValuePathAsString} valueObject`}
+          data={valueObject}
+        /> */}
         {typeError ? "typeError: " : ""}
         {typeError}
       </div>

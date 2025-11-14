@@ -19,6 +19,7 @@ import { useDomainControllerService } from "../../MiroirContextReactProvider.js"
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { RunnerView } from "./RunnerView.js";
+import { OuterRunnerView } from "./OuterRunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -37,6 +38,7 @@ export interface DeleteApplicationToolProps {
 export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
   deploymentUuid,
 }) => {
+  const runnerName: string = "deleteApplication";
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
@@ -196,7 +198,8 @@ export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
   }, []);
 
   return (
-    <RunnerView
+    <OuterRunnerView
+      runnerName={runnerName}
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}
       initialFormValue={initialFormValue}

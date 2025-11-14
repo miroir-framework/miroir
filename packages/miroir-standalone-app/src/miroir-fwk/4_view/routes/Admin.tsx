@@ -1,45 +1,22 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useMemo, useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
 // import { z } from "zod";
 
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-import type {
-  DomainControllerInterface,
-  Entity,
-  EntityDefinition,
-  ReduxDeploymentsState,
-  SyncBoxedExtractorOrQueryRunnerMap,
-  Uuid
-} from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
-  entityApplicationForAdmin,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resolvePathOnObject,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-  type JzodElement,
-  type JzodSchema,
-  type LoggerInterface,
-  type MetaModel,
-  type MiroirModelEnvironment
+  type LoggerInterface
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap, selectCurrentReduxDeploymentsStateFromReduxState, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
-import { useSelector } from 'react-redux';
 import { packageName } from "../../../constants.js";
 import { CreateApplicationTool } from '../components/AdminTools/CreateApplicationTool.js';
 import { CreateEntityTool } from '../components/AdminTools/CreateEntityTool.js';
 import { DeleteApplicationTool } from '../components/AdminTools/DeleteApplicationTool.js';
+import { DeleteEntityRunner } from '../components/AdminTools/DeleteEntityRunner.js';
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
 import { cleanLevel } from "../constants.js";
-import { useDomainControllerService, useMiroirContextService } from "../MiroirContextReactProvider.js";
-import { useCurrentModel } from "../ReduxHooks.js";
 import { usePageConfiguration } from "../services/index.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -447,26 +424,17 @@ export const AdminPage: React.FC<any> = (
             />
           </AccordionDetails>
         </Accordion>
-        {/* {testResult} */}
-        {/* <span style={{ color: "red" }}>{testResult}</span> */}
-        {/* <div>
-          <form id={"form." + pageLabel} onSubmit={checkTestDefinition}>
-            <button type="submit" name={pageLabel} form={"form." + pageLabel}>
-              submit form.{pageLabel}
-            </button>
-            <input
-              type="text"
-              name="testInput"
-              value={testInput}
-              onChange={(e) => setTestInput(e.target.value)}
+        {/* delete entity */}
+        <Accordion style={{ marginBottom: 12 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <div style={{ fontWeight: 500 }}>Delete Entity</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <DeleteEntityRunner
+              deploymentUuid={deploymentUuid}
             />
-          </form>
-        </div> */}
-        {/* <div>
-          <pre>
-            {JSON.stringify(testSubPart, null, 2)}
-          </pre>
-        </div> */}
+          </AccordionDetails>
+        </Accordion>
       </PageContainer>
     </ReportPageContextProvider>
   );

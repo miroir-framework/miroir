@@ -47,7 +47,8 @@ export interface ReportViewProps {
 
 // ###############################################################################################################
 export function useQueryTemplateResults(
-  props: ReportViewProps,
+  // props: ReportViewProps,
+  props: Record<string, any>,
   queryOrQueryTemplate?:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
@@ -98,23 +99,12 @@ export function useQueryTemplateResults(
   // fetching report data
   const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
-      props.pageParams.deploymentUuid &&
-      props.pageParams.applicationSection &&
-      props.pageParams.reportUuid &&
+      // props.pageParams.deploymentUuid &&
+      // props.pageParams.applicationSection &&
+      // props.pageParams.reportUuid &&
       (query || resolvedTemplateQuery)
         ? ((resolvedTemplateQuery ?? query) as BoxedQueryWithExtractorCombinerTransformer)
-        : // ?? {
-          //     queryType: "boxedQueryWithExtractorCombinerTransformer",
-          //     deploymentUuid: props.pageParams.deploymentUuid,
-          //     pageParams: props.pageParams,
-          //     queryParams: {},
-          //     contextResults: {},
-          //     extractors: props.reportDefinition.extractors,
-          //     combiners: props.reportDefinition.combiners,
-          //     runtimeTransformers: props.reportDefinition.runtimeTransformers,
-          //   }
-          // : resolvedTemplateQuery
-          {
+        : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             deploymentUuid: "",
             pageParams: props.pageParams,
@@ -122,7 +112,7 @@ export function useQueryTemplateResults(
             contextResults: {},
             extractors: {},
           },
-    [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
+    [props?.pageParams, resolvedTemplateQuery]
   );
 
   log.info("useQueryTemplateResults reportDataQuery", reportDataQuery);

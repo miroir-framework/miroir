@@ -41,6 +41,7 @@ import {
   type AdminApplication,
   type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction,
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { OuterRunnerView } from "./OuterRunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -66,6 +67,7 @@ export interface CreateApplicationToolProps {
 
 // ################################################################################################
 export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({ deploymentUuid }) => {
+  const runnerName: string = "createApplicationAndDeployment";
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentMiroirModelEnvironment: MiroirModelEnvironment =
     useCurrentModelEnvironment(deploymentUuid);
@@ -493,7 +495,8 @@ export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({ de
   }, []);
 
   return (
-    <RunnerView
+    <OuterRunnerView
+      runnerName={runnerName} 
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}
       initialFormValue={initialFormValue}
