@@ -12,11 +12,11 @@ import {
   entityApplicationForAdmin,
   entityDeployment,
   entityEntity,
+  entityEntityDefinition,
   MiroirLoggerFactory
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { ThemedOnScreenHelper } from "../Themes/BasicComponents.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { OuterRunnerView } from "./OuterRunnerView.js";
 import type { FormMlSchema } from "./RunnerInterface.js";
@@ -79,11 +79,35 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
                     defaultLabel: "Entity",
                     editable: true,
                     selectorParams: {
-                      // targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       targetDeploymentUuid: {
-                        transformerType: "mustacheStringTemplate",
+                        transformerType: "!=",
                         interpolation: "build",
-                        definition: `{{${runnerName}.deploymentUuidQuery.deployments.0.uuid}}`,
+                        left: {
+                          transformerType: "getFromParameters",
+                          interpolation: "build",
+                          safe: true,
+                          referencePath: [
+                            runnerName,
+                            "deploymentUuidQuery",
+                            "deployments",
+                            "0",
+                            "uuid",
+                          ],
+                        },
+                        right: {transformerType: "returnValue", value: undefined},
+                        then: {
+                          transformerType: "getFromParameters",
+                          interpolation: "build",
+                          safe: true,
+                          referencePath: [
+                            runnerName,
+                            "deploymentUuidQuery",
+                            "deployments",
+                            "0",
+                            "uuid",
+                          ],
+                        },
+                        else: noValue.uuid,
                       },
                       targetEntity: entityEntity.uuid,
                       targetEntityApplicationSection: "model",
@@ -95,7 +119,7 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
             },
           },
         },
-      }
+      },
     }),
     []
   );
@@ -184,44 +208,89 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
             },
           },
         },
-        // // createEntity action
-        // {
-        //   actionType: "deleteEntity",
-        //   actionLabel: "deleteEntity",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   deploymentUuid: {
-        //     transformerType: "mustacheStringTemplate",
-        //     interpolation: "runtime",
-        //     definition: "{{deploymentInfo.deployments.0.uuid}}",
-        //   } as any,
-        //   payload: {
-        //     entities: [
-        //       {
-        //         entity: {
-        //           transformerType: "getFromParameters",
-        //           interpolation: "build",
-        //           referencePath: ["createEntity", "entity"],
-        //         } as any,
-        //         entityDefinition: {
-        //           transformerType: "getFromParameters",
-        //           interpolation: "build",
-        //           referencePath: ["createEntity", "entityDefinition"],
-        //         } as any,
-        //       },
-        //     ],
-        //   } as any,
-        // },
-        // {
-        //   actionType: "commit",
-        //   actionLabel: "commit",
-        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //   // deploymentUuid: localDeploymentUuid,
-        //   deploymentUuid: {
-        //     transformerType: "mustacheStringTemplate",
-        //     interpolation: "runtime",
-        //     definition: "{{deploymentInfo.deployments.0.uuid}}",
-        //   } as any,
-        // },
+        // infer entityDefintion from entity uuid
+        {
+          actionType: "compositeRunBoxedExtractorOrQueryAction",
+          // actionType: "",
+          actionLabel: "getEntityDefinitionForEntity",
+          nameGivenToResult: "entityDefinitionInfo",
+          query: {
+            actionType: "runBoxedExtractorOrQueryAction",
+            actionName: "runQuery",
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            deploymentUuid: {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              // definition: "{{deploymentInfo.deployments.0.uuid}}",
+              referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+            } as any,
+            payload: {
+              applicationSection: "model",
+              query: {
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                deploymentUuid: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  // definition: "{{deploymentInfo.deployments.0.uuid}}",
+                  referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+                } as any,
+                pageParams: {},
+                queryParams: {},
+                contextResults: {},
+                extractors: {
+                  entityDefinitions: {
+                    label: "entityDefinitions of the deployment",
+                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    parentUuid: entityEntityDefinition.uuid,
+                    parentName: entityEntityDefinition.name,
+                    applicationSection: "model",
+                    filter: {
+                      attributeName: "entityUuid",
+                      value: {
+                        transformerType: "mustacheStringTemplate",
+                        interpolation: "build",
+                        definition: `{{${runnerName}.entity}}`,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        // createEntity action
+        {
+          actionType: "dropEntity",
+          actionLabel: runnerName,
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "mustacheStringTemplate",
+            interpolation: "runtime",
+            definition: "{{deploymentInfo.deployments.0.uuid}}",
+          } as any,
+          payload: {
+            entityUuid: {
+              transformerType: "getFromParameters",
+              interpolation: "build",
+              referencePath: [runnerName, "entity"],
+            } as any,
+            entityDefinitionUuid: {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              referencePath: ["entityDefinitionInfo", "entityDefinitions", "0", "uuid"],
+            } as any,
+          },
+        },
+        {
+          actionType: "commit",
+          actionLabel: "commit",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "mustacheStringTemplate",
+            interpolation: "runtime",
+            definition: "{{deploymentInfo.deployments.0.uuid}}",
+          } as any,
+        },
       ],
     };
   }, [localDeploymentUuid]);

@@ -8,6 +8,7 @@ import {
   MetaModel,
   ModelAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
@@ -30,7 +31,8 @@ export class ModelEntityActionTransformer{
     deploymentUuid: Uuid,
     modelAction:ModelAction,
     currentModel: MetaModel,
-  ):InstanceAction[] {
+  // ):InstanceAction[] {
+  ):TransformerReturnType<InstanceAction[]> {
     // log.info("modelActionToInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionType) {
       case "createEntity": {
@@ -67,6 +69,14 @@ export class ModelEntityActionTransformer{
         break;
       }
       case "dropEntity": {
+        if (!modelAction.payload.entityUuid || !modelAction.payload.entityDefinitionUuid) {
+          return new TransformerFailure({
+            queryFailure: "FailedTransformer",
+            failureMessage:
+              "modelActionToInstanceAction dropEntity missing entityUuid or entityDefinitionUuid",
+            query: { modelAction } as any, // TODO: ill-typed
+          });
+        }
         return [
           {
             // actionType: "instanceAction",

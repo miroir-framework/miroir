@@ -13,41 +13,24 @@ import {
   Action2Error,
   Action2ReturnType,
   ApplicationSection,
-  ApplicationVersion,
-  ReduxDeploymentsState,
   DomainState,
-  EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
   InstanceAction,
-  JzodSchema,
   LocalCacheAction,
   LoggerInterface,
-  Menu,
-  MetaEntity,
-  MetaModel,
   MiroirLoggerFactory,
   ModelAction,
   ModelEntityActionTransformer,
-  Report,
-  StoreBasedConfiguration,
+  ReduxDeploymentsState,
+  TransformerFailure,
   Uuid,
-  adminConfigurationDeploymentMiroir,
   entityDefinitionEntityDefinition,
-  entityEntity,
-  entityEntityDefinition,
-  entityJzodSchema,
-  entityMenu,
-  entityReport,
-  entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
-  getReduxDeploymentsStateIndex,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
-  entityQueryVersion,
-  type Query
+  getReduxDeploymentsStateIndex
 } from "miroir-core";
 
 import { packageName } from "../../constants.js";
@@ -593,8 +576,20 @@ function handleModelAction(
         );
       log.info(
         "localCacheSliceObject handleModelAction generated instanceActions",
+        "localInstanceActions instanceof TransformerFailure=",
+        localInstanceActions instanceof TransformerFailure,
+        "localInstanceActions=",
         JSON.stringify(localInstanceActions, undefined, 2)
       );
+      if (localInstanceActions instanceof TransformerFailure) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          "localCacheSliceObject handleModelAction could not transform model action to instance actions",
+          ["handleModelAction"],
+          localInstanceActions as any,
+          {action},
+        );
+      }
       // for (const localInstanceAction of localInstanceActions) {
       //   handleInstanceAction(state, localInstanceAction);
       // }

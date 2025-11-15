@@ -2570,20 +2570,30 @@ export class DomainController implements DomainControllerInterface {
       "localActionParams",
       localActionParams
     );
-    const resolved: {
+    const resolved: TransformerReturnType<{
       // resolvedCompositeActionDefinition: CompositeActionDefinition;
       resolvedCompositeActionDefinition: CompositeAction;
       resolvedCompositeActionTemplates: Record<string, any>;
-    } = resolveCompositeActionTemplate(compositeAction, modelEnvironment, localActionParams,); // resolves "build" temp
+    }> = resolveCompositeActionTemplate(compositeAction, modelEnvironment, localActionParams,); // resolves "build" temp
 
-    log.info("handleCompositeActionTemplate", actionLabel, "localActionParams", localActionParams);
-    log.info(
-      "handleCompositeActionTemplate",
-      actionLabel,
-      "resolvedCompositeActionDefinition",
-      resolved.resolvedCompositeActionDefinition
-      // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
-    );
+    if (resolved instanceof TransformerFailure) {
+      return new Action2Error(
+        "FailedToResolveTemplate",
+        "handleCompositeActionTemplate error resolving composite action template",
+        [actionLabel],
+        resolved as any, // TODO: TransformerFailure to Action2Error
+        compositeAction
+      );
+    }
+    log.info("handleCompositeActionTemplate resolved Templates", {actionLabel, localActionParams, resolved});
+    // log.info("handleCompositeActionTemplate", actionLabel, "localActionParams", localActionParams);
+    // log.info(
+    //   "handleCompositeActionTemplate",
+    //   actionLabel,
+    //   "resolvedCompositeActionDefinition",
+    //   resolved.resolvedCompositeActionDefinition
+    //   // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+    // );
 
     // TODO: replace with handleCompositeAction
     for (const currentAction of resolved.resolvedCompositeActionDefinition.definition) {
@@ -2601,6 +2611,35 @@ export class DomainController implements DomainControllerInterface {
         "localContext",
         localContext
       );
+      // const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
+      const resolvedActionTemplate: any = transformer_extended_apply(
+        "runtime",
+        [],
+        currentAction.actionLabel ?? "NO NAME",
+        currentAction as any as TransformerForRuntime, // TODO: correct type
+        "value",
+        modelEnvironment,
+        localActionParams,
+        localContext
+      ) as InstanceAction;
+          log.info(
+            "handleCompositeActionTemplate compositeInstanceAction",
+            currentAction.actionLabel ?? "without step name",
+            "resolvedActionTemplate instanceof Domain2ElementFailed",
+            resolvedActionTemplate instanceof Domain2ElementFailed,
+            "resolved action Template",
+            JSON.stringify(resolvedActionTemplate, null, 2)
+          );
+          // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
+          if (resolvedActionTemplate instanceof Domain2ElementFailed) {
+            return new Action2Error(
+              "FailedToResolveTemplate",
+              "handleCompositeActionTemplate compositeInstanceAction error resolving action",
+              [],
+              resolvedActionTemplate,
+              currentAction
+            );
+          }
       switch (currentAction.actionType) {
         // case "instanceAction":
         case "createInstance":
@@ -2639,24 +2678,6 @@ export class DomainController implements DomainControllerInterface {
           //   "handleCompositeActionTemplate compositeInstanceAction action to resolve",
           //   JSON.stringify(currentAction.domainAction, null, 2)
           // );
-          const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
-            "runtime",
-            [],
-            currentAction.actionLabel ?? "NO NAME",
-            currentAction as any as TransformerForRuntime, // TODO: correct type
-            "value",
-            modelEnvironment,
-            localActionParams,
-            localContext
-          ) as InstanceAction;
-          log.info(
-            "handleCompositeActionTemplate compositeInstanceAction",
-            currentAction.actionLabel ?? "without step name",
-            "resolved action Template",
-            JSON.stringify(resolvedActionTemplate, null, 2)
-          );
-          // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
-
           const actionResult = await this.handleAction(resolvedActionTemplate, modelEnvironment);
           if (actionResult instanceof Action2Error) {
             log.error(
@@ -2686,7 +2707,8 @@ export class DomainController implements DomainControllerInterface {
         }
         case "compositeRunBoxedQueryAction": {
           const actionResult = await this.handleCompositeRunBoxedQueryAction(
-            currentAction,
+            // currentAction,
+            resolvedActionTemplate,
             localContext,
             // modelEnvironment,
             // actionParamValues,
@@ -2728,7 +2750,8 @@ export class DomainController implements DomainControllerInterface {
 
           // TODO: resolve runtime transformers here. Use the "main" case, since it's the same implementation?
           const actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
-            currentAction,
+            // currentAction,
+            resolvedActionTemplate,
             actionParamValues,
             // actionResult,
             localContext,
@@ -2746,6 +2769,9 @@ export class DomainController implements DomainControllerInterface {
             "resulting context",
             localContext
           );
+          if (actionResult instanceof Action2Error) {
+            return actionResult;
+          }
           // return actionResult;
           break;
         }
@@ -2758,11 +2784,19 @@ export class DomainController implements DomainControllerInterface {
             "unknown actionType",
             currentAction
           );
-          throw new Error(
+          // throw new Error(
+          //   "handleCompositeActionTemplate " +
+          //     actionLabel +
+          //     " unknown actionType: " +
+          //     currentAction.actionType
+          // );
+          return new Action2Error(
+            "FailedToHandleAction",
             "handleCompositeActionTemplate " +
               actionLabel +
               " unknown actionType: " +
-              currentAction.actionType
+              currentAction.actionType,
+            [currentAction.actionLabel ?? currentAction.actionType]
           );
           break;
         }

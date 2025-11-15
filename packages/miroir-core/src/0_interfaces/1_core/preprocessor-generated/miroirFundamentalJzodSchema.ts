@@ -3202,6 +3202,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "getFromContext"
           },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
+          },
           "referenceName": {
             "optional": true,
             "type": "string"
@@ -3816,6 +3820,10 @@ export const miroirFundamentalJzodSchema = {
           "transformerType": {
             "type": "literal",
             "definition": "getFromParameters"
+          },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
           },
           "referenceName": {
             "optional": true,
@@ -4629,6 +4637,10 @@ export const miroirFundamentalJzodSchema = {
           "transformerType": {
             "type": "literal",
             "definition": "getFromContext"
+          },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
           },
           "referenceName": {
             "optional": true,
@@ -6044,6 +6056,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "getFromContext"
           },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
+          },
           "referenceName": {
             "optional": true,
             "type": "string"
@@ -6265,6 +6281,10 @@ export const miroirFundamentalJzodSchema = {
           "transformerType": {
             "type": "literal",
             "definition": "getFromParameters"
+          },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
           },
           "referenceName": {
             "optional": true,
@@ -24671,6 +24691,22 @@ export const miroirFundamentalJzodSchema = {
               }
             ]
           },
+          "safe": {
+            "optional": true,
+            "type": "union",
+            "definition": [
+              {
+                "optional": true,
+                "type": "boolean"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
           "referenceName": {
             "optional": true,
             "type": "union",
@@ -24738,6 +24774,22 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "literal",
                 "definition": "getFromParameters"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "safe": {
+            "optional": true,
+            "type": "union",
+            "definition": [
+              {
+                "optional": true,
+                "type": "boolean"
               },
               {
                 "type": "schemaReference",
@@ -39321,6 +39373,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "safe": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
               "referenceName": {
                 "optional": true,
                 "type": "union",
@@ -40480,6 +40548,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "getFromParameters"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "safe": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "boolean"
                   },
                   {
                     "type": "schemaReference",
@@ -41950,6 +42034,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "getFromContext"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "safe": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "boolean"
                   },
                   {
                     "type": "schemaReference",
@@ -51784,6 +51884,22 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "safe": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
               "referenceName": {
                 "optional": true,
                 "type": "union",
@@ -52386,6 +52502,22 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "getFromContext"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "safe": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "boolean"
                   },
                   {
                     "type": "schemaReference",
@@ -55385,6 +55517,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "getFromContext"
           },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
+          },
           "referenceName": {
             "optional": true,
             "type": "string"
@@ -55414,6 +55550,10 @@ export const miroirFundamentalJzodSchema = {
           "transformerType": {
             "type": "literal",
             "definition": "getFromParameters"
+          },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
           },
           "referenceName": {
             "optional": true,
@@ -64135,6 +64275,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "getFromContext"
           },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
+          },
           "referenceName": {
             "optional": true,
             "type": "string"
@@ -64164,6 +64308,10 @@ export const miroirFundamentalJzodSchema = {
           "transformerType": {
             "type": "literal",
             "definition": "getFromParameters"
+          },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
           },
           "referenceName": {
             "optional": true,
@@ -72845,6 +72993,10 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "getFromContext"
           },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
+          },
           "referenceName": {
             "optional": true,
             "type": "string"
@@ -72874,6 +73026,10 @@ export const miroirFundamentalJzodSchema = {
           "transformerType": {
             "type": "literal",
             "definition": "getFromParameters"
+          },
+          "safe": {
+            "optional": true,
+            "type": "boolean"
           },
           "referenceName": {
             "optional": true,

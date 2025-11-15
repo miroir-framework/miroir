@@ -427,7 +427,7 @@ export const AdminPage: React.FC<any> = (
         {/* delete entity */}
         <Accordion style={{ marginBottom: 12 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Delete Entity</div>
+            <div style={{ fontWeight: 500 }}>Drop Entity</div>
           </AccordionSummary>
           <AccordionDetails>
             <DeleteEntityRunner

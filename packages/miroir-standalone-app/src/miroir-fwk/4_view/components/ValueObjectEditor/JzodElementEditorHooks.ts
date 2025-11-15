@@ -202,24 +202,26 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity &&
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid &&
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !== noValue.uuid
       ) {
         const applicationSection = getApplicationSection(
           currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid ??
             currentDeploymentUuid,
           currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
         );
-        log.info(
-          "useJzodElementEditorHooks foreignKeyObjectsFetchQueryParams",
-          "rawSchema",
-          currentTypecheckKeyMap.rawSchema,
-          "deploymentUuid",
-          currentDeploymentUuid,
-          "targetEntityUuid",
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
-          "applicationSection",
-          applicationSection
-        );
+        // log.info(
+        //   "useJzodElementEditorHooks foreignKeyObjectsFetchQueryParams",
+        //   "rawSchema",
+        //   currentTypecheckKeyMap.rawSchema,
+        //   "deploymentUuid",
+        //   currentDeploymentUuid,
+        //   "targetEntityUuid",
+        //   currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
+        //   "applicationSection",
+        //   applicationSection
+        // );
         return getQueryRunnerParamsForReduxDeploymentsState(
           {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -232,6 +234,7 @@ export function useJzodElementEditorHooks(
             extractors: {
               [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                label: "jzodElementEditorHooks foreign key objects",
                 applicationSection,
                 parentName: "",
                 parentUuid:

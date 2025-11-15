@@ -175,6 +175,7 @@ export const RunnerView = <T extends Record<string, any>>({
         label={`Runner ${runnerName} formik values`}
         data={formikContext.values}
       /> */}
+      {/* <ThemedOnScreenHelper label={`Runner ${runnerName} targetSchema`} data={targetSchema} /> */}
       {/* <ThemedOnScreenHelper
         label={`Runner ${runnerName} application`}
         data={(formikContext.values as any)[runnerName]?.application}
@@ -187,7 +188,6 @@ export const RunnerView = <T extends Record<string, any>>({
         label={`Runner ${runnerName} deploymentUuidFromApplicationUuid`}
         data={deploymentUuidFromApplicationUuid}
       /> */}
-      {/* <ThemedOnScreenHelper label={`Runner ${runnerName} targetSchema`} data={targetSchema} /> */}
       <TypedValueObjectEditor
         labelElement={labelElement}
         deploymentUuid={deploymentUuid}

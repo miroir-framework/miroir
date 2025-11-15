@@ -5,6 +5,7 @@ import {
   TransformerForBuild
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { Domain2ElementFailed, TransformerFailure, type Action2VoidReturnType, type Domain2QueryReturnType, type ITransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -22,10 +23,10 @@ export function resolveCompositeActionTemplate(
   compositeActionTemplate: CompositeActionTemplate,
   currentModel: MiroirModelEnvironment,
   actionParamValues: Record<string, any>,
-): {
+): TransformerReturnType<{
   resolvedCompositeActionDefinition: CompositeAction,
   resolvedCompositeActionTemplates: Record<string,any>
-} {
+}> {
   if (!compositeActionTemplate || !(compositeActionTemplate as any)["actionType"]) {
     throw new Error("resolveCompositeActionTemplate compositeActionTemplate is undefined");
   }
@@ -80,6 +81,17 @@ export function resolveCompositeActionTemplate(
       );
       if (resolvedTemplate.elementType == "failure") {
         log.error("resolveCompositeActionTemplate resolved template error", resolvedTemplate);
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          failureMessage:
+            "Error resolving template " +
+            compositeActionLabel +
+            " " +
+            t[0] +
+            " " +
+            (resolvedTemplate as TransformerFailure).failureMessage,
+          innerError: resolvedTemplate as ITransformerFailure,
+        });
         // throw new Error(
         //   "resolveCompositeActionTemplate error resolving template " +
         //   compositeActionLabel + " " + t[0] + " " + JSON.stringify(resolvedTemplate, null, 2)
@@ -111,7 +123,17 @@ export function resolveCompositeActionTemplate(
     // resolvedCompositeActionDefinition
     JSON.stringify(resolvedCompositeActionDefinition, null, 2)
   );
-
+  if (resolvedCompositeActionDefinition instanceof TransformerFailure) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      failureMessage:
+        "Error resolving composite action definition " +
+        compositeActionLabel +
+        " " +
+        resolvedCompositeActionDefinition.failureMessage,
+      innerError: resolvedCompositeActionDefinition as ITransformerFailure,
+    });
+  }
   const resolvedCompositeAction: CompositeAction = {
     actionType: "compositeAction",
     actionName: "sequence",

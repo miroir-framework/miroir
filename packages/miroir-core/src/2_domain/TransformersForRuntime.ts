@@ -88,7 +88,7 @@ import {
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
-import { resolvePathOnObject } from "../tools";
+import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { getEntityInstancesUuidIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
@@ -1598,7 +1598,9 @@ export function transformer_resolveReference(
   // ReferenceFoundButUndefined
   if (transformerInnerReference.referencePath) {
     try {
-      const pathResult = resolvePathOnObject(bank, transformerInnerReference.referencePath);
+      const pathResult = transformerInnerReference.safe
+        ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath)
+        : resolvePathOnObject(bank, transformerInnerReference.referencePath);
       // log.info(
       //   "transformer_resolveReference resolved for",
       //   JSON.stringify(transformerInnerReference, null, 2),
@@ -2554,8 +2556,14 @@ export function handleTransformer_ifThenElse(
       break;
     }
     case "!=": {
+      // log.info(
+      //   "handleTransformer_ifThenElse != leftValue",
+      //   leftValue,
+      //   "rightValue",
+      //   rightValue
+      // );
       if (leftValue != rightValue) {
-        return defaultTransformers.transformer_extended_apply(
+        const result = defaultTransformers.transformer_extended_apply(
           step,
           [...transformerPath, "then"],
           transformer.label ? transformer.label + "_then" : "then",
@@ -2566,8 +2574,10 @@ export function handleTransformer_ifThenElse(
           contextResults,
           reduxDeploymentsState
         );
+        log.info("handleTransformer_ifThenElse != leftValue", leftValue, "rightValue", rightValue, "THEN", result);
+        return result;
       } else {
-        return defaultTransformers.transformer_extended_apply(
+        const result = defaultTransformers.transformer_extended_apply(
           step,
           [...transformerPath, "else"],
           transformer.label ? transformer.label + "_else" : "else",
@@ -2578,6 +2588,8 @@ export function handleTransformer_ifThenElse(
           contextResults,
           reduxDeploymentsState
         );
+        log.info("handleTransformer_ifThenElse != leftValue", leftValue, "rightValue", rightValue, "ELSE", result);
+        return result;
       }
     }
     case "<": {
@@ -2762,6 +2774,7 @@ export function handleTransformer_constant(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   switch (typeof transformer.value) {
+    case "undefined":
     case "string":
     case "number":
     case "bigint":
@@ -2779,7 +2792,6 @@ export function handleTransformer_constant(
       // }
     }
     case "symbol":
-    case "undefined":
     case "function": {
       return new TransformerFailure({
         queryFailure: "FailedTransformer_constant",
@@ -3158,7 +3170,6 @@ export function transformer_extended_apply(
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
-        // ((transformer as any)["interpolation"]??"build" == "build") &&
         ((transformer as any)["interpolation"] ?? "build" == step) &&
         resolveBuildTransformersTo == "constantTransformer"
           ? "value" // HACK!

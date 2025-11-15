@@ -20,6 +20,10 @@
       "transformerDefinition": {
         "type": "object",
         "definition": {
+          "safe": {
+            "optional": true,
+            "type": "boolean"
+          },
           "referenceName": {
             "optional": true,
             "type": "string"
