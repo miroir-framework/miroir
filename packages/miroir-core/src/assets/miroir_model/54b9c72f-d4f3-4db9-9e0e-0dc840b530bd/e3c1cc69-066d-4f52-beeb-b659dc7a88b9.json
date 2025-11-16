@@ -19,6 +19,24 @@
   "defaultInstanceDetailsReportUuid": "0c62ec35-01f9-4824-8119-afa710dba715",
   "jzodSchema": {
     "type": "object",
+    "tag": {
+      "value": {
+        "id": 1,
+        "defaultLabel": "Endpoint",
+        "editable": false,
+        "display": {
+          "foldSubLevels": {
+            "definition": true
+          },
+          "unfoldSubLevels": 2
+        }
+      }
+    },
+    "display": {
+      "foldSubLevels": {
+        "definition": true
+      }
+    },
     "definition": {
       "uuid": {
         "type": "uuid",
@@ -118,6 +136,16 @@
             "context": {
               "action": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "id": 10,
+                    "defaultLabel": "Action",
+                    "editable": true,
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "actionParameters.actionType.definition"
+                    }
+                  }
+                },
                 "definition": {
                   "actionParameters": {
                     "type": "object",

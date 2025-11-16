@@ -20205,6 +20205,16 @@ export const miroirFundamentalJzodSchema = {
       },
       "action": {
         "type": "object",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Action",
+            "editable": true,
+            "display": {
+              "displayedAttributeValueWhenFolded": "actionParameters.actionType.definition"
+            }
+          }
+        },
         "definition": {
           "actionParameters": {
             "type": "object",
@@ -20367,6 +20377,24 @@ export const miroirFundamentalJzodSchema = {
       },
       "endpointDefinition": {
         "type": "object",
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Endpoint",
+            "editable": false,
+            "display": {
+              "foldSubLevels": {
+                "definition": true
+              },
+              "unfoldSubLevels": 2
+            }
+          }
+        },
+        "display": {
+          "foldSubLevels": {
+            "definition": true
+          }
+        },
         "definition": {
           "uuid": {
             "type": "uuid",
@@ -20466,6 +20494,16 @@ export const miroirFundamentalJzodSchema = {
                 "context": {
                   "action": {
                     "type": "object",
+                    "tag": {
+                      "value": {
+                        "id": 10,
+                        "defaultLabel": "Action",
+                        "editable": true,
+                        "display": {
+                          "displayedAttributeValueWhenFolded": "actionParameters.actionType.definition"
+                        }
+                      }
+                    },
                     "definition": {
                       "actionParameters": {
                         "type": "object",

@@ -47,6 +47,7 @@ import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
 import { defaultMiroirModelEnvironment } from 'miroir-core';
 import { createDeploymentCompositeAction } from 'miroir-core';
+import type { Uuid } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -99,6 +100,9 @@ MiroirLoggerFactory.startRegisteredLoggers(
 );
 myConsoleLog("started registered loggers DONE");
 
+const testApplicationName: string = "Test";
+const testApplicationUuid: Uuid = "ca7832a9-379a-41d9-8d4d-6c12c05a0cd6";
+
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
@@ -141,7 +145,8 @@ const beforeAll = async () => {
   miroirContext = localmiroirContext;
 
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
-    typedAdminConfigurationDeploymentMiroir.name,
+    testApplicationName,
+    testApplicationUuid,
     typedAdminConfigurationDeploymentMiroir.uuid,
     typedAdminConfigurationDeploymentMiroir.configuration,
   );

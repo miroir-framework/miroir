@@ -18,6 +18,7 @@ import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
+import { ImportEntityFromSpreadsheetRunner } from '../components/AdminTools/ImportEntityFromSpreadsheetRunner.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -431,6 +432,17 @@ export const AdminPage: React.FC<any> = (
           </AccordionSummary>
           <AccordionDetails>
             <DeleteEntityRunner
+              deploymentUuid={deploymentUuid}
+            />
+          </AccordionDetails>
+        </Accordion>
+        {/* create entity from import */}
+        <Accordion style={{ marginBottom: 12 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <div style={{ fontWeight: 500 }}>Import Entity From Spreadsheet</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <ImportEntityFromSpreadsheetRunner
               deploymentUuid={deploymentUuid}
             />
           </AccordionDetails>
