@@ -116,10 +116,10 @@ export function resolveCompositeActionTemplate(
     "value",
   );
   log.info(
-    "resolveCompositeActionTemplate", compositeActionLabel,
-    "actionParamsAndTemplates",
+    "resolveCompositeActionTemplate for action", compositeActionLabel,
+    "using actionParamsAndTemplates",
     JSON.stringify(Object.keys(actionParamsAndTemplates), null, 2),
-    "resolvedCompositeActionDefinition",
+    "got result resolvedCompositeActionDefinition",
     // resolvedCompositeActionDefinition
     JSON.stringify(resolvedCompositeActionDefinition, null, 2)
   );

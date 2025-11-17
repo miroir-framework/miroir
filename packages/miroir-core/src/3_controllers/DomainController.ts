@@ -2625,18 +2625,21 @@ export class DomainController implements DomainControllerInterface {
           log.info(
             "handleCompositeActionTemplate compositeInstanceAction",
             currentAction.actionLabel ?? "without step name",
-            "resolvedActionTemplate instanceof Domain2ElementFailed",
-            resolvedActionTemplate instanceof Domain2ElementFailed,
+            // "resolvedActionTemplate instanceof Domain2ElementFailed",
+            // resolvedActionTemplate instanceof Domain2ElementFailed,
+            "resolvedActionTemplate instanceof TransformerFailure",
+            resolvedActionTemplate instanceof TransformerFailure,
             "resolved action Template",
             JSON.stringify(resolvedActionTemplate, null, 2)
           );
           // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
-          if (resolvedActionTemplate instanceof Domain2ElementFailed) {
+          // if (resolvedActionTemplate instanceof Domain2ElementFailed) {
+          if (resolvedActionTemplate instanceof TransformerFailure) {
             return new Action2Error(
               "FailedToResolveTemplate",
               "handleCompositeActionTemplate compositeInstanceAction error resolving action",
               [],
-              resolvedActionTemplate,
+              resolvedActionTemplate as any,
               currentAction
             );
           }

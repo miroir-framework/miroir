@@ -2,6 +2,7 @@ import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/prepr
 import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 
+import transformer_spreadSheetToJzodSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e44300e8-ed02-40fb-a9ee-d83d08cb1f25.json';
 import transformer_menu_addItem_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json';
 // 
 import transformer_ifThenElse_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ded1479-1331-4f96-8723-9a797ba3924b.json';
@@ -37,6 +38,7 @@ export type Step = "build" | "runtime";
 export type ResolveBuildTransformersTo = "value" | "constantTransformer";
 
 
+export const transformer_spreadSheetToJzodSchema: TransformerDefinition = transformer_spreadSheetToJzodSchema_json as TransformerDefinition;
 export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
 // 
 export const transformer_ifThenElse: TransformerDefinition = transformer_ifThenElse_json as TransformerDefinition;
@@ -65,6 +67,10 @@ export const transformer_resolveConditionalSchema: TransformerDefinition = trans
 export const transformer_resolveSchemaReferenceInContext: TransformerDefinition = transformer_resolveSchemaReferenceInContext_json as TransformerDefinition;
 export const transformer_unfoldSchemaOnce: TransformerDefinition = transformer_unfoldSchemaOnce_json as TransformerDefinition;
 export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzodTypeCheck_json as TransformerDefinition;
+
+export const spreadsheetTransformers: Record<string,TransformerDefinition> = {
+  transformer_spreadSheetToJzodSchema,
+};
 
 export const mlsTransformers: Record<string,TransformerDefinition> = {
   transformer_defaultValueForMLSchema,
@@ -101,6 +107,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
 };
 export const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_menu_addItem,
+  ...spreadsheetTransformers,
   ...miroirCoreTransformers,
   ...mlsTransformers,
 };

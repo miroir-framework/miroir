@@ -7,6 +7,7 @@ import {
   EntityInstanceCollection,
   QueryFailed,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type { Step } from "../../2_domain/Transformers";
 
 export type TransformerFailureType =
   | "FailedTransformer_mustache"
@@ -31,6 +32,7 @@ export type TransformerFailureType =
 export interface ITransformerFailure {
   queryFailure: TransformerFailureType;
   query?: string | undefined;
+  step?: Step;
   transformerPath?: string[];
   failureOrigin?: string[] | undefined;
   failureMessage?: string | undefined;
@@ -52,6 +54,7 @@ export class TransformerFailure implements ITransformerFailure {
 
   public queryFailure: TransformerFailureType;
   public query?: string | undefined;
+  public step?: Step;
   public transformerPath?: string[] | undefined;
   public failureOrigin?: string[] | undefined;
   public failureMessage?: string | undefined;
@@ -70,6 +73,7 @@ export class TransformerFailure implements ITransformerFailure {
   constructor(elementValue: ITransformerFailure) {
     this.queryFailure = elementValue.queryFailure;
     this.query = elementValue.query;
+    this.step = elementValue.step;
     this.transformerPath = elementValue.transformerPath;
     this.failureOrigin = elementValue.failureOrigin;
     this.failureMessage = elementValue.failureMessage;

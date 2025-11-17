@@ -835,6 +835,9 @@ export function getMiroirFundamentalJzodSchema(
         // zodParseErrorIssue: zodParseError.context.zodParseErrorIssue as any,
         // zodParseError: zodParseError.context.zodParseError as any,
         // ########################################################################################
+        transformerForBuild_spreadSheetToJzodSchema:
+          miroirTransformersForBuild.transformer_spreadSheetToJzodSchema,
+        //  
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
         transformerForBuild_ifThenElse: miroirTransformersForBuild.transformer_ifThenElse,
@@ -905,7 +908,10 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         // ########################################################################################
-        transformerForRuntime_menu_addItem: miroirTransformersForRuntime.transformer_menu_addItem,
+        transformerForRuntime_spreadSheetToJzodSchema:
+          miroirTransformersForRuntime.transformer_spreadSheetToJzodSchema,
+        // 
+          transformerForRuntime_menu_addItem: miroirTransformersForRuntime.transformer_menu_addItem,
         //
         //
         transformerForRuntime_ifThenElse: miroirTransformersForRuntime.transformer_ifThenElse,
@@ -1002,7 +1008,11 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         // ########################################################################################
-        // WRONG!!!!
+        // WRONG!!!! (???)
+        // 
+        transformerForBuildPlusRuntime_spreadSheetToJzodSchema:
+          miroirTransformersForBuildPlusRuntime.transformer_spreadSheetToJzodSchema,
+        //
         transformerForBuildPlusRuntime_menu_addItem:
           miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         //

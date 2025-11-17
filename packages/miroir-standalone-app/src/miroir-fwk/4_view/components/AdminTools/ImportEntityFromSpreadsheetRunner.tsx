@@ -347,8 +347,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
           } as any,
         },
         {
-          //  actionType: "instanceAction",
-          // actionType: "createInstance",
           actionType: "createInstance",
           deploymentUuid: {
             transformerType: "getFromContext",
@@ -381,6 +379,9 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     [runnerName]
   );
   
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
   const onSubmit = useCallback(
   async (values: any) => {
     log.info("DeleteEntityRunner onSubmit values", values);
@@ -393,53 +394,44 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       { a: "US", b: "USA", c: "United States" },
       { a: "DE", b: "DEU", c: "Germany" },
     ];
-    const newEntityJzodSchema: JzodObject = {
-      type: "object",
-      definition: Object.assign(
-        {},
-        {
-          uuid: {
-            type: "string",
-            validations: [{ type: "uuid" }],
-            tag: { id: 1, defaultLabel: "Uuid", editable: false },
-          },
-          parentName: {
-            type: "string",
-            optional: true,
-            tag: { id: 2, defaultLabel: "Uuid", editable: false },
-          },
-          parentUuid: {
-            type: "string",
-            validations: [{ type: "uuid" }],
-            tag: { id: 3, defaultLabel: "parentUuid", editable: false },
-          },
-        },
-        ...(fileData[0]
-          ? Object.values(fileData[0]).map((a: string, index) => ({
-              [a]: {
-                type: "string",
-                // optional: true,
-                // tag: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
-              },
-            }))
-          : [])
-      ),
-    };
-
-    // const newEntityJzodSchema2: TransformerForBuildPlusRuntime = {
-    //   transformerType: "spreadSheetToJzodSchema",
-    //   interpolation: "runtime",
-    //   spreadsheetContents: {
-    //     transformerType: "getFromContext",
-    //     interpolation: "runtime",
-    //     referenceName: "spreadsheetContents",
-    //   },
+    // const newEntityJzodSchema: JzodObject = {
+    //   type: "object",
+    //   definition: Object.assign(
+    //     {},
+    //     {
+    //       uuid: {
+    //         type: "string",
+    //         validations: [{ type: "uuid" }],
+    //         tag: { id: 1, defaultLabel: "Uuid", editable: false },
+    //       },
+    //       parentName: {
+    //         type: "string",
+    //         optional: true,
+    //         tag: { id: 2, defaultLabel: "Uuid", editable: false },
+    //       },
+    //       parentUuid: {
+    //         type: "string",
+    //         validations: [{ type: "uuid" }],
+    //         tag: { id: 3, defaultLabel: "parentUuid", editable: false },
+    //       },
+    //     },
+    //     ...(fileData[0]
+    //       ? Object.values(fileData[0]).map((a: string, index) => ({
+    //           [a]: {
+    //             type: "string",
+    //             // optional: true,
+    //             // tag: { id: index + 2 /* uuid attribute has been added*/, defaultLabel: a, editable: true },
+    //           },
+    //         }))
+    //       : [])
+    //   ),
     // };
 
     const objectAttributeNames = fileData[0];
-    fileData.splice(0,1) // side effect!!!
+    // fileData.splice(0,1) // side effect!!!
+    // fileData.slice(1) // side effect!!!
     const instances:EntityInstance[] = 
-      fileData
+      fileData.slice(1)
       .map(
         (fileDataRow:any) => {
           return Object.fromEntries([
@@ -477,7 +469,17 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         definition: `{{${runnerName}.entityName}} Definition`,
       } as any,
       entityUuid: newEntityUuid,
-      jzodSchema: newEntityJzodSchema,
+      // jzodSchema: newEntityJzodSchema,
+      jzodSchema: {
+        transformerType: "spreadSheetToJzodSchema",
+        interpolation: "runtime",
+        spreadsheetContents: fileData,
+        // spreadsheetContents: {
+        //   transformerType: "getFromContext",
+        //   interpolation: "runtime",
+        //   referenceName: "spreadsheetContents",
+        // },
+      } as any,
     };
 
     log.info("ImportEntityFromSpreadsheetRunner onSubmit entityDefinition", JSON.stringify(entityDefinition, null, 2));
@@ -492,53 +494,9 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     await domainController.handleCompositeActionTemplate(
       action,
       currentMiroirModelEnvironment,
-      values,
+      {...values, spreadsheetContents: fileData},
     )
 
-    // // const importInstances: CompositeActionTemplate = {
-    // const importInstances: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = {
-    //   actionType: "compositeAction",
-    //   actionLabel: "importInstances",
-    //   actionName: "sequence",
-    //   definition: [
-    //     {
-    //       //  actionType: "instanceAction",
-    //       // actionType: "createInstance",
-    //       actionType: "createInstance",
-    //       deploymentUuid: {
-    //         transformerType: "getFromParameters",
-    //         referenceName: "currentDeploymentUuid",
-    //       },
-    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    //       payload: {
-    //         applicationSection: "data",
-    //         objects: [
-    //           {
-    //             parentName: "EntityName",
-    //             // parentName: {
-    //             //   transformerType: "mustacheStringTemplate",
-    //             //   definition: "{{createEntity_newEntity.name}}",
-    //             // },
-    //             parentUuid: newEntityUuid,
-    //             // parentUuid: {
-    //             //   transformerType: "mustacheStringTemplate",
-    //             //   definition: "{{createEntity_newEntity.uuid}}",
-    //             // },
-    //             applicationSection: "data",
-    //             instances: instances,
-    //           },
-    //         ],
-    //       }
-    //     },
-    //   ],
-    // } as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
-    // // } as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
-    // log.info("ImportEntityFromSpreadsheetRunner onSubmit import instances", importInstances);
-    // await domainController.handleCompositeActionTemplate(
-    //   importInstances,
-    //   currentMiroirModelEnvironment,
-    //   values,
-    // )
 
   }
   , []);

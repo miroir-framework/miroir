@@ -91,9 +91,12 @@ import { packageName } from "../constants";
 import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { getEntityInstancesUuidIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
-import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
+// import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
+  // 
+  transformer_spreadSheetToJzodSchema,
+  // 
   transformer_ifThenElse,
   transformer_returnValue,
   transformer_constantAsExtractor,
@@ -2189,11 +2192,12 @@ export function handleListPickElementTransformer(
   );
   if (resolvedReference instanceof TransformerFailure) {
     log.error(
-      "handleListPickElementTransformer extractorTransformer pickFromList can not apply to resolvedReference",
+      "handleListPickElementTransformer", step, "pickFromList can not apply to resolvedReference",
       resolvedReference
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
+      step,
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["innerTransformer_apply"],
       queryContext: "pickFromList can not apply to resolvedReference",
@@ -3127,6 +3131,7 @@ export function transformer_extended_apply(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
+  const transformerLabel = label ?? (transformer as any)?.label ?? (transformer as any)?.transformerType ?? "unnamed_transformer";
   // log.info(
   //   "transformer_extended_apply called for label",
   //   label,
@@ -3191,7 +3196,7 @@ export function transformer_extended_apply(
           if (!foundApplicationTransformer) {
             log.error(
               "transformer_extended_apply failed for",
-              label,
+              transformerLabel,
               "using to resolve build transformers for step:",
               step,
               "transformer",
@@ -3201,7 +3206,7 @@ export function transformer_extended_apply(
               queryFailure: "TransformerNotFound",
               transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_extended_apply"],
-              queryContext: "transformer " + (transformer as any).transformerType + " not found",
+              queryContext: "transformer " + (transformer as any).transformerType + " does not exist",
               queryParameters: JSON.stringify(transformer),
             });
           }
@@ -3283,7 +3288,7 @@ export function transformer_extended_apply(
               ) {
                 log.error(
                   "transformer_extended_apply failed for",
-                  label,
+                  transformerLabel,
                   "using to resolve build transformers for step:",
                   step,
                   "transformer",
@@ -3344,7 +3349,7 @@ export function transformer_extended_apply(
               if (!foundApplicationTransformer.transformerInterface) {
                 log.error(
                   "transformer_extended_apply failed for",
-                  label,
+                  transformerLabel,
                   "using to resolve build transformers for step:",
                   step,
                   "transformer",
@@ -3382,6 +3387,47 @@ export function transformer_extended_apply(
                     ];
                   })
                 );
+                const errorsInParams = Object.entries(evaluatedParams).filter(
+                  (e) =>
+                    typeof e[1] == "object" &&
+                    e[1] != null &&
+                    !Array.isArray(e[1]) &&
+                    e[1] instanceof TransformerFailure
+                );
+                if (errorsInParams.length > 0) {
+                  log.error(
+                    "transformer_extended_apply failed for",
+                    transformerLabel,
+                    "using to resolve build transformers for step:",
+                    step,
+                    "transformer",
+                    JSON.stringify(transformer, null, 2),
+                    "errorsInParams",
+                    JSON.stringify(errorsInParams, null, 2)
+                  );
+                  return new TransformerFailure({
+                    queryFailure: "FailedTransformer",
+                    transformerPath, //: [...transformerPath, transformer.transformerType],
+                    failureOrigin: ["transformer_extended_apply"],
+                    queryContext:
+                      "errors in parameters for transformer " +
+                      (transformer as any).transformerType +
+                      ": " +
+                      errorsInParams
+                        .map((e => e[0] + " -> " + JSON.stringify(e[1])))
+                        .join(", "),
+                    queryParameters: transformer as any,
+                  });
+                };
+                log.info(
+                  "transformer_extended_apply calling transformerImplementation for",
+                  label,
+                  transformerLabel,
+                  "with evaluatedParams",
+                  Object.keys(evaluatedParams),
+                  evaluatedParams,
+                );
+                const newContextResults = { ...contextResults, ...evaluatedParams }
                 preResult = transformer_extended_apply(
                   step,
                   [...transformerPath, "transformerImplementation"],
@@ -3390,9 +3436,25 @@ export function transformer_extended_apply(
                   newResolveBuildTransformersTo,
                   modelEnvironment,
                   transformerParams,
-                  { ...contextResults, ...evaluatedParams },
+                  newContextResults,
                   reduxDeploymentsState,
                   deploymentUuid,
+                );
+                log.info(
+                  "transformer_extended_apply transformerImplementation returning for",
+                  transformerLabel,
+                  "step:",
+                  step,
+                  // "transformer.interpolation:",
+                  // (transformer as any)?.interpolation ?? "build",
+                  // ((transformer as any)?.interpolation ?? "build") == step,
+                  // typeof transformer,
+                  // "transformer",
+                  // JSON.stringify(transformer, null, 2),
+                  "context",
+                  newContextResults,
+                  "result",
+                  JSON.stringify(preResult, null, 2)
                 );
               }
               // }
@@ -3425,7 +3487,7 @@ export function transformer_extended_apply(
           if (preResult instanceof TransformerFailure) {
             log.error(
               "transformer_extended_apply failed for",
-              label,
+              transformerLabel,
               "using to resolve build transformers for step:",
               step,
               "transformer",
@@ -3435,6 +3497,23 @@ export function transformer_extended_apply(
             );
             return preResult;
           } else {
+          //   log.info(
+          //     "transformer_extended_apply transformerImplementation returning for",
+          //     transformerLabel,
+          //     "step:",
+          //     step,
+          //     // "transformer.interpolation:",
+          //     // (transformer as any)?.interpolation ?? "build",
+          //     // ((transformer as any)?.interpolation ?? "build") == step,
+          //     // typeof transformer,
+          //     // "transformer",
+          //     // JSON.stringify(transformer, null, 2),
+          //     "context",
+          //     { ...contextResults, ...evaluatedParams },
+          //     "result",
+          //     JSON.stringify(preResult, null, 2)
+          //   );
+
             if (
               ((transformer as any)["interpolation"] ?? "build" == "build") &&
               resolveBuildTransformersTo == "constantTransformer"
@@ -3500,10 +3579,10 @@ export function transformer_extended_apply(
       }
     }
     // log.info(
-    //   "transformer_extended_apply called for",
+    //   "transformer_extended_apply returning for",
     //   label,
-    //   // "step:",
-    //   // step,
+    //   "step:",
+    //   step,
     //   // "transformer.interpolation:",
     //   // (transformer as any)?.interpolation ?? "build",
     //   // ((transformer as any)?.interpolation ?? "build") == step,
