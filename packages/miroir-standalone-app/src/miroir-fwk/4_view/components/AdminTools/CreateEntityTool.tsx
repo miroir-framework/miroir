@@ -41,42 +41,46 @@ export interface CreateEntityToolProps {
 
 
 // ################################################################################################
-export function getCreateEntityActionTemplate(actionName: string, actionLabel: string) : CompositeActionTemplate {
+export function getCreateEntityActionTemplate(
+  actionName: string,
+  actionLabel: string
+): CompositeActionTemplate {
   return {
-  actionType: "compositeAction",
-  actionLabel,
-  actionName: "sequence",
-  definition: [
-    // Step 1: Query to get the deployment UUID from the selected application
-    {
-      actionType: "compositeRunBoxedExtractorOrQueryAction",
-      actionLabel: "getDeploymentForApplication",
-      nameGivenToResult: "deploymentInfo",
-      query: {
-        actionType: "runBoxedExtractorOrQueryAction",
-        actionName: "runQuery",
-        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-        payload: {
-          applicationSection: "data",
-          query: {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            extractors: {
-              deployments: {
-                label: "deployments of the application",
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                parentUuid: entityDeployment.uuid,
-                parentName: entityDeployment.name,
-                applicationSection: "data",
-                filter: {
-                  attributeName: "adminApplication",
-                  value: {
-                    transformerType: "mustacheStringTemplate",
-                    definition: "{{createEntity.application}}",
+    actionType: "compositeAction",
+    actionLabel,
+    actionName: "sequence",
+    definition: [
+      // Step 1: Query to get the deployment UUID from the selected application
+      {
+        actionType: "compositeRunBoxedExtractorOrQueryAction",
+        actionLabel: "getDeploymentForApplication",
+        nameGivenToResult: "deploymentInfo",
+        query: {
+          actionType: "runBoxedExtractorOrQueryAction",
+          actionName: "runQuery",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          payload: {
+            applicationSection: "data",
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                deployments: {
+                  label: "deployments of the application",
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  parentUuid: entityDeployment.uuid,
+                  parentName: entityDeployment.name,
+                  applicationSection: "data",
+                  filter: {
+                    attributeName: "adminApplication",
+                    value: {
+                      transformerType: "mustacheStringTemplate",
+                      definition: "{{createEntity.application}}",
+                    },
                   },
                 },
               },
@@ -84,43 +88,42 @@ export function getCreateEntityActionTemplate(actionName: string, actionLabel: s
           },
         },
       },
-    },
-    // createEntity action
-    {
-      actionType: "createEntity",
-      actionLabel,
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: {
-        transformerType: "mustacheStringTemplate",
-        interpolation: "runtime",
-        definition: "{{deploymentInfo.deployments.0.uuid}}",
-      } as any,
-      payload: {
-        entities: [
-          {
-            entity: {
-              transformerType: "getFromParameters",
-              referencePath: [actionName, "entity"],
-            } as any,
-            entityDefinition: {
-              transformerType: "getFromParameters",
-              referencePath: [actionName, "entityDefinition"],
-            } as any,
-          },
-        ],
-      } as any,
-    },
-    {
-      actionType: "commit",
-      actionLabel: "commit",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: {
-        transformerType: "mustacheStringTemplate",
-        interpolation: "runtime",
-        definition: "{{deploymentInfo.deployments.0.uuid}}",
-      } as any,
-    },
-  ],
+      // createEntity action
+      {
+        actionType: "createEntity",
+        actionLabel,
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "runtime",
+          definition: "{{deploymentInfo.deployments.0.uuid}}",
+        } as any,
+        payload: {
+          entities: [
+            {
+              entity: {
+                transformerType: "getFromParameters",
+                referencePath: [actionName, "entity"],
+              } as any,
+              entityDefinition: {
+                transformerType: "getFromParameters",
+                referencePath: [actionName, "entityDefinition"],
+              } as any,
+            },
+          ],
+        } as any,
+      },
+      {
+        actionType: "commit",
+        actionLabel: "commit",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "runtime",
+          definition: "{{deploymentInfo.deployments.0.uuid}}",
+        } as any,
+      },
+    ],
   };
 }
 

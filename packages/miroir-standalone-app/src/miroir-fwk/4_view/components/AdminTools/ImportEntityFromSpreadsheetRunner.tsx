@@ -8,9 +8,11 @@ import type {
   DomainControllerInterface,
   Entity,
   EntityDefinition,
+  EntityInstance,
   JzodObject,
   LoggerInterface,
-  MiroirModelEnvironment
+  MiroirModelEnvironment,
+  TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
@@ -26,7 +28,7 @@ import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { OuterRunnerView } from "./OuterRunnerView.js";
 import type { FormMlSchema } from "./RunnerInterface.js";
 import { getCreateEntityActionTemplate } from "./CreateEntityTool.js";
-import { transformer } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { transformer, type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 
@@ -119,7 +121,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     extractorTemplates: {
       deployments: {
         label: "deployments of the application",
-        // extractorOrCombinerType: "extractorByEntityReturningObjectList",
         extractorTemplateType: "extractorTemplateForObjectListByEntity",
         parentUuid: entityDeployment.uuid,
         parentName: entityDeployment.name,
@@ -128,7 +129,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
           attributeName: "adminApplication",
           value: {
             transformerType: "mustacheStringTemplate",
-            interpolation: "build",
             definition: `{{${runnerName}.application}}`,
           },
         },
@@ -269,44 +269,47 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   // }, [localDeploymentUuid]);
 
   // const createEntityActionTemplate = useMemo(() => getCreateEntityActionTemplate(runnerName, "Create Entity"), []);
-  const createEntityActionTemplate = useCallback((
-    entity: Entity,
-    entityDefinition: EntityDefinition,
-  ): CompositeActionTemplate => ({
-    actionType: "compositeAction",
-    actionLabel: "createEntity",
-    actionName: "sequence",
-    definition: [
-      // Step 1: Query to get the deployment UUID from the selected application
-      {
-        actionType: "compositeRunBoxedExtractorOrQueryAction",
-        actionLabel: "getDeploymentForApplication",
-        nameGivenToResult: "deploymentInfo",
-        query: {
-          actionType: "runBoxedExtractorOrQueryAction",
-          actionName: "runQuery",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-          payload: {
-            applicationSection: "data",
-            query: {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              extractors: {
-                deployments: {
-                  label: "deployments of the application",
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  parentUuid: entityDeployment.uuid,
-                  parentName: entityDeployment.name,
-                  applicationSection: "data",
-                  filter: {
-                    attributeName: "adminApplication",
-                    value: {
-                      transformerType: "getFromParameters",
-                      referencePath: [runnerName, "application"],
+  const createEntityActionTemplate = useCallback(
+    (
+      entity: Entity,
+      entityDefinition: EntityDefinition,
+      instances: EntityInstance[]
+    ): CompositeActionTemplate => ({
+      actionType: "compositeAction",
+      actionLabel: "createEntity",
+      actionName: "sequence",
+      definition: [
+        // Step 1: Query to get the deployment UUID from the selected application
+        {
+          actionType: "compositeRunBoxedExtractorOrQueryAction",
+          actionLabel: "getDeploymentForApplication",
+          nameGivenToResult: "deploymentInfo",
+          query: {
+            actionType: "runBoxedExtractorOrQueryAction",
+            actionName: "runQuery",
+            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            payload: {
+              applicationSection: "data",
+              query: {
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                pageParams: {},
+                queryParams: {},
+                contextResults: {},
+                extractors: {
+                  deployments: {
+                    label: "deployments of the application",
+                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    parentUuid: entityDeployment.uuid,
+                    parentName: entityDeployment.name,
+                    applicationSection: "data",
+                    filter: {
+                      attributeName: "adminApplication",
+                      value: {
+                        transformerType: "getFromParameters",
+                        referencePath: [runnerName, "application"],
+                      },
                     },
                   },
                 },
@@ -314,49 +317,72 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
             },
           },
         },
-      },
-      // createEntity action
-      {
-        actionType: "createEntity",
-        actionLabel: "createEntity",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: {
-          transformerType: "getFromContext",
-          interpolation: "runtime",
-          referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-        } as any,
-        payload: {
-          entities: [
-            {
-              entity,
-              entityDefinition,
-              // entity: {
-              //   transformerType: "getFromParameters",
-              //   referencePath: [runnerName, "entity"],
-              // } as any,
-              // entityDefinition: {
-              //   transformerType: "getFromParameters",
-              //   referencePath: [runnerName, "entityDefinition"],
-              // } as any,
-            },
-          ],
-        } as any,
-      },
-      {
-        actionType: "commit",
-        actionLabel: "commit",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: {
-          transformerType: "getFromContext",
-          interpolation: "runtime",
-          referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-        } as any,
-      },
-    ],
-    }), [runnerName, ]);
+        // createEntity action
+        {
+          actionType: "createEntity",
+          actionLabel: "createEntity",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+          } as any,
+          payload: {
+            entities: [
+              {
+                entity,
+                entityDefinition,
+              },
+            ],
+          } as any,
+        },
+        {
+          actionType: "commit",
+          actionLabel: "commit",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+          } as any,
+        },
+        {
+          //  actionType: "instanceAction",
+          // actionType: "createInstance",
+          actionType: "createInstance",
+          deploymentUuid: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+          } as any,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            applicationSection: "data",
+            objects: [
+              {
+                parentName: "EntityName",
+                // parentName: {
+                //   transformerType: "mustacheStringTemplate",
+                //   definition: "{{createEntity_newEntity.name}}",
+                // },
+                parentUuid: newEntityUuid,
+                // parentUuid: {
+                //   transformerType: "mustacheStringTemplate",
+                //   definition: "{{createEntity_newEntity.uuid}}",
+                // },
+                applicationSection: "data",
+                instances: instances,
+              },
+            ],
+          },
+        },
+      ],
+    }),
+    [runnerName]
+  );
   
   const onSubmit = useCallback(
-  (values: any) => {
+  async (values: any) => {
     log.info("DeleteEntityRunner onSubmit values", values);
 
     // open file??
@@ -400,6 +426,36 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       ),
     };
 
+    // const newEntityJzodSchema2: TransformerForBuildPlusRuntime = {
+    //   transformerType: "spreadSheetToJzodSchema",
+    //   interpolation: "runtime",
+    //   spreadsheetContents: {
+    //     transformerType: "getFromContext",
+    //     interpolation: "runtime",
+    //     referenceName: "spreadsheetContents",
+    //   },
+    // };
+
+    const objectAttributeNames = fileData[0];
+    fileData.splice(0,1) // side effect!!!
+    const instances:EntityInstance[] = 
+      fileData
+      .map(
+        (fileDataRow:any) => {
+          return Object.fromEntries([
+            ...Object.entries(fileDataRow).map((e: [string, any], index: number) => [
+              objectAttributeNames[(e as any)[0]],
+              e[1],
+            ]),
+            ["uuid", uuidv4()],
+            ["parentName", "EntityName"], // TODO: replace with actual entity name!
+            ["parentUuid", newEntityUuid],
+          ]) as EntityInstance;
+        }
+      ) 
+    ;
+    log.info('createEntity adding instances',instances);
+
     const entity: Entity = {
       uuid: newEntityUuid,
       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -428,15 +484,62 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     const action: CompositeActionTemplate = createEntityActionTemplate(
       entity,
       entityDefinition,
+      instances,
     )
 
     // call createEntity action
-    log.info("ImportEntityFromSpreadsheetRunner onSubmit action", action);
-    domainController.handleCompositeActionTemplate(
+    log.info("ImportEntityFromSpreadsheetRunner onSubmit create Entity", action);
+    await domainController.handleCompositeActionTemplate(
       action,
       currentMiroirModelEnvironment,
       values,
     )
+
+    // // const importInstances: CompositeActionTemplate = {
+    // const importInstances: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction = {
+    //   actionType: "compositeAction",
+    //   actionLabel: "importInstances",
+    //   actionName: "sequence",
+    //   definition: [
+    //     {
+    //       //  actionType: "instanceAction",
+    //       // actionType: "createInstance",
+    //       actionType: "createInstance",
+    //       deploymentUuid: {
+    //         transformerType: "getFromParameters",
+    //         referenceName: "currentDeploymentUuid",
+    //       },
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         applicationSection: "data",
+    //         objects: [
+    //           {
+    //             parentName: "EntityName",
+    //             // parentName: {
+    //             //   transformerType: "mustacheStringTemplate",
+    //             //   definition: "{{createEntity_newEntity.name}}",
+    //             // },
+    //             parentUuid: newEntityUuid,
+    //             // parentUuid: {
+    //             //   transformerType: "mustacheStringTemplate",
+    //             //   definition: "{{createEntity_newEntity.uuid}}",
+    //             // },
+    //             applicationSection: "data",
+    //             instances: instances,
+    //           },
+    //         ],
+    //       }
+    //     },
+    //   ],
+    // } as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
+    // // } as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
+    // log.info("ImportEntityFromSpreadsheetRunner onSubmit import instances", importInstances);
+    // await domainController.handleCompositeActionTemplate(
+    //   importInstances,
+    //   currentMiroirModelEnvironment,
+    //   values,
+    // )
+
   }
   , []);
 
