@@ -3527,11 +3527,24 @@ export const miroirFundamentalJzodSchema = {
             "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_createObject"
-            }
+            "type": "union",
+            "discriminator": "transformerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuild_createObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuild_returnValue"
+                }
+              }
+            ]
           }
         }
       },
@@ -5120,11 +5133,24 @@ export const miroirFundamentalJzodSchema = {
             "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_createObject"
-            }
+            "type": "union",
+            "discriminator": "transformerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForRuntime_createObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForRuntime_returnValue"
+                }
+              }
+            ]
           }
         }
       },
@@ -6621,11 +6647,24 @@ export const miroirFundamentalJzodSchema = {
             "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_createObject"
-            }
+            "type": "union",
+            "discriminator": "transformerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime_createObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime_returnValue"
+                }
+              }
+            ]
           }
         }
       },
@@ -40442,14 +40481,21 @@ export const miroirFundamentalJzodSchema = {
               },
               "definition": {
                 "type": "union",
+                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_createObject"
-                    },
-                    "context": {}
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_returnValue"
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -43203,14 +43249,21 @@ export const miroirFundamentalJzodSchema = {
               },
               "definition": {
                 "type": "union",
+                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_createObject"
-                    },
-                    "context": {}
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_returnValue"
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -50633,14 +50686,21 @@ export const miroirFundamentalJzodSchema = {
               },
               "definition": {
                 "type": "union",
+                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_createObject"
-                    },
-                    "context": {}
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_returnValue"
+                    }
                   },
                   {
                     "type": "schemaReference",

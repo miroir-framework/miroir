@@ -130,6 +130,7 @@ export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformer
 const runtimeReferenceMap: Record<string, string> = {
   transformer: "transformerForRuntime",
   // transformer_InnerReference: "transformerForRuntime_InnerReference",
+  transformer_returnValue: "transformerForRuntime_returnValue",
   transformer_createObject: "transformerForRuntime_createObject",
   transformer_getFromContext: "transformerForRuntime_getFromContext",
   transformer_accessDynamicPath: "transformerForRuntime_accessDynamicPath",
@@ -139,6 +140,7 @@ const runtimeReferenceMap: Record<string, string> = {
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
   // transformer_InnerReference: "transformerForBuild_InnerReference",
+  transformer_returnValue: "transformerForBuild_returnValue",
   transformer_createObject: "transformerForBuild_createObject",
   transformer_getFromContext: "transformerForBuild_getFromParameters",
   transformer_accessDynamicPath: "transformerForBuild_accessDynamicPath",
@@ -152,6 +154,7 @@ const buildReferenceMap: Record<string, string> = {
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
   // transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapList, transformer_mergeIntoObject
+  transformer_returnValue: "transformerForBuildPlusRuntime_returnValue",
   transformer_createObject: "transformerForBuildPlusRuntime_createObject",
   transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
   transformer_accessDynamicPath: "transformerForBuildPlusRuntime_accessDynamicPath",
