@@ -104,7 +104,7 @@
                 },
                 "attributeValue": {
                   "transformerType": "returnValue",
-                  "value": { "type": "string" }
+                  "value": { "type": "string", "optional": true }
                 }
               }
             ]

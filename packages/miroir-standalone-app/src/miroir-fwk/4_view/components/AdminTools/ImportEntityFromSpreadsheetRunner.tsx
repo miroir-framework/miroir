@@ -1,5 +1,6 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import * as XLSX from 'xlsx';
 
 import type {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
@@ -34,11 +35,14 @@ import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateEntityTool"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ImportEntityFromSpreadsheetRunner"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+const imageMimeType = /image\/(png|jpg|jpeg)/i;
+const excelMimeType = /application\//i;
 
 // ################################################################################################
 export interface CreateEntityToolProps {
@@ -54,6 +58,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   const newEntityUuid = uuidv4();
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+
+  const [file, setFile] = useState(null);
+  const [fileDataURL, setFileDataURL] = useState<any>(null);
+  const [fileData, setFileData] = useState<string[]>([]);
+  const [currentWorkSheet, setCurrentWorkSheet] = useState<XLSX.WorkSheet | undefined>(undefined);
 
   // const localDeploymentUuid = deploymentUuid;
   // const localDeploymentUuid = "1b3f973b-a000-4a85-9d42-2639ecd0c473"; // WRONG, it's the application's uuid
@@ -109,6 +118,49 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     };
   }, []);
 
+  // ##############################################################################################
+  const changeHandler = (e:any) => {
+      const file = e.target.files[0];
+      if (!file.type.match(excelMimeType)) {
+        alert("excel mime type is not valid: " + file.type);
+        return;
+      }
+      setFile(file);
+    }
+    useEffect(() => {
+      let fileReader:FileReader, isCancel = false;
+      if (file) {
+        fileReader = new FileReader();
+        fileReader.onload = (e:ProgressEvent<FileReader>) => {
+          const result = e.target?.result;
+          if (result && !isCancel) {
+            setFileDataURL(result);
+            const workBook: XLSX.WorkBook = XLSX.read(result, {type: 'binary'});
+            log.info('found excel workbook',workBook);
+            const workSheetName: string = workBook.SheetNames[0];
+            log.info('found excel workSheetName',workSheetName);
+            const workSheet: XLSX.WorkSheet = workBook.Sheets[workSheetName];
+            log.info('found excel workSheet',workSheet);
+            const data: any = XLSX.utils.sheet_to_json(workSheet, {header:"A"});
+            // headers = data[0];
+            setFileData(data);
+            setCurrentWorkSheet(workSheet)
+            log.info('found excel data',data);
+            
+          }
+        }
+        fileReader.readAsBinaryString(file);
+      }
+      return () => {
+        isCancel = true;
+        if (fileReader && fileReader.readyState === 1) {
+          fileReader.abort();
+        }
+      }
+  
+    }, [file]);
+  
+  // ##############################################################################################
   const deploymentUuidQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
@@ -359,15 +411,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
             objects: [
               {
                 parentName: "EntityName",
-                // parentName: {
-                //   transformerType: "mustacheStringTemplate",
-                //   definition: "{{createEntity_newEntity.name}}",
-                // },
                 parentUuid: newEntityUuid,
-                // parentUuid: {
-                //   transformerType: "mustacheStringTemplate",
-                //   definition: "{{createEntity_newEntity.uuid}}",
-                // },
                 applicationSection: "data",
                 instances: instances,
               },
@@ -376,7 +420,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         },
       ],
     }),
-    [runnerName]
+    [runnerName, newEntityUuid]
   );
   
   // ################################################################################################
@@ -384,16 +428,16 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   // ################################################################################################
   const onSubmit = useCallback(
   async (values: any) => {
-    log.info("DeleteEntityRunner onSubmit values", values);
+    log.info("ImportEntityFromSpreadsheetRunner onSubmit", "newEntityUuid", newEntityUuid, "values", values);
 
     // open file??
 
     // create mlSchema from spreadsheet
-    const fileData: { [k: string]: any }[] = [
-      { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
-      { a: "US", b: "USA", c: "United States" },
-      { a: "DE", b: "DEU", c: "Germany" },
-    ];
+    // const fileData: { [k: string]: any }[] = [
+    //   { a: "iso3166-1Alpha-2", b: "iso3166-1Alpha-3", c: "Name" },
+    //   { a: "US", b: "USA", c: "United States" },
+    //   { a: "DE", b: "DEU", c: "Germany" },
+    // ];
     // const newEntityJzodSchema: JzodObject = {
     //   type: "object",
     //   definition: Object.assign(
@@ -428,8 +472,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     // };
 
     const objectAttributeNames = fileData[0];
-    // fileData.splice(0,1) // side effect!!!
-    // fileData.slice(1) // side effect!!!
     const instances:EntityInstance[] = 
       fileData.slice(1)
       .map(
@@ -446,7 +488,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         }
       ) 
     ;
-    log.info('createEntity adding instances',instances);
+    log.info('ImportEntityFromSpreadsheetRunner adding instances',instances);
 
     const entity: Entity = {
       uuid: newEntityUuid,
@@ -469,20 +511,16 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         definition: `{{${runnerName}.entityName}} Definition`,
       } as any,
       entityUuid: newEntityUuid,
-      // jzodSchema: newEntityJzodSchema,
       jzodSchema: {
         transformerType: "spreadSheetToJzodSchema",
-        interpolation: "runtime",
         spreadsheetContents: fileData,
-        // spreadsheetContents: {
-        //   transformerType: "getFromContext",
-        //   interpolation: "runtime",
-        //   referenceName: "spreadsheetContents",
-        // },
       } as any,
     };
 
-    log.info("ImportEntityFromSpreadsheetRunner onSubmit entityDefinition", JSON.stringify(entityDefinition, null, 2));
+    // log.info(
+    //   "ImportEntityFromSpreadsheetRunner onSubmit entityDefinition",
+    //   JSON.stringify(entityDefinition, null, 2)
+    // );
     const action: CompositeActionTemplate = createEntityActionTemplate(
       entity,
       entityDefinition,
@@ -490,16 +528,20 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     )
 
     // call createEntity action
-    log.info("ImportEntityFromSpreadsheetRunner onSubmit create Entity", action);
+    log.info("ImportEntityFromSpreadsheetRunner onSubmit action create Entity", 
+      JSON.stringify(action, null, 2),
+      //
+      // action
+    );
     await domainController.handleCompositeActionTemplate(
       action,
       currentMiroirModelEnvironment,
-      {...values, spreadsheetContents: fileData},
+      values,
     )
 
 
   }
-  , []);
+  , [fileData, createEntityActionTemplate, domainController, currentMiroirModelEnvironment, newEntityUuid]);
 
   return (
     <>
@@ -511,6 +553,26 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         label={`DeleteEntityRunner for ${runnerName} deploymentUuidQuery`}
         data={deploymentUuidQuery}
       /> */}
+      <form>
+        <p>
+          <label htmlFor="image"> Browse files </label>
+          <input type="file" id="excel" accept=".xls, .xlsx, .ods" onChange={changeHandler} />
+          {file ? file["type"] : ""}
+        </p>
+        <p>
+          <input type="submit" />
+        </p>
+      </form>
+      {fileDataURL ? (
+        <p>
+          found Json file length:
+          {
+            // <img src={fileDataURL} alt="preview" />
+            JSON.stringify(fileData).length
+          }
+        </p>
+      ) : null}
+      found row A:{JSON.stringify(fileData ? fileData[0] : "")}
       <OuterRunnerView
         runnerName={runnerName}
         deploymentUuid={deploymentUuid}

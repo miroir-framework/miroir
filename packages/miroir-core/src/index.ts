@@ -897,7 +897,6 @@ export {
   resolveQueryTemplateSelectExtractorWrapper,
   resolveQueryTemplateWithExtractorCombinerTransformer,
 } from "./2_domain/Templates";
-export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
 export {
   applicationTransformerDefinitions,
   getInnermostTransformerError,

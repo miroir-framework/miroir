@@ -97,7 +97,14 @@ export function resolveCompositeActionTemplate(
         //   compositeActionLabel + " " + t[0] + " " + JSON.stringify(resolvedTemplate, null, 2)
         // );
       } else {
-        log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolved template", t[0], "has value", resolvedTemplate);
+        log.info(
+          "resolveCompositeActionTemplate",
+          compositeActionLabel,
+          "resolved template",
+          t[0],
+          "has value",
+          resolvedTemplate
+        );
         resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
       }
     }
@@ -142,7 +149,12 @@ export function resolveCompositeActionTemplate(
     // templates: resolvedCompositeActionTemplates, // TODO: TEMPLATES IN COMPOSITE ACTION?
     definition: resolvedCompositeActionDefinition as any,
   }
-  log.info("resolveCompositeActionTemplate", compositeActionLabel, "resolvedCompositeAction", resolvedCompositeAction);
+  log.info(
+    "resolveCompositeActionTemplate",
+    compositeActionLabel,
+    "resolvedCompositeAction",
+    resolvedCompositeAction
+  );
 
   // log.info("resolveCompositeActionTemplate", compositeActionLabel, "localActionParams", Object.keys(localActionParams));
   return {

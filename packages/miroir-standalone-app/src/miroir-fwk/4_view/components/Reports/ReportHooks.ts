@@ -62,23 +62,23 @@ export function useQueryTemplateResults(
   const isQueryTemplate = queryOrQueryTemplate
     ? !(queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer).extractors
     : true;
-  log.info(
-    "################################################################### useQueryTemplateResults isQueryTemplate",
-    isQueryTemplate,
-    queryOrQueryTemplate
-  );
+  // log.info(
+  //   "################################################################### useQueryTemplateResults isQueryTemplate",
+  //   isQueryTemplate,
+  //   queryOrQueryTemplate
+  // );
   const queryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer | undefined =
     queryOrQueryTemplate && isQueryTemplate
       ? (queryOrQueryTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer)
       : undefined;
-  log.info("useQueryTemplateResults queryTemplate", queryTemplate);
+  // log.info("useQueryTemplateResults queryTemplate", queryTemplate);
   const query: BoxedQueryWithExtractorCombinerTransformer | undefined =
     queryOrQueryTemplate && !isQueryTemplate
       ? (queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer)
       : undefined;
-  log.info("useQueryTemplateResults  query", query);
-  // fetching report definition
+  // log.info("useQueryTemplateResults  query", query);
 
+  // fetching report definition
   const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer | undefined = useMemo(
     () =>
       queryTemplate
@@ -92,7 +92,7 @@ export function useQueryTemplateResults(
     [queryTemplate]
   );
 
-  log.info("useQueryTemplateResults resolvedQuery", resolvedTemplateQuery);
+  // log.info("useQueryTemplateResults resolvedQuery", resolvedTemplateQuery);
   // log.info(
   //   "################################################################ useQueryTemplateResults resolved query Template DONE"
   // );
@@ -115,7 +115,7 @@ export function useQueryTemplateResults(
     [props?.pageParams, resolvedTemplateQuery]
   );
 
-  log.info("useQueryTemplateResults reportDataQuery", reportDataQuery);
+  // log.info("useQueryTemplateResults reportDataQuery", reportDataQuery);
   const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
     useMemo(
       () =>
@@ -126,18 +126,17 @@ export function useQueryTemplateResults(
       [deploymentEntityStateSelectorMap, reportDataQuery]
     );
 
-  log.info(
-    "useQueryTemplateResults deploymentEntityStateFetchQueryParams",
-    deploymentEntityStateFetchQueryParams
-  );
+  // log.info(
+  //   "useQueryTemplateResults deploymentEntityStateFetchQueryParams",
+  //   deploymentEntityStateFetchQueryParams
+  // );
 
-  log.info("reportDataQuery", reportDataQuery);
+  // log.info("reportDataQuery", reportDataQuery);
   const reportData: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> =
     useReduxDeploymentsStateQuerySelector(
       deploymentEntityStateSelectorMap.runQuery,
       deploymentEntityStateFetchQueryParams
     );
-  log.info("useQueryTemplateResults reportData", reportData);
-  // return [reportData, reportDataQuery];
+  // log.info("useQueryTemplateResults reportData", reportData);
   return {reportData, resolvedQuery: reportDataQuery};
 };
