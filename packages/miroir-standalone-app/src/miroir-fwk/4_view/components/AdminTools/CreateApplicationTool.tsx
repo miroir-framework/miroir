@@ -35,7 +35,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { RunnerView } from "./RunnerView.js";
+import { InnerRunnerView } from "./InnerRunnerView.js";
 import {
   transformer,
   type AdminApplication,

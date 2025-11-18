@@ -31,10 +31,9 @@ import {
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../../constants.js';
-import { cleanLevel } from '../../constants.js';
+import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
-import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
@@ -295,6 +294,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
+  // ##############################################################################################
   const formValueMLSchema: JzodObject = useMemo(() => {
     if (!props.pageParams.deploymentUuid || !reportEntityDefinition?.entityUuid) {
       return { type: "object", definition: {} };
@@ -567,12 +567,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                       reportDefinitionDEFUNCT={reportViewData[reportNamePath.join("_")]} // DEFUNCT since InlineReportEditor uses formik context directly
                       reportEntityDefinitionDEFUNCT={reportEntityDefinition}
                       formValueMLSchema={formValueMLSchema}
-                      // hasValidationErrors={hasValidationErrors}
                       formikValuePath={reportNamePath}
                       formikReportDefinitionPathString={props.reportDefinition.name}
                       formikAlreadyAvailable={true}
-                      // onDefinitionChange={setLocalEditedReportDefinitionDEFUNCT}
-                      // onValidationChange={setHasValidationErrors}
                     />
                   )}
                   {/* <span>

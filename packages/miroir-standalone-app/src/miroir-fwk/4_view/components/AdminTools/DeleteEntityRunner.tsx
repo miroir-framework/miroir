@@ -40,12 +40,7 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
 }) => {
   const runnerName: string = "deleteEntity";
   const runnerLabel: string = "Delete Entity";
-  // const domainController: DomainControllerInterface = useDomainControllerService();
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
-
-  // const localDeploymentUuid = deploymentUuid;
-  // const localDeploymentUuid = "1b3f973b-a000-4a85-9d42-2639ecd0c473"; // WRONG, it's the application's uuid
-  const localDeploymentUuid = "c0569263-bf2e-428a-af4b-37b7d3953f4b";
+  // const localDeploymentUuid = "c0569263-bf2e-428a-af4b-37b7d3953f4b";
   const formMlSchema: FormMlSchema = useMemo(
     () => ({
       // formMlSchemaType: "mlSchema",
@@ -293,7 +288,7 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
         },
       ],
     };
-  }, [localDeploymentUuid]);
+  }, [runnerName, runnerLabel]);
 
   return (
     <>

@@ -56,7 +56,6 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
-export const lastSubmitButtonClicked = "lastSubmitButtonClicked";
 
 // const miroirExpression: JzodElement = {
 //   type: "object",

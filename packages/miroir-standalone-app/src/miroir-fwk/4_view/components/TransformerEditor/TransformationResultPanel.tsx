@@ -62,7 +62,8 @@ export const TransformationResultPanel: React.FC<{
   }) => {
     log.info("Rendering TransformationResultPanel with result:", transformationResult);
     return (
-      <ThemedContainer style={{ flex: 1, maxWidth: "50%" }}>
+      // <ThemedContainer style={{ flex: 1, maxWidth: "50%" }}>
+      <ThemedContainer style={{ flex: 1 }}>
         <ThemedHeaderSection>
           <ThemedTitle>
             Transformation Result

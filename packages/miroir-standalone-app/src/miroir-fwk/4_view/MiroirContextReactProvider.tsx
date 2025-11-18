@@ -52,12 +52,14 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// ################################################################################################
 // ToolsPage state interface for persistence
 export interface ToolsPageState {
   transformerEditor?: {
     selectedEntityUuid?: string;
     currentInstanceIndex?: number;
     showAllInstances?: boolean;
+    mode?: "here" | "defined";
     currentTransformerDefinition?: any;
     foldedObjectAttributeOrArrayItems?: FoldedStateTree;
     foldedEntityInstanceItems?: { [k: string]: boolean };
@@ -65,6 +67,10 @@ export interface ToolsPageState {
   };
 }
 
+// #############################################################################################
+// #############################################################################################
+// #############################################################################################
+// #############################################################################################
 export interface MiroirReactContext {
   // miroirContext: MiroirContextInterface, // events, client/server config
   miroirContext: MiroirContextInterface; // events, client/server config
@@ -116,7 +122,7 @@ export interface MiroirReactContext {
   // ###################################################################################################
   // ToolsPage state management
   toolsPageState: ToolsPageState;
-  updateToolsPageState: (updates: Partial<ToolsPageState>) => void;
+  updateToolsPageStateDEFUNCT: (updates: Partial<ToolsPageState>) => void;
   updateTransformerEditorState: (updates: Partial<ToolsPageState["transformerEditor"]>) => void;
   // ###################################################################################################
   // Modal windows for monitoring
@@ -229,10 +235,10 @@ export function MiroirContextReactProvider(props: {
   }, [sidebarWidth, gridType, editMode]);
 
   // Update functions for ToolsPage state with persistence
-  const updateToolsPageState = useMemo(
+  const updateToolsPageStateDEFUNCT = useMemo(
     () => (updates: Partial<ToolsPageState>) => {
       const newState = { ...toolsPageState, ...updates };
-      // log.info("updateTransformerEditorState updateToolsPageState", { updates, newState });
+      // log.info("updateTransformerEditorState updateToolsPageStateDEFUNCT", { updates, newState });
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
       sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
@@ -414,7 +420,7 @@ export function MiroirContextReactProvider(props: {
       },
       viewParams,
       toolsPageState,
-      updateToolsPageState,
+      updateToolsPageStateDEFUNCT,
       updateTransformerEditorState,
       showPerformanceDisplay,
       setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => {
@@ -474,7 +480,7 @@ export function MiroirContextReactProvider(props: {
       snackbarMessage,
       snackbarSeverity,
       toolsPageState,
-      updateToolsPageState,
+      updateToolsPageStateDEFUNCT,
       updateTransformerEditorState,
     ]
   );

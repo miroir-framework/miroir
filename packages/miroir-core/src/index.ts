@@ -1161,6 +1161,7 @@ export {
   entityStoreBasedConfiguration,
   entityTest,
   entityTransformerTest,
+  entityTransformerDefinition,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,

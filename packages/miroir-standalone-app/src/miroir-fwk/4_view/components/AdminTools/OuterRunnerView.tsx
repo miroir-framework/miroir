@@ -1,9 +1,7 @@
 import { Formik, FormikHelpers } from "formik";
-import { useMemo } from "react";
 
 import type {
   DomainControllerInterface,
-  JzodObject,
   LoggerInterface,
   MiroirModelEnvironment,
   TransformerForRuntime
@@ -17,9 +15,8 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { ThemedOnScreenHelper } from "../Themes/BasicComponents.js";
+import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { RunnerProps } from "./RunnerInterface.js";
-import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -151,7 +148,7 @@ export const OuterRunnerView = <T extends Record<string, any>>(props: RunnerProp
         validateOnChange={validateOnChange}
         validateOnBlur={validateOnBlur}
       >
-        <RunnerView
+        <InnerRunnerView
           {...props}
           // runnerName={runnerName}
           // deploymentUuid={deploymentUuid}

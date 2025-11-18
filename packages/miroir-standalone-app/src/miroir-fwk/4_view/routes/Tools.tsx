@@ -124,42 +124,41 @@ export const ToolsPage: React.FC<any> = (
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  );
-  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  // const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  // const currentModel: MetaModel = useCurrentModel(
+  //   context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  // );
+  // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
   const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
     undefined
   );
-  const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
+  // const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
   const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
 
 
-  const resolvedTestResultsJzodSchema: JzodElement | undefined = useMemo(() => {
-    if (
-      testResults &&
-      context.miroirFundamentalJzodSchema != undefined &&
-      (testSuitesResults != undefined && testSuitesResults.context != undefined)
-    ) {
-      const configuration = jzodTypeCheck(
-        (context.miroirFundamentalJzodSchema.definition as any).context.testsResults,
-        testResults?.testsSuiteResults?.["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
-        [], // currentValuePath
-        [], // currentTypePath
-        {
-          miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel: currentMiroirModel,
-        },
-        emptyObject
-      );
+  // const resolvedTestResultsJzodSchema: JzodElement | undefined = useMemo(() => {
+  //   if (
+  //     testResults &&
+  //     context.miroirFundamentalJzodSchema != undefined &&
+  //     (testSuitesResults != undefined && testSuitesResults.context != undefined)
+  //   ) {
+  //     const configuration = jzodTypeCheck(
+  //       (context.miroirFundamentalJzodSchema.definition as any).context.testsResults,
+  //       testResults?.testsSuiteResults?.["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
+  //       [], // currentValuePath
+  //       [], // currentTypePath
+  //       {
+  //         miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+  //         currentModel,
+  //         miroirMetaModel: currentMiroirModel,
+  //       },
+  //       emptyObject
+  //     );
 
-      return configuration.status == "ok" ? configuration.resolvedSchema : defaultObject;
-    }
-  }, [context.miroirFundamentalJzodSchema, testResults]);
+  //     return configuration.status == "ok" ? configuration.resolvedSchema : defaultObject;
+  //   }
+  // }, [context.miroirFundamentalJzodSchema, testResults]);
 
   // log.info(
   //   "called jzodTypeCheck: resolvedTestResultsJzodSchema",

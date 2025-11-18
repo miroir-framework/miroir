@@ -44,7 +44,7 @@ import {
 import { javascript } from '@codemirror/lang-javascript';
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../../constants.js';
-import { cleanLevel } from '../../constants.js';
+import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import {
   useCurrentModel,
   useReduxDeploymentsStateQuerySelectorForCleanedResult
@@ -55,7 +55,6 @@ import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
-import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
 import { ActionButton } from '../Page/ActionButton.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -82,21 +81,21 @@ export interface TypedValueObjectEditorProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   domainElement?: Record<string,any>,
+  // readonly mode
+  readonly?: boolean; // Whether the editor should be readonly (no submit button, no editing)
   // Note: Outline props removed since using context now
   // ancillary props
   showPerformanceDisplay?: boolean;
   formLabel: string;
-  // fold / unfold element
-  // depth control
-  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
-  // readonly mode
-  readonly?: boolean; // Whether the editor should be readonly (no submit button, no editing)
-  // error highlighting
   displayError?: {
     errorPath: string[]; // Path to element that should be highlighted with red border due to error
     errorMessage: string; // Error message to display as tooltip or title
   };
-  displaySubmitButton?: "onTop" | "onFirstLine";
+  // fold / unfold element
+  // depth control
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
+  // error highlighting
+  displaySubmitButton?: "onTop" | "onFirstLine" | "noDisplay";
   useActionButton?: boolean; // Whether to use ActionButton (async) instead of ThemedStyledButton
   // navigationCount: number;
 }
