@@ -309,18 +309,18 @@ export const ThemedSpan: React.FC<ThemedComponentProps & {
 export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
   label?: string;
   data: any;
+  initiallyUnfolded?: boolean;
 }> = ({ 
   label,
   data,
   className, 
-  style 
+  style,
+  initiallyUnfolded = true
 }) => {
   const { currentTheme } = useMiroirTheme();
+  const [isUnfolded, setIsUnfolded] = React.useState(initiallyUnfolded);
   
-  const helperStyles = css({
-    fontSize: currentTheme.typography.fontSize.sm,
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
+  const containerStyles = css({
     backgroundColor: currentTheme.colors.surface,
     color: currentTheme.colors.text,
     border: `1px solid ${currentTheme.colors.border}`,
@@ -331,15 +331,49 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
     lineHeight: currentTheme.typography.lineHeight.normal,
   });
 
+  const headerStyles = css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: currentTheme.spacing.sm,
+    cursor: 'pointer',
+    userSelect: 'none',
+  });
+
+  const iconStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    color: currentTheme.colors.textSecondary,
+    transition: 'transform 0.2s ease',
+    transform: isUnfolded ? 'rotate(90deg)' : 'rotate(0deg)',
+    display: 'inline-block',
+  });
+
   const labelStyles = css({
     fontWeight: currentTheme.typography.fontWeight.bold,
     color: currentTheme.colors.textSecondary,
   });
 
+  const dataStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    marginTop: currentTheme.spacing.sm,
+  });
+
+  const handleToggle = () => {
+    setIsUnfolded(!isUnfolded);
+  };
+
   return (
-    <pre css={helperStyles} className={className} style={style}>
-      {label && <span css={labelStyles}>{label}: </span>}
-      {JSON.stringify(data, null, 2)}
-    </pre>
+    <div css={containerStyles} className={className} style={style}>
+      <div css={headerStyles} onClick={handleToggle}>
+        <span css={iconStyles}>▶</span>
+        {label && <span css={labelStyles}>{label}</span>}
+      </div>
+      {isUnfolded && (
+        <pre css={dataStyles}>
+          {JSON.stringify(data, null, 2)}
+        </pre>
+      )}
+    </div>
   );
 };

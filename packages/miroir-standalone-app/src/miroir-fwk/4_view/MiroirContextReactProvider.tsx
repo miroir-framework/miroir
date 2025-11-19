@@ -32,6 +32,7 @@ import {
   GridType,
   type MiroirEvent,
   type KeyMapEntry,
+  type TransformerForBuildPlusRuntime,
 } from "miroir-core";
 import { ReduxStateChanges, selectCurrentTransaction } from "miroir-localcache-redux";
 
@@ -59,8 +60,21 @@ export interface ToolsPageState {
     selectedEntityUuid?: string;
     currentInstanceIndex?: number;
     showAllInstances?: boolean;
-    mode?: "here" | "defined";
+    // selector
+    mode?: "here" | "defined" | "none"; // OLD
+    currentDefinedTransformerDefinition?: any; // OLD
     currentTransformerDefinition?: any;
+    selector?: {
+      mode: "defined";
+      application: Uuid
+      transformerUuid: Uuid;
+    } | {
+      mode: "here";
+      transformer: TransformerForBuildPlusRuntime
+    } | {
+      mode: "none";
+    };
+    // 
     foldedObjectAttributeOrArrayItems?: FoldedStateTree;
     foldedEntityInstanceItems?: { [k: string]: boolean };
     foldedTransformationResultItems?: { [k: string]: boolean };
@@ -246,6 +260,7 @@ export function MiroirContextReactProvider(props: {
     [toolsPageState]
   );
 
+  // ##############################################################################################
   const updateTransformerEditorState = useMemo(
     () => (updates: Partial<ToolsPageState["transformerEditor"]>) => {
       const newState = {

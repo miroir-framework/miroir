@@ -37,7 +37,7 @@ import {
 } from 'miroir-core';
 
 
-import type { TransformerDefinition, TransformerForBuildPlusRuntime } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { transformer, type TransformerDefinition, type TransformerForBuildPlusRuntime } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
 import { packageName } from '../../../../constants';
@@ -356,10 +356,13 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   const reportContext = useReportPageContext();
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const miroirContextService = useMiroirContextService();
+  
+  // Ref for debouncing transformer definition updates when mode='here'
+  const transformerUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
-  const currentMode: "here" | "defined" = persistedState?.mode || "here";
+  // const currentMode: "here" | "defined" = persistedState?.mode || "here";
   const currentHereTransformerDefinition: TransformerForBuildPlusRuntime =
     persistedState?.currentTransformerDefinition??{ transformerType: "returnValue", value: null };
   // ##############################################################################################
@@ -583,34 +586,34 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   }, [context]);
 
   // Memoized context results to avoid recreating on every execution
-  const contextResults = useMemo(() => {
-    if (showAllInstances) {
-      // When showing all instances, target becomes an array of all instances
-      if (entityInstances.length === 0) return {};
+  // const inputSelectorInstances = useMemo(() => {
+  //   if (showAllInstances) {
+  //     // When showing all instances, target becomes an array of all instances
+  //     if (entityInstances.length === 0) return {};
 
-      return {
-        // entityInstance: entityInstances,
-        // instance: entityInstances,
-        [defaultTransformerInput]: entityInstances,
-        // applyTo: entityInstances,
-        // Also provide individual properties from the first instance for compatibility
-        // (in case transformers expect single instance properties)
-        ...(entityInstances[0] || {}),
-      };
-    } else {
-      // When showing single instance, target is the selected instance
-      if (!selectedEntityInstance) return {};
+  //     return {
+  //       // entityInstance: entityInstances,
+  //       // instance: entityInstances,
+  //       [defaultTransformerInput]: entityInstances,
+  //       // applyTo: entityInstances,
+  //       // Also provide individual properties from the first instance for compatibility
+  //       // (in case transformers expect single instance properties)
+  //       ...(entityInstances[0] || {}),
+  //     };
+  //   } else {
+  //     // When showing single instance, target is the selected instance
+  //     if (!selectedEntityInstance) return {};
 
-      return {
-        entityInstance: selectedEntityInstance,
-        instance: selectedEntityInstance,
-        // target: selectedEntityInstance,
-        [defaultTransformerInput]: selectedEntityInstance,
-        applyTo: selectedEntityInstance,
-        ...selectedEntityInstance,
-      };
-    }
-  }, [showAllInstances, entityInstances, selectedEntityInstance]);
+  //     return {
+  //       entityInstance: selectedEntityInstance,
+  //       instance: selectedEntityInstance,
+  //       // target: selectedEntityInstance,
+  //       [defaultTransformerInput]: selectedEntityInstance,
+  //       applyTo: selectedEntityInstance,
+  //       ...selectedEntityInstance,
+  //     };
+  //   }
+  // }, [showAllInstances, entityInstances, selectedEntityInstance]);
 
 
 
@@ -708,21 +711,21 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // }, [currentReportTargetEntityDefinition]);
 
   // TransformerDefinition schema - memoized to avoid recalculation
-  const transformerDefinitionSchema: JzodElement = useMemo(
-    () => ({
-      type: "schemaReference",
-      definition: {
-        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        relativePath: "transformerForBuildPlusRuntime",
-      },
-    }),
-    []
-  );
+  // const transformerDefinitionSchema: JzodElement = useMemo(
+  //   () => ({
+  //     type: "schemaReference",
+  //     definition: {
+  //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  //       relativePath: "transformerForBuildPlusRuntime",
+  //     },
+  //   }),
+  //   []
+  // );
 
 
 
   log.info("TransformerEditor currentTransformerDefinition:", currentHereTransformerDefinition);
-  log.info("TransformerEditor transformerDefinitionSchema:", transformerDefinitionSchema);
+  // log.info("TransformerEditor transformerDefinitionSchema:", transformerDefinitionSchema);
   // handle folding of TransfrormerEditor object attributes and array items
   useEffect(() => {
     if (persistedState && persistedState?.foldedObjectAttributeOrArrayItems) {
@@ -732,207 +735,90 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     }
   }, [context, persistedState?.foldedObjectAttributeOrArrayItems]);
 
-  // ################################################################################################
-  // Apply transformer to selected entity instance with debouncing
-  // const applyTransformerToInstance = useCallback(async () => {
-  //   if (!currentTransformerDefinition || (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)) {
-  //     // setTransformationResult(null);
-  //     setTransformationError(null);
-  //     return null;
-  //   }
+  // // ################################################################################################
+  // // Apply transformer to selected entity instance with debouncing
+  // // const applyTransformerToInstance = useCallback(async () => {
+  // //   if (!currentTransformerDefinition || (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)) {
+  // //     // setTransformationResult(null);
+  // //     setTransformationError(null);
+  // //     return null;
+  // //   }
 
-  //   // Clear existing timeout
-  //   if (transformerTimeoutRef.current) {
-  //     clearTimeout(transformerTimeoutRef.current);
-  //   }
+  // //   // Clear existing timeout
+  // //   if (transformerTimeoutRef.current) {
+  // //     clearTimeout(transformerTimeoutRef.current);
+  // //   }
 
-  //   // Debounce transformer execution
-  //   transformerTimeoutRef.current = setTimeout(async () => {
-  //     try {
-  //       log.info("Applying transformer to instance(s)", {
-  //         transformer: currentTransformerDefinition,
-  //         showAllInstances,
-  //         instanceCount: showAllInstances ? entityInstances.length : 1,
-  //         target: showAllInstances ? entityInstances : selectedEntityInstance,
-  //       });
+  // //   // Debounce transformer execution
+  // //   transformerTimeoutRef.current = setTimeout(async () => {
+  // //     try {
+  // //       log.info("Applying transformer to instance(s)", {
+  // //         transformer: currentTransformerDefinition,
+  // //         showAllInstances,
+  // //         instanceCount: showAllInstances ? entityInstances.length : 1,
+  // //         target: showAllInstances ? entityInstances : selectedEntityInstance,
+  // //       });
 
-  //       const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
-  //         context.miroirContext.miroirActivityTracker, // activityTracker
-  //         "runtime", // step
-  //         ["rootTransformer"], // transformerPath
-  //         "TransformerEditor", // label
-  //         currentTransformerDefinition, // transformer
-  //         { ...currentMiroirModelEnvironment, ...contextResults }, // transformerParams
-  //         contextResults, // contextResults - pass the instance to transform
-  //         "value" // resolveBuildTransformersTo
-  //       );
+  // //       const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
+  // //         context.miroirContext.miroirActivityTracker, // activityTracker
+  // //         "runtime", // step
+  // //         ["rootTransformer"], // transformerPath
+  // //         "TransformerEditor", // label
+  // //         currentTransformerDefinition, // transformer
+  // //         { ...currentMiroirModelEnvironment, ...contextResults }, // transformerParams
+  // //         contextResults, // contextResults - pass the instance to transform
+  // //         "value" // resolveBuildTransformersTo
+  // //       );
 
-  //       // Check for Domain2ElementFailed pattern
-  //       if (result && typeof result === "object" && "queryFailure" in result) {
-  //         // setTransformationError(`Transformation failed: ${safeStringify(result)}`);
-  //         setTransformationError(result);
-  //         // setTransformationResult(null);
-  //         return null;
-  //       } else {
-  //         // setTransformationResult(result);
-  //         setTransformationError(null);
-  //         return result;
-  //         log.info("Transformation successful", { result });
-  //       }
-  //     } catch (error) {
-  //       const errorMessage = error instanceof Error ? error.message : String(error);
-  //       log.error("Error applying transformer:", error);
-  //       setTransformationError({
-  //         queryFailure: "FailedTransformer",
-  //         elementType: "Transformer",
-  //         transformerPath: [],
-  //         failureMessage: errorMessage,
-  //       });
-  //       // setTransformationResult(null);
-  //       return null;
-  //     }
-  //   }, 300); // 300ms debounce
-  // }, [
-  //   currentTransformerDefinition,
-  //   showAllInstances,
-  //   entityInstances,
-  //   selectedEntityInstance,
-  //   currentMiroirModelEnvironment,
-  //   contextResults,
-  // ]);
+  // //       // Check for Domain2ElementFailed pattern
+  // //       if (result && typeof result === "object" && "queryFailure" in result) {
+  // //         // setTransformationError(`Transformation failed: ${safeStringify(result)}`);
+  // //         setTransformationError(result);
+  // //         // setTransformationResult(null);
+  // //         return null;
+  // //       } else {
+  // //         // setTransformationResult(result);
+  // //         setTransformationError(null);
+  // //         return result;
+  // //         log.info("Transformation successful", { result });
+  // //       }
+  // //     } catch (error) {
+  // //       const errorMessage = error instanceof Error ? error.message : String(error);
+  // //       log.error("Error applying transformer:", error);
+  // //       setTransformationError({
+  // //         queryFailure: "FailedTransformer",
+  // //         elementType: "Transformer",
+  // //         transformerPath: [],
+  // //         failureMessage: errorMessage,
+  // //       });
+  // //       // setTransformationResult(null);
+  // //       return null;
+  // //     }
+  // //   }, 300); // 300ms debounce
+  // // }, [
+  // //   currentTransformerDefinition,
+  // //   showAllInstances,
+  // //   entityInstances,
+  // //   selectedEntityInstance,
+  // //   currentMiroirModelEnvironment,
+  // //   contextResults,
+  // // ]);
 
-  // useEffect(() => {
-  //   miroirContextService.miroirContext.miroirActivityTracker.resetResults();
-  // }, [miroirContextService.miroirContext.miroirActivityTracker, currentTransformerDefinition]);
-  log.info("TransformerEditor contextResults:", contextResults);
-  const [transformationResult, setTransformationResult] = useState<TransformerReturnType<any>>();
+  // // useEffect(() => {
+  // //   miroirContextService.miroirContext.miroirActivityTracker.resetResults();
+  // // }, [miroirContextService.miroirContext.miroirActivityTracker, currentTransformerDefinition]);
+  // log.info("TransformerEditor contextResults:", contextResults);
+  // const [transformationResult, setTransformationResult] = useState<TransformerReturnType<any>>();
 
-  // ##############################################################################################
-  // run transformation when transformer definition or imput data change
-  useEffect(() => {
-    let ignore = false;
-
-    const runTransformation = async () => {
-      if (
-        !currentHereTransformerDefinition ||
-        (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)
-      ) {
-        if (!ignore) setTransformationResult(undefined);
-        return;
-        // return null;
-      }
-      if (!ignore) {
-        try {
-          log.info("Applying transformer to instance(s)", {
-            transformer: currentHereTransformerDefinition,
-            showAllInstances,
-            instanceCount: showAllInstances ? entityInstances.length : 1,
-            target: showAllInstances ? entityInstances : selectedEntityInstance,
-          });
-          const transformerParams = { ...currentMiroirModelEnvironment, ...contextResults };
-          const result: TransformerReturnType<any> =
-            await miroirContextService.miroirContext.miroirActivityTracker.trackTransformerRun(
-              (currentHereTransformerDefinition as any)?.label ??
-                (currentHereTransformerDefinition as any)?.transformerType ??
-                "UnnamedTransformer",
-              (currentHereTransformerDefinition as any)?.transformerType as any,
-              "runtime",
-              transformerParams,
-              undefined, // parentId
-              () =>
-                transformer_extended_apply_wrapper(
-                  context.miroirContext.miroirActivityTracker, // activityTracker
-                  "runtime", // step
-                  ["rootTransformer"], // transformerPath
-                  "TransformerEditor", // label
-                  currentHereTransformerDefinition, // transformer
-                  currentMiroirModelEnvironment,
-                  transformerParams,
-                  contextResults, // contextResults - pass the instance to transform
-                  "value" // resolveBuildTransformersTo
-                )
-            );
-          setTransformationResult(result);
-          log.info("Applied transformer to instance(s)", {
-            transformer: currentHereTransformerDefinition,
-            showAllInstances,
-            instanceCount: showAllInstances ? entityInstances.length : 1,
-            target: showAllInstances ? entityInstances : selectedEntityInstance,
-            result,
-          });
-
-          // // Check for Domain2ElementFailed pattern
-          // if (result && typeof result === "object" && "queryFailure" in result) {
-          //   setTransformationError(result);
-          //   return null;
-          // } else {
-          //   setTransformationError(null);
-          //   return result;
-          // }
-          // return result;
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          log.error("Error applying transformer:", error);
-          if (!ignore)
-            setTransformationResult({
-              queryFailure: "FailedTransformer",
-              elementType: "Transformer",
-              transformerPath: [],
-              failureMessage: errorMessage,
-            });
-          // return ({
-          //   queryFailure: "FailedTransformer",
-          //   elementType: "Transformer",
-          //   transformerPath: [],
-          //   failureMessage: errorMessage,
-          // });
-          // return null;
-        }
-      }
-    };
-    runTransformation();
-    return () => {
-      ignore = true;
-    };
-  }, [
-    currentHereTransformerDefinition,
-    showAllInstances,
-    entityInstances,
-    selectedEntityInstance,
-    currentMiroirModelEnvironment,
-    contextResults,
-    context.miroirContext.miroirActivityTracker,
-    context.miroirContext,
-    context.toolsPageState,
-  ]);
-
-  const innermostError = useMemo(
-    () =>
-      transformationResult &&
-      typeof transformationResult == "object" &&
-      "queryFailure" in transformationResult
-        ? getInnermostTransformerError(transformationResult)
-        : undefined,
-    [transformationResult]
-  );
-  const errorPath = innermostError?.transformerPath || [];
-  log.info("TransformerEditor Transformation error path:", errorPath);
 
   // ################################################################################################
-  const transformationResultSchema: JzodElement = useMemo(() => {
-    if (!currentHereTransformerDefinition) {
-      return { type: "any" } as JzodElement;
-    }
-    return (valueToJzod(transformationResult) ?? { type: "any" }) as JzodElement;
-  }, [transformationResult]);
-
-  // ################################################################################################
-  // Handle transformer definition changes with debouncing (with persistence)
-  // TODO: useful? the result is already updated via useEffect above
+  // Handle transformer definition changes (form submission)
+  // Note: For mode='here', updates are already handled by debounced useEffect
+  // This mainly handles clearing activity tracker/events on submit
   const handleTransformerDefinitionSubmit = useCallback(
     async (formValuesAsParam: any) => {
       log.info(
-        "handleTransformerDefinitionChange form values",
+        "handleTransformerDefinitionSubmit form values",
         formValuesAsParam,
         "button clicked:",
         formValuesAsParam[lastSubmitButtonClicked]
@@ -940,21 +826,15 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       miroirContextService.miroirContext.miroirActivityTracker.resetResults();
       miroirContextService.miroirContext.miroirEventService.clear();
 
-      context.updateTransformerEditorState({
-        // currentTransformerDefinition: formValues.transformerEditor_editor["currentTransformerDefinition"],
-        currentTransformerDefinition:
-          formValuesAsParam.transformerEditor_selector.mode == "here"
-            ? formValuesAsParam.transformerEditor_selector["transformer"]
-            : { transformerType: "returnValue", value: null },
-      });
+      // For mode='here', the transformer is already being updated via debounced useEffect
+      // For mode='defined', the transformer is already updated when fetched
+      // So this submit handler is mainly for clearing activity tracker/events
     },
     [
-      context,
-      context.updateTransformerEditorState,
       miroirContextService,
       miroirContextService.miroirContext,
     ]
-  ); // Remove context from dependencies
+  );
 
   log.info(
     "Rendering TransformerEditor context.miroirContext.miroirEventService.events.size",
@@ -968,24 +848,30 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   //       <TransformerEventsPanel />
   //     </>
   //   );
-  // }, [transformationResult, context.miroirContext.miroirEventService.events.size]);
 
+  // }, [transformationResult, context.miroirContext.miroirEventService.events.size]);
+  // // ################################################################################################
+  // const transformationResultSchema: JzodElement = useMemo(() => {
+  //   // if (!currentHereTransformerDefinition) {
+  //   //   return { type: "any" } as JzodElement;
+  //   // }
+  //   return (valueToJzod(transformationResult) ?? { type: "any" }) as JzodElement;
+  // }, [transformationResult]);
+
+  // ################################################################################################
   const initialFormValues = useMemo(() => {
     return {
-      transformerEditor_selector: { transformer: currentHereTransformerDefinition, mode: currentMode },
-      // {
-      //   mode: "here",
-      //   transformer: {
-      //     transformerType: "returnValue",
-      //     // valueJzodSchema: { type: "any" },
-      //     // value: null,
-      //     // interpolation: "runtime",
-      //     value: "enter the wanted value here...", // Default to undefined value
-      //   } as TransformerForBuildPlusRuntime,
-      // },
-      transformerEditor_editor: { currentTransformerDefinition: currentHereTransformerDefinition },
+      // For mode selector - transformer field is only used when mode='here'
+      transformerEditor_selector: { 
+        // transformer: currentHereTransformerDefinition, 
+        mode: "none" 
+      },
+      // For transformer editor when mode='here'
+      transformerEditor_editor: { 
+        currentTransformerDefinition: currentHereTransformerDefinition 
+      },
     };
-  }, []);
+  }, []); // Empty deps - initialize once with persisted state
 
   return (
     <ThemedContainer>
@@ -1032,12 +918,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       </ThemedHeaderSection>
 
       {/* 3-Pane Layout */}
-      <div style={{ display: "flex", gap: "20px" }}>
+      {/* <div style={{ display: "flex", gap: "20px" }}> */}
         {/* left Pane: Transformer Definition Editor */}
         <Formik
           enableReinitialize={true}
           // initialValues={{ currentTransformerDefinition }}
-          initialValues={initialFormValues}
+          initialValues={initialFormValues as any}
           onSubmit={async (values, { setSubmitting, setErrors }) => {
             // if (readonly) {
             //   setSubmitting(false);
@@ -1065,8 +951,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             /* Formik children as function to access formik context */ (
               formikContext: FormikProps<{
                 transformerEditor_selector: {
-                  mode: "here" | "defined";
-                  transformer: TransformerForBuildPlusRuntime;
+                  mode?: "here" | "defined" | "none";
+                  transformer?: TransformerForBuildPlusRuntime;
                 };
                 transformerEditor_editor: {
                   currentTransformerDefinition: TransformerForBuildPlusRuntime;
@@ -1147,6 +1033,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               }, [deploymentUuidQueryResultsData]);
 
               // ##################################################################################
+              // fetch defined transformer definition
               const transformerDefinitionApplicationSection = getApplicationSection(
                 deploymentUuidFromApplicationUuid,
                 entityTransformerDefinition.uuid
@@ -1218,43 +1105,310 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 );
               }
               // const {reportData: transformerQueryResultsData } = transformerQueryResults;
-              const currentTransformerDefinition: TransformerDefinition | string = useMemo(() => {
+              const currentFetchedTransformerDefinition: TransformerDefinition | string = useMemo(() => {
                 return transformerQueryResults?.reportData?.transformers &&
                   transformerQueryResults?.reportData?.transformers.length == 1
                   ? transformerQueryResults?.reportData?.transformers[0]
                   : "NOT_FOUND";
               }, [transformerQueryResults]);
 
+              // ##################################################################################
+              // persistedState -> formik
               useEffect(() => {
                 log.info(
                   "TransformerEditor: got new mode:",
-                  formikContext.values.transformerEditor_selector.mode
+                  // formikContext.values.transformerEditor_selector.mode
+                  persistedState?.selector?.mode
                 );
-                // log.info(
-                //   "TransformerEditor: got new currentTransformerDefinition from query results:",
-                //   currentTransformerDefinition
-                // );
+                if (formikContext.values.transformerEditor_selector.mode == "none") {
+                  if (persistedState?.selector?.mode && persistedState?.selector?.mode !== "none") {
+                    // restore state from persistedState
+                    log.info(
+                      "TransformerEditor: initializing mode from persisted state:",
+                      persistedState?.selector?.mode
+                    );
+                    formikContext.setFieldValue(
+                      "transformerEditor_selector",
+                      persistedState?.selector
+                    );
+                  }
+                }
+                // // transfer the current transformer definition in persistedState to the formik context
                 // if (
-                //   formikContext.values.transformerEditor_selector.mode === "defined" &&
-                //   currentTransformerDefinition &&
-                //   typeof currentTransformerDefinition == "object" &&
-                //   currentTransformerDefinition.transformerImplementation
-                //     ?.transformerImplementationType == "transformer"
+                //   // formikContext.values.transformerEditor_selector.mode === "here"
+                //   persistedState?.selector?.mode === "here"
                 // ) {
-                //   context.updateTransformerEditorState({
-                //     // currentTransformerDefinition: formValues.transformerEditor_editor["currentTransformerDefinition"],
-                //     currentTransformerDefinition: currentTransformerDefinition.transformerImplementation
-                //     ?.definition,
-                //   });
+                //   formikContext.setFieldValue(
+                //     "transformerEditor_selector.transformer",
+                //     persistedState?.selector?.transformer
+                //   );
                 // }
-                context.updateTransformerEditorState({
-                  mode: formikContext.values.transformerEditor_selector.mode as any,
-                });
+                
+                // When mode is 'defined' and transformerUuid is changed, fetch transformer from stored definition and update formik context
                 if (
                   formikContext.values.transformerEditor_selector.mode === "defined" &&
-                  currentTransformerDefinition) {
+                  (formikContext.values.transformerEditor_selector as any).application &&
+                  (formikContext.values.transformerEditor_selector as any).transformerUuid &&
+                  (formikContext.values.transformerEditor_selector as any).transformerUuid !==
+                    noValue.uuid &&
+                  (formikContext.values.transformerEditor_selector as any).transformerUuid !==
+                    (persistedState?.selector as any).transformerUuid &&
+                  currentFetchedTransformerDefinition &&
+                  typeof currentFetchedTransformerDefinition == "object" &&
+                  currentFetchedTransformerDefinition.transformerImplementation
+                    ?.transformerImplementationType == "transformer"
+                ) {
+                  log.info(
+                    "TransformerEditor: updating context with stored transformer definition:",
+                    currentFetchedTransformerDefinition.transformerImplementation?.definition
+                  );
+                  formikContext.setFieldValue(
+                    "transformerEditor_selector.transformer",
+                    currentFetchedTransformerDefinition.transformerImplementation?.definition
+                  );
+                }
+              }, [formikContext.values.transformerEditor_selector.mode, persistedState?.selector, currentFetchedTransformerDefinition]);
+              
+              // ##################################################################################
+              // formik -> persistedState
+              // Debounced update to context when mode='here' and transformer definition changes
+              useEffect(() => {
+                // Clear existing timeout
+                if (transformerUpdateTimeoutRef.current) {
+                  clearTimeout(transformerUpdateTimeoutRef.current);
+                }
+                
+                // Only update if mode is defined
+                if (
+                  !formikContext.values.transformerEditor_selector.mode
+                   ||
+                  formikContext.values.transformerEditor_selector.mode === "none"
+                ) {
+                  return;
+                }
+                
+                // Debounce the update - only push to context after 2 seconds of no changes
+                transformerUpdateTimeoutRef.current = setTimeout(() => {
+                  log.info(
+                    "TransformerEditor: debounced update - pushing transformer to context:",
+                    formikContext.values.transformerEditor_selector.transformer
+                  );
+                  const selector = formikContext.values.transformerEditor_selector.mode === "defined"?{
+                    mode: "defined" as any, //formikContext.values.transformerEditor_selector.mode,
+                    application: (formikContext.values.transformerEditor_selector as any).application,
+                    transformerUuid: (formikContext.values.transformerEditor_selector as any).transformerUuid,
+                    transformer: (formikContext.values.transformerEditor_selector as any).transformer, // restores potentially saved modifications
+                  }:{
+                    mode: "here" as any, //formikContext.values.transformerEditor_selector.mode
+                    transformer: formikContext.values.transformerEditor_selector.transformer,
                   }
-              }, [formikContext.values.transformerEditor_selector.mode]);
+                  context.updateTransformerEditorState({
+                    currentTransformerDefinition:
+                      formikContext.values.transformerEditor_selector.transformer,
+                    selector
+                  });
+                }, 2000); // 2 second debounce
+                
+                // Cleanup timeout on unmount
+                return () => {
+                  if (transformerUpdateTimeoutRef.current) {
+                    clearTimeout(transformerUpdateTimeoutRef.current);
+                  }
+                };
+              }, [
+                formikContext.values.transformerEditor_selector.mode,
+                formikContext.values.transformerEditor_selector.transformer,
+                // formikContext.values.transformerEditor_editor.currentTransformerDefinition,
+              ]);
+
+              const spreadsheetContents = [
+                {
+                  a: "iso3166-1Alpha-2",
+                  b: "iso3166-1Alpha-3",
+                  c: "Name",
+                },
+                {
+                  a: "US",
+                  b: "USA",
+                  c: "United States",
+                },
+                {
+                  a: "DE",
+                  b: "DEU",
+                  c: "Germany",
+                },
+              ];
+              const inputSelectorData = useMemo(() => {
+                if (showAllInstances) {
+                  // When showing all instances, target becomes an array of all instances
+                  if (entityInstances.length === 0) return {};
+
+                  return {
+                    // entityInstance: entityInstances,
+                    // instance: entityInstances,
+                    [defaultTransformerInput]: entityInstances,
+                    spreadsheetContents,
+                    // applyTo: entityInstances,
+                    // Also provide individual properties from the first instance for compatibility
+                    // (in case transformers expect single instance properties)
+                    ...(entityInstances[0] || {}),
+                  };
+                } else {
+                  // When showing single instance, target is the selected instance
+                  if (!selectedEntityInstance) return {};
+
+                  return {
+                    entityInstance: selectedEntityInstance,
+                    instance: selectedEntityInstance,
+                    spreadsheetContents,
+                    // target: selectedEntityInstance,
+                    [defaultTransformerInput]: selectedEntityInstance,
+                    applyTo: selectedEntityInstance,
+                    ...selectedEntityInstance,
+                  };
+                }
+              }, [showAllInstances, entityInstances, selectedEntityInstance]);
+
+              // ##################################################################################
+              // run transformation when transformer definition or imput data change
+              // useEffect(() => {
+              //   // let ignore = false;
+              //   const currentFormikTransformerDefinition =
+              //     formikContext.values.transformerEditor_editor.currentTransformerDefinition;
+              //   try {
+              //     log.info("Applying transformer to instance(s)", {
+              //       transformer: currentFormikTransformerDefinition,
+              //       showAllInstances,
+              //       instanceCount: showAllInstances ? entityInstances.length : 1,
+              //       target: showAllInstances ? entityInstances : selectedEntityInstance,
+              //     });
+              //     const transformerParams = {
+              //       ...currentMiroirModelEnvironment,
+              //       ...contextResults,
+              //     };
+              //     // const result: TransformerReturnType<any> =
+              //     //   await miroirContextService.miroirContext.miroirActivityTracker.trackTransformerRun(
+              //     miroirContextService.miroirContext.miroirActivityTracker.trackTransformerRun(
+              //       (currentFormikTransformerDefinition as any)?.label ??
+              //         (currentFormikTransformerDefinition as any)?.transformerType ??
+              //         "UnnamedTransformer",
+              //       (currentFormikTransformerDefinition as any)?.transformerType as any,
+              //       "runtime",
+              //       transformerParams,
+              //       undefined, // parentId
+              //       () => {
+              //         const transformationResult = transformer_extended_apply_wrapper(
+              //           context.miroirContext.miroirActivityTracker, // activityTracker
+              //           "runtime", // step
+              //           ["rootTransformer"], // transformerPath
+              //           "TransformerEditor", // label
+              //           currentFormikTransformerDefinition, // transformer
+              //           currentMiroirModelEnvironment,
+              //           transformerParams,
+              //           contextResults, // contextResults - pass the instance to transform
+              //           "value" // resolveBuildTransformersTo
+              //         );
+              //         setTransformationResult(transformationResult);
+              //         log.info("Applied transformer to instance(s)", {
+              //           transformer: currentFormikTransformerDefinition,
+              //           showAllInstances,
+              //           instanceCount: showAllInstances ? entityInstances.length : 1,
+              //           target: showAllInstances ? entityInstances : selectedEntityInstance,
+              //           transformationResult,
+              //         });
+              //         return transformationResult;
+              //       }
+              //     );
+
+              //     // // Check for Domain2ElementFailed pattern
+              //     // if (result && typeof result === "object" && "queryFailure" in result) {
+              //     //   setTransformationError(result);
+              //     //   return null;
+              //     // } else {
+              //     //   setTransformationError(null);
+              //     //   return result;
+              //     // }
+              //     // return result;
+              //   } catch (error) {
+              //     const errorMessage = error instanceof Error ? error.message : String(error);
+              //     log.error("Error applying transformer:", error);
+              //     setTransformationResult({
+              //       queryFailure: "FailedTransformer",
+              //       elementType: "Transformer",
+              //       transformerPath: [],
+              //       failureMessage: errorMessage,
+              //     });
+              //     // return ({
+              //     //   queryFailure: "FailedTransformer",
+              //     //   elementType: "Transformer",
+              //     //   transformerPath: [],
+              //     //   failureMessage: errorMessage,
+              //     // });
+              //     // return null;
+              //   } finally {
+              //     // return Promise.resolve();
+              //   }
+              // }, [
+              //   formikContext.values.transformerEditor_editor
+              //           .currentTransformerDefinition,
+              //   // transformationResult,
+              //   showAllInstances,
+              //   entityInstances,
+              //   selectedEntityInstance,
+              //   currentMiroirModelEnvironment,
+              //   contextResults,
+              //   context.miroirContext.miroirActivityTracker,
+              //   context.miroirContext,
+              //   context.toolsPageState,
+              // ]);
+              const transformationResult = useMemo(() => {
+                const currentFormikTransformerDefinition = formikContext.values
+                  .transformerEditor_selector.transformer ?? {
+                  transformerType: "returnValue",
+                  value: null,
+                };
+                // const currentFormikTransformerDefinition =
+                //   formikContext.values.transformerEditor_editor.currentTransformerDefinition;
+                const transformerParams = {
+                  // spreadsheetContents: [],
+                  ...currentMiroirModelEnvironment,
+                  ...inputSelectorData,
+                };
+
+                return transformer_extended_apply_wrapper(
+                  context.miroirContext.miroirActivityTracker, // activityTracker
+                  "runtime", // step
+                  ["rootTransformer"], // transformerPath
+                  "TransformerEditor", // label
+                  currentFormikTransformerDefinition, // transformer
+                  currentMiroirModelEnvironment,
+                  transformerParams,
+                  inputSelectorData, // contextResults - pass the instance to transform
+                  "value" // resolveBuildTransformersTo
+                );
+              // }, [formikContext.values.transformerEditor_editor.currentTransformerDefinition]);
+              }, [formikContext.values.transformerEditor_selector.transformer, inputSelectorData]);
+
+              const innermostError = useMemo(
+                () =>
+                  transformationResult &&
+                  typeof transformationResult == "object" &&
+                  "queryFailure" in transformationResult
+                    ? getInnermostTransformerError(transformationResult)
+                    : undefined,
+                [transformationResult]
+              );
+              const errorPath = innermostError?.transformerPath || [];
+              log.info("TransformerEditor Transformation error path:", errorPath);
+
+              // ################################################################################################
+              const transformationResultSchema: JzodElement = useMemo(() => {
+                // if (!currentHereTransformerDefinition) {
+                //   return { type: "any" } as JzodElement;
+                // }
+                return (valueToJzod(transformationResult) ?? { type: "any" }) as JzodElement;
+              }, [transformationResult]);
+
               // ##################################################################################
               // Form ML Schema for the transformer editor
               const formMLSchema: JzodObject = useMemo(() => {
@@ -1273,6 +1427,15 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         },
                       },
                       definition: [
+                        {
+                          type: "object",
+                          definition: {
+                            mode: {
+                              type: "literal",
+                              definition: "none",
+                            }
+                          }
+                        },
                         // here mode uses the in-editor transformer
                         {
                           type: "object",
@@ -1333,6 +1496,86 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                                 },
                               },
                             },
+                            transformer: {
+                              type: "schemaReference",
+                              optional: true,
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "transformerForBuildPlusRuntime",
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    } as JzodUnion,
+                    transformerEditor_input: {
+                      type: "union",
+                      discriminator: "mode",
+                      tag: {
+                        value: {
+                          initializeTo: {
+                            initializeToType: "value",
+                            value: "here",
+                          },
+                        },
+                      },
+                      definition: [
+                        // here mode uses the in-editor transformer
+                        {
+                          type: "object",
+                          definition: {
+                            mode: {
+                              type: "literal",
+                              definition: "here",
+                            },
+                            transformer: {
+                              type: "any",
+                            },
+                          },
+                        },
+                        // instance mode extract ENtity instances using a query
+                        {
+                          type: "object",
+                          definition: {
+                            mode: {
+                              type: "literal",
+                              definition: "instance",
+                            },
+                            application: {
+                              type: "uuid",
+                              nullable: true,
+                              tag: {
+                                value: {
+                                  defaultLabel: "Application",
+                                  editable: true,
+                                  selectorParams: {
+                                    targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                                    targetEntity: entityApplicationForAdmin.uuid,
+                                    targetEntityOrderInstancesBy: "name",
+                                  },
+                                  initializeTo: {
+                                    initializeToType: "value",
+                                    value: noValue.uuid,
+                                  },
+                                },
+                              },
+                            },
+                            transformerUuid: {
+                              type: "uuid",
+                              tag: {
+                                value: {
+                                  selectorParams: {
+                                    targetDeploymentUuid: deploymentUuidFromApplicationUuid,
+                                    targetEntity: entityDefinitionTransformerDefinition.entityUuid,
+                                    targetEntityOrderInstancesBy: "name",
+                                  },
+                                  initializeTo: {
+                                    initializeToType: "value",
+                                    value: noValue.uuid,
+                                  },
+                                },
+                              },
+                            },
                           },
                         },
                       ],
@@ -1354,85 +1597,144 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               }, [currentReportTargetEntityDefinition, deploymentUuidFromApplicationUuid]);
 
               return (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "20px",
-                    maxWidth: "50%",
-                    flexGrow: 1,
-                  }}
-                >
-                  {/* <ThemedOnScreenHelper
-                    label="deploymentUuidQueryResultsData"
-                    data={deploymentUuidQueryResultsData}
-                  /> */}
+                // 3-Pane Layout
+                <div style={{ display: "flex", gap: "20px" }}>
+                  {/* left Pane: Transformer Definition Editor */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "20px",
+                      maxWidth: "50%",
+                      flexGrow: 1,
+                    }}
+                  >
+                    {/* <ThemedOnScreenHelper
+                      label="deploymentUuidQueryResultsData"
+                      data={deploymentUuidQueryResultsData}
+                    /> */}
+                    {/* <ThemedOnScreenHelper
+                        label="deploymentUuidFromApplicationUuid"
+                        data={deploymentUuidFromApplicationUuid}
+                      /> */}
+                    {/* <ThemedOnScreenHelper
+                      label="transformerQuery"
+                      data={transformerQuery}
+                    /> */}
                     <ThemedOnScreenHelper
-                      label="deploymentUuidFromApplicationUuid"
-                      data={deploymentUuidFromApplicationUuid}
+                      label="persistedState?.selector"
+                      data={persistedState?.selector}
+                      initiallyUnfolded={false}
                     />
-                  <ThemedOnScreenHelper
-                    label="transformerQuery"
-                    data={transformerQuery}
-                  />
-                  <ThemedOnScreenHelper
-                    label="transformerQueryResults"
-                    data={transformerQueryResults}
-                  />
-                  {/* <ThemedOnScreenHelper
-                    label="currentTransformerDefinition"
-                    data={currentTransformerDefinition}
-                  /> */}
-                  <ThemedOnScreenHelper
-                    label="currentTransformerDefinition transformerImplementation.definition"
-                    data={(currentTransformerDefinition as any)?.transformerImplementation?.definition}
-                  />
-                  {/* <ThemedOnScreenHelper label="formikValues" data={formikContext.values} /> */}
-                  <TypedValueObjectEditor
-                    labelElement={<>Transformer Definition</>}
-                    // formValueMLSchema={formMlSchema.definition.transformerEditor_selector as JzodObject}
-                    formValueMLSchema={formMLSchema}
-                    // formikValuePathAsString="currentTransformerDefinition"
-                    formikValuePathAsString="transformerEditor_selector"
-                    deploymentUuid={deploymentUuid}
-                    applicationSection={"model"}
-                    formLabel={"Transformer Definition Selector"}
-                    displaySubmitButton="noDisplay"
-                    maxRenderDepth={Infinity}
-                  />
-                  {/* {formikContext.values.transformerEditor_selector.mode === "here" && (
-                    <>
-                      <ReportSectionEntityInstance
-                        applicationSection={transformerDefinitionApplicationSection}
-                        deploymentUuid={props.deploymentUuid}
-                        initialInstanceValueDEFUNCT={}
-                        entityUuidDEFUNCT={entityDefinitionTransformerDefinition.entityUuid} // entityUuid-based section display, independent of report section definition
-                        //
-                        formikValuePath={props.reportSectionPath}
-                        formikReportDefinitionPathString={props.formikReportDefinitionPathString}
-                        reportSectionPath={props.reportSectionPath}
-                        formValueMLSchema={formMLSchema}
-                        formikAlreadyAvailable={true}
-                      />
-                    </>
-                  )} */}
-                  {formikContext.values.transformerEditor_selector.mode === "here" && (
+                    <ThemedOnScreenHelper
+                      label="formikValues"
+                      data={formikContext.values}
+                      initiallyUnfolded={false}
+                    />
+                    <ThemedOnScreenHelper
+                      label="formik Transformer Definition"
+                      data={{
+                        mode: formikContext.values.transformerEditor_selector.mode,
+                        defn: formikContext.values.transformerEditor_selector.transformer,
+                        // defn: formikContext.values.transformerEditor_editor
+                        //   .currentTransformerDefinition,
+                      }}
+                      initiallyUnfolded={false}
+                    />
+                    <ThemedOnScreenHelper
+                      label="currentDefinedTransformerDefinition"
+                      data={currentFetchedTransformerDefinition}
+                      initiallyUnfolded={false}
+                    />
+                    <ThemedOnScreenHelper
+                      label="currentHereTransformerDefinition"
+                      data={currentHereTransformerDefinition}
+                      initiallyUnfolded={false}
+                    />
+                    <ThemedOnScreenHelper
+                      label="transformerQueryResults"
+                      data={transformerQueryResults}
+                      initiallyUnfolded={false}
+                    />
+                    <ThemedOnScreenHelper
+                      label="transformer mode"
+                      data={formikContext.values.transformerEditor_selector.mode}
+                    />
+                    <ThemedOnScreenHelper
+                      label="transformation Error"
+                      data={innermostError}
+                      initiallyUnfolded={innermostError ? true : false}
+                    />
+                    <ThemedOnScreenHelper
+                      label="transformationResult"
+                      data={transformationResult}
+                      initiallyUnfolded={innermostError ? false : true}
+                    />
+                    <ThemedOnScreenHelper
+                      label="transformationResultSchema"
+                      data={transformationResultSchema}
+                      initiallyUnfolded={false}
+                    />
+                    {/* <ThemedOnScreenHelper
+                      label="currentTransformerDefinition"
+                      data={currentTransformerDefinition}
+                    /> */}
+                    <ThemedOnScreenHelper
+                      label="currentTransformerDefinition transformerImplementation.definition"
+                      data={
+                        (currentFetchedTransformerDefinition as any)?.transformerImplementation
+                          ?.definition
+                      }
+                      initiallyUnfolded={true}
+                    />
                     <TypedValueObjectEditor
                       labelElement={<>Transformer Definition</>}
-                      // initialValueObject={{ currentTransformerDefinition: currentTransformerDefinition }}
-                      // formValueMLSchema={formMlSchema.definition.transformerEditor_editor as JzodObject}
                       formValueMLSchema={formMLSchema}
-                      // formValueMLSchema={{
-                      //   type: "object",
-                      //   definition: { currentTransformerDefinition: transformerDefinitionSchema },
-                      // }}
-                      formikValuePathAsString="transformerEditor_editor"
+                      formikValuePathAsString="transformerEditor_selector"
                       deploymentUuid={deploymentUuid}
                       applicationSection={"model"}
-                      formLabel={"Transformer Definition Editor"}
+                      formLabel={"Transformer Definition Selector"}
+                      displaySubmitButton="noDisplay"
                       maxRenderDepth={Infinity}
                     />
-                  )}
+                  </div>
+                  {/* Right Panes: stacked */}
+                  {/* <div style={{ display: "flex", flexDirection: "column", gap: "20px", minWidth: "50%" }}> */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "start",
+                      alignItems: "flex-start",
+                      minWidth: "50%",
+                      gap: "20px",
+                    }}
+                  >
+                    <EntityInstancePanel
+                      entityInstances={entityInstances}
+                      selectedEntityInstance={selectedEntityInstance}
+                      selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
+                      currentInstanceIndex={currentInstanceIndex}
+                      deploymentUuid={deploymentUuid}
+                      availableEntities={currentReportDeploymentSectionEntities || []}
+                      selectedEntityUuid={selectedEntityUuid}
+                      showAllInstances={showAllInstances}
+                      onEntityChange={handleEntityChange}
+                      onNavigateNext={navigateToNextInstance}
+                      onNavigatePrevious={navigateToPreviousInstance}
+                      onNavigateRandom={navigateToRandomInstance}
+                      onToggleShowAll={handleToggleShowAll}
+                    />
+                    <TransformationResultPanel
+                      transformationResult={transformationResult}
+                      transformationResultSchema={transformationResultSchema}
+                      // transformationError={transformationError}
+                      selectedEntityInstance={selectedEntityInstance}
+                      showAllInstances={showAllInstances}
+                      entityInstances={entityInstances}
+                      deploymentUuid={deploymentUuid}
+                    />
+                  </div>
                 </div>
               );
             }
@@ -1455,7 +1757,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
         {/* Right Panes: stacked */}
         {/* <div style={{ display: "flex", flexDirection: "column", gap: "20px", minWidth: "50%" }}> */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        {/* <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <EntityInstancePanel
             entityInstances={entityInstances}
             selectedEntityInstance={selectedEntityInstance}
@@ -1480,8 +1782,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             entityInstances={entityInstances}
             deploymentUuid={deploymentUuid}
           />
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       {/* {transformerEventsPanel} */}
       <TransformerEventsPanel />
