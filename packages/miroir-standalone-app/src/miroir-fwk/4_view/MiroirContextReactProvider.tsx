@@ -74,6 +74,10 @@ export interface ToolsPageState {
     } | {
       mode: "none";
     };
+    input_selector?: {
+      mode: "instance" | "here";
+      input?: any
+    }
     // 
     foldedObjectAttributeOrArrayItems?: FoldedStateTree;
     foldedEntityInstanceItems?: { [k: string]: boolean };

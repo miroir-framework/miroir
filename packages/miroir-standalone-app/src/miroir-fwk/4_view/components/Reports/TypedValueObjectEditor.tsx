@@ -254,8 +254,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       result =
         context.miroirFundamentalJzodSchema && zoomedInDisplaySchema && formik.values && currentModel
           ? jzodTypeCheck( // TODO: typecheck only the value for the currently edited instance / object, not the whole formik.values
-              // valueObjectMMLSchema, 
-              // formik.values, // this leads to an error for now if there are multiple instances in the formik values
               formValueMLSchema.definition[formikValuePathAsString], 
               valueObject, // this leads to an error for now if there are multiple instances in the formik values
               [],
@@ -336,9 +334,32 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         null,
         2
       );
-      typeError = <CodeBlock_ReadOnly value={jsonString} />;
+      typeError = <div>
+        <ThemedOnScreenHelper
+          label={`TypedValueObjectEditor for schema at ${formikValuePathAsString}`}
+          data={formValueMLSchema}
+        />
+        <ThemedOnScreenHelper
+          label={`TypedValueObjectEditor for value`}
+          data={valueObject}
+        />
+        <CodeBlock_ReadOnly value={jsonString} />;
+        </div>
     } else {
-      typeError = <div>Could not resolve jzod schema</div>;
+      typeError = <div>Could not resolve jzod schema
+        <ThemedOnScreenHelper
+          label={`TypedValueObjectEditor for ${formikValuePathAsString} jzodTypeCheckResult`}
+          data={jzodTypeCheckResult}
+        />
+        <ThemedOnScreenHelper
+          label={`TypedValueObjectEditor for schema at ${formikValuePathAsString}`}
+          data={formValueMLSchema}
+        />
+        <ThemedOnScreenHelper
+          label={`TypedValueObjectEditor for value`}
+          data={valueObject}
+        />
+      </div>;
     }
   }
 
@@ -550,11 +571,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 data={formValueMLSchema}
               /> */}
               <JzodElementEditor
-                // name={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
-                // isTopLevel={true}
-                // listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
-                // rootLessListKey={reportSectionPathAsString??""}
-                // rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
                 reportSectionPathAsString={formikValuePathAsString ?? ""}
                 name={"ROOT"}
                 isTopLevel={true}

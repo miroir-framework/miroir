@@ -89,7 +89,23 @@ function createGenericObjectSchema(): JzodElement {
 // ################################################################################################
 // Memoized sub-components for better performance
 // ################################################################################################
-const EntityInstancePanel = React.memo<{
+// const EntityInstancePanel = React.memo<
+// {
+//   entityInstances: EntityInstance[];
+//   selectedEntityInstance: EntityInstance | undefined;
+//   selectedEntityInstanceDefinition: EntityDefinition | undefined;
+//   currentInstanceIndex: number;
+//   deploymentUuid: Uuid;
+//   availableEntities: Entity[];
+//   selectedEntityUuid: Uuid;
+//   showAllInstances: boolean;
+//   onEntityChange: (entityUuid: Uuid) => void;
+//   onNavigateNext: () => void;
+//   onNavigatePrevious: () => void;
+//   onNavigateRandom: () => void;
+//   onToggleShowAll: () => void;
+// }>(
+function EntityInstancePanel(props:{
   entityInstances: EntityInstance[];
   selectedEntityInstance: EntityInstance | undefined;
   selectedEntityInstanceDefinition: EntityDefinition | undefined;
@@ -103,22 +119,22 @@ const EntityInstancePanel = React.memo<{
   onNavigatePrevious: () => void;
   onNavigateRandom: () => void;
   onToggleShowAll: () => void;
-}>(
-  ({
-    entityInstances,
-    selectedEntityInstance,
-    selectedEntityInstanceDefinition,
-    currentInstanceIndex,
-    deploymentUuid,
-    availableEntities,
-    selectedEntityUuid,
-    showAllInstances,
-    onEntityChange,
-    onNavigateNext,
-    onNavigatePrevious,
-    onNavigateRandom,
-    onToggleShowAll,
-  }) => (
+}): JSX.Element {
+  const {entityInstances,
+  selectedEntityInstance,
+  selectedEntityInstanceDefinition,
+  currentInstanceIndex,
+  deploymentUuid,
+  availableEntities,
+  selectedEntityUuid,
+  showAllInstances,
+  onEntityChange,
+  onNavigateNext,
+  onNavigatePrevious,
+  onNavigateRandom,
+  onToggleShowAll,
+} = props;
+  return (
     <ThemedContainer style={{ flex: 1 }}>
       <ThemedHeaderSection style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -234,27 +250,48 @@ const EntityInstancePanel = React.memo<{
       {showAllInstances ? (
         /* Show all instances */
         entityInstances.length > 0 ? (
-          <TypedValueObjectEditorWithFormik
-            labelElement={<></>}
-            initialValueObject={{ entityInstances }}
-            formValueMLSchema={
-              {
+          <>
+            <ThemedOnScreenHelper
+              label={`TypedValueObjectEditor showing all ${
+                entityInstances.length
+              } instances of entity '${selectedEntityInstanceDefinition?.name || ""}`}
+              data={{
                 type: "object",
                 definition: {
-                  type: "array",
-                  definition:
-                    selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
+                  entityInstances: {
+                    definition: {
+                      type: "array",
+                      definition:
+                        selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
+                    },
+                  },
                 },
-              } as any
-            } // TODO: ILL-TYPED!!
-            formikValuePathAsString="entityInstances"
-            deploymentUuid={deploymentUuid}
-            applicationSection={"data"}
-            formLabel={"All Entity Instances Viewer"}
-            onSubmit={async () => {}} // No-op for readonly
-            maxRenderDepth={3}
-            readonly={true}
-          />
+              }}
+            />
+            <TypedValueObjectEditorWithFormik
+              labelElement={<></>}
+              initialValueObject={{ entityInstances }}
+              formValueMLSchema={
+                {
+                  type: "object",
+                  definition: {
+                    entityInstances: {
+                      type: "array",
+                      definition:
+                        selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
+                    },
+                  },
+                } as any
+              } // TODO: ILL-TYPED!!
+              formikValuePathAsString="entityInstances"
+              deploymentUuid={deploymentUuid}
+              applicationSection={"data"}
+              formLabel={"All Entity Instances Viewer"}
+              onSubmit={async () => {}} // No-op for readonly
+              maxRenderDepth={3}
+              readonly={true}
+            />
+          </>
         ) : (
           <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
             No entity instances found
@@ -264,7 +301,7 @@ const EntityInstancePanel = React.memo<{
       selectedEntityInstance ? (
         <TypedValueObjectEditorWithFormik
           labelElement={<></>}
-          initialValueObject={{selectedEntityInstance}}
+          initialValueObject={{ selectedEntityInstance }}
           // valueObjectMMLSchema={createGenericObjectSchema()}
           formValueMLSchema={{
             type: "object",
@@ -287,8 +324,8 @@ const EntityInstancePanel = React.memo<{
         </div>
       )}
     </ThemedContainer>
-  )
-);
+  );
+}
 
 // const DebugPanel = React.memo<{
 //   currentTransformerDefinition: any;
@@ -866,6 +903,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         // transformer: currentHereTransformerDefinition, 
         mode: "none" 
       },
+      transformerEditor_input: {},
+      transformerEditor_input_selector: {
+          mode: "none",
+        // input: "no input yet"
+      },
       // For transformer editor when mode='here'
       transformerEditor_editor: { 
         currentTransformerDefinition: currentHereTransformerDefinition 
@@ -949,15 +991,22 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         >
           {
             /* Formik children as function to access formik context */ (
-              formikContext: FormikProps<{
+              formikContext: FormikProps<
+              {
                 transformerEditor_selector: {
                   mode?: "here" | "defined" | "none";
                   transformer?: TransformerForBuildPlusRuntime;
                 };
+                transformerEditor_input_selector: {
+                    mode: "instance" | "here" | "none";
+                    input?: any;
+                };
+                transformerEditor_input: any;
                 transformerEditor_editor: {
                   currentTransformerDefinition: TransformerForBuildPlusRuntime;
                 };
-              }>
+              }
+              >
             ) => {
               const deploymentUuidQuery:
                 | BoxedQueryWithExtractorCombinerTransformer
@@ -1113,7 +1162,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               }, [transformerQueryResults]);
 
               // ##################################################################################
-              // persistedState -> formik
+              // transformerEditor_selector persistedState -> formik
               useEffect(() => {
                 log.info(
                   "TransformerEditor: got new mode:",
@@ -1133,6 +1182,44 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     );
                   }
                 }
+
+                switch (formikContext.values.transformerEditor_input_selector.mode) {
+                  case "here": {
+                    // if (persistedState?.input_selector?.input) {
+                    //   formikContext.setFieldValue(
+                    //     "transformerEditor_input_selector",
+                    //     { mode: "here", input: persistedState?.input_selector.input }
+                    //   );
+                    // }
+                    break;
+                  }
+                  case "instance":{
+                    // clears the formik transformerEditor_input_selector.input
+                    if (formikContext.values.transformerEditor_input_selector.input) {
+                      formikContext.setFieldValue(
+                        "transformerEditor_input_selector",
+                        { mode: "instance" }
+                      );
+                    }
+                    break;
+                  }
+                  case "none": {
+                    // sets the formik input_selector from the persisted state input_selector, if there is one
+                    if (persistedState?.input_selector?.mode) {
+                      formikContext.setFieldValue(
+                        "transformerEditor_input_selector",
+                        persistedState?.input_selector
+                      );
+                    } else {
+                      formikContext.setFieldValue("transformerEditor_input_selector", {
+                        mode: "here",
+                        input: { placeholder: "put your input here..." },
+                      });
+                    }
+                    break;
+                  }
+                }
+                // restore state from persistedState
                 // // transfer the current transformer definition in persistedState to the formik context
                 // if (
                 //   // formikContext.values.transformerEditor_selector.mode === "here"
@@ -1143,7 +1230,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 //     persistedState?.selector?.transformer
                 //   );
                 // }
-                
+
                 // When mode is 'defined' and transformerUuid is changed, fetch transformer from stored definition and update formik context
                 if (
                   formikContext.values.transformerEditor_selector.mode === "defined" &&
@@ -1167,10 +1254,15 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     currentFetchedTransformerDefinition.transformerImplementation?.definition
                   );
                 }
-              }, [formikContext.values.transformerEditor_selector.mode, persistedState?.selector, currentFetchedTransformerDefinition]);
+              }, [
+                formikContext.values.transformerEditor_selector.mode,
+                persistedState?.selector,
+                currentFetchedTransformerDefinition,
+              ]);
               
+
               // ##################################################################################
-              // formik -> persistedState
+              // transformerEditor_selector, transformerEditor_input_selector formik -> persistedState
               // Debounced update to context when mode='here' and transformer definition changes
               useEffect(() => {
                 // Clear existing timeout
@@ -1205,7 +1297,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   context.updateTransformerEditorState({
                     currentTransformerDefinition:
                       formikContext.values.transformerEditor_selector.transformer,
-                    selector
+                    selector,
+                    input_selector: {
+                      mode: formikContext.values.transformerEditor_input_selector.mode as any,
+                      input: formikContext.values.transformerEditor_input_selector.input,
+                    }
                   });
                 }, 2000); // 2 second debounce
                 
@@ -1218,27 +1314,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               }, [
                 formikContext.values.transformerEditor_selector.mode,
                 formikContext.values.transformerEditor_selector.transformer,
+                formikContext.values.transformerEditor_input_selector.mode,
+                formikContext.values.transformerEditor_input_selector.input,
                 // formikContext.values.transformerEditor_editor.currentTransformerDefinition,
               ]);
 
-              const spreadsheetContents = [
-                {
-                  a: "iso3166-1Alpha-2",
-                  b: "iso3166-1Alpha-3",
-                  c: "Name",
-                },
-                {
-                  a: "US",
-                  b: "USA",
-                  c: "United States",
-                },
-                {
-                  a: "DE",
-                  b: "DEU",
-                  c: "Germany",
-                },
-              ];
+              // ##################################################################################
               const inputSelectorData = useMemo(() => {
+                const defaultTransformerInputValue =
+                  formikContext.values.transformerEditor_input_selector.mode == "instance"
+                    ? showAllInstances
+                      ? entityInstances
+                      : selectedEntityInstance
+                    : formikContext.values.transformerEditor_input;
                 if (showAllInstances) {
                   // When showing all instances, target becomes an array of all instances
                   if (entityInstances.length === 0) return {};
@@ -1246,28 +1334,56 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   return {
                     // entityInstance: entityInstances,
                     // instance: entityInstances,
-                    [defaultTransformerInput]: entityInstances,
-                    spreadsheetContents,
+                    // [defaultTransformerInput]: entityInstances,
+                    [defaultTransformerInput]: defaultTransformerInputValue,
+                    // spreadsheetContents,
                     // applyTo: entityInstances,
                     // Also provide individual properties from the first instance for compatibility
                     // (in case transformers expect single instance properties)
-                    ...(entityInstances[0] || {}),
+                    // ...(entityInstances[0] || {}),
                   };
                 } else {
                   // When showing single instance, target is the selected instance
                   if (!selectedEntityInstance) return {};
 
                   return {
-                    entityInstance: selectedEntityInstance,
-                    instance: selectedEntityInstance,
-                    spreadsheetContents,
+                    // entityInstance: selectedEntityInstance,
+                    // instance: selectedEntityInstance,
+                    // spreadsheetContents,
                     // target: selectedEntityInstance,
-                    [defaultTransformerInput]: selectedEntityInstance,
-                    applyTo: selectedEntityInstance,
-                    ...selectedEntityInstance,
+                    // [defaultTransformerInput]: selectedEntityInstance,
+                    [defaultTransformerInput]: defaultTransformerInputValue,
+                    // applyTo: selectedEntityInstance,
+                    // ...selectedEntityInstance,
                   };
                 }
               }, [showAllInstances, entityInstances, selectedEntityInstance]);
+
+              // ##################################################################################
+              // input -> formik
+              useEffect(() => {
+                if (formikContext.values.transformerEditor_input_selector.mode == "instance") {
+                  formikContext.setFieldValue(
+                    "transformerEditor_input",
+                    inputSelectorData
+                  );
+                }
+              }, [
+                formikContext.values.transformerEditor_input_selector.mode,
+                // formikContext.values.transformerEditor_input.input,
+                inputSelectorData
+              ]);
+
+              const transformerInput = useMemo(
+                () =>
+                  formikContext.values.transformerEditor_input_selector.mode == "here"
+                    ? formikContext.values.transformerEditor_input_selector.input ?? {}
+                    : formikContext.values.transformerEditor_input ?? {},
+                [formikContext.values.transformerEditor_input_selector.mode,
+                formikContext.values.transformerEditor_input_selector.input,
+                formikContext.values.transformerEditor_input
+                ]
+              );
 
               // ##################################################################################
               // run transformation when transformer definition or imput data change
@@ -1372,7 +1488,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 const transformerParams = {
                   // spreadsheetContents: [],
                   ...currentMiroirModelEnvironment,
-                  ...inputSelectorData,
+                  // ...inputSelectorData,
+                  ...transformerInput,
                 };
 
                 return transformer_extended_apply_wrapper(
@@ -1383,11 +1500,15 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   currentFormikTransformerDefinition, // transformer
                   currentMiroirModelEnvironment,
                   transformerParams,
-                  inputSelectorData, // contextResults - pass the instance to transform
+                  // inputSelectorData, // contextResults - pass the instance to transform
+                  transformerInput, // contextResults - pass the input to transform
                   "value" // resolveBuildTransformersTo
                 );
-              // }, [formikContext.values.transformerEditor_editor.currentTransformerDefinition]);
-              }, [formikContext.values.transformerEditor_selector.transformer, inputSelectorData]);
+                // }, [formikContext.values.transformerEditor_editor.currentTransformerDefinition]);
+              }, [
+                formikContext.values.transformerEditor_selector.transformer,
+                transformerInput,
+              ]);
 
               const innermostError = useMemo(
                 () =>
@@ -1508,14 +1629,14 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         },
                       ],
                     } as JzodUnion,
-                    transformerEditor_input: {
+                    transformerEditor_input_selector: {
                       type: "union",
                       discriminator: "mode",
                       tag: {
                         value: {
                           initializeTo: {
                             initializeToType: "value",
-                            value: "here",
+                            value: {mode: "here", input: { placeholder: "put your input here..." }},
                           },
                         },
                       },
@@ -1528,8 +1649,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                               type: "literal",
                               definition: "here",
                             },
-                            transformer: {
+                            input: {
                               type: "any",
+                              tag: {
+                                value: {
+                                  initializeTo: {
+                                    initializeToType: "value",
+                                    value: { "sampleKey": "sampleValue"},
+                                  },
+                                }
+                              }
                             },
                           },
                         },
@@ -1541,45 +1670,52 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                               type: "literal",
                               definition: "instance",
                             },
-                            application: {
-                              type: "uuid",
-                              nullable: true,
-                              tag: {
-                                value: {
-                                  defaultLabel: "Application",
-                                  editable: true,
-                                  selectorParams: {
-                                    targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                    targetEntity: entityApplicationForAdmin.uuid,
-                                    targetEntityOrderInstancesBy: "name",
-                                  },
-                                  initializeTo: {
-                                    initializeToType: "value",
-                                    value: noValue.uuid,
-                                  },
-                                },
-                              },
-                            },
-                            transformerUuid: {
-                              type: "uuid",
-                              tag: {
-                                value: {
-                                  selectorParams: {
-                                    targetDeploymentUuid: deploymentUuidFromApplicationUuid,
-                                    targetEntity: entityDefinitionTransformerDefinition.entityUuid,
-                                    targetEntityOrderInstancesBy: "name",
-                                  },
-                                  initializeTo: {
-                                    initializeToType: "value",
-                                    value: noValue.uuid,
-                                  },
-                                },
-                              },
-                            },
+                            // input: {
+                            //   type: "any",
+                            //   optional: true,
+                            // },
+                            // application: {
+                            //   type: "uuid",
+                            //   nullable: true,
+                            //   tag: {
+                            //     value: {
+                            //       defaultLabel: "Application",
+                            //       editable: true,
+                            //       selectorParams: {
+                            //         targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                            //         targetEntity: entityApplicationForAdmin.uuid,
+                            //         targetEntityOrderInstancesBy: "name",
+                            //       },
+                            //       initializeTo: {
+                            //         initializeToType: "value",
+                            //         value: noValue.uuid,
+                            //       },
+                            //     },
+                            //   },
+                            // },
+                            // transformerUuid: {
+                            //   type: "uuid",
+                            //   tag: {
+                            //     value: {
+                            //       selectorParams: {
+                            //         targetDeploymentUuid: deploymentUuidFromApplicationUuid,
+                            //         targetEntity: entityDefinitionTransformerDefinition.entityUuid,
+                            //         targetEntityOrderInstancesBy: "name",
+                            //       },
+                            //       initializeTo: {
+                            //         initializeToType: "value",
+                            //         value: noValue.uuid,
+                            //       },
+                            //     },
+                            //   },
+                            // },
                           },
                         },
                       ],
                     } as JzodUnion,
+                    transformerEditor_input: {
+                      type: "any",
+                    } as JzodElement,
                     transformerEditor_editor: {
                       type: "object",
                       definition: {
@@ -1598,7 +1734,14 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
               return (
                 // 3-Pane Layout
-                <div style={{ display: "flex", gap: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "20px",
+                    justifyContent: "start",
+                    alignItems: "flex-start",
+                  }}
+                >
                   {/* left Pane: Transformer Definition Editor */}
                   <div
                     style={{
@@ -1659,16 +1802,24 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     <ThemedOnScreenHelper
                       label="transformer mode"
                       data={formikContext.values.transformerEditor_selector.mode}
+                      initiallyUnfolded={false}
+                    />
+                    <ThemedOnScreenHelper
+                      label="transformer input"
+                      data={transformerInput}
+                      initiallyUnfolded={false}
                     />
                     <ThemedOnScreenHelper
                       label="transformation Error"
                       data={innermostError}
-                      initiallyUnfolded={innermostError ? true : false}
+                      initiallyUnfolded={false}
+                      // initiallyUnfolded={innermostError ? true : false}
                     />
                     <ThemedOnScreenHelper
                       label="transformationResult"
                       data={transformationResult}
-                      initiallyUnfolded={innermostError ? false : true}
+                      initiallyUnfolded={false}
+                      // initiallyUnfolded={innermostError ? false : true}
                     />
                     <ThemedOnScreenHelper
                       label="transformationResultSchema"
@@ -1710,21 +1861,38 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       gap: "20px",
                     }}
                   >
-                    <EntityInstancePanel
-                      entityInstances={entityInstances}
-                      selectedEntityInstance={selectedEntityInstance}
-                      selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
-                      currentInstanceIndex={currentInstanceIndex}
+                    {/* input selector */}
+                    <TypedValueObjectEditor
+                      labelElement={<>Input Definition</>}
+                      formValueMLSchema={formMLSchema}
+                      // formikValuePathAsString="transformerEditor_input.selector"
+                      formikValuePathAsString="transformerEditor_input_selector"
+                      // zoomInPath="selector"
                       deploymentUuid={deploymentUuid}
-                      availableEntities={currentReportDeploymentSectionEntities || []}
-                      selectedEntityUuid={selectedEntityUuid}
-                      showAllInstances={showAllInstances}
-                      onEntityChange={handleEntityChange}
-                      onNavigateNext={navigateToNextInstance}
-                      onNavigatePrevious={navigateToPreviousInstance}
-                      onNavigateRandom={navigateToRandomInstance}
-                      onToggleShowAll={handleToggleShowAll}
+                      applicationSection={"model"}
+                      formLabel={"Transformer Input Selector"}
+                      displaySubmitButton="noDisplay"
+                      maxRenderDepth={Infinity}
                     />
+                    {
+                      formikContext.values.transformerEditor_input_selector.mode == "instance" && (
+                        <EntityInstancePanel
+                          entityInstances={entityInstances}
+                          selectedEntityInstance={selectedEntityInstance}
+                          selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
+                          currentInstanceIndex={currentInstanceIndex}
+                          deploymentUuid={deploymentUuid}
+                          availableEntities={currentReportDeploymentSectionEntities || []}
+                          selectedEntityUuid={selectedEntityUuid}
+                          showAllInstances={showAllInstances}
+                          onEntityChange={handleEntityChange}
+                          onNavigateNext={navigateToNextInstance}
+                          onNavigatePrevious={navigateToPreviousInstance}
+                          onNavigateRandom={navigateToRandomInstance}
+                          onToggleShowAll={handleToggleShowAll}
+                        />
+                      )
+                    }
                     <TransformationResultPanel
                       transformationResult={transformationResult}
                       transformationResultSchema={transformationResultSchema}
