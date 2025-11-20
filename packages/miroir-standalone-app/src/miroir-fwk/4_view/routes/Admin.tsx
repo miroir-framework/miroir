@@ -10,15 +10,15 @@ import {
   type LoggerInterface
 } from "miroir-core";
 import { packageName } from "../../../constants.js";
-import { CreateApplicationTool } from '../components/AdminTools/CreateApplicationTool.js';
-import { CreateEntityTool } from '../components/AdminTools/CreateEntityTool.js';
-import { DeleteApplicationTool } from '../components/AdminTools/DeleteApplicationTool.js';
-import { DeleteEntityRunner } from '../components/AdminTools/DeleteEntityRunner.js';
+import { CreateApplicationRunner } from '../components/Runners/CreateApplicationRunner.js';
+import { CreateEntityRunner } from '../components/Runners/CreateEntityRunner.js';
+import { DeleteApplicationRunner } from '../components/Runners/DeleteApplicationRunner.js';
+import { DeleteEntityRunner } from '../components/Runners/DeleteEntityRunner.js';
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
-import { ImportEntityFromSpreadsheetRunner } from '../components/AdminTools/ImportEntityFromSpreadsheetRunner.js';
+import { ImportEntityFromSpreadsheetRunner } from '../components/Runners/ImportEntityFromSpreadsheetRunner.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -398,7 +398,7 @@ export const AdminPage: React.FC<any> = (
             <div style={{ fontWeight: 500 }}>Create Application & Deployment</div>
           </AccordionSummary>
           <AccordionDetails>
-            <CreateApplicationTool
+            <CreateApplicationRunner
               deploymentUuid={deploymentUuid}
             />
           </AccordionDetails>
@@ -409,7 +409,7 @@ export const AdminPage: React.FC<any> = (
             <div style={{ fontWeight: 500 }}>Delete Application & Deployment</div>
           </AccordionSummary>
           <AccordionDetails>
-            <DeleteApplicationTool
+            <DeleteApplicationRunner
               deploymentUuid={deploymentUuid}
             />
           </AccordionDetails>
@@ -420,7 +420,7 @@ export const AdminPage: React.FC<any> = (
             <div style={{ fontWeight: 500 }}>Create Entity</div>
           </AccordionSummary>
           <AccordionDetails>
-            <CreateEntityTool
+            <CreateEntityRunner
               deploymentUuid={deploymentUuid}
             />
           </AccordionDetails>

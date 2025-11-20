@@ -23,7 +23,7 @@ import type { FormMlSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateEntityTool"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateEntityRunner"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;

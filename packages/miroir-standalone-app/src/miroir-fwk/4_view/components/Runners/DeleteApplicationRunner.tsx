@@ -23,7 +23,7 @@ import { OuterRunnerView } from "./OuterRunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DeleteApplicationTool"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DeleteApplicationRunner"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
@@ -35,7 +35,7 @@ export interface DeleteApplicationToolProps {
 }
 
 // ################################################################################################
-export const DeleteApplicationTool: React.FC<DeleteApplicationToolProps> = ({
+export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
   deploymentUuid,
 }) => {
   const runnerName: string = "deleteApplication";

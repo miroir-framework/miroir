@@ -28,7 +28,7 @@ import { OuterRunnerView } from "./OuterRunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateEntityTool"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateEntityRunner"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
@@ -129,7 +129,7 @@ export function getCreateEntityActionTemplate(
 
 
 // ################################################################################################
-export const CreateEntityTool: React.FC<CreateEntityToolProps> = ({
+export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
   deploymentUuid,
 }) => {
   const runnerName: string = "createEntity";

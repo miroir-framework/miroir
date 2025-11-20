@@ -99,12 +99,12 @@ export const ThemedFoldableContainer: React.FC<ThemedComponentProps & {
     <div css={containerStyles} className={className} style={style}>
       <div css={headerStyles} onClick={handleToggle}>
         <div css={titleWrapperStyles}>
-          <span css={iconStyles}>▶</span>
           {typeof title === 'string' ? (
             <h1 css={titleElementStyles}>{title}</h1>
           ) : (
             title
           )}
+          <span css={iconStyles}>▶</span>
         </div>
       </div>
       {!isFolded && children}

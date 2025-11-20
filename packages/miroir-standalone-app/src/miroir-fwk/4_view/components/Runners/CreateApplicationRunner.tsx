@@ -45,7 +45,7 @@ import { OuterRunnerView } from "./OuterRunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateApplicationTool"), "UI",
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateApplicationRunner"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
@@ -66,7 +66,7 @@ export interface CreateApplicationToolProps {
 }
 
 // ################################################################################################
-export const CreateApplicationTool: React.FC<CreateApplicationToolProps> = ({ deploymentUuid }) => {
+export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ deploymentUuid }) => {
   const runnerName: string = "createApplicationAndDeployment";
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentMiroirModelEnvironment: MiroirModelEnvironment =
