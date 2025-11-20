@@ -49,7 +49,8 @@ const handleDiscriminatorChange = (
   currentDeploymentUuid: string | undefined,
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
-  log: LoggerInterface
+  log: LoggerInterface,
+  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>
 ) => {
   log.info("handleDiscriminatorChange called with:", {
     reportSectionPathAsString,
@@ -263,6 +264,10 @@ const handleDiscriminatorChange = (
   //     false, // do not validate / refresh
   //   );
   // } else {
+    // Invoke onChangeVector callback if registered for this field
+    if (onChangeVector?.[rootLessListKey]) {
+      onChangeVector[rootLessListKey](defaultValue, rootLessListKey);
+    }
     formik.setFieldValue(
       targetRootLessListKey,
       defaultValue,
@@ -415,7 +420,8 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
         formik,
-        log
+        log,
+        onChangeVector
       );
     },
     [
@@ -426,7 +432,8 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       reportSectionPathAsString,
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
-      formik
+      formik,
+      onChangeVector
     ]
   ); // end handleFilterableSelectChange
 

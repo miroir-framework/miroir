@@ -300,7 +300,7 @@ export const ReportPage = () => {
     // log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
     // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
-      <ReportPageContextProvider>
+      // <ReportPageContextProvider>
         <PageContainer
           withSidebar={true}
           withDocumentOutline={true} // ReportPage has document outline
@@ -357,7 +357,7 @@ export const ReportPage = () => {
             )}
           </ThemedBox>
         </PageContainer>
-      </ReportPageContextProvider>
+      // </ReportPageContextProvider>
     );
   } else {
     return <>ReportPage Invalid parameters! {JSON.stringify(pageParams)}</>;

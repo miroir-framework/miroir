@@ -141,7 +141,6 @@ export const OuterRunnerView = <T extends Record<string, any>>(props: RunnerProp
       {/* <ThemedOnScreenHelper label={`${formLabel} OuterRunner targetSchema`} data={targetSchema} /> */}
       {/* <ThemedOnScreenHelper label={`OuterRunner ${runnerName} initialValues`} data={initialValues} /> */}
       <Formik
-        // enableReinitialize={enableReinitialize}
         enableReinitialize={true}
         initialValues={initialValues}
         onSubmit={handleSubmit}
@@ -150,19 +149,6 @@ export const OuterRunnerView = <T extends Record<string, any>>(props: RunnerProp
       >
         <InnerRunnerView
           {...props}
-          // runnerName={runnerName}
-          // deploymentUuid={deploymentUuid}
-          // formMlSchema={formMlSchema}
-          // initialFormValue={initialFormValue}
-          // action={{
-          //   actionType: "compositeActionTemplate",
-          //   compositeActionTemplate: deleteEntityActionTemplate,
-          // }}
-          // labelElement={<h2>Entity Creator</h2>}
-          // formikValuePathAsString={runnerName}
-          // formLabel={runnerLabel}
-          // displaySubmitButton="onFirstLine"
-          // useActionButton={true}
         />
       </Formik>
     </>

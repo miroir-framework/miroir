@@ -67,6 +67,7 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
+import { ReportPageContextProvider } from '../Reports/ReportPageContext';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -717,161 +718,163 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
         onThemeChange={handleAppThemeChange}
       >
-        <>
-          <Sidebar
-            open={drawerIsOpen}
-            setOpen={handleDrawerStateChange}
-            width={sidebarWidth}
-            onWidthChange={handleSidebarWidthChange}
-          />
-          <ThemedGrid container direction="column" id="mainPanel">
-            {/* <ThemedGrid item> */}
-            <AppBar
-              handleDrawerOpen={handleDrawerOpen}
+        <ReportPageContextProvider>
+          <>
+            <Sidebar
               open={drawerIsOpen}
+              setOpen={handleDrawerStateChange}
               width={sidebarWidth}
               onWidthChange={handleSidebarWidthChange}
-              outlineOpen={isOutlineOpen}
-              outlineWidth={outlineWidth}
-              onOutlineToggle={handleToggleOutline}
-              gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
-              onGridTypeToggle={handleGridTypeToggle}
-              editMode={context.viewParams.editMode}
-              onEditModeToggle={() => context.viewParams.updateEditMode(!context.viewParams.editMode)}
+            />
+            <ThemedGrid container direction="column" id="mainPanel">
+              {/* <ThemedGrid item> */}
+              <AppBar
+                handleDrawerOpen={handleDrawerOpen}
+                open={drawerIsOpen}
+                width={sidebarWidth}
+                onWidthChange={handleSidebarWidthChange}
+                outlineOpen={isOutlineOpen}
+                outlineWidth={outlineWidth}
+                onOutlineToggle={handleToggleOutline}
+                gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
+                onGridTypeToggle={handleGridTypeToggle}
+                editMode={context.viewParams.editMode}
+                onEditModeToggle={() => context.viewParams.updateEditMode(!context.viewParams.editMode)}
+              >
+                Bar!
+              </AppBar>
+              <ThemedMainPanel
+                sideBarOpen={drawerIsOpen}
+                sideBarWidth={sidebarWidth}
+                outlineOpen={isOutlineOpen}
+                outlineWidth={outlineWidth}
+              >
+                <ThemedText>uuid: {uuidv4()}</ThemedText>
+                {transactions && transactions.length > 0 && (
+                  <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
+                )}
+                {context.showPerformanceDisplay && (
+                  <div>
+                    RootComponent renders: {navigationCount} (total: {totalCount})
+                  </div>
+                )}
+                {/* <ThemedFormControl fullWidth>
+                  <ThemedInputLabel id="demo-simple-select-label">
+                    Chosen selfApplication Deployment
+                  </ThemedInputLabel>
+                  <ThemedMUISelect
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={context.deploymentUuid}
+                    label="displayedDeploymentUuid"
+                    onChange={handleChangeDisplayedDeployment}
+                  >
+                    {deployments.map((deployment) => {
+                      return (
+                        <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
+                          {deployment.description}
+                        </ThemedMenuItem>
+                      );
+                    })}
+                  </ThemedMUISelect>
+                </ThemedFormControl> */}
+                <span>
+                  <ThemedButton onClick={fetchConfigurations}>
+                    fetch Miroir & App configurations from database
+                  </ThemedButton>
+                  {/* <ThemedButton
+                          onClick={() =>
+                            handleAsyncAction(
+                              async () => {
+                                await domainController.handleAction(
+                                  {
+                                    actionType: "remoteLocalCacheRollback",
+                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                                  },
+                                  defaultMiroirMetaModel
+                                );
+                                await domainController.handleAction(
+                                  {
+                                    actionType: "remoteLocalCacheRollback",
+                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                                  },
+                                  defaultMiroirMetaModel
+                                );
+                              },
+                              "Server local cache loaded successfully",
+                              "load server local cache"
+                            )
+                          }
+                        >
+                          Load server local cache
+                        </ThemedButton> */}
+                  {/* commit miroir */}
+                  <ActionButton
+                    onAction={async () => {
+                      await domainController.handleAction(
+                        {
+                          actionType: "commit",
+                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                        },
+                        defaultMiroirModelEnvironment
+                      );
+                    }}
+                    successMessage="Miroir committed successfully"
+                    label="Commit Miroir"
+                    handleAsyncAction={handleAsyncAction}
+                    actionName="commit miroir"
+                  />
+                  {/* Commit Library app */}
+                  <ActionButton
+                    onAction={async () => {
+                      await domainController.handleAction(
+                        {
+                          actionType: "commit",
+                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        },
+                        defaultMiroirModelEnvironment
+                      );
+                    }}
+                    successMessage="Library app committed successfully"
+                    label="Commit Library app"
+                    handleAsyncAction={handleAsyncAction}
+                    actionName="commit library app"
+                  />
+                </span>
+                {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
+                <Outlet></Outlet>
+              </ThemedMainPanel>
+            </ThemedGrid>
+            {/* </ThemedGrid> */}
+            {/* Document Outline - Full height on right side */}
+            <InstanceEditorOutline
+              isOpen={isOutlineOpen}
+              onToggle={handleToggleOutline}
+              // data={outlineData}
+              // rootObjectKey={Object.keys(outlineData || {})[0] || ""}
+              onNavigate={handleNavigateToPath}
+              // title={outlineTitle}
+              width={outlineWidth}
+              onWidthChange={setOutlineWidth}
+            />
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={6000}
+              onClose={handleSnackbarClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
-              Bar!
-            </AppBar>
-            <ThemedMainPanel
-              sideBarOpen={drawerIsOpen}
-              sideBarWidth={sidebarWidth}
-              outlineOpen={isOutlineOpen}
-              outlineWidth={outlineWidth}
-            >
-              <ThemedText>uuid: {uuidv4()}</ThemedText>
-              {transactions && transactions.length > 0 && (
-                <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
-              )}
-              {context.showPerformanceDisplay && (
-                <div>
-                  RootComponent renders: {navigationCount} (total: {totalCount})
-                </div>
-              )}
-              {/* <ThemedFormControl fullWidth>
-                <ThemedInputLabel id="demo-simple-select-label">
-                  Chosen selfApplication Deployment
-                </ThemedInputLabel>
-                <ThemedMUISelect
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={context.deploymentUuid}
-                  label="displayedDeploymentUuid"
-                  onChange={handleChangeDisplayedDeployment}
-                >
-                  {deployments.map((deployment) => {
-                    return (
-                      <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
-                        {deployment.description}
-                      </ThemedMenuItem>
-                    );
-                  })}
-                </ThemedMUISelect>
-              </ThemedFormControl> */}
-              <span>
-                <ThemedButton onClick={fetchConfigurations}>
-                  fetch Miroir & App configurations from database
-                </ThemedButton>
-                {/* <ThemedButton
-                        onClick={() =>
-                          handleAsyncAction(
-                            async () => {
-                              await domainController.handleAction(
-                                {
-                                  actionType: "remoteLocalCacheRollback",
-                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                                },
-                                defaultMiroirMetaModel
-                              );
-                              await domainController.handleAction(
-                                {
-                                  actionType: "remoteLocalCacheRollback",
-                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                                },
-                                defaultMiroirMetaModel
-                              );
-                            },
-                            "Server local cache loaded successfully",
-                            "load server local cache"
-                          )
-                        }
-                      >
-                        Load server local cache
-                      </ThemedButton> */}
-                {/* commit miroir */}
-                <ActionButton
-                  onAction={async () => {
-                    await domainController.handleAction(
-                      {
-                        actionType: "commit",
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                      },
-                      defaultMiroirModelEnvironment
-                    );
-                  }}
-                  successMessage="Miroir committed successfully"
-                  label="Commit Miroir"
-                  handleAsyncAction={handleAsyncAction}
-                  actionName="commit miroir"
-                />
-                {/* Commit Library app */}
-                <ActionButton
-                  onAction={async () => {
-                    await domainController.handleAction(
-                      {
-                        actionType: "commit",
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                      },
-                      defaultMiroirModelEnvironment
-                    );
-                  }}
-                  successMessage="Library app committed successfully"
-                  label="Commit Library app"
-                  handleAsyncAction={handleAsyncAction}
-                  actionName="commit library app"
-                />
-              </span>
-              {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
-              <Outlet></Outlet>
-            </ThemedMainPanel>
-          </ThemedGrid>
-          {/* </ThemedGrid> */}
-          {/* Document Outline - Full height on right side */}
-          <InstanceEditorOutline
-            isOpen={isOutlineOpen}
-            onToggle={handleToggleOutline}
-            // data={outlineData}
-            // rootObjectKey={Object.keys(outlineData || {})[0] || ""}
-            onNavigate={handleNavigateToPath}
-            // title={outlineTitle}
-            width={outlineWidth}
-            onWidthChange={setOutlineWidth}
-          />
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={6000}
-            onClose={handleSnackbarClose}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          >
-            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
-          {/* Action Timeline - Show when enabled */}
-          <EventTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
-        </>
+              <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+                {snackbarMessage}
+              </Alert>
+            </Snackbar>
+            {/* Action Timeline - Show when enabled */}
+            <EventTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
+          </>
+        </ReportPageContextProvider>
       </MiroirThemeProvider>
     </DocumentOutlineContextProvider>
   );

@@ -65,12 +65,13 @@ export const indentShift = "4px"; // TODO: centralize style
 interface JzodArrayMoveButtonProps {
   direction: "up" | "down";
   index: number;
-  itemsOrder: number[];
+  itemsOrder: any[];
   listKey: string;
   rootLessListKey: string;
   reportSectionPathAsString: string;
   formik: FormikContextType<Record<string, any>>; // useFormikContext<Record<string, any>>()
   currentValue: any;
+  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
 }
 
 // ################################################################################################
@@ -82,7 +83,8 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   reportSectionPathAsString,
   formik,
   currentValue,
-  rootLessListKey
+  rootLessListKey,
+  onChangeVector
 }) => {
   const isDisabled = direction === "up" ? index === 0 : index === itemsOrder.length - 1;
 
@@ -106,6 +108,10 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
       JSON.stringify(formik.values, null, 2),
     );
 
+    // Invoke onChangeVector callback if registered for this field
+    if (onChangeVector?.[rootLessListKey]) {
+      onChangeVector[rootLessListKey](newList, rootLessListKey);
+    }
     formik.setFieldValue(`${reportSectionPathAsString}.${rootLessListKey}`, newList, true); // validate to trigger re-renders
   };
 
@@ -220,6 +226,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   reportSectionPathAsString={reportSectionPathAsString}
                   formik={formik}
                   currentValue={currentValue}
+                  onChangeVector={onChangeVector}
                 />
                 <JzodArrayEditorMoveButton
                   direction="up"
@@ -230,6 +237,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   reportSectionPathAsString={reportSectionPathAsString}
                   formik={formik}
                   currentValue={currentValue}
+                  onChangeVector={onChangeVector}
                 />
               </>
             )}
@@ -555,6 +563,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
       // Update the specific field in Formik state
       // formik.setFieldValue(rootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
+      // Invoke onChangeVector callback if registered for this field
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newArrayValue, rootLessListKey);
+      }
       formik.setFieldValue(formikRootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
 
       // // Update the items order

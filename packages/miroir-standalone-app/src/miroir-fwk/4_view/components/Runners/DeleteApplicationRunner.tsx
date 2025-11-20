@@ -2,10 +2,8 @@ import { useMemo } from "react";
 
 import type {
   CompositeActionTemplate,
-  DomainControllerInterface,
   JzodObject,
-  LoggerInterface,
-  MiroirModelEnvironment,
+  LoggerInterface
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
@@ -15,10 +13,7 @@ import {
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { InnerRunnerView } from "./InnerRunnerView.js";
 import { OuterRunnerView } from "./OuterRunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -39,8 +34,6 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
   deploymentUuid,
 }) => {
   const runnerName: string = "deleteApplication";
-  const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
   const formMlSchema: JzodObject = useMemo(
     () => ({

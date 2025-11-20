@@ -682,6 +682,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
       // Update formik values
       // formik.setValues(newFormState2);
+      // Invoke onChangeVector callback if registered for this field
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newFormState2, rootLessListKey);
+      }
       formik.setFieldValue(reportSectionPathAsString, newFormState2);
     },
     [formik.values, formik.setValues]
@@ -738,6 +742,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // const newItemsOrder = getItemsOrder(newRecordValue, currentTypeCheckKeyMap.rawSchema);
     // log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
+    // Invoke onChangeVector callback if registered for this field
+    if (onChangeVector?.[rootLessListKey]) {
+      onChangeVector[rootLessListKey](newRecordValue, rootLessListKey);
+    }
     formik.setFieldValue(formikRootLessListKey, newRecordValue);
     // log.info(
     //   "addExtraRecordEntry clicked2!",
@@ -839,6 +847,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       //   newItemsOrder
       // );
       // if (rootLessListKey) {
+        // Invoke onChangeVector callback if registered for this field
+        if (onChangeVector?.[rootLessListKey]) {
+          onChangeVector[rootLessListKey](newObjectValue, rootLessListKey);
+        }
         formik.setFieldValue(formikRootLessListKey, newObjectValue, false);
       // } else {
       //   formik.setValues(newObjectValue, false);
@@ -881,6 +893,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "newFormState",
         newFormState
       );
+      // Invoke onChangeVector callback if registered for this field
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newFormState, rootLessListKey);
+      }
       formik.setFieldValue(reportSectionPathAsString, newFormState);
       log.info("Removed optional attribute:", rootLessListKeyArray.join("."));
     } else {
@@ -1154,6 +1170,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       log.error("editorButton transformer error:", result.message);
                       console.error("editorButton transformer error:", result.message);
                     } else {
+                      // Invoke onChangeVector callback if registered for this field
+                      if (onChangeVector?.[rootLessListKey]) {
+                        onChangeVector[rootLessListKey](result, rootLessListKey);
+                      }
                       formik.setFieldValue(reportSectionPathAsString, result);
                     }
                     log.info("editorButton transformer button clicked, result:", result);

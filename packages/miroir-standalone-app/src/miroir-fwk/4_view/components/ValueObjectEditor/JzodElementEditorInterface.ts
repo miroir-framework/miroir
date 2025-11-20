@@ -50,6 +50,8 @@ export interface JzodEditorPropsRoot {
     errorPath: string[]; // Path to element that should be highlighted with red border due to error
     errorMessage: string; // Error message to display as tooltip or title
   };
+  // external field change observation
+  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
 }
 
 // ################################################################################################

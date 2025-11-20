@@ -98,6 +98,8 @@ export interface TypedValueObjectEditorProps {
   displaySubmitButton?: "onTop" | "onFirstLine" | "noDisplay";
   useActionButton?: boolean; // Whether to use ActionButton (async) instead of ThemedStyledButton
   // navigationCount: number;
+  // external field change observation
+  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
 }
  let count = 0;
 // ################################################################################################
@@ -134,6 +136,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   displaySubmitButton,
   useActionButton = false,
   // navigationCount,
+  onChangeVector,
   ...props
 }) => {
   const renderStartTime = performance.now();
@@ -525,6 +528,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               maxRenderDepth={maxRenderDepth} // always 1
               readOnly={true}
               displayError={displayError}
+              onChangeVector={onChangeVector}
             />
           </ErrorBoundary>
         </div>
@@ -534,8 +538,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         <form
           id={"form." + formLabel}
           onSubmit={(e) => {
-            // When using ActionButton, prevent default form submission
-            // since we handle submission programmatically via the button
             if (useActionButton) {
               e.preventDefault();
               log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
@@ -593,6 +595,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   !displaySubmitButton || displaySubmitButton === "onTop" ? submitButton : <></>
                 }
                 extraToolsButtons={displaySubmitButton === "onFirstLine" ? submitButton : <></>}
+                onChangeVector={onChangeVector}
               />
             </ErrorBoundary>
           </div>

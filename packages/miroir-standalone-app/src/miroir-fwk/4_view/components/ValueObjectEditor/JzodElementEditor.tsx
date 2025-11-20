@@ -382,6 +382,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             mStringify(parsedCodeMirrorValue, null, 2)
           );
           // if (props.rootLessListKey && props.rootLessListKey.length > 0) {
+            // Invoke onChangeVector callback if registered for this field
+            if (props.onChangeVector?.[props.rootLessListKey]) {
+              props.onChangeVector[props.rootLessListKey](parsedCodeMirrorValue, props.rootLessListKey);
+            }
             formik.setFieldValue(formikRootLessListKey, parsedCodeMirrorValue);
           // } else {
           //   formik.setValues(parsedCodeMirrorValue);
@@ -630,6 +634,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={props.foreignKeyObjects}
               readOnly={props.readOnly}
               displayError={props.displayError}
+              onChangeVector={props.onChangeVector}
             />
         );
       }
@@ -658,6 +663,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               readOnly={props.readOnly}
               extraToolsButtons={props.extraToolsButtons}
               displayError={props.displayError}
+              onChangeVector={props.onChangeVector}
             />
           );
         }
@@ -686,6 +692,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
               displayError={props.displayError}
+              onChangeVector={props.onChangeVector}
             />
           );
           break;
@@ -707,6 +714,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     // name={props.rootLessListKey}
                     checked={currentValueObjectAtKey}// TODO: get other fieldProps: name, checked, onChange, onBlur
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      // Invoke onChangeVector callback if registered for this field
+                      if (props.onChangeVector?.[props.rootLessListKey]) {
+                        props.onChangeVector[props.rootLessListKey](e.target.checked, props.rootLessListKey);
+                      }
                       formik.setFieldValue(formikRootLessListKey, e.target.checked);
                     }}
                     // error={hasPathError}
@@ -763,7 +774,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     name={formikRootLessListKey}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const value = e.target.value;
-                      formik.setFieldValue(formikRootLessListKey, value ? BigInt(value) : BigInt(0));
+                      const newValue = value ? BigInt(value) : BigInt(0);
+                      // Invoke onChangeVector callback if registered for this field
+                      if (props.onChangeVector?.[props.rootLessListKey]) {
+                        props.onChangeVector[props.rootLessListKey](newValue, props.rootLessListKey);
+                      }
+                      formik.setFieldValue(formikRootLessListKey, newValue);
                     }}
                     // name={props.rootLessListKey}
                     error={hasPathError}
@@ -862,6 +878,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         onChange={(e) => {
                           const newValue = e.target.value === "" ? undefined : e.target.value;
                           log.info("JzodElementEditor UUID selector onChange", formikRootLessListKey, "newValue", newValue);
+                          // Invoke onChangeVector callback if registered for this field
+                          if (props.onChangeVector?.[props.rootLessListKey]) {
+                            props.onChangeVector[props.rootLessListKey](newValue, props.rootLessListKey);
+                          }
                           formik.setFieldValue(formikRootLessListKey, newValue);
                         }}
                         name={formikRootLessListKey}
@@ -935,6 +955,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 insideAny={props.insideAny}
                 readOnly={props.readOnly}
                 displayError={props.displayError}
+                onChangeVector={props.onChangeVector}
               />
             // </div>
           );
@@ -967,6 +988,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 insideAny={props.insideAny}
                 readOnly={props.readOnly}
                 displayError={props.displayError}
+                onChangeVector={props.onChangeVector}
               />
             // </div>
           );
@@ -994,6 +1016,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               typeCheckKeyMap={ props.typeCheckKeyMap }
               readOnly={props.readOnly}
               displayError={props.displayError}
+              onChangeVector={props.onChangeVector}
             />
             </>
           );
@@ -1032,7 +1055,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     value={formattedDate} // TODO: get other formik.getFieldProps: name, value, onChange, onBlur
                     onChange={(e) => {
                       const value = e.target.value;
-                      formik.setFieldValue(formikRootLessListKey, value ? new Date(value) : null);
+                      const newValue = value ? new Date(value) : null;
+                      // Invoke onChangeVector callback if registered for this field
+                      if (props.onChangeVector?.[props.rootLessListKey]) {
+                        props.onChangeVector[props.rootLessListKey](newValue, props.rootLessListKey);
+                      }
+                      formik.setFieldValue(formikRootLessListKey, newValue);
                     }}
                   />
                 )

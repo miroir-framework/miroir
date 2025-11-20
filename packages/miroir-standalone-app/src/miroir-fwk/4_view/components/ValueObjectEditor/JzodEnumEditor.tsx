@@ -46,7 +46,8 @@ const handleDiscriminatorChange = (
   currentDeploymentUuid: string | undefined,
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
-  log: LoggerInterface
+  log: LoggerInterface,
+  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>
 ) => {
   if (!parentKeyMap) {
     throw new Error(
@@ -163,12 +164,11 @@ const handleDiscriminatorChange = (
         newJzodSchemaWithOptional,
         formik.values,
         rootLessListKey,
-        undefined,
-        [],
-        undefined,
-        true,
+        undefined, // currentDefaultValue
+        [], // currentValuePath
+        true, // forceOptional
         currentDeploymentUuid,
-        modelEnvironment
+        modelEnvironment,
       ),
       [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
     }
@@ -191,6 +191,10 @@ const handleDiscriminatorChange = (
   //     defaultValue,
   //   );
   // } else {
+    // Invoke onChangeVector callback if registered for this field
+    if (onChangeVector?.[rootLessListKey]) {
+      onChangeVector[rootLessListKey](defaultValue, rootLessListKey);
+    }
     formik.setFieldValue(
       formikRootLessListKey,
       defaultValue,
@@ -214,6 +218,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   typeCheckKeyMap,
   currentDeploymentUuid,
   readOnly,
+  onChangeVector,
 }: JzodEnumEditorProps) => {
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLessListKeyArray);
 
@@ -358,10 +363,15 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           currentDeploymentUuid,
           currentMiroirModelEnvironment,
           formik,
-          log
+          log,
+          onChangeVector
         );
       } else {
         // For non-discriminator enums, just set the field value
+        // Invoke onChangeVector callback if registered for this field
+        if (onChangeVector?.[rootLessListKey]) {
+          onChangeVector[rootLessListKey](selectedValue, rootLessListKey);
+        }
         formik.setFieldValue(formikRootLessListKey, selectedValue);
         // formik.setFieldValue(rootLessListKey, selectedValue);
       }
@@ -375,6 +385,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
       formik,
+      onChangeVector
     ]
   );
 
