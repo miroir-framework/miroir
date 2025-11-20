@@ -108,10 +108,12 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               rootLessListKey,
               undefined, // currentDefaultValue is not known yet, this is what this call will determine
               [], // currentPath on value is root
-              deploymentEntityState,
               true, // force optional attributes to receive a default value
               currentDeploymentUuid,
-              currentMiroirModelEnvironment
+              currentMiroirModelEnvironment,
+              {}, // transformerParams
+              {}, // contextResults
+              deploymentEntityState,
             );
             // formik.setFieldValue(rootLessListKey, defaultValue, false);
             formik.setFieldValue(formikRootLessListKey, defaultValue, false);

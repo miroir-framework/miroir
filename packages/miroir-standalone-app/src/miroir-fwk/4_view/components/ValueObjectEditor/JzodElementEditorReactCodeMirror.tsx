@@ -157,7 +157,8 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           padding: "2px",
           minWidth: "40ch",
           display: !hidden && !insideAny ? "inline-flex" : "none", // control visibility with flex
-          flexDirection: "column"
+          flexDirection: "column",
+          background: "white"
         }}
       >
         <ThemedSpan style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginBottom: "4px" }}>

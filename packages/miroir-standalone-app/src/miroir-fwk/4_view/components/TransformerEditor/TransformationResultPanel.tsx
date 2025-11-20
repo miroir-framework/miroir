@@ -34,8 +34,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const TransformationResultPanel: React.FC<{
   transformationResult: TransformerReturnType<any>;
   transformationResultSchema?: JzodElement;
-  // transformationError: string | null;
-  // transformationError: TransformerFailure | null;
   selectedEntityInstance: EntityInstance | undefined;
   showAllInstances: boolean;
   entityInstances: EntityInstance[];
@@ -62,7 +60,6 @@ export const TransformationResultPanel: React.FC<{
   }) => {
     log.info("Rendering TransformationResultPanel with result:", transformationResult);
     return (
-      // <ThemedContainer style={{ flex: 1, maxWidth: "50%" }}>
       <ThemedContainer style={{ flex: 1 }}>
         <ThemedHeaderSection>
           <ThemedTitle>

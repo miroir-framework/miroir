@@ -4,6 +4,7 @@ export type { ThemedComponentProps } from './BaseTypes';
 // Basic components
 export {
   ThemedContainer,
+  ThemedFoldableContainer,
   ThemedButton,
   ThemedHeaderSection,
   ThemedTitle,

@@ -11,6 +11,14 @@ import { ThemedComponentProps } from './BaseTypes';
 // Basic themed components like containers, buttons, text, etc.
 // ################################################################################################
 
+// Helper function to get base container styles
+const getBaseContainerStyles = (currentTheme: any) => ({
+  padding: currentTheme.spacing.md,
+  backgroundColor: currentTheme.colors.background,
+  color: currentTheme.colors.text,
+  fontFamily: currentTheme.typography.fontFamily,
+});
+
 // Simple container component that uses the theme
 export const ThemedContainer: React.FC<ThemedComponentProps> = ({ 
   children, 
@@ -19,16 +27,87 @@ export const ThemedContainer: React.FC<ThemedComponentProps> = ({
 }) => {
   const { currentTheme } = useMiroirTheme();
   
-  const containerStyles = css({
-    padding: currentTheme.spacing.md,
-    backgroundColor: currentTheme.colors.background,
-    color: currentTheme.colors.text,
-    fontFamily: currentTheme.typography.fontFamily,
-  });
+  const containerStyles = css(getBaseContainerStyles(currentTheme));
 
   return (
     <div css={containerStyles} className={className} style={style}>
       {children}
+    </div>
+  );
+};
+
+// Foldable container component with clickable title
+export const ThemedFoldableContainer: React.FC<ThemedComponentProps & {
+  title: string | React.ReactNode;
+  initiallyFolded?: boolean;
+}> = ({ 
+  children, 
+  title,
+  className, 
+  style,
+  initiallyFolded = false
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  const [isFolded, setIsFolded] = React.useState(initiallyFolded);
+  
+  const containerStyles = css(getBaseContainerStyles(currentTheme));
+
+  const headerStyles = css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: isFolded ? 0 : currentTheme.spacing.md,
+    position: "sticky",
+    top: 0,
+    backgroundColor: currentTheme.colors.background,
+    zIndex: 1000,
+    padding: `${currentTheme.spacing.sm} 0`,
+    boxShadow: currentTheme.elevation.low,
+    cursor: 'pointer',
+    userSelect: 'none',
+  });
+
+  const titleWrapperStyles = css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: currentTheme.spacing.sm,
+    flex: 1,
+  });
+
+  const iconStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    color: currentTheme.colors.textSecondary,
+    transition: 'transform 0.2s ease',
+    transform: isFolded ? 'rotate(0deg)' : 'rotate(90deg)',
+    display: 'inline-block',
+    flexShrink: 0,
+  });
+
+  const titleElementStyles = css({
+    margin: 0,
+    color: currentTheme.colors.text,
+    fontFamily: currentTheme.typography.fontFamily,
+    fontSize: currentTheme.typography.fontSize.xl,
+    fontWeight: currentTheme.typography.fontWeight.bold,
+  });
+
+  const handleToggle = () => {
+    setIsFolded(!isFolded);
+  };
+
+  return (
+    <div css={containerStyles} className={className} style={style}>
+      <div css={headerStyles} onClick={handleToggle}>
+        <div css={titleWrapperStyles}>
+          <span css={iconStyles}>▶</span>
+          {typeof title === 'string' ? (
+            <h1 css={titleElementStyles}>{title}</h1>
+          ) : (
+            title
+          )}
+        </div>
+      </div>
+      {!isFolded && children}
     </div>
   );
 };

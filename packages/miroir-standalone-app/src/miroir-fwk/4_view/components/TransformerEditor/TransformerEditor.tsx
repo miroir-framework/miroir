@@ -48,6 +48,7 @@ import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import {
   ThemedContainer,
+  ThemedFoldableContainer,
   ThemedHeaderSection,
   ThemedOnScreenHelper,
   ThemedTitle
@@ -1764,80 +1765,80 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       label="transformerQuery"
                       data={transformerQuery}
                     /> */}
-                    <ThemedOnScreenHelper
+                    {/*  */}
+                    {/*  */}
+                    {/* <ThemedOnScreenHelper
                       label="persistedState?.selector"
                       data={persistedState?.selector}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="formikValues"
                       data={formikContext.values}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="formik Transformer Definition"
                       data={{
                         mode: formikContext.values.transformerEditor_selector.mode,
                         defn: formikContext.values.transformerEditor_selector.transformer,
-                        // defn: formikContext.values.transformerEditor_editor
-                        //   .currentTransformerDefinition,
                       }}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="currentDefinedTransformerDefinition"
                       data={currentFetchedTransformerDefinition}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="currentHereTransformerDefinition"
                       data={currentHereTransformerDefinition}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="transformerQueryResults"
                       data={transformerQueryResults}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="transformer mode"
                       data={formikContext.values.transformerEditor_selector.mode}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="transformer input"
                       data={transformerInput}
                       initiallyUnfolded={false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="transformation Error"
                       data={innermostError}
                       initiallyUnfolded={false}
                       // initiallyUnfolded={innermostError ? true : false}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="transformationResult"
                       data={transformationResult}
                       initiallyUnfolded={false}
                       // initiallyUnfolded={innermostError ? false : true}
-                    />
-                    <ThemedOnScreenHelper
+                    /> */}
+                    {/* <ThemedOnScreenHelper
                       label="transformationResultSchema"
                       data={transformationResultSchema}
                       initiallyUnfolded={false}
-                    />
+                    /> */}
                     {/* <ThemedOnScreenHelper
                       label="currentTransformerDefinition"
                       data={currentTransformerDefinition}
                     /> */}
-                    <ThemedOnScreenHelper
+                    {/* <ThemedOnScreenHelper
                       label="currentTransformerDefinition transformerImplementation.definition"
                       data={
                         (currentFetchedTransformerDefinition as any)?.transformerImplementation
                           ?.definition
                       }
                       initiallyUnfolded={true}
-                    />
+                    /> */}
                     <TypedValueObjectEditor
                       labelElement={<>Transformer Definition</>}
                       formValueMLSchema={formMLSchema}
@@ -1862,37 +1863,42 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     }}
                   >
                     {/* input selector */}
-                    <TypedValueObjectEditor
-                      labelElement={<>Input Definition</>}
-                      formValueMLSchema={formMLSchema}
-                      // formikValuePathAsString="transformerEditor_input.selector"
-                      formikValuePathAsString="transformerEditor_input_selector"
-                      // zoomInPath="selector"
-                      deploymentUuid={deploymentUuid}
-                      applicationSection={"model"}
-                      formLabel={"Transformer Input Selector"}
-                      displaySubmitButton="noDisplay"
-                      maxRenderDepth={Infinity}
-                    />
-                    {
-                      formikContext.values.transformerEditor_input_selector.mode == "instance" && (
-                        <EntityInstancePanel
-                          entityInstances={entityInstances}
-                          selectedEntityInstance={selectedEntityInstance}
-                          selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
-                          currentInstanceIndex={currentInstanceIndex}
-                          deploymentUuid={deploymentUuid}
-                          availableEntities={currentReportDeploymentSectionEntities || []}
-                          selectedEntityUuid={selectedEntityUuid}
-                          showAllInstances={showAllInstances}
-                          onEntityChange={handleEntityChange}
-                          onNavigateNext={navigateToNextInstance}
-                          onNavigatePrevious={navigateToPreviousInstance}
-                          onNavigateRandom={navigateToRandomInstance}
-                          onToggleShowAll={handleToggleShowAll}
-                        />
-                      )
-                    }
+                    <ThemedFoldableContainer style={{ flex: 1 }} title="Transformer Input">
+                      {/* <ThemedHeaderSection>
+                        <ThemedTitle>
+                          Transformer Input
+                        </ThemedTitle>
+                      </ThemedHeaderSection> */}
+                      <TypedValueObjectEditor
+                        labelElement={<>Input Definition</>}
+                        formValueMLSchema={formMLSchema}
+                        // formikValuePathAsString="transformerEditor_input.selector"
+                        formikValuePathAsString="transformerEditor_input_selector"
+                        // zoomInPath="selector"
+                        deploymentUuid={deploymentUuid}
+                        applicationSection={"model"}
+                        formLabel={"Transformer Input Selector"}
+                        displaySubmitButton="noDisplay"
+                        maxRenderDepth={Infinity}
+                      />
+                    </ThemedFoldableContainer>
+                    {formikContext.values.transformerEditor_input_selector.mode == "instance" && (
+                      <EntityInstancePanel
+                        entityInstances={entityInstances}
+                        selectedEntityInstance={selectedEntityInstance}
+                        selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
+                        currentInstanceIndex={currentInstanceIndex}
+                        deploymentUuid={deploymentUuid}
+                        availableEntities={currentReportDeploymentSectionEntities || []}
+                        selectedEntityUuid={selectedEntityUuid}
+                        showAllInstances={showAllInstances}
+                        onEntityChange={handleEntityChange}
+                        onNavigateNext={navigateToNextInstance}
+                        onNavigatePrevious={navigateToPreviousInstance}
+                        onNavigateRandom={navigateToRandomInstance}
+                        onToggleShowAll={handleToggleShowAll}
+                      />
+                    )}
                     <TransformationResultPanel
                       transformationResult={transformationResult}
                       transformationResultSchema={transformationResultSchema}
