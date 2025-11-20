@@ -86,6 +86,11 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   rootLessListKey,
   onChangeVector
 }) => {
+  // Memoize the callback lookup
+  const onChangeCallback = useMemo(
+    () => onChangeVector?.[rootLessListKey],
+    [onChangeVector, rootLessListKey]
+  );
   const isDisabled = direction === "up" ? index === 0 : index === itemsOrder.length - 1;
 
   // const handleClick = (e: React.MouseEvent) => {
@@ -109,8 +114,8 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
     );
 
     // Invoke onChangeVector callback if registered for this field
-    if (onChangeVector?.[rootLessListKey]) {
-      onChangeVector[rootLessListKey](newList, rootLessListKey);
+    if (onChangeCallback) {
+      onChangeCallback(newList, rootLessListKey);
     }
     formik.setFieldValue(`${reportSectionPathAsString}.${rootLessListKey}`, newList, true); // validate to trigger re-renders
   };
@@ -154,6 +159,7 @@ interface ProgressiveArrayItemProps {
     errorPath: string[];
     errorMessage: string;
   };
+  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
 }
 
 // ################################################################################################
@@ -182,6 +188,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   maxRenderDepth,
   readOnly,
   displayError,
+  onChangeVector,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   const [isRendered, setIsRendered] = useState(isTestMode);
@@ -324,6 +331,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     maxRenderDepth,
     readOnly,
     displayError,
+    onChangeVector,
   }
 ) => {
   jzodArrayEditorRenderCount++;
@@ -332,6 +340,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const formik = useFormikContext<Record<string, any>>();
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
+
+  // Memoize the onChangeVector callback for this field to avoid repeated lookups
+  const onChangeCallback = useMemo(
+    () => onChangeVector?.[rootLessListKey],
+    [onChangeVector, rootLessListKey]
+  );
   const currentValue = resolvePathOnObject(
     formik.values[reportSectionPathAsString],
     rootLessListKeyArray
@@ -576,6 +590,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       formik,
       currentTypeCheckKeyMap?.rawSchema,
       arrayValueObject,
+      onChangeCallback,
+      rootLessListKey,
+      formikRootLessListKey,
     ]
   );
   
@@ -661,6 +678,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   maxRenderDepth={maxRenderDepth}
                   readOnly={readOnly}
                   displayError={displayError}
+                  onChangeVector={onChangeVector}
                 />
               );
             })}

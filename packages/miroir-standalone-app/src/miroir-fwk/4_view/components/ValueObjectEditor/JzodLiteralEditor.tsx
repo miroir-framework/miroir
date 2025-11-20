@@ -50,7 +50,7 @@ const handleDiscriminatorChange = (
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
   log: LoggerInterface,
-  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>
+  onChangeCallback?: (value: any, rootLessListKey: string) => void
 ) => {
   log.info("handleDiscriminatorChange called with:", {
     reportSectionPathAsString,
@@ -265,8 +265,8 @@ const handleDiscriminatorChange = (
   //   );
   // } else {
     // Invoke onChangeVector callback if registered for this field
-    if (onChangeVector?.[rootLessListKey]) {
-      onChangeVector[rootLessListKey](defaultValue, rootLessListKey);
+    if (onChangeCallback) {
+      onChangeCallback(defaultValue, rootLessListKey);
     }
     formik.setFieldValue(
       targetRootLessListKey,
@@ -300,6 +300,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     typeCheckKeyMap,
     readOnly,
     hasPathError,
+    onChangeVector,
   }
 ) => {
   JzodLiteralEditorRenderCount++;
@@ -318,6 +319,12 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   const formik = useFormikContext<Record<string, any>>();
+
+  // Memoize the onChangeVector callback for this field to avoid repeated lookups
+  const onChangeCallback = useMemo(
+    () => onChangeVector?.[rootLessListKey],
+    [onChangeVector, rootLessListKey]
+  );
 
   const parentKey = rootLessListKey.includes('.') ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf('.')) : '';
   const parentKeyMap:KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
@@ -363,7 +370,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
 
-  // const currentValue = formik.getFieldProps(rootLessListKey).value;
+  // const possibleLiteralValues = (currentKeyMap?.resolvedSchema).;  // const currentValue = formik.getFieldProps(rootLessListKey).value;
   const currentValue = useMemo(() => {
     try {
       return rootLessListKeyArray.length > 0
@@ -421,7 +428,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         currentMiroirModelEnvironment,
         formik,
         log,
-        onChangeVector
+        onChangeCallback
       );
     },
     [
@@ -433,7 +440,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
       formik,
-      onChangeVector
+      onChangeCallback
     ]
   ); // end handleFilterableSelectChange
 

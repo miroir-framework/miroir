@@ -402,7 +402,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     maxRenderDepth,
     readOnly,
     foreignKeyObjects = {}, // Add default empty object
+    onChangeVector,
   } = props;
+
+  // Memoize the onChangeVector callback for this field to avoid repeated lookups
+  const onChangeCallback = useMemo(
+    () => onChangeVector?.[rootLessListKey],
+    [onChangeVector, rootLessListKey]
+  );
 
   // count++;
   // log.info(
@@ -683,12 +690,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       // Update formik values
       // formik.setValues(newFormState2);
       // Invoke onChangeVector callback if registered for this field
-      if (onChangeVector?.[rootLessListKey]) {
-        onChangeVector[rootLessListKey](newFormState2, rootLessListKey);
+      if (onChangeCallback) {
+        onChangeCallback(newFormState2, rootLessListKey);
       }
       formik.setFieldValue(reportSectionPathAsString, newFormState2);
     },
-    [formik.values, formik.setValues]
+    [formik.values, formik.setValues, onChangeCallback, rootLessListKey]
   );
 
   // ##############################################################################################

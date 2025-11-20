@@ -47,7 +47,7 @@ const handleDiscriminatorChange = (
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
   log: LoggerInterface,
-  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>
+  onChangeCallback?: (value: any, rootLessListKey: string) => void
 ) => {
   if (!parentKeyMap) {
     throw new Error(
@@ -192,8 +192,8 @@ const handleDiscriminatorChange = (
   //   );
   // } else {
     // Invoke onChangeVector callback if registered for this field
-    if (onChangeVector?.[rootLessListKey]) {
-      onChangeVector[rootLessListKey](defaultValue, rootLessListKey);
+    if (onChangeCallback) {
+      onChangeCallback(defaultValue, rootLessListKey);
     }
     formik.setFieldValue(
       formikRootLessListKey,
@@ -238,6 +238,12 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const currentReportSectionFormikValues = formik.values[reportSectionPathAsString] ?? formik.values;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
+
+  // Memoize the onChangeVector callback for this field to avoid repeated lookups
+  const onChangeCallback = useMemo(
+    () => onChangeVector?.[rootLessListKey],
+    [onChangeVector, rootLessListKey]
+  );
 
   // const possibleEnumValues = (currentKeyMap?.resolvedSchema).;
   // Log only when component renders to track performance
@@ -292,7 +298,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
         formik,
-        log
+        log,
+        onChangeCallback
       );
     },
     [
@@ -303,6 +310,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
       formik,
+      onChangeCallback,
     ]
   );
 
@@ -364,7 +372,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           currentMiroirModelEnvironment,
           formik,
           log,
-          onChangeVector
+          onChangeCallback
         );
       } else {
         // For non-discriminator enums, just set the field value
