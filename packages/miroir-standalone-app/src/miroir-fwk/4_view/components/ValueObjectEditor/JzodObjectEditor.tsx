@@ -174,6 +174,7 @@ const ProgressiveAttribute: FC<{
   currentValue: any;
   usedIndentLevel: number;
   definedOptionalAttributes: Set<string>;
+  onChangeVector?: Record<string, (newValue: any, rootLessListKey: string) => void>;
   handleAttributeNameChange: (newValue: string, attributeRootLessListKeyArray: (string | number)[]) => void;
   deleteElement: (formikRootLessListKeyArray: (string | number)[]) => () => void;
   formik: any;
@@ -208,6 +209,7 @@ const ProgressiveAttribute: FC<{
   currentValue,
   usedIndentLevel,
   definedOptionalAttributes,
+  onChangeVector,
   handleAttributeNameChange,
   deleteElement,
   formik,
@@ -340,6 +342,7 @@ const ProgressiveAttribute: FC<{
             foreignKeyObjects={foreignKeyObjects}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
+            onChangeVector={onChangeVector}
             maxRenderDepth={maxRenderDepth}
             readOnly={readOnly}
             displayError={displayError}
@@ -1007,6 +1010,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 currentValue={currentValueObjectAtKey}
                 usedIndentLevel={usedIndentLevel}
                 definedOptionalAttributes={definedOptionalAttributes}
+                onChangeVector={onChangeVector}
                 handleAttributeNameChange={handleAttributeNameChange}
                 deleteElement={deleteElement}
                 maxRenderDepth={maxRenderDepth}
@@ -1037,6 +1041,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentValueObjectAtKey,
     usedIndentLevel,
     definedOptionalAttributes,
+    onChangeVector,
     handleAttributeNameChange,
     deleteElement,
     formik,

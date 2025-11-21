@@ -1310,6 +1310,7 @@ export {
   //
   selfApplicationDeploymentLibrary,
   // reportTestList,
+  adminApplicationLibrary,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationStoreBasedConfigurationLibrary,

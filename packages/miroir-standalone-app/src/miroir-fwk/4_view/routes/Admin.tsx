@@ -19,6 +19,9 @@ import { ReportPageContextProvider } from "../components/Reports/ReportPageConte
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
 import { ImportEntityFromSpreadsheetRunner } from '../components/Runners/ImportEntityFromSpreadsheetRunner.js';
+import { useState } from 'react';
+import { noValue } from '../components/ValueObjectEditor/JzodElementEditorInterface.js';
+import { ApplicationSelector } from '../components/interactive/ApplicationSelector.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -383,6 +386,8 @@ export const AdminPage: React.FC<any> = (
   // log.info("deleteApplicationAndDeploymentCompositeAction_application", deleteApplicationAndDeploymentCompositeAction_application);
 
   // log.info("initialReportSectionsFormValue", initialReportSectionsFormValue);
+  const [currentApplication, setCurrentApplication] = useState<string>(noValue.uuid);
+
 
   return (
     <ReportPageContextProvider>
@@ -390,8 +395,12 @@ export const AdminPage: React.FC<any> = (
         <h1>Admin</h1>
         This is the Admin page. It has been rendered {count} times.
         <br />
-        path: {testSubPartPathArray.join(".")}
-        <br />
+        {/* path: {testSubPartPathArray.join(".")} */}
+          {/* <ApplicationSelector
+            applicationUuid={currentApplication}
+            onApplicationChange={setCurrentApplication}
+          />
+        <br /> */}
         {/* Create Application & Deployment */}
         <Accordion style={{ marginBottom: 12 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>

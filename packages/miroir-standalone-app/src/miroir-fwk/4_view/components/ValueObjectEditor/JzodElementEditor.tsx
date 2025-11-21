@@ -300,7 +300,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   // Memoize the onChangeVector callback for this field to avoid repeated lookups
   const onChangeCallback = useMemo(
-    () => props.onChangeVector?.[props.rootLessListKey],
+    () => {
+      const callback = props.onChangeVector?.[props.rootLessListKey];
+      if (props.rootLessListKey && props.rootLessListKey.includes("application")) {
+        log.info(
+          "JzodElementEditor onChangeCallback lookup",
+          "rootLessListKey:", props.rootLessListKey,
+          "onChangeVector keys:", props.onChangeVector ? Object.keys(props.onChangeVector) : "undefined",
+          "callback found:", !!callback,
+          "callback type:", typeof callback,
+          "direct lookup test:", props.onChangeVector?.["applicationSelector.application"],
+          "hasOwnProperty test:", props.onChangeVector?.hasOwnProperty(props.rootLessListKey),
+          "onChangeVector ref:", props.onChangeVector
+        );
+      }
+      return callback;
+    },
     [props.onChangeVector, props.rootLessListKey]
   );
 
@@ -883,7 +898,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
                         onChange={(e) => {
                           const newValue = e.target.value === "" ? undefined : e.target.value;
-                          log.info("JzodElementEditor UUID selector onChange", formikRootLessListKey, "newValue", newValue);
+                          log.info(
+                            "JzodElementEditor UUID selector onChange",
+                            formikRootLessListKey,
+                            "newValue",
+                            newValue,
+                            "onChangeCallback",
+                            !!onChangeCallback,
+                            "props.onChangeVector",
+                            JSON.stringify(Object.keys(props.onChangeVector || {}))
+                          );
                           // Invoke onChangeVector callback if registered for this field
                           if (onChangeCallback) {
                             onChangeCallback(newValue, props.rootLessListKey);
@@ -1222,6 +1246,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             indentLevel={props.indentLevel}
           />
         )}
+        {/* <ThemedOnScreenHelper
+          label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
+          data={onChangeCallback ? "onChangeCallback" : "no onChangeCallback"}
+        /> */}
         {objectOrArrayOrAny ? (
           <ThemedCard
             id={props.rootLessListKey}

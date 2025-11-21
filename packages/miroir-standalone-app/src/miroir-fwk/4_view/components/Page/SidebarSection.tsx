@@ -32,6 +32,8 @@ import {
 import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../../constants.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -127,6 +129,26 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   return (
     <>
+      <ErrorBoundary
+        FallbackComponent={({ error, resetErrorBoundary }) => (
+          <ErrorFallbackComponent
+            error={error}
+            resetErrorBoundary={resetErrorBoundary}
+            context={{
+              origin: "SidebarSection",
+              objectType: "root_editor",
+              rootLessListKey: "ROOT",
+              // currentValue: zoomedInValueObject_DEFUNCT,
+              // formikValues: undefined,
+              // rawJzodSchema: zoomedInDisplaySchema,
+              // localResolvedElementJzodSchemaBasedOnValue:
+              //   jzodTypeCheckResult?.status == "ok"
+              //     ? jzodTypeCheckResult.resolvedSchema
+              //     : undefined,
+            }}
+          />
+        )}
+      >
       {
         miroirMenusDomainElementObject.elementType == "failure"
         ?
@@ -184,7 +206,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
           </ThemedList>
           }
         </>
-      }
+      } </ErrorBoundary>
     </>
   );
 }

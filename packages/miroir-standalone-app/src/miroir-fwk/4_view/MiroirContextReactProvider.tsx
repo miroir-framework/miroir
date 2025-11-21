@@ -56,6 +56,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 // ToolsPage state interface for persistence
 export interface ToolsPageState {
+  applicationSelector?: Uuid;
   transformerEditor?: {
     selectedEntityUuid?: string;
     currentInstanceIndex?: number;
@@ -271,7 +272,7 @@ export function MiroirContextReactProvider(props: {
         ...toolsPageState,
         transformerEditor: { ...(toolsPageState.transformerEditor || {}), ...updates },
       };
-      // log.info("updateTransformerEditorState", { updates, newState });
+      log.info("updateTransformerEditorState", { toolsPageState, updates, newState });
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
       sessionStorage.setItem("toolsPageState", JSON.stringify(newState));

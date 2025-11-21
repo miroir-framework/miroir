@@ -898,6 +898,7 @@ export function jzodTypeCheck(
               typePath: currentTypePath,
               value: valueObject,
               rawSchema: effectiveRawSchema,
+              errorOnSchemaAttributes: jzodObjectFlattenedSchema as any
             },
           ];
         }
