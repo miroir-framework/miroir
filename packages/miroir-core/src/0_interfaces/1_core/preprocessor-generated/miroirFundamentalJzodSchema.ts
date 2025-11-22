@@ -255,6 +255,10 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "hideHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
                     "unfoldSubLevels": {
                       "type": "number",
                       "optional": true
@@ -497,6 +501,10 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "displayedAttributeValueWhenFolded": {
                         "type": "string",
+                        "optional": true
+                      },
+                      "hideHeader": {
+                        "type": "boolean",
                         "optional": true
                       },
                       "unfoldSubLevels": {
@@ -21557,6 +21565,22 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "hideHeader": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
                         "unfoldSubLevels": {
                           "type": "union",
                           "optional": true,
@@ -22283,6 +22307,22 @@ export const miroirFundamentalJzodSchema = {
                                     "definition": [
                                       {
                                         "type": "string",
+                                        "optional": true
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "hideHeader": {
+                                    "type": "union",
+                                    "optional": true,
+                                    "definition": [
+                                      {
+                                        "type": "boolean",
                                         "optional": true
                                       },
                                       {
@@ -45778,6 +45818,22 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "hideHeader": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
                         "unfoldSubLevels": {
                           "type": "union",
                           "optional": true,
@@ -46471,6 +46527,22 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "string",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "hideHeader": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "boolean",
                                   "optional": true
                                 },
                                 {
@@ -47207,6 +47279,22 @@ export const miroirFundamentalJzodSchema = {
                                         "definition": [
                                           {
                                             "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "hideHeader": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "definition": [
+                                          {
+                                            "type": "boolean",
                                             "optional": true
                                           },
                                           {
@@ -55674,6 +55762,10 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "hideHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
                     "unfoldSubLevels": {
                       "type": "number",
                       "optional": true
@@ -55916,6 +56008,10 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "displayedAttributeValueWhenFolded": {
                         "type": "string",
+                        "optional": true
+                      },
+                      "hideHeader": {
+                        "type": "boolean",
                         "optional": true
                       },
                       "unfoldSubLevels": {
@@ -64900,6 +64996,10 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "hideHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
                     "unfoldSubLevels": {
                       "type": "number",
                       "optional": true
@@ -65142,6 +65242,10 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "displayedAttributeValueWhenFolded": {
                         "type": "string",
+                        "optional": true
+                      },
+                      "hideHeader": {
+                        "type": "boolean",
                         "optional": true
                       },
                       "unfoldSubLevels": {
@@ -74080,6 +74184,10 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "hideHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
                     "unfoldSubLevels": {
                       "type": "number",
                       "optional": true
@@ -74322,6 +74430,10 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "displayedAttributeValueWhenFolded": {
                         "type": "string",
+                        "optional": true
+                      },
+                      "hideHeader": {
+                        "type": "boolean",
                         "optional": true
                       },
                       "unfoldSubLevels": {

@@ -1060,151 +1060,153 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       /> */}
       <div>
         {/* Performance statistics */}
-        <ThemedFlexRow justify="start" align="center">
-          <span>
-            <ThemedFlexRow align="center">
-              {labelElement}
-              {/* Show folded display value when object is folded and a value is available */}
-              {reportContext.isNodeFolded(rootLessListKeyArray) &&
-                (() => {
-                  return foldedDisplayValue !== null ? (
-                    <ThemedFoldedValueDisplay
-                      value={String(foldedDisplayValue)}
-                      title={`Folded value: ${foldedDisplayValue}`}
-                      maxLength={100}
-                    />
-                  ) : null;
-                })()}
-            </ThemedFlexRow>
-          </span>
-          <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
-            <FoldUnfoldObjectOrArray
-              listKey={listKey}
-              rootLessListKeyArray={rootLessListKeyArray}
-              currentValue={currentValueObjectAtKey}
-              unfoldingDepth={unfoldingDepth}
-            ></FoldUnfoldObjectOrArray>
-            <FoldUnfoldObjectOrArray
-              listKey={listKey}
-              rootLessListKeyArray={rootLessListKeyArray}
-              currentValue={currentValueObjectAtKey}
-              unfoldingDepth={Infinity}
-            ></FoldUnfoldObjectOrArray>
-            {!reportContext.isNodeFolded(rootLessListKeyArray) &&
-              itemsOrder.length >= 2 &&
-              foldableItemsCount > 1 && (
-                <FoldUnfoldAllObjectAttributesOrArrayItems
-                  listKey={listKey}
-                  rootLessListKeyArray={rootLessListKeyArray}
-                  itemsOrder={itemsOrder}
-                  maxDepth={maxRenderDepth ?? 1}
-                ></FoldUnfoldAllObjectAttributesOrArrayItems>
-              )}
-          </span>
-          {/* add record attribute button for records */}
-          <span>
-            {!readOnly &&
-            currentTypeCheckKeyMap?.rawSchema.type == "record" &&
-            !reportContext.isNodeFolded(rootLessListKeyArray) ? (
-              <ThemedSizedButton
-                id={formikRootLessListKey + ".addRecordAttribute"}
-                aria-label={formikRootLessListKey + ".addRecordAttribute"}
-                onClick={addExtraRecordEntry}
-                title="Add new record attribute"
-              >
-                <ThemedAddIcon />
-              </ThemedSizedButton>
-            ) : (
-              <></>
-            )}
-          </span>
-          {/* add optional attributes buttons */}
-          <span>
-            {!readOnly &&
-              currentTypeCheckKeyMap?.rawSchema.type != "record" &&
-              undefinedOptionalAttributes.length > 0 &&
-              !reportContext.isNodeFolded(rootLessListKeyArray) && (
-                <>
-                  <ThemedOptionalAttributeContainer>
-                    {undefinedOptionalAttributes.map((attributeName) => (
-                      <ThemedOptionalAttributeItem key={attributeName}>
-                        <ThemedSizedButton
-                          aria-label={
-                            formikRootLessListKey + ".addObjectOptionalAttribute." + attributeName
-                          }
-                          onClick={() => addObjectOptionalAttribute(attributeName)}
-                          title={`Add optional attribute: ${attributeName}`}
-                        >
-                          <ThemedAddIcon />
-                        </ThemedSizedButton>
-                        <ThemedAttributeName>{attributeName}</ThemedAttributeName>
-                      </ThemedOptionalAttributeItem>
-                    ))}
-                  </ThemedOptionalAttributeContainer>
-                </>
-              )}
-          </span>
-          {/* custom transformer for transformers (transform Entity Instance Transformer to an Entity Instance List Transformer) */}
-          {currentTypeCheckKeyMap?.resolvedSchema &&
-            currentTypeCheckKeyMap?.resolvedSchema.tag &&
-            currentTypeCheckKeyMap.resolvedSchema.tag.value &&
-            currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton && (
-              <span>
-                {(() => {
-                  // log.info("JzodObjectEditor rendering editorButton",
-                  //   "rootLessListKey", rootLessListKey,
-                  //   "editorButton", currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
-                  //   "tag.value", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema.tag.value)
-                  // );
-                  return null;
-                })()}
-                {/* {JSON.stringify((currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value) ??
-                  "tag undefined!"} */}
-                <button
-                  type="button"
-                  onClick={(e: any) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    log.info("editorButton transformer button clicked", e);
-                    console.log("editorButton transformer button clicked", e);
-                    const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
-                      context.miroirContext.miroirActivityTracker, // activityTracker
-                      "runtime", // step
-                      [], // transformerPath
-                      currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.label, // label
-                      currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.transformer, // transformer
-                      currentMiroirModelEnvironment,
-                      {}, // queryParams
-                      { originTransformer: currentValueObjectAtKey }, // contextResults - pass the instance to transform
-                      "value" // resolveBuildTransformersTo
-                    );
-                    if (result.status === "error") {
-                      log.error("editorButton transformer error:", result.message);
-                      console.error("editorButton transformer error:", result.message);
-                    } else {
-                      // Invoke onChangeVector callback if registered for this field
-                      if (onChangeVector?.[rootLessListKey]) {
-                        onChangeVector[rootLessListKey](result, rootLessListKey);
-                      }
-                      formik.setFieldValue(reportSectionPathAsString, result);
-                    }
-                    log.info("editorButton transformer button clicked, result:", result);
-                  }}
-                  // name={currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton.label}
-                  // role="button"
+        {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.hideHeader && (
+          <ThemedFlexRow justify="start" align="center">
+            <span>
+              <ThemedFlexRow align="center">
+                {labelElement}
+                {/* Show folded display value when object is folded and a value is available */}
+                {reportContext.isNodeFolded(rootLessListKeyArray) &&
+                  (() => {
+                    return foldedDisplayValue !== null ? (
+                      <ThemedFoldedValueDisplay
+                        value={String(foldedDisplayValue)}
+                        title={`Folded value: ${foldedDisplayValue}`}
+                        maxLength={100}
+                      />
+                    ) : null;
+                  })()}
+              </ThemedFlexRow>
+            </span>
+            <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
+              <FoldUnfoldObjectOrArray
+                listKey={listKey}
+                rootLessListKeyArray={rootLessListKeyArray}
+                currentValue={currentValueObjectAtKey}
+                unfoldingDepth={unfoldingDepth}
+              ></FoldUnfoldObjectOrArray>
+              <FoldUnfoldObjectOrArray
+                listKey={listKey}
+                rootLessListKeyArray={rootLessListKeyArray}
+                currentValue={currentValueObjectAtKey}
+                unfoldingDepth={Infinity}
+              ></FoldUnfoldObjectOrArray>
+              {!reportContext.isNodeFolded(rootLessListKeyArray) &&
+                itemsOrder.length >= 2 &&
+                foldableItemsCount > 1 && (
+                  <FoldUnfoldAllObjectAttributesOrArrayItems
+                    listKey={listKey}
+                    rootLessListKeyArray={rootLessListKeyArray}
+                    itemsOrder={itemsOrder}
+                    maxDepth={maxRenderDepth ?? 1}
+                  ></FoldUnfoldAllObjectAttributesOrArrayItems>
+                )}
+            </span>
+            {/* add record attribute button for records */}
+            <span>
+              {!readOnly &&
+              currentTypeCheckKeyMap?.rawSchema.type == "record" &&
+              !reportContext.isNodeFolded(rootLessListKeyArray) ? (
+                <ThemedSizedButton
+                  id={formikRootLessListKey + ".addRecordAttribute"}
+                  aria-label={formikRootLessListKey + ".addRecordAttribute"}
+                  onClick={addExtraRecordEntry}
+                  title="Add new record attribute"
                 >
-                  {(currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value.editorButton.label}
-                </button>
-              </span>
-            )}
-          {/* extra buttons */}
-          {props.extraToolsButtons && <span>{props.extraToolsButtons}</span>}
-          <ThemedDeleteButtonContainer>
-            {deleteButtonElement ?? <></>}
-            {displayAsStructuredElementSwitch ?? <></>}
-            {/* {jzodSchemaTooltip ?? <></>} */}
-          </ThemedDeleteButtonContainer>
-        </ThemedFlexRow>
+                  <ThemedAddIcon />
+                </ThemedSizedButton>
+              ) : (
+                <></>
+              )}
+            </span>
+            {/* add optional attributes buttons */}
+            <span>
+              {!readOnly &&
+                currentTypeCheckKeyMap?.rawSchema.type != "record" &&
+                undefinedOptionalAttributes.length > 0 &&
+                !reportContext.isNodeFolded(rootLessListKeyArray) && (
+                  <>
+                    <ThemedOptionalAttributeContainer>
+                      {undefinedOptionalAttributes.map((attributeName) => (
+                        <ThemedOptionalAttributeItem key={attributeName}>
+                          <ThemedSizedButton
+                            aria-label={
+                              formikRootLessListKey + ".addObjectOptionalAttribute." + attributeName
+                            }
+                            onClick={() => addObjectOptionalAttribute(attributeName)}
+                            title={`Add optional attribute: ${attributeName}`}
+                          >
+                            <ThemedAddIcon />
+                          </ThemedSizedButton>
+                          <ThemedAttributeName>{attributeName}</ThemedAttributeName>
+                        </ThemedOptionalAttributeItem>
+                      ))}
+                    </ThemedOptionalAttributeContainer>
+                  </>
+                )}
+            </span>
+            {/* custom transformer for transformers (transform Entity Instance Transformer to an Entity Instance List Transformer) */}
+            {currentTypeCheckKeyMap?.resolvedSchema &&
+              currentTypeCheckKeyMap?.resolvedSchema.tag &&
+              currentTypeCheckKeyMap.resolvedSchema.tag.value &&
+              currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton && (
+                <span>
+                  {(() => {
+                    // log.info("JzodObjectEditor rendering editorButton",
+                    //   "rootLessListKey", rootLessListKey,
+                    //   "editorButton", currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
+                    //   "tag.value", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema.tag.value)
+                    // );
+                    return null;
+                  })()}
+                  {/* {JSON.stringify((currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value) ??
+                    "tag undefined!"} */}
+                  <button
+                    type="button"
+                    onClick={(e: any) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      log.info("editorButton transformer button clicked", e);
+                      console.log("editorButton transformer button clicked", e);
+                      const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
+                        context.miroirContext.miroirActivityTracker, // activityTracker
+                        "runtime", // step
+                        [], // transformerPath
+                        currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.label, // label
+                        currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.transformer, // transformer
+                        currentMiroirModelEnvironment,
+                        {}, // queryParams
+                        { originTransformer: currentValueObjectAtKey }, // contextResults - pass the instance to transform
+                        "value" // resolveBuildTransformersTo
+                      );
+                      if (result.status === "error") {
+                        log.error("editorButton transformer error:", result.message);
+                        console.error("editorButton transformer error:", result.message);
+                      } else {
+                        // Invoke onChangeVector callback if registered for this field
+                        if (onChangeVector?.[rootLessListKey]) {
+                          onChangeVector[rootLessListKey](result, rootLessListKey);
+                        }
+                        formik.setFieldValue(reportSectionPathAsString, result);
+                      }
+                      log.info("editorButton transformer button clicked, result:", result);
+                    }}
+                    // name={currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton.label}
+                    // role="button"
+                  >
+                    {(currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value.editorButton.label}
+                  </button>
+                </span>
+              )}
+            {/* extra buttons */}
+            {props.extraToolsButtons && <span>{props.extraToolsButtons}</span>}
+            <ThemedDeleteButtonContainer>
+              {deleteButtonElement ?? <></>}
+              {displayAsStructuredElementSwitch ?? <></>}
+              {/* {jzodSchemaTooltip ?? <></>} */}
+            </ThemedDeleteButtonContainer>
+          </ThemedFlexRow>
+        )}
         <ThemedIndentedContainer
           id={listKey + ".inner"}
           marginLeft={`calc(${indentShift})`}

@@ -32,12 +32,35 @@ export const ApplicationSelector: FC<{
   // Ref for debouncing application UUID updates
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    const labelElement = useMemo(
+    () => (
+      <>
+        {/* <AutoStories style={{ verticalAlign: "middle", marginRight: 4 }} />  */}
+        {/* Application Selector */}
+      </>
+    ),
+    []
+  );
+  const deploymentUuid = adminConfigurationDeploymentAdmin.uuid;
+  const formikValuePathAsString = "applicationSelector";
+  const formLabel = "Select Application to delete";
+
+  // ##############################################################################################
   const formMlSchema: JzodObject = useMemo(
     () => ({
       type: "object",
       definition: {
         applicationSelector: {
           type: "object",
+          tag: {
+            value: {
+              defaultLabel: "Application Selector",
+              display: {
+                // unfoldSubLevels: 1,
+                hideHeader: true,
+              }
+            }
+          },
           definition: {
             application: {
               type: "uuid",
@@ -81,18 +104,6 @@ export const ApplicationSelector: FC<{
     };
   }, []);
 
-  const labelElement = useMemo(
-    () => (
-      <>
-        {/* <AutoStories style={{ verticalAlign: "middle", marginRight: 4 }} />  */}
-        Application Selector
-      </>
-    ),
-    []
-  );
-  const deploymentUuid = adminConfigurationDeploymentAdmin.uuid;
-  const formikValuePathAsString = "applicationSelector";
-  const formLabel = "Select Application to delete";
 
   // const [currentInnerApplication, setCurrentInnerApplication] = useState<string>(noValue.uuid);
 
@@ -113,7 +124,6 @@ export const ApplicationSelector: FC<{
       return vector;
     },
     [onApplicationChange]
-    // []
   );
 
   // Debounced update to persisted state when applicationUuid changes
@@ -151,6 +161,7 @@ export const ApplicationSelector: FC<{
       }
     };
   }, [applicationUuid, context]);
+
   return (
     <div>
       {/* <ThemedOnScreenHelper
