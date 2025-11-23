@@ -71,8 +71,6 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
       validateOnChange={false}
       validateOnBlur={false}
     >
-      {/* {(formik: FormikProps<Record<string, any>>) => ( */}
-      <div>
         {/* <ThemedOnScreenHelper label="formikValuePathAsString" data={editorProps.formikValuePathAsString} />
         <ThemedOnScreenHelper label="initialValueObject" data={initialValueObject} />
         <ThemedOnScreenHelper label="valueObjectMMLSchema" data={valueObjectMMLSchema} /> */}
@@ -82,8 +80,6 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
           readonly={readonly}
           zoomInPath={zoomInPath}
         />
-      </div>
-      {/* )} */}
     </Formik>
   );
 };

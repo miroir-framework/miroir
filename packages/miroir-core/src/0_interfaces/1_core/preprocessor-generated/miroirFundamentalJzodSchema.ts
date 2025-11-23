@@ -255,7 +255,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
-                    "hideHeader": {
+                    "objectUuidAttributeLabelPosition": {
+                      "type": "enum",
+                      "optional": true,
+                      "definition": [
+                        "left",
+                        "stacked"
+                      ]
+                    },
+                    "objectHideDeleteButton": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectWithoutHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectAttributesNoIndent": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectOrArrayWithoutFrame": {
                       "type": "boolean",
                       "optional": true
                     },
@@ -503,7 +523,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "string",
                         "optional": true
                       },
-                      "hideHeader": {
+                      "objectWithoutHeader": {
                         "type": "boolean",
                         "optional": true
                       },
@@ -21565,7 +21585,75 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
-                        "hideHeader": {
+                        "objectUuidAttributeLabelPosition": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "enum",
+                              "optional": true,
+                              "definition": [
+                                "left",
+                                "stacked"
+                              ]
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectHideDeleteButton": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectWithoutHeader": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectAttributesNoIndent": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectOrArrayWithoutFrame": {
                           "type": "union",
                           "optional": true,
                           "definition": [
@@ -22317,7 +22405,7 @@ export const miroirFundamentalJzodSchema = {
                                       }
                                     ]
                                   },
-                                  "hideHeader": {
+                                  "objectWithoutHeader": {
                                     "type": "union",
                                     "optional": true,
                                     "definition": [
@@ -45818,7 +45906,75 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
-                        "hideHeader": {
+                        "objectUuidAttributeLabelPosition": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "enum",
+                              "optional": true,
+                              "definition": [
+                                "left",
+                                "stacked"
+                              ]
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectHideDeleteButton": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectWithoutHeader": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectAttributesNoIndent": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "boolean",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "objectOrArrayWithoutFrame": {
                           "type": "union",
                           "optional": true,
                           "definition": [
@@ -46537,7 +46693,75 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             },
-                            "hideHeader": {
+                            "objectUuidAttributeLabelPosition": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "enum",
+                                  "optional": true,
+                                  "definition": [
+                                    "left",
+                                    "stacked"
+                                  ]
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "objectHideDeleteButton": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "boolean",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "objectWithoutHeader": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "boolean",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "objectAttributesNoIndent": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "boolean",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "objectOrArrayWithoutFrame": {
                               "type": "union",
                               "optional": true,
                               "definition": [
@@ -47289,7 +47513,7 @@ export const miroirFundamentalJzodSchema = {
                                           }
                                         ]
                                       },
-                                      "hideHeader": {
+                                      "objectWithoutHeader": {
                                         "type": "union",
                                         "optional": true,
                                         "definition": [
@@ -55762,7 +55986,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
-                    "hideHeader": {
+                    "objectUuidAttributeLabelPosition": {
+                      "type": "enum",
+                      "optional": true,
+                      "definition": [
+                        "left",
+                        "stacked"
+                      ]
+                    },
+                    "objectHideDeleteButton": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectWithoutHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectAttributesNoIndent": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectOrArrayWithoutFrame": {
                       "type": "boolean",
                       "optional": true
                     },
@@ -56010,7 +56254,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "string",
                         "optional": true
                       },
-                      "hideHeader": {
+                      "objectWithoutHeader": {
                         "type": "boolean",
                         "optional": true
                       },
@@ -64996,7 +65240,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
-                    "hideHeader": {
+                    "objectUuidAttributeLabelPosition": {
+                      "type": "enum",
+                      "optional": true,
+                      "definition": [
+                        "left",
+                        "stacked"
+                      ]
+                    },
+                    "objectHideDeleteButton": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectWithoutHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectAttributesNoIndent": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectOrArrayWithoutFrame": {
                       "type": "boolean",
                       "optional": true
                     },
@@ -65244,7 +65508,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "string",
                         "optional": true
                       },
-                      "hideHeader": {
+                      "objectWithoutHeader": {
                         "type": "boolean",
                         "optional": true
                       },
@@ -74184,7 +74448,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
-                    "hideHeader": {
+                    "objectUuidAttributeLabelPosition": {
+                      "type": "enum",
+                      "optional": true,
+                      "definition": [
+                        "left",
+                        "stacked"
+                      ]
+                    },
+                    "objectHideDeleteButton": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectWithoutHeader": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectAttributesNoIndent": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectOrArrayWithoutFrame": {
                       "type": "boolean",
                       "optional": true
                     },
@@ -74432,7 +74716,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "string",
                         "optional": true
                       },
-                      "hideHeader": {
+                      "objectWithoutHeader": {
                         "type": "boolean",
                         "optional": true
                       },

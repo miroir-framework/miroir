@@ -451,7 +451,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
 
   const result = (
     <>
-      <div>
+      {/* <div> */}
         {/* <ThemedOnScreenHelper
           label={`TypedValueObjectEditor for ${formikValuePathAsString} (navigationCount: ${navigationCount}, totalCount: ${totalCount})`}
           data={formValueMLSchema}
@@ -460,9 +460,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           label={`TypedValueObjectEditor for ${formikValuePathAsString} valueObject`}
           data={valueObject}
         /> */}
-        {typeError ? "typeError: " : ""}
-        {typeError}
-      </div>
+        {typeError && (<span>"typeError: "{typeError}</span>) }
+        
+      {/* </div> */}
       {/* <ThemedOnScreenHelper
         label={`TypedValueObjectEditor: "${formikValuePathAsString}"`}
         data={{
@@ -546,59 +546,57 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             formik.handleSubmit(e);
           }}
         >
-          <div>
-            <ErrorBoundary
-              FallbackComponent={({ error, resetErrorBoundary }) => (
-                <ErrorFallbackComponent
-                  error={error}
-                  resetErrorBoundary={resetErrorBoundary}
-                  context={{
-                    origin: "TypedValueObjectEditor",
-                    objectType: "root_editor",
-                    rootLessListKey: "ROOT",
-                    rootLessListKeyArray: [],
-                    currentValue: zoomedInValueObject_DEFUNCT,
-                    formikValues: undefined,
-                    rawJzodSchema: zoomedInDisplaySchema,
-                    localResolvedElementJzodSchemaBasedOnValue:
-                      jzodTypeCheckResult?.status == "ok"
-                        ? jzodTypeCheckResult.resolvedSchema
-                        : undefined,
-                  }}
-                />
-              )}
-            >
-              {/* <ThemedOnScreenHelper
-                label={`TypedValueObjectEditor: ${formikValuePathAsString}`}
-                data={formValueMLSchema}
-              /> */}
-              <JzodElementEditor
-                reportSectionPathAsString={formikValuePathAsString ?? ""}
-                name={"ROOT"}
-                isTopLevel={true}
-                listKey={"ROOT"}
-                rootLessListKey=""
-                rootLessListKeyArray={[]}
-                labelElement={labelElement}
-                indentLevel={0}
-                currentDeploymentUuid={deploymentUuid}
-                currentApplicationSection={applicationSection}
-                resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
-                hasTypeError={typeError != undefined}
-                typeCheckKeyMap={
-                  jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
-                }
-                foreignKeyObjects={foreignKeyObjects}
-                maxRenderDepth={maxRenderDepth} // always 1
-                displayError={displayError}
-                submitButton={
-                  !displaySubmitButton || displaySubmitButton === "onTop" ? submitButton : <></>
-                }
-                extraToolsButtons={displaySubmitButton === "onFirstLine" ? submitButton : <></>}
-                onChangeVector={onChangeVector}
+          <ErrorBoundary
+            FallbackComponent={({ error, resetErrorBoundary }) => (
+              <ErrorFallbackComponent
+                error={error}
+                resetErrorBoundary={resetErrorBoundary}
+                context={{
+                  origin: "TypedValueObjectEditor",
+                  objectType: "root_editor",
+                  rootLessListKey: "ROOT",
+                  rootLessListKeyArray: [],
+                  currentValue: zoomedInValueObject_DEFUNCT,
+                  formikValues: undefined,
+                  rawJzodSchema: zoomedInDisplaySchema,
+                  localResolvedElementJzodSchemaBasedOnValue:
+                    jzodTypeCheckResult?.status == "ok"
+                      ? jzodTypeCheckResult.resolvedSchema
+                      : undefined,
+                }}
               />
-            </ErrorBoundary>
-          </div>
+            )}
+          >
+            {/* <ThemedOnScreenHelper
+              label={`TypedValueObjectEditor: ${formikValuePathAsString}`}
+              data={formValueMLSchema}
+            /> */}
+            <JzodElementEditor
+              reportSectionPathAsString={formikValuePathAsString ?? ""}
+              name={"ROOT"}
+              isTopLevel={true}
+              listKey={"ROOT"}
+              rootLessListKey=""
+              rootLessListKeyArray={[]}
+              labelElement={labelElement}
+              indentLevel={0}
+              currentDeploymentUuid={deploymentUuid}
+              currentApplicationSection={applicationSection}
+              resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
+              hasTypeError={typeError != undefined}
+              typeCheckKeyMap={
+                jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
+              }
+              foreignKeyObjects={foreignKeyObjects}
+              maxRenderDepth={maxRenderDepth} // always 1
+              displayError={displayError}
+              submitButton={
+                !displaySubmitButton || displaySubmitButton === "onTop" ? submitButton : <></>
+              }
+              extraToolsButtons={displaySubmitButton === "onFirstLine" ? submitButton : <></>}
+              onChangeVector={onChangeVector}
+            />
+          </ErrorBoundary>
         </form>
       )}
     </>

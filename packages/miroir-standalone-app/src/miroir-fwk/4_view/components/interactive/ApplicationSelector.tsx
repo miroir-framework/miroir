@@ -22,7 +22,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 export const ApplicationSelector: FC<{
-  applicationUuid: string;
+  applicationUuid: string | undefined;
   onApplicationChange: (applicationUuid: string) => void;
 }> = ({ applicationUuid, onApplicationChange }) => {
   const runnerName: string = "ApplicationSelector";
@@ -57,7 +57,9 @@ export const ApplicationSelector: FC<{
               defaultLabel: "Application Selector",
               display: {
                 // unfoldSubLevels: 1,
-                hideHeader: true,
+                objectWithoutHeader: true,
+                objectOrArrayWithoutFrame: true,
+                objectAttributesNoIndent: true,
               }
             }
           },
@@ -69,6 +71,10 @@ export const ApplicationSelector: FC<{
                 value: {
                   defaultLabel: "Application",
                   editable: true,
+                  display: {
+                    objectUuidAttributeLabelPosition: "stacked",
+                    objectHideDeleteButton: true,
+                  },
                   selectorParams: {
                     targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                     targetEntity: entityApplicationForAdmin.uuid,
@@ -127,6 +133,7 @@ export const ApplicationSelector: FC<{
   );
 
   // Debounced update to persisted state when applicationUuid changes
+  // formik -> persistedToolsPageState
   useEffect(() => {
     // Clear existing timeout
     if (updateTimeoutRef.current) {
@@ -148,10 +155,11 @@ export const ApplicationSelector: FC<{
         "ApplicationSelector: debounced update - pushing applicationUuid to context:",
         applicationUuid
       );
-      context.updateToolsPageStateDEFUNCT({
-        ...persistedToolsPageState,
-        applicationSelector: applicationUuid,
-      });
+      // context.updateToolsPageStateDEFUNCT({
+      //   ...persistedToolsPageState,
+      //   applicationSelector: applicationUuid,
+      // });
+      onApplicationChange(applicationUuid);
     }, 2000); // 2 second debounce
     
     // Cleanup timeout on unmount
@@ -163,7 +171,20 @@ export const ApplicationSelector: FC<{
   }, [applicationUuid, context]);
 
   return (
-    <div>
+    <
+      // style={{
+      //   // marginTop: 16,
+      //   // marginBottom: 16,
+      //   padding: 0,
+      //   margin: 0,
+      //   // border: "1px solid #ccc",
+      //   // borderRadius: 4,
+      //   display: "flex",
+      //   flexDirection: "column",
+      //   // alignItems: "flex-start",
+      //   alignItems: "stretch",
+      // }}
+    >
       {/* <ThemedOnScreenHelper
         label={`ApplicationSelector: applicationUuid "${applicationUuid}"`}
         // data={{ applicationUuid, currentInnerApplication, onChangeVector }}
@@ -192,9 +213,7 @@ export const ApplicationSelector: FC<{
           return Promise.resolve();
         }}
       />
-      {/* {currentInnerApplication} */}
-      {applicationUuid}
-    </div>
+    </>
 
     // <OuterRunnerView
     //   runnerName={runnerName}

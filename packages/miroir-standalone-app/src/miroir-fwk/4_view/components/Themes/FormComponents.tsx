@@ -47,6 +47,33 @@ export const ThemedLabeledEditor: React.FC<{
   );
 };
 
+export const ThemedStackedLabeledEditor: React.FC<{
+  labelElement: JSX.Element;
+  editor: JSX.Element;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ labelElement, editor, className, style }) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const containerStyles = css({
+    display: 'flex',
+    flexFlow: 'column',
+    justifyContent: 'flex-start',
+    // alignItems: 'stretch',
+    alignItems: 'flex-start',
+    flexGrow: 1,
+    // gap: currentTheme.spacing.xs,
+  });
+
+  return (
+    <span css={containerStyles} className={className} style={style}>
+      {labelElement}
+      {editor}
+    </span>
+  );
+};
+
+// ################################################################################################
 export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
   minWidth?: string;
   maxWidth?: string;
@@ -487,9 +514,9 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
       }
     }, [highlightedIndex, filteredOptions, handleOptionClick, allowCustomValue, filterText, isOpen, navigateWithoutOpening, value, openDropdown, setIsOpenWithDOMUpdate, updateDropdownPosition, options]);
 
+    // position: relative;
+    // display: inline-block;
     const containerStyles = css`
-      position: relative;
-      display: inline-block;
       min-width: ${minWidth || calculateOptimalWidth};
       max-width: ${maxWidth || 'none'};
       width: ${width || calculateOptimalWidth};
@@ -704,7 +731,7 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
     
     border: 1px solid ${currentTheme.colors.border} !important;
     border-radius: ${currentTheme.borderRadius.sm};
-    padding: ${currentTheme.spacing.sm};
+    // padding: ${currentTheme.spacing.sm};
     
     font-family: ${currentTheme.typography.fontFamily};
     font-size: ${currentTheme.typography.fontSize.md};

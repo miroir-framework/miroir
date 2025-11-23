@@ -1058,9 +1058,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         label={`JzodObjectEditor: ${rootLessListKey}`}
         data={{ rootLessListKey, formikRootLessListKey, currentValueObjectAtKey }}
       /> */}
-      <div>
         {/* Performance statistics */}
-        {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.hideHeader && (
+        {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (
           <ThemedFlexRow justify="start" align="center">
             <span>
               <ThemedFlexRow align="center">
@@ -1207,15 +1206,18 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             </ThemedDeleteButtonContainer>
           </ThemedFlexRow>
         )}
-        <ThemedIndentedContainer
-          id={listKey + ".inner"}
-          marginLeft={`calc(${indentShift})`}
-          isVisible={!reportContext.isNodeFolded(rootLessListKeyArray)}
-          key={`${rootLessListKey}|body`}
-        >
-          <div>{attributeElements}</div>
-        </ThemedIndentedContainer>
-      </div>
+        {/* {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectAttributesNoIndent ? (
+          <ThemedIndentedContainer
+            id={listKey + ".inner"}
+            marginLeft={`calc(${indentShift})`}
+            isVisible={!reportContext.isNodeFolded(rootLessListKeyArray)}
+            key={`${rootLessListKey}|body`}
+          >
+            <div>{attributeElements}</div>
+          </ThemedIndentedContainer>
+        ) : ( */}
+          {attributeElements}
+        {/* )} */}
     </div>
   );
 }

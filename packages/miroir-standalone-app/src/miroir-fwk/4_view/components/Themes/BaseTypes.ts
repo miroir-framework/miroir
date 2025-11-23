@@ -9,6 +9,7 @@ export interface ThemedComponentProps {
   name?: string;
   labelId?: string;
   label?: string;
+  padding?: string | number;
   variant?: string; // Allow any string for flexibility
   role?: string;
   'data-testid'?: string;

@@ -60,10 +60,11 @@ export const ThemedDrawerHeader: React.FC<ThemedComponentProps> = ({
   
   const headerStyles = css({
     display: 'flex',
-    alignItems: 'center',
+    flexFlow: 'column nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
     padding: currentTheme.spacing.sm,
     minHeight: 'auto',
-    justifyContent: 'flex-start',
     fontSize: currentTheme.typography.fontSize.md,
     backgroundColor: currentTheme.colors.surface,
     borderBottom: `1px solid ${currentTheme.colors.border}`,

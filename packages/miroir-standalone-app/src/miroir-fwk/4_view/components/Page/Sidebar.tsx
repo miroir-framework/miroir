@@ -94,8 +94,14 @@ export const Sidebar: FC<{
     };
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
-  const [currentApplication, setCurrentApplication] = useState<string>(noValue.uuid);
-
+  const context = useMiroirContextService();
+  const currentApplication = context.toolsPageState.applicationSelector;
+  const setCurrentApplication = useCallback((applicationUuid: string) => {
+    context.updateToolsPageStateDEFUNCT({
+      ...context.toolsPageState,
+      applicationSelector: applicationUuid,
+    });
+  }, [context]);
 
   const miroirSidebarSections = useMemo(() => (
     [
@@ -175,20 +181,31 @@ export const Sidebar: FC<{
   return (
     <ThemedDrawer open={props.open} width={props.width}>
       <ThemedDrawerHeader>
-        <ThemedIconButton onClick={() => props.setOpen(false)} aria-label="Close sidebar">
-          <ChevronLeftIcon />
-        </ThemedIconButton>
-        <span style={{ marginLeft: currentTheme.spacing.xs, color: currentTheme.colors.text }}>
+        <div
+          style={{
+            position: "relative",
+            width: "calc(width)",
+            color: currentTheme.colors.text,
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              zIndex: 2,
+            }}
+          >
+            {/* <ThemedIconButton padding={0} onClick={() => props.setOpen(false)} aria-label="Close sidebar"> */}
+            <ThemedIconButton style={{padding:0}} onClick={() => props.setOpen(false)} aria-label="Close sidebar">
+              <ChevronLeftIcon />
+            </ThemedIconButton>
+          </div>
           <ApplicationSelector
             applicationUuid={currentApplication}
             onApplicationChange={setCurrentApplication}
           />
-          {/* count: {count}<br/>
-          currentApplication {currentApplication}<br/>
-          adminApplicationLibrary {adminApplicationLibrary.uuid}<br/>
-          applicationParis {applicationParis.uuid}<br/>
-          filteredAppSidebarSections {filteredAppSidebarSections.length}<br/> */}
-        </span>
+        </div>
       </ThemedDrawerHeader>
       <ThemedScrollableContent>{memoizedSidebarSections}</ThemedScrollableContent>
       {/* Resize handle - only show when sidebar is open */}

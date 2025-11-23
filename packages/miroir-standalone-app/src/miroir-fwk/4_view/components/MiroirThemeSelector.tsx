@@ -52,6 +52,7 @@ const getThemeColorIndicator = (themeOption: MiroirThemeOption) => {
   );
 };
 
+// ################################################################################################
 export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
   size = 'small',
   showDescription = true,

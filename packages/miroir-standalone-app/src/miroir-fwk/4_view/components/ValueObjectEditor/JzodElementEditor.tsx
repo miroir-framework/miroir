@@ -36,7 +36,8 @@ import {
   ThemedTextEditor,
   ThemedDisplayValue,
   ThemedButton,
-  ThemedOnScreenHelper
+  ThemedOnScreenHelper,
+  ThemedStackedLabeledEditor
 } from "../Themes/index"
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
@@ -576,6 +577,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const borderColor = hasPathError ? errorBorderColor : normalBorderColor;
   const leftBorderColor = hasPathError ? errorBorderColor : normalLeftBorderColor;
 
+  // Check if we should display without frame (ThemedCard)
+  const displayWithoutFrame = useMemo(
+    () => currentKeyMap?.resolvedSchema?.tag?.value?.display?.objectOrArrayWithoutFrame === true,
+    [currentKeyMap?.resolvedSchema?.tag?.value?.display?.objectOrArrayWithoutFrame]
+  );
+
   //   log.info(
   //   "JzodElementEditor",
   //   count,
@@ -866,7 +873,48 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 e[1].uuid,
             }));
 
-            return (
+            const editor = props.readOnly ? (
+                <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
+              ) : (
+                <ThemedSelectWithPortal
+                  id={props.rootLessListKey}
+                  key={props.rootLessListKey}
+                  data-testid="miroirInput"
+                  aria-label={props.rootLessListKey}
+                  variant="standard"
+                  minWidth="200px"
+                  maxWidth="400px"
+                  filterable={true}
+                  options={selectOptions}
+                  placeholder="Select an option..."
+                  filterPlaceholder="Type to filter..."
+                  // {...formik.getFieldProps(formikRootLessListKey)}
+                  value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
+                  onChange={(e) => {
+                    const newValue = e.target.value === "" ? undefined : e.target.value;
+                    log.info(
+                      "JzodElementEditor UUID selector onChange",
+                      formikRootLessListKey,
+                      "newValue",
+                      newValue,
+                      "onChangeCallback",
+                      !!onChangeCallback,
+                      "props.onChangeVector",
+                      JSON.stringify(Object.keys(props.onChangeVector || {}))
+                    );
+                    // Invoke onChangeVector callback if registered for this field
+                    if (onChangeCallback) {
+                      onChangeCallback(newValue, props.rootLessListKey);
+                    }
+                    formik.setFieldValue(formikRootLessListKey, newValue);
+                  }}
+                  name={formikRootLessListKey}
+                  // error={hasPathError}
+                />
+              )
+            ;
+            return (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display
+              ?.objectUuidAttributeLabelPosition ?? "left") === "stacked" ? (
               <>
                 {/* <ThemedOnScreenHelper
                   label={`Uuid: ${props.rootLessListKey}`}
@@ -876,51 +924,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   label={`select options: ${props.rootLessListKey}`}
                   data={selectOptions}
                 /> */}
-                <ThemedLabeledEditor
-                  labelElement={enhancedLabelElement}
-                  editor={
-                    props.readOnly ? (
-                      <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
-                    ) : (
-                      <ThemedSelectWithPortal
-                        id={props.rootLessListKey}
-                        key={props.rootLessListKey}
-                        data-testid="miroirInput"
-                        aria-label={props.rootLessListKey}
-                        variant="standard"
-                        minWidth="200px"
-                        maxWidth="400px"
-                        filterable={true}
-                        options={selectOptions}
-                        placeholder="Select an option..."
-                        filterPlaceholder="Type to filter..."
-                        // {...formik.getFieldProps(formikRootLessListKey)}
-                        value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
-                        onChange={(e) => {
-                          const newValue = e.target.value === "" ? undefined : e.target.value;
-                          log.info(
-                            "JzodElementEditor UUID selector onChange",
-                            formikRootLessListKey,
-                            "newValue",
-                            newValue,
-                            "onChangeCallback",
-                            !!onChangeCallback,
-                            "props.onChangeVector",
-                            JSON.stringify(Object.keys(props.onChangeVector || {}))
-                          );
-                          // Invoke onChangeVector callback if registered for this field
-                          if (onChangeCallback) {
-                            onChangeCallback(newValue, props.rootLessListKey);
-                          }
-                          formik.setFieldValue(formikRootLessListKey, newValue);
-                        }}
-                        name={formikRootLessListKey}
-                        // error={hasPathError}
-                      />
-                    )
-                  }
-                />
+                <ThemedStackedLabeledEditor labelElement={enhancedLabelElement} editor={editor} />
               </>
+            ) : (
+              <ThemedLabeledEditor labelElement={enhancedLabelElement} editor={editor} />
             );
           } else {
               // const currentUuidValue = formik.values[props.rootLessListKey] || "";
@@ -1251,37 +1258,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           data={onChangeCallback ? "onChangeCallback" : "no onChangeCallback"}
         /> */}
         {objectOrArrayOrAny ? (
-          <ThemedCard
-            id={props.rootLessListKey}
-            key={props.rootLessListKey}
-            title={hasPathError && props.displayError ? props.displayError.errorMessage : undefined}
-            style={{
-              padding: "1px",
-              width: "calc(100% - 10px)",
-              // margin: !props.isTopLevel?"5px 10px 5px 0": undefined,
-              margin: "5px 10px 5px 0",
-              position: "relative",
-              // Apply nesting background colors for visual hierarchy (Prettier-like effect)
-              backgroundColor: backgroundColor,
-              border: `1px solid ${borderColor}`,
-              // Enhanced left border for nested containers to show depth
-              borderLeft: isNestableType
-                ? `3px solid ${leftBorderColor}`
-                : `1px solid ${borderColor}`,
-              justifyContent: "space-between",
-              boxShadow: "none",
-            }}
-          >
-            <ThemedCardContent
+          displayWithoutFrame ? (
+            // Render without ThemedCard frame - plain column-oriented flex box
+            <div
               style={{
-                // Pass the background color to the content component to ensure it's visible
-                backgroundColor: backgroundColor,
                 display: "flex",
                 flexDirection: "column",
-                // alignItems: "center",
-                // padding: "5px",
+                justifyContent: "flex-start",
+                // alignItems: "flex-start",
+                width: "100%",
               }}
-            > 
+            >
               {props.submitButton}
               {displayAsCodeEditor ? (
                 <JzodElementEditorReactCodeMirror
@@ -1299,32 +1286,93 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
                 />
               ) : (
-                <span
-                  style={{
-                    display: hideSubJzodEditor ? "none" : "block",
-                    margin: "2px 5px 5px 5px",
-                    width: "calc(100% - 15px)",
-                    flexGrow: 1,
-                  }}
-                >
-                  {/* main element */}
-                  {mainElement}
-                </span>
+                mainElement
               )}
-              {/* </span> */}
-            </ThemedCardContent>
-          </ThemedCard>
+            </div>
+          ) : (
+            // Render with ThemedCard frame (original behavior)
+            <ThemedCard
+              id={props.rootLessListKey}
+              key={props.rootLessListKey}
+              title={
+                hasPathError && props.displayError ? props.displayError.errorMessage : undefined
+              }
+              style={{
+                padding: "1px",
+                width: "calc(100% - 10px)",
+                // margin: !props.isTopLevel?"5px 10px 5px 0": undefined,
+                margin: "5px 10px 5px 0",
+                position: "relative",
+                // Apply nesting background colors for visual hierarchy (Prettier-like effect)
+                backgroundColor: backgroundColor,
+                border: `1px solid ${borderColor}`,
+                // Enhanced left border for nested containers to show depth
+                borderLeft: isNestableType
+                  ? `3px solid ${leftBorderColor}`
+                  : `1px solid ${borderColor}`,
+                justifyContent: "space-between",
+                boxShadow: "none",
+              }}
+            >
+              <ThemedCardContent
+                style={{
+                  // Pass the background color to the content component to ensure it's visible
+                  backgroundColor: backgroundColor,
+                  display: "flex",
+                  flexDirection: "column",
+                  // alignItems: "center",
+                  // padding: "5px",
+                }}
+              >
+                {props.submitButton}
+                {displayAsCodeEditor ? (
+                  <JzodElementEditorReactCodeMirror
+                    formikRootLessListKey={formikRootLessListKey}
+                    initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
+                    codeMirrorValue={codeMirrorValue}
+                    setCodeMirrorValue={setCodeMirrorValue}
+                    codeMirrorIsValidJson={codeMirrorIsValidJson}
+                    setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+                    rootLessListKey={props.rootLessListKey}
+                    rootLessListKeyArray={props.rootLessListKeyArray}
+                    hidden={!displayAsCodeEditor}
+                    insideAny={props.insideAny}
+                    isUnderTest={isUnderTest}
+                    displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+                  />
+                ) : (
+                  <span
+                    style={{
+                      display: hideSubJzodEditor ? "none" : "block",
+                      margin: "2px 5px 5px 5px",
+                      width: "calc(100% - 15px)",
+                      flexGrow: 1,
+                    }}
+                  >
+                    {/* main element */}
+                    {mainElement}
+                  </span>
+                )}
+                {/* </span> */}
+              </ThemedCardContent>
+            </ThemedCard>
+          )
         ) : (
           // simple type value / attribute
           <span
             style={{
               display: "flex",
-              alignItems: "center",
+              // alignItems: "center",
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
               width: "100%",
             }}
           >
             {/* simple type */}
-            <span>{props.deleteButtonElement ?? <></>}</span>
+            {/* <span>{props.deleteButtonElement ?? <></>}</span> */}
+            {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
+              ?.objectHideDeleteButton &&
+              props.deleteButtonElement}
             {/* <span
               style={{
                 // display: !hideSubJzodEditor ? "none" : "inline-block",
@@ -1349,16 +1397,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 />
               )}
             </span> */}
-            <span
+            {/* <span
               style={{
-                // display: hideSubJzodEditor ? "none" : "inline-block",
                 display: "inline-block",
                 margin: "2px 0 2px 0",
                 flexGrow: 1,
               }}
-            >
-              {mainElement}
-            </span>
+            > */}
+            {mainElement}
+            {/* </span> */}
           </span>
         )}
         {/* <div>{count}</div> */}

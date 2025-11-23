@@ -20,6 +20,7 @@ export {
 // Form components
 export {
   ThemedLabeledEditor,
+  ThemedStackedLabeledEditor,
   ThemedSelectWithPortal,
   ThemedEditableInput,
 } from './FormComponents';

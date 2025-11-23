@@ -211,6 +211,7 @@ export const ThemedIconButton: React.FC<ThemedComponentProps> = ({
   onClick,
   title,
   id,
+  // padding,
   'aria-label': ariaLabel,
   disabled = false
 }) => {

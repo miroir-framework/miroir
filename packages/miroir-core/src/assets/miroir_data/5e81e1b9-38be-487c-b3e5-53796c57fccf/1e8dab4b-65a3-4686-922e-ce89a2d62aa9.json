@@ -245,7 +245,24 @@
                       "type": "string",
                       "optional": true
                     },
-                    "hideHeader":{
+                    "objectUuidAttributeLabelPosition": {
+                      "type": "enum",
+                      "optional": true,
+                      "definition": ["left", "stacked"]
+                    },
+                    "objectHideDeleteButton":{
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectWithoutHeader":{
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectAttributesNoIndent":{
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "objectOrArrayWithoutFrame":{
                       "type": "boolean",
                       "optional": true
                     },
@@ -483,7 +500,7 @@
                         "type": "string",
                         "optional": true
                       },
-                      "hideHeader":{
+                      "objectWithoutHeader":{
                         "type": "boolean",
                         "optional": true
                       },
