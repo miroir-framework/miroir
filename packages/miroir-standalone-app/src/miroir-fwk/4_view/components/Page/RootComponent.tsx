@@ -760,8 +760,8 @@ export const RootComponent = (props: RootComponentProps) => {
                     RootComponent renders: {navigationCount} (total: {totalCount})
                   </div>
                 )}
-                <span>
-                  {/* commit miroir */}
+                {/* commit */}
+                {/* <span>
                   <ActionButton
                     onAction={async () => {
                       await domainController.handleAction(
@@ -778,7 +778,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     handleAsyncAction={handleAsyncAction}
                     actionName="commit"
                   />
-                </span>
+                </span> */}
                 {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
                 <Outlet></Outlet>
               </ThemedMainPanel>

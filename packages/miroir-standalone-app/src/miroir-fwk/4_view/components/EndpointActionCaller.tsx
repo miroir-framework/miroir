@@ -205,10 +205,12 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             "", // rootLessListKey,
             undefined, // No need to pass currentDefaultValue here
             [], // currentPath on value is root
-            deploymentEntityState,
             false, // forceOptional
             selectedDeploymentUuid,
             currentMiroirModelEnvironment,
+            {}, // transformerParams
+            {}, // contextResults 
+            deploymentEntityState,
             {} // relativeReferenceJzodContext
           );
     log.info(

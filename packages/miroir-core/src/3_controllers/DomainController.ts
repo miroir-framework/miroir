@@ -94,6 +94,7 @@ import {
 import { ConfigurationService } from './ConfigurationService.js';
 
 const autocommit = true;
+// const autocommit = false;
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -1040,9 +1041,16 @@ export class DomainController implements DomainControllerInterface {
             currentTransactions[0].actionType == "transactionalInstanceAction"
               ? currentTransactions[0].instanceAction.deploymentUuid
               : currentTransactions[0].deploymentUuid;
+
           if (currentDeploymentUuid != modelAction.deploymentUuid) {
             log.warn(
-              "commit operation deploymentUuid mismatch between current transaction and modelAction"
+              "commit operation deploymentUuid mismatch between current replay action (",
+              currentDeploymentUuid,
+              ") and modelAction(",
+              modelAction.deploymentUuid,
+              ")",
+              "currentTransactions:",
+              currentTransactions
             );
           }
           const filteredDeployments = currentTransactions.length > 1 ?
@@ -1058,7 +1066,8 @@ export class DomainController implements DomainControllerInterface {
           }
           
           const sectionOfapplicationEntities: ApplicationSection =
-            modelAction.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+            // modelAction.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+            currentDeploymentUuid == adminConfigurationDeploymentMiroir.uuid
               ? "data"
               : "model";
           const newModelVersionUuid = uuidv4();
@@ -1328,10 +1337,21 @@ export class DomainController implements DomainControllerInterface {
       domainAction.actionType,
       (domainAction as any).actionLabel,
       (async () => {
+        log.info(
+          "handleActionFromUI running for action type",
+          domainAction.actionType,
+          "on deployment",
+          domainAction.deploymentUuid,
+          "autocommit=",
+          autocommit,
+          "domainAction",
+          domainAction
+        );
         if (autocommit) {
-          return this.handleActionInternal(domainAction, currentModelEnvironment).then(async (result) => {
-            if (
-              // domainAction.actionType == "modelAction" ||
+          return this.handleActionInternal(domainAction, currentModelEnvironment).then(
+            async (result) => {
+              if (
+                // domainAction.actionType == "modelAction" ||
                 domainAction.actionType == "transactionalInstanceAction" ||
                 domainAction.actionType == "alterEntityAttribute" ||
                 domainAction.actionType == "createEntity" ||
@@ -1352,17 +1372,26 @@ export class DomainController implements DomainControllerInterface {
                 // domainAction.actionType == "remoteLocalCacheRollback" ||
                 domainAction.actionType == "compositeAction"
               ) {
-                  // automatically commit after each model action from the UI if autocommit is enabled
+                // automatically commit after each model action from the UI if autocommit is enabled
                 const commitAction: ModelAction = {
                   actionType: "commit",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: domainAction.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
                 };
                 return this.handleActionInternal(commitAction, currentModelEnvironment);
-            } else {
-              return result;
+              } else {
+                log.info(
+                  "handleActionFromUI no autocommit for action",
+                  domainAction.actionType,
+                  "deployment",
+                  domainAction.deploymentUuid,
+                  "domainAction",
+                  domainAction
+                );
+                return result;
+              }
             }
-          });
+          );
         }
         return this.handleActionInternal(domainAction, currentModelEnvironment);
         // return Promise.resolve();

@@ -34,7 +34,7 @@ import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
-import { ThemedSpan } from '../Themes/index.js';
+import { ThemedOnScreenHelper, ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
@@ -470,18 +470,19 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         
         // update entityDefinition instance
         if (
-          props.deploymentUuid == adminConfigurationDeploymentMiroir.uuid ||
-          applicationSection == "model"
-        ) {
+          props.deploymentUuid == adminConfigurationDeploymentMiroir.uuid || // modifying the meta-model is always transactional
+          applicationSection == "model" // in an application, modifying the model must be transactional
+        ) { // meta-model or model change, need transaction
           await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
+              deploymentUuid: props.deploymentUuid,
               instanceAction: {
                 actionType: "updateInstance",
                 deploymentUuid: props.deploymentUuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
-                  applicationSection: "model",
+                  applicationSection,
                   objects: [
                     {
                       parentName: currentInstance.parentName,
@@ -495,7 +496,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             },
             currentModelEnvironment // TODO: use correct model environment
           );
-        } else {
+        } else { // only data is modified, no transaction is needed
           const updateAction: InstanceAction = {
             actionType: "updateInstance",
             deploymentUuid: props.deploymentUuid,
@@ -512,6 +513,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               ],
             },
           };
+          log.info("onEditValueObjectFormSubmit dispatching updateAction", updateAction);
           await domainController.handleActionFromUI(updateAction);
         }
       } else {
@@ -529,7 +531,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        {/* {editMode && modifiedSections.size > 0 && ( */}
+        {/* <ThemedOnScreenHelper
+          label='ReportViewWithEditor'
+          data={{deploymentUuid: props.deploymentUuid}}
+        /> */}
         {props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
@@ -538,7 +543,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             <>
               <Formik
                 enableReinitialize={true}
-                // initialValues={formInitialValue}
                 initialValues={initialReportSectionsFormValue}
                 onSubmit={async (values, { setSubmitting, setErrors }) => {
                   try {
