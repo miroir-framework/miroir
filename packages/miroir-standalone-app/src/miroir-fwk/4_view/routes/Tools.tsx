@@ -62,7 +62,6 @@ import {
   useMiroirContextformHelperState
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { EndpointActionCaller } from "../components/EndpointActionCaller";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
 
@@ -443,10 +442,6 @@ export const ToolsPage: React.FC<any> = (
               entityUuid={entityBook.uuid}
             />
           </div>
-
-          <EndpointActionCaller
-            key={"aaaa"}
-          />
 
           <div>Hello World!</div>
 

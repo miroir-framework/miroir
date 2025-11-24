@@ -22,6 +22,7 @@ import { ImportEntityFromSpreadsheetRunner } from '../components/Runners/ImportE
 import { useState } from 'react';
 import { noValue } from '../components/ValueObjectEditor/JzodElementEditorInterface.js';
 import { ApplicationSelector } from '../components/interactive/ApplicationSelector.js';
+import { EndpointActionCaller } from '../components/EndpointActionCaller.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -454,6 +455,15 @@ export const AdminPage: React.FC<any> = (
             <ImportEntityFromSpreadsheetRunner
               deploymentUuid={deploymentUuid}
             />
+          </AccordionDetails>
+        </Accordion>
+        {/* Endpoint Action Caller */}
+        <Accordion style={{ marginBottom: 12 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <div style={{ fontWeight: 500 }}>Endpoint Action Caller</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <EndpointActionCaller />
           </AccordionDetails>
         </Accordion>
       </PageContainer>
