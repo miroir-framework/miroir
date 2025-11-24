@@ -188,19 +188,6 @@ export const Sidebar: FC<{
             color: currentTheme.colors.text,
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              zIndex: 2,
-            }}
-          >
-            {/* <ThemedIconButton padding={0} onClick={() => props.setOpen(false)} aria-label="Close sidebar"> */}
-            <ThemedIconButton style={{padding:0}} onClick={() => props.setOpen(false)} aria-label="Close sidebar">
-              <ChevronLeftIcon />
-            </ThemedIconButton>
-          </div>
           <ApplicationSelector
             applicationUuid={currentApplication}
             onApplicationChange={setCurrentApplication}

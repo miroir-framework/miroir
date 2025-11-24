@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft.js';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight.js';
+
 import { styled } from '@mui/material/styles';
 import { 
   Icon, 
@@ -29,13 +32,14 @@ import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { MiroirThemeSelector } from '../MiroirThemeSelector.js';
+import { ThemedIconButton } from '../Themes/IconComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-const pages: MiroirMenuItem[] = [
+const appbarItems: MiroirMenuItem[] = [
   {
     "label": "Tools",
     "section": "model",
@@ -43,20 +47,20 @@ const pages: MiroirMenuItem[] = [
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
     "icon": "category",
   },
-  {
-    "label": "concept",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-    "icon": "category"
-  },
-  {
-    "label": "check",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    "icon": "category"
-  },
+  // {
+  //   "label": "concept",
+  //   "section": "model",
+  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+  //   "icon": "category"
+  // },
+  // {
+  //   "label": "check",
+  //   "section": "model",
+  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+  //   "icon": "category"
+  // },
   {
     "label": "admin",
     "section": "model",
@@ -84,8 +88,9 @@ const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 
 export interface AppBarProps extends MuiAppBarProps {
   // open?: boolean;
-  handleDrawerOpen?: ()=>void,
-  open: boolean,
+  handleSidebarOpen?: ()=>void,
+  setSidebarOpen: (v: boolean) => void;
+  sidebarIsOpen: boolean,
   children:any,
   width?: number,
   onWidthChange?: (width: number) => void,
@@ -181,7 +186,7 @@ export function AppBar(props:AppBarProps) {
   
   return (
     <StyledAppBar
-      open={props.open}
+      open={props.sidebarIsOpen}
       width={props.width}
       outlineOpen={props.outlineOpen}
       outlineWidth={props.outlineWidth}
@@ -195,36 +200,30 @@ export function AppBar(props:AppBarProps) {
       <>
         <Toolbar disableGutters={false}>
           {/* <Box sx={{display:"flex"}}> */}
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={props.handleDrawerOpen}
-            edge="start"
-            sx={{
-              mr: 2,
-              ...(props.open && { display: "none" }),
-              ...(!props.open && { display: "flex" }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-          {/* </Box> */}
-          {/* <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                href="/"
-                sx={{
-                  mr: 2,
-                  display: { xs: 'none', md: 'flex' },
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  letterSpacing: '.3rem',
-                  color: 'inherit',
-                  textDecoration: 'none',
-                }}
-              > */}
+          {/* sidebar opener */}
+          {
+            !props.sidebarIsOpen && (
+              <ThemedIconButton
+                aria-label="open sidebar"
+                title="Open sidebar"
+                onClick={props.handleSidebarOpen}
+              >
+                <ChevronRightIcon />
+              </ThemedIconButton>
+            )
+          }
+          {/* sidebar closer */}
+          {props.sidebarIsOpen && (
+            <ThemedIconButton
+              style={{ padding: 0 }}
+              onClick={() => props.setSidebarOpen(false)}
+              aria-label="Close sidebar"
+              title='Close sidebar'
+            >
+              <ChevronLeftIcon />
+            </ThemedIconButton>
+          )}
+          {/* HOME */}
           <Link to={`/home`}>
             <Icon
               sx={{
@@ -235,21 +234,8 @@ export function AppBar(props:AppBarProps) {
               home
             </Icon>
           </Link>
-
-          {/* open: {props.open?"true":"false"} */}
-          {/* </Typography> */}
-
-          <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "flex" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
+          {/* MENU, NOT WORKING */}
+          {/* <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "flex" } }}>
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -274,9 +260,9 @@ export function AppBar(props:AppBarProps) {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
+          </Box> */}
+          {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
+          {/* <Typography
             variant="h5"
             noWrap
             component="a"
@@ -293,9 +279,10 @@ export function AppBar(props:AppBarProps) {
             }}
           >
             LOGO
-          </Typography>
+          </Typography> */}
+          {/* MAIN APPBAR ITEMS */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
+            {appbarItems.map((page) => (
               <Button
                 key={page.label}
                 onClick={(e: any) => goToLabelPage(e, page.label)}
@@ -309,6 +296,17 @@ export function AppBar(props:AppBarProps) {
               </Button>
             ))}
           </Box>
+          {/* useless menu */}
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleOpenNavMenu}
+            color="inherit"
+          >
+            <MenuIcon />
+          </IconButton>
 
           <Box sx={{ flexGrow: 0, display: "flex" }}>
             {/* App Theme Selector */}
@@ -408,9 +406,9 @@ export function AppBar(props:AppBarProps) {
               >
                 <Button
                   onClick={() => {
-                    console.log('Action Timeline toggle clicked:', { 
-                      current: context.showActionTimeline, 
-                      willBecome: !context.showActionTimeline 
+                    console.log("Action Timeline toggle clicked:", {
+                      current: context.showActionTimeline,
+                      willBecome: !context.showActionTimeline,
                     });
                     context.setShowActionTimeline?.(!context.showActionTimeline);
                   }}
@@ -455,7 +453,11 @@ export function AppBar(props:AppBarProps) {
             {/* Edit Mode Toggle Button */}
             {props.onEditModeToggle && (
               <Tooltip
-                title={props.editMode ? "Edit Mode: ON (click to disable)" : "Edit Mode: OFF (click to enable)"}
+                title={
+                  props.editMode
+                    ? "Edit Mode: ON (click to disable)"
+                    : "Edit Mode: OFF (click to enable)"
+                }
               >
                 <IconButton
                   color="inherit"
@@ -463,7 +465,7 @@ export function AppBar(props:AppBarProps) {
                   sx={{
                     mr: 1,
                     color: props.editMode
-                      ? miroirTheme.currentTheme.colors.error || '#d32f2f'
+                      ? miroirTheme.currentTheme.colors.error || "#d32f2f"
                       : miroirTheme.currentTheme.components.appBar.textColor,
                     transition: "all 0.3s ease-in-out",
                     "&:hover": {

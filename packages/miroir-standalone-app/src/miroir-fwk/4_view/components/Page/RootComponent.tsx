@@ -101,7 +101,7 @@ export interface RootComponentProps {
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
 
-  const [drawerIsOpen, setDrawerIsOpen] = useState(true);
+  const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
 
   // Use snackbar from context
   const {
@@ -232,36 +232,36 @@ export const RootComponent = (props: RootComponentProps) => {
   useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any));
   // ###############################################################################################
 
-  const handleDrawerOpen = useMemo(
+  const openSidebarCloseOutline = useMemo( // TODO: simplify the sidebar open / close logic
     () => () => {
-      setDrawerIsOpen(true);
+      setSidebarIsOpen(true);
       // If opening sidebar, close outline
       if (isOutlineOpen) {
         setIsOutlineOpen(false);
       }
     },
-    [setDrawerIsOpen, isOutlineOpen]
+    [setSidebarIsOpen, isOutlineOpen]
   );
 
-  const handleDrawerClose = useMemo(
+  const closeSidebar = useMemo(
     () => () => {
-      setDrawerIsOpen(false);
+      setSidebarIsOpen(false);
       // Note: When closing sidebar, we don't automatically open outline
       // The user can manually open it if needed
     },
-    [setDrawerIsOpen]
+    [setSidebarIsOpen]
   );
 
   // Coordinated drawer state handler for sidebar
-  const handleDrawerStateChange = useMemo(
+  const setSidebarStatus = useMemo(
     () => (isOpen: boolean) => {
       if (isOpen) {
-        handleDrawerOpen();
+        openSidebarCloseOutline();
       } else {
-        handleDrawerClose();
+        closeSidebar();
       }
     },
-    [handleDrawerOpen, handleDrawerClose]
+    [openSidebarCloseOutline, closeSidebar]
   );
 
   const handleChangeDisplayedDeployment = useMemo(
@@ -284,21 +284,21 @@ export const RootComponent = (props: RootComponentProps) => {
 
       if (newOutlineState) {
         // Opening outline: remember current sidebar state and close it
-        setSidebarStateBeforeOutline(drawerIsOpen);
-        if (drawerIsOpen) {
-          setDrawerIsOpen(false);
+        setSidebarStateBeforeOutline(sidebarIsOpen);
+        if (sidebarIsOpen) {
+          setSidebarIsOpen(false);
         }
       } else {
         // Closing outline: restore sidebar to its previous state
         if (sidebarStateBeforeOutline !== null) {
-          setDrawerIsOpen(sidebarStateBeforeOutline);
+          setSidebarIsOpen(sidebarStateBeforeOutline);
           setSidebarStateBeforeOutline(null);
         }
       }
 
       return newOutlineState;
     });
-  }, [drawerIsOpen, sidebarStateBeforeOutline]);
+  }, [sidebarIsOpen, sidebarStateBeforeOutline]);
 
   // ##############################################################################################
   const handleNavigateToPath = useCallback((path: string[]) => {
@@ -721,18 +721,19 @@ export const RootComponent = (props: RootComponentProps) => {
         <ReportPageContextProvider>
           <>
             <Sidebar
-              open={drawerIsOpen}
-              setOpen={handleDrawerStateChange}
+              open={sidebarIsOpen}
+              setOpen={setSidebarStatus}
               width={sidebarWidth}
               onWidthChange={handleSidebarWidthChange}
             />
             <ThemedGrid container direction="column" id="mainPanel">
               {/* <ThemedGrid item> */}
               <AppBar
-                handleDrawerOpen={handleDrawerOpen}
-                open={drawerIsOpen}
+                handleSidebarOpen={openSidebarCloseOutline}
+                sidebarIsOpen={sidebarIsOpen}
                 width={sidebarWidth}
                 onWidthChange={handleSidebarWidthChange}
+                setSidebarOpen={setSidebarStatus}
                 outlineOpen={isOutlineOpen}
                 outlineWidth={outlineWidth}
                 onOutlineToggle={handleToggleOutline}
@@ -744,7 +745,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 Bar!
               </AppBar>
               <ThemedMainPanel
-                sideBarOpen={drawerIsOpen}
+                sideBarOpen={sidebarIsOpen}
                 sideBarWidth={sidebarWidth}
                 outlineOpen={isOutlineOpen}
                 outlineWidth={outlineWidth}

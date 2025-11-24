@@ -222,7 +222,7 @@ export const ThemedIconButton: React.FC<ThemedComponentProps> = ({
     backgroundColor: 'transparent',
     border: 'none',
     borderRadius: currentTheme.borderRadius.sm,
-    color: currentTheme.colors.text,
+    color: 'inherit',
     cursor: disabled ? 'not-allowed' : 'pointer',
     display: 'inline-flex',
     alignItems: 'center',

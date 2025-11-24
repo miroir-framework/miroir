@@ -36,6 +36,7 @@ import {
 } from "../../MiroirContextReactProvider.js";
 
 import { Toc } from '@mui/icons-material';
+import { useFormikContext } from 'formik';
 import {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap
 } from "miroir-localcache-redux";
@@ -54,8 +55,6 @@ import {
   ThemedIconButton,
   ThemedLabel,
   ThemedPreformattedText,
-  ThemedStatusText,
-  ThemedSwitch,
   ThemedText,
   ThemedTitle,
   ThemedTooltip
@@ -64,10 +63,7 @@ import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOu
 import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TransformerTestDisplay } from './TransformerTestDisplay.js';
-import { TypedValueObjectEditorWithFormik } from './TypedValueObjectEditorWithFormik.js';
-import { Formik, useFormikContext } from 'formik';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
-import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
