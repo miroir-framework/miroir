@@ -31,8 +31,7 @@ import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
-import { MiroirThemeSelector } from '../MiroirThemeSelector.js';
-import { ThemedIconButton } from '../Themes/IconComponents.js';
+import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -45,7 +44,7 @@ const appbarItems: MiroirMenuItem[] = [
     "section": "model",
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-    "icon": "category",
+    // "icon": "category",
   },
   // {
   //   "label": "concept",
@@ -66,21 +65,32 @@ const appbarItems: MiroirMenuItem[] = [
     "section": "model",
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    "icon": "category"
+    // "icon": "category"
   },
   {
     "label": "events",
     "section": "model",
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    "icon": "event_note"
+    // "icon": "event_note"
   },
   {
     "label": "error-logs",
     "section": "model",
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    "icon": "error"
+    // "icon": "error"
+  },
+  {
+    "label": "settings",
+    "section": "model",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    // "icon": "cogwheel"
+    "icon": {
+      iconType: "mui",
+      name: "settings"
+    }
   },
 ];
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
@@ -201,24 +211,22 @@ export function AppBar(props:AppBarProps) {
         <Toolbar disableGutters={false}>
           {/* <Box sx={{display:"flex"}}> */}
           {/* sidebar opener */}
-          {
-            !props.sidebarIsOpen && (
-              <ThemedIconButton
-                aria-label="open sidebar"
-                title="Open sidebar"
-                onClick={props.handleSidebarOpen}
-              >
-                <ChevronRightIcon />
-              </ThemedIconButton>
-            )
-          }
+          {!props.sidebarIsOpen && (
+            <ThemedIconButton
+              aria-label="open sidebar"
+              title="Open sidebar"
+              onClick={props.handleSidebarOpen}
+            >
+              <ChevronRightIcon />
+            </ThemedIconButton>
+          )}
           {/* sidebar closer */}
           {props.sidebarIsOpen && (
             <ThemedIconButton
               style={{ padding: 0 }}
               onClick={() => props.setSidebarOpen(false)}
               aria-label="Close sidebar"
-              title='Close sidebar'
+              title="Close sidebar"
             >
               <ChevronLeftIcon />
             </ThemedIconButton>
@@ -282,17 +290,17 @@ export function AppBar(props:AppBarProps) {
           </Typography> */}
           {/* MAIN APPBAR ITEMS */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {appbarItems.map((page) => (
+            {appbarItems.map((item) => (
               <Button
-                key={page.label}
-                onClick={(e: any) => goToLabelPage(e, page.label)}
+                key={item.label}
+                onClick={(e: any) => goToLabelPage(e, item.label)}
                 sx={{
                   my: 2,
                   color: miroirTheme.currentTheme.components.appBar.textColor,
                   display: "block",
                 }}
               >
-                {page.label}
+                {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
               </Button>
             ))}
           </Box>
@@ -309,8 +317,6 @@ export function AppBar(props:AppBarProps) {
           </IconButton>
 
           <Box sx={{ flexGrow: 0, display: "flex" }}>
-            {/* App Theme Selector */}
-            <MiroirThemeSelector showDescription={false} label="Theme" />
             {/* Grid Type Toggle Button */}
             {props.gridType && props.onGridTypeToggle && (
               <Tooltip

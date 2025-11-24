@@ -38,6 +38,7 @@ import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import { color } from '@uiw/react-codemirror';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -284,6 +285,8 @@ const EMOJI_MAP: Record<string, string> = {
   'home': '🏠',
   'user': '👤',
   'settings': '⚙️',
+  'gear': '⚙️',
+  'cogwheel': '⚙️',
   'search': '🔍',
   'menu': '☰',
   'close': '✕',
@@ -536,7 +539,8 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
     fontSize: sizeMap[size],
     lineHeight: 1,
     display: 'inline-block',
-    color: currentTheme.colors.text,
+    // color: currentTheme.colors.text,
+    color: 'inherit',
     verticalAlign: 'middle',
     userSelect: 'none' as const,
   };

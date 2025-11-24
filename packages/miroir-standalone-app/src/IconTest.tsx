@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ThemedIcon } from './src/miroir-fwk/4_view/components/Themes/IconComponents';
-import { MiroirThemeProvider } from './src/miroir-fwk/4_view/contexts/MiroirThemeContext';
-import { defaultMiroirTheme } from './src/miroir-fwk/4_view/components/Themes/defaults';
+// import { ThemedIcon } from './src/miroir-fwk/4_view/components/Themes/IconComponents';
+// import { MiroirThemeProvider } from './src/miroir-fwk/4_view/contexts/MiroirThemeContext';
+// import { defaultMiroirTheme } from './src/miroir-fwk/4_view/components/Themes/defaults';
+import { ThemedIcon } from './miroir-fwk/4_view/components/Themes';
+import { MiroirThemeProvider } from './miroir-fwk/4_view/contexts/MiroirThemeContext';
+import { defaultMiroirTheme } from './miroir-fwk/4_view/components/Themes/MiroirTheme';
 
 // Simple test component to verify MUI icons are working
 const IconTest = () => {
   return (
-    <MiroirThemeProvider theme={defaultMiroirTheme}>
+    // <MiroirThemeProvider theme={defaultMiroirTheme}>
+    <MiroirThemeProvider currentThemeId='default'>
       <div style={{ padding: '20px', display: 'flex', gap: '10px', flexDirection: 'column' }}>
         <h2>MUI Icon Test</h2>
         
