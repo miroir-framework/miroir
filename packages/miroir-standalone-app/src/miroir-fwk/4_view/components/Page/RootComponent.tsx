@@ -760,55 +760,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     RootComponent renders: {navigationCount} (total: {totalCount})
                   </div>
                 )}
-                {/* <ThemedFormControl fullWidth>
-                  <ThemedInputLabel id="demo-simple-select-label">
-                    Chosen selfApplication Deployment
-                  </ThemedInputLabel>
-                  <ThemedMUISelect
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={context.deploymentUuid}
-                    label="displayedDeploymentUuid"
-                    onChange={handleChangeDisplayedDeployment}
-                  >
-                    {deployments.map((deployment) => {
-                      return (
-                        <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
-                          {deployment.description}
-                        </ThemedMenuItem>
-                      );
-                    })}
-                  </ThemedMUISelect>
-                </ThemedFormControl> */}
                 <span>
-                  {/* <ThemedButton
-                          onClick={() =>
-                            handleAsyncAction(
-                              async () => {
-                                await domainController.handleAction(
-                                  {
-                                    actionType: "remoteLocalCacheRollback",
-                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                                  },
-                                  defaultMiroirMetaModel
-                                );
-                                await domainController.handleAction(
-                                  {
-                                    actionType: "remoteLocalCacheRollback",
-                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                                  },
-                                  defaultMiroirMetaModel
-                                );
-                              },
-                              "Server local cache loaded successfully",
-                              "load server local cache"
-                            )
-                          }
-                        >
-                          Load server local cache
-                        </ThemedButton> */}
                   {/* commit miroir */}
                   <ActionButton
                     onAction={async () => {
@@ -826,40 +778,6 @@ export const RootComponent = (props: RootComponentProps) => {
                     handleAsyncAction={handleAsyncAction}
                     actionName="commit"
                   />
-                  {/* commit miroir */}
-                  {/* <ActionButton
-                    onAction={async () => {
-                      await domainController.handleAction(
-                        {
-                          actionType: "commit",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                        },
-                        defaultMiroirModelEnvironment
-                      );
-                    }}
-                    successMessage="Miroir committed successfully"
-                    label="Commit Miroir"
-                    handleAsyncAction={handleAsyncAction}
-                    actionName="commit miroir"
-                  /> */}
-                  {/* Commit Library app */}
-                  {/* <ActionButton
-                    onAction={async () => {
-                      await domainController.handleAction(
-                        {
-                          actionType: "commit",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                        },
-                        defaultMiroirModelEnvironment
-                      );
-                    }}
-                    successMessage="Library app committed successfully"
-                    label="Commit Library app"
-                    handleAsyncAction={handleAsyncAction}
-                    actionName="commit library app"
-                  /> */}
                 </span>
                 {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
                 <Outlet></Outlet>

@@ -336,7 +336,7 @@ export function AppBar(props:AppBarProps) {
           <Box sx={{ flexGrow: 0, display: "flex" }}>
             <ActionButton
               onAction={async () => {
-                await domainController.handleAction(
+                await domainController.handleActionFromUI(
                   {
                     actionType: "commit",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

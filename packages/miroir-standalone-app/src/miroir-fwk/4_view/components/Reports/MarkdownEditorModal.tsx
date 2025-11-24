@@ -151,9 +151,10 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
       "newReportDefinition", newReportDefinition,
     );
 
-    await domainController.handleAction(
+    await domainController.handleActionFromUI(
       {
         actionType: "transactionalInstanceAction",
+        deploymentUuid: props.deploymentUuid,
         instanceAction: {
           actionType: "updateInstance",
           deploymentUuid: props.deploymentUuid,

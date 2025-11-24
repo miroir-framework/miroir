@@ -412,7 +412,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
     // } else {
     //   log.info("onCellValueChanged on instance of entity",props.reportSection.definition.parentName, props.reportSection.definition.parentUuid,'updating object',e.data)
     //   // sending DataUpdates
-    //   await domainController.handleAction(
+    //   await domainController.handleActionFromUI(
     //     contextDeploymentUuid,
     //     {
     //       actionType: "DomainNonTransactionalInstanceAction",

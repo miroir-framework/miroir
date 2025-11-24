@@ -437,9 +437,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         }
         const applicationSection = getApplicationSection(props.deploymentUuid, data[formikValuePathAsString].parentUuid);
         if (applicationSection == "model") {
-          await domainController.handleAction(
+          await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
+              deploymentUuid: props.deploymentUuid,
               instanceAction: {
                 actionType: "updateInstance",
                 deploymentUuid: props.deploymentUuid,
@@ -476,7 +477,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               ],
             },
           };
-          await domainController.handleAction(updateAction);
+          await domainController.handleActionFromUI(updateAction);
         }
       } else {
         throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");

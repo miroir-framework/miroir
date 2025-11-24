@@ -510,9 +510,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       
       if (props.displayedDeploymentDefinition && props.displayedDeploymentDefinition.uuid) {
         if (props.chosenApplicationSection == 'model') {
-          await domainController.handleAction(
+          await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
+              deploymentUuid: props.displayedDeploymentDefinition.uuid,
               instanceAction: {
                 actionType: "createInstance",
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
@@ -558,7 +559,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               ],
             }
           };
-          await domainController.handleAction(createAction);
+          await domainController.handleActionFromUI(createAction);
         }
       } else {
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
@@ -576,9 +577,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       if (props.displayedDeploymentDefinition) {
         let result: Action2VoidReturnType;
         if (props.chosenApplicationSection == "model") {
-          result = await domainController.handleAction(
+          result = await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
+              deploymentUuid: props.displayedDeploymentDefinition.uuid,
               instanceAction: {
                 // actionType: "instanceAction",
                 actionType: "updateInstance",
@@ -622,7 +624,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               ],
             },
           };
-          result = await domainController.handleAction(updateAction);
+          result = await domainController.handleActionFromUI(updateAction);
         }
         return result;
       } else {

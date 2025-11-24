@@ -473,7 +473,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           props.deploymentUuid == adminConfigurationDeploymentMiroir.uuid ||
           applicationSection == "model"
         ) {
-          await domainController.handleAction(
+          await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
               instanceAction: {
@@ -512,7 +512,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               ],
             },
           };
-          await domainController.handleAction(updateAction);
+          await domainController.handleActionFromUI(updateAction);
         }
       } else {
         throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");

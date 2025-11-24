@@ -275,7 +275,7 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleAction({
+            await domainController.handleActionFromUI({
               actionType: "undoRedoAction",
               actionName: "undo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
@@ -290,7 +290,7 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleAction({
+            await domainController.handleActionFromUI({
               actionType: "undoRedoAction",
               actionName: "redo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
@@ -305,7 +305,7 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <span>
         <button
           onClick={async () => {
-            await domainController.handleAction(
+            await domainController.handleActionFromUI(
               {
                 actionType: "modelAction",
                 actionName: "commit",
@@ -323,7 +323,7 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <span>
         <button
           onClick={async () => {
-            await domainController.handleAction(
+            await domainController.handleActionFromUI(
               {
                 actionType: "modelAction",
                 actionName: "commit",
@@ -341,7 +341,7 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleAction({
+            await domainController.handleActionFromUI({
               // actionType: "modelAction",
               actionType: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -370,7 +370,7 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleAction({
+            await domainController.handleActionFromUI({
               // actionType: "modelAction",
               actionType: "resetData",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -379,7 +379,7 @@ export const HomePage = (props: RootComponentProps) => {
             log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
-            await domainController.handleAction({
+            await domainController.handleActionFromUI({
               // actionType: "modelAction",
               actionType: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -395,13 +395,13 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
-            await domainController.handleAction({
+            await domainController.handleActionFromUI({
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
             });
-            await domainController.handleAction({
+            await domainController.handleActionFromUI({
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -426,7 +426,7 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <span>
         <button
           onClick={async () => {
-            await domainController.handleAction(
+            await domainController.handleActionFromUI(
               {
                 // actionType: "modelAction",
                 actionType: "renameEntity",
@@ -448,7 +448,7 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <span>
         <button
           onClick={async () => {
-            await domainController.handleAction(
+            await domainController.handleActionFromUI(
               {
                 actionType: "transactionalInstanceAction",
                 instanceAction: {
@@ -483,7 +483,7 @@ export const HomePage = (props: RootComponentProps) => {
       {/* <span>
         <button
           onClick={async () => {
-            await domainController.handleAction(
+            await domainController.handleActionFromUI(
               {
                 // actionType: "modelAction",
                 actionType: "dropEntity",

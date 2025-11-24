@@ -136,7 +136,7 @@ export class ViewParamsUpdateQueue {
 
       this.log.info("ViewParamsUpdateQueue: sending updateInstance action", updateAction);
 
-      await this.domainController.handleAction(updateAction);
+      await this.domainController.handleActionFromUI(updateAction);
 
       this.log.info("ViewParamsUpdateQueue: successfully updated view params");
 

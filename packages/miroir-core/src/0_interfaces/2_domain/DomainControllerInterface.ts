@@ -128,6 +128,18 @@ export interface DomainControllerInterface {
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType>;
 
+  /**
+   * handleActionFromUI is similar to handleAction, but it is intended to be called from the UI layer.
+   * It enables autocommit mode for the actions handled, meaning that each action is committed immediately after being processed.
+   * @param action 
+   * @param currentModel 
+   */
+  handleActionFromUI(action: DomainAction, currentModel?: MiroirModelEnvironment): Promise<Action2VoidReturnType>;
+  /**
+   * 
+   * @param action 
+   * @param currentModel 
+   */
   handleAction(action: DomainAction, currentModel?: MiroirModelEnvironment): Promise<Action2VoidReturnType>;
   /**
    * data access must accomodate different styles of access

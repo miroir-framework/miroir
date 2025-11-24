@@ -85,11 +85,15 @@ import {
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
-import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject, removeUndefinedProperties, unNullify } from '../4_services/otherTools.js';
+import {
+  ignorePostgresExtraAttributesOnList,
+  ignorePostgresExtraAttributesOnObject,
+  removeUndefinedProperties,
+  unNullify,
+} from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
-import { act } from 'react';
 
-
+const autocommit = true;
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -1298,7 +1302,75 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve(ACTION_OK);
   }
 
-  // // ##############################################################################################
+  // ##############################################################################################
+  // private async trackAction<T>(
+  //   actionType: string,
+  //   actionLabel: string | undefined,
+  //   actionFn: () => Promise<T>
+  // ): Promise<T> {
+  //   const trackingId = this.miroirContext.miroirActivityTracker.startEvent(actionType, actionLabel);
+  //   try {
+  //     const result = await actionFn();
+  //     this.miroirContext.miroirActivityTracker.endEvent(trackingId);
+  //     return result;
+  //   } catch (error) {
+  //     this.miroirContext.miroirActivityTracker.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+  //     throw error;
+  //   }
+  // }
+
+  // ##############################################################################################
+  async handleActionFromUI(
+    domainAction: DomainAction,
+    currentModelEnvironment?: MiroirModelEnvironment
+  ): Promise<Action2VoidReturnType> {
+    return this.miroirContext.miroirActivityTracker.trackAction(
+      domainAction.actionType,
+      (domainAction as any).actionLabel,
+      (async () => {
+        if (autocommit) {
+          return this.handleActionInternal(domainAction, currentModelEnvironment).then(async (result) => {
+            if (
+              // domainAction.actionType == "modelAction" ||
+                domainAction.actionType == "transactionalInstanceAction" ||
+                domainAction.actionType == "alterEntityAttribute" ||
+                domainAction.actionType == "createEntity" ||
+                domainAction.actionType == "renameEntity" ||
+                domainAction.actionType == "dropEntity" ||
+                // domainAction.actionType == "updateInstance" ||
+                // domainAction.actionType == "createInstance" ||
+                // domainAction.actionType == "deleteInstance" ||
+                // domainAction.actionType == "deleteInstanceWithCascade" ||
+                // domainAction.actionType == "loadNewInstancesInLocalCache" ||
+                // domainAction.actionType == "getInstance" ||
+                // domainAction.actionType == "getInstances" ||
+                // domainAction.actionType == "resetModel" ||
+                // domainAction.actionType == "resetData" ||
+                // domainAction.actionType == "initModel" ||
+                // domainAction.actionType == "commit" ||
+                // domainAction.actionType == "rollback" ||
+                // domainAction.actionType == "remoteLocalCacheRollback" ||
+                domainAction.actionType == "compositeAction"
+              ) {
+                  // automatically commit after each model action from the UI if autocommit is enabled
+                const commitAction: ModelAction = {
+                  actionType: "commit",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: domainAction.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
+                };
+                return this.handleActionInternal(commitAction, currentModelEnvironment);
+            } else {
+              return result;
+            }
+          });
+        }
+        return this.handleActionInternal(domainAction, currentModelEnvironment);
+        // return Promise.resolve();
+      }).bind(this)
+    );
+    // return Promise.resolve(ACTION_OK);
+  }
+  // ##############################################################################################
   // private async trackAction<T>(
   //   actionType: string,
   //   actionLabel: string | undefined,
