@@ -31,6 +31,7 @@ import {
   Settings as SettingsIcon,
   South as SouthIcon,
   Star as StarIcon,
+  Sync,
 } from '@mui/icons-material';
 
 import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from 'miroir-core';
@@ -393,6 +394,7 @@ const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
   science: Science,
   star: StarIcon,
   space_dashboard: SpaceDashboard,
+  sync: Sync,
   folder: Folder,
 };
 

@@ -68,6 +68,7 @@ import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParam
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { ReportPageContextProvider } from '../Reports/ReportPageContext';
+import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -780,9 +781,6 @@ export const RootComponent = (props: RootComponentProps) => {
                   </ThemedMUISelect>
                 </ThemedFormControl> */}
                 <span>
-                  <ThemedButton onClick={fetchConfigurations}>
-                    fetch Miroir & App configurations from database
-                  </ThemedButton>
                   {/* <ThemedButton
                           onClick={() =>
                             handleAsyncAction(
@@ -818,6 +816,23 @@ export const RootComponent = (props: RootComponentProps) => {
                         {
                           actionType: "commit",
                           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          deploymentUuid: noValue.uuid,
+                        },
+                        defaultMiroirModelEnvironment
+                      );
+                    }}
+                    successMessage="Committed successfully"
+                    label="Commit"
+                    handleAsyncAction={handleAsyncAction}
+                    actionName="commit"
+                  />
+                  {/* commit miroir */}
+                  {/* <ActionButton
+                    onAction={async () => {
+                      await domainController.handleAction(
+                        {
+                          actionType: "commit",
+                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                         },
                         defaultMiroirModelEnvironment
@@ -827,9 +842,9 @@ export const RootComponent = (props: RootComponentProps) => {
                     label="Commit Miroir"
                     handleAsyncAction={handleAsyncAction}
                     actionName="commit miroir"
-                  />
+                  /> */}
                   {/* Commit Library app */}
-                  <ActionButton
+                  {/* <ActionButton
                     onAction={async () => {
                       await domainController.handleAction(
                         {
@@ -844,7 +859,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     label="Commit Library app"
                     handleAsyncAction={handleAsyncAction}
                     actionName="commit library app"
-                  />
+                  /> */}
                 </span>
                 {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
                 <Outlet></Outlet>

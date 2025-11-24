@@ -925,7 +925,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   // converts a Domain model action into a set of local cache actions and remote store actions
   async handleModelAction(
-    deploymentUuid: Uuid,
+    // deploymentUuid: Uuid,
     modelAction: ModelAction,
     currentModelEnvironment: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
@@ -933,7 +933,7 @@ export class DomainController implements DomainControllerInterface {
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionType=",
       modelAction["actionType"],
       "deployment",
-      deploymentUuid,
+      modelAction["deploymentUuid"],
       "action",
       modelAction.actionType != "initModel" ? JSON.stringify(modelAction, null, 2) : modelAction
       // modelAction,
@@ -946,7 +946,7 @@ export class DomainController implements DomainControllerInterface {
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore!"
             );
-            await this.loadConfigurationFromPersistenceStore(deploymentUuid);
+            await this.loadConfigurationFromPersistenceStore(modelAction.deploymentUuid);
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore DONE!"
             );
@@ -961,7 +961,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "rollback": {
-          await this.loadConfigurationFromPersistenceStore(deploymentUuid);
+          await this.loadConfigurationFromPersistenceStore(modelAction.deploymentUuid);
           break;
         }
         case "alterEntityAttribute":
@@ -1024,204 +1024,237 @@ export class DomainController implements DomainControllerInterface {
             throw new Error(
               "commit operation did not receive current model. It requires the current model, to access the pre-existing transactions."
             );
-          } else {
-            const sectionOfapplicationEntities: ApplicationSection =
-              modelAction.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
-                ? "data"
-                : "model";
-            const newModelVersionUuid = uuidv4();
-            // const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
-            const newModelVersion: ApplicationVersion = {
-              uuid: newModelVersionUuid,
-              // conceptLevel: "Data",
-              parentName: entitySelfApplicationVersion?.name,
-              parentUuid: entitySelfApplicationVersion?.uuid,
-              description: "TODO: no description yet",
-              name: "TODO: No label was given to this version.",
-              // previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
-              previousVersion: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
-              branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-              selfApplication: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-            };
-
+          }
+          const currentTransactions = this.localCache.currentTransaction();
+          if (currentTransactions.length == 0) {
             log.info(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version",
-              newModelVersion
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit no current transaction to commit"
             );
-            const newModelVersionAction: RestPersistenceAction = {
-              actionType: "RestPersistenceAction",
-              actionName: "create",
-              deploymentUuid,
-              endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-              section: sectionOfapplicationEntities,
-              objects: [newModelVersion],
-            };
+            return Promise.resolve(ACTION_OK);
+          }
+          const currentDeploymentUuid: Uuid =
+            currentTransactions[0].actionType == "transactionalInstanceAction"
+              ? currentTransactions[0].instanceAction.deploymentUuid
+              : currentTransactions[0].deploymentUuid;
+          if (currentDeploymentUuid != modelAction.deploymentUuid) {
+            log.warn(
+              "commit operation deploymentUuid mismatch between current transaction and modelAction"
+            );
+          }
+          const filteredDeployments = currentTransactions.length > 1 ?
+            currentTransactions.filter((tx) => tx.deploymentUuid != modelAction.deploymentUuid) : [];
+          if (filteredDeployments.length > 0) {
+            log.warn(
+              "commit operation deploymentUuid mismatch among current transactions.",
+              "Committing for deploymentUuid:",
+              currentDeploymentUuid,
+              "Ignoring transactions for other deployments:",
+              filteredDeployments
+            );
+          }
+          
+          const sectionOfapplicationEntities: ApplicationSection =
+            modelAction.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+              ? "data"
+              : "model";
+          const newModelVersionUuid = uuidv4();
+          // const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
+          const newModelVersion: ApplicationVersion = {
+            uuid: newModelVersionUuid,
+            // conceptLevel: "Data",
+            parentName: entitySelfApplicationVersion?.name,
+            parentUuid: entitySelfApplicationVersion?.uuid,
+            description: "TODO: no description yet",
+            name: "TODO: No label was given to this version.",
+            // previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
+            previousVersion: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
+            branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            selfApplication: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+          };
 
-            // in the case of the Miroir app, this should be done in the 'data' section
-            await this.callUtil.callPersistenceAction(
-              {}, // context
-              {}, // context update
-              // deploymentUuid,
-              newModelVersionAction
-            );
+          log.info(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version",
+            newModelVersion
+          );
+          const newModelVersionAction: RestPersistenceAction = {
+            actionType: "RestPersistenceAction",
+            actionName: "create",
+            // deploymentUuid: modelAction.deploymentUuid,
+            deploymentUuid: currentDeploymentUuid,
+            endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+            section: sectionOfapplicationEntities,
+            objects: [newModelVersion],
+          };
+
+          // in the case of the Miroir app, this should be done in the 'data' section
+          await this.callUtil.callPersistenceAction(
+            {}, // context
+            {}, // context update
+            // deploymentUuid,
+            newModelVersionAction
+          );
+          log.info(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created",
+            newModelVersion
+          );
+
+          log.info(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replaying currentTransaction",
+            JSON.stringify(
+              this.localCache.currentTransaction(),
+              null,
+              2
+            )
+          );
+          for (const replayAction of this.localCache.currentTransaction()) {
+            // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction = replayAction;
             log.info(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created",
-              newModelVersion
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction",
+              replayAction
             );
-
-            log.info(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replaying currentTransaction",
-              JSON.stringify(
-                this.localCache.currentTransaction(),
-                null,
-                2
-              )
-            );
-            for (const replayAction of this.localCache.currentTransaction()) {
-              // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction = replayAction;
-              log.info(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction",
-                replayAction
-              );
-              switch (replayAction.actionType) {
-                case "transactionalInstanceAction": {
-                  // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
-                  //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
-                  const replayActionResult = await this.callUtil.callPersistenceAction(
-                    {}, // context
-                    {}, // context update
-                    {
-                      actionType: "RestPersistenceAction",
-                      actionName:
-                        replayAction.instanceAction.actionType.toString() as CRUDActionName,
-                      endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                      deploymentUuid,
-                      // payload: {
-                        section: replayAction.instanceAction.payload.applicationSection??"data",
-                        parentName: replayAction.instanceAction.payload.objects[0].parentName,
-                        parentUuid: replayAction.instanceAction.payload.objects[0].parentUuid,
-                        objects: replayAction.instanceAction.payload.objects[0].instances,
-                      // }
-                    }
-                  );
-                  if (replayActionResult instanceof Action2Error) {
-                    log.warn(
-                      "DomainController handleModelAction commit replayAction transactionalInstanceAction failed",
-                      replayActionResult
-                    );
-                    return replayActionResult;
-                  }
-                  break;
-                }
-                // case "modelAction": 
-                case 'alterEntityAttribute':
-                case 'createEntity':
-                case 'dropEntity':
-                case 'renameEntity': {
-                  const replayActionResult = await this.callUtil.callPersistenceAction(
-                    {}, // context
-                    {}, // context update
-                    {
-                      ...replayAction,
-                      payload: {
-                        ...replayAction.payload,
-                        transactional: false,
-                      } as any, // TODO: remove as any
-                    }
-                  );
-                  if (replayActionResult instanceof Action2Error) {
-                    log.warn(
-                      "DomainController handleModelAction commit replayAction transactionalInstanceAction failed",
-                      replayActionResult
-                    );
-                    return replayActionResult;
-                  }
-                  break;
-                }
-                default:
-                  throw new Error(
-                    "DomainController handleModelAction commit could not handle replay action:" +
-                      JSON.stringify(replayAction)
-                  );
-                  break;
-              }
-            }
-
-            log.debug(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed, currentTransaction:",
-              this.localCache.currentTransaction()
-            );
-
-            await this.callUtil
-              .callLocalCacheAction(
-                {}, // context
-                {}, // context update
-                {
-                  // actionType: "modelAction",
-                  actionType: "commit",
-                  deploymentUuid: modelAction.deploymentUuid,
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                }
-              )
-              .then((context) => {
-                log.debug(
-                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed and notified to local cache, currentTransaction:",
-                  this.localCache.currentTransaction()
-                );
-                return this.callUtil.callLocalCacheAction(
+            switch (replayAction.actionType) {
+              case "transactionalInstanceAction": {
+                // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
+                //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
+                const replayActionResult = await this.callUtil.callPersistenceAction(
                   {}, // context
                   {}, // context update
                   {
-                    actionType: "createInstance",
-                    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                    deploymentUuid: modelAction.deploymentUuid,
-                    payload: {
-                      applicationSection: "model",
-                      parentUuid: newModelVersion.parentUuid,
-                      objects: [
-                        {
-                          parentUuid: newModelVersion.parentUuid,
-                          applicationSection: sectionOfapplicationEntities,
-                          instances: [newModelVersion],
-                        },
-                      ],
-                    }
+                    actionType: "RestPersistenceAction",
+                    actionName:
+                      replayAction.instanceAction.actionType.toString() as CRUDActionName,
+                    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+                    // deploymentUuid: modelAction.deploymentUuid,
+                    // deploymentUuid: replayAction.deploymentUuid,
+                    deploymentUuid: replayAction.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
+                    // payload: {
+                      section: replayAction.instanceAction.payload.applicationSection??"data",
+                      parentName: replayAction.instanceAction.payload.objects[0].parentName,
+                      parentUuid: replayAction.instanceAction.payload.objects[0].parentUuid,
+                      objects: replayAction.instanceAction.payload.objects[0].instances,
+                    // }
                   }
                 );
-              })
-              // TODO: STORE-BASED CONFIGURATION IS NOT IN DATABASE MODEL ANYMORE WHERE SHOUND IT BE?
-              // .then((context) => {
-              //   // const updatedConfiguration = Object.assign({}, instanceConfigurationReference, {
-              //   //   definition: { currentApplicationVersion: newModelVersionUuid },
-              //   // });
-              //   const updatedConfiguration = {
-              //     ...instanceConfigurationReference, 
-              //     definition: { currentApplicationVersion: newModelVersionUuid },
-              //   };
-              //   log.debug(
-              //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit updating configuration",
-              //     updatedConfiguration
-              //   );
-              //   const newStoreBasedConfiguration: RestPersistenceAction = {
-              //     actionType: "RestPersistenceAction",
-              //     actionName: "update",
-              //     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-              //     deploymentUuid,
-              //     section: sectionOfapplicationEntities,
-              //     objects: [updatedConfiguration],
-              //   };
-              //   // TODO: in the case of the Miroir app, this should be in the 'data'section
-              //   return this.callUtil.callPersistenceAction(
-              //     {}, // context
-              //     {}, // context update
-              //     newStoreBasedConfiguration
-              //   );
-              // })
-            ;
-            log.info(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!"
-            );
+                if (replayActionResult instanceof Action2Error) {
+                  log.warn(
+                    "DomainController handleModelAction commit replayAction transactionalInstanceAction failed",
+                    replayActionResult
+                  );
+                  return replayActionResult;
+                }
+                break;
+              }
+              // case "modelAction": 
+              case 'alterEntityAttribute':
+              case 'createEntity':
+              case 'dropEntity':
+              case 'renameEntity': {
+                const replayActionResult = await this.callUtil.callPersistenceAction(
+                  {}, // context
+                  {}, // context update
+                  {
+                    ...replayAction,
+                    payload: {
+                      ...replayAction.payload,
+                      transactional: false,
+                    } as any, // TODO: remove as any
+                  }
+                );
+                if (replayActionResult instanceof Action2Error) {
+                  log.warn(
+                    "DomainController handleModelAction commit replayAction transactionalInstanceAction failed",
+                    replayActionResult
+                  );
+                  return replayActionResult;
+                }
+                break;
+              }
+              default:
+                throw new Error(
+                  "DomainController handleModelAction commit could not handle replay action:" +
+                    JSON.stringify(replayAction)
+                );
+                break;
+            }
           }
+
+          log.debug(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed, currentTransaction:",
+            this.localCache.currentTransaction()
+          );
+
+          await this.callUtil
+            .callLocalCacheAction(
+              {}, // context
+              {}, // context update
+              {
+                // actionType: "modelAction",
+                actionType: "commit",
+                // deploymentUuid: modelAction.deploymentUuid,
+                deploymentUuid: currentDeploymentUuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              }
+            )
+            .then((context) => {
+              log.debug(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed and notified to local cache, currentTransaction:",
+                this.localCache.currentTransaction()
+              );
+              return this.callUtil.callLocalCacheAction(
+                {}, // context
+                {}, // context update
+                {
+                  actionType: "createInstance",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  // deploymentUuid: modelAction.deploymentUuid,
+                  deploymentUuid: currentDeploymentUuid,
+                  payload: {
+                    applicationSection: "model",
+                    parentUuid: newModelVersion.parentUuid,
+                    objects: [
+                      {
+                        parentUuid: newModelVersion.parentUuid,
+                        applicationSection: sectionOfapplicationEntities,
+                        instances: [newModelVersion],
+                      },
+                    ],
+                  }
+                }
+              );
+            })
+            // TODO: STORE-BASED CONFIGURATION IS NOT IN DATABASE MODEL ANYMORE WHERE SHOUND IT BE?
+            // .then((context) => {
+            //   // const updatedConfiguration = Object.assign({}, instanceConfigurationReference, {
+            //   //   definition: { currentApplicationVersion: newModelVersionUuid },
+            //   // });
+            //   const updatedConfiguration = {
+            //     ...instanceConfigurationReference, 
+            //     definition: { currentApplicationVersion: newModelVersionUuid },
+            //   };
+            //   log.debug(
+            //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit updating configuration",
+            //     updatedConfiguration
+            //   );
+            //   const newStoreBasedConfiguration: RestPersistenceAction = {
+            //     actionType: "RestPersistenceAction",
+            //     actionName: "update",
+            //     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+            //     deploymentUuid,
+            //     section: sectionOfapplicationEntities,
+            //     objects: [updatedConfiguration],
+            //   };
+            //   // TODO: in the case of the Miroir app, this should be in the 'data'section
+            //   return this.callUtil.callPersistenceAction(
+            //     {}, // context
+            //     {}, // context update
+            //     newStoreBasedConfiguration
+            //   );
+            // })
+          ;
+          log.info(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!"
+          );
+          
           log.info(
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done, end of handleModelAction!"
           );
@@ -1237,7 +1270,7 @@ export class DomainController implements DomainControllerInterface {
         "DomainController handleModelAction caught exception when handling",
         modelAction["actionType"],
         "deployment",
-        deploymentUuid,
+        modelAction.deploymentUuid,
         "action",
         modelAction,
         "error instanceof Action2Error=",
@@ -1259,7 +1292,7 @@ export class DomainController implements DomainControllerInterface {
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction DONE actionName=",
       modelAction["actionType"],
       "deployment",
-      deploymentUuid,
+      modelAction.deploymentUuid,
     );
 
     return Promise.resolve(ACTION_OK);
@@ -1358,7 +1391,8 @@ export class DomainController implements DomainControllerInterface {
               "DomainController handleAction for modelAction needs a currentModel argument"
             );
           }
-          return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
+          // return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
+          return this.handleModelAction(domainAction, currentModel);
         }
         // case "instanceAction": {
         case "createInstance":

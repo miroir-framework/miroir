@@ -79,23 +79,29 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
         fullWidth
         sx={{
           '& .MuiInputLabel-root': {
-            color: miroirTheme.components.appBar.textColor,
+            // color: miroirTheme.components.appBar.textColor,
+            color: "inherit",
           },
           '& .MuiOutlinedInput-root': {
-            color: miroirTheme.components.appBar.textColor,
+            // color: miroirTheme.components.appBar.textColor,
+            color: "inherit",
             '& fieldset': {
-              borderColor: miroirTheme.components.appBar.textColor,
+              // borderColor: miroirTheme.components.appBar.textColor,
+            color: "inherit",
             },
             '&:hover fieldset': {
-              borderColor: miroirTheme.components.appBar.textColor,
+              // borderColor: miroirTheme.components.appBar.textColor,
+            color: "inherit",
             },
             '&.Mui-focused fieldset': {
-              borderColor: miroirTheme.components.appBar.textColor,
+              // borderColor: miroirTheme.components.appBar.textColor,
+              color: "inherit",
             },
           },
           '& .MuiSelect-icon': {
-            color: miroirTheme.components.appBar.textColor,
-          },
+            // color: miroirTheme.components.appBar.textColor,
+            color: "inherit",
+        },
         }}
       >
         <InputLabel id="miroir-theme-selector-label">{label}</InputLabel>
@@ -109,14 +115,16 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
             '& .MuiSelect-select': {
               display: 'flex',
               alignItems: 'center',
-              color: miroirTheme.components.appBar.textColor,
+              // color: miroirTheme.components.appBar.textColor,
+              color: "inherit",
             },
           }}
           MenuProps={{
             PaperProps: {
               sx: {
                 backgroundColor: miroirTheme.colors.surface,
-                color: miroirTheme.colors.text,
+                // color: miroirTheme.colors.text,
+              color: "inherit",
               }
             }
           }}

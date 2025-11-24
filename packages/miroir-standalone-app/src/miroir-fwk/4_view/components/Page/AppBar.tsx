@@ -23,15 +23,18 @@ import TocIcon from '@mui/icons-material/Toc';
 import Edit from '@mui/icons-material/Edit';
 import EditOff from '@mui/icons-material/EditOff';
 
-import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
+import { defaultMiroirModelEnvironment, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { SidebarWidth } from './SidebarSection.js';
-import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../../MiroirContextReactProvider.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
+import { usePageConfiguration } from '../../services/index.js';
+import { ActionButton } from './ActionButton.js';
+import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -168,11 +171,25 @@ export function AppBar(props:AppBarProps) {
   // react hooks
   const navigate = useNavigate();
 
+  const domainController = useDomainControllerService();
+  // const context = useMiroirContextService();
+
+    // Use snackbar from context
+    const {
+      snackbarOpen,
+      snackbarMessage,
+      snackbarSeverity,
+      showSnackbar,
+      handleSnackbarClose,
+      handleAsyncAction,
+    } = useSnackbar();
+  
   // custom hooks
   const miroirTheme = useMiroirTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const context = useMiroirContextService();
+  const { fetchConfigurations } = usePageConfiguration();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -317,6 +334,31 @@ export function AppBar(props:AppBarProps) {
           </IconButton>
 
           <Box sx={{ flexGrow: 0, display: "flex" }}>
+            <ActionButton
+              onAction={async () => {
+                await domainController.handleAction(
+                  {
+                    actionType: "commit",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    deploymentUuid: noValue.uuid,
+                  },
+                  defaultMiroirModelEnvironment
+                );
+              }}
+              successMessage="Committed successfully"
+              label="Commit"
+              handleAsyncAction={handleAsyncAction}
+              actionName="commit"
+            />
+
+            {/* Fetch Configurations Button */}
+            <ThemedIconButton
+              onClick={fetchConfigurations}
+              aria-label="Fetch configurations"
+              title="Fetch Miroir & App configurations from database"
+            >
+              <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
+            </ThemedIconButton>
             {/* Grid Type Toggle Button */}
             {props.gridType && props.onGridTypeToggle && (
               <Tooltip

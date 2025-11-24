@@ -67,7 +67,6 @@
             "actionLabel": { "type": "string", "optional": true },
             "deploymentUuid": {
               "type": "uuid",
-              "optional": true,
               "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
             },
             "instanceAction": {
