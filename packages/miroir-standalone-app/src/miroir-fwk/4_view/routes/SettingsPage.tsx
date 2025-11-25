@@ -1,13 +1,32 @@
-import { Box, Container, Paper, Typography, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
-import { MiroirLoggerFactory, type LoggerInterface, adminConfigurationDeploymentAdmin } from "miroir-core";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from "@mui/material";
+import {
+  MiroirLoggerFactory,
+  type LoggerInterface,
+  adminConfigurationDeploymentAdmin,
+  deployment,
+  reportViewParamsDetails,
+  defaultAdminViewParams,
+} from "miroir-core";
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
-import { MiroirThemeSelector } from '../components/MiroirThemeSelector.js';
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
-import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider.js';
-import { useSelector } from 'react-redux';
+import { MiroirThemeSelector } from "../components/MiroirThemeSelector.js";
+import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import {
+  useDomainControllerService,
+  useMiroirContextService,
+} from "../MiroirContextReactProvider.js";
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   Domain2QueryReturnType,
@@ -16,33 +35,38 @@ import {
   ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  ViewParamsData
+  ViewParamsData,
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
-import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-import { useMemo } from 'react';
-import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../components/ViewParamsUpdateQueue.js';
+import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
+import { useMemo } from "react";
+import {
+  ViewParamsUpdateQueue,
+  ViewParamsUpdateQueueConfig,
+} from "../components/ViewParamsUpdateQueue.js";
+import { ReportDisplay } from "./ReportDisplay.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SettingsPage"), "UI",
-).then((logger: LoggerInterface) => {log = logger});
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SettingsPage"),
+  "UI"
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 const pageLabel = "Settings";
 
 // ################################################################################################
-export const SettingsPage: React.FC<any> = (
-  props: any
-) => {
+export const SettingsPage: React.FC<any> = (props: any) => {
   const miroirTheme = useMiroirTheme();
   const context = useMiroirContextService();
   const domainController = useDomainControllerService();
-  
+
   // Auto-fetch configurations when the page loads
   const { fetchConfigurations } = usePageConfiguration({
     autoFetchOnMount: true,
     successMessage: "Settings page configurations loaded successfully",
-    actionName: "settings page configuration fetch"
+    actionName: "settings page configuration fetch",
   });
 
   // Get viewParams from Redux to access grid type
@@ -66,7 +90,7 @@ export const SettingsPage: React.FC<any> = (
   );
 
   const viewParamsData: ViewParamsData | undefined = useMemo(
-    () => (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any),
+    () => defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any,
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
 
@@ -96,14 +120,11 @@ export const SettingsPage: React.FC<any> = (
       log.error("Failed to initialize ViewParamsUpdateQueue", error);
       return null;
     }
-  }, [
-    viewParamsData ? Object.keys(viewParamsData)[0] : null,
-    domainController,
-  ]);
+  }, [viewParamsData ? Object.keys(viewParamsData)[0] : null, domainController]);
 
   const handleGridTypeChange = (event: SelectChangeEvent<string>) => {
     const newGridType = event.target.value as "ag-grid" | "glide-data-grid";
-    
+
     if (viewParamsData && updateQueue) {
       updateQueue.queueUpdate(
         {
@@ -124,43 +145,39 @@ export const SettingsPage: React.FC<any> = (
   return (
     <PageContainer>
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Typography 
-          variant="h4" 
+        <Typography
+          variant="h4"
           gutterBottom
-          sx={{ 
+          sx={{
             mb: 4,
-            color: miroirTheme.currentTheme.colors.text 
+            color: miroirTheme.currentTheme.colors.text,
           }}
         >
           {pageLabel}
         </Typography>
-        
-        <Paper 
-          elevation={2} 
-          sx={{ 
+
+        <Paper
+          elevation={2}
+          sx={{
             p: 3,
             backgroundColor: miroirTheme.currentTheme.colors.background,
             color: miroirTheme.currentTheme.colors.text,
             border: `1px solid ${miroirTheme.currentTheme.colors.border}`,
           }}
         >
-          <Typography 
-            variant="h6" 
-            gutterBottom
-            sx={{ mb: 3 }}
-          >
+          <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
             Appearance
           </Typography>
-          
+
           <Box sx={{ mb: 2 }}>
-            <MiroirThemeSelector 
+            <MiroirThemeSelector
               size="medium"
               showDescription={true}
               label="App Theme"
               variant="outlined"
             />
           </Box>
-          
+
           <Box sx={{ mb: 2, mt: 3 }}>
             <FormControl fullWidth variant="outlined">
               <InputLabel id="grid-type-label">Grid Type</InputLabel>
@@ -172,13 +189,13 @@ export const SettingsPage: React.FC<any> = (
                 label="Grid Type"
                 sx={{
                   color: miroirTheme.currentTheme.colors.text,
-                  '& .MuiOutlinedInput-notchedOutline': {
+                  "& .MuiOutlinedInput-notchedOutline": {
                     borderColor: miroirTheme.currentTheme.colors.border,
                   },
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
                     borderColor: miroirTheme.currentTheme.colors.primary,
                   },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: miroirTheme.currentTheme.colors.primary,
                   },
                 }}
@@ -188,18 +205,28 @@ export const SettingsPage: React.FC<any> = (
               </Select>
             </FormControl>
           </Box>
-          
-          <Typography 
-            variant="body2" 
+
+          <Typography
+            variant="body2"
             color="textSecondary"
-            sx={{ 
+            sx={{
               mt: 2,
-              fontStyle: 'italic',
-              opacity: 0.8 
+              fontStyle: "italic",
+              opacity: 0.8,
             }}
           >
             Customize the appearance and behavior of the application
           </Typography>
+          <ReportDisplay
+            pageParams={
+              {
+                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                applicationSection: "data",
+                reportUuid: reportViewParamsDetails.uuid,
+                instanceUuid: defaultAdminViewParams.uuid,
+              } as any
+            }
+          />
         </Paper>
       </Container>
     </PageContainer>

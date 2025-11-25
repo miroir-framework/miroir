@@ -1013,6 +1013,7 @@ const entityAdminApplication = require("../src/assets/admin_model/16dbfe28-e1d7-
 const entityViewParams = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json"); //assert { type: "json" };
 const entityDefinitionViewParams = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json"); //assert { type: "json" };
 const defaultAdminViewParams = require("../src/assets/admin_data/b9765b7c-b614-4126-a0e2-634463f99937/441cb6fd-2728-4a16-b170-ebceec1ce6c2.json"); //assert { type: "json" };
+const reportViewParamsDetails = require("./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/57b3d7ef-8c12-4891-893e-35bab00b2037.json");
 // miroir model
 const entityEndpointVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json");
 const entityEntity = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
@@ -1210,6 +1211,7 @@ export {
   entityViewParams,
   entityDefinitionViewParams,
   defaultAdminViewParams,
+  reportViewParamsDetails,
 };
 
 // ################################################################################################

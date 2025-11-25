@@ -108,7 +108,14 @@ const reportSectionsFormSchema = (
           applicationSection
         ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
       if (!targetEntityDefinition) {
-        throw new Error("reportSectionsFormSchema: cannot find target entity definition for entityUuid " + entityUuid + " in applicationSection " + applicationSection);
+        throw new Error(
+          "reportSectionsFormSchema: cannot find target entity definition for " +
+          " deploymentUuid " + deploymentUuid +
+           " entityUuid " +
+            entityUuid +
+            " in applicationSection " +
+            applicationSection
+        );
       }
       return {
         [reportSectionPath.join("_")]:targetEntityDefinition.jzodSchema
@@ -188,7 +195,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const outlineContext = useDocumentOutlineContext();
   
   const currentDeploymentReportsEntitiesDefinitionsMapping =
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
+    // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
 
   // Read editMode from ViewParams context
   const editMode = context.viewParams.editMode;

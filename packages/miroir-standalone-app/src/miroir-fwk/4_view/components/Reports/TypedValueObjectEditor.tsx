@@ -341,10 +341,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         <ThemedOnScreenHelper
           label={`TypedValueObjectEditor for schema at ${formikValuePathAsString}`}
           data={formValueMLSchema}
+          initiallyUnfolded={false}
         />
         <ThemedOnScreenHelper
           label={`TypedValueObjectEditor for value`}
           data={valueObject}
+          // initiallyUnfolded={false}
         />
         <CodeBlock_ReadOnly value={jsonString} />;
         </div>

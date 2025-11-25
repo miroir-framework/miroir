@@ -39,6 +39,7 @@
       },
       "sidebarWidth": { "type": "number" },
       "gridType": { "type": "enum", "definition": ["ag-grid", "glide-data-grid"] },
+      "appTheme": { "type": "enum", "definition": ["default", "dark", "compact", "material"] },
       "editMode": {
         "type": "boolean",
         "optional": true,

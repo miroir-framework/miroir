@@ -1,7 +1,11 @@
+import {
+  LoggerInterface,
+  MiroirLoggerFactory
+} from "miroir-core";
 import React from "react";
-import { resolvePathOnObject, LoggerInterface, MiroirLoggerFactory, unfoldJzodSchemaOnce } from "miroir-core";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
+import { ThemedOnScreenHelper } from "./Themes";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -69,6 +73,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
         {attributeRootLessListKeyArray && Array.isArray(attributeRootLessListKeyArray) && (
           <div key="2">attribute {attributeRootLessListKeyArray.join(".")}</div>
         )}
+        {currentValue && (<ThemedOnScreenHelper label="ErrorFallbackComponent currentValue" data={currentValue} />)}
         {/* {attributeRootLessListKeyArray && formikValues && (
           <div>
             calc attribute value{" "}

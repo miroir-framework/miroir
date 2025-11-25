@@ -112,8 +112,8 @@ export const ReportPage = () => {
           </ThemedBox>
           <ReportDisplay
             pageParams={pageParams}
-            context={context}
-            theme={theme}
+            // context={context}
+            // theme={theme}
           ></ReportDisplay>
           {/* <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
             {pageParams.deploymentUuid &&

@@ -54,6 +54,7 @@ import {
   ThemedHeaderSection,
   ThemedIconButton,
   ThemedLabel,
+  ThemedOnScreenHelper,
   ThemedPreformattedText,
   ThemedText,
   ThemedTitle,
@@ -196,6 +197,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           )
         : undefined;
   
+  const entityUuid: Uuid | undefined = (reportSectionDefinitionFromFormik?.definition as any)?.parentUuid;
+
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionEntityInstance render",
     ++count,
@@ -210,6 +213,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     reportDefinitionFromFormik,
     "reportSectionDefinitionFromFormik",
     reportSectionDefinitionFromFormik,
+    "entityUuid",
+    entityUuid,
     "with props:",
     props,
     // "formikContext:",
@@ -285,20 +290,21 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     formikContext?.values[formikValuePathAsString]
   );
 
-  // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
-  // const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
-  const formInitialValueDEFUNCT: any = useMemo(() => ({
-    [formikValuePathAsString] : instance
-  }), [instance]);
+  // // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
+  // // const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
+  // const formInitialValueDEFUNCT: any = useMemo(() => ({
+  //   [formikValuePathAsString] : instance
+  // }), [instance]);
 
-  const currentDeploymentMetaModel: MetaModel = useCurrentModel(
+  const currentDeploymentModel: MetaModel = useCurrentModel( props.deploymentUuid
     // context.applicationSection == "data"
-    props.applicationSection == "data"
-      ? context.deploymentUuid
-      : adminConfigurationDeploymentMiroir.uuid
+    // props.applicationSection == "data"
+    //   ? context.deploymentUuid
+    //   : adminConfigurationDeploymentMiroir.uuid
   );
 
-  const currentDeploymentReportsEntitiesDefinitionsMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
+  const currentDeploymentReportsEntitiesDefinitionsMapping =
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
 
   // log.info("ReportSectionEntityInstance: currentDeploymentReportsEntitiesDefinitionsMapping:", currentDeploymentReportsEntitiesDefinitionsMapping);
 
@@ -306,19 +312,22 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentModelEnvironment = defaultMiroirModelEnvironment;
   const domainController: DomainControllerInterface = useDomainControllerService();
 
-  const currentReportDeploymentSectionEntities: Entity[] = currentDeploymentMetaModel.entities; // Entities are always defined in the 'model' section
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
-    currentDeploymentMetaModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
+  const currentReportDeploymentSectionEntities: Entity[] = currentDeploymentModel.entities; // Entities are always defined in the 'model' section
+  // const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
+  //   currentDeploymentMetaModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
   const currentReportTargetEntity: Entity | undefined =
-    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === props.entityUuidDEFUNCT);
+    // currentReportDeploymentSectionEntities?.find((e) => e?.uuid === props.entityUuidDEFUNCT);
+    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === reportSectionDefinitionFromFormik?.definition?.parentUuid);
 
   const currentReportSectionTargetEntityDefinition: EntityDefinition | undefined =
     // currentReportDeploymentSectionEntityDefinitions?.find(
     //   (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     // );
-    currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
-        (e) => e?.entityUuid === props.entityUuidDEFUNCT // TODO: remove entityUuid from props and use only formValueMLSchema?
+    // currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
+    currentDeploymentModel?.entityDefinitions?.find(
+        // (e) => e?.entityUuid === props.entityUuidDEFUNCT // TODO: remove entityUuid from props and use only formValueMLSchema?
+        (e) => e?.entityUuid === reportSectionDefinitionFromFormik?.definition?.parentUuid
   );
 
   log.info(
@@ -772,13 +781,22 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             <div>props deploymentUuid: {props.deploymentUuid}</div>
             <div>props selfApplication section: {props.applicationSection}</div>
             <div>context selfApplication section: {context.applicationSection}</div>
-            <div>instance entityUuid: {props.entityUuidDEFUNCT}</div>
-            <div>instance uuid: {props.initialInstanceValueDEFUNCT?.uuid}</div>
+            <div>instance entityUuid: {entityUuid}</div>
+            <div>instance entityUuid2: {instance.entityUuid}</div>
+            <div>instance uuid: {instance.uuid}</div>
             <div>
               target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}
             </div>
             {props.zoomInPath && <div>zoom path: {props.zoomInPath}</div>}
             {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
+            <ThemedOnScreenHelper
+              label={`currentDeploymentMetaModel.entities`}
+              data={currentDeploymentModel.entities}
+            />
+            <ThemedOnScreenHelper
+              label={`reportSectionDefinitionFromFormik`}
+              data={reportSectionDefinitionFromFormik}
+            />
             <ThemedPreformattedText>
               target entity definition:{" "}
               {currentReportSectionTargetEntityDefinition?.name ??
@@ -786,7 +804,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </ThemedPreformattedText>
             <div> ######################################## </div>
             <ThemedPreformattedText>
-              entity jzod schema: {safeStringify(instance?.jzodSchema)}
+              {/* entity jzod schema: {safeStringify(instance?.jzodSchema)} */}
+              entity jzod schema: {JSON.stringify(instance?.jzodSchema, null, 2)}
             </ThemedPreformattedText>
           </div>
         )}

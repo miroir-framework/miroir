@@ -1,8 +1,7 @@
 import {
-  useEffect,
   useMemo
 } from "react";
-import { Params, useParams } from "react-router-dom";
+import { Params } from "react-router-dom";
 
 import {
   ApplicationSection,
@@ -11,7 +10,6 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Report,
-  SelfApplicationDeploymentConfiguration,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
@@ -22,22 +20,19 @@ import {
   useMiroirContextService
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider.js";
 
+import { ErrorBoundary } from "react-error-boundary";
 import {
-  deployments,
   packageName,
-  ReportUrlParamKeys,
+  ReportUrlParamKeys
 } from "../../../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
+import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js";
 import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
-import { usePageConfiguration } from "../services/index.js";
-import { useRenderTracker } from "../tools/renderCountTracker.js";
-import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -72,29 +67,18 @@ const defaultReport: Report = {
 
 export const ReportDisplay: React.FC<{
   pageParams: Params<ReportUrlParamKeys>;
-  context: ReturnType<typeof useMiroirContextService>;
-  theme: ReturnType<typeof useMiroirTheme>;
-}> = ({ pageParams, context, theme }) => {
+  // context: ReturnType<typeof useMiroirContextService>;
+  // theme: ReturnType<typeof useMiroirTheme>;
+}> = ({ pageParams }) => {
+  const context = useMiroirContextService();
+  const theme = useMiroirTheme();
 
   const currentModel: MetaModel = useCurrentModel(pageParams.deploymentUuid);
 
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined =
-    deployments.find((d) => d.uuid == pageParams.deploymentUuid); // TODO; inject real existing deployments, not use a fixed list
 
-  const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    return displayedDeploymentDefinition &&
-      pageParams.applicationSection &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
-      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
-          displayedDeploymentDefinition?.uuid
-        ][pageParams.applicationSection as ApplicationSection]
-      : { availableReports: [], entities: [], entityDefinitions: [] };
-  }, [
-    displayedDeploymentDefinition,
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
-    pageParams.applicationSection,
-  ]);
+  const availableReports: Report[] = useMemo(() => {
+    return currentModel.reports || [];
+  }, [currentModel]);
 
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
@@ -163,32 +147,61 @@ export const ReportDisplay: React.FC<{
   log.info("currentStoredQueryData", currentStoredQueryData);
 
   return (
-    <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-      {pageParams.deploymentUuid &&
-      pageParams.applicationSection &&
-      pageParams.reportUuid &&
-      pageParams.reportUuid != "undefined" ? (
-        <>
-          {/* {pageParams.useReportViewWithEditor  === "true" ? ( */}
+    <>
+      {/* <ThemedOnScreenHelper label="ReportDisplay pageParams" data={pageParams} /> */}
+      {/* <ThemedOnScreenHelper label="ReportDisplay currentModel" data={currentModel} /> */}
+      {/* <ThemedOnScreenHelper label="ReportDisplay availableReports" data={availableReports} /> */}
+      {/* <ThemedOnScreenHelper label="ReportDisplay currentMiroirReport" data={currentMiroirReport} /> */}
+      <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+        {!pageParams.deploymentUuid ||
+        !pageParams.applicationSection ||
+        !pageParams.reportUuid ||
+        // !pageParams.instanceUuid ||
+        !currentMiroirReport ||
+        !currentStoredQueryData ? (
           <>
-            <ReportViewWithEditor
-              applicationSection={pageParams.applicationSection as ApplicationSection}
-              deploymentUuid={pageParams.deploymentUuid}
-              instanceUuid={pageParams.instanceUuid}
-              pageParams={pageParams}
-              storedQueryData={currentStoredQueryData}
-              reportDefinition={currentMiroirReport}
-            />
-            {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
+            <ThemedSpan style={{ color: theme.currentTheme.colors.error }}>
+              ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
+              applicationSection=
+              {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
+            </ThemedSpan>
           </>
-        </>
-      ) : (
-        <ThemedSpan style={{ color: theme.currentTheme.colors.error }}>
-          ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
-          applicationSection=
-          {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
-        </ThemedSpan>
-      )}
-    </ThemedBox>
+        ) : (
+          <>
+            <ErrorBoundary
+              FallbackComponent={({ error, resetErrorBoundary }) => (
+                <ErrorFallbackComponent
+                  error={error}
+                  resetErrorBoundary={resetErrorBoundary}
+                  context={{
+                    origin: "ReportDisplay",
+                    objectType: "root_editor",
+                    rootLessListKey: "ROOT",
+                    currentValue: pageParams,
+                    // currentValue: JSON.stringify(pageParams, null, 2),
+                    formikValues: undefined,
+                    // rawJzodSchema: zoomedInDisplaySchema,
+                    // localResolvedElementJzodSchemaBasedOnValue:
+                    //   jzodTypeCheckResult?.status == "ok"
+                    //     ? jzodTypeCheckResult.resolvedSchema
+                    //     : undefined,
+                  }}
+                />
+              )}
+            >
+              <ReportViewWithEditor
+                applicationSection={pageParams.applicationSection as ApplicationSection}
+                deploymentUuid={pageParams.deploymentUuid}
+                instanceUuid={pageParams.instanceUuid}
+                pageParams={pageParams}
+                storedQueryData={currentStoredQueryData}
+                reportDefinition={currentMiroirReport}
+              />
+              {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
+            </ErrorBoundary>
+          </>
+        )}
+      </ThemedBox>
+    </>
   );
 };
