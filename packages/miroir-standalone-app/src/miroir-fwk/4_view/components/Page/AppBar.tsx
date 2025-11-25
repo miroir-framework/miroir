@@ -350,7 +350,6 @@ export function AppBar(props:AppBarProps) {
               handleAsyncAction={handleAsyncAction}
               actionName="commit"
             />
-
             {/* Fetch Configurations Button */}
             <ThemedIconButton
               onClick={fetchConfigurations}
@@ -401,7 +400,23 @@ export function AppBar(props:AppBarProps) {
                     : "Performance Monitor: OFF (click to enable)"
                 }
               >
-                <Button
+                <ThemedIconButton
+                  onClick={() =>
+                    context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay) as any
+                  }
+                  aria-label="Performance Monitor"
+                  // title="Fetch Miroir & App configurations from database"
+                >
+                  <ThemedIcon
+                    icon={
+                      context.showPerformanceDisplay
+                        ? { iconType: "mui", name: "timerOff" }
+                        : { iconType: "mui", name: "timer" }
+                    }
+                  />
+                </ThemedIconButton>
+
+                {/* <Button
                   onClick={() =>
                     context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay)
                   }
@@ -440,7 +455,7 @@ export function AppBar(props:AppBarProps) {
                   }}
                 >
                   Performance Monitor
-                </Button>
+                </Button> */}
               </Tooltip>
             )}{" "}
             {/* Action Timeline Indicator */}
@@ -452,7 +467,22 @@ export function AppBar(props:AppBarProps) {
                     : "Action Timeline: OFF (click to enable)"
                 }
               >
-                <Button
+                <ThemedIconButton
+                  onClick={() =>
+                    context.setShowActionTimeline?.(!context.showActionTimeline) as any
+                  }
+                  aria-label="Action Timeline"
+                  // title="Fetch Miroir & App configurations from database"
+                >
+                  <ThemedIcon
+                    icon={
+                      context.showActionTimeline
+                        ? { iconType: "mui", name: "notificationOff" }
+                        : { iconType: "mui", name: "notification" }
+                    }
+                  />
+                </ThemedIconButton>
+                {/* <Button
                   onClick={() => {
                     console.log("Action Timeline toggle clicked:", {
                       current: context.showActionTimeline,
@@ -495,7 +525,7 @@ export function AppBar(props:AppBarProps) {
                   }}
                 >
                   Action Timeline
-                </Button>
+                </Button> */}
               </Tooltip>
             )}{" "}
             {/* Edit Mode Toggle Button */}
@@ -521,7 +551,7 @@ export function AppBar(props:AppBarProps) {
                     },
                   }}
                 >
-                  {props.editMode ? <Edit /> : <EditOff />}
+                  {props.editMode ? <EditOff />: <Edit />}
                 </IconButton>
               </Tooltip>
             )}

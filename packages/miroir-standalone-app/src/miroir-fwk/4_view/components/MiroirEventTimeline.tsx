@@ -328,7 +328,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
             primary={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Typography variant="body2" fontWeight="medium" component="span">
-                  {"A " + getDisplayLabel(action) + " A"}
+                  {getDisplayLabel(action)}
                 </Typography>
                 <Chip
                   label={getTrackingTypeLabel(action.activityType)}
