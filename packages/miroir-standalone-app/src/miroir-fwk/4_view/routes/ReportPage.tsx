@@ -1,52 +1,29 @@
 import {
-  useEffect,
-  useMemo
+  useEffect
 } from "react";
 import { Params, useParams } from "react-router-dom";
 
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
   ApplicationSection,
-  Domain2ElementFailed,
-  getReportsAndEntitiesDefinitionsForDeploymentUuid,
-  JzodElement,
   LoggerInterface,
-  MetaModel,
-  MiroirLoggerFactory,
-  Report,
-  SelfApplicationDeploymentConfiguration,
-  type BoxedQueryTemplateWithExtractorCombinerTransformer,
-  type BoxedQueryWithExtractorCombinerTransformer,
-  type DeploymentUuidToReportsEntitiesDefinitionsMapping,
-  type Domain2QueryReturnType,
-  type Query,
-  type Uuid,
+  MiroirLoggerFactory
 } from "miroir-core";
 import {
-  useErrorLogService,
-  useMiroirContextService,
+  useMiroirContextService
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider.js";
 
 import {
-  deployments,
   packageName,
-  ReportUrlParamKeys,
+  ReportUrlParamKeys
 } from "../../../constants.js";
-import { useCurrentModel } from "../ReduxHooks.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
-import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
-import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
-import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
-import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
+import { ThemedBox } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { usePageConfiguration } from "../services/index.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
-import { usePageConfiguration } from "../services/index.js";
+import { ReportDisplay } from "./ReportDisplay.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -55,28 +32,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
-
-
-// const miroirExpression: JzodElement = {
-//   type: "object",
-//   definition: {
-//     root: {
-//       type: "string",
-//     },
-//     attribute: {
-//       type: "string",
-//     },
-//   },
-// };
-
-// export const deployments = [
-//   adminConfigurationDeploymentMiroir,
-//   adminConfigurationDeploymentLibrary,
-//   adminConfigurationDeploymentAdmin,
-//   // adminConfigurationDeploymentTest1,
-//   // adminConfigurationDeploymentTest4,
-//   adminConfigurationDeploymentParis,
-// ] as any[]; //type for Admin SelfApplication Deployment Entity Definition
 
 // ###############################################################################################################
 export const ReportPage = () => {
@@ -107,96 +62,6 @@ export const ReportPage = () => {
     context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data")
   );
 
-  const errorLog = useErrorLogService();
-
-  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-
-  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
-
-  // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
-  // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
-  const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
-
-  const currentModel: MetaModel = useCurrentModel(pageParams.deploymentUuid);
-
-  // log.info("ReportPage currentModel", currentModel);
-
-  const defaultReport: Report = useMemo(
-    () => ({
-      uuid: "c0ba7e3d-3740-45a9-b183-20c3382b6419",
-      parentName: "Report",
-      parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      conceptLevel: "Model",
-      name: "DummyDefaultReport",
-      defaultLabel: "No report to display!",
-      type: "list",
-      definition: {
-        extractorTemplates: {},
-        section: {
-          type: "objectListReportSection",
-          definition: {
-            parentName: "Test",
-            parentUuid: "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
-          },
-        },
-      },
-    }),
-    []
-  );
-
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined =
-    deployments.find((d) => d.uuid == pageParams.deploymentUuid);
-
-  // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
-
-  // const deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping =
-  //   useMemo(
-  //     () => ({
-  //       [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //         adminConfigurationDeploymentAdmin.uuid,
-  //         miroirMetaModel,
-  //         adminAppModel
-  //       ),
-  //       [adminConfigurationDeploymentMiroir.uuid]:
-  //         getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //           adminConfigurationDeploymentMiroir.uuid,
-  //           miroirMetaModel,
-  //           miroirMetaModel
-  //         ),
-  //       [adminConfigurationDeploymentLibrary.uuid]:
-  //         getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //           adminConfigurationDeploymentLibrary.uuid,
-  //           miroirMetaModel,
-  //           libraryAppModel
-  //         ),
-  //       // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //       //   adminConfigurationDeploymentTest1.uuid,
-  //       //   miroirMetaModel,
-  //       //   test1AppModel,
-  //       // ),
-  //       // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //       //   adminConfigurationDeploymentTest4.uuid,
-  //       //   miroirMetaModel,
-  //       //   test4AppModel,
-  //       // ),
-  //       [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //         adminConfigurationDeploymentParis.uuid,
-  //         miroirMetaModel,
-  //         parisAppModel
-  //       ),
-  //     }),
-  //     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
-  //     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel ]
-  //     [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
-  //   );
-
-  // useEffect(() =>
-  //   context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(
-  //     deploymentUuidToReportsEntitiesDefinitionsMapping
-  //   )
-  // );
-
   useEffect(() => {
     // Only reset metrics if we're navigating to a different deployment
     // Keep metrics when navigating between different reports/entities within the same deployment
@@ -211,90 +76,6 @@ export const ReportPage = () => {
     sessionStorage.setItem("currentDeploymentKey", currentDeploymentKey);
   }, [pageParams.deploymentUuid, pageParams.applicationSection]);
 
-  // log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
-
-  const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    return displayedDeploymentDefinition &&
-      pageParams.applicationSection &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
-      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
-          displayedDeploymentDefinition?.uuid
-        ][pageParams.applicationSection as ApplicationSection]
-      : { availableReports: [], entities: [], entityDefinitions: [] };
-  }, [
-    displayedDeploymentDefinition,
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
-    pageParams.applicationSection,
-  ]);
-  // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
-  // log.info("ReportPage availableReports", availableReports);
-
-  const currentMiroirReport: Report =
-    availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
-  const availableStoredQueries = currentModel.storedQueries || [];
-  const currentReportQueries: Uuid[] = (currentMiroirReport.definition.runStoredQueries ?? [])
-    ?.filter((sq) => !!sq.storedQuery)
-    .map((sq) => sq.storedQuery) as Uuid[];
-
-  log.info(
-    "currentMiroirReport",
-    currentMiroirReport,
-    "currentReportQueries",
-    currentReportQueries,
-    "availableStoredQueries",
-    availableStoredQueries
-  );
-  const currentStoredQueries: { definition: Query }[] = availableStoredQueries.filter(
-    (q: any /* StoredQuery*/) => currentReportQueries.includes(q.uuid)
-  ) as any;
-  log.info("currentStoredQueries", currentStoredQueries);
-
-  const currentStoredQuery:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined = useMemo(
-    () =>
-      pageParams.deploymentUuid &&
-      pageParams.applicationSection &&
-      pageParams.reportUuid &&
-      currentStoredQueries.length > 0
-        ? {
-            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            deploymentUuid: pageParams.deploymentUuid,
-            pageParams: pageParams,
-            queryParams: {},
-            contextResults: {},
-            extractorTemplates: currentStoredQueries[0].definition.extractorTemplates,
-            combinerTemplates: currentStoredQueries[0].definition.combinerTemplates,
-            runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
-          }
-        : undefined,
-    [currentStoredQueries, pageParams]
-  );
-
-  const currentStoredQueryResults: Domain2QueryReturnType<
-    Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults(
-    {
-      applicationSection: pageParams.applicationSection as ApplicationSection,
-      deploymentUuid: pageParams.deploymentUuid!,
-      instanceUuid: pageParams.instanceUuid,
-      pageParams: pageParams,
-      reportDefinition: currentMiroirReport,
-    },
-    currentStoredQuery
-  );
-
-  if (currentStoredQueryResults instanceof Domain2ElementFailed) {
-    // should never happen
-    throw new Error(
-      "ReportView: failed to get report data: " + JSON.stringify(currentStoredQueryResults, null, 2)
-    );
-  }
-  const { reportData: currentStoredQueryData, resolvedQuery: currentResolvedStoredQuery } =
-    currentStoredQueryResults;
-  log.info("currentStoredQueryData", currentStoredQueryData);
 
   if (pageParams.applicationSection) {
     // log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
@@ -329,13 +110,17 @@ export const ReportPage = () => {
               <h3>erreurs: {JSON.stringify(errorLog)}</h3>
             )} */}
           </ThemedBox>
-          <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+          <ReportDisplay
+            pageParams={pageParams}
+            context={context}
+            theme={theme}
+          ></ReportDisplay>
+          {/* <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
             {pageParams.deploymentUuid &&
             pageParams.applicationSection &&
             pageParams.reportUuid &&
             pageParams.reportUuid != "undefined" ? (
               <>
-                {/* {pageParams.useReportViewWithEditor  === "true" ? ( */}
                   <>
                     <ReportViewWithEditor
                       applicationSection={pageParams.applicationSection as ApplicationSection}
@@ -355,7 +140,7 @@ export const ReportPage = () => {
                 {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
               </ThemedSpan>
             )}
-          </ThemedBox>
+          </ThemedBox> */}
         </PageContainer>
       // </ReportPageContextProvider>
     );

@@ -54,8 +54,8 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
   const cellRef = useRef<HTMLDivElement>(null);
   const { currentTheme } = useMiroirTheme();
 
-  if (type === 'testName')
-    log.info("TestCellWithDetails: rendering for test=", testName, " isSelected=", isSelected, "testData=", testData);
+  // if (type === 'testName')
+    // log.info("TestCellWithDetails: rendering for test=", testName, " isSelected=", isSelected, "testData=", testData);
   // Check if this test is skipped
   // const isSkipped = testData?.testResult === "skipped" || testData?.status === "skipped";
   const isSkipped = testData?.testResult === "skipped";
