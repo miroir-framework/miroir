@@ -449,39 +449,23 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
       
       if (!iconSource) {
         const FallbackComponent = muiIconComponentMap[fallback] || HelpOutlineIcon;
-        return { type: 'mui', content: fallback, component: FallbackComponent, error: null };
+        return { type: 'mui', content: fallback, component: FallbackComponent, error: null, color: undefined };
       }
 
             // Handle string (legacy MUI icon names)
       if (typeof iconSource === 'string') {
-        // Check if it's an emoji first
-        // if (iconSource.match(/[\u{1F000}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u)) {
-        //   return { type: 'emoji', content: iconSource, error: null };
-        // }
-        
-        // // Check emoji name mapping
-        // const emojiFromName = EMOJI_MAP[iconSource.toLowerCase()];
-        // if (emojiFromName) {
-        //   return { type: 'emoji', content: emojiFromName, error: null };
-        // }
-        
-        // // Try unicode conversion
-        // const convertedEmoji = codePointToEmoji(iconSource);
-        // if (convertedEmoji !== '❓') {
-        //   return { type: 'emoji', content: convertedEmoji, error: null };
-        // }
-        
         // Default to MUI icon
         const mappedName = muiIconNameMap[iconSource] || iconSource;
         const IconComponent = muiIconComponentMap[mappedName];
         if (IconComponent) {
-          return { type: 'mui', content: mappedName, component: IconComponent, error: null };
+          return { type: 'mui', content: mappedName, component: IconComponent, error: null, color: undefined };
         }
         return {
           type: "mui",
           content: mappedName,
           component: muiIconComponentMap[fallback] || HelpOutlineIcon,
           error: `Unknown MUI icon: ${mappedName}`,
+          color: undefined,
         };
       }
 
@@ -489,43 +473,62 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
       if (typeof iconSource === 'object') {
         if (iconSource.iconType === 'emoji') {
           // Handle emoji type
-          // const emojiName = iconSource.name.toLowerCase();
           const mappedEmoji = EMOJI_MAP[iconSource.name];
           if (mappedEmoji) {
             log.info(`Mapped emoji name "${iconSource.name}" to "${mappedEmoji}"`);
-            return { type: 'emoji', content: mappedEmoji, error: null };
+            return { type: 'emoji', content: mappedEmoji, error: null, color: undefined };
           }
           
-          // // Try to convert unicode codes to emoji
-          // const convertedEmoji = codePointToEmoji(iconSource.name);
-          // if (convertedEmoji !== '❓') {
-          //   return { type: 'emoji', content: convertedEmoji, error: null };
-          // }
-          
           // If it's already an emoji character, use it directly
-          // if (iconSource.name.match(/[\u{1F000}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u)) {
-            return { type: 'emoji', content: iconSource.name, error: null };
-          // }
-          
-          // return { 
-          //   type: 'error', 
-          //   content: `❓ ${iconSource.name}`, 
-          //   error: `Unknown emoji: ${iconSource.name}` 
-          // };
+            return { type: 'emoji', content: iconSource.name, error: null, color: undefined };
         }
         
         if (iconSource.iconType === 'mui') {
           const mappedName = muiIconNameMap[iconSource.name] || iconSource.name;
           const IconComponent = muiIconComponentMap[mappedName];
-          if (IconComponent) {
-            return { type: 'mui', content: mappedName, component: IconComponent, error: null };
+          
+          // Resolve color
+          let resolvedColor: string | undefined = undefined;
+          if (iconSource.color) {
+            if (typeof iconSource.color === 'string') {
+              // Direct color string (name or code)
+              resolvedColor = iconSource.color;
+            } else if (iconSource.color.colorType === 'themeColor') {
+              // Resolve from theme using dot notation path
+              const pathParts = iconSource.color.currentThemeColorPath.split('.');
+              let colorValue: any = currentTheme;
+              
+              for (const part of pathParts) {
+                if (colorValue && typeof colorValue === 'object' && part in colorValue) {
+                  colorValue = colorValue[part];
+                } else {
+                  log.warn(`Theme color path not found: ${iconSource.color.currentThemeColorPath}`);
+                  colorValue = undefined;
+                  break;
+                }
+              }
+              
+              if (typeof colorValue === 'string') {
+                resolvedColor = colorValue;
+              }
+            }
           }
-          return { type: 'mui', content: mappedName, component: muiIconComponentMap[fallback] || HelpOutlineIcon, error: `Unknown MUI icon: ${mappedName}` };
+          
+          if (IconComponent) {
+            return { type: 'mui', content: mappedName, component: IconComponent, error: null, color: resolvedColor };
+          }
+          return { 
+            type: 'mui', 
+            content: mappedName, 
+            component: muiIconComponentMap[fallback] || HelpOutlineIcon, 
+            error: `Unknown MUI icon: ${mappedName}`,
+            color: resolvedColor
+          };
         }
       }
 
       const FallbackComponent = muiIconComponentMap[fallback] || HelpOutlineIcon;
-      return { type: 'mui', content: fallback, component: FallbackComponent, error: 'Invalid icon format' };
+      return { type: 'mui', content: fallback, component: FallbackComponent, error: 'Invalid icon format', color: undefined };
     } catch (error) {
       console.warn('Icon resolution error:', error);
       const FallbackComponent = muiIconComponentMap[fallback] || HelpOutlineIcon;
@@ -533,10 +536,11 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
         type: 'error', 
         content: `❓ ${fallback}`, 
         component: FallbackComponent,
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        error: error instanceof Error ? error.message : 'Unknown error',
+        color: undefined
       };
     }
-  }, [icon, children, fallback, muiIconNameMap, muiIconComponentMap]);
+  }, [icon, children, fallback, muiIconNameMap, muiIconComponentMap, currentTheme]);
 
   // Size mapping
   const sizeMap = {
@@ -607,9 +611,21 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
     switch (resolvedIcon.type) {
       case 'mui':
         const IconComponent = resolvedIcon.component || HelpOutlineIcon;
+        // const iconColor = resolvedIcon.color || currentTheme.colors.text;
+        const iconColor = resolvedIcon.color || "inherit";
+        const muiIconStylesWithColor = css({
+          fontSize: sizeMap[size],
+          lineHeight: 1,
+          display: 'inline-block',
+          color: iconColor,
+          verticalAlign: 'middle',
+          userSelect: 'none' as const,
+          minWidth: sizeMap[size],
+          textAlign: 'center',
+        });
         return (
           <IconComponent
-            css={muiIconStyles}
+            css={muiIconStylesWithColor}
             className={className}
             style={style}
             aria-label={accessibilityLabel}

@@ -1562,6 +1562,34 @@ export const miroirFundamentalJzodSchema = {
                     "editable": true
                   }
                 }
+              },
+              "color": {
+                "type": "union",
+                "discriminator": "colorType",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Color",
+                    "editable": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "colorType": {
+                        "type": "literal",
+                        "definition": "themeColor"
+                      },
+                      "currentThemeColorPath": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -39203,6 +39231,63 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "defaultLabel": "Icon Name",
                         "editable": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "color": {
+                "type": "union",
+                "discriminator": "colorType",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Color",
+                    "editable": true,
+                    "isTemplate": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "colorType": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "literal",
+                            "definition": "themeColor"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "currentThemeColorPath": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
                       }
                     }
                   },

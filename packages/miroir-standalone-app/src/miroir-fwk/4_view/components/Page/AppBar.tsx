@@ -92,7 +92,13 @@ const appbarItems: MiroirMenuItem[] = [
     // "icon": "cogwheel"
     "icon": {
       iconType: "mui",
-      name: "settings"
+      name: "settings",
+      // color: "#FF0000",
+      // color: "red",
+      // color: {
+      //   colorType: "themeColor",
+      //   currentThemeColorPath: "colors.warning"
+      // }
     }
   },
 ];
@@ -321,8 +327,35 @@ export function AppBar(props:AppBarProps) {
               </Button>
             ))}
           </Box>
+            {/* Edit Mode Toggle Button */}
+            {props.onEditModeToggle && (
+              <Tooltip
+                title={
+                  props.editMode
+                    ? "Edit Report Mode: ON (click to disable)"
+                    : "Edit Report Mode: OFF (click to enable)"
+                }
+              >
+                <IconButton
+                  color="inherit"
+                  onClick={props.onEditModeToggle}
+                  sx={{
+                    mr: 1,
+                    color: props.editMode
+                      ? miroirTheme.currentTheme.colors.warning || "orange"
+                      : miroirTheme.currentTheme.components.appBar.textColor,
+                    transition: "all 0.3s ease-in-out",
+                    "&:hover": {
+                      backgroundColor: miroirTheme.currentTheme.colors.hover,
+                    },
+                  }}
+                >
+                  {props.editMode ? <EditOff />: <Edit />}
+                </IconButton>
+              </Tooltip>
+            )}
           {/* useless menu */}
-          <IconButton
+          {/* <IconButton
             size="large"
             aria-label="account of current user"
             aria-controls="menu-appbar"
@@ -331,8 +364,7 @@ export function AppBar(props:AppBarProps) {
             color="inherit"
           >
             <MenuIcon />
-          </IconButton>
-
+          </IconButton> */}
           <Box sx={{ flexGrow: 0, display: "flex" }}>
             <ActionButton
               onAction={async () => {
@@ -382,47 +414,6 @@ export function AppBar(props:AppBarProps) {
                     }
                   />
                 </ThemedIconButton>
-
-                {/* <Button
-                  onClick={() =>
-                    context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay)
-                  }
-                  sx={{
-                    mr: 2,
-                    px: 1,
-                    py: 0.5,
-                    backgroundColor: "transparent",
-                    color: context.showPerformanceDisplay
-                      ? miroirTheme.currentTheme.colors.success
-                      : miroirTheme.currentTheme.components.appBar.textColor,
-                    border: `1px solid ${
-                      context.showPerformanceDisplay
-                        ? miroirTheme.currentTheme.colors.success
-                        : miroirTheme.currentTheme.components.appBar.textColor
-                    }`,
-                    borderRadius: 1,
-                    textShadow: context.showPerformanceDisplay
-                      ? `0 0 8px ${miroirTheme.currentTheme.colors.success}aa, 0 0 16px ${miroirTheme.currentTheme.colors.success}77, 0 0 24px ${miroirTheme.currentTheme.colors.success}55`
-                      : "none",
-                    transition: "all 0.3s ease-in-out",
-                    fontSize: "0.875rem",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    minWidth: "auto",
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: miroirTheme.currentTheme.colors.hover,
-                      color: context.showPerformanceDisplay
-                        ? miroirTheme.currentTheme.colors.success
-                        : miroirTheme.currentTheme.colors.text,
-                      textShadow: context.showPerformanceDisplay
-                        ? `0 0 12px ${miroirTheme.currentTheme.colors.success}, 0 0 20px ${miroirTheme.currentTheme.colors.success}cc, 0 0 32px ${miroirTheme.currentTheme.colors.success}99`
-                        : "none",
-                    },
-                  }}
-                >
-                  Performance Monitor
-                </Button> */}
               </Tooltip>
             )}{" "}
             {/* Action Timeline Indicator */}
@@ -449,81 +440,10 @@ export function AppBar(props:AppBarProps) {
                     }
                   />
                 </ThemedIconButton>
-                {/* <Button
-                  onClick={() => {
-                    console.log("Action Timeline toggle clicked:", {
-                      current: context.showActionTimeline,
-                      willBecome: !context.showActionTimeline,
-                    });
-                    context.setShowActionTimeline?.(!context.showActionTimeline);
-                  }}
-                  sx={{
-                    mr: 2,
-                    px: 1,
-                    py: 0.5,
-                    backgroundColor: "transparent",
-                    color: context.showActionTimeline
-                      ? miroirTheme.currentTheme.colors.secondary
-                      : miroirTheme.currentTheme.components.appBar.textColor,
-                    border: `1px solid ${
-                      context.showActionTimeline
-                        ? miroirTheme.currentTheme.colors.secondary
-                        : miroirTheme.currentTheme.components.appBar.textColor
-                    }`,
-                    borderRadius: 1,
-                    textShadow: context.showActionTimeline
-                      ? `0 0 8px ${miroirTheme.currentTheme.colors.secondary}aa, 0 0 16px ${miroirTheme.currentTheme.colors.secondary}77, 0 0 24px ${miroirTheme.currentTheme.colors.secondary}55`
-                      : "none",
-                    transition: "all 0.3s ease-in-out",
-                    fontSize: "0.875rem",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    minWidth: "auto",
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: miroirTheme.currentTheme.colors.hover,
-                      color: context.showActionTimeline
-                        ? miroirTheme.currentTheme.colors.secondary
-                        : miroirTheme.currentTheme.colors.text,
-                      textShadow: context.showActionTimeline
-                        ? `0 0 12px ${miroirTheme.currentTheme.colors.secondary}, 0 0 20px ${miroirTheme.currentTheme.colors.secondary}cc, 0 0 32px ${miroirTheme.currentTheme.colors.secondary}99`
-                        : "none",
-                    },
-                  }}
-                >
-                  Action Timeline
-                </Button> */}
               </Tooltip>
             )}{" "}
-            {/* Edit Mode Toggle Button */}
-            {props.onEditModeToggle && (
-              <Tooltip
-                title={
-                  props.editMode
-                    ? "Edit Mode: ON (click to disable)"
-                    : "Edit Mode: OFF (click to enable)"
-                }
-              >
-                <IconButton
-                  color="inherit"
-                  onClick={props.onEditModeToggle}
-                  sx={{
-                    mr: 1,
-                    color: props.editMode
-                      ? miroirTheme.currentTheme.colors.error || "#d32f2f"
-                      : miroirTheme.currentTheme.components.appBar.textColor,
-                    transition: "all 0.3s ease-in-out",
-                    "&:hover": {
-                      backgroundColor: miroirTheme.currentTheme.colors.hover,
-                    },
-                  }}
-                >
-                  {props.editMode ? <EditOff />: <Edit />}
-                </IconButton>
-              </Tooltip>
-            )}
-            {/* Document Outline Toggle Button */}
-            {props.onOutlineToggle && (
+            {/* Document Outline Toggle */}
+            {/* {props.onOutlineToggle && (
               <Tooltip
                 title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}
               >
@@ -531,13 +451,14 @@ export function AppBar(props:AppBarProps) {
                   <TocIcon />
                 </IconButton>
               </Tooltip>
-            )}
-            <Tooltip title="Open settings">
+            )} */}
+            {/* User settings menu */}
+            {/* <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
               </IconButton>
-            </Tooltip>
-            <Menu
+            </Tooltip> */}
+            {/* <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
@@ -558,7 +479,7 @@ export function AppBar(props:AppBarProps) {
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
-            </Menu>
+            </Menu> */}
           </Box>
         </Toolbar>
       </>

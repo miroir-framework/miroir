@@ -790,6 +790,32 @@ export function getMiroirFundamentalJzodSchema(
                     },
                   },
                 },
+                color: {
+                  type: "union",
+                  discriminator: "colorType",
+                  optional: true,
+                  tag: {
+                    value: {
+                      defaultLabel: "Icon Color",
+                      editable: true,
+                    },
+                  },
+                  definition: [
+                    { type: "string" },
+                    {
+                      type: "object",
+                      definition: {
+                        colorType: {
+                          type: "literal",
+                          definition: "themeColor",
+                        },
+                        currentThemeColorPath: {
+                          type: "string",
+                        },
+                      }
+                    }
+                  ]
+                },
               },
             },
           ],
