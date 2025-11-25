@@ -358,39 +358,6 @@ export function AppBar(props:AppBarProps) {
             >
               <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
             </ThemedIconButton>
-            {/* Grid Type Toggle Button */}
-            {props.gridType && props.onGridTypeToggle && (
-              <Tooltip
-                title={`Switch to ${props.gridType === "ag-grid" ? "Glide Data Grid" : "AG-Grid"}`}
-              >
-                <Button
-                  onClick={props.onGridTypeToggle}
-                  sx={{
-                    mr: 2,
-                    px: 1,
-                    py: 0.5,
-                    backgroundColor: "transparent",
-                    color: miroirTheme.currentTheme.components.appBar.textColor,
-                    opacity: 0.8,
-                    border: `1px solid ${miroirTheme.currentTheme.components.appBar.textColor}`,
-                    borderRadius: 1,
-                    transition: "all 0.3s ease-in-out",
-                    fontSize: "0.875rem",
-                    fontWeight: "normal",
-                    textTransform: "none",
-                    minWidth: "auto",
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: miroirTheme.currentTheme.colors.hover,
-                      color: miroirTheme.currentTheme.colors.text,
-                      opacity: 1,
-                    },
-                  }}
-                >
-                  Grid: {props.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"}
-                </Button>
-              </Tooltip>
-            )}
             {/* Performance Monitor Indicator */}
             {context.setShowPerformanceDisplay && (
               <Tooltip
