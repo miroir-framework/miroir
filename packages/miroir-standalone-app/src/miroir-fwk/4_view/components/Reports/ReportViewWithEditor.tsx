@@ -22,6 +22,7 @@ import {
   type InstanceAction,
   type JzodElement,
   type JzodObject,
+  type MetaModel,
   type QueryByQuery2GetParamJzodSchema,
   type QueryRunnerMapForJzodSchema,
   type RecordOfJzodObject,
@@ -33,7 +34,7 @@ import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-lo
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
-import { useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
+import { useCurrentModel, useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
 import { ThemedOnScreenHelper, ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
@@ -55,6 +56,7 @@ const reportSectionsFormSchema = (
   reportSection: ReportSection,
   deploymentUuid: Uuid,
   currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
+  currentModel: MetaModel,
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
 ): Record<string, JzodElement> => {
@@ -71,6 +73,7 @@ const reportSectionsFormSchema = (
               // applicationSection,
               // entityUuid,
               currentDeploymentReportsEntitiesDefinitionsMapping,
+              currentModel,
               reportData,
               reportSectionPath.concat("definition", index)
             ),
@@ -90,6 +93,7 @@ const reportSectionsFormSchema = (
                 // applicationSection,
                 // entityUuid,
                 currentDeploymentReportsEntitiesDefinitionsMapping,
+                currentModel,
                 reportData,
                 reportSectionPath.concat("definition", rowIndex, colIndex)
               ),
@@ -104,9 +108,10 @@ const reportSectionsFormSchema = (
       const entityUuid = reportSection.definition.parentUuid;
       const applicationSection = getApplicationSection(deploymentUuid, entityUuid)
       const targetEntityDefinition: EntityDefinition | undefined =
-        currentDeploymentReportsEntitiesDefinitionsMapping?.[
-          applicationSection
-        ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
+        // currentDeploymentReportsEntitiesDefinitionsMapping?.[
+        //   applicationSection
+        // ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
+        currentModel?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
       if (!targetEntityDefinition) {
         throw new Error(
           "reportSectionsFormSchema: cannot find target entity definition for " +
@@ -194,6 +199,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
   
+  const currentModel: MetaModel = useCurrentModel(props.deploymentUuid);
   const currentDeploymentReportsEntitiesDefinitionsMapping =
     // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
@@ -311,6 +317,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       props.reportDefinition?.definition.section,
       props.pageParams.deploymentUuid,
       currentDeploymentReportsEntitiesDefinitionsMapping,
+      currentModel,
       reportData,
       ["definition", "section"]
     );
