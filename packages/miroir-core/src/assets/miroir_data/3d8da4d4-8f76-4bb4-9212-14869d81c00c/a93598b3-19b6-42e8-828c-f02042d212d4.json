@@ -11,10 +11,10 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"LocalPersistenceAction"},
-            "actionName": {"type": "enum", "definition": ["create", "read", "update", "delete"]},
+            "actionType": { "type": "literal", "definition": "LocalPersistenceAction" },
+            "actionName": { "type": "enum", "definition": ["create", "read", "update", "delete"] },
             "actionLabel": { "type": "string", "optional": true },
-            "endpoint": {"type": "literal", "definition":"a93598b3-19b6-42e8-828c-f02042d212d4"},
+            "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
             "section": {
               "type": "schemaReference",
               "definition": {
@@ -22,26 +22,43 @@
                 "relativePath": "applicationSection"
               }
             },
+            "application": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "canBeTemplate": false,
+                  "defaultLabel": "Application",
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "editable": false
+                }
+              }
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
             },
             "parentName": {
               "type": "string",
               "optional": true,
-              "tag": { "value": {  "id":1, "defaultLabel": "Parent Name", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
             },
             "parentUuid": {
               "type": "string",
               "optional": true,
               "validations": [{ "type": "uuid" }],
-              "tag": { "value": {  "id":1, "defaultLabel": "Parent Uuid", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
             },
             "uuid": {
               "type": "string",
               "optional": true,
               "validations": [{ "type": "uuid" }],
-              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
             },
             "objects": {
               "type": "array",
@@ -58,17 +75,18 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedToUndo"
+          "type": "literal",
+          "definition": "FailedToUndo"
         }
       },
       {
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"RestPersistenceAction"},
-            "actionName": {"type": "enum", "definition": ["create", "read", "update", "delete"]},
+            "actionType": { "type": "literal", "definition": "RestPersistenceAction" },
+            "actionName": { "type": "enum", "definition": ["create", "read", "update", "delete"] },
             "actionLabel": { "type": "string", "optional": true },
-            "endpoint": {"type": "literal", "definition":"a93598b3-19b6-42e8-828c-f02042d212d4"},
+            "endpoint": { "type": "literal", "definition": "a93598b3-19b6-42e8-828c-f02042d212d4" },
             "section": {
               "type": "schemaReference",
               "definition": {
@@ -76,26 +94,43 @@
                 "relativePath": "applicationSection"
               }
             },
+            "application": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "canBeTemplate": false,
+                  "defaultLabel": "Application",
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "editable": false
+                }
+              }
+            },
             "deploymentUuid": {
               "type": "uuid",
-              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
             },
             "parentName": {
               "type": "string",
               "optional": true,
-              "tag": { "value": {  "id":1, "defaultLabel": "Parent Name", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
             },
             "parentUuid": {
               "type": "string",
               "optional": true,
               "validations": [{ "type": "uuid" }],
-              "tag": { "value": {  "id":1, "defaultLabel": "Parent Uuid", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
             },
             "uuid": {
               "type": "string",
               "optional": true,
               "validations": [{ "type": "uuid" }],
-              "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+              "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
             },
             "objects": {
               "type": "array",
@@ -112,7 +147,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedToUndo"
+          "type": "literal",
+          "definition": "FailedToUndo"
         }
       },
       {
@@ -125,7 +161,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -138,7 +175,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -151,7 +189,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -164,7 +203,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -177,7 +217,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -190,7 +231,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -203,7 +245,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -216,7 +259,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -229,7 +273,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       },
       {
@@ -242,7 +287,8 @@
           }
         },
         "actionErrors": {
-          "type":"literal", "definition": "FailedHandleQueryAction"
+          "type": "literal",
+          "definition": "FailedHandleQueryAction"
         }
       }
     ]

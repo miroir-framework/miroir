@@ -18,6 +18,24 @@
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
+          "application": {
+            "type": "literal",
+            "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -30,7 +48,7 @@
             }
           },
           "payload": {
-            "type":"object",
+            "type": "object",
             "definition": {
               "params": {
                 "type": "object",
@@ -87,6 +105,23 @@
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -110,6 +145,23 @@
           "endpoint": {
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -135,6 +187,23 @@
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -158,6 +227,23 @@
           "endpoint": {
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -183,6 +269,23 @@
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -207,6 +310,23 @@
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -219,7 +339,7 @@
             }
           },
           "payload": {
-            "type":"object",
+            "type": "object",
             "definition": {
               "transactional": {
                 "type": "boolean",
@@ -293,6 +413,23 @@
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -305,7 +442,7 @@
             }
           },
           "payload": {
-            "type":"object",
+            "type": "object",
             "definition": {
               "transactional": {
                 "type": "boolean",
@@ -349,6 +486,23 @@
             "type": "literal",
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -361,7 +515,7 @@
             }
           },
           "payload": {
-            "type":"object",
+            "type": "object",
             "definition": {
               "transactional": {
                 "type": "boolean",
@@ -374,7 +528,7 @@
                   "definition": {
                     "entity": {
                       "type": "schemaReference",
-                      "tag": { "value": {"canBeTemplate": true} },
+                      "tag": { "value": { "canBeTemplate": true } },
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "entity"
@@ -382,7 +536,7 @@
                     },
                     "entityDefinition": {
                       "type": "schemaReference",
-                      "tag": { "value":{ "canBeTemplate": true } },
+                      "tag": { "value": { "canBeTemplate": true } },
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "entityDefinition"
@@ -402,6 +556,23 @@
             "definition": "dropEntity"
           },
           "actionLabel": { "type": "string", "optional": true },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -418,7 +589,7 @@
             "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
           },
           "payload": {
-            "type":"object",
+            "type": "object",
             "definition": {
               "transactional": {
                 "type": "boolean",

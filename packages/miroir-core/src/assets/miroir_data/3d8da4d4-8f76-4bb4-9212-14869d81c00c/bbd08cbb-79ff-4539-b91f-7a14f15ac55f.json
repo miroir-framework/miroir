@@ -27,6 +27,23 @@
                 "relativePath": "storeUnitConfiguration"
               }
             },
+            "application": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "canBeTemplate": false,
+                  "defaultLabel": "Application",
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "editable": false
+                }
+              }
+            },
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
@@ -40,10 +57,7 @@
         },
         "actionErrors": {
           "type": "enum",
-          "definition": [
-            "FailedToCreateStore",
-            "FailedToDeployModule"
-          ]
+          "definition": ["FailedToCreateStore", "FailedToDeployModule"]
         }
       },
       {
@@ -58,6 +72,23 @@
             "endpoint": {
               "type": "literal",
               "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+            },
+            "application": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "canBeTemplate": false,
+                  "defaultLabel": "Application",
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "editable": false
+                }
+              }
             },
             "deploymentUuid": {
               "type": "uuid",
@@ -105,6 +136,23 @@
                 }
               }
             },
+            "application": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "canBeTemplate": false,
+                  "defaultLabel": "Application",
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "editable": false
+                }
+              }
+            },
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
@@ -144,6 +192,23 @@
                 }
               }
             },
+            "application": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "canBeTemplate": false,
+                  "defaultLabel": "Application",
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "editable": false
+                }
+              }
+            },
             "deploymentUuid": {
               "type": "uuid",
               "tag": {
@@ -172,6 +237,23 @@
             "endpoint": {
               "type": "literal",
               "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+            },
+            "application": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "canBeTemplate": false,
+                  "defaultLabel": "Application",
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "editable": false
+                }
+              }
             },
             "deploymentUuid": {
               "type": "uuid",

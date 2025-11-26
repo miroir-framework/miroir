@@ -9,10 +9,30 @@
     "actions": [
       {
         "actionParameters": {
-          "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction" },
+          "actionType": {
+            "type": "literal",
+            "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction"
+          },
           "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -65,6 +85,23 @@
           "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -123,6 +160,23 @@
           "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -161,6 +215,23 @@
           "actionType": { "type": "literal", "definition": "runBoxedExtractorTemplateAction" },
           "actionName": { "type": "literal", "definition": "runQuery" },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -200,6 +271,23 @@
           "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -244,6 +332,23 @@
           "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "canBeTemplate": false,
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "editable": false
+              }
+            }
+          },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
