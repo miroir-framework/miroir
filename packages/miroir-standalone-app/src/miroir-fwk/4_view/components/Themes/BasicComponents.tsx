@@ -4,6 +4,7 @@ import React from 'react';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import { useMiroirContextService } from '../../MiroirContextReactProvider';
 
 // ################################################################################################
 // Basic Themed Components
@@ -383,6 +384,34 @@ export const ThemedSpan: React.FC<ThemedComponentProps & {
   );
 };
 
+// ################################################################################################
+// On-screen debug/helper component for displaying structured data
+export const ThemedOnScreenDebug: React.FC<ThemedComponentProps & {
+  label?: string;
+  data: any;
+  initiallyUnfolded?: boolean;
+}> = ({ 
+  label,
+  data,
+  className, 
+  style,
+  initiallyUnfolded = true
+}) => {
+  const context = useMiroirContextService();
+  const { currentTheme } = useMiroirTheme();
+  if (!context.showDebugInfo) {
+    return null;
+  }
+  return (
+    <ThemedOnScreenHelper
+      label={label}
+      data={data}
+      className={className}
+      style={{...style, background: currentTheme.colors.warning}}
+      initiallyUnfolded={initiallyUnfolded}
+    />
+  );
+}
 // ################################################################################################
 // On-screen debug/helper component for displaying structured data
 export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {

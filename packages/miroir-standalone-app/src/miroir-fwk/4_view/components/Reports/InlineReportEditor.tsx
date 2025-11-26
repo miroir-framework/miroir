@@ -43,7 +43,6 @@ export interface InlineReportEditorProps {
 }
 
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
-  // reportDefinitionDEFUNCT,
   reportEntityDefinitionDEFUNCT,
   formValueMLSchema,
   deploymentUuid,
@@ -51,11 +50,6 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
   formikAlreadyAvailable,
   formikReportDefinitionPathString,
   formikValuePath,
-  // sectionPath,
-  // hasValidationErrors,
-  // reportSectionPathAsString,
-  // onDefinitionChange,
-  // onValidationChange,
 }) => {
   const formik = useFormikContext<any>();
   // const formikReportDefinition: Report = formik.values[reportSectionPath.join("_")];
@@ -89,39 +83,31 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 data={reportDefinitionDEFUNCT}
                 initiallyUnfolded={false}
               /> */}
-              <ThemedOnScreenHelper
+              {/* <ThemedOnScreenHelper
                 label={"InlineReportEditor: reportEntityDefinitionDEFUNCT"}
                 data={reportEntityDefinitionDEFUNCT}
                 initiallyUnfolded={false}
-              />
-              <ThemedOnScreenHelper
+              /> */}
+              {/* <ThemedOnScreenHelper
                 label={"InlineReportEditor: report edition parameters"}
                 initiallyUnfolded={false}
                 data={{
-                  // reportDefinitionDEFUNCT: reportDefinitionDEFUNCT?.uuid,
-                  // reportDefinitionDEFUNCT,
                   reportEntityDefinitionDEFUNCT: reportEntityDefinitionDEFUNCT?.uuid,
-                  // reportEntityDefinitionDEFUNCT,
-                  // formValueMLSchema,
                   deploymentUuid,
                   applicationSection,
                   applicationSectionComputed,
                   formikAlreadyAvailable,
                   formikReportDefinitionPathString,
                   formikValuePath,
-                  // formikReportDefinition,
                 }}
-              />
+              /> */}
               <ReportSectionEntityInstance
-                // deploymentUuid={deploymentUuid}
                 deploymentUuid={deploymentUuid}
-                // applicationSection="model"
                 applicationSection={getApplicationSection(deploymentUuid, formikReportDefinition?.parentUuid)}
                 entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema
                 formValueMLSchema={formValueMLSchema}
                 formikValuePath={formikValuePath}
                 formikReportDefinitionPathString={formikReportDefinitionPathString}
-                // reportSectionPath={["definition"]}
                 reportSectionPath={["definition", "section", "definition", 0]}
                 // formikAlreadyAvailable={false}
                 formikAlreadyAvailable={formikAlreadyAvailable}

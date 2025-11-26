@@ -3,25 +3,25 @@ import { css } from '@emotion/react';
 import React, { useMemo } from 'react';
 
 // Material-UI Icons
-import { 
-  Add as AddIcon,
+import {
   AccountBalance,
-  Folder,
-  SpaceDashboard,
-  Book as BookIcon,
+  Add as AddIcon,
   AutoStories as AutoStoriesIcon,
+  Book as BookIcon,
+  BugReportOutlined,
   Category as CategoryIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
   Error as ErrorIcon,
   Flag,
+  Folder,
   HelpOutline as HelpOutlineIcon,
   Home as HomeIcon,
   Interests as InterestsIcon,
   List as ListIcon,
   LocationOn as LocationOnIcon,
-  Menu as MenuIcon,
   MenuBook as MenuBookIcon,
+  Menu as MenuIcon,
   NotificationsOutlined as NotificationsIcon,
   NotificationsOffOutlined as NotificationsOffIcon,
   Person,
@@ -32,18 +32,18 @@ import {
   Search as SearchIcon,
   Settings as SettingsIcon,
   South as SouthIcon,
+  SpaceDashboard,
   Star as StarIcon,
   Sync,
   TimerOffOutlined,
   TimerOutlined,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from 'miroir-core';
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
-import { color } from '@uiw/react-codemirror';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -381,6 +381,7 @@ const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
   // 
   add: AddIcon,
   auto_stories: AutoStoriesIcon,
+  bugReport: BugReportOutlined,
   category: CategoryIcon,
   delete: DeleteIcon,
   edit: EditIcon,

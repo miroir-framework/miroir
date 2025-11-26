@@ -327,33 +327,33 @@ export function AppBar(props:AppBarProps) {
               </Button>
             ))}
           </Box>
-            {/* Edit Mode Toggle Button */}
-            {props.onEditModeToggle && (
-              <Tooltip
-                title={
-                  props.editMode
-                    ? "Edit Report Mode: ON (click to disable)"
-                    : "Edit Report Mode: OFF (click to enable)"
-                }
+          {/* Edit Mode Toggle Button */}
+          {props.onEditModeToggle && (
+            <Tooltip
+              title={
+                props.editMode
+                  ? "Edit Report Mode: ON (click to disable)"
+                  : "Edit Report Mode: OFF (click to enable)"
+              }
+            >
+              <IconButton
+                color="inherit"
+                onClick={props.onEditModeToggle}
+                sx={{
+                  mr: 1,
+                  color: props.editMode
+                    ? miroirTheme.currentTheme.colors.warning || "orange"
+                    : miroirTheme.currentTheme.components.appBar.textColor,
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: miroirTheme.currentTheme.colors.hover,
+                  },
+                }}
               >
-                <IconButton
-                  color="inherit"
-                  onClick={props.onEditModeToggle}
-                  sx={{
-                    mr: 1,
-                    color: props.editMode
-                      ? miroirTheme.currentTheme.colors.warning || "orange"
-                      : miroirTheme.currentTheme.components.appBar.textColor,
-                    transition: "all 0.3s ease-in-out",
-                    "&:hover": {
-                      backgroundColor: miroirTheme.currentTheme.colors.hover,
-                    },
-                  }}
-                >
-                  {props.editMode ? <EditOff />: <Edit />}
-                </IconButton>
-              </Tooltip>
-            )}
+                {props.editMode ? <EditOff /> : <Edit />}
+              </IconButton>
+            </Tooltip>
+          )}
           {/* useless menu */}
           {/* <IconButton
             size="large"
@@ -441,7 +441,40 @@ export function AppBar(props:AppBarProps) {
                   />
                 </ThemedIconButton>
               </Tooltip>
-            )}{" "}
+            )}
+            {/* Debug Info Indicator */}
+            {context.setShowDebugInfo && (
+              <Tooltip
+                title={
+                  context.showDebugInfo
+                    ? "Debug Info: ON (click to disable)"
+                    : "Debug Info: OFF (click to enable)"
+                }
+              >
+                <ThemedIconButton
+                  onClick={() => context.setShowDebugInfo?.(!context.showDebugInfo) as any}
+                  aria-label="Debug Info"
+                >
+                  <ThemedIcon
+                    icon={
+                      context.showDebugInfo
+                        ? {
+                            iconType: "mui",
+                            name: "bugReport",
+                            color: {
+                              colorType: "themeColor",
+                              currentThemeColorPath: "colors.warning",
+                            },
+                          }
+                        : {
+                            iconType: "mui",
+                            name: "bugReport",
+                          }
+                    }
+                  />
+                </ThemedIconButton>
+              </Tooltip>
+            )}
             {/* Document Outline Toggle */}
             {/* {props.onOutlineToggle && (
               <Tooltip

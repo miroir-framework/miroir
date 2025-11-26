@@ -583,29 +583,26 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 <>
                   {editMode && entityDefinitionReport && (
                     <>
-                      <ThemedOnScreenHelper
+                      {/* <ThemedOnScreenHelper
                         label={"ReportViewWithEditor: reportEntityDefinition"}
                         data={entityDefinitionReport}
                         initiallyUnfolded={false}
-                      />
-                      <ThemedOnScreenHelper
+                      /> */}
+                      {/* <ThemedOnScreenHelper
                         label={"ReportViewWithEditor: reportViewData"}
                         data={reportViewData}
                         initiallyUnfolded={false}
-                      />
-                      <ThemedOnScreenHelper
+                      /> */}
+                      {/* <ThemedOnScreenHelper
                         label={"ReportViewWithEditor: reportNamePath"}
                         data={reportNamePath}
-                      />
+                      /> */}
                       <InlineReportEditor
                         deploymentUuid={props.deploymentUuid}
                         applicationSection={props.applicationSection}
-                        // reportDefinitionDEFUNCT={reportViewData[reportNamePath.join("_")]} // DEFUNCT since InlineReportEditor uses formik context directly
                         reportEntityDefinitionDEFUNCT={entityDefinitionReport}
                         formValueMLSchema={formValueMLSchema}
                         formikValuePath={reportNamePath}
-                        // formikReportDefinitionPathString={props.reportDefinition.name}
-                        // formikReportDefinitionPathString={entityDefinitionReportKey}
                         formikReportDefinitionPathString={reportReportDetailsKey}
                         formikAlreadyAvailable={true}
                       />
@@ -621,7 +618,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     // data
                     reportDataDEFUNCT={reportViewData}
                     fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
-                    // formikValuePath={[]}
                     //
                     reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
                     reportDefinitionDEFUNCT={props.reportDefinition}

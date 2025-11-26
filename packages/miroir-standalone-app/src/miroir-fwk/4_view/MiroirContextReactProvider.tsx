@@ -149,6 +149,8 @@ export interface MiroirReactContext {
   setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => void;
   showActionTimeline: boolean;
   setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => void;
+  showDebugInfo: boolean;
+  setShowDebugInfo: (value: boolean | ((prev: boolean) => boolean)) => void;
   // ##################################################################################################
   // Snackbar functionality
   snackbarOpen: boolean;
@@ -231,6 +233,12 @@ export function MiroirContextReactProvider(props: {
   const [showActionTimeline, setShowActionTimeline] = useState(() => {
     // Persist showActionTimeline state across navigation
     const saved = sessionStorage.getItem("showActionTimeline");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const [showDebugInfo, setShowDebugInfo] = useState(() => {
+    // Persist showDebugInfo state across navigation
+    const saved = sessionStorage.getItem("showDebugInfo");
     return saved ? JSON.parse(saved) : false;
   });
 
@@ -459,6 +467,12 @@ export function MiroirContextReactProvider(props: {
         setShowActionTimeline(newValue);
         sessionStorage.setItem("showActionTimeline", JSON.stringify(newValue));
       },
+      showDebugInfo,
+      setShowDebugInfo: (value: boolean | ((prev: boolean) => boolean)) => {
+        const newValue = typeof value === "function" ? value(showDebugInfo) : value;
+        setShowDebugInfo(newValue);
+        sessionStorage.setItem("showDebugInfo", JSON.stringify(newValue));
+      },
       // // ###################################################################################################
       // // Outline for Instance Editor
       setFoldedObjectAttributeOrArrayItems,
@@ -496,6 +510,7 @@ export function MiroirContextReactProvider(props: {
       handleAsyncAction,
       showPerformanceDisplay,
       showActionTimeline,
+      showDebugInfo,
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,
