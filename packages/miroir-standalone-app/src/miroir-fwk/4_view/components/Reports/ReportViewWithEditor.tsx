@@ -7,10 +7,13 @@ import {
   adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnvironment,
   Domain2ElementFailed,
+  entityDefinitionEntityDefinition,
+  // entityDefinitionReport,
   entityEntityDefinition,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  reportReportDetails,
   selfApplicationDeploymentMiroir,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
@@ -55,7 +58,7 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
 const reportSectionsFormSchema = (
   reportSection: ReportSection,
   deploymentUuid: Uuid,
-  currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
+  // currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
   currentModel: MetaModel,
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
@@ -70,9 +73,6 @@ const reportSectionsFormSchema = (
             ...reportSectionsFormSchema(
               curr,
               deploymentUuid,
-              // applicationSection,
-              // entityUuid,
-              currentDeploymentReportsEntitiesDefinitionsMapping,
               currentModel,
               reportData,
               reportSectionPath.concat("definition", index)
@@ -90,9 +90,6 @@ const reportSectionsFormSchema = (
               ...reportSectionsFormSchema(
                 subSection,
                 deploymentUuid,
-                // applicationSection,
-                // entityUuid,
-                currentDeploymentReportsEntitiesDefinitionsMapping,
                 currentModel,
                 reportData,
                 reportSectionPath.concat("definition", rowIndex, colIndex)
@@ -108,9 +105,6 @@ const reportSectionsFormSchema = (
       const entityUuid = reportSection.definition.parentUuid;
       const applicationSection = getApplicationSection(deploymentUuid, entityUuid)
       const targetEntityDefinition: EntityDefinition | undefined =
-        // currentDeploymentReportsEntitiesDefinitionsMapping?.[
-        //   applicationSection
-        // ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
         currentModel?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
       if (!targetEntityDefinition) {
         throw new Error(
@@ -275,7 +269,18 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
+  const entityDefinitionReportKey = "entityDefinitionReport";
+  const reportReportDetailsKey = "reportReportDetails";
 
+  // ##############################################################################################
+  // (meta-)information about the current report, to enable editing
+  const entityDefinitionReport: EntityDefinition | undefined = useMemo(() => {
+    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
+    if (!miroirMapping) return undefined;
+    return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
+  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
+
+  // ##############################################################################################
   const initialReportSectionsFormValue = useMemo(() => {
     log.info(
       "############################################## reportSectionsFormValue",
@@ -294,29 +299,24 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       // storedQueryData: props.storedQueryData, // included in reportViewData
       ...reportViewData,
       reportViewData,
-      [reportNamePath.join("_")]: props.reportDefinition,
+      [reportReportDetailsKey]: reportReportDetails,
+      [entityDefinitionReportKey ]: entityDefinitionReport,
+      [reportName]: props.reportDefinition,
     };
     log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
-  }, [props.reportDefinition, reportData, reportViewData]);
+  }, [props.reportDefinition, entityDefinitionReportKey, reportData, reportViewData]);
 
-    // (meta-)information about the current report, to enable editing
-  const reportEntityDefinition = useMemo(() => {
-    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
-    if (!miroirMapping) return undefined;
-    return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
-  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
   // ##############################################################################################
   const formValueMLSchema: JzodObject = useMemo(() => {
-    if (!props.pageParams.deploymentUuid || !reportEntityDefinition?.entityUuid) {
+    if (!props.pageParams.deploymentUuid || !entityDefinitionReport?.entityUuid) {
       return { type: "object", definition: {} };
     }
     const r = reportSectionsFormSchema(
       props.reportDefinition?.definition.section,
       props.pageParams.deploymentUuid,
-      currentDeploymentReportsEntitiesDefinitionsMapping,
       currentModel,
       reportData,
       ["definition", "section"]
@@ -325,7 +325,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       type: "object",
       definition: {
         ...r,
-        [reportNamePath.join("_")]: reportEntityDefinition.jzodSchema,
+        [reportReportDetailsKey]: entityDefinitionReport.jzodSchema,
+        [entityDefinitionReportKey]: entityDefinitionEntityDefinition.jzodSchema, // will contain reportEntityDefinition-itself
+        [reportName]: entityDefinitionReport.jzodSchema,
         [lastSubmitButtonClicked]: { type: "string", optional: true}
       }
     };
@@ -347,7 +349,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   }, [
     props.reportDefinition,
     reportData,
-    reportEntityDefinition,
+    entityDefinitionReport,
     // reportEditorEntitySectionPath,
     currentDeploymentReportsEntitiesDefinitionsMapping,
     props.pageParams.applicationSection,
@@ -579,24 +581,36 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 validateOnBlur={false}
               >
                 <>
-                  {editMode && reportEntityDefinition && (
-                    <InlineReportEditor
-                      deploymentUuid={props.deploymentUuid}
-                      applicationSection={props.applicationSection}
-                      reportDefinitionDEFUNCT={reportViewData[reportNamePath.join("_")]} // DEFUNCT since InlineReportEditor uses formik context directly
-                      reportEntityDefinitionDEFUNCT={reportEntityDefinition}
-                      formValueMLSchema={formValueMLSchema}
-                      formikValuePath={reportNamePath}
-                      formikReportDefinitionPathString={props.reportDefinition.name}
-                      formikAlreadyAvailable={true}
-                    />
+                  {editMode && entityDefinitionReport && (
+                    <>
+                      <ThemedOnScreenHelper
+                        label={"ReportViewWithEditor: reportEntityDefinition"}
+                        data={entityDefinitionReport}
+                        initiallyUnfolded={false}
+                      />
+                      <ThemedOnScreenHelper
+                        label={"ReportViewWithEditor: reportViewData"}
+                        data={reportViewData}
+                        initiallyUnfolded={false}
+                      />
+                      <ThemedOnScreenHelper
+                        label={"ReportViewWithEditor: reportNamePath"}
+                        data={reportNamePath}
+                      />
+                      <InlineReportEditor
+                        deploymentUuid={props.deploymentUuid}
+                        applicationSection={props.applicationSection}
+                        // reportDefinitionDEFUNCT={reportViewData[reportNamePath.join("_")]} // DEFUNCT since InlineReportEditor uses formik context directly
+                        reportEntityDefinitionDEFUNCT={entityDefinitionReport}
+                        formValueMLSchema={formValueMLSchema}
+                        formikValuePath={reportNamePath}
+                        // formikReportDefinitionPathString={props.reportDefinition.name}
+                        // formikReportDefinitionPathString={entityDefinitionReportKey}
+                        formikReportDefinitionPathString={reportReportDetailsKey}
+                        formikAlreadyAvailable={true}
+                      />
+                    </>
                   )}
-                  {/* <span>
-                    <pre>
-                      ReportViewEditor editMode: {JSON.stringify(editMode)}, reportEntityDefinition:{" "}
-                      {JSON.stringify(!!reportEntityDefinition)}
-                    </pre>
-                  </span> */}
                   <ReportSectionViewWithEditor
                     applicationSection={props.applicationSection}
                     deploymentUuid={props.deploymentUuid}

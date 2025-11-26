@@ -772,8 +772,7 @@ export {
   pushIfUnique,
   mergeIfUnique,
 } from "./1_core/tools.js";
-export {} from "./1_core/Report";
-export {} from "./1_core/Report.js";
+export {defaultReport} from "./1_core/Report.js";
 export { zodErrorFirstIssueLeaf, zodErrorDeepestIssueLeaves } from "./1_core/zodParseErrorHandler";
 export {
   asyncApplyExtractorTransformerInMemory,

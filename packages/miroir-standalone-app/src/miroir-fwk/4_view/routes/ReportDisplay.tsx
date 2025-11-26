@@ -5,6 +5,7 @@ import { Params } from "react-router-dom";
 
 import {
   ApplicationSection,
+  defaultReport,
   Domain2ElementFailed,
   LoggerInterface,
   MetaModel,
@@ -44,27 +45,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 
-const defaultReport: Report = {
-  uuid: "c0ba7e3d-3740-45a9-b183-20c3382b6419",
-  parentName: "Report",
-  parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  conceptLevel: "Model",
-  name: "DummyDefaultReport",
-  defaultLabel: "No report to display!",
-  type: "list",
-  definition: {
-    extractorTemplates: {},
-    section: {
-      type: "objectListReportSection",
-      definition: {
-        parentName: "Test",
-        parentUuid: "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
-      },
-    },
-  },
-};
 
-
+// ################################################################################################
+// ReportDisplay Component
+// ################################################################################################
 export const ReportDisplay: React.FC<{
   pageParams: Params<ReportUrlParamKeys>;
   // context: ReturnType<typeof useMiroirContextService>;

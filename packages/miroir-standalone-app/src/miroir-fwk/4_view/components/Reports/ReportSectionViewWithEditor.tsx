@@ -375,6 +375,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             <ReportSectionEntityInstance
               applicationSection={props.applicationSection as ApplicationSection}
               deploymentUuid={props.deploymentUuid}
+              // 
               initialInstanceValueDEFUNCT={objectInstanceReportSectionEntityInstanceDEFUNCT}
               entityUuidDEFUNCT={reportSectionDefinitionFromFormik.definition.parentUuid} // entityUuid-based section display, independent of report section definition
               //
