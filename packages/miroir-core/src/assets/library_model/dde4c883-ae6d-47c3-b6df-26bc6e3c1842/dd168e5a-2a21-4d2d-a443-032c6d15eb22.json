@@ -74,6 +74,13 @@
             "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
             "reportUuid": "3df9413d-5050-4357-910c-f764aacae7e6",
             "icon": "person"
+          },
+          {
+            "label": "Library Lending History",
+            "section": "data",
+            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
+            "icon": "history"
           }
         ]
       }
