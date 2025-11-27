@@ -407,7 +407,7 @@ export const ThemedOnScreenDebug: React.FC<ThemedComponentProps & {
       label={label}
       data={data}
       className={className}
-      style={{...style, background: currentTheme.colors.warning}}
+      style={{...style, background: currentTheme.colors.warningLight}}
       initiallyUnfolded={initiallyUnfolded}
     />
   );

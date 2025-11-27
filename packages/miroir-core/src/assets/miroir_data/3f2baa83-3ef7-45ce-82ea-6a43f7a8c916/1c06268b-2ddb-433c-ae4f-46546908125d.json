@@ -27,7 +27,6 @@
         {
           "type": "objectInstanceReportSection",
           "definition": {
-            "label": "My Transformer Test",
             "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
             "fetchedDataReference": "elementToDisplay"
           }

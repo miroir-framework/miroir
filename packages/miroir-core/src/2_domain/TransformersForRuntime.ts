@@ -472,6 +472,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return {};
     }
     case "schemaReference": {
+      // HACK: to avoid infinite loop, detect meta-reference "jzodElement"
+      if (effectiveSchema.definition.relativePath == "jzodElement") {
+        return { type: "any"}
+      }
       const localContext = effectiveSchema.context
         ? { ...relativeReferenceJzodContext, ...effectiveSchema.context }
         : relativeReferenceJzodContext;
@@ -480,9 +484,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
         effectiveSchema,
         localContext,
         miroirEnvironment
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
       );
       return getDefaultValueForJzodSchemaWithResolution(
         step,

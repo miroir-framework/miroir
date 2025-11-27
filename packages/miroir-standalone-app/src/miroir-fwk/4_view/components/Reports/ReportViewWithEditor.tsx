@@ -58,7 +58,7 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
 const reportSectionsFormSchema = (
   reportSection: ReportSection,
   deploymentUuid: Uuid,
-  // currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
+  currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
   currentModel: MetaModel,
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
@@ -73,6 +73,7 @@ const reportSectionsFormSchema = (
             ...reportSectionsFormSchema(
               curr,
               deploymentUuid,
+              currentDeploymentReportsEntitiesDefinitionsMapping,
               currentModel,
               reportData,
               reportSectionPath.concat("definition", index)
@@ -90,6 +91,7 @@ const reportSectionsFormSchema = (
               ...reportSectionsFormSchema(
                 subSection,
                 deploymentUuid,
+                currentDeploymentReportsEntitiesDefinitionsMapping,
                 currentModel,
                 reportData,
                 reportSectionPath.concat("definition", rowIndex, colIndex)
@@ -104,11 +106,15 @@ const reportSectionsFormSchema = (
     case "objectInstanceReportSection": {
       const entityUuid = reportSection.definition.parentUuid;
       const applicationSection = getApplicationSection(deploymentUuid, entityUuid)
+      // const targetEntityDefinition: EntityDefinition | undefined =
+      //   currentModel?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
       const targetEntityDefinition: EntityDefinition | undefined =
-        currentModel?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
+        currentDeploymentReportsEntitiesDefinitionsMapping?.[
+          applicationSection
+        ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
       if (!targetEntityDefinition) {
         throw new Error(
-          "reportSectionsFormSchema: cannot find target entity definition for " +
+          "ReportViewWithEditor reportSectionsFormSchema: cannot find target entity definition for " +
           " deploymentUuid " + deploymentUuid +
            " entityUuid " +
             entityUuid +
@@ -317,6 +323,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     const r = reportSectionsFormSchema(
       props.reportDefinition?.definition.section,
       props.pageParams.deploymentUuid,
+      currentDeploymentReportsEntitiesDefinitionsMapping,
       currentModel,
       reportData,
       ["definition", "section"]

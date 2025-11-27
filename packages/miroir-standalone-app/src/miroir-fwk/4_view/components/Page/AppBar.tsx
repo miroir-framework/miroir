@@ -342,7 +342,7 @@ export function AppBar(props:AppBarProps) {
                 sx={{
                   mr: 1,
                   color: props.editMode
-                    ? miroirTheme.currentTheme.colors.warning || "orange"
+                    ? miroirTheme.currentTheme.colors.warningLight || "orange"
                     : miroirTheme.currentTheme.components.appBar.textColor,
                   transition: "all 0.3s ease-in-out",
                   "&:hover": {
