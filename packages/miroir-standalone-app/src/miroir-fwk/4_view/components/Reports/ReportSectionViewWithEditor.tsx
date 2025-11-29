@@ -70,6 +70,7 @@ export interface ReportSectionViewWithEditorProps extends ReportSectionViewProps
   editMode: boolean,
   onSectionEdit?: (path: string, newDefinition: ReportSection) => void,
   onSectionCancel?: (path: string) => void,
+  setAddObjectdialogFormIsOpen?: (a:boolean) => void,
   // isSectionModified?: boolean,
 }
 
@@ -127,6 +128,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     ? formik.values[props.formikReportDefinitionPathString]
     : undefined;
 
+  // const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath.join("_") ?? 'root'}`;
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
@@ -384,6 +386,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               reportSectionPath={props.reportSectionPath}
               formValueMLSchema={props.formValueMLSchema}
               formikAlreadyAvailable={true}
+              // 
+              setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
             />
           </>
         )}

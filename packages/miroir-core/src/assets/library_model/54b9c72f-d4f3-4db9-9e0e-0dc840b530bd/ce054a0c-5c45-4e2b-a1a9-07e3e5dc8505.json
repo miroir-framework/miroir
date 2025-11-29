@@ -36,7 +36,11 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "editable": false,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": "e81078f3-2de7-4301-bd79-d3a156aec149"
+            }
           }
         }
       },
@@ -85,7 +89,19 @@
       "endDate": {
         "type": "date",
         "optional": true
+      },
+      "note": {
+        "type": "string",
+        "optional": true
       }
     }
-  }
+  },
+  "description": "The history of book lendings",
+  "viewAttributes": [
+    "uuid",
+    "user",
+    "book",
+    "startDate",
+    "endDate"
+  ]
 }

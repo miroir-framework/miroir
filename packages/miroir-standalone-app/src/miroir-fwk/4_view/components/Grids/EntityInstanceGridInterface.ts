@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { set, z } from "zod";
 
 import {
   // SelfApplicationDeploymentConfigurationSchema,
@@ -32,6 +32,8 @@ export const tableComponentCorePropsSchema = z.object({
   paramsAsdomainElements: domainElementObject,
   foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),
   maxRows: z.number().optional(), // Maximum number of rows to show (controls table height)
+  addObjectdialogFormIsOpen: z.boolean(), //.optional(),
+  setAddObjectdialogFormIsOpen: z.function().args(z.boolean()).returns(z.void()), //.optional(),
 });
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({

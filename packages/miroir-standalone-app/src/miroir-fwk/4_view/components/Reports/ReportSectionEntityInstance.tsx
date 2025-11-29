@@ -129,6 +129,8 @@ export interface ReportSectionEntityInstanceProps {
   showPerformanceDisplay?: boolean;
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
+  // when displayed in a AddObjectdialogForm modal dialog form
+  setAddObjectdialogFormIsOpen?: (a:boolean) => void,
 }
 
 // Test Selection Types are now in TransformerTestDisplay
@@ -355,6 +357,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // CALLS reportContext.setFoldedObjectAttributeOrArrayItems
   useEffect(() => {
+    log.info("ReportSectionEntityInstance: useEffect setting initial folded paths");
     const foldedStringPaths = currentReportSectionTargetEntityDefinition?.display?.foldSubLevels
       ? Object.entries(currentReportSectionTargetEntityDefinition?.display?.foldSubLevels).filter(
           ([key, value]) => value
@@ -400,6 +403,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // CALLS setOutlineTitle and setReportInstance
   useEffect(() => {
+    log.info("ReportSectionEntityInstance: useEffect setting outline title and report instance");
     if (currentReportTargetEntity?.name) {
       // log.info(
       //   "ReportSectionEntityInstance: setting outline title and report instance for entity:",
@@ -724,6 +728,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             formLabel={formLabel}
             zoomInPath={props.zoomInPath}
             maxRenderDepth={Infinity} // Always render fully for editor
+            // 
+            setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
           />
         ) : (
           <div>

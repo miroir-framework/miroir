@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { FormikProps, useFormikContext } from "formik";
 
@@ -100,6 +100,8 @@ export interface TypedValueObjectEditorProps {
   // navigationCount: number;
   // external field change observation
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
+  // when displayed in a JzodObjectEditFormDialog modal dialog form
+  setAddObjectdialogFormIsOpen?: (a:boolean) => void,
 }
  let count = 0;
 // ################################################################################################
@@ -154,19 +156,30 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const valueObject = formik.values[formikValuePathAsString];
   const zoomedInValueObject_DEFUNCT = hasZoomPath ? getValueAtPath(valueObject, zoomInPath) : valueObject;
   const zoomedInDisplaySchema = formValueMLSchema.definition[formikValuePathAsString]; 
-  // const displaySchema = hasZoomPath && valueObjectMMLSchema 
-  //   // WRONG!! the value path is in general different from the type path! It may be true only after ReferenceSchema resolution
-  //   ? getSchemaAtPath(valueObjectMMLSchema, zoomInPath) 
-  //   : valueObjectMMLSchema;
-  // log.info(
-  //   "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ TypedValueObjectEditor render", ++count,
-  //   "valueObjectMMLSchema", formValueMLSchema,
-  //   "formik.values", formik.values,
-  //   "reportSectionPathAsString", formikValuePathAsString,
-  //   // "zoomInPath", zoomInPath,
-  //   // "zoomedInValueObject_DEFUNCT", zoomedInValueObject_DEFUNCT,
-  //   // "zoomedInDisplaySchema", zoomedInDisplaySchema
-  // );
+
+
+  const onSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      log.info("TypedValueObjectEditor onSubmit called", e, formikValuePathAsString);
+      // e.preventDefault();
+      if (useActionButton) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
+        return false;
+      }
+      await formik.handleSubmit(e);
+      if (props.setAddObjectdialogFormIsOpen) {
+        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit");
+        props.setAddObjectdialogFormIsOpen(false); // close the dialog form after submit
+        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit DONE");
+      } else {
+        log.info(
+          "TypedValueObjectEditor no setAddObjectdialogFormIsOpen prop, not closing dialog form"
+        );
+      }
+    },
+    [formik, formikValuePathAsString, useActionButton, props.setAddObjectdialogFormIsOpen]
+  );
   // Log zoom functionality usage
   // if (hasZoomPath) {
   //   log.info(
@@ -206,6 +219,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     );
   }
 
+  // ##############################################################################################
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
@@ -421,7 +435,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const submitButton = useActionButton ? (
     <ActionButton
       onAction={async () => {
-        log.info("TypedValueObjectEditor async submit button clicked", formikValuePathAsString);
+        log.info("TypedValueObjectEditor ActionButton async submit button clicked", formikValuePathAsString);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
         const result = await formik.submitForm();
         log.info("TypedValueObjectEditor async submit button action done", result);
@@ -430,7 +444,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       successMessage={`${formLabel} completed successfully`}
       label={formLabel}
       actionName={formLabel}
-      type="button"
+      type="button" // no form submit happening!
       variant="contained"
       style={{ maxWidth: "300px" }}
     />
@@ -539,14 +553,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         // TODO: is form actually needed here, since we have formik context already?
         <form
           id={"form." + formLabel}
-          onSubmit={(e) => {
-            if (useActionButton) {
-              e.preventDefault();
-              log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
-              return false;
-            }
-            formik.handleSubmit(e);
-          }}
+          onSubmit={onSubmit}
         >
           <ErrorBoundary
             FallbackComponent={({ error, resetErrorBoundary }) => (

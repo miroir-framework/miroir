@@ -6,7 +6,7 @@ import {
   GridApi,
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useCallback, useMemo, useState, useRef, useEffect } from "react";
+import { useCallback, useMemo, useState, useRef, useEffect, type FC } from "react";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -111,7 +111,7 @@ const generateLocalId = (obj: any, index: number): string => {
 };
 
 // ################################################################################################
-export const ValueObjectGrid = (
+export const ValueObjectGrid: FC<any> = (
   props: ValueObjectGridProps & { theme?: DeepPartial<TableTheme> }
 ) => {
   const renderStartTime = performance.now();
@@ -618,48 +618,6 @@ export const ValueObjectGrid = (
             ▼ Clear All Filters
           </span>
         </div>
-      )}
-
-      {/* Edit/Delete dialogs (only rendered if editing is enabled) */}
-      {dialogFormObject && (props.onRowEdit || props.onRowDelete) ? (
-        <>
-          <JsonObjectEditFormDialog
-            showButton={false}
-            isOpen={editDialogFormIsOpen}
-            isAttributes={true}
-            label="Value Object"
-            defaultFormValuesObject={dialogFormObject}
-            entityDefinitionJzodSchema={props.jzodSchema}
-            foreignKeyObjects={{}}
-            currentDeploymentUuid=""
-            currentApplicationSection="data"
-            currentAppModel={{} as any}
-            currentMiroirModel={{} as any}
-            addObjectdialogFormIsOpen={false}
-            setAddObjectdialogFormIsOpen={() => {}}
-            onSubmit={onEditDialogFormSubmit}
-            onClose={handleEditDialogFormClose}
-          />
-          <JsonObjectDeleteFormDialog
-            showButton={false}
-            currentDeploymentUuid=""
-            currentApplicationSection="data"
-            currentAppModel={{} as any}
-            currentMiroirModel={{} as any}
-            defaultFormValuesObject={dialogFormObject}
-            deleteObjectdialogFormIsOpen={deleteDialogFormIsOpen}
-            entityDefinitionJzodSchema={props.jzodSchema}
-            foreignKeyObjects={{}}
-            isOpen={deleteDialogFormIsOpen}
-            isAttributes={true}
-            label="Value Object"
-            onDeleteFormObject={onDeleteDialogFormSubmit}
-            onClose={handleEditDialogFormClose}
-            setDeleteObjectdialogFormIsOpen={setDeleteDialogFormIsOpen}
-          />
-        </>
-      ) : (
-        <></>
       )}
 
       {/* Grid implementation */}

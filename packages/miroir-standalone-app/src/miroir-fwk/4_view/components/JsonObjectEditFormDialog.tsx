@@ -2,9 +2,9 @@ import _ from "lodash";
 
 import { Dialog, DialogTitle, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles"; // For MUI v5
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Formik, FormikProps } from "formik";
+import { Formik, FormikProps, FormikHelpers, useFormikContext } from "formik";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
@@ -20,8 +20,12 @@ import {
   ResolvedJzodSchemaReturnType,
   Uuid,
   defaultMetaModelEnvironment,
+  entityDefinitionReport,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
   jzodTypeCheck,
-  selfApplicationDeploymentMiroir
+  selfApplicationDeploymentMiroir,
+  type EntityDefinition,
+  type Report
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
@@ -36,6 +40,9 @@ import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import {
   measuredJzodTypeCheck,
 } from "../tools/hookPerformanceMeasure.js";
+import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
+import { reportSectionsFormSchema, reportSectionsFormValue } from "./Reports/ReportTools.js";
+import { ThemedOnScreenDebug } from "./Themes/BasicComponents.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -55,6 +62,7 @@ export interface EditorAttribute {
 export interface JsonObjectFormEditorCoreDialogProps {
   label?: string,
   isAttributes?: boolean,
+  entityDefinition: EntityDefinition,
   entityDefinitionJzodSchema: JzodObject,
   defaultFormValuesObject: any,
   currentDeploymentUuid?: Uuid,
@@ -203,9 +211,11 @@ let count = 0;
 interface JsonElementEditorDialogProps {
   label?: string;
   count: number;
-  formState: any;
+  formState: any; // TODO: is it still used?
+  defaultFormValuesObject: any,
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
+  entityDefinition: EntityDefinition;
   entityDefinitionJzodSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -220,18 +230,21 @@ interface JsonElementEditorDialogProps {
   onCreateFormObject?: (a: any) => void;
   onEditFormObject: (data: any) => Promise<void>;
   // 
-  onSubmit: (data: JsonObjectEditFormDialogInputs) => void;
+  setAddObjectdialogFormIsOpen: (a:boolean) => void,
+  // onSubmit: (data: JsonObjectEditFormDialogInputs) => void;
 }
 
 // ################################################################################################
 const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   label,
   count,
-  formState: formState,
+  formState,
+  defaultFormValuesObject,
   // setformHelperState,
   // dialog: open and close dialog, collect result
   currentDeploymentUuid,
   currentApplicationSection,
+  entityDefinition,
   entityDefinitionJzodSchema,
   resolvedJzodSchema,
   foreignKeyObjects,
@@ -245,164 +258,385 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   onEditFormObject,
   formIsOpen,
   // 
-  onSubmit,
+  // onSubmit,
+  ...props
 }) => {
   // Add state for folded object attributes/array items
   const context = useMiroirContextService();
 
-  const onCodeEditorChange = useCallback((values: any, viewUpdate: any) => {
-    log.info('edit code received value:', values);
-    setdialogOuterFormObject(JSON.parse(values));
-    log.info('edit code done');
-  }, [setdialogOuterFormObject]);
+  const formikEditedInstancePath = "formikEditedInstancePath";
+  const formikReportDefinitionPath = "formikReportDefinitionPath";
+  const reportSectionPath: (string | number)[] = ["definition", "section", "definition", 0];
+  const currentDeploymentReportsEntitiesDefinitionsMapping =
+    // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentDeploymentUuid??""] || {};
+
+  const currentModel: MetaModel = currentAppModel;
+  // const onCodeEditorChange = useCallback((values: any, viewUpdate: any) => {
+  //   log.info('edit code received value:', values);
+  //   setdialogOuterFormObject(JSON.parse(values));
+  //   log.info('edit code done');
+  // }, [setdialogOuterFormObject]);
 
   const labelElement = useMemo(() => {
     return label ? <span id={"label." + label}>{label}</span> : undefined;
   }, [label]);
-  return (
-    <Formik
-      enableReinitialize={true}
-      initialValues={formState}
-      onSubmit={async (values, { setSubmitting, setErrors }) => {
-        try {
-          log.info("onSubmit formik values", values);
-          
-          // Call the actual domain controller action (equivalent to ReportSectionEntityInstance)
-          await onEditFormObject(values);
-          
-          // Also handle the legacy form submission logic if needed
-          if (onCreateFormObject) {
-            log.info("onSubmit formik onCreateFormObject", values);
-            await onCreateFormObject(values);
-            await onSubmit(values);
-          } else {
-            log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
-            await handleAddObjectDialogFormSubmit(values, "param");
-          }
-        } catch (e) {
-          log.error(e);
-        } finally {
-          setSubmitting(false);
-        }
-      }}
-      // handleChange={async (e: ChangeEvent<any>) => {
-      //   log.info("onChange formik DOES NOTHING", e);
-      // }}
-    >
-      {(formik: FormikProps<any>) => {
-        // Resolve the jzod schema inside Formik using formik.values
-        const resolvedJzodSchemaForFormik: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-          let result: ResolvedJzodSchemaReturnType | undefined = undefined;
-          try {
-            result =
-              miroirFundamentalJzodSchema &&
-              entityDefinitionJzodSchema &&
-              formik.values &&
-              currentAppModel
-                ? jzodTypeCheck(
-                    entityDefinitionJzodSchema,
-                    formik.values,
-                    [], // currentValuePath
-                    [], // currentTypePath
-                    {
-                      miroirFundamentalJzodSchema,
-                      currentModel: currentAppModel,
-                      miroirMetaModel: currentMiroirModel,
-                    },
-                    {}
-                  )
-                : undefined;
-          } catch (e) {
-            log.error(
-              "JsonElementEditorDialog useMemo error",
-              e
-            );
-            result = {
-              status: "error",
-              valuePath: [],
-              typePath: [],
-              error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-            };
-          }
-          return result;
-        }, [formik.values, entityDefinitionJzodSchema, miroirFundamentalJzodSchema, currentAppModel, currentMiroirModel]);
+  const reportLendingHistoryItemDetails: Report = {
+    uuid: "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
+    selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+    parentName: "Report",
+    parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+    conceptLevel: "Model",
+    name: "LendingHistoryItemDetails",
+    defaultLabel: "Detailed information about a Lending History Item",
+    definition: {
+      extractorTemplates: {
+        lendingHistoryItem: {
+          extractorTemplateType: "extractorForObjectByDirectReference",
+          parentName: "LendingHistoryItem",
+          parentUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
+          instanceUuid: {
+            transformerType: "getFromParameters",
+            referenceName: "instanceUuid",
+          },
+        },
+      },
+      section: {
+        type: "list",
+        definition: [
+          {
+            type: "objectInstanceReportSection",
+            definition: {
+              parentUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
+              fetchedDataReference: "lendingHistoryItem",
+            },
+          },
+        ],
+      },
+    },
+  };
 
-        return (
-          <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
-            <DialogTitle>{label} add / edit Element</DialogTitle>
-            <span>
-              form: {"form." + label}, JsonObjectEditFormDialog count {count}
-            </span>
-            <form id={"form." + label} onSubmit={formik.handleSubmit}>
-              <span style={{ paddingTop: 0, paddingBottom: 0 }}>
-                <ErrorBoundary
-                  FallbackComponent={({ error, resetErrorBoundary }) => (
-                    <ErrorFallbackComponent
-                      error={error}
-                      resetErrorBoundary={resetErrorBoundary}
-                      context={{
-                        origin: "JsonObjectEditFormDialog",
-                        objectType: "root_editor",
-                        rootLessListKey: "ROOT",
-                        currentValue: formState,
-                        formikValues: formik.values,
-                        rawJzodSchema: entityDefinitionJzodSchema,
-                        localResolvedElementJzodSchemaBasedOnValue:
-                          resolvedJzodSchemaForFormik?.status == "ok"
-                            ? (resolvedJzodSchemaForFormik as any).resolvedSchema
-                            : undefined,
-                      }}
-                    />
-                  )}
-                >
-                  {resolvedJzodSchemaForFormik?.status == "ok" ? (
-                    <JzodElementEditor
-                      name={"ROOT"}
-                      listKey={"ROOT"}
-                      rootLessListKey=""
-                      rootLessListKeyArray={[]}
-                      reportSectionPathAsString=""
-                      labelElement={labelElement}
-                      currentDeploymentUuid={currentDeploymentUuid}
-                      currentApplicationSection={currentApplicationSection}
-                      // rawJzodSchema={entityDefinitionJzodSchema}
-                      // localRootLessListKeyMap={{}}
-                      resolvedElementJzodSchemaDEFUNCT={
-                        resolvedJzodSchemaForFormik?.status == "ok"
-                          ? (resolvedJzodSchemaForFormik as any).resolvedSchema
-                          : undefined
-                      }
-                      hasTypeError={resolvedJzodSchemaForFormik?.status !== "ok"}
-                      typeCheckKeyMap={
-                        resolvedJzodSchemaForFormik?.status == "ok"
-                          ? (resolvedJzodSchemaForFormik as any).keyMap
-                          : {}
-                      }
-                      foreignKeyObjects={foreignKeyObjects}
-                      indentLevel={0}
-                      submitButton={
-                        <button type="submit" name={label} form={"form." + label}>
-                          submit form.{label}
-                        </button>
-                      }
-                    />
-                  ) : (
-                    <div>
-                      <span style={{ color: "red" }}>
-                        Error in Jzod schema resolution:{" "}
-                        {/* {resolvedJzodSchemaForFormik?.error || "Unknown error"} */}
-                        <pre>{JSON.stringify(resolvedJzodSchemaForFormik, null, 2)}</pre>
-                      </span>
-                    </div>
-                  )}
-                </ErrorBoundary>
-              </span>
-            </form>
-          </Dialog>
-        );
-      }}
-    </Formik>
+  const entityDefinitionLendingHistoryItem: EntityDefinition = {
+    uuid: "ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505",
+    parentName: "EntityDefinition",
+    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+    parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
+    name: "LendingHistoryItem",
+    entityUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
+    defaultInstanceDetailsReportUuid: "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
+    jzodSchema: {
+      type: "object",
+      definition: {
+        uuid: {
+          type: "uuid",
+          tag: {
+            value: {
+              id: 1,
+              defaultLabel: "Uuid",
+              editable: false,
+            },
+          },
+        },
+        parentName: {
+          type: "string",
+          optional: true,
+          tag: {
+            value: {
+              id: 2,
+              defaultLabel: "Entity Name",
+              editable: false,
+            },
+          },
+        },
+        parentUuid: {
+          type: "uuid",
+          tag: {
+            value: {
+              id: 3,
+              defaultLabel: "Entity Uuid",
+              editable: false,
+              initializeTo: {
+                initializeToType: "value",
+                value: "e81078f3-2de7-4301-bd79-d3a156aec149",
+              },
+            },
+          },
+        },
+        parentDefinitionVersionUuid: {
+          type: "uuid",
+          optional: true,
+          tag: {
+            value: {
+              id: 4,
+              defaultLabel: "Entity Definition Version Uuid",
+              editable: false,
+            },
+          },
+        },
+        // name: {
+        //   type: "string",
+        //   optional: true,
+        // },
+        user: {
+          type: "uuid",
+          tag: {
+            value: {
+              editable: false,
+              defaultLabel: "User",
+              selectorParams: {
+                targetEntity: "ca794e28-b2dc-45b3-8137-00151557eea8",
+                targetEntityOrderInstancesBy: "name",
+              },
+            },
+          },
+          optional: true,
+        },
+        book: {
+          type: "uuid",
+          tag: {
+            value: {
+              editable: false,
+              defaultLabel: "Book",
+              selectorParams: {
+                targetEntity: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                targetEntityOrderInstancesBy: "name",
+              },
+            },
+          },
+          optional: true,
+        },
+        startDate: {
+          type: "date",
+        },
+        endDate: {
+          type: "date",
+          optional: true,
+        },
+      },
+    },
+    description: "The history of book lendings",
+    viewAttributes: ["uuid", "user", "book", "startDate", "endDate"],
+  };
+  const formik = useFormikContext<any>()
+  // ##############################################################################################
+  useEffect(() => {
+    formik.setValues(
+      {
+        ...formik.values,
+        [reportSectionPath.join("_")]: defaultFormValuesObject,
+        formikReportDefinitionPath: reportLendingHistoryItemDetails,
+      }
+    );
+  }, [defaultFormValuesObject]);
+
+  // const initialReportSectionsFormValue = useMemo(() => {
+  //   // log.info(
+  //   //   "############################################## JsonElementEditorDialog",
+  //   //   // "reportViewData",
+  //   //   // reportViewData
+  //   // );
+  //   // const reportSectionsData = reportSectionsFormValue(
+  //   //   lendingHistoryItemDetails.definition.section,
+  //   //   {},
+  //   //   ["definition", "section"]
+  //   // );
+  //   const reportSectionsData: Record<string, any> = {
+  //     [reportSectionPath.join("_")]: defaultFormValuesObject,
+  //     // [reportSectionPath.join("_")]: getDefaultValueForJzodSchemaWithResolutionNonHook(
+  //     //   "build",
+  //     //   // entityDefinitionLendingHistoryItem.jzodSchema,
+  //     //   entityDefinitionJzodSchema,
+  //     //   {}, // rootObject
+  //     //   "", // rootLessListKey
+  //     //   {},
+  //     //   [],
+  //     //   false,
+  //     //   currentDeploymentUuid,
+  //     //   defaultMetaModelEnvironment,
+  //     // ),
+  //     formikReportDefinitionPath: reportLendingHistoryItemDetails,
+  //   };
+  //   const result = {
+  //     ...reportSectionsData,
+  //     // ...props.storedQueryData,
+  //     // // storedQueryData: props.storedQueryData, // included in reportViewData
+  //     // ...reportViewData,
+  //     // reportViewData,
+  //     // [reportReportDetailsKey]: reportReportDetails,
+  //     // [entityDefinitionReportKey]: entityDefinitionReport,
+  //     // [reportName]: props.reportDefinition,
+  //   };
+  //   log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
+  //   return result;
+  // }, [defaultFormValuesObject]);
+  // }, [props.reportDefinition, entityDefinitionReportKey, reportData, reportViewData]);
+
+  // ##############################################################################################
+  const formValueMLSchema: JzodObject = useMemo(() => {
+    // if (!currentDeploymentUuid || !entityDefinitionReport?.entityUuid) {
+    //   return { type: "object", definition: {} };
+    // }
+    const r = currentDeploymentUuid?reportSectionsFormSchema(
+      (reportLendingHistoryItemDetails as any)?.definition?.section?.definition[0],
+      currentDeploymentUuid,
+      currentDeploymentReportsEntitiesDefinitionsMapping,
+      currentModel,
+      {
+        ...formik.values,
+        [reportSectionPath.join("_")]: defaultFormValuesObject,
+        formikReportDefinitionPath: reportLendingHistoryItemDetails,
+      },
+      // initialReportSectionsFormValue,
+      // [formikEditedInstancePath]
+      reportSectionPath
+    )
+     : { };
+    const result: JzodObject = {
+      type: "object",
+      definition: {
+        ...r,
+        [formikReportDefinitionPath]: entityDefinitionReport.jzodSchema,
+        // [reportReportDetailsKey]: entityDefinitionReport.jzodSchema,
+        // [entityDefinitionReportKey]: entityDefinitionEntityDefinition.jzodSchema, // will contain reportEntityDefinition-itself
+        // [reportName]: entityDefinitionReport.jzodSchema,
+        // [lastSubmitButtonClicked]: { type: "string", optional: true },
+      },
+    };
+    // log.info("reportSectionsFormSchema formValueSchema", result);
+    log.info(
+      "############################################## computing formValueMLSchema",
+      // "props.reportDefinition",
+      // props.reportDefinition,
+      // "initialReportSectionsFormValue",
+      // initialReportSectionsFormValue,
+      // "reportData",
+      // reportData,
+      "formValueMLSchema",
+      result,
+      []
+    );
+    // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
+    return result;
+  }, [
+    // props.reportDefinition,
+    // reportData,
+    // entityDefinitionReport,
+    // reportEditorEntitySectionPath,
+    currentDeploymentReportsEntitiesDefinitionsMapping,
+    // props.pageParams.applicationSection,
+  ]);
+
+//   const onSubmitForm = useCallback(
+//     async (values: any, { setSubmitting, setErrors }: FormikHelpers<{
+//     [x: string]: any;
+// }>) => {
+//     try {
+//       log.info("onSubmit formik values", values);
+
+//       // // Call the actual domain controller action (equivalent to ReportSectionEntityInstance)
+//       // await onEditFormObject(values);
+
+//       // // Also handle the legacy form submission logic if needed
+//       // if (onCreateFormObject) {
+//       //   log.info("onSubmit formik onCreateFormObject", values);
+//       //   await onCreateFormObject(values);
+//       //   await onSubmit(values);
+//       // } else {
+//       //   log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
+//       //   await handleAddObjectDialogFormSubmit(values, "param");
+//       // }
+//     } catch (e) {
+//       log.error(e);
+//     } finally {
+//       // setSubmitting(false);
+//     }
+//   }, [onCreateFormObject, onEditFormObject, handleAddObjectDialogFormSubmit, onSubmit]);
+
+  // return (
+  //   <Formik
+  //     enableReinitialize={true}
+  //     // initialValues={formState}
+  //     initialValues={initialReportSectionsFormValue}
+  //     onSubmit={onSubmitForm}
+  //   >
+  //     {(formik: FormikProps<any>) => {
+  // const onSubmitFormik = useCallback(
+  //   () => {
+  //     log.info("JsonObjectEditFormDialog form submit");
+  //     // formik.handleSubmit();
+  //   }, [  formik]
+  // );
+  return (
+    <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
+      <DialogTitle>{label} add / edit Element</DialogTitle>
+      <div>
+        <ThemedOnScreenDebug
+          label={"JsonObjectEditFormDialog formValueMLSchema"}
+          data={formValueMLSchema}
+          initiallyUnfolded={false}
+        />
+        {/* <ThemedOnScreenDebug
+          label={"JsonObjectEditFormDialog initialReportSectionsFormValue"}
+          data={initialReportSectionsFormValue}
+        /> */}
+        <ThemedOnScreenDebug
+          label={"JsonObjectEditFormDialog formik.values"}
+          data={formik.values}
+          initiallyUnfolded={false}
+        />
+      </div>
+      <span>
+        form: {"form." + label}, JsonObjectEditFormDialog count {count}
+      </span>
+      <span style={{ paddingTop: 0, paddingBottom: 0 }}>
+        <ErrorBoundary
+          FallbackComponent={({ error, resetErrorBoundary }) => (
+            <ErrorFallbackComponent
+              error={error}
+              resetErrorBoundary={resetErrorBoundary}
+              context={{
+                origin: "JsonObjectEditFormDialog",
+                objectType: "root_editor",
+                rootLessListKey: "ROOT",
+                currentValue: formState,
+                formikValues: formik.values,
+                rawJzodSchema: entityDefinitionJzodSchema,
+              }}
+            />
+          )}
+        >
+          {currentApplicationSection && currentDeploymentUuid && (
+            <ReportSectionViewWithEditor
+              applicationSection={currentApplicationSection}
+              deploymentUuid={currentDeploymentUuid}
+              editMode={true}
+              paramsAsdomainElements={{}}
+              isOutlineOpen={false} // no connection to outline context here
+              onToggleOutline={() => {}}
+              // data
+              reportDataDEFUNCT={{} as any}
+              fetchedDataJzodSchemaDEFUNCT={{} as any}
+              //
+              reportSectionDEFUNCT={{} as any} // TODO: defunct, must use formik[reportName]?.definition.section
+              reportDefinitionDEFUNCT={{} as any}
+              formValueMLSchema={formValueMLSchema}
+              // formikReportDefinitionPathString={formikEditedInstancePath}
+              formikReportDefinitionPathString={formikReportDefinitionPath}
+              // formikReportDefinitionPathString={"definition.section"}
+              reportSectionPath={reportSectionPath}
+              reportName="reportName"
+              // 
+              setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
+            />
+          )}
+        </ErrorBoundary>
+      </span>
+    </Dialog>
   );
+      // }
+    // }
+    // </Formik>
+  // );
 };
 
 // ################################################################################################
@@ -428,7 +662,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     showButton,
   } = props;
   log.info(
-    "##################################### rendering",
+    "##################################### rendering JsonObjectEditFormDialog",
     "label",
     label,
     "aggregate",
@@ -501,59 +735,60 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
         currentApplicationSection
       );
 
-      if (!currentDeploymentUuid) { // TODO: do not throw, use snackbar mechanism
-        throw new Error(
-          "JsonObjectEditFormDialog onEditFormObject currentDeploymentUuid is undefined."
-        );
-      }
-      if (!currentApplicationSection) { // TODO: do not throw, use snackbar mechanism
-        throw new Error(
-          "JsonObjectEditFormDialog onEditFormObject currentApplicationSection is undefined."
-        );
-      }
-      if (currentDeploymentUuid == selfApplicationDeploymentMiroir.uuid || currentApplicationSection == "model") {
-        await domainController.handleAction(
-          {
-            actionType: "transactionalInstanceAction",
-            instanceAction: {
-              actionType: "updateInstance",
-              deploymentUuid: currentDeploymentUuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              payload: {
-                applicationSection: "model",
-                includeInTransaction: true, // not used
-                objects: [
-                  {
-                    parentName: data.name,
-                    parentUuid: data.parentUuid,
-                    applicationSection: currentApplicationSection,
-                    instances: [data],
-                  },
-                ],
-              },
-            },
-          },
-          defaultMetaModelEnvironment
-        );
-      } else {
-        const updateAction: InstanceAction = {
-          actionType: "updateInstance",
-          deploymentUuid: currentDeploymentUuid,
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            applicationSection: currentApplicationSection ? currentApplicationSection : "data",
-            objects: [
-              {
-                parentName: data.name,
-                parentUuid: data.parentUuid,
-                applicationSection: currentApplicationSection ? currentApplicationSection : "data",
-                instances: [data],
-              },
-            ],
-          },
-        };
-        await domainController.handleAction(updateAction);
-      }
+      // if (!currentDeploymentUuid) { // TODO: do not throw, use snackbar mechanism
+      //   throw new Error(
+      //     "JsonObjectEditFormDialog onEditFormObject currentDeploymentUuid is undefined."
+      //   );
+      // }
+      // if (!currentApplicationSection) { // TODO: do not throw, use snackbar mechanism
+      //   throw new Error(
+      //     "JsonObjectEditFormDialog onEditFormObject currentApplicationSection is undefined."
+      //   );
+      // }
+      // if (currentDeploymentUuid == selfApplicationDeploymentMiroir.uuid || currentApplicationSection == "model") {
+      //   await domainController.handleAction(
+      //     {
+      //       actionType: "transactionalInstanceAction",
+      //       deploymentUuid: currentDeploymentUuid,
+      //       instanceAction: {
+      //         actionType: "updateInstance",
+      //         deploymentUuid: currentDeploymentUuid,
+      //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      //         payload: {
+      //           applicationSection: "model",
+      //           includeInTransaction: true, // not used
+      //           objects: [
+      //             {
+      //               parentName: data.name,
+      //               parentUuid: data.parentUuid,
+      //               applicationSection: currentApplicationSection,
+      //               instances: [data],
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //     defaultMetaModelEnvironment
+      //   );
+      // } else {
+      //   const updateAction: InstanceAction = {
+      //     actionType: "updateInstance",
+      //     deploymentUuid: currentDeploymentUuid,
+      //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      //     payload: {
+      //       applicationSection: currentApplicationSection ? currentApplicationSection : "data",
+      //       objects: [
+      //         {
+      //           parentName: data.name,
+      //           parentUuid: data.parentUuid,
+      //           applicationSection: currentApplicationSection ? currentApplicationSection : "data",
+      //           instances: [data],
+      //         },
+      //       ],
+      //     },
+      //   };
+      //   await domainController.handleAction(updateAction);
+      // }
     },
     [domainController, currentDeploymentUuid, currentApplicationSection, currentAppModel]
   );
@@ -568,6 +803,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     }
   },[props]);
 
+  // ##############################################################################################
   const handleAddObjectDialogFormSubmit = useCallback(
     async (data:any, source?: string) => {
       log.info(
@@ -629,15 +865,16 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
         <JsonElementEditorDialog
           label={label}
           formState={dialogOuterFormObject}
+          defaultFormValuesObject={defaultFormValuesObject}
           setdialogOuterFormObject={setdialogOuterFormObject}
           handleAddObjectDialogFormSubmit={handleAddObjectDialogFormSubmit}
           handleAddObjectDialogFormClose={handleAddObjectDialogFormClose}
-          formIsOpen={formIsOpen}
           onCreateFormObject={onCreateFormObject}
           onEditFormObject={onEditFormObject}
-          onSubmit={onSubmit}
+          // onSubmit={onSubmit}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
+          entityDefinition={props.entityDefinition}
           entityDefinitionJzodSchema={entityDefinitionJzodSchema}
           resolvedJzodSchema={resolvedJzodSchema}
           foreignKeyObjects={foreignKeyObjects}
@@ -645,6 +882,8 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           currentMiroirModel={currentMiroirModel}
           miroirFundamentalJzodSchema={context.miroirFundamentalJzodSchema}
           count={count}
+          formIsOpen={formIsOpen}
+          setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
         />
       ) : (
         <></>

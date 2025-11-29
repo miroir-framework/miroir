@@ -298,6 +298,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // ##############################################################################################
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
+  const setAddObjectdialogFormIsOpenCallback = useCallback((a:boolean) => {
+    log.info("ReportSectionListDisplay setAddObjectdialogFormIsOpen called with",a);
+    setAddObjectdialogFormIsOpen(a);
+  },[setAddObjectdialogFormIsOpen]);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   // const [dialogOuterFormObject, setdialogOuterFormObject] = useState({});
 
@@ -753,9 +757,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // ##############################################################################################
   const handleAddObjectDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
     event?.stopPropagation();
-    log.info('ReportComponent handleDialogTableRowFormClose',value);
+    log.info('ReportSectionListDisplay handleDialogTableRowFormClose',value);
     
-    setAddObjectdialogFormIsOpen(false);
+    // setAddObjectdialogFormIsOpen(false);
+    setAddObjectdialogFormIsOpenCallback(false);
   },[setAddObjectdialogFormIsOpen]);
 
 
@@ -870,6 +875,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 isAttributes={true}
                 label={props.defaultlabel ?? currentReportTargetEntityDefinition?.name}
                 defaultFormValuesObject={dialogOuterFormObject}
+                entityDefinition={currentReportTargetEntityDefinition}
                 entityDefinitionJzodSchema={
                   currentReportTargetEntityDefinition?.jzodSchema as JzodObject
                 }
@@ -879,10 +885,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
                 addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
-                setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
                 onSubmit={onSubmitOuterDialog}
                 onClose={handleAddObjectDialogTableRowFormClose}
                 onCreateFormObject={onCreateFormObject}
+                //
+                // setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
+                setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpenCallback}
               />
             ) : (
               <></>
@@ -909,6 +917,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   // sortByAttribute={props.reportSectionDEFUNCT.definition.sortByAttribute}
                   sortByAttribute={reportSectionDefinitionFromFormik.definition?.sortByAttribute}
                   paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
+                  //
+                  addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
+                  setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpenCallback}
                 ></EntityInstanceGrid>
               </div>
             ) : (

@@ -142,7 +142,6 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
   },[props]);
 
   // ##############################################################################################
-  // const handleDeleteObjectDialogFormSubmit: SubmitHandler<JsonObjectEditFormDialogInputs> = useCallback(
   const handleDeleteObjectDialogFormSubmit = useCallback(
     async (data:any, source?: string) => {
       // const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
