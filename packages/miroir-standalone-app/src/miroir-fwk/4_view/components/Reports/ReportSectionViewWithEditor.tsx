@@ -64,6 +64,7 @@ export interface ReportSectionViewPropsBase {
   isOutlineOpen?: boolean,
   onToggleOutline?: () => void,
   showPerformanceDisplay?: boolean;
+  mode?: "create" | "update",
 }
 
 export interface ReportSectionViewWithEditorProps extends ReportSectionViewPropsBase {
@@ -388,6 +389,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               formikAlreadyAvailable={true}
               // 
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
+              mode={props.mode || "update"}
             />
           </>
         )}

@@ -871,6 +871,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             {addObjectdialogFormIsOpen ? (
               <JsonObjectEditFormDialog
                 showButton={false}
+                mode="create"
                 isOpen={addObjectdialogFormIsOpen}
                 isAttributes={true}
                 label={props.defaultlabel ?? currentReportTargetEntityDefinition?.name}

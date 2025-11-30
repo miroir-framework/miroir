@@ -131,6 +131,7 @@ export interface ReportSectionEntityInstanceProps {
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
   // when displayed in a AddObjectdialogForm modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
+  mode: "create" | "update",
 }
 
 // Test Selection Types are now in TransformerTestDisplay
@@ -254,7 +255,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   //   props
   // );
 
-  const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
+  // const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   // const [displayEditor, setDisplayEditor] = useState(true);
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
   // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
@@ -318,8 +319,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // log.info("ReportSectionEntityInstance: currentDeploymentReportsEntitiesDefinitionsMapping:", currentDeploymentReportsEntitiesDefinitionsMapping);
 
 
-  const currentModelEnvironment = defaultMiroirModelEnvironment;
-  const domainController: DomainControllerInterface = useDomainControllerService();
+  // const currentModelEnvironment = defaultMiroirModelEnvironment;
+  // const domainController: DomainControllerInterface = useDomainControllerService();
 
   const targetEntityUuid: Uuid | undefined = reportSectionDefinitionFromFormik?.definition?.parentUuid;
 
@@ -730,6 +731,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             maxRenderDepth={Infinity} // Always render fully for editor
             // 
             setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
+            mode={props.mode}
           />
         ) : (
           <div>

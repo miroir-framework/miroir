@@ -341,7 +341,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         const currentInstance = data[data[lastSubmitButtonClicked]];
         const applicationSection = getApplicationSection(props.deploymentUuid, currentInstance.parentUuid);
 
-        log.info("onEditValueObjectFormSubmit currentInstance", currentInstance, "applicationSection", applicationSection);
+        const mode = data[lastSubmitButtonClicked + "_mode"];
+        log.info("onEditValueObjectFormSubmit",
+          "mode", mode,
+          "currentInstance", currentInstance, "applicationSection", applicationSection);
         
         if (props.deploymentUuid === adminConfigurationDeploymentMiroir.uuid && applicationSection === "model") {
           throw new Error("Editing model definitions in the miroir (meta-model) deployment is not allowed.");
@@ -361,7 +364,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               actionType: "transactionalInstanceAction",
               deploymentUuid: props.deploymentUuid,
               instanceAction: {
-                actionType: "updateInstance",
+                actionType: mode == "create"?"createInstance":"updateInstance",
                 deploymentUuid: props.deploymentUuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
@@ -381,7 +384,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           );
         } else { // only data is modified, no transaction is needed
           const updateAction: InstanceAction = {
-            actionType: "updateInstance",
+            actionType: mode == "create"?"createInstance":"updateInstance",
             deploymentUuid: props.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {

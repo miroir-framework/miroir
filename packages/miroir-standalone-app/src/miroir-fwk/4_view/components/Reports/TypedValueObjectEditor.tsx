@@ -102,6 +102,7 @@ export interface TypedValueObjectEditorProps {
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
   // when displayed in a JzodObjectEditFormDialog modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
+  mode: "create" | "update"
 }
  let count = 0;
 // ################################################################################################
@@ -456,6 +457,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       onClick={(e) => {
         log.info("TypedValueObjectEditor submit button clicked", e);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
+        formik.setFieldValue(lastSubmitButtonClicked + "_mode", props.mode);
       }}
     >
       {/* Submit {formLabel} */}

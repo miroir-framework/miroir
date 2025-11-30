@@ -148,7 +148,7 @@ export const ValueObjectGrid: FC<any> = (
   const [deleteDialogFormIsOpen, setDeleteDialogFormIsOpen] = useState(false);
 
   // Container width tracking for adaptive column sizing
-  const containerRef = useRef<HTMLDivElement>(null);
+  // const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(1200);
 
   // ##############################################################################################
@@ -592,7 +592,7 @@ export const ValueObjectGrid: FC<any> = (
   // ##############################################################################################
   return (
     <div
-      ref={containerRef}
+      // ref={containerRef}
       style={{
         width: "100%",
         maxWidth: "100%",

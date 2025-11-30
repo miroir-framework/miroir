@@ -230,7 +230,7 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
   style 
 }) => {
   const { currentTheme } = useMiroirTheme();
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  // const containerRef = React.useRef<HTMLDivElement>(null);
   const preRef = React.useRef<HTMLPreElement>(null);
   const [dynamicHeight, setDynamicHeight] = React.useState<number | undefined>(undefined);
 

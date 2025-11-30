@@ -97,7 +97,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   const gridApiRef = useRef<GridApi | null>(null);
 
   // Container width tracking for adaptive column sizing
-  const containerRef = useRef<HTMLDivElement>(null);
+  // const containerRef = useRef<HTMLDivElement>(null);
 
     // const viewParams = useViewParams();
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -715,7 +715,6 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           ) {
             // Find the column definition to get the target entity UUID
             const columnDef = props.columnDefs.columnDefs.find((cd: any) => cd.field === fieldName);
-            // const targetEntityUuid = columnDef?.cellRendererParams?.entityUuid;
             const targetEntityUuid = columnDef?.cellRenderer?.entityUuid;
             
             const targetEntityDefinition: EntityDefinition | undefined =
@@ -724,7 +723,6 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
               );
 
             const targetApplicationSection =
-              // (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection ||
               (columnDefinitionAttribute as any)?.tag?.value?.selectorParams?.targetEntityApplicationSection ||
               context.applicationSection;
 
@@ -826,7 +824,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   // const domLayout = tableComponentRows.tableComponentRowUuidIndexSchema.length > 10?"normal":"autoHeight";
   return (
     <div 
-      ref={containerRef}
+      // ref={containerRef}
       style={{ 
         width: '100%', 
         maxWidth: '100%',
@@ -851,6 +849,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
             <>
               <JsonObjectEditFormDialog
                 showButton={false}
+                mode="update"
                 isAttributes={true}
                 label={props.currentEntity?.name ?? "No Entity Found!"}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}

@@ -74,6 +74,7 @@ export interface JsonObjectFormEditorCoreDialogProps {
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
   onCreateFormObject?: (a: any) => void,
   onSubmit: (data:JsonObjectEditFormDialogInputs)=>void,
+  mode: 'create' | 'update',
 }
 
 export interface JsonObjectFormEditorWithButtonDialogProps extends JsonObjectFormEditorCoreDialogProps {
@@ -231,6 +232,7 @@ interface JsonElementEditorDialogProps {
   onEditFormObject: (data: any) => Promise<void>;
   // 
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
+  mode: 'create' | 'update',
   // onSubmit: (data: JsonObjectEditFormDialogInputs) => void;
 }
 
@@ -264,7 +266,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   // Add state for folded object attributes/array items
   const context = useMiroirContextService();
 
-  const formikEditedInstancePath = "formikEditedInstancePath";
+  // const formikEditedInstancePath = "formikEditedInstancePath";
   const formikReportDefinitionPath = "formikReportDefinitionPath";
   const reportSectionPath: (string | number)[] = ["definition", "section", "definition", 0];
   const currentDeploymentReportsEntitiesDefinitionsMapping =
@@ -278,9 +280,9 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   //   log.info('edit code done');
   // }, [setdialogOuterFormObject]);
 
-  const labelElement = useMemo(() => {
-    return label ? <span id={"label." + label}>{label}</span> : undefined;
-  }, [label]);
+  // const labelElement = useMemo(() => {
+  //   return label ? <span id={"label." + label}>{label}</span> : undefined;
+  // }, [label]);
   const reportLendingHistoryItemDetails: Report = {
     uuid: "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
     selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -496,76 +498,19 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       definition: {
         ...r,
         [formikReportDefinitionPath]: entityDefinitionReport.jzodSchema,
-        // [reportReportDetailsKey]: entityDefinitionReport.jzodSchema,
-        // [entityDefinitionReportKey]: entityDefinitionEntityDefinition.jzodSchema, // will contain reportEntityDefinition-itself
-        // [reportName]: entityDefinitionReport.jzodSchema,
-        // [lastSubmitButtonClicked]: { type: "string", optional: true },
       },
     };
-    // log.info("reportSectionsFormSchema formValueSchema", result);
-    log.info(
-      "############################################## computing formValueMLSchema",
-      // "props.reportDefinition",
-      // props.reportDefinition,
-      // "initialReportSectionsFormValue",
-      // initialReportSectionsFormValue,
-      // "reportData",
-      // reportData,
-      "formValueMLSchema",
-      result,
-      []
-    );
-    // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
+    // log.info(
+    //   "############################################## computing formValueMLSchema",
+    //   "formValueMLSchema",
+    //   result,
+    //   []
+    // );
     return result;
   }, [
-    // props.reportDefinition,
-    // reportData,
-    // entityDefinitionReport,
-    // reportEditorEntitySectionPath,
     currentDeploymentReportsEntitiesDefinitionsMapping,
-    // props.pageParams.applicationSection,
   ]);
 
-//   const onSubmitForm = useCallback(
-//     async (values: any, { setSubmitting, setErrors }: FormikHelpers<{
-//     [x: string]: any;
-// }>) => {
-//     try {
-//       log.info("onSubmit formik values", values);
-
-//       // // Call the actual domain controller action (equivalent to ReportSectionEntityInstance)
-//       // await onEditFormObject(values);
-
-//       // // Also handle the legacy form submission logic if needed
-//       // if (onCreateFormObject) {
-//       //   log.info("onSubmit formik onCreateFormObject", values);
-//       //   await onCreateFormObject(values);
-//       //   await onSubmit(values);
-//       // } else {
-//       //   log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
-//       //   await handleAddObjectDialogFormSubmit(values, "param");
-//       // }
-//     } catch (e) {
-//       log.error(e);
-//     } finally {
-//       // setSubmitting(false);
-//     }
-//   }, [onCreateFormObject, onEditFormObject, handleAddObjectDialogFormSubmit, onSubmit]);
-
-  // return (
-  //   <Formik
-  //     enableReinitialize={true}
-  //     // initialValues={formState}
-  //     initialValues={initialReportSectionsFormValue}
-  //     onSubmit={onSubmitForm}
-  //   >
-  //     {(formik: FormikProps<any>) => {
-  // const onSubmitFormik = useCallback(
-  //   () => {
-  //     log.info("JsonObjectEditFormDialog form submit");
-  //     // formik.handleSubmit();
-  //   }, [  formik]
-  // );
   return (
     <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
       <DialogTitle>{label} add / edit Element</DialogTitle>
@@ -620,13 +565,12 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
               reportSectionDEFUNCT={{} as any} // TODO: defunct, must use formik[reportName]?.definition.section
               reportDefinitionDEFUNCT={{} as any}
               formValueMLSchema={formValueMLSchema}
-              // formikReportDefinitionPathString={formikEditedInstancePath}
               formikReportDefinitionPathString={formikReportDefinitionPath}
-              // formikReportDefinitionPathString={"definition.section"}
               reportSectionPath={reportSectionPath}
               reportName="reportName"
               // 
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
+              mode={props.mode}
             />
           )}
         </ErrorBoundary>
@@ -884,6 +828,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           count={count}
           formIsOpen={formIsOpen}
           setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
+          mode={props.mode}
         />
       ) : (
         <></>
