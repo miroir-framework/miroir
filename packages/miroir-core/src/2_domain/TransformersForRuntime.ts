@@ -479,7 +479,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       const localContext = effectiveSchema.context
         ? { ...relativeReferenceJzodContext, ...effectiveSchema.context }
         : relativeReferenceJzodContext;
-
+      
       const resolvedReference = resolveJzodSchemaReferenceInContext(
         effectiveSchema,
         localContext,
@@ -575,24 +575,24 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
   relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): any {
-  // log.info(
-  //   "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
-  //   "rootLessListKey",
-  //   rootLessListKey,
-  //   "deploymentUuid",
-  //   deploymentUuid,
-  //   "rootObject",
-  //   rootObject,
-  //   "jzodSchema",
-  //   jzodSchema,
-  //   "forceOptional",
-  //   forceOptional,
-  //   "currentDefaultValue",
-  //   currentDefaultValue,
-  //   "currentValuePath",
-  //   currentValuePath,
-  //   "reduxDeploymentsState", reduxDeploymentsState,
-  // );
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
+    "rootLessListKey",
+    rootLessListKey,
+    "deploymentUuid",
+    deploymentUuid,
+    "rootObject",
+    rootObject,
+    "jzodSchema",
+    jzodSchema,
+    "forceOptional",
+    forceOptional,
+    "currentDefaultValue",
+    currentDefaultValue,
+    "currentValuePath",
+    currentValuePath,
+    "reduxDeploymentsState", reduxDeploymentsState,
+  );
 
   if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
     return getDefaultValueForJzodSchemaWithResolution(

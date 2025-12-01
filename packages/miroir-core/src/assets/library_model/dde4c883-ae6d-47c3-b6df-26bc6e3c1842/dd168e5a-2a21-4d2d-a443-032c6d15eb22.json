@@ -41,6 +41,20 @@
             "icon": "list"
           },
           {
+            "label": "Library Menus",
+            "section": "model",
+            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+            "icon": "list"
+          },
+          {
+            "label": "Library Endpoints",
+            "section": "model",
+            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+            "icon": "list"
+          },
+          {
             "label": "Library Books",
             "section": "data",
             "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",

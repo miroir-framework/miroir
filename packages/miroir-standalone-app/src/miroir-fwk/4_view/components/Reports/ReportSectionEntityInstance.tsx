@@ -312,12 +312,30 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       : adminConfigurationDeploymentMiroir.uuid // the report to edit any element from the 'model' section must be in the meta-model
   );
 
-  // const currentDeploymentReportsEntitiesDefinitionsMapping =
-  //   // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
-  //   context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
+  const currentDeploymentReportsEntitiesDefinitionsMapping =
+    // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
 
   // log.info("ReportSectionEntityInstance: currentDeploymentReportsEntitiesDefinitionsMapping:", currentDeploymentReportsEntitiesDefinitionsMapping);
 
+  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+      // return displayedDeploymentDefinition &&
+      return props.deploymentUuid &&
+        context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
+        context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
+        ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
+        // context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
+        // ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
+          props.applicationSection
+          ]
+        : { availableReports: [], entities: [], entityDefinitions: [] };
+    }, [
+      props.deploymentUuid,
+      // displayedDeploymentDefinition,
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+      props.applicationSection,
+    ]);
+  
 
   // const currentModelEnvironment = defaultMiroirModelEnvironment;
   // const domainController: DomainControllerInterface = useDomainControllerService();
@@ -329,15 +347,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   //   currentDeploymentMetaModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
   const currentReportTargetEntity: Entity | undefined =
-    // currentReportDeploymentSectionEntities?.find((e) => e?.uuid === props.entityUuidDEFUNCT);
-    currentDeploymentModel.entities?.find((e) => e?.uuid === targetEntityUuid);
+    // currentDeploymentModel.entities?.find((e) => e?.uuid === targetEntityUuid);
+    entities?.find((e) => e?.uuid === targetEntityUuid);
 
   const currentReportSectionTargetEntityDefinition: EntityDefinition | undefined =
-    // currentReportDeploymentSectionEntityDefinitions?.find(
-    //   (e) => e?.entityUuid === currentReportTargetEntity?.uuid
-    // );
-    // currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
-    currentDeploymentModel?.entityDefinitions?.find(
+    currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
+    // currentDeploymentModel?.entityDefinitions?.find(
         // (e) => e?.entityUuid === props.entityUuidDEFUNCT // TODO: remove entityUuid from props and use only formValueMLSchema?
         (e) => e?.entityUuid === targetEntityUuid
   );
@@ -759,6 +774,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               initiallyUnfolded={false}
             />
             <ThemedOnScreenHelper
+              label={`entities`}
+              data={entities}
+              initiallyUnfolded={false}
+            />
+            <ThemedOnScreenHelper
+              label={`entityDefinitions`}
+              data={entityDefinitions}
+              initiallyUnfolded={false}
+            />
+            <ThemedOnScreenHelper
               label={`targetEntityUuid`}
               data={targetEntityUuid}
             />
@@ -773,6 +798,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             <ThemedOnScreenHelper
               label={`reportSectionDefinitionFromFormik`}
               data={reportSectionDefinitionFromFormik}
+              initiallyUnfolded={false}
             />
             <ThemedOnScreenHelper
               label={`props.formikReportDefinitionPathString`}

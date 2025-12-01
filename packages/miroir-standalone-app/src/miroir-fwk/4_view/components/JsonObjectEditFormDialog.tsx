@@ -24,6 +24,7 @@ import {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   jzodTypeCheck,
   selfApplicationDeploymentMiroir,
+  type DeploymentUuidToReportsEntitiesDefinitions,
   type EntityDefinition,
   type Report
 } from "miroir-core";
@@ -269,156 +270,124 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   // const formikEditedInstancePath = "formikEditedInstancePath";
   const formikReportDefinitionPath = "formikReportDefinitionPath";
   const reportSectionPath: (string | number)[] = ["definition", "section", "definition", 0];
-  const currentDeploymentReportsEntitiesDefinitionsMapping =
+  const currentDeploymentReportsEntitiesDefinitionsMapping:DeploymentUuidToReportsEntitiesDefinitions | undefined  =
     // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentDeploymentUuid??""] || {};
 
   const currentModel: MetaModel = currentAppModel;
-  // const onCodeEditorChange = useCallback((values: any, viewUpdate: any) => {
-  //   log.info('edit code received value:', values);
-  //   setdialogOuterFormObject(JSON.parse(values));
-  //   log.info('edit code done');
-  // }, [setdialogOuterFormObject]);
 
-  // const labelElement = useMemo(() => {
-  //   return label ? <span id={"label." + label}>{label}</span> : undefined;
-  // }, [label]);
-  const reportLendingHistoryItemDetails: Report = {
-    uuid: "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
-    selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
-    parentName: "Report",
-    parentUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-    conceptLevel: "Model",
-    name: "LendingHistoryItemDetails",
-    defaultLabel: "Detailed information about a Lending History Item",
-    definition: {
-      extractorTemplates: {
-        lendingHistoryItem: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
-          parentName: "LendingHistoryItem",
-          parentUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
-          instanceUuid: {
-            transformerType: "getFromParameters",
-            referenceName: "instanceUuid",
-          },
-        },
-      },
-      section: {
-        type: "list",
-        definition: [
-          {
-            type: "objectInstanceReportSection",
-            definition: {
-              parentUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
-              fetchedDataReference: "lendingHistoryItem",
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  const entityDefinitionLendingHistoryItem: EntityDefinition = {
-    uuid: "ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505",
-    parentName: "EntityDefinition",
-    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-    parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
-    name: "LendingHistoryItem",
-    entityUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
-    defaultInstanceDetailsReportUuid: "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
-    jzodSchema: {
-      type: "object",
-      definition: {
-        uuid: {
-          type: "uuid",
-          tag: {
-            value: {
-              id: 1,
-              defaultLabel: "Uuid",
-              editable: false,
-            },
-          },
-        },
-        parentName: {
-          type: "string",
-          optional: true,
-          tag: {
-            value: {
-              id: 2,
-              defaultLabel: "Entity Name",
-              editable: false,
-            },
-          },
-        },
-        parentUuid: {
-          type: "uuid",
-          tag: {
-            value: {
-              id: 3,
-              defaultLabel: "Entity Uuid",
-              editable: false,
-              initializeTo: {
-                initializeToType: "value",
-                value: "e81078f3-2de7-4301-bd79-d3a156aec149",
-              },
-            },
-          },
-        },
-        parentDefinitionVersionUuid: {
-          type: "uuid",
-          optional: true,
-          tag: {
-            value: {
-              id: 4,
-              defaultLabel: "Entity Definition Version Uuid",
-              editable: false,
-            },
-          },
-        },
-        // name: {
-        //   type: "string",
-        //   optional: true,
-        // },
-        user: {
-          type: "uuid",
-          tag: {
-            value: {
-              editable: false,
-              defaultLabel: "User",
-              selectorParams: {
-                targetEntity: "ca794e28-b2dc-45b3-8137-00151557eea8",
-                targetEntityOrderInstancesBy: "name",
-              },
-            },
-          },
-          optional: true,
-        },
-        book: {
-          type: "uuid",
-          tag: {
-            value: {
-              editable: false,
-              defaultLabel: "Book",
-              selectorParams: {
-                targetEntity: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                targetEntityOrderInstancesBy: "name",
-              },
-            },
-          },
-          optional: true,
-        },
-        startDate: {
-          type: "date",
-        },
-        endDate: {
-          type: "date",
-          optional: true,
-        },
-      },
-    },
-    description: "The history of book lendings",
-    viewAttributes: ["uuid", "user", "book", "startDate", "endDate"],
-  };
+  // const entityDefinitionLendingHistoryItem: EntityDefinition = {
+  //   uuid: "ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505",
+  //   parentName: "EntityDefinition",
+  //   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  //   parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
+  //   name: "LendingHistoryItem",
+  //   entityUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
+  //   defaultInstanceDetailsReportUuid: "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
+  //   jzodSchema: {
+  //     type: "object",
+  //     definition: {
+  //       uuid: {
+  //         type: "uuid",
+  //         tag: {
+  //           value: {
+  //             id: 1,
+  //             defaultLabel: "Uuid",
+  //             editable: false,
+  //           },
+  //         },
+  //       },
+  //       parentName: {
+  //         type: "string",
+  //         optional: true,
+  //         tag: {
+  //           value: {
+  //             id: 2,
+  //             defaultLabel: "Entity Name",
+  //             editable: false,
+  //           },
+  //         },
+  //       },
+  //       parentUuid: {
+  //         type: "uuid",
+  //         tag: {
+  //           value: {
+  //             id: 3,
+  //             defaultLabel: "Entity Uuid",
+  //             editable: false,
+  //             initializeTo: {
+  //               initializeToType: "value",
+  //               value: "e81078f3-2de7-4301-bd79-d3a156aec149",
+  //             },
+  //           },
+  //         },
+  //       },
+  //       parentDefinitionVersionUuid: {
+  //         type: "uuid",
+  //         optional: true,
+  //         tag: {
+  //           value: {
+  //             id: 4,
+  //             defaultLabel: "Entity Definition Version Uuid",
+  //             editable: false,
+  //           },
+  //         },
+  //       },
+  //       // name: {
+  //       //   type: "string",
+  //       //   optional: true,
+  //       // },
+  //       user: {
+  //         type: "uuid",
+  //         tag: {
+  //           value: {
+  //             editable: false,
+  //             defaultLabel: "User",
+  //             selectorParams: {
+  //               targetEntity: "ca794e28-b2dc-45b3-8137-00151557eea8",
+  //               targetEntityOrderInstancesBy: "name",
+  //             },
+  //           },
+  //         },
+  //         optional: true,
+  //       },
+  //       book: {
+  //         type: "uuid",
+  //         tag: {
+  //           value: {
+  //             editable: false,
+  //             defaultLabel: "Book",
+  //             selectorParams: {
+  //               targetEntity: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  //               targetEntityOrderInstancesBy: "name",
+  //             },
+  //           },
+  //         },
+  //         optional: true,
+  //       },
+  //       startDate: {
+  //         type: "date",
+  //       },
+  //       endDate: {
+  //         type: "date",
+  //         optional: true,
+  //       },
+  //     },
+  //   },
+  //   description: "The history of book lendings",
+  //   viewAttributes: ["uuid", "user", "book", "startDate", "endDate"],
+  // };
+  const defaultDetailsReport: Report | undefined = useMemo(() => {
+    return entityDefinition.defaultInstanceDetailsReportUuid
+      ? currentDeploymentReportsEntitiesDefinitionsMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
+          (r) => r.uuid === entityDefinition.defaultInstanceDetailsReportUuid
+        )
+      : undefined;
+  }, [
+    entityDefinition,
+    currentDeploymentReportsEntitiesDefinitionsMapping,
+    currentApplicationSection,
+  ]);
   const formik = useFormikContext<any>()
   // ##############################################################################################
   useEffect(() => {
@@ -426,52 +395,11 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       {
         ...formik.values,
         [reportSectionPath.join("_")]: defaultFormValuesObject,
-        formikReportDefinitionPath: reportLendingHistoryItemDetails,
+        formikReportDefinitionPath: defaultDetailsReport,
       }
     );
   }, [defaultFormValuesObject]);
 
-  // const initialReportSectionsFormValue = useMemo(() => {
-  //   // log.info(
-  //   //   "############################################## JsonElementEditorDialog",
-  //   //   // "reportViewData",
-  //   //   // reportViewData
-  //   // );
-  //   // const reportSectionsData = reportSectionsFormValue(
-  //   //   lendingHistoryItemDetails.definition.section,
-  //   //   {},
-  //   //   ["definition", "section"]
-  //   // );
-  //   const reportSectionsData: Record<string, any> = {
-  //     [reportSectionPath.join("_")]: defaultFormValuesObject,
-  //     // [reportSectionPath.join("_")]: getDefaultValueForJzodSchemaWithResolutionNonHook(
-  //     //   "build",
-  //     //   // entityDefinitionLendingHistoryItem.jzodSchema,
-  //     //   entityDefinitionJzodSchema,
-  //     //   {}, // rootObject
-  //     //   "", // rootLessListKey
-  //     //   {},
-  //     //   [],
-  //     //   false,
-  //     //   currentDeploymentUuid,
-  //     //   defaultMetaModelEnvironment,
-  //     // ),
-  //     formikReportDefinitionPath: reportLendingHistoryItemDetails,
-  //   };
-  //   const result = {
-  //     ...reportSectionsData,
-  //     // ...props.storedQueryData,
-  //     // // storedQueryData: props.storedQueryData, // included in reportViewData
-  //     // ...reportViewData,
-  //     // reportViewData,
-  //     // [reportReportDetailsKey]: reportReportDetails,
-  //     // [entityDefinitionReportKey]: entityDefinitionReport,
-  //     // [reportName]: props.reportDefinition,
-  //   };
-  //   log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
-  //   return result;
-  // }, [defaultFormValuesObject]);
-  // }, [props.reportDefinition, entityDefinitionReportKey, reportData, reportViewData]);
 
   // ##############################################################################################
   const formValueMLSchema: JzodObject = useMemo(() => {
@@ -479,14 +407,14 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
     //   return { type: "object", definition: {} };
     // }
     const r = currentDeploymentUuid?reportSectionsFormSchema(
-      (reportLendingHistoryItemDetails as any)?.definition?.section?.definition[0],
+      (defaultDetailsReport as any)?.definition?.section?.definition[0],
       currentDeploymentUuid,
       currentDeploymentReportsEntitiesDefinitionsMapping,
       currentModel,
       {
         ...formik.values,
         [reportSectionPath.join("_")]: defaultFormValuesObject,
-        formikReportDefinitionPath: reportLendingHistoryItemDetails,
+        formikReportDefinitionPath: defaultDetailsReport,
       },
       // initialReportSectionsFormValue,
       // [formikEditedInstancePath]

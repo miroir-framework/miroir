@@ -67,30 +67,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 let totalUnfoldTime = 0;
 let unfoldCallCount = 0;
 
-// // Legacy wrapper function redirects to our new generalized approach
-// function measureUnfoldPerformance(
-//   miroirFundamentalJzodSchema: any,
-//   schema: any,
-//   path: any[],
-//   unfoldingReference: any[],
-//   rootSchema: any,
-//   depth: number,
-//   currentModel: any,
-//   miroirMetaModel: any
-// ): UnfoldJzodSchemaOnceReturnType {
-//   // Just call the measured version created with our higher-order function
-//   return measuredUnfoldJzodSchemaOnce(
-//     miroirFundamentalJzodSchema,
-//     schema,
-//     path,
-//     unfoldingReference,
-//     rootSchema,
-//     depth,
-//     currentModel,
-//     miroirMetaModel
-//   );
-// }
-
 // Editable attribute name component with local state management
 // const EditableAttributeName = React.memo(({
 const EditableAttributeName: FC<{

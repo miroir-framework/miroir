@@ -369,25 +369,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   //   "currentKeyMap", currentKeyMap,
   // );
 
-  // const defaultOnChange = useCallback(
-  //   (e: any) => {
-  //    const value = e.target.value;
-  //    log.info("JzodElementEditor defaultOnChange setting value for", props.rootLessListKey, "to", value);
-  //    formik.setFieldValue(props.rootLessListKey, value);
-  //  }, [formik, props.rootLessListKey]
-  // ) 
-
   // Extract hiddenFormItems and setHiddenFormItems from props
   const reportContext = useReportPageContext();
-  // Handle switch for structured element display
-  // log.info("JzodElementEditor",
-  //   count,
-  //   "Rendering JzodElementEditor for listKey",
-  //   props.listKey,
-  //   "reportContext.foldedObjectAttributeOrArrayItems",
-  //   reportContext.foldedObjectAttributeOrArrayItems,
-  // );
 
+  // ##############################################################################################
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       log.info(
@@ -505,25 +490,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   //   localResolvedElementJzodSchemaBasedOnValue,
   // )
 
-  // // Check if we should show code editor
-  // const shouldShowCodeEditor = useMemo(() => 
-  //   !isUnderTest &&
-  //   displayAsCodeEditor
-  //   // (
-  //   //   currentKeyMap?.resolvedSchema?.type == "object" ||
-  //   //   currentKeyMap?.resolvedSchema?.type == "record" ||
-  //   //   currentKeyMap?.resolvedSchema?.type == "array" ||
-  //   //   currentKeyMap?.resolvedSchema?.type == "tuple" ||
-  //   //   currentKeyMap?.resolvedSchema?.type == "any"
-  //   // )
-  //   ,
-  //   [
-  //     isUnderTest,
-  //     displayAsCodeEditor,
-  //     currentKeyMap?.resolvedSchema?.type,
-  //     // props.resolvedElementJzodSchema?.type
-  //   ]
-  // );
 
   // Check if this element type supports nesting (should have alternating background)
   // These are the container types that can hold other JzodElements

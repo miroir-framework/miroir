@@ -344,6 +344,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         const mode = data[lastSubmitButtonClicked + "_mode"];
         log.info("onEditValueObjectFormSubmit",
           "mode", mode,
+          "deploymentUuid", props.deploymentUuid,
           "currentInstance", currentInstance, "applicationSection", applicationSection);
         
         if (props.deploymentUuid === adminConfigurationDeploymentMiroir.uuid && applicationSection === "model") {
@@ -373,7 +374,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     {
                       parentName: currentInstance.parentName,
                       parentUuid: currentInstance.parentUuid,
-                      applicationSection: props.applicationSection,
+                      applicationSection: applicationSection,
                       instances: [currentInstance],
                     },
                   ],
@@ -388,12 +389,14 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             deploymentUuid: props.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              applicationSection: "data",
+              // applicationSection: "data",
+              applicationSection: applicationSection,
               objects: [
                 {
                   parentName: currentInstance.name,
                   parentUuid: currentInstance.parentUuid,
-                  applicationSection: "data",
+                  // applicationSection: "data",
+                  applicationSection: applicationSection,
                   instances: [currentInstance],
                 },
               ],

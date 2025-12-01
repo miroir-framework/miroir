@@ -2,6 +2,7 @@ const entitySelfApplication = require("../assets/miroir_model/16dbfe28-e1d7-4f20
 const entitySelfApplicationVersion = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json");
 const entitySelfApplicationModelBranch = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json");
 const entityEntity = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
+const entityEndpointVersion = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json");
 // const entitySelfApplicationDeploymentConfiguration = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json');
 const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 const entityJzodSchema = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json");
@@ -9,6 +10,7 @@ const entityMenu = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a98
 const entityQueryVersion = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json");
 const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
 // const entityStoreBasedConfiguration = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json');
+
 
 const entityDefinitionJzodSchema = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json");
 const entityDefinitionSelfApplicationVersion = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json");
@@ -87,6 +89,7 @@ export const metaModelEntities: MetaEntity[] = [
   entityMenu,
   entityQueryVersion,
   entityReport,
+  entityEndpointVersion,
   // entityStoreBasedConfiguration,
 ] as MetaEntity[];
 
