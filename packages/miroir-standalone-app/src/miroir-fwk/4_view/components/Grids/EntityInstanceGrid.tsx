@@ -281,6 +281,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   // const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   // const [editDialogFormIsOpen, setEditDialogFormIsOpen] = useState(false);
 
+  const [dialogFormMode, setDialogFormMode] = useState<"create" | "update">("update");
   const [deleteDialogFormIsOpen, setDeleteDialogFormIsOpen] = useState(false);
   
   // log.info("EntityInstanceGrid refreshing with dialogFormObject",dialogFormObject);
@@ -424,6 +425,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
       log.info('handleEditDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     // setEditDialogFormIsOpen(true);
+    setDialogFormMode("update");
     props.setAddObjectdialogFormIsOpen(true);
   },[props.instancesToDisplay]);
 
@@ -474,6 +476,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
       log.info('handleDuplicateDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     // setEditDialogFormIsOpen(true);
+    setDialogFormMode("create");
     props.setAddObjectdialogFormIsOpen(true);
   },[props.instancesToDisplay, props.setAddObjectdialogFormIsOpen]);
   
@@ -849,7 +852,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
             <>
               <JsonObjectEditFormDialog
                 showButton={false}
-                mode="update"
+                mode={dialogFormMode}
                 isAttributes={true}
                 label={props.currentEntity?.name ?? "No Entity Found!"}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}

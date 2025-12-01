@@ -98,9 +98,22 @@
         "context": {
           "miroirMenuItem": {
             "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label"
+                },
+                "editable": true
+              }
+            },
             "definition": {
               "label": {
                 "type": "string"
+              },
+              "hidden": {
+                "type": "boolean",
+                "optional": true
               },
               "section": {
                 "type": "schemaReference",
