@@ -1045,11 +1045,11 @@ const entityDefinitionSelfApplicationModelBranch = require("./assets/miroir_mode
 const entityDefinitionTest = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json");
 const entityDefinitionTransformerTest = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json");
 
-const selfApplicationMiroir = require("./assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json");
+const selfApplicationStoreBasedConfigurationMiroir = require("./assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/21840247-b5b1-4344-baec-f818f4797d92.json");
 const selfApplicationDeploymentMiroir = require("./assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
 const selfApplicationModelBranchMiroirMasterBranch = require("./assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json");
 const selfApplicationVersionInitialMiroirVersion = require("./assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json");
-const selfApplicationStoreBasedConfigurationMiroir = require("./assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
+const selfApplicationMiroir = require("./assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
 const reportApplicationList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json");
 const reportApplicationDeploymentConfigurationList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json");
 const reportApplicationModelBranchList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json");
@@ -1216,7 +1216,6 @@ export {
 // ################################################################################################
 // LIBRARY APPLICATION
 // ################################################################################################
-// import adminApplicationLibrary from "./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" //assert { type: "json" };
 const adminApplicationLibrary = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json");
 const selfApplicationLibrary = require("./assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
 const selfApplicationStoreBasedConfigurationLibrary = require("./assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json");
@@ -1319,7 +1318,11 @@ export {
   springer,
 };
 
+const adminAdminApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/f3e04bb2-005f-484b-aaf2-072232f60f2c.json"); //assert { type: "json" };
+const adminSelfApplication = require("./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
+
 const menuDefaultAdmin = require("./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json"); //assert { type: "json" };
+const selfApplicationStoreBasedConfigurationAdmin = require("./assets/admin_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/a192c4bd-15c9-4932-84f6-3885b9d5969f.json");
 const adminConfigurationDeploymentAdmin = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
 const adminConfigurationDeploymentMiroir = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json"); //assert { type: "json" };
 const adminConfigurationDeploymentLibrary = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
@@ -1331,6 +1334,8 @@ const test1SelfApplication = require("./assets/test1_model/a659d350-dd97-4da9-91
 const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"); //assert { type: "json" };
 
 export {
+  adminSelfApplication,
+  adminAdminApplication,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -1339,6 +1344,7 @@ export {
   entityDefinitionDeployment,
   entityDeployment,
   menuDefaultAdmin,
+  selfApplicationStoreBasedConfigurationAdmin,
 };
 
 export { menuDefaultTest1, test1SelfApplication };

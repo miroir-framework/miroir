@@ -51,6 +51,7 @@ export const defaultLibraryAppModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
   entities: Object.values(libraryAppEntities),
   entityDefinitions: Object.values(libraryAppEntityDefinitions),
+  endpoints: [],
   jzodSchemas: [],
   menus: [],
   applicationVersions: [],

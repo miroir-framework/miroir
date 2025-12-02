@@ -1,3 +1,4 @@
+import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
 import {
   JzodElement,
   JzodObject,
@@ -5,10 +6,9 @@ import {
   JzodSchema,
   MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
-import { Step, ResolveBuildTransformersTo } from "../../2_domain/Transformers";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import type { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
+import { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 
 // ################################################################################################
 export function resolveSchemaReferenceInContextTransformer<T extends MiroirModelEnvironment>(
@@ -41,9 +41,6 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
   jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
   relativeReferenceJzodContext: { [k: string]: JzodElement } = {},
   miroirEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel?: MetaModel,
-  // miroirMetaModel?: MetaModel,
 ): JzodElement {
   if (Array.isArray(jzodReference)) {
     // Aggregate resolved items into an object with keys as indices
@@ -53,9 +50,6 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
         ref,
         relativeReferenceJzodContext,
         miroirEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
       );
     });
     // If all items are objects with a definition, merge them into one object

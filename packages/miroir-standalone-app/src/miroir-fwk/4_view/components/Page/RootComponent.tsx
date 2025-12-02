@@ -44,7 +44,8 @@ import {
   ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  ViewParamsData
+  ViewParamsData,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -59,7 +60,7 @@ import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
 import { packageName } from '../../../../constants.js';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { useCurrentModel, useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
@@ -69,6 +70,7 @@ import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { ReportPageContextProvider } from '../Reports/ReportPageContext';
 import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
+import { start } from 'repl';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -164,6 +166,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const currentAppModel: MetaModel = useCurrentModel(context.deploymentUuid);
   const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+  const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(adminConfigurationDeploymentLibrary.uuid);
 
   // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
   // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
@@ -743,7 +746,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 editMode={context.viewParams.editMode}
                 onEditModeToggle={() => context.viewParams.updateEditMode(!context.viewParams.editMode)}
               >
-                Bar!
+                Bar! TODO: remove children
               </AppBar>
               <ThemedMainPanel
                 sideBarOpen={sidebarIsOpen}
@@ -761,24 +764,30 @@ export const RootComponent = (props: RootComponentProps) => {
                   </div>
                 )}
                 {/* commit */}
-                {/* <span>
+                <span>
                   <ActionButton
                     onAction={async () => {
-                      await domainController.handleAction(
+                      return domainController.handleAction(
                         {
-                          actionType: "commit",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid: noValue.uuid,
-                        },
-                        defaultMiroirModelEnvironment
+                          actionType: "lendDocument",
+                          endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                          application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          user: "054518f7-f626-4e76-8633-6b6ece7dcfc3",
+                          book: "394941f7-524b-4751-b0fb-cd1a4b7ea273",
+                          startDate: new Date().toISOString(),
+                          note: "Lent via RootComponent button",
+                          // deploymentUuid: noValue.uuid,
+                        } as any,
+                        // defaultMiroirModelEnvironment,
+                        libraryAppModelEnvironment,
                       );
                     }}
-                    successMessage="Committed successfully"
-                    label="Commit"
+                    successMessage="Lent book successfully"
+                    label="lend book"
                     handleAsyncAction={handleAsyncAction}
-                    actionName="commit"
+                    actionName="lendBook"
                   />
-                </span> */}
+                </span>
                 {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
                 <Outlet></Outlet>
               </ThemedMainPanel>

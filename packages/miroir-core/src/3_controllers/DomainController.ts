@@ -19,9 +19,15 @@ import {
 
 
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
-const instanceConfigurationReference = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
+const adminConfigurationDeploymentLibrary = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
+// const instanceConfigurationReference = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
 const entityEntity = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json');
 const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json');
+const adminSelfApplication = require("../assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
+const adminConfigurationDeploymentAdmin = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
+
+const selfApplicationLibrary = require("../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
+const selfApplicationDeploymentLibrary = require("../assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json");
 
 import {
   ApplicationSection,
@@ -29,6 +35,7 @@ import {
   BuildPlusRuntimeCompositeAction,
   CompositeAction,
   CompositeActionTemplate,
+  deployment,
   DomainAction,
   EntityInstance,
   InstanceAction,
@@ -65,11 +72,12 @@ import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
-const selfApplicationMiroir = require('../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json');
+// const selfApplicationMiroir = require('../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json');
+const selfApplicationMiroir = require('../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
 const selfApplicationDeploymentMiroir = require('../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json');
 const selfApplicationModelBranchMiroirMasterBranch = require('../assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json');
 const selfApplicationVersionInitialMiroirVersion = require('../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json');
-const selfApplicationStoreBasedConfigurationMiroir = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
+const selfApplicationStoreBasedConfigurationMiroir = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/21840247-b5b1-4344-baec-f818f4797d92.json');
 
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
@@ -92,6 +100,39 @@ import {
   unNullify,
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
+
+
+const applicationEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json");
+const deploymentEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json");
+const instanceEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json");
+const modelEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json");
+const domainEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json"); //assert { type: "json" };
+const testEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a9139e2d-a714-4c9c-bdee-c104488e2eaa.json"); //assert { type: "json" };
+const storeManagementEndpoint = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json"); //assert { type: "json" };
+const instanceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json"); //assert { type: "json" };
+const undoRedoEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json"); //assert { type: "json" };
+const localCacheEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9e404b3c-368c-40cb-be8b-e3c28550c25e.json"); //assert { type: "json" };
+const queryEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0faae143-0d7b-4a8a-a950-4fc3df943bde.json"); //assert { type: "json" };
+const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json"); //assert { type: "json" };
+
+const coreEndpoints: Record<string, Endpoint> = {
+  [applicationEndpointV1.uuid]: applicationEndpointV1,
+  [deploymentEndpointV1.uuid]: deploymentEndpointV1,
+  [instanceEndpointV1.uuid]: instanceEndpointV1,
+  [modelEndpointV1.uuid]: modelEndpointV1,
+  [domainEndpointVersionV1.uuid]: domainEndpointVersionV1,
+  [testEndpointVersionV1.uuid]: testEndpointVersionV1,
+  [storeManagementEndpoint.uuid]: storeManagementEndpoint,
+  [instanceEndpointVersionV1.uuid]: instanceEndpointVersionV1,
+  [undoRedoEndpointVersionV1.uuid]: undoRedoEndpointVersionV1,
+  [localCacheEndpointVersionV1.uuid]: localCacheEndpointVersionV1,
+  [queryEndpointVersionV1.uuid]: queryEndpointVersionV1,
+  [persistenceEndpointVersionV1.uuid]: persistenceEndpointVersionV1,
+};
+
+const coreEndpointsUuidList = Object.keys(coreEndpoints);
+
+const libraryEndpointUuid: Uuid = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
 
 const autocommit = true;
 // const autocommit = false;
@@ -165,8 +206,13 @@ export async function resetAndInitApplicationDeployment(
  */
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
-  private log: LoggerInterface;
-    // ##############################################################################################
+  // private log: LoggerInterface;
+  private defaultApplicationDeploymentMap: Record<Uuid, Uuid> = {
+    [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
+    [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
+    [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  };
+  // ##############################################################################################
   constructor(
     private persistenceStoreAccessMode: "local" | "remote",
     private miroirContext: MiroirContextInterface,
@@ -175,7 +221,6 @@ export class DomainController implements DomainControllerInterface {
     private endpoint: Endpoint
   ) {
     // this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
-    this.log = log;
     this.callUtil = new CallUtils(persistenceStoreLocalOrRemote);
     const boundRemotePersistenceAction = this.callUtil.callPersistenceAction.bind(
       this.callUtil
@@ -1421,17 +1466,121 @@ export class DomainController implements DomainControllerInterface {
     domainAction: DomainAction,
     currentModelEnvironment?: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
+    log.info(
+      "DomainController handleAction START actionType=",
+      domainAction["actionType"],
+    );
     return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,
       (async () => {
-        return this.handleActionInternal(domainAction, currentModelEnvironment);
+        if ((domainAction as any)?.endpoint == libraryEndpointUuid) {
+          return this.handleApplicationAction(domainAction, currentModelEnvironment);
+        } else {
+          return this.handleActionInternal(domainAction, currentModelEnvironment);
+        }
         // return Promise.resolve();
       }).bind(this)
     );
     // return Promise.resolve(ACTION_OK);
   }
 
+  // ##############################################################################################
+  private async handleApplicationAction(
+    domainAction: DomainAction,
+    currentModelEnvironment?: MiroirModelEnvironment
+  ): Promise<Action2VoidReturnType> {
+    log.info(
+      "DomainController handleApplicationAction domainAction",
+      JSON.stringify(domainAction, null, 2),
+      currentModelEnvironment
+    );
+    if (!currentModelEnvironment) {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction call is missing currentModelEnvironment argument",
+        []
+      ));
+    }
+    if (!(domainAction as any).application) {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction missing application in action",
+        []
+      ));
+    }
+    if (!(domainAction as any).endpoint) {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction missing endpoint in action",
+        []
+      ));
+    }
+    if (!(domainAction as any).actionType) {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction missing actionType in action",
+        []
+      ));
+    }
+    // look up the action implementation in the currentModelEnvironment
+    const currentEndpointDefinition = currentModelEnvironment?.currentModel?.endpoints?.find(
+      (ep) => ep.uuid == (domainAction as any).endpoint
+    );
+    log.info(
+      "DomainController handleApplicationAction currentEndpointDefinition",
+      currentEndpointDefinition
+    );
+    if (!currentEndpointDefinition) {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction unknown endpoint in action: " + (domainAction as any).endpoint,
+        []
+      ));
+    }
+    const currentActionDefinition = currentEndpointDefinition.definition.actions.find(
+      (ac) => ac.actionParameters.actionType.definition == (domainAction as any).actionType
+    );
+    log.info(
+      "DomainController handleApplicationAction currentActionDefinition",
+      currentActionDefinition
+    );
+    if (!currentActionDefinition) {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction unknown actionType in action: " + (domainAction as any).actionType,
+        []
+      ));
+    }
+    if (!currentActionDefinition.actionImplementation) {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction actionType has no implementation: " + (domainAction as any).actionType,
+        []
+      ));
+    }
+    if (currentActionDefinition.actionImplementation.actionImplementationType != "compositeActionTemplate") {
+      return Promise.resolve(new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction actionImplementationType not supported yet: " + currentActionDefinition.actionImplementation.actionImplementationType,
+        []
+      ));
+    }
+
+    const result = this.handleCompositeActionTemplate(
+      currentActionDefinition.actionImplementation.definition as CompositeActionTemplate,
+      currentModelEnvironment,
+      {...domainAction,
+        deploymentUuid: this.defaultApplicationDeploymentMap[(domainAction as any).application],
+      }
+    );
+    return result;
+    return Promise.resolve(new Action2Error(
+      "NotImplemented",
+      "DomainController handleApplicationAction not implemented yet",
+      []
+    ));
+  }
   // ##############################################################################################
   private async handleActionInternal(
     domainAction: DomainAction,
@@ -2699,8 +2848,9 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues };
     const actionLabel = (compositeAction as any).actionLabel ?? "no action label";
     log.info(
-      "handleCompositeActionTemplate compositeAction",
+      "handleCompositeActionTemplate called with compositeAction",
       actionLabel,
+      "compositeAction",
       compositeAction,
       "localActionParams",
       localActionParams

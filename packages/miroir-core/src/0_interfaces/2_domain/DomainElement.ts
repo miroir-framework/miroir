@@ -192,6 +192,8 @@ export type ActionErrorType =
 | "FailedToUpdateInstance"
 | "FailedToSetupTest"
 | "FailedToTeardownTest"
+| "NotImplemented"
+| "InvalidAction"
 ;
 
 export class Action2Error extends Error {

@@ -29,15 +29,15 @@ import {
   Menu,
   MetaModel,
   Report,
-  StoreBasedConfiguration,
-  type Query,
+  type EndpointDefinition,
+  type Query
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
+import { entityEndpointVersion, entityQueryVersion } from "..";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { entityQueryVersion } from "..";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -85,6 +85,13 @@ export function selectCurrentDeploymentModel(
           domainState[deploymentUuid]["model"] &&
           domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
           ? Object.values(domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]) as EntityDefinition[]
+          : []
+        ),
+        endpoints: (
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid]["model"] &&
+          domainState[deploymentUuid]["model"][entityEndpointVersion.uuid]
+          ? Object.values(domainState[deploymentUuid]["model"][entityEndpointVersion.uuid]) as EndpointDefinition[]
           : []
         ),
         jzodSchemas: (

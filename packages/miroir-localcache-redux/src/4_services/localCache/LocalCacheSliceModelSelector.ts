@@ -25,7 +25,9 @@ import {
   entityStoreBasedConfiguration,
   type MiroirModelEnvironment,
   entityQueryVersion,
-  type Query
+  type Query,
+  entityEndpointVersion,
+  type EndpointDefinition
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -102,6 +104,23 @@ const selectJzodSchemasFromReduxState = createSelector(
       entityJzodSchema.uuid
     )
     // return selectEntityInstancesFromReduxDeploymentsState(reduxState,params, entityJzodSchema.uuid)
+  }
+);
+
+// ################################################################################################
+const selectEndpointsFromReduxState = createSelector(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
+      reduxState,
+      params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
+      params.queryType == "localCacheEntityInstancesExtractor"
+            ? params.definition.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+              ? "data"
+              : "model"
+            : undefined,
+      entityEndpointVersion.uuid
+    )
   }
 );
 
@@ -206,6 +225,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectMenusFromReduxState,
       selectReportsFromReduxState,
       selectQueriesFromReduxState,
+      selectEndpointsFromReduxState,
       // selectMiroirQueryTemplateSelectorParams,
     ],
     (
@@ -217,6 +237,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       menus: EntityInstancesUuidIndex,
       reports: EntityInstancesUuidIndex,
       queries: EntityInstancesUuidIndex,
+      endpoints: EntityInstancesUuidIndex,
       // params: MiroirQueryTemplate
     ) => {
       const result:MetaModel = {
@@ -227,6 +248,7 @@ export const selectModelForDeploymentFromReduxState: () => (
         // configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
         entities: (entities ? Object.values(entities) : []) as MetaEntity[],
         entityDefinitions: (entityDefinitions ? Object.values(entityDefinitions) : []) as EntityDefinition[],
+        endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],
         jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as JzodSchema[],
         menus: (menus ? Object.values(menus) : []) as Menu[],
         reports: (reports ? Object.values(reports) : []) as Report[],

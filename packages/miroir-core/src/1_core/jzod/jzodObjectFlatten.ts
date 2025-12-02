@@ -1,14 +1,12 @@
+import equal from "fast-deep-equal";
 import {
-  JzodObject,
   JzodElement,
+  JzodObject,
   JzodReference,
-  JzodSchema,
-  MetaModel,
-  type JzodBaseObject,
+  type JzodBaseObject
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
-import equal from "fast-deep-equal";
 
   // Function to recursively get all properties from parent objects
 const getAllProperties = <T extends MiroirModelEnvironment>(

@@ -5,6 +5,138 @@
   "name": "Lending",
   "version": "1",
   "definition": {
-    "actions": []
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "definition": "lendDocument"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+          },
+          "application": {
+            "type": "literal",
+            "definition": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+          },
+          "deploymentUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "deployment Uuid",
+                "editable": false
+              }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "user": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "editable": false,
+                    "defaultLabel": "User",
+                    "selectorParams": {
+                      "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "book": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "editable": false,
+                    "defaultLabel": "Book",
+                    "selectorParams": {
+                      "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "startDate": {
+                "type": "date",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Start Date",
+                    "editable": true
+                  }
+                },
+                "optional": true
+              },
+              "note": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "compositeActionTemplate",
+          "definition": {
+            "actionType": "compositeAction",
+            "actionLabel": "lendDocumentImplementation",
+            "actionName": "sequence",
+            "definition": [
+              {
+                "actionType": "createInstance",
+                "actionLabel": "lendDocument_createInstance_LendingHistoryItem",
+                "deploymentUuid": {
+                  "transformerType": "getFromParameters",
+                  "referenceName": "deploymentUuid"
+                },
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "parentName": "LendingHistoryItem",
+                      "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                      "applicationSection": "data",
+                      "instances": [
+                        {
+                          "uuid": {
+                            "transformerType": "generateUuid"
+                          },
+                          "parentName": "LendingHistoryItem",
+                          "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                          "book": {
+                            "transformerType": "getFromParameters",
+                            "referenceName": "book"
+                          },
+                          "user": {
+                            "transformerType": "getFromParameters",
+                            "referenceName": "user"
+                          },
+                          "startDate": "2025-06-01T00:00:00.000Z",
+                          "note": "this is a note"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToLendDocument"
+        }
+      }
+    ]
   }
 }

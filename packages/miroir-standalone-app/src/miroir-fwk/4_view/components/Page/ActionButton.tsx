@@ -1,13 +1,14 @@
 import React from 'react';
 import { ThemedButton } from '../Themes/index';
 import { useSnackbar } from '../../MiroirContextReactProvider';
+import type { Action2VoidReturnType } from 'miroir-core';
 
 interface ActionButtonProps {
-  onAction: () => Promise<void>;
+  onAction: () => Promise<Action2VoidReturnType>;
   successMessage: string;
   label: string;
   handleAsyncAction?: (
-    action: () => Promise<void>,
+    action: () => Promise<Action2VoidReturnType>,
     successMessage: string,
     actionName: string
   ) => void;

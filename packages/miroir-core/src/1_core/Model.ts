@@ -48,8 +48,21 @@ const applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfi
 const applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication = require("../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/dc47438c-166a-4d19-aeba-ad70281afdf4.json");
 const applicationVersionInitialMiroirVersionCrossEntityDefinitionReport = require("../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ede7e794-5ae7-48a8-81c9-d1f82df11829.json");
 const selfApplicationVersionInitialMiroirVersion = require("../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json");
-const instanceConfigurationReference = require("../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
+// const instanceConfigurationReference = require("../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
+
+const applicationEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json");
+const deploymentEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json");
+const instanceEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json");
+const modelEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json");
+const domainEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json"); //assert { type: "json" };
+const testEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a9139e2d-a714-4c9c-bdee-c104488e2eaa.json"); //assert { type: "json" };
+const storeManagementEndpoint = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json"); //assert { type: "json" };
+const instanceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json"); //assert { type: "json" };
+const undoRedoEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json"); //assert { type: "json" };
+const localCacheEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9e404b3c-368c-40cb-be8b-e3c28550c25e.json"); //assert { type: "json" };
+const queryEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0faae143-0d7b-4a8a-a950-4fc3df943bde.json"); //assert { type: "json" };
+const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json"); //assert { type: "json" };
 
 // import { entityDefinitionQueryVersionV1, entityQueryVersion } from "..";
 // import { entityJzodSchema, entitySelfApplicationDeploymentConfiguration, entityStoreBasedConfiguration } from "..";
@@ -65,6 +78,7 @@ import {
   MetaModel,
   Report,
   type ApplicationSection,
+  type EndpointDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
@@ -135,6 +149,20 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionMenu as EntityDefinition,
     entityDefinitionQuery as EntityDefinition,
     entityDefinitionReport as EntityDefinition,
+  ],
+  endpoints: [
+    applicationEndpointV1 as EndpointDefinition,
+    deploymentEndpointV1 as EndpointDefinition,
+    instanceEndpointV1 as EndpointDefinition,
+    modelEndpointV1 as EndpointDefinition,
+    domainEndpointVersionV1 as EndpointDefinition,
+    testEndpointVersionV1 as EndpointDefinition,
+    storeManagementEndpoint as EndpointDefinition,
+    instanceEndpointVersionV1 as EndpointDefinition,
+    undoRedoEndpointVersionV1 as EndpointDefinition,
+    localCacheEndpointVersionV1 as EndpointDefinition,
+    queryEndpointVersionV1 as EndpointDefinition,
+    persistenceEndpointVersionV1 as EndpointDefinition,
   ],
   jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as JzodSchema],
   menus: [menuDefaultMiroir as Menu],

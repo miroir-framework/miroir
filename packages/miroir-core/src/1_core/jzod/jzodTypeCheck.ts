@@ -1,23 +1,20 @@
 import { valueToJzod } from "@miroir-framework/jzod";
 
 import {
-  EntityInstancesUuidIndex,
   JzodArray,
   JzodElement,
   JzodEnum,
   JzodLiteral,
   JzodObject,
   JzodReference,
-  JzodSchema,
   JzodTuple,
   JzodUnion,
-  MetaModel,
-  type ResolvedJzodSchemaReturnTypeOK,
-  type ResolvedJzodSchemaReturnType,
-  type ResolvedJzodSchemaReturnTypeError,
   KeyMapEntry,
   type JzodRecord,
-  type TransformerForBuildPlusRuntime_jzodTypeCheck,
+  type ResolvedJzodSchemaReturnType,
+  type ResolvedJzodSchemaReturnTypeError,
+  type ResolvedJzodSchemaReturnTypeOK,
+  type TransformerForBuildPlusRuntime_jzodTypeCheck
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
@@ -26,23 +23,22 @@ import {
   jzodUnion_recursivelyUnfold,
 } from "./jzodUnion_RecursivelyUnfold";
 
-import { packageName } from "../../constants";
-import { cleanLevel } from "../constants";
-import { jzodObjectFlatten } from "./jzodObjectFlatten";
-import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "./getObjectUniondiscriminatorValuesFromResolvedSchema";
-import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
-import { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
-import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
-import { Step } from "../../2_domain/Transformers";
 import type {
+  JzodUnionResolvedTypeForArrayReturnTypeOK,
+  JzodUnionResolvedTypeForObjectReturnTypeOK,
+  JzodUnionResolvedTypeReturnTypeError,
   SelectUnionBranchFromDiscriminatorReturnType,
   SelectUnionBranchFromDiscriminatorReturnTypeError,
-  JzodUnionResolvedTypeForArrayReturnTypeOK,
-  JzodUnionResolvedTypeReturnTypeError,
-  JzodUnionResolvedTypeForObjectReturnTypeOK,
 } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
+import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
+import { Step } from "../../2_domain/Transformers";
+import { packageName } from "../../constants";
+import { cleanLevel } from "../constants";
 import { defaultMiroirModelEnvironment } from "../Model";
+import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "./getObjectUniondiscriminatorValuesFromResolvedSchema";
+import { jzodObjectFlatten } from "./jzodObjectFlatten";
+import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -58,66 +54,53 @@ MiroirLoggerFactory.registerLoggerToStart(
 export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvironment>(
   jzodObject: JzodObject,
   modelEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel?: MetaModel,
-  // miroirMetaModel?: MetaModel,
-  relativeReferenceJzodContext?: {[k:string]: JzodElement},
+  relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): JzodObject {
-  // if (j.type == "object") {
-    if (jzodObject.extend) {
-      // const extension = resolveJzodSchemaReferenceInContext(
-      const extension:JzodElement = resolveJzodSchemaReferenceInContext(
-        jzodObject.extend,
-        relativeReferenceJzodContext,
-        modelEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
-      )
-      const resolvedDefinition = Object.fromEntries(
-        Object.entries(jzodObject.definition).filter(
-          (e:[string, JzodElement]) => e[1].type == "schemaReference"
-        ).map(
-          (e) => [e[0], resolveJzodSchemaReferenceInContext(
+  if (jzodObject.extend) {
+    const extension: JzodElement = resolveJzodSchemaReferenceInContext(
+      jzodObject.extend,
+      relativeReferenceJzodContext,
+      modelEnvironment
+    );
+    const resolvedDefinition = Object.fromEntries(
+      Object.entries(jzodObject.definition)
+        .filter((e: [string, JzodElement]) => e[1].type == "schemaReference")
+        .map((e) => [
+          e[0],
+          resolveJzodSchemaReferenceInContext(
             e[1] as JzodReference,
             relativeReferenceJzodContext,
-            modelEnvironment,
-            // miroirFundamentalJzodSchema,
-            // currentModel,
-            // miroirMetaModel,
-          )]
-        )
-      );
-      if (extension.type == "object") {
-        return {
-          type: "object",
-          definition: {
-            ...extension.definition,
-            ...jzodObject.definition,
-            ...resolvedDefinition
-          }
-        }
-      } else {
-        throw new Error(
-          "resolveObjectExtendClauseAndDefinition object extend clause schema " +
-            JSON.stringify(jzodObject) +
-            " is not an object " +
-            JSON.stringify(extension)
-        );
-        // return ({
-        //   status: "error",
-        //   error: "jzodTypeCheck object extend clause schema " +
-        //       JSON.stringify(jzodSchema) +
-        //       " is not an object " +
-        //       JSON.stringify(extension)
-        // })
-      }
+            modelEnvironment
+          ),
+        ])
+    );
+    if (extension.type == "object") {
+      return {
+        type: "object",
+        definition: {
+          ...extension.definition,
+          ...jzodObject.definition,
+          ...resolvedDefinition,
+        },
+      };
     } else {
-      return jzodObject
+      throw new Error(
+        "resolveObjectExtendClauseAndDefinition object extend clause schema " +
+          JSON.stringify(jzodObject) +
+          " is not an object " +
+          JSON.stringify(extension)
+      );
+      // return ({
+      //   status: "error",
+      //   error: "jzodTypeCheck object extend clause schema " +
+      //       JSON.stringify(jzodSchema) +
+      //       " is not an object " +
+      //       JSON.stringify(extension)
+      // })
     }
-  // } else {
-  //   return j;
-  // }
+  } else {
+    return jzodObject;
+  }
 }
 
 // ################################################################################################
@@ -507,9 +490,6 @@ export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel: MetaModel,
-  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): JzodUnionResolvedTypeForArrayReturnTypeOK
   | JzodUnionResolvedTypeReturnTypeError
@@ -521,9 +501,6 @@ export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
   const arrayUnionChoices = unionArrayChoices(
     concreteUnrolledJzodSchemas,
     modelEnvironment,
-    // miroirFundamentalJzodSchema,
-    // currentModel,
-    // miroirMetaModel,
     relativeReferenceJzodContext
   );
   if (arrayUnionChoices.length == 1) {

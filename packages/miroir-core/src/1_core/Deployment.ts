@@ -52,10 +52,6 @@ export function createApplicationCompositeAction(
             },
           ],
         },
-        // action: {
-        //   transformerType: "getFromParameters",
-        //   referenceName: "createApplicationForAdminAction",
-        // }
       },
     ],
   };

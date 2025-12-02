@@ -377,6 +377,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             </Typography>
             <TypedValueObjectEditorWithFormik
               labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
+              mode="update"
               initialValueObject={{ actionFormInitialValues }}
               formValueMLSchema={{
                 type: "object",
