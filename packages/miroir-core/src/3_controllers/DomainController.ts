@@ -81,7 +81,7 @@ const selfApplicationStoreBasedConfigurationMiroir = require('../assets/miroir_d
 
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { Endpoint } from "./Endpoint";
+import { Endpoint, libraryEndpointUuid } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
 // import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
 import {
@@ -100,39 +100,6 @@ import {
   unNullify,
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
-
-
-const applicationEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json");
-const deploymentEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json");
-const instanceEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json");
-const modelEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json");
-const domainEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json"); //assert { type: "json" };
-const testEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a9139e2d-a714-4c9c-bdee-c104488e2eaa.json"); //assert { type: "json" };
-const storeManagementEndpoint = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json"); //assert { type: "json" };
-const instanceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json"); //assert { type: "json" };
-const undoRedoEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json"); //assert { type: "json" };
-const localCacheEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9e404b3c-368c-40cb-be8b-e3c28550c25e.json"); //assert { type: "json" };
-const queryEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0faae143-0d7b-4a8a-a950-4fc3df943bde.json"); //assert { type: "json" };
-const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json"); //assert { type: "json" };
-
-const coreEndpoints: Record<string, Endpoint> = {
-  [applicationEndpointV1.uuid]: applicationEndpointV1,
-  [deploymentEndpointV1.uuid]: deploymentEndpointV1,
-  [instanceEndpointV1.uuid]: instanceEndpointV1,
-  [modelEndpointV1.uuid]: modelEndpointV1,
-  [domainEndpointVersionV1.uuid]: domainEndpointVersionV1,
-  [testEndpointVersionV1.uuid]: testEndpointVersionV1,
-  [storeManagementEndpoint.uuid]: storeManagementEndpoint,
-  [instanceEndpointVersionV1.uuid]: instanceEndpointVersionV1,
-  [undoRedoEndpointVersionV1.uuid]: undoRedoEndpointVersionV1,
-  [localCacheEndpointVersionV1.uuid]: localCacheEndpointVersionV1,
-  [queryEndpointVersionV1.uuid]: queryEndpointVersionV1,
-  [persistenceEndpointVersionV1.uuid]: persistenceEndpointVersionV1,
-};
-
-const coreEndpointsUuidList = Object.keys(coreEndpoints);
-
-const libraryEndpointUuid: Uuid = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
 
 const autocommit = true;
 // const autocommit = false;
@@ -2929,70 +2896,6 @@ export class DomainController implements DomainControllerInterface {
             );
           }
       switch (currentAction.actionType) {
-        // case "instanceAction":
-        case "createInstance":
-        case "deleteInstance":
-        case "deleteInstanceWithCascade":
-        case "updateInstance":
-        case "loadNewInstancesInLocalCache":
-        case "getInstance":
-        case "getInstances":
-        //
-        case "undoRedoAction":
-        // case "modelAction":
-        case "initModel":
-        case "commit":
-        case "rollback":
-        case "remoteLocalCacheRollback":
-        case "resetModel":
-        case "resetData":
-        case "alterEntityAttribute":
-        case "renameEntity":
-        case "createEntity":
-        case "dropEntity":
-        //
-        case "transactionalInstanceAction":
-        case "compositeAction":
-        // case "storeManagementAction":
-        case "storeManagementAction_createStore":
-        case "storeManagementAction_deleteStore":
-        case "storeManagementAction_resetAndInitApplicationDeployment":
-        case "storeManagementAction_openStore":
-        case "storeManagementAction_closeStore":
-        //
-        case "bundleAction": {
-          // case "domainAction": {
-          // log.info(
-          //   "handleCompositeActionTemplate compositeInstanceAction action to resolve",
-          //   JSON.stringify(currentAction.domainAction, null, 2)
-          // );
-          const actionResult = await this.handleAction(resolvedActionTemplate, modelEnvironment);
-          if (actionResult instanceof Action2Error) {
-            log.error(
-              "handleCompositeActionTemplate compositeInstanceAction error on action",
-              JSON.stringify(currentAction, null, 2) +
-                "actionResult" +
-                JSON.stringify(actionResult, null, 2)
-            );
-            // throw new Error(
-            //   "handleCompositeActionTemplate compositeInstanceAction error on action" +
-            //     JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-            //     "actionResult" +
-            //     JSON.stringify(actionResult, null, 2)
-            // );
-            return new Action2Error(
-              "FailedToHandleAction",
-              "handleCompositeActionTemplate compositeInstanceAction error: " +
-                JSON.stringify(actionResult, null, 2),
-              [
-                currentAction.actionLabel ?? currentAction.actionType,
-                ...(actionResult.errorStack ?? ([] as any)),
-              ],
-              actionResult
-            );
-          }
-          break;
-        }
         case "compositeRunBoxedQueryAction": {
           const actionResult = await this.handleCompositeRunBoxedQueryAction(
             // currentAction,
@@ -3064,12 +2967,11 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "compositeRunBoxedExtractorAction":
-        case "compositeRunTestAssertion":
-        default: {
+        case "compositeRunTestAssertion": {
           log.error(
             "handleCompositeActionTemplate",
             actionLabel,
-            "unknown actionType",
+            "can not handle actionType",
             currentAction
           );
           // throw new Error(
@@ -3082,12 +2984,100 @@ export class DomainController implements DomainControllerInterface {
             "FailedToHandleAction",
             "handleCompositeActionTemplate " +
               actionLabel +
-              " unknown actionType: " +
+              " can not handle actionType: " +
               currentAction.actionType,
             [currentAction.actionLabel ?? currentAction.actionType]
           );
           break;
         }
+        // case "instanceAction":
+        case "createInstance":
+        case "deleteInstance":
+        case "deleteInstanceWithCascade":
+        case "updateInstance":
+        case "loadNewInstancesInLocalCache":
+        case "getInstance":
+        case "getInstances":
+        //
+        case "undoRedoAction":
+        // case "modelAction":
+        case "initModel":
+        case "commit":
+        case "rollback":
+        case "remoteLocalCacheRollback":
+        case "resetModel":
+        case "resetData":
+        case "alterEntityAttribute":
+        case "renameEntity":
+        case "createEntity":
+        case "dropEntity":
+        //
+        case "transactionalInstanceAction":
+        case "compositeAction":
+        // case "storeManagementAction":
+        case "storeManagementAction_createStore":
+        case "storeManagementAction_deleteStore":
+        case "storeManagementAction_resetAndInitApplicationDeployment":
+        case "storeManagementAction_openStore":
+        case "storeManagementAction_closeStore":
+        //
+        case "bundleAction":
+        default: {
+          // case "domainAction": {
+          // log.info(
+          //   "handleCompositeActionTemplate compositeInstanceAction action to resolve",
+          //   JSON.stringify(currentAction.domainAction, null, 2)
+          // );
+          const actionResult = await this.handleAction(resolvedActionTemplate, modelEnvironment);
+          if (actionResult instanceof Action2Error) {
+            log.error(
+              "handleCompositeActionTemplate compositeInstanceAction error on action",
+              JSON.stringify(currentAction, null, 2) +
+                "actionResult" +
+                JSON.stringify(actionResult, null, 2)
+            );
+            // throw new Error(
+            //   "handleCompositeActionTemplate compositeInstanceAction error on action" +
+            //     JSON.stringify(resolveCompositeActionTemplate, null, 2) +
+            //     "actionResult" +
+            //     JSON.stringify(actionResult, null, 2)
+            // );
+            return new Action2Error(
+              "FailedToHandleAction",
+              "handleCompositeActionTemplate compositeInstanceAction error: " +
+                JSON.stringify(actionResult, null, 2),
+              [
+                currentAction.actionLabel ?? currentAction.actionType,
+                ...(actionResult.errorStack ?? ([] as any)),
+              ],
+              actionResult
+            );
+          }
+          break;
+        }
+        // default: {
+        //   log.error(
+        //     "handleCompositeActionTemplate",
+        //     actionLabel,
+        //     "unknown actionType",
+        //     currentAction
+        //   );
+        //   // throw new Error(
+        //   //   "handleCompositeActionTemplate " +
+        //   //     actionLabel +
+        //   //     " unknown actionType: " +
+        //   //     currentAction.actionType
+        //   // );
+        //   return new Action2Error(
+        //     "FailedToHandleAction",
+        //     "handleCompositeActionTemplate " +
+        //       actionLabel +
+        //       " unknown actionType: " +
+        //       currentAction.actionType,
+        //     [currentAction.actionLabel ?? currentAction.actionType]
+        //   );
+        //   break;
+        // }
       }
     }
     return Promise.resolve(ACTION_OK);

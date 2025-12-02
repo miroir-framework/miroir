@@ -196,6 +196,7 @@ export const ApplicationSelector: FC<{
         }}
       /> */}
       <TypedValueObjectEditorWithFormik
+        mode="update"
         labelElement={labelElement}
         deploymentUuid={deploymentUuid}
         applicationSection="model"

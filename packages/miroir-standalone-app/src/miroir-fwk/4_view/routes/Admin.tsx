@@ -23,6 +23,7 @@ import { useState } from 'react';
 import { noValue } from '../components/ValueObjectEditor/JzodElementEditorInterface.js';
 import { ApplicationSelector } from '../components/interactive/ApplicationSelector.js';
 import { EndpointActionCaller } from '../components/EndpointActionCaller.js';
+import { LibraryRunner_LendDocument } from '../components/Runners/LibraryRunner_LendDocument.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -402,6 +403,17 @@ export const AdminPage: React.FC<any> = (
             onApplicationChange={setCurrentApplication}
           />
         <br /> */}
+        {/* Lend Library Document */}
+        <Accordion style={{ marginBottom: 12 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <div style={{ fontWeight: 500 }}>Lend Document</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <LibraryRunner_LendDocument
+              deploymentUuid={deploymentUuid}
+            />
+          </AccordionDetails>
+        </Accordion>
         {/* Create Application & Deployment */}
         <Accordion style={{ marginBottom: 12 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>

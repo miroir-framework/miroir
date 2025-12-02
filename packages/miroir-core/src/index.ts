@@ -241,6 +241,8 @@ export {
   miroirQuery,
   MiroirQueryTemplate,
   miroirQueryTemplate,
+  Action,
+  action,
   ModelAction,
   modelAction,
   ModelActionAlterEntityAttribute,
