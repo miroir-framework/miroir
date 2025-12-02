@@ -63,6 +63,7 @@ export class ViewParams {
   private _appTheme: AppTheme;
   private _toolsPage: ToolsPageState;
   private _editMode: boolean;
+  // private _showModelTools: boolean;
 
   constructor(
     initialSidebarIsOpen: boolean = true,
@@ -70,7 +71,8 @@ export class ViewParams {
     initialGridType: GridType = 'ag-grid', 
     initialAppTheme: AppTheme = 'default',
     initialToolsPage: ToolsPageState = {},
-    initialEditMode: boolean = false
+    initialEditMode: boolean = false,
+    // initialShowModelTools: boolean = false
   ) {
     this._sidebarIsOpen = initialSidebarIsOpen;
     this._sidebarWidth = initialSidebarWidth;
@@ -78,6 +80,7 @@ export class ViewParams {
     this._appTheme = initialAppTheme;
     this._toolsPage = initialToolsPage;
     this._editMode = initialEditMode;
+    // this._showModelTools = initialShowModelTools;
   }
 
   get sidebarIsOpen(): boolean {
@@ -146,4 +149,16 @@ export class ViewParams {
   updateEditMode(enabled: boolean): void {
     this._editMode = enabled;
   }
+
+  // get showModelTools(): boolean {
+  //   return this._showModelTools;
+  // }
+
+  // set showModelTools(enabled: boolean) {
+  //   this._showModelTools = enabled;
+  // }
+
+  // updateShowModelTools(enabled: boolean): void {
+  //   this._showModelTools = enabled;
+  // }
 }

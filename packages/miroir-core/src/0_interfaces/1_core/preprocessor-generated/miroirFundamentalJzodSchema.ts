@@ -11250,6 +11250,25 @@ export const miroirFundamentalJzodSchema = {
             "type": "boolean",
             "optional": true
           },
+          "menuItemScope": {
+            "type": "enum",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "editable": true,
+                "description": "What elements this menu item targets (data or model)",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "data"
+                }
+              }
+            },
+            "definition": [
+              "data",
+              "model"
+            ]
+          },
           "section": {
             "type": "schemaReference",
             "definition": {
@@ -11487,6 +11506,25 @@ export const miroirFundamentalJzodSchema = {
                   "hidden": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "menuItemScope": {
+                    "type": "enum",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scope",
+                        "editable": true,
+                        "description": "What elements this menu item targets (data or model)",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "data"
+                        }
+                      }
+                    },
+                    "definition": [
+                      "data",
+                      "model"
+                    ]
                   },
                   "section": {
                     "type": "schemaReference",
@@ -39077,6 +39115,25 @@ export const miroirFundamentalJzodSchema = {
                             "type": "boolean",
                             "optional": true
                           },
+                          "menuItemScope": {
+                            "type": "enum",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Scope",
+                                "editable": true,
+                                "description": "What elements this menu item targets (data or model)",
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "data"
+                                }
+                              }
+                            },
+                            "definition": [
+                              "data",
+                              "model"
+                            ]
+                          },
                           "section": {
                             "type": "schemaReference",
                             "definition": {
@@ -58086,6 +58143,49 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "boolean",
                     "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "menuItemScope": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "editable": true,
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "enum",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scope",
+                        "editable": true,
+                        "description": "What elements this menu item targets (data or model)",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "data"
+                        }
+                      }
+                    },
+                    "definition": [
+                      "data",
+                      "model"
+                    ]
                   },
                   {
                     "type": "schemaReference",

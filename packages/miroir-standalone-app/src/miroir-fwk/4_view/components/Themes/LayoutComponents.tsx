@@ -411,7 +411,7 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
     flex: 1,
     overflowY: 'scroll',
     overflowX: 'hidden',
-    padding: currentTheme.spacing.md,
+    // padding: currentTheme.spacing.md, // no reason for padding something because it is scrollable
     backgroundColor: currentTheme.colors.background,
     
     // Hide scrollbars but keep scroll functionality

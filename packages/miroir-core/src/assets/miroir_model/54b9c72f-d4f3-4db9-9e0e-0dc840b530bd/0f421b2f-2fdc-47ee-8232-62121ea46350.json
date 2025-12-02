@@ -115,6 +115,25 @@
                 "type": "boolean",
                 "optional": true
               },
+              "menuItemScope": {
+                "type": "enum",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "editable": true,
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    }
+                  }
+                },
+                "definition": [
+                  "data",
+                  "model"
+                ]
+              },
               "section": {
                 "type": "schemaReference",
                 "definition": {

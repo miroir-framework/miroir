@@ -113,7 +113,9 @@ export const Sidebar: FC<{
         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         menuUuid: menuDefaultAdmin.uuid
       },
-    ].map((section, index) => (
+    ]
+    .filter(section => context.showModelTools)
+    .map((section, index) => (
       <>
         {index > 0 && <ThemedDivider />}
         <SidebarSection
@@ -125,7 +127,7 @@ export const Sidebar: FC<{
         />
       </>
     ))
-  ), [props.open, props.setOpen]);
+  ), [props.open, context.showModelTools, props.setOpen]);
 
   const filteredAppSidebarSections = useMemo(() => (
     [
@@ -179,7 +181,7 @@ export const Sidebar: FC<{
   ), [appSidebarSections, miroirSidebarSections]);
 
   return (
-    <ThemedDrawer open={props.open} width={props.width}>
+    <ThemedDrawer open={props.open} width={props.width} style={{padding: "0"}}>
       <ThemedDrawerHeader>
         <div
           style={{

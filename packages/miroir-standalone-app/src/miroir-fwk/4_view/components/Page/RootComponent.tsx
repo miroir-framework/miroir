@@ -764,7 +764,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   </div>
                 )}
                 {/* commit */}
-                <span>
+                {/* <span>
                   <ActionButton
                     onAction={async () => {
                       return domainController.handleAction(
@@ -787,7 +787,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     handleAsyncAction={handleAsyncAction}
                     actionName="lendBook"
                   />
-                </span>
+                </span> */}
                 {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
                 <Outlet></Outlet>
               </ThemedMainPanel>

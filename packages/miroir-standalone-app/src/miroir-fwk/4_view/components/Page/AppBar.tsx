@@ -64,7 +64,7 @@ const appbarItems: MiroirMenuItem[] = [
   //   "icon": "category"
   // },
   {
-    "label": "admin",
+    "label": "runners",
     "section": "model",
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
@@ -327,6 +327,43 @@ export function AppBar(props:AppBarProps) {
               </Button>
             ))}
           </Box>
+            {/* Model Tools Indicator */}
+            {context.setShowModelTools && (
+              <Tooltip
+                title={
+                  context.showModelTools
+                    ? "Model Tools: ON (click to disable)"
+                    : "Model Tools: OFF (click to enable)"
+                }
+              >
+                <ThemedIconButton
+                  onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
+                  aria-label="Model Tools"
+                >
+                  <ThemedIcon
+                    icon={
+                      context.showModelTools
+                        ? {
+                            iconType: "mui",
+                            // name: "architecture",
+                            name: "wbIncandescent",
+                            // name: "draw",
+                            color: {
+                              colorType: "themeColor",
+                              currentThemeColorPath: "colors.warning",
+                            },
+                          }
+                        : {
+                            iconType: "mui",
+                            // name: "architecture",
+                            name: "lightbulb",
+                            // name: "draw",
+                          }
+                    }
+                  />
+                </ThemedIconButton>
+              </Tooltip>
+            )}
           {/* Edit Mode Toggle Button */}
           {props.onEditModeToggle && (
             <Tooltip
@@ -368,7 +405,7 @@ export function AppBar(props:AppBarProps) {
           <Box sx={{ flexGrow: 0, display: "flex" }}>
             <ActionButton
               onAction={async () => {
-                await domainController.handleActionFromUI(
+                return domainController.handleActionFromUI(
                   {
                     actionType: "commit",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

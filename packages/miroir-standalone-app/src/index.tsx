@@ -50,7 +50,7 @@ import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
 import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
 import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
 import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
-import { AdminPage } from "./miroir-fwk/4_view/routes/Admin.js";
+import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
 import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
@@ -154,7 +154,7 @@ const router = createBrowserRouter([
       },
       {
         path: "admin",
-        element: <AdminPage />,
+        element: <RunnersPage />,
         // errorElement: <ErrorPage />,
       },
       {

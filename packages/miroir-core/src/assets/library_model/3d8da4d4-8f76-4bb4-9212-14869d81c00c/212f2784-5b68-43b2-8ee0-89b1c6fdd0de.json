@@ -54,8 +54,7 @@
                       "targetEntityOrderInstancesBy": "name"
                     }
                   }
-                },
-                "optional": true
+                }
               },
               "book": {
                 "type": "uuid",
@@ -73,8 +72,7 @@
                       "targetEntityOrderInstancesBy": "name"
                     }
                   }
-                },
-                "optional": true
+                }
               },
               "startDate": {
                 "type": "date",
@@ -84,8 +82,7 @@
                     "defaultLabel": "Start Date",
                     "editable": true
                   }
-                },
-                "optional": true
+                }
               },
               "note": {
                 "type": "string",
@@ -125,19 +122,31 @@
                           "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
                           "book": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["payload", "book"]
+                            "referencePath": [
+                              "payload",
+                              "book"
+                            ]
                           },
                           "user": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["payload", "user"]
+                            "referencePath": [
+                              "payload",
+                              "user"
+                            ]
                           },
                           "startDate": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["payload", "startDate"]
+                            "referencePath": [
+                              "payload",
+                              "startDate"
+                            ]
                           },
                           "note": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["payload", "note"]
+                            "referencePath": [
+                              "payload",
+                              "note"
+                            ]
                           }
                         }
                       ]

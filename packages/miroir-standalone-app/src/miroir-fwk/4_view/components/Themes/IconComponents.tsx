@@ -6,11 +6,13 @@ import React, { useMemo } from 'react';
 import {
   AccountBalance,
   Add as AddIcon,
+  Architecture,
   AutoStories as AutoStoriesIcon,
   Book as BookIcon,
   BugReportOutlined,
   Category as CategoryIcon,
   Delete as DeleteIcon,
+  Draw,
   Edit as EditIcon,
   Error as ErrorIcon,
   Flag,
@@ -19,6 +21,7 @@ import {
   History,
   Home as HomeIcon,
   Interests as InterestsIcon,
+  Lightbulb,
   List as ListIcon,
   LocationOn as LocationOnIcon,
   MenuBook as MenuBookIcon,
@@ -34,10 +37,12 @@ import {
   Settings as SettingsIcon,
   South as SouthIcon,
   SpaceDashboard,
+  SquareFootSharp,
   Star as StarIcon,
   Sync,
   TimerOffOutlined,
   TimerOutlined,
+  WbIncandescent,
 } from "@mui/icons-material";
 
 import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from 'miroir-core';
@@ -381,6 +386,7 @@ const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
   menu_book: MenuBookIcon,
   // 
   add: AddIcon,
+  architecture: Architecture,
   auto_stories: AutoStoriesIcon,
   bugReport: BugReportOutlined,
   category: CategoryIcon,
@@ -389,6 +395,8 @@ const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
   error: ErrorIcon,
   folder: Folder,
   history: History,
+  lightbulb: Lightbulb,
+  draw: Draw,
   list: ListIcon,
   location_on: LocationOnIcon,
   south: SouthIcon,
@@ -404,10 +412,12 @@ const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
   search: SearchIcon,
   settings: SettingsIcon,
   space_dashboard: SpaceDashboard,
+  squareFoot: SquareFootSharp,
   star: StarIcon,
   sync: Sync,
   timer: TimerOutlined,
   timerOff: TimerOffOutlined,
+  wbIncandescent: WbIncandescent,
 };
 
   // Map common MUI icon name variations to component keys
@@ -436,7 +446,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
   children, 
   className, 
   style,
-  size = 'md',
+  size = 'lg',
   fallback = 'help_outline',
   'aria-label': ariaLabel,
   ...rest 

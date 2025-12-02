@@ -60,7 +60,7 @@ function formatYYYYMMDD_HHMMSS(date = new Date()) {
 }
 
 // ################################################################################################
-export const AdminPage: React.FC<any> = (
+export const RunnersPage: React.FC<any> = (
   props: any // TODO: give a type to props!!!
 ) => {
   count++;

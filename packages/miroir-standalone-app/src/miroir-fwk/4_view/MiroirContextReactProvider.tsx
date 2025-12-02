@@ -151,6 +151,8 @@ export interface MiroirReactContext {
   setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => void;
   showDebugInfo: boolean;
   setShowDebugInfo: (value: boolean | ((prev: boolean) => boolean)) => void;
+  showModelTools: boolean;
+  setShowModelTools: (value: boolean | ((prev: boolean) => boolean)) => void;
   // ##################################################################################################
   // Snackbar functionality
   snackbarOpen: boolean;
@@ -242,12 +244,19 @@ export function MiroirContextReactProvider(props: {
     return saved ? JSON.parse(saved) : false;
   });
 
+  const [showModelTools, setShowModelTools] = useState(() => {
+    // Persist showModelTools state across navigation
+    const saved = sessionStorage.getItem("showModelTools");
+    return saved ? JSON.parse(saved) : false;
+  });
+
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
 
   const viewParams = useMemo(() => {
+    // const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, editMode, showModelTools);
     const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, editMode);
     // Override setters to use React state
     params.updateSidebarIsOpen = (sidebarIsopen: boolean) => setSidebarIsOpen(sidebarIsopen);
@@ -258,8 +267,13 @@ export function MiroirContextReactProvider(props: {
       // Persist to sessionStorage
       sessionStorage.setItem("editMode", JSON.stringify(enabled));
     };
+    // params.updateShowModelTools = (enabled: boolean) => {
+    //   setShowModelTools(enabled);
+    //   // Persist to sessionStorage
+    //   sessionStorage.setItem("showModelTools", JSON.stringify(enabled));
+    // };
     return params;
-  }, [sidebarWidth, gridType, editMode]);
+  }, [sidebarWidth, gridType, editMode, showModelTools]);
 
   // Update functions for ToolsPage state with persistence
   const updateToolsPageStateDEFUNCT = useMemo(
@@ -473,6 +487,12 @@ export function MiroirContextReactProvider(props: {
         setShowDebugInfo(newValue);
         sessionStorage.setItem("showDebugInfo", JSON.stringify(newValue));
       },
+      showModelTools,
+      setShowModelTools: (value: boolean | ((prev: boolean) => boolean)) => {
+        const newValue = typeof value === "function" ? value(showModelTools) : value;
+        setShowModelTools(newValue);
+        sessionStorage.setItem("showModelTools", JSON.stringify(newValue));
+      },
       // // ###################################################################################################
       // // Outline for Instance Editor
       setFoldedObjectAttributeOrArrayItems,
@@ -511,6 +531,7 @@ export function MiroirContextReactProvider(props: {
       showPerformanceDisplay,
       showActionTimeline,
       showDebugInfo,
+      showModelTools,
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,
