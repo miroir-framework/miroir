@@ -1,23 +1,18 @@
 import { useMemo } from "react";
 
-import type {
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
-  CompositeActionTemplate,
-  EndpointDefinition,
-  LoggerInterface,
-  MiroirModelEnvironment,
-  ReduxDeploymentsState,
-  SyncBoxedExtractorOrQueryRunnerMap,
-  Uuid
-} from "miroir-core";
 import {
-  type Action,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  entityDeployment,
+  CompositeActionTemplate,
+  defaultApplicationDeploymentMap,
+  EndpointDefinition,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  MiroirLoggerFactory
+  type LoggerInterface,
+  MiroirLoggerFactory,
+  type MiroirModelEnvironment,
+  type ReduxDeploymentsState,
+  selfApplicationLibrary,
+  type SyncBoxedExtractorOrQueryRunnerMap,
+  Uuid,
+  type Action
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
@@ -41,13 +36,20 @@ export interface LibraryRunner_LendDocumentProps {
   deploymentUuid: string;
 }
 
+const runnerDefinition = {
+  application: selfApplicationLibrary.uuid,
+  runnerName: "lendDocument",
+  runnerLabel: "Lend Document",
+  currentEndpointUuid : "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+  domainActionType : "lendDocument",
+}
 // ################################################################################################
 export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProps> = ({
 }) => {
-  const runnerName: string = "lendDocument";
-  const runnerLabel: string = "Lend Document";
-  const deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid;
-  const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(adminConfigurationDeploymentLibrary.uuid);
+
+  // const deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid;
+  const deploymentUuid: Uuid = defaultApplicationDeploymentMap[runnerDefinition.application];
+  const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
         getMemoizedReduxDeploymentsStateSelectorMap();
@@ -60,15 +62,13 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       )
   );
 
-  const currentEndpointUuid = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
-  const domainActionType = "lendDocument";
   
   const currentEndpointDefinition: EndpointDefinition | undefined = libraryAppModelEnvironment?.currentModel?.endpoints?.find(
-    (ep) => ep.uuid == currentEndpointUuid
+    (ep) => ep.uuid == runnerDefinition.currentEndpointUuid
   );
 
   const currentActionDefinition:Action | undefined = currentEndpointDefinition?.definition.actions.find(
-    (ac) => ac.actionParameters.actionType.definition == domainActionType
+    (ac) => ac.actionParameters.actionType.definition == runnerDefinition.domainActionType
   );
 
   const formMlSchema: FormMlSchema = useMemo(
@@ -77,7 +77,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       mlSchema: {
         type: "object",
         definition: {
-          [runnerName]: { type: "object", definition: currentActionDefinition?.actionParameters??{} },
+          [runnerDefinition.runnerName]: { type: "object", definition: currentActionDefinition?.actionParameters??{} },
         },
       },
     }),
@@ -93,7 +93,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       undefined, // No need to pass currentDefaultValue here
       [], // currentPath on value is root
       false, // forceOptional
-      adminConfigurationDeploymentLibrary.uuid,
+      deploymentUuid,
       libraryAppModelEnvironment,
       {}, // transformerParams
       {}, // contextResults
@@ -102,202 +102,40 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
     return result;
   }, [formMlSchema]);
 
-  const deploymentUuidQuery:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined = {
-    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-    pageParams: {},
-    queryParams: {},
-    contextResults: {},
-    extractorTemplates: {
-      deployments: {
-        label: "deployments of the application",
-        // extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        extractorTemplateType: "extractorTemplateForObjectListByEntity",
-        parentUuid: entityDeployment.uuid,
-        parentName: entityDeployment.name,
-        applicationSection: "data",
-        filter: {
-          attributeName: "adminApplication",
-          value: {
-            transformerType: "mustacheStringTemplate",
-            interpolation: "build",
-            definition: `{{${runnerName}.application}}`,
-          },
-        },
-      },
-    },
-  } as BoxedQueryTemplateWithExtractorCombinerTransformer;
-
-  // const deleteEntityActionTemplate = useMemo((): CompositeActionTemplate => {
-  //   return {
-  //     actionType: "compositeAction",
-  //     actionLabel: runnerLabel,
-  //     actionName: "sequence",
-  //     definition: [
-  //       // Step 1: Query to get the deployment UUID from the selected application
-  //       {
-  //         actionType: "compositeRunBoxedExtractorOrQueryAction",
-  //         actionLabel: "getDeploymentForApplication",
-  //         nameGivenToResult: "deploymentInfo",
-  //         query: {
-  //           actionType: "runBoxedExtractorOrQueryAction",
-  //           actionName: "runQuery",
-  //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-  //           payload: {
-  //             applicationSection: "data",
-  //             query: {
-  //               queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-  //               pageParams: {},
-  //               queryParams: {},
-  //               contextResults: {},
-  //               extractors: {
-  //                 deployments: {
-  //                   label: "deployments of the application",
-  //                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
-  //                   parentUuid: entityDeployment.uuid,
-  //                   parentName: entityDeployment.name,
-  //                   applicationSection: "data",
-  //                   filter: {
-  //                     attributeName: "adminApplication",
-  //                     value: {
-  //                       transformerType: "mustacheStringTemplate",
-  //                       interpolation: "build",
-  //                       definition: `{{${runnerName}.application}}`,
-  //                     },
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       // infer entityDefintion from entity uuid
-  //       {
-  //         actionType: "compositeRunBoxedExtractorOrQueryAction",
-  //         // actionType: "",
-  //         actionLabel: "getEntityDefinitionForEntity",
-  //         nameGivenToResult: "entityDefinitionInfo",
-  //         query: {
-  //           actionType: "runBoxedExtractorOrQueryAction",
-  //           actionName: "runQuery",
-  //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //           deploymentUuid: {
-  //             transformerType: "getFromContext",
-  //             interpolation: "runtime",
-  //             // definition: "{{deploymentInfo.deployments.0.uuid}}",
-  //             referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-  //           } as any,
-  //           payload: {
-  //             applicationSection: "model",
-  //             query: {
-  //               queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //               deploymentUuid: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 // definition: "{{deploymentInfo.deployments.0.uuid}}",
-  //                 referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-  //               } as any,
-  //               pageParams: {},
-  //               queryParams: {},
-  //               contextResults: {},
-  //               extractors: {
-  //                 entityDefinitions: {
-  //                   label: "entityDefinitions of the deployment",
-  //                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
-  //                   parentUuid: entityEntityDefinition.uuid,
-  //                   parentName: entityEntityDefinition.name,
-  //                   applicationSection: "model",
-  //                   filter: {
-  //                     attributeName: "entityUuid",
-  //                     value: {
-  //                       transformerType: "mustacheStringTemplate",
-  //                       interpolation: "build",
-  //                       definition: `{{${runnerName}.entity}}`,
-  //                     },
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //       // createEntity action
-  //       {
-  //         actionType: "dropEntity",
-  //         actionLabel: runnerName,
-  //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-  //         deploymentUuid: {
-  //           transformerType: "mustacheStringTemplate",
-  //           interpolation: "runtime",
-  //           definition: "{{deploymentInfo.deployments.0.uuid}}",
-  //         } as any,
-  //         payload: {
-  //           entityUuid: {
-  //             transformerType: "getFromParameters",
-  //             interpolation: "build",
-  //             referencePath: [runnerName, "entity"],
-  //           } as any,
-  //           entityDefinitionUuid: {
-  //             transformerType: "getFromContext",
-  //             interpolation: "runtime",
-  //             referencePath: ["entityDefinitionInfo", "entityDefinitions", "0", "uuid"],
-  //           } as any,
-  //         },
-  //       },
-  //       {
-  //         actionType: "commit",
-  //         actionLabel: "commit",
-  //         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-  //         deploymentUuid: {
-  //           transformerType: "mustacheStringTemplate",
-  //           interpolation: "runtime",
-  //           definition: "{{deploymentInfo.deployments.0.uuid}}",
-  //         } as any,
-  //       },
-  //     ],
-  //   };
-  // }, [runnerName, runnerLabel]);
-
   const action: CompositeActionTemplate = useMemo((): CompositeActionTemplate => {
     return {
       actionType: "compositeAction",
-      actionLabel: runnerLabel,
+      actionLabel: runnerDefinition.runnerLabel,
       actionName: "sequence",
       definition: [
         {
           transformerType: "getFromParameters",
           interpolation: "build",
-          // referencePath: [runnerName, "lendDocumentAction"],
-          referencePath: [runnerName],
+          referencePath: [runnerDefinition.runnerName],
         }
       ],
     };
-  }, [runnerName, runnerLabel]);
+  }, [runnerDefinition]);
   
   return (
     <>
       <ThemedOnScreenDebug
-        label={`DeleteEntityRunner for ${runnerName} currentActionDefinition`}
+        label={`DeleteEntityRunner for ${runnerDefinition.runnerName} currentActionDefinition`}
         data={currentActionDefinition}
         initiallyUnfolded={false}
       />
       <ThemedOnScreenDebug
-        label={`DeleteEntityRunner for ${runnerName} formMlSchema`}
+        label={`DeleteEntityRunner for ${runnerDefinition.runnerName} formMlSchema`}
         data={formMlSchema}
         initiallyUnfolded={false}
       />
       <ThemedOnScreenDebug
-        label={`DeleteEntityRunner for ${runnerName} initialFormValue`}
+        label={`DeleteEntityRunner for ${runnerDefinition.runnerName} initialFormValue`}
         data={initialFormValue}
         initiallyUnfolded={false}
       />
       <ThemedOnScreenDebug
-        label={`DeleteEntityRunner for ${runnerName} action`}
+        label={`DeleteEntityRunner for ${runnerDefinition.runnerName} action`}
         data={action}
         initiallyUnfolded={false}
       />
@@ -308,7 +146,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       /> */}
       {!currentEndpointDefinition ? (
         <div>
-          LibraryRunner_LendDocument: endpoint definition not found for uuid {currentEndpointUuid}
+          LibraryRunner_LendDocument: endpoint definition not found for uuid {runnerDefinition.currentEndpointUuid}
           <ThemedOnScreenDebug
             label="libraryAppModelEnvironment"
             data={libraryAppModelEnvironment?.currentModel?.endpoints}
@@ -316,18 +154,17 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
         </div>
       ) : (
         <OuterRunnerView
-          runnerName={runnerName}
+          runnerName={runnerDefinition.runnerName}
           deploymentUuid={deploymentUuid}
-          deploymentUuidQuery={deploymentUuidQuery}
           formMlSchema={formMlSchema}
           initialFormValue={initialFormValue}
           action={{
             actionType: "compositeActionTemplate",
             compositeActionTemplate: action,
           }}
-          labelElement={<h2>{runnerLabel}</h2>}
-          formikValuePathAsString={runnerName}
-          formLabel={runnerLabel}
+          labelElement={<h2>{runnerDefinition.runnerLabel}</h2>}
+          formikValuePathAsString={runnerDefinition.runnerName}
+          formLabel={runnerDefinition.runnerLabel}
           displaySubmitButton="onFirstLine"
           useActionButton={true}
         />

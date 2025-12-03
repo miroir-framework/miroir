@@ -35,7 +35,6 @@ import {
   BuildPlusRuntimeCompositeAction,
   CompositeAction,
   CompositeActionTemplate,
-  deployment,
   DomainAction,
   EntityInstance,
   InstanceAction,
@@ -92,6 +91,7 @@ import {
   TransformerFailure,
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
+import { defaultApplicationDeploymentMap } from '../1_core/Deployment.js';
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
   ignorePostgresExtraAttributesOnList,
@@ -100,6 +100,12 @@ import {
   unNullify,
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
+
+// const defaultApplicationDeploymentMap: Record<Uuid, Uuid> = {
+//   [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
+//   [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
+//   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+// };
 
 const autocommit = true;
 // const autocommit = false;
@@ -174,11 +180,6 @@ export async function resetAndInitApplicationDeployment(
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
   // private log: LoggerInterface;
-  private defaultApplicationDeploymentMap: Record<Uuid, Uuid> = {
-    [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
-    [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
-    [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
-  };
   // ##############################################################################################
   constructor(
     private persistenceStoreAccessMode: "local" | "remote",
@@ -1538,7 +1539,7 @@ export class DomainController implements DomainControllerInterface {
       currentActionDefinition.actionImplementation.definition as CompositeActionTemplate,
       currentModelEnvironment,
       {...domainAction,
-        deploymentUuid: this.defaultApplicationDeploymentMap[(domainAction as any).application],
+        deploymentUuid: defaultApplicationDeploymentMap[(domainAction as any).application],
       }
     );
     return result;
