@@ -2,7 +2,6 @@
   "uuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
   "parentName": "Deployment",
   "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
-  "type": "singleNode",
   "name": "AdminApplicationFilesystemDeployment",
   "defaultLabel": "AdminApplicationFilesystemDeployment",
   "adminApplication": "f3e04bb2-005f-484b-aaf2-072232f60f2c",

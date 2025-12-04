@@ -28,7 +28,7 @@ export const viewParams: JzodElement = {
 export type GridType = "ag-grid" | "glide-data-grid";
 export type AppTheme = "default" | "dark" | "compact" | "material";
 
-// ToolsPage state interface for persistence
+// TransformerBuilderPage state interface for persistence
 export interface ToolsPageState {
   transformerEditor?: {
     selectedEntityUuid?: string;

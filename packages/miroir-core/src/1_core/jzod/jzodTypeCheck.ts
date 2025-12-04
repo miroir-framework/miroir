@@ -760,9 +760,6 @@ export function jzodTypeCheck(
         effectiveRawSchema,
         newContext,
         modelEnvironment
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
       );
       // log.info(
       //   "jzodTypeCheck schemaReference",

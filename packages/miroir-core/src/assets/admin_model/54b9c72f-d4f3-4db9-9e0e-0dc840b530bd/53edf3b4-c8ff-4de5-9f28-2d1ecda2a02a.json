@@ -53,9 +53,22 @@
           "value": {
             "id": 9,
             "editable": false,
-            "defaultLabel": "SelfApplication",
+            "defaultLabel": "AdminApplication",
             "selectorParams": {
               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "editable": false,
+            "defaultLabel": "SelfApplication",
+            "selectorParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "targetEntityOrderInstancesBy": "name"
             }
           }

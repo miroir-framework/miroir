@@ -45,16 +45,6 @@
         "optional": true,
         "tag": { "value": { "id": 7, "defaultLabel": "Description", "editable": true } }
       },
-      "adminApplication": {
-        "type": "uuid",
-        "tag": {
-          "value": {
-            "id": 8,
-            "defaultLabel": "Admin SelfApplication",
-            "editable": true
-          }
-        }
-      },
       "selfApplication": {
         "type": "uuid",
         "tag": {

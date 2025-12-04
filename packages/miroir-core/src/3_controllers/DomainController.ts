@@ -91,7 +91,7 @@ import {
   TransformerFailure,
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
-import { defaultApplicationDeploymentMap } from '../1_core/Deployment.js';
+import { defaultSelfApplicationDeploymentMap } from '../1_core/Deployment.js';
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
   ignorePostgresExtraAttributesOnList,
@@ -101,7 +101,7 @@ import {
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
 
-// const defaultApplicationDeploymentMap: Record<Uuid, Uuid> = {
+// const defaultSelfApplicationDeploymentMap: Record<Uuid, Uuid> = {
 //   [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
 //   [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
 //   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
@@ -1084,7 +1084,8 @@ export class DomainController implements DomainControllerInterface {
               ? "data"
               : "model";
           const newModelVersionUuid = uuidv4();
-          // const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
+          // TODO: this seems to be taken from the Admin Model Version
+          // in the application, only the selfApplication could be used
           const newModelVersion: ApplicationVersion = {
             uuid: newModelVersionUuid,
             // conceptLevel: "Data",
@@ -1093,9 +1094,10 @@ export class DomainController implements DomainControllerInterface {
             description: "TODO: no description yet",
             name: "TODO: No label was given to this version.",
             // previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
-            previousVersion: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
-            branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-            selfApplication: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            previousVersion: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
+            branch: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            selfApplication: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            // adminApplication: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
           };
 
           log.info(
@@ -1539,7 +1541,7 @@ export class DomainController implements DomainControllerInterface {
       currentActionDefinition.actionImplementation.definition as CompositeActionTemplate,
       currentModelEnvironment,
       {...domainAction,
-        deploymentUuid: defaultApplicationDeploymentMap[(domainAction as any).application],
+        deploymentUuid: defaultSelfApplicationDeploymentMap[(domainAction as any).application],
       }
     );
     return result;

@@ -102,7 +102,7 @@
             "description": "If true, this test will be skipped when running tests",
             "initializeTo": {
               "initializeToType": "value",
-              "definition": true
+              "value": true
             }
           }
         }
@@ -170,7 +170,7 @@
                     "description": "If true, this test will be skipped when running tests",
                     "initializeTo": {
                       "initializeToType": "value",
-                      "definition": true
+                      "value": true
                     }
                   }
                 }
@@ -259,7 +259,7 @@
                     "description": "If true, this test suite will be skipped when running tests",
                     "initializeTo": {
                       "initializeToType": "value",
-                      "definition": true
+                      "value": true
                     }
                   }
                 }

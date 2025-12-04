@@ -706,7 +706,8 @@ export {
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export { ACTION_OK, MAX_BLOB_FILE_SIZE, BLOB_SIZE_WARNING_THRESHOLD } from "./1_core/constants.js";
 export {
-  defaultApplicationDeploymentMap,
+  defaultSelfApplicationDeploymentMap,
+  defaultAdminApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
@@ -1322,6 +1323,8 @@ export {
 };
 
 const adminAdminApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/f3e04bb2-005f-484b-aaf2-072232f60f2c.json"); //assert { type: "json" };
+const adminMiroirApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/79a8fa03-cb64-45c8-9f85-7f8336bf92a5.json"); //assert { type: "json" };
+const adminLibraryApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json"); //assert { type: "json" };
 const adminSelfApplication = require("./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
 
 const menuDefaultAdmin = require("./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json"); //assert { type: "json" };
@@ -1337,8 +1340,10 @@ const test1SelfApplication = require("./assets/test1_model/a659d350-dd97-4da9-91
 const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"); //assert { type: "json" };
 
 export {
-  adminSelfApplication,
   adminAdminApplication,
+  adminLibraryApplication,
+  adminMiroirApplication,
+  adminSelfApplication,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,

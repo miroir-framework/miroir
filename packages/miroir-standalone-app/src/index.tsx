@@ -49,7 +49,7 @@ import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json
 import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
 import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
 import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
-import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
+import { TransformerBuilderPage } from "./miroir-fwk/4_view/routes/TransformerBuilderPage.js";
 import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
 import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
 
@@ -143,8 +143,8 @@ const router = createBrowserRouter([
         // errorElement: <ErrorPage />,
       },
       {
-        path: "tools",
-        element: <ToolsPage />,
+        path: "transformerBuilder",
+        element: <TransformerBuilderPage />,
         // errorElement: <ErrorPage />,
       },
       {

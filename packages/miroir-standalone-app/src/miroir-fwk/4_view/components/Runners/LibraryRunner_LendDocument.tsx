@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import {
   CompositeActionTemplate,
-  defaultApplicationDeploymentMap,
+  defaultSelfApplicationDeploymentMap,
   EndpointDefinition,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   type LoggerInterface,
@@ -48,7 +48,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
 }) => {
 
   // const deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid;
-  const deploymentUuid: Uuid = defaultApplicationDeploymentMap[runnerDefinition.application];
+  const deploymentUuid: Uuid = defaultSelfApplicationDeploymentMap[runnerDefinition.application];
   const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =

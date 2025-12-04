@@ -72,7 +72,7 @@ import { ReportPageContextProvider } from "../components/Reports/ReportPageConte
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ToolsPage"), "UI",
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerBuilderPage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -106,7 +106,7 @@ export interface MiroirForm {
 // ################################################################################################
 // ################################################################################################
 let count = 0;
-export const ToolsPage: React.FC<any> = (
+export const TransformerBuilderPage: React.FC<any> = (
   props: any // TODO: give a type to props!!!
 ) => {
   count++;
@@ -433,67 +433,12 @@ export const ToolsPage: React.FC<any> = (
   return (
     <ReportPageContextProvider>
       <PageContainer>
-        {/* Tools page! */}
-        <div>
-          {/* Transformer Editor */}
-          <div style={{ margin: "20px 0" }}>
-            <TransformerEditor
-              deploymentUuid={selfApplicationDeploymentLibrary.uuid}
-              entityUuid={entityBook.uuid}
-            />
-          </div>
-
-          <div>Hello World!</div>
-
-          {/* Test Results Display */}
-          {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
-            <div style={{ margin: "20px 0" }}>
-              <h3>resolveConditionalSchema Test Results:</h3>
-              <ValueObjectGrid
-                valueObjects={resolveConditionalSchemaResultsData}
-                jzodSchema={{
-                  type: "object",
-                  definition: {
-                    testName: { type: "string" },
-                    testResult: { type: "string" },
-                    status: { type: "string" },
-                    assertionCount: { type: "number" },
-                    assertions: { type: "string" },
-                  },
-                }}
-                styles={{
-                  height: "400px",
-                  width: "100%",
-                }}
-                maxRows={20}
-                sortByAttribute="testName"
-                displayTools={false}
-                gridType="ag-grid"
-              />
-            </div>
-          )}
-            <Formik
-              enableReinitialize={true}
-              initialValues={formState}
-              onSubmit={onSubmit}
-              handleChange={async (e: ChangeEvent<any>): Promise<void> => {
-                log.info("onChange formik", e);
-              }}
-            >
-              {(formik) => (
-                <>
-                  <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                    <>
-                      <button type="submit" name={pageLabel} form={"form." + pageLabel}>
-                        submit form.{pageLabel}
-                      </button>
-                    </>
-                    {/* )} */}
-                  </form>
-                </>
-              )}
-            </Formik>
-          {/* </div> */}
+        {/* Transformer Editor */}
+        <div style={{ margin: "20px 0" }}>
+          <TransformerEditor
+            deploymentUuid={selfApplicationDeploymentLibrary.uuid}
+            entityUuid={entityBook.uuid}
+          />
         </div>
       </PageContainer>
     </ReportPageContextProvider>

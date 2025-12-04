@@ -54,7 +54,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 // ################################################################################################
-// ToolsPage state interface for persistence
+// TransformerBuilderPage state interface for persistence
 export interface ToolsPageState {
   applicationSelector?: Uuid;
   transformerEditor?: {
@@ -139,7 +139,7 @@ export interface MiroirReactContext {
   ) => void;
 
   // ###################################################################################################
-  // ToolsPage state management
+  // TransformerBuilderPage state management
   toolsPageState: ToolsPageState;
   updateToolsPageStateDEFUNCT: (updates: Partial<ToolsPageState>) => void;
   updateTransformerEditorState: (updates: Partial<ToolsPageState["transformerEditor"]>) => void;
@@ -222,7 +222,7 @@ export function MiroirContextReactProvider(props: {
     return saved ? JSON.parse(saved) : false;
   });
   const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
-    // Persist ToolsPage state across navigation per deployment
+    // Persist TransformerBuilderPage state across navigation per deployment
     const saved = sessionStorage.getItem("toolsPageState");
     return saved ? JSON.parse(saved) : {};
   });
@@ -275,7 +275,7 @@ export function MiroirContextReactProvider(props: {
     return params;
   }, [sidebarWidth, gridType, editMode, showModelTools]);
 
-  // Update functions for ToolsPage state with persistence
+  // Update functions for TransformerBuilderPage state with persistence
   const updateToolsPageStateDEFUNCT = useMemo(
     () => (updates: Partial<ToolsPageState>) => {
       const newState = { ...toolsPageState, ...updates };

@@ -41,12 +41,13 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-const appbarItems: MiroirMenuItem[] = [
+const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
   {
-    "label": "Tools",
+    "label": "Transformer Builder",
+    targetRoot: "transformerBuilder",
     "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
     // "icon": "category",
   },
   // {
@@ -316,7 +317,7 @@ export function AppBar(props:AppBarProps) {
             {appbarItems.map((item) => (
               <Button
                 key={item.label}
-                onClick={(e: any) => goToLabelPage(e, item.label)}
+                onClick={(e: any) => goToLabelPage(e, item.targetRoot??item.label)}
                 sx={{
                   my: 2,
                   color: miroirTheme.currentTheme.components.appBar.textColor,

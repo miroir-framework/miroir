@@ -4217,7 +4217,6 @@ export type AdminApplication = {
     name: string;
     defaultLabel: string;
     description?: string | undefined;
-    adminApplication: string;
     selfApplication: string;
 };
 export type SelfApplication = {
@@ -16132,7 +16131,7 @@ export const transformerTest: z.ZodType<TransformerTest> = z.object({transformer
 export const transformerTestSuite: z.ZodType<TransformerTestSuite> = z.object({transformerTestType:z.literal("transformerTestSuite"), transformerTestLabel:z.string(), skip:z.boolean().optional(), transformerTests:z.array(z.union([z.lazy(() =>transformerTest), z.lazy(() =>transformerTestSuite)]))}).strict();
 export const transformerTestDefinition: z.ZodType<TransformerTestDefinition> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), selfApplication:z.string().uuid(), branch:z.string().uuid(), name:z.string().optional(), skip:z.boolean().optional(), description:z.string().optional(), definition:z.lazy(() =>transformerTestSuite)}).strict();
 export const ______________________________________________entities_____________________________________________: z.ZodType<______________________________________________entities_____________________________________________> = z.never();
-export const adminApplication: z.ZodType<AdminApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), adminApplication:z.string().uuid(), selfApplication:z.string().uuid()}).strict();
+export const adminApplication: z.ZodType<AdminApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), selfApplication:z.string().uuid()}).strict();
 export const selfApplication: z.ZodType<SelfApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional()}).strict();
 export const applicationVersion: z.ZodType<ApplicationVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), type:z.string().optional(), selfApplication:z.string().uuid(), branch:z.string().uuid(), previousVersion:z.string().uuid().optional(), modelStructureMigration:z.array(z.record(z.string(),z.any())).optional(), modelCUDMigration:z.array(z.record(z.string(),z.any())).optional()}).strict();
 export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid(), name:z.string(), contents:z.union([z.object({type:z.literal("runtime")}).strict(), z.object({type:z.literal("development"), applicationVersion:z.lazy(() =>applicationVersion)}).strict()])}).strict();

@@ -29,13 +29,23 @@ const adminConfigurationDeploymentAdmin = require("../assets/admin_data/7959d814
 const entityApplicationForAdmin = require("../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
 const entityDeployment = require("../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json"); //assert { type: "json" };
 
+const adminAdminApplication = require("../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/f3e04bb2-005f-484b-aaf2-072232f60f2c.json"); //assert { type: "json" };
+const adminMiroirApplication = require("../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/79a8fa03-cb64-45c8-9f85-7f8336bf92a5.json"); //assert { type: "json" };
+const adminLibraryApplication = require("../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json"); //assert { type: "json" };
+
 const selfApplicationLibrary = require("../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
 // const selfApplicationDeploymentLibrary = require("../assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json");
 
-export const defaultApplicationDeploymentMap: Record<Uuid, Uuid> = {
+export const defaultSelfApplicationDeploymentMap: Record<Uuid, Uuid> = {
   [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
   [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+};
+
+export const defaultAdminApplicationDeploymentMap: Record<Uuid, Uuid> = {
+  [adminMiroirApplication.uuid]: adminConfigurationDeploymentMiroir.uuid,
+  [adminAdminApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
+  [adminLibraryApplication.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;

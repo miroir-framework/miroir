@@ -2,11 +2,16 @@ import { useMemo } from 'react';
 import { Params } from 'react-router-dom';
 
 import {
+  adminConfigurationDeploymentAdmin,
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   defaultMiroirModelEnvironment,
+  Domain2ElementFailed,
   Domain2QueryReturnType,
+  entityDeployment,
+  entityTransformerDefinition,
+  getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -27,6 +32,8 @@ import {
 } from "miroir-localcache-redux";
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
+import type { TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -99,9 +106,6 @@ export function useQueryTemplateResults(
   // fetching report data
   const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
-      // props.pageParams.deploymentUuid &&
-      // props.pageParams.applicationSection &&
-      // props.pageParams.reportUuid &&
       (query || resolvedTemplateQuery)
         ? ((resolvedTemplateQuery ?? query) as BoxedQueryWithExtractorCombinerTransformer)
         : {
@@ -140,3 +144,198 @@ export function useQueryTemplateResults(
   // log.info("useQueryTemplateResults reportData", reportData);
   return {reportData, resolvedQuery: reportDataQuery};
 };
+
+
+// ################################################################################################
+export function useDeploymentUuidFromApplicationUuid2(applicationUuid:Uuid | undefined): Uuid {
+  const deploymentUuidQuery:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined =
+    applicationUuid && applicationUuid !== noValue.uuid
+      ? ({
+          queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          pageParams: {},
+          queryParams: {},
+          contextResults: {},
+          extractorTemplates: {
+            deployments: {
+              label: "deployments of the application",
+              // extractorOrCombinerType: "extractorByEntityReturningObjectList",
+              extractorTemplateType: "extractorTemplateForObjectListByEntity",
+              parentUuid: entityDeployment.uuid,
+              parentName: entityDeployment.name,
+              applicationSection: "data",
+              filter: {
+                attributeName: "adminApplication",
+                value: applicationUuid,
+              },
+            },
+          },
+        } as BoxedQueryTemplateWithExtractorCombinerTransformer)
+      : {
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
+          deploymentUuid: "",
+          pageParams: {},
+          queryParams: {},
+          contextResults: {},
+          extractors: {},
+        };
+
+  const deploymentUuidQueryResults: Domain2QueryReturnType<
+    Domain2QueryReturnType<Record<string, any>>
+  > = useQueryTemplateResults({} as any, deploymentUuidQuery);
+
+  if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
+    // should never happen
+    throw new Error(
+      "DeleteEntityRunner: failed to get report data: " +
+        JSON.stringify(deploymentUuidQueryResults, null, 2)
+    );
+  }
+  const { reportData: deploymentUuidQueryResultsData, resolvedQuery } = deploymentUuidQueryResults;
+              
+  const deploymentUuidFromApplicationUuid: Uuid = deploymentUuidQueryResultsData?.deployments &&
+      deploymentUuidQueryResultsData?.deployments.length == 1
+      ? deploymentUuidQueryResultsData?.deployments[0].uuid
+      : "NOT_FOUND";
+  
+  return deploymentUuidFromApplicationUuid;
+}
+
+// ################################################################################################
+export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | undefined): Uuid {
+  const deploymentUuidQuery:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = useMemo(
+    () =>
+      applicationUuid && applicationUuid !== noValue.uuid
+        ? ({
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: {
+              deployments: {
+                label: "deployments of the application",
+                // extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                parentUuid: entityDeployment.uuid,
+                parentName: entityDeployment.name,
+                applicationSection: "data",
+                filter: {
+                  attributeName: "adminApplication",
+                  value: applicationUuid
+                },
+              },
+            },
+          } as BoxedQueryTemplateWithExtractorCombinerTransformer)
+        : 
+          {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            deploymentUuid: "",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractors: {},
+          },
+    [
+      applicationUuid
+    ]
+  );
+
+  const deploymentUuidQueryResults: Domain2QueryReturnType<
+    Domain2QueryReturnType<Record<string, any>>
+  > = useQueryTemplateResults({} as any, deploymentUuidQuery);
+
+  if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
+    // should never happen
+    throw new Error(
+      "DeleteEntityRunner: failed to get report data: " +
+        JSON.stringify(deploymentUuidQueryResults, null, 2)
+    );
+  }
+  const { reportData: deploymentUuidQueryResultsData, resolvedQuery } = deploymentUuidQueryResults;
+              
+  const deploymentUuidFromApplicationUuid: Uuid = useMemo(() => {
+    return deploymentUuidQueryResultsData?.deployments &&
+      deploymentUuidQueryResultsData?.deployments.length == 1
+      ? deploymentUuidQueryResultsData?.deployments[0].uuid
+      : "NOT_FOUND";
+  }, [deploymentUuidQueryResultsData]);
+  
+  return deploymentUuidFromApplicationUuid;
+}
+
+// ################################################################################################
+export function useTransformer(
+  deploymentUuid: Uuid,
+  transformerUuid: Uuid | undefined
+): Domain2ElementFailed | TransformerDefinition | undefined {
+  const transformerDefinitionApplicationSection = getApplicationSection(
+    deploymentUuid,
+    entityTransformerDefinition.uuid
+  );
+
+  const transformerQuery:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = useMemo(
+    () =>
+      // formikContext.values[runnerName]?.application !== noValue.uuid &&
+      deploymentUuid && deploymentUuid !== noValue.uuid
+        ? ({
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            deploymentUuid: deploymentUuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: {
+              transformers: {
+                label: "transformers of the given application",
+                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                parentUuid: entityTransformerDefinition.uuid,
+                parentName: entityTransformerDefinition.name,
+                applicationSection: transformerDefinitionApplicationSection,
+                filter: {
+                  attributeName: "uuid",
+                  value: transformerUuid
+                  // value: {
+                  //   transformerType: "mustacheStringTemplate",
+                  //   interpolation: "build",
+                  //   definition: `{{transformerEditor_selector.transformerUuid}}`,
+                  // },
+                },
+              },
+            },
+          } as BoxedQueryTemplateWithExtractorCombinerTransformer)
+        : {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            deploymentUuid: "",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractors: {},
+          },
+    [deploymentUuid, transformerDefinitionApplicationSection]
+  );
+
+  const transformerQueryResults: Domain2QueryReturnType<
+    Domain2QueryReturnType<Record<string, any>>
+  > = useQueryTemplateResults({} as any, transformerQuery);
+
+  if (transformerQueryResults instanceof Domain2ElementFailed) {
+    return transformerQueryResults;
+  }
+  const currentFetchedTransformerDefinition: TransformerDefinition | undefined = useMemo(() => {
+    return transformerQueryResults?.reportData?.transformers &&
+      transformerQueryResults?.reportData?.transformers.length == 1
+      ? transformerQueryResults?.reportData?.transformers[0]
+      : undefined;
+  }, [transformerQueryResults]);
+
+  return currentFetchedTransformerDefinition;
+}

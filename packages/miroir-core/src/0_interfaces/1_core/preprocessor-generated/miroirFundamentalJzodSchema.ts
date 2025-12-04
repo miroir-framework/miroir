@@ -1191,6 +1191,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -8894,16 +8895,6 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "adminApplication": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 8,
-                "defaultLabel": "Admin SelfApplication",
-                "editable": true
-              }
-            }
-          },
           "selfApplication": {
             "type": "uuid",
             "tag": {
@@ -9086,10 +9077,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 9,
                 "editable": false,
                 "defaultLabel": "SelfApplication",
-                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "selectorParams": {
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                   "targetEntityOrderInstancesBy": "name"
@@ -24546,6 +24535,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -37701,10 +37691,8 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 9,
                     "editable": false,
                     "defaultLabel": "SelfApplication",
-                    "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                     "selectorParams": {
                       "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                       "targetEntityOrderInstancesBy": "name"
@@ -37717,10 +37705,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 9,
                         "editable": false,
                         "defaultLabel": "SelfApplication",
-                        "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "selectorParams": {
                           "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                           "targetEntityOrderInstancesBy": "name"
@@ -41333,6 +41319,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "extend": {
                 "type": "union",
+                "discriminator": "type",
                 "optional": true,
                 "definition": [
                   {
@@ -60440,6 +60427,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -70142,6 +70130,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -79798,6 +79787,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {

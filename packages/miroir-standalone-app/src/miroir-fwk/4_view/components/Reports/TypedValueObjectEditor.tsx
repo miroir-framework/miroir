@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { FormikProps, useFormikContext } from "formik";
 
 import {
+  ACTION_OK,
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
   defaultMetaModelEnvironment,
@@ -359,7 +360,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           initiallyUnfolded={false}
         />
         <ThemedOnScreenHelper
-          label={`TypedValueObjectEditor for value`}
+          label={`TypedValueObjectEditor for valueObject`}
           data={valueObject}
           // initiallyUnfolded={false}
         />
@@ -440,7 +441,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
         const result = await formik.submitForm();
         log.info("TypedValueObjectEditor async submit button action done", result);
-        return result;
+        return Promise.resolve(ACTION_OK);
       }}
       successMessage={`${formLabel} completed successfully`}
       label={formLabel}
