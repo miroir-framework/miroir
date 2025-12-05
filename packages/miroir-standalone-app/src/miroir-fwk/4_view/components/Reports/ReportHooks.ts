@@ -306,7 +306,7 @@ export function useTransformer(
                   // value: {
                   //   transformerType: "mustacheStringTemplate",
                   //   interpolation: "build",
-                  //   definition: `{{transformerEditor_selector.transformerUuid}}`,
+                  //   definition: `{{transformerEditor_editor_selector.transformerUuid}}`,
                   // },
                 },
               },

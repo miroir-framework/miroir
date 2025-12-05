@@ -100,6 +100,7 @@ export const TransformationResultPanel: React.FC<{
             applicationSection={"data"}
             formLabel={"Transformation Result Viewer"}
             onSubmit={async () => {}} // No-op for readonly
+            mode="create"
             maxRenderDepth={3}
             readonly={true}
           />
