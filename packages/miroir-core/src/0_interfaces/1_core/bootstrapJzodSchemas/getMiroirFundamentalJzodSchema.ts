@@ -33,6 +33,7 @@ import { zodParseErrorJzodSchema, zodParseErrorIssueJzodSchema } from "../zodPar
 import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
 import { keyMapEntry, resolvedJzodSchemaReturnType, resolvedJzodSchemaReturnTypeError, resolvedJzodSchemaReturnTypeOK } from "../jzodTypeCheckInterface";
 import { jzodUnion_RecursivelyUnfold_ReturnType, jzodUnion_RecursivelyUnfold_ReturnTypeError, jzodUnion_RecursivelyUnfold_ReturnTypeOK } from "../jzodUnion_RecursivelyUnfoldInterface";
+import { optional } from "zod";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -735,7 +736,6 @@ export function getMiroirFundamentalJzodSchema(
           discriminator: "iconType",
           tag: {
             value: {
-              id: 11,
               defaultLabel: "Icon used to represent instances of this Entity",
               editable: true,
             },
@@ -789,6 +789,32 @@ export function getMiroirFundamentalJzodSchema(
                       editable: true,
                     },
                   },
+                },
+                superImpose: {
+                  type: "object",
+                  optional: true,
+                  definition: {
+                    letter: {
+                      type: "string",
+                      optional: true,
+                      tag: {
+                        value: {
+                          defaultLabel: "Letter Superimposed on Icon",
+                          editable: true,
+                        },
+                      },
+                    },
+                    color: {
+                      type: "string",
+                      optional: true,
+                      tag: {
+                        value: {
+                          defaultLabel: "Color of Superimposed Letter",
+                          editable: true,
+                        },
+                      },
+                    }
+                  }
                 },
                 color: {
                   type: "union",

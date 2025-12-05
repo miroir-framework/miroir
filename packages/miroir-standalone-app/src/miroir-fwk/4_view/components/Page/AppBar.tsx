@@ -38,6 +38,20 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
     // "icon": "category",
+    "icon": {
+      iconType: "mui",
+      name: "build",
+      superImpose: {
+        letter: "T",
+        color: "#FF0000",
+      }
+      // color: "red",
+      // color: {
+      //   colorType: "themeColor",
+      //   currentThemeColorPath: "colors.warning"
+      // }
+    }
+
   },
   // {
   //   "label": "concept",

@@ -7,6 +7,7 @@ import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import { SymbolWithLetter } from './SymbolWithLetter';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -617,7 +618,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
       
       if (!iconSource) {
         const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
-        return { type: 'symbol', content: fallbackIconName, error: null, color: undefined };
+        return { type: 'symbol', content: fallbackIconName, error: null, color: undefined, superImpose: undefined };
       }
 
       // Handle string (legacy MUI icon names)
@@ -625,7 +626,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
         // Default to Material Symbol
         const mappedName = muiIconNameMap[iconSource] || iconSource;
         const symbolName = materialSymbolsIconMap[mappedName] || mappedName;
-        return { type: 'symbol', content: symbolName, error: null, color: undefined };
+        return { type: 'symbol', content: symbolName, error: null, color: undefined, superImpose: undefined };
       }
 
       // Handle MiroirIcon object types
@@ -635,11 +636,11 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
           const mappedEmoji = EMOJI_MAP[iconSource.name];
           if (mappedEmoji) {
             log.info(`Mapped emoji name "${iconSource.name}" to "${mappedEmoji}"`);
-            return { type: 'emoji', content: mappedEmoji, error: null, color: undefined };
+            return { type: 'emoji', content: mappedEmoji, error: null, color: undefined, superImpose: undefined };
           }
           
           // If it's already an emoji character, use it directly
-            return { type: 'emoji', content: iconSource.name, error: null, color: undefined };
+            return { type: 'emoji', content: iconSource.name, error: null, color: undefined, superImpose: undefined };
         }
         
         if (iconSource.iconType === 'mui') {
@@ -673,12 +674,12 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
             }
           }
           
-          return { type: 'symbol', content: symbolName, error: null, color: resolvedColor };
+          return { type: 'symbol', content: symbolName, error: null, color: resolvedColor, superImpose: iconSource.superImpose };
         }
       }
 
       const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
-      return { type: 'symbol', content: fallbackIconName, error: 'Invalid icon format', color: undefined };
+      return { type: 'symbol', content: fallbackIconName, error: 'Invalid icon format', color: undefined, superImpose: undefined };
     } catch (error) {
       console.warn('Icon resolution error:', error);
       const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
@@ -687,7 +688,8 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
         content: `❓ ${fallback}`, 
         symbolName: fallbackIconName,
         error: error instanceof Error ? error.message : 'Unknown error',
-        color: undefined
+        color: undefined,
+        superImpose: undefined
       };
     }
   }, [icon, children, fallback, muiIconNameMap, materialSymbolsIconMap, currentTheme]);
@@ -760,6 +762,25 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
   const renderIcon = () => {
     switch (resolvedIcon.type) {
       case 'symbol':
+        // Check if we should render with superimposed letter
+        if (resolvedIcon.superImpose?.letter) {
+          return (
+            <SymbolWithLetter
+              symbol={resolvedIcon.content}
+              letter={resolvedIcon.superImpose.letter}
+              size={sizeMap[size]}
+              symbolColor={resolvedIcon.color}
+              letterColor={resolvedIcon.superImpose.color}
+              className={className}
+              style={style}
+              aria-label={accessibilityLabel}
+              role="img"
+              {...rest}
+            />
+          );
+        }
+        
+        // Regular symbol rendering
         const iconColor = resolvedIcon.color || "inherit";
         const symbolStyles: React.CSSProperties = {
           fontSize: sizeMap[size],

@@ -35,6 +35,10 @@ export {
   ThemedIcon,
 } from './IconComponents';
 
+// Symbol with letter overlay
+export { SymbolWithLetter } from './SymbolWithLetter';
+export type { SymbolWithLetterProps } from './SymbolWithLetter';
+
 // Layout components
 export {
   ThemedFlexRow,

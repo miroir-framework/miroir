@@ -1509,7 +1509,6 @@ export const miroirFundamentalJzodSchema = {
         "discriminator": "iconType",
         "tag": {
           "value": {
-            "id": 11,
             "defaultLabel": "Icon used to represent instances of this Entity",
             "editable": true
           }
@@ -1561,6 +1560,32 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "defaultLabel": "Icon Name",
                     "editable": true
+                  }
+                }
+              },
+              "superImpose": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "letter": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Letter Superimposed on Icon",
+                        "editable": true
+                      }
+                    }
+                  },
+                  "color": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Color of Superimposed Letter",
+                        "editable": true
+                      }
+                    }
                   }
                 }
               },
@@ -8414,7 +8439,7 @@ export const miroirFundamentalJzodSchema = {
                 "description": "If true, this test will be skipped when running tests",
                 "initializeTo": {
                   "initializeToType": "value",
-                  "definition": true
+                  "value": true
                 }
               }
             }
@@ -8504,7 +8529,7 @@ export const miroirFundamentalJzodSchema = {
                 "description": "If true, this test suite will be skipped when running tests",
                 "initializeTo": {
                   "initializeToType": "value",
-                  "definition": true
+                  "value": true
                 }
               }
             }
@@ -8624,7 +8649,7 @@ export const miroirFundamentalJzodSchema = {
                 "description": "If true, this test will be skipped when running tests",
                 "initializeTo": {
                   "initializeToType": "value",
-                  "definition": true
+                  "value": true
                 }
               }
             }
@@ -8692,7 +8717,7 @@ export const miroirFundamentalJzodSchema = {
                         "description": "If true, this test will be skipped when running tests",
                         "initializeTo": {
                           "initializeToType": "value",
-                          "definition": true
+                          "value": true
                         }
                       }
                     }
@@ -8781,7 +8806,7 @@ export const miroirFundamentalJzodSchema = {
                         "description": "If true, this test suite will be skipped when running tests",
                         "initializeTo": {
                           "initializeToType": "value",
-                          "definition": true
+                          "value": true
                         }
                       }
                     }
@@ -42078,7 +42103,6 @@ export const miroirFundamentalJzodSchema = {
         "discriminator": "iconType",
         "tag": {
           "value": {
-            "id": 11,
             "defaultLabel": "Icon used to represent instances of this Entity",
             "editable": true,
             "isTemplate": true
@@ -42202,6 +42226,81 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "superImpose": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "letter": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Letter Superimposed on Icon",
+                            "editable": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Letter Superimposed on Icon",
+                                "editable": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "color": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Color of Superimposed Letter",
+                            "editable": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Color of Superimposed Letter",
+                                "editable": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
