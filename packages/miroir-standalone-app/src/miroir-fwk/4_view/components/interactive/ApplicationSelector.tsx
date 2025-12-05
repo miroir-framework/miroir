@@ -91,11 +91,11 @@ export const ApplicationSelector: FC<{
   );
 
   // ##################################################################################
-  // transformerEditor_editor_selector initial load, persistedState -> formik
+  // transformerEditor_transformer_selector initial load, persistedState -> formik
   const initialSelectorValue = useMemo(() => {
     log.info(
       "ApplicationSelector: got new mode:",
-      // formikContext.values.transformerEditor_editor_selector.mode
+      // formikContext.values.transformerEditor_transformer_selector.mode
       persistedToolsPageState?.applicationSelector
     );
     return persistedToolsPageState?.applicationSelector?? noValue.uuid;

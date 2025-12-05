@@ -10,6 +10,7 @@ import {
   adminConfigurationDeploymentMiroir,
   defaultAdminApplicationDeploymentMap,
   defaultMiroirModelEnvironment,
+  defaultTransformerInput,
   entityApplicationForAdmin,
   entityDefinitionTransformerDefinition,
   getInnermostTransformerError,
@@ -48,6 +49,8 @@ import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
 import type { TransformerEditorFormikValueType, TransformerEditorProps } from './TransformerEditorInterface';
 import { TransformerEventsPanel } from './TransformerEventsPanel';
+import { TransformationResultPanel } from './TransformationResultPanel';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -190,7 +193,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   const initialFormValues = useMemo(() => {
     return {
       // For mode selector - transformer field is only used when mode='here'
-      transformerEditor_editor_selector: {
+      transformerEditor_transformer_selector: {
         // transformer: currentHereTransformerDefinition,
         mode: "none",
       },
@@ -273,25 +276,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         {
           /* Formik children as function to access formik context */ (
             formikContext: FormikProps<TransformerEditorFormikValueType>
-            // formikContext: FormikProps<{
-            //   transformerEditor_editor_selector: {
-            //     mode?: "here" | "defined" | "none";
-            //     transformer?: TransformerForBuildPlusRuntime;
-            //   };
-            //   transformerEditor_input_selector: {
-            //     mode: "instance" | "here" | "none";
-            //     input?: any;
-            //   };
-            //   transformerEditor_input: any;
-            //   transformerEditor_editor: {
-            //     currentTransformerDefinition: TransformerForBuildPlusRuntime;
-            //   };
-            // }>
           ) => {
             // ##################################################################################
             const transformerSelector_deploymentUuidFromApplicationUuid: Uuid =
               useDeploymentUuidFromApplicationUuid(
-                (formikContext.values.transformerEditor_editor_selector as any).application
+                (formikContext.values.transformerEditor_transformer_selector as any).application
               );
             // ##################################################################################
             const transformerSelector_currentFetchedTransformerDefinition:
@@ -299,7 +288,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               | Domain2ElementFailed
               | undefined = useTransformer(
               transformerSelector_deploymentUuidFromApplicationUuid,
-              (formikContext.values.transformerEditor_editor_selector as any).transformerUuid
+              (formikContext.values.transformerEditor_transformer_selector as any).transformerUuid
             );
 
             if (
@@ -314,14 +303,14 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             }
 
             // ##################################################################################
-            // transformerEditor_editor_selector persistedState -> formik
+            // transformerEditor_transformer_selector persistedState -> formik
             useEffect(() => {
               log.info(
                 "TransformerEditor: got new mode:",
-                // formikContext.values.transformerEditor_editor_selector.mode
+                // formikContext.values.transformerEditor_transformer_selector.mode
                 persistedState?.selector?.mode
               );
-              if (formikContext.values.transformerEditor_editor_selector.mode == "none") {
+              if (formikContext.values.transformerEditor_transformer_selector.mode == "none") {
                 if (persistedState?.selector?.mode && persistedState?.selector?.mode !== "none") {
                   // restore state from persistedState
                   log.info(
@@ -329,7 +318,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     persistedState?.selector?.mode
                   );
                   formikContext.setFieldValue(
-                    "transformerEditor_editor_selector",
+                    "transformerEditor_transformer_selector",
                     persistedState?.selector
                   );
                 }
@@ -375,12 +364,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
               // When mode is 'defined' and transformerUuid is changed, fetch transformer from stored definition and update formik context
               if (
-                formikContext.values.transformerEditor_editor_selector.mode === "defined" &&
-                (formikContext.values.transformerEditor_editor_selector as any).application &&
-                (formikContext.values.transformerEditor_editor_selector as any).transformerUuid &&
-                (formikContext.values.transformerEditor_editor_selector as any).transformerUuid !==
+                formikContext.values.transformerEditor_transformer_selector.mode === "defined" &&
+                (formikContext.values.transformerEditor_transformer_selector as any).application &&
+                (formikContext.values.transformerEditor_transformer_selector as any).transformerUuid &&
+                (formikContext.values.transformerEditor_transformer_selector as any).transformerUuid !==
                   noValue.uuid &&
-                (formikContext.values.transformerEditor_editor_selector as any).transformerUuid !==
+                (formikContext.values.transformerEditor_transformer_selector as any).transformerUuid !==
                   (persistedState?.selector as any).transformerUuid &&
                 transformerSelector_currentFetchedTransformerDefinition &&
                 typeof transformerSelector_currentFetchedTransformerDefinition == "object" &&
@@ -393,19 +382,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     ?.definition
                 );
                 formikContext.setFieldValue(
-                  "transformerEditor_editor_selector.transformer",
+                  "transformerEditor_transformer_selector.transformer",
                   transformerSelector_currentFetchedTransformerDefinition.transformerImplementation
                     ?.definition
                 );
               }
             }, [
-              formikContext.values.transformerEditor_editor_selector.mode,
+              formikContext.values.transformerEditor_transformer_selector.mode,
               persistedState?.selector,
               transformerSelector_currentFetchedTransformerDefinition,
             ]);
 
             // ##################################################################################
-            // transformerEditor_editor_selector, transformerEditor_input_selector formik -> persistedState
+            // transformerEditor_transformer_selector, transformerEditor_input_selector formik -> persistedState
             // Debounced update to context when mode='here' and transformer definition changes
             useEffect(() => {
               // Clear existing timeout
@@ -415,8 +404,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
               // Only update if mode is defined
               if (
-                !formikContext.values.transformerEditor_editor_selector.mode ||
-                formikContext.values.transformerEditor_editor_selector.mode === "none"
+                !formikContext.values.transformerEditor_transformer_selector.mode ||
+                formikContext.values.transformerEditor_transformer_selector.mode === "none"
               ) {
                 return;
               }
@@ -425,26 +414,26 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               transformerUpdateTimeoutRef.current = setTimeout(() => {
                 log.info(
                   "TransformerEditor: debounced update - pushing transformer to context:",
-                  formikContext.values.transformerEditor_editor_selector.transformer
+                  formikContext.values.transformerEditor_transformer_selector.transformer
                 );
                 const selector =
-                  formikContext.values.transformerEditor_editor_selector.mode === "defined"
+                  formikContext.values.transformerEditor_transformer_selector.mode === "defined"
                     ? {
-                        mode: "defined" as any, //formikContext.values.transformerEditor_editor_selector.mode,
-                        application: (formikContext.values.transformerEditor_editor_selector as any)
+                        mode: "defined" as any, //formikContext.values.transformerEditor_transformer_selector.mode,
+                        application: (formikContext.values.transformerEditor_transformer_selector as any)
                           .application,
-                        transformerUuid: (formikContext.values.transformerEditor_editor_selector as any)
+                        transformerUuid: (formikContext.values.transformerEditor_transformer_selector as any)
                           .transformerUuid,
-                        transformer: (formikContext.values.transformerEditor_editor_selector as any)
+                        transformer: (formikContext.values.transformerEditor_transformer_selector as any)
                           .transformer, // restores potentially saved modifications
                       }
                     : {
-                        mode: "here" as any, //formikContext.values.transformerEditor_editor_selector.mode
-                        transformer: formikContext.values.transformerEditor_editor_selector.transformer,
+                        mode: "here" as any, //formikContext.values.transformerEditor_transformer_selector.mode
+                        transformer: formikContext.values.transformerEditor_transformer_selector.transformer,
                       };
                 context.updateTransformerEditorState({
                   currentTransformerDefinition:
-                    formikContext.values.transformerEditor_editor_selector.transformer,
+                    formikContext.values.transformerEditor_transformer_selector.transformer,
                   selector,
                   input_selector: {
                     mode: formikContext.values.transformerEditor_input_selector.mode as any,
@@ -460,8 +449,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 }
               };
             }, [
-              formikContext.values.transformerEditor_editor_selector.mode,
-              formikContext.values.transformerEditor_editor_selector.transformer,
+              formikContext.values.transformerEditor_transformer_selector.mode,
+              formikContext.values.transformerEditor_transformer_selector.transformer,
               formikContext.values.transformerEditor_input_selector.mode,
               formikContext.values.transformerEditor_input_selector.input,
               // formikContext.values.transformerEditor_editor.currentTransformerDefinition,
@@ -478,7 +467,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             const transformerInput = useMemo(
               () =>
                 formikContext.values.transformerEditor_input_selector.mode == "here"
-                  ? formikContext.values.transformerEditor_input_selector.input ?? {}
+                  ? {[defaultTransformerInput]: formikContext.values.transformerEditor_input_selector.input}
                   : formikContext.values.transformerEditor_input ?? {},
               [
                 formikContext.values.transformerEditor_input_selector.mode,
@@ -489,7 +478,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
             const transformationResult = useMemo(() => {
               const currentFormikTransformerDefinition: TransformerForBuildPlusRuntime = formikContext.values
-                .transformerEditor_editor_selector.transformer ?? {
+                .transformerEditor_transformer_selector.transformer ?? {
                 transformerType: "returnValue",
                 value: null,
               };
@@ -511,7 +500,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 "value" // resolveBuildTransformersTo
               );
               // }, [formikContext.values.transformerEditor_editor.currentTransformerDefinition]);
-            }, [formikContext.values.transformerEditor_editor_selector.transformer, transformerInput]);
+            }, [formikContext.values.transformerEditor_transformer_selector.transformer, transformerInput]);
 
             const innermostError = useMemo(
               () =>
@@ -539,7 +528,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               return {
                 type: "object",
                 definition: {
-                  transformerEditor_editor_selector: {
+                  transformerEditor_transformer_selector: {
                     type: "union",
                     discriminator: "mode",
                     tag: {
@@ -560,7 +549,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                           },
                         },
                       },
-                      // transformerEditor_editor_selector here mode uses the in-editor transformer
+                      // transformerEditor_transformer_selector here mode uses the in-editor transformer
                       {
                         type: "object",
                         definition: {
@@ -577,7 +566,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                           },
                         },
                       },
-                      // transformerEditor_editor_selector defined mode uses a stored transformer
+                      // transformerEditor_transformer_selector defined mode uses a stored transformer
                       {
                         type: "object",
                         definition: {
@@ -806,12 +795,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   {/* <ThemedOnScreenHelper
                       label="formik Transformer Definition"
                       data={{
-                        mode: formikContext.values.transformerEditor_editor_selector.mode,
-                        defn: formikContext.values.transformerEditor_editor_selector.transformer,
+                        mode: formikContext.values.transformerEditor_transformer_selector.mode,
+                        defn: formikContext.values.transformerEditor_transformer_selector.transformer,
                       }}
                       initiallyUnfolded={false}
                     /> */}
-                  <ThemedOnScreenHelper
+                  <ThemedOnScreenDebug
                     label="inputSelector defaultAdminApplicationDeploymentMap"
                     data={defaultAdminApplicationDeploymentMap}
                     // initiallyUnfolded={false}
@@ -826,12 +815,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     data={inputSelector_deploymentUuidFromApplicationUuid}
                     // initiallyUnfolded={false}
                   /> */}
-                  <ThemedOnScreenHelper
+                  <ThemedOnScreenDebug
                     label="formikContext.values.transformerEditor_input_selector"
                     data={formikContext.values.transformerEditor_input_selector}
                     initiallyUnfolded={false}
                   />
-                  <ThemedOnScreenHelper
+                  <ThemedOnScreenDebug
                     label="currentDefinedTransformerDefinition"
                     data={transformerSelector_currentFetchedTransformerDefinition}
                     initiallyUnfolded={false}
@@ -848,7 +837,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     /> */}
                   {/* <ThemedOnScreenHelper
                       label="transformer mode"
-                      data={formikContext.values.transformerEditor_editor_selector.mode}
+                      data={formikContext.values.transformerEditor_transformer_selector.mode}
                       initiallyUnfolded={false}
                     /> */}
                   {/* <ThemedOnScreenHelper
@@ -888,7 +877,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   <TypedValueObjectEditor
                     labelElement={<>Transformer Definition</>}
                     formValueMLSchema={formMLSchema}
-                    formikValuePathAsString="transformerEditor_editor_selector"
+                    formikValuePathAsString="transformerEditor_transformer_selector"
                     deploymentUuid={deploymentUuid}
                     applicationSection={"model"}
                     formLabel={"Transformer Definition Selector"}
@@ -937,15 +926,15 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       showAllInstances={showAllInstances}
                     />
                   )}
-                  {/* <TransformationResultPanel
+                  <TransformationResultPanel
                     transformationResult={transformationResult}
                     transformationResultSchema={transformationResultSchema}
                     // transformationError={transformationError}
-                    selectedEntityInstance={selectedEntityInstance}
+                    // selectedEntityInstance={selectedEntityInstance}
                     showAllInstances={showAllInstances}
-                    entityInstances={entityInstances}
+                    // entityInstances={entityInstances}
                     deploymentUuid={deploymentUuid}
-                  /> */}
+                  />
                 </div>
               </div>
             );

@@ -1,7 +1,7 @@
-import type { TransformerForBuildPlusRuntime, Uuid } from "miroir-core";
+import type { EntityInstance, TransformerForBuildPlusRuntime, Uuid } from "miroir-core";
 
 export type TransformerEditorFormikValueType = {
-  transformerEditor_editor_selector: {
+  transformerEditor_transformer_selector: {
     mode?: "here" | "defined" | "none";
     transformer?: TransformerForBuildPlusRuntime;
   };
@@ -9,7 +9,12 @@ export type TransformerEditorFormikValueType = {
     mode: "instance" | "here" | "none";
     input?: any;
   };
+  // 
   transformerEditor_input: any;
+  selectedEntityInstance: EntityInstance | undefined;
+  entityInstances: EntityInstance[];
+  deploymentUuid: Uuid;
+  // 
   transformerEditor_editor: {
     currentTransformerDefinition: TransformerForBuildPlusRuntime;
   };

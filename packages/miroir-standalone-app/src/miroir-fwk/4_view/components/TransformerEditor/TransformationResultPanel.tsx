@@ -21,6 +21,8 @@ import {
   ThemedHeaderSection,
   ThemedTitle
 } from "../Themes/index";
+import { useFormikContext } from 'formik';
+import type { TransformerEditorFormikValueType } from './TransformerEditorInterface';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -34,9 +36,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const TransformationResultPanel: React.FC<{
   transformationResult: TransformerReturnType<any>;
   transformationResultSchema?: JzodElement;
-  selectedEntityInstance: EntityInstance | undefined;
+  // selectedEntityInstance: EntityInstance | undefined;
   showAllInstances: boolean;
-  entityInstances: EntityInstance[];
+  // entityInstances: EntityInstance[];
   deploymentUuid: Uuid;
 }> =
   // React.memo<{
@@ -53,12 +55,13 @@ export const TransformationResultPanel: React.FC<{
     transformationResult,
     transformationResultSchema,
     // transformationError,
-    selectedEntityInstance,
+    // selectedEntityInstance,
     showAllInstances,
-    entityInstances,
+    // entityInstances,
     deploymentUuid,
   }) => {
     log.info("Rendering TransformationResultPanel with result:", transformationResult);
+    const formikContext = useFormikContext<TransformerEditorFormikValueType>();
     return (
       <ThemedContainer style={{ flex: 1 }}>
         <ThemedHeaderSection>
@@ -104,7 +107,9 @@ export const TransformationResultPanel: React.FC<{
             maxRenderDepth={3}
             readonly={true}
           />
-        ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
+        // ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
+        // ) : (showAllInstances ? formikContext.values.entityInstances?.length > 0 : formikContext.values.selectedEntityInstance) ? (
+        ) : formikContext.values.transformerEditor_input_selector.mode !== "instance" ? (
           <div>
             <div
               style={{
@@ -122,8 +127,7 @@ export const TransformationResultPanel: React.FC<{
               </div>
               <div style={{ fontSize: "0.9em", color: "#666" }}>
                 <div style={{ marginBottom: "4px" }}>
-                  Tip: Use getFromContext to access the entity instance
-                  {showAllInstances ? "s" : ""}:
+                  Tip: Use getFromContext to access the input, using "defaultInput" as referenceName:
                 </div>
               </div>
             </div>
@@ -131,7 +135,6 @@ export const TransformationResultPanel: React.FC<{
               {JSON.stringify(
                 {
                   transformerType: "getFromContext",
-                  // referenceName: showAllInstances ? "target" : "applyTo",
                   referenceName: defaultTransformerInput,
                 },
                 null,

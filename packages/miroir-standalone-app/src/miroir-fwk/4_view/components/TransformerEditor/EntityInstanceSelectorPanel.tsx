@@ -75,6 +75,7 @@ import {
 } from "../Reports/ReportHooks";
 import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInstance';
 import type { TransformerEditorFormikValueType } from './TransformerEditorInterface';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -342,11 +343,21 @@ export function EntityInstanceSelectorPanel(props:{
   useEffect(() => {
     if (formikContext.values.transformerEditor_input_selector.mode == "instance") {
       formikContext.setFieldValue("transformerEditor_input", inputSelectorData);
+      if (showAllInstances) {
+        formikContext.setFieldValue(
+          "entityInstances", entityInstances
+        );
+      } else {
+        formikContext.setFieldValue(
+          "selectedEntityInstance", selectedEntityInstance
+        )
+      }
     }
   }, [
     formikContext.values.transformerEditor_input_selector.mode,
-    // formikContext.values.transformerEditor_input.input,
     inputSelectorData,
+    entityInstances,
+    selectedEntityInstance,
   ]);
 
   // ##############################################################################################
@@ -467,7 +478,7 @@ export function EntityInstanceSelectorPanel(props:{
         /* Show all instances */
         entityInstances.length > 0 ? (
           <>
-            <ThemedOnScreenHelper
+            <ThemedOnScreenDebug
               label={`TypedValueObjectEditor showing all ${
                 entityInstances.length
               } instances of entity '${currentReportTargetEntityDefinition?.name || ""}`}
@@ -478,37 +489,45 @@ export function EntityInstanceSelectorPanel(props:{
                     definition: {
                       type: "array",
                       definition:
-                        currentReportTargetEntityDefinition?.jzodSchema ?? createGenericObjectSchema(),
+                        currentReportTargetEntityDefinition?.jzodSchema ??
+                        createGenericObjectSchema(),
                     },
                   },
                 },
               }}
               initiallyUnfolded={false}
             />
-            <TypedValueObjectEditorWithFormik
-              labelElement={<></>}
-              initialValueObject={{ entityInstances }}
-              formValueMLSchema={
-                {
-                  type: "object",
-                  definition: {
-                    entityInstances: {
-                      type: "array",
-                      definition:
-                        currentReportTargetEntityDefinition?.jzodSchema ?? createGenericObjectSchema(),
+            <ThemedFoldableContainer
+              style={{ flex: 1, padding: 0 }}
+              title="Selected Entity Instances"
+              initiallyFolded={true}
+            >
+              <TypedValueObjectEditorWithFormik
+                labelElement={<></>}
+                initialValueObject={{ entityInstances }}
+                formValueMLSchema={
+                  {
+                    type: "object",
+                    definition: {
+                      entityInstances: {
+                        type: "array",
+                        definition:
+                          currentReportTargetEntityDefinition?.jzodSchema ??
+                          createGenericObjectSchema(),
+                      },
                     },
-                  },
-                } as any
-              } // TODO: ILL-TYPED!!
-              formikValuePathAsString="entityInstances"
-              deploymentUuid={deploymentUuid}
-              applicationSection={"data"}
-              formLabel={"All Entity Instances Viewer"}
-              onSubmit={async () => {}} // No-op for readonly
-              mode="create" // Readonly viewer mode, not relevant here
-              maxRenderDepth={3}
-              readonly={true}
-            />
+                  } as any
+                } // TODO: ILL-TYPED!!
+                formikValuePathAsString="entityInstances"
+                deploymentUuid={deploymentUuid}
+                applicationSection={"data"}
+                formLabel={"All Entity Instances Viewer"}
+                onSubmit={async () => {}} // No-op for readonly
+                mode="create" // Readonly viewer mode, not relevant here
+                maxRenderDepth={3}
+                readonly={true}
+              />
+            </ThemedFoldableContainer>
           </>
         ) : (
           <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
@@ -517,26 +536,32 @@ export function EntityInstanceSelectorPanel(props:{
         )
       ) : /* Show single instance */
       selectedEntityInstance ? (
-        <TypedValueObjectEditorWithFormik
-          mode="create"
-          labelElement={<></>}
-          initialValueObject={{ selectedEntityInstance }}
-          // valueObjectMMLSchema={createGenericObjectSchema()}
-          formValueMLSchema={{
-            type: "object",
-            definition: {
-              selectedEntityInstance:
-                currentReportTargetEntityDefinition?.jzodSchema ?? createGenericObjectSchema(),
-            },
-          }}
-          formikValuePathAsString="selectedEntityInstance"
-          deploymentUuid={deploymentUuid}
-          applicationSection={"data"}
-          formLabel={"Entity Instance Viewer"}
-          onSubmit={async () => {}} // No-op for readonly
-          maxRenderDepth={3}
-          readonly={true}
-        />
+        <ThemedFoldableContainer
+          style={{ flex: 1, padding: 0 }}
+          title="Selected Entity Instance"
+          initiallyFolded={false}
+        >
+          <TypedValueObjectEditorWithFormik
+            mode="create"
+            labelElement={<></>}
+            initialValueObject={{ selectedEntityInstance }}
+            // valueObjectMMLSchema={createGenericObjectSchema()}
+            formValueMLSchema={{
+              type: "object",
+              definition: {
+                selectedEntityInstance:
+                  currentReportTargetEntityDefinition?.jzodSchema ?? createGenericObjectSchema(),
+              },
+            }}
+            formikValuePathAsString="selectedEntityInstance"
+            deploymentUuid={deploymentUuid}
+            applicationSection={"data"}
+            formLabel={"Entity Instance Viewer"}
+            onSubmit={async () => {}} // No-op for readonly
+            maxRenderDepth={3}
+            readonly={true}
+          />
+        </ThemedFoldableContainer>
       ) : (
         <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
           No entity instances found
