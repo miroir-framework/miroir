@@ -5,6 +5,7 @@ import React from 'react';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
+import { CodeBlock_ReadOnly } from '../Reports/CodeBlock_ReadOnly.js';
 
 // ################################################################################################
 // Basic Themed Components
@@ -390,12 +391,14 @@ export const ThemedOnScreenDebug: React.FC<ThemedComponentProps & {
   label?: string;
   data: any;
   initiallyUnfolded?: boolean;
+  useCodeBlock?: boolean;
 }> = ({ 
   label,
   data,
   className, 
   style,
-  initiallyUnfolded = true
+  initiallyUnfolded = true,
+  useCodeBlock = false
 }) => {
   const context = useMiroirContextService();
   const { currentTheme } = useMiroirTheme();
@@ -409,6 +412,7 @@ export const ThemedOnScreenDebug: React.FC<ThemedComponentProps & {
       className={className}
       style={{...style, background: currentTheme.colors.warningLight}}
       initiallyUnfolded={initiallyUnfolded}
+      useCodeBlock={useCodeBlock}
     />
   );
 }
@@ -418,12 +422,14 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
   label?: string;
   data: any;
   initiallyUnfolded?: boolean;
+  useCodeBlock?: boolean;
 }> = ({ 
   label,
   data,
   className, 
   style,
-  initiallyUnfolded = true
+  initiallyUnfolded = true,
+  useCodeBlock = false
 }) => {
   const { currentTheme } = useMiroirTheme();
   const [isUnfolded, setIsUnfolded] = React.useState(initiallyUnfolded);
@@ -471,6 +477,8 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
     setIsUnfolded(!isUnfolded);
   };
 
+  const jsonString = JSON.stringify(data, null, 2);
+
   return (
     <div css={containerStyles} className={className} style={style}>
       <div css={headerStyles} onClick={handleToggle}>
@@ -478,9 +486,13 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
         {label && <span css={labelStyles}>{label}</span>}
       </div>
       {isUnfolded && (
-        <pre css={dataStyles}>
-          {JSON.stringify(data, null, 2)}
-        </pre>
+        useCodeBlock ? (
+          <CodeBlock_ReadOnly value={jsonString} />
+        ) : (
+          <pre css={dataStyles}>
+            {jsonString}
+          </pre>
+        )
       )}
     </div>
   );

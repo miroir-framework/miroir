@@ -39,7 +39,8 @@ export const TransformationResultPanel: React.FC<{
   // selectedEntityInstance: EntityInstance | undefined;
   showAllInstances: boolean;
   // entityInstances: EntityInstance[];
-  deploymentUuid: Uuid;
+  inputSelectorMode: "instance" | "here" | "none";
+  inputDeploymentUuid: Uuid;
 }> =
   // React.memo<{
   //   transformationResult: any;
@@ -57,8 +58,9 @@ export const TransformationResultPanel: React.FC<{
     // transformationError,
     // selectedEntityInstance,
     showAllInstances,
+    inputSelectorMode,
     // entityInstances,
-    deploymentUuid,
+    inputDeploymentUuid: inputDeploymentUuid,
   }) => {
     log.info("Rendering TransformationResultPanel with result:", transformationResult);
     const formikContext = useFormikContext<TransformerEditorFormikValueType>();
@@ -99,7 +101,7 @@ export const TransformationResultPanel: React.FC<{
               } // TODO: ILL-TYPED!!
             }
             formikValuePathAsString="transformationResult"
-            deploymentUuid={deploymentUuid}
+            deploymentUuid={inputDeploymentUuid}
             applicationSection={"data"}
             formLabel={"Transformation Result Viewer"}
             onSubmit={async () => {}} // No-op for readonly
@@ -109,7 +111,7 @@ export const TransformationResultPanel: React.FC<{
           />
         // ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
         // ) : (showAllInstances ? formikContext.values.entityInstances?.length > 0 : formikContext.values.selectedEntityInstance) ? (
-        ) : formikContext.values.transformerEditor_input_selector.mode !== "instance" ? (
+        ) : inputSelectorMode !== "instance" ? (
           <div>
             <div
               style={{

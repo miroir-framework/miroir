@@ -1,81 +1,44 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { valueToJzod } from '@miroir-framework/jzod';
 import {
-  Domain2ElementFailed,
   EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   adminLibraryApplication,
-  defaultSelfApplicationDeploymentMap,
   defaultAdminApplicationDeploymentMap,
   defaultTransformerInput,
-  entityApplicationForAdmin,
-  entityDefinitionTransformerDefinition,
-  entityDeployment,
-  entityTransformerDefinition,
-  getApplicationSection,
   getEntityInstancesUuidIndexNonHook,
-  getInnermostTransformerError,
   miroirFundamentalJzodSchema,
-  safeStringify,
-  transformer_extended_apply_wrapper,
-  type BoxedQueryTemplateWithExtractorCombinerTransformer,
-  type BoxedQueryWithExtractorCombinerTransformer,
-  type Domain2QueryReturnType,
   type Entity,
   type EntityDefinition,
   type JzodElement,
-  type JzodObject,
   type JzodSchema,
-  type JzodUnion,
   type MetaModel,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap,
-  type TransformerReturnType,
-  defaultMiroirModelEnvironment
+  type SyncBoxedExtractorOrQueryRunnerMap
 } from 'miroir-core';
 
 
-import {
-  transformer,
-  type TransformerDefinition,
-  type TransformerForBuildPlusRuntime,
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { useFormikContext } from 'formik';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
 import { packageName } from '../../../../constants';
-import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
+import { cleanLevel } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
 import { useCurrentModel } from '../../ReduxHooks';
-import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
   ThemedHeaderSection,
-  ThemedOnScreenHelper,
   ThemedTitle
 } from "../Themes/index";
-import { TransformationResultPanel } from './TransformationResultPanel';
-import { TransformerEventsPanel } from './TransformerEventsPanel';
-import { Formik, useFormikContext, type FormikProps } from 'formik';
-import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
-import {
-  useDeploymentUuidFromApplicationUuid,
-  useDeploymentUuidFromApplicationUuid2,
-  useQueryTemplateResults,
-  useTransformer,
-} from "../Reports/ReportHooks";
-import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInstance';
 import type { TransformerEditorFormikValueType } from './TransformerEditorInterface';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -94,6 +57,7 @@ function createGenericObjectSchema(): JzodElement {
   };
 }
 
+export const formikPath_entityInstanceSelectorPanel = "transformerEditor_input_selector"
 // ################################################################################################
 // ################################################################################################
 // EntityInstanceSelectorPanel Component
@@ -126,9 +90,9 @@ export function EntityInstanceSelectorPanel(props:{
   );
 
   const inputSelector_applicationUuid: Uuid =
-    formikContext.values.transformerEditor_input_selector.mode == "instance" &&
-    (formikContext.values.transformerEditor_input_selector as any).application
-      ? (formikContext.values.transformerEditor_input_selector as any).application
+    formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "instance" &&
+    (formikContext.values[formikPath_entityInstanceSelectorPanel] as any).application
+      ? (formikContext.values[formikPath_entityInstanceSelectorPanel] as any).application
       : // : noValue.uuid;
         adminLibraryApplication.uuid;
 
@@ -242,7 +206,7 @@ export function EntityInstanceSelectorPanel(props:{
 
   const inputSelectorData = useMemo(() => {
     const defaultTransformerInputValue =
-      formikContext.values.transformerEditor_input_selector.mode == "instance"
+      formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "instance"
         ? showAllInstances
           ? entityInstances
           : selectedEntityInstance
@@ -341,7 +305,7 @@ export function EntityInstanceSelectorPanel(props:{
   // ##################################################################################
   // input -> formik
   useEffect(() => {
-    if (formikContext.values.transformerEditor_input_selector.mode == "instance") {
+    if (formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "instance") {
       formikContext.setFieldValue("transformerEditor_input", inputSelectorData);
       if (showAllInstances) {
         formikContext.setFieldValue(
@@ -354,7 +318,7 @@ export function EntityInstanceSelectorPanel(props:{
       }
     }
   }, [
-    formikContext.values.transformerEditor_input_selector.mode,
+    formikContext.values[formikPath_entityInstanceSelectorPanel].mode,
     inputSelectorData,
     entityInstances,
     selectedEntityInstance,
