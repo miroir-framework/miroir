@@ -902,6 +902,7 @@ export {
 } from "./2_domain/Templates";
 export {
   applicationTransformerDefinitions,
+  defaultTransformers,
   getInnermostTransformerError,
   resolveApplyTo_legacy,
   transformer_extended_apply,

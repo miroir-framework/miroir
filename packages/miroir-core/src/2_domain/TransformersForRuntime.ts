@@ -233,13 +233,13 @@ export function getDefaultValueForJzodSchemaWithResolution(
     effectiveSchema.tag.value.initializeTo.value
   ) {
     const result = effectiveSchema.tag.value.initializeTo.value;
-    // log.info(
-    //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
-    //   "currentValuePath",
-    //   currentValuePath,
-    //   "result",
-    //   result
-    // );
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+      "currentValuePath",
+      currentValuePath,
+      "result",
+      result
+    );
     return result;
   }
   if (

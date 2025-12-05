@@ -45,6 +45,7 @@ import {
   logServerError,
   logClientError,
 } from "./services/ErrorLogService.js";
+import type { formikPath_EntityInstanceSelectorPanel } from "./components/TransformerEditor/TransformerEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -57,7 +58,12 @@ MiroirLoggerFactory.registerLoggerToStart(
 // TransformerBuilderPage state interface for persistence
 export interface ToolsPageState {
   applicationSelector?: Uuid;
+  [formikPath_EntityInstanceSelectorPanel]?: {
+    application?: string;
+    selectedEntityUuid?: string;
+  };
   transformerEditor?: {
+    selectedApplicationUuid?: string;
     selectedEntityUuid?: string;
     currentInstanceIndex?: number;
     showAllInstances?: boolean;

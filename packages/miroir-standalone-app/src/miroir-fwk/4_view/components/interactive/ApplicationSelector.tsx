@@ -10,7 +10,6 @@ import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEdi
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { ThemedOnScreenHelper } from "../Themes";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -50,7 +49,7 @@ export const ApplicationSelector: FC<{
     () => ({
       type: "object",
       definition: {
-        applicationSelector: {
+        [formikValuePathAsString]: {
           type: "object",
           tag: {
             value: {
@@ -172,18 +171,6 @@ export const ApplicationSelector: FC<{
 
   return (
     <
-      // style={{
-      //   // marginTop: 16,
-      //   // marginBottom: 16,
-      //   padding: 0,
-      //   margin: 0,
-      //   // border: "1px solid #ccc",
-      //   // borderRadius: 4,
-      //   display: "flex",
-      //   flexDirection: "column",
-      //   // alignItems: "flex-start",
-      //   alignItems: "stretch",
-      // }}
     >
       {/* <ThemedOnScreenHelper
         label={`ApplicationSelector: applicationUuid "${applicationUuid}"`}
@@ -215,21 +202,5 @@ export const ApplicationSelector: FC<{
         }}
       />
     </>
-
-    // <OuterRunnerView
-    //   runnerName={runnerName}
-    //   deploymentUuid={deploymentUuid}
-    //   formMlSchema={formMlSchema}
-    //   initialFormValue={initialFormValue}
-    //   action={{
-    //     actionType: "compositeActionTemplate",
-    //     compositeActionTemplate: deleteApplicationActionTemplate,
-    //   }}
-    //   labelElement={<h2>Delete Application & Deployment</h2>}
-    //   formikValuePathAsString="deleteApplicationAndDeployment"
-    //   formLabel="Delete Application & Deployment"
-    //   displaySubmitButton="onFirstLine"
-    //   useActionButton={true}
-    // />
   );
 };

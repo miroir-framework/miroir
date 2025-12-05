@@ -14,11 +14,11 @@ import { packageName, type ReportUrlParamKeys } from "../../../constants";
 import { PageContainer } from "../components/Page/PageContainer";
 import {
   EntityInstanceSelectorPanel,
-  formikPath_entityInstanceSelectorPanel,
 } from "../components/TransformerEditor/EntityInstanceSelectorPanel";
 import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
 import { useMiroirContextService } from "../MiroirContextReactProvider";
+import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -50,7 +50,7 @@ export function SearchPage() {
   const initialEntityUuid: Uuid = entityBook.uuid;
 
   const initialFormValues = {
-    [formikPath_entityInstanceSelectorPanel]: {
+    [formikPath_TransformerEditorInputModeSelector]: {
       mode: "instance",
       application: adminApplicationLibrary.uuid
     },

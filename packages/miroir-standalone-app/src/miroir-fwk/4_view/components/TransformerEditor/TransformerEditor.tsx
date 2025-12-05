@@ -46,8 +46,12 @@ import {
   ThemedTitle
 } from "../Themes/index";
 import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
-import { EntityInstanceSelectorPanel, formikPath_entityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
-import type { TransformerEditorFormikValueType, TransformerEditorProps } from './TransformerEditorInterface';
+import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
+import {
+  formikPath_TransformerEditorInputModeSelector,
+  type TransformerEditorFormikValueType,
+  type TransformerEditorProps,
+} from "./TransformerEditorInterface";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 import { TransformationResultPanel } from './TransformationResultPanel';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
@@ -198,7 +202,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         mode: "none",
       },
       transformerEditor_input: {},
-      transformerEditor_input_selector: {
+      [formikPath_TransformerEditorInputModeSelector]: {
         mode: "none",
         // input: "no input yet"
       },
@@ -324,16 +328,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 }
               }
 
-              switch (formikContext.values[formikPath_entityInstanceSelectorPanel].mode) {
+              switch (formikContext.values[formikPath_TransformerEditorInputModeSelector].mode) {
                 case "here": {
                   break;
                 }
                 case "instance": {
-                  // clears the formik [formikPath_entityInstanceSelectorPanel].input
+                  // clears the formik [formikPath_TransformerEditorInputModeSelector].input
                   if (
-                    Object.hasOwn(formikContext.values[formikPath_entityInstanceSelectorPanel], "input")
+                    Object.hasOwn(formikContext.values[formikPath_TransformerEditorInputModeSelector], "input")
                   ) {
-                    formikContext.setFieldValue(formikPath_entityInstanceSelectorPanel, {
+                    formikContext.setFieldValue(formikPath_TransformerEditorInputModeSelector, {
                       mode: "instance",
                     });
                   }
@@ -343,11 +347,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   // sets the formik input_selector from the persisted state input_selector, if there is one
                   if (persistedState?.input_selector?.mode) {
                     formikContext.setFieldValue(
-                      formikPath_entityInstanceSelectorPanel,
+                      formikPath_TransformerEditorInputModeSelector,
                       persistedState?.input_selector
                     );
                   } else {
-                    formikContext.setFieldValue(formikPath_entityInstanceSelectorPanel, {
+                    formikContext.setFieldValue(formikPath_TransformerEditorInputModeSelector, {
                       mode: "here",
                       input: { placeholder: "put your input here..." },
                     });
@@ -388,7 +392,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             ]);
 
             // ##################################################################################
-            // transformerEditor_transformer_selector, transformerEditor_input_selector formik -> persistedState
+            // transformerEditor_transformer_selector, EntityInstanceSelectorPanel formik -> persistedState
             // Debounced update to context when mode='here' and transformer definition changes
             useEffect(() => {
               // Clear existing timeout
@@ -430,8 +434,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     formikContext.values.transformerEditor_transformer_selector.transformer,
                   selector,
                   input_selector: {
-                    mode: formikContext.values[formikPath_entityInstanceSelectorPanel].mode as any,
-                    input: formikContext.values[formikPath_entityInstanceSelectorPanel].input,
+                    mode: formikContext.values[formikPath_TransformerEditorInputModeSelector].mode as any,
+                    input: formikContext.values[formikPath_TransformerEditorInputModeSelector].input,
                   },
                 });
               }, 2000); // 2 second debounce
@@ -445,8 +449,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             }, [
               formikContext.values.transformerEditor_transformer_selector.mode,
               formikContext.values.transformerEditor_transformer_selector.transformer,
-              formikContext.values[formikPath_entityInstanceSelectorPanel].mode,
-              formikContext.values[formikPath_entityInstanceSelectorPanel].input,
+              formikContext.values[formikPath_TransformerEditorInputModeSelector].mode,
+              formikContext.values[formikPath_TransformerEditorInputModeSelector].input,
               // formikContext.values.transformerEditor_editor.currentTransformerDefinition,
             ]);
 
@@ -460,12 +464,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             // Apply transformer to input
             const transformerInput = useMemo(
               () =>
-                formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "here"
-                  ? {[defaultTransformerInput]: formikContext.values[formikPath_entityInstanceSelectorPanel].input}
+                formikContext.values[formikPath_TransformerEditorInputModeSelector].mode == "here"
+                  ? {[defaultTransformerInput]: formikContext.values[formikPath_TransformerEditorInputModeSelector].input}
                   : formikContext.values.transformerEditor_input ?? {},
               [
-                formikContext.values[formikPath_entityInstanceSelectorPanel].mode,
-                formikContext.values[formikPath_entityInstanceSelectorPanel].input,
+                formikContext.values[formikPath_TransformerEditorInputModeSelector].mode,
+                formikContext.values[formikPath_TransformerEditorInputModeSelector].input,
                 formikContext.values.transformerEditor_input,
               ]
             );
@@ -616,8 +620,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       },
                     ],
                   } as JzodUnion,
-                  // transformerEditor_input_selector: {
-                  [formikPath_entityInstanceSelectorPanel]: {
+                  [formikPath_TransformerEditorInputModeSelector]: {
                     type: "union",
                     discriminator: "mode",
                     tag: {
@@ -658,64 +661,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                             type: "literal",
                             definition: "instance",
                           },
-                          // input: {
-                          //   type: "any",
-                          //   optional: true,
-                          // },
-                          // deploymentUuid: {
-                          //   type: "uuid",
-                          //   optional: true,
-                          //   tag: {
-                          //     value: {
-                          //       defaultLabel: "Input Instance Deployment",
-                          //       editable: true,
-                          //       selectorParams: {
-                          //         targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                          //         targetEntity: entityDeployment.uuid,
-                          //         targetEntityOrderInstancesBy: "name",
-                          //       },
-                          //       initializeTo: {
-                          //         initializeToType: "value",
-                          //         value: noValue.uuid,
-                          //       },
-                          //     },
-                          //   },
-                          // },
-                          application: {
-                            type: "uuid",
-                            optional: true,
-                            tag: {
-                              value: {
-                                defaultLabel: "Input Instance Application",
-                                editable: true,
-                                selectorParams: {
-                                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                  targetEntity: entityApplicationForAdmin.uuid,
-                                  targetEntityOrderInstancesBy: "name",
-                                },
-                                initializeTo: {
-                                  initializeToType: "value",
-                                  value: noValue.uuid,
-                                },
-                              },
-                            },
-                          },
-                          // transformerUuid: {
-                          //   type: "uuid",
-                          //   tag: {
-                          //     value: {
-                          //       selectorParams: {
-                          //         targetDeploymentUuid: deploymentUuidFromApplicationUuid,
-                          //         targetEntity: entityDefinitionTransformerDefinition.entityUuid,
-                          //         targetEntityOrderInstancesBy: "name",
-                          //       },
-                          //       initializeTo: {
-                          //         initializeToType: "value",
-                          //         value: noValue.uuid,
-                          //       },
-                          //     },
-                          //   },
-                          // },
                         },
                       },
                     ],
@@ -812,8 +757,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     // initiallyUnfolded={false}
                   /> */}
                   <ThemedOnScreenDebug
-                    label={"formikContext.values." + formikPath_entityInstanceSelectorPanel}
-                    data={formikContext.values[formikPath_entityInstanceSelectorPanel]}
+                    label={"formikContext.values." + formikPath_TransformerEditorInputModeSelector}
+                    data={formikContext.values[formikPath_TransformerEditorInputModeSelector]}
                     initiallyUnfolded={false}
                   />
                   <ThemedOnScreenDebug
@@ -905,9 +850,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       mode="create"
                       labelElement={<>Input Definition</>}
                       formValueMLSchema={formMLSchema}
-                      // formikValuePathAsString="transformerEditor_input.selector"
-                      // formikValuePathAsString="transformerEditor_input_selector"
-                      formikValuePathAsString={formikPath_entityInstanceSelectorPanel}
+                      formikValuePathAsString={formikPath_TransformerEditorInputModeSelector}
                       // zoomInPath="selector"
                       deploymentUuid={deploymentUuid}
                       applicationSection={"model"}
@@ -916,7 +859,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       maxRenderDepth={Infinity}
                     />
                   </ThemedFoldableContainer>
-                  {formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "instance" && (
+                  {formikContext.values[formikPath_TransformerEditorInputModeSelector].mode == "instance" && (
                     <EntityInstanceSelectorPanel
                       initialEntityUuid={initialEntityUuid}
                       deploymentUuid={deploymentUuid}
@@ -931,7 +874,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     showAllInstances={showAllInstances}
                     // entityInstances={entityInstances}
                     inputDeploymentUuid={deploymentUuid}
-                    inputSelectorMode={formikContext.values[formikPath_entityInstanceSelectorPanel].mode}
+                    inputSelectorMode={formikContext.values[formikPath_TransformerEditorInputModeSelector].mode}
                   />
                 </div>
               </div>

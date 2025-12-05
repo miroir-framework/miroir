@@ -5,10 +5,14 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
+  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   adminLibraryApplication,
   defaultAdminApplicationDeploymentMap,
+  defaultMiroirModelEnvironment,
   defaultTransformerInput,
+  defaultTransformers,
+  entityApplicationForAdmin,
   getEntityInstancesUuidIndexNonHook,
   miroirFundamentalJzodSchema,
   type Entity,
@@ -25,10 +29,11 @@ import {
 import { useFormikContext } from 'formik';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
-import { packageName } from '../../../../constants';
+import { applicationParis, packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
 import { useCurrentModel } from '../../ReduxHooks';
+import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 import {
@@ -38,7 +43,12 @@ import {
   ThemedTitle
 } from "../Themes/index";
 import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
-import type { TransformerEditorFormikValueType } from './TransformerEditorInterface';
+import {
+  formikPath_EntityInstanceSelectorPanel,
+  formikPath_TransformerEditorInputModeSelector,
+  type TransformerEditorFormikValueType,
+} from "./TransformerEditorInterface";
+import { transformer } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -47,6 +57,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
 
 // ################################################################################################
 // Helper function to create a generic "any" schema for displaying arbitrary objects
@@ -57,7 +68,6 @@ function createGenericObjectSchema(): JzodElement {
   };
 }
 
-export const formikPath_entityInstanceSelectorPanel = "transformerEditor_input_selector"
 // ################################################################################################
 // ################################################################################################
 // EntityInstanceSelectorPanel Component
@@ -79,6 +89,46 @@ export function EntityInstanceSelectorPanel(props:{
   const persistedState = context.toolsPageState.transformerEditor;
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
+  const entityInstanceSelectorPanelSchema: JzodElement = {
+    type: "object",
+    definition: {
+      [formikPath_EntityInstanceSelectorPanel]: {
+        type: "object",
+        tag: {
+          value: {
+            defaultLabel: "Application Selector",
+            display: {
+              // unfoldSubLevels: 1,
+              objectWithoutHeader: true,
+              objectOrArrayWithoutFrame: true,
+              objectAttributesNoIndent: true,
+            }
+          }
+        },
+        definition: {
+          application: {
+            type: "uuid",
+            tag: {
+              value: {
+                defaultLabel: "Application (mls)",
+                editable: true,
+                selectorParams: {
+                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                  targetEntity: entityApplicationForAdmin.uuid,
+                  targetEntityOrderInstancesBy: "name",
+                },
+                initializeTo: {
+                  initializeToType: "value",
+                  value: noValue.uuid,
+                },
+              },
+            },
+          },
+        }
+      }
+    },
+  };
+
   // ##################################################################################
   // ##################################################################################
   // SELECT INPUT INSTANCE(S)
@@ -89,12 +139,12 @@ export function EntityInstanceSelectorPanel(props:{
     persistedState?.currentInstanceIndex || 0
   );
 
-  const inputSelector_applicationUuid: Uuid =
-    formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "instance" &&
-    (formikContext.values[formikPath_entityInstanceSelectorPanel] as any).application
-      ? (formikContext.values[formikPath_entityInstanceSelectorPanel] as any).application
-      : // : noValue.uuid;
-        adminLibraryApplication.uuid;
+  // // Application selection is now managed internally in EntityInstanceSelectorPanel
+  // const [selectedApplicationUuid, setSelectedApplicationUuid] = useState<Uuid>(
+  //   persistedState?.selectedApplicationUuid || adminLibraryApplication.uuid
+  // );
+
+  const inputSelector_applicationUuid: Uuid = formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application || adminLibraryApplication.uuid;
 
   const inputSelector_deploymentUuidFromApplicationUuid: Uuid = 
     !inputSelector_applicationUuid || inputSelector_applicationUuid == noValue.uuid
@@ -102,6 +152,16 @@ export function EntityInstanceSelectorPanel(props:{
       : defaultAdminApplicationDeploymentMap[inputSelector_applicationUuid];
 
   const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
+
+  // Fetch available applications from the admin deployment
+  const adminModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  const availableApplications: Entity[] = useMemo(() => {
+    // Return hardcoded list of known applications with their names
+    return [
+      { uuid: adminLibraryApplication.uuid, name: "Library" } as Entity,
+      { uuid: applicationParis.uuid, name: "Paris" } as Entity,
+    ];
+  }, []);
 
   // Entities are always defined in the 'model' section, sorted by name
   const currentReportDeploymentSectionEntities: Entity[] = useMemo(() => {
@@ -117,6 +177,14 @@ export function EntityInstanceSelectorPanel(props:{
   const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(initialEntityUuid);
   // Ensure selected entity is valid when available entities change
   useEffect(() => {
+    // if (
+    //   formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application &&
+    //   formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application !== noValue.uuid) {
+    //     context.updateTransformerEditorState({
+    //       ...context.toolsPageState.transformerEditor,
+    //       selectedApplicationUuid: formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application,
+    //     });
+    // }
     const availableEntityUuids =
       currentReportDeploymentSectionEntities?.map((e) => e.uuid) || [];
     if (
@@ -206,7 +274,7 @@ export function EntityInstanceSelectorPanel(props:{
 
   const inputSelectorData = useMemo(() => {
     const defaultTransformerInputValue =
-      formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "instance"
+      formikContext.values[formikPath_TransformerEditorInputModeSelector].mode == "instance"
         ? showAllInstances
           ? entityInstances
           : selectedEntityInstance
@@ -279,6 +347,30 @@ export function EntityInstanceSelectorPanel(props:{
     context.toolsPageState.transformerEditor,
   ]); // Remove context from dependencies
 
+  // Handler for toggling show all instances mode (with persistence)
+  const handleToggleShowAll = useCallback(() => {
+    const newShowAllInstances =
+      !context.toolsPageState.transformerEditor?.showAllInstances;
+    context.updateTransformerEditorState({
+      ...context.toolsPageState.transformerEditor,
+      showAllInstances: newShowAllInstances,
+    });
+  }, [context.toolsPageState.transformerEditor?.showAllInstances]); // Remove context from dependencies
+
+  // // ##############################################################################################
+  // // Handler for application change (with persistence)
+  // const handleApplicationChange = useCallback(
+  //   (newApplicationUuid: Uuid) => {
+  //     // setSelectedApplicationUuid(newApplicationUuid);
+  //     // Persist to context
+  //     context.updateTransformerEditorState({
+  //       ...context.toolsPageState.transformerEditor,
+  //       selectedApplicationUuid: newApplicationUuid,
+  //     });
+  //   },
+  //   [context.toolsPageState.transformerEditor]
+  // );
+
   // Handler for entity change (with persistence)
   const handleEntityChange = useCallback(
     (newEntityUuid: Uuid) => {
@@ -292,20 +384,32 @@ export function EntityInstanceSelectorPanel(props:{
     [context.toolsPageState.transformerEditor]
   ); // Remove context from dependencies
 
-  // Handler for toggling show all instances mode (with persistence)
-  const handleToggleShowAll = useCallback(() => {
-    const newShowAllInstances =
-      !context.toolsPageState.transformerEditor?.showAllInstances;
-    context.updateTransformerEditorState({
-      ...context.toolsPageState.transformerEditor,
-      showAllInstances: newShowAllInstances,
-    });
-  }, [context.toolsPageState.transformerEditor?.showAllInstances]); // Remove context from dependencies
-
   // ##################################################################################
   // input -> formik
   useEffect(() => {
-    if (formikContext.values[formikPath_entityInstanceSelectorPanel].mode == "instance") {
+    // formikPath_EntityInstanceSelectorPanel initial value
+    if (!formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application) {
+      const initialValue = defaultTransformers.transformer_extended_apply(
+        "runtime",
+        [],
+        "get default values for EntityInstanceSelectorPanel",
+        {
+          transformerType: "defaultValueForMLSchema",
+          label: "EntityInstanceSelectorPanel initial value",
+          mlSchema: entityInstanceSelectorPanelSchema,
+        },
+        "value",
+        defaultMiroirModelEnvironment, //modelEnvironment, // TODO: use real deployment environment!
+        {},
+        {}
+      );
+      log.info("Setting initial value for EntityInstanceSelectorPanel", initialValue);
+      formikContext.setFieldValue(
+        formikPath_EntityInstanceSelectorPanel,
+        initialValue[formikPath_EntityInstanceSelectorPanel]
+      );
+    }
+    if (formikContext.values[formikPath_TransformerEditorInputModeSelector].mode == "instance") {
       formikContext.setFieldValue("transformerEditor_input", inputSelectorData);
       if (showAllInstances) {
         formikContext.setFieldValue(
@@ -318,7 +422,7 @@ export function EntityInstanceSelectorPanel(props:{
       }
     }
   }, [
-    formikContext.values[formikPath_entityInstanceSelectorPanel].mode,
+    formikContext.values[formikPath_TransformerEditorInputModeSelector].mode,
     inputSelectorData,
     entityInstances,
     selectedEntityInstance,
@@ -364,9 +468,58 @@ export function EntityInstanceSelectorPanel(props:{
             )}
           </div>
 
+          {/* Application Selector */}
+          {
+            formikContext.values[formikPath_EntityInstanceSelectorPanel] && (
+              <TypedValueObjectEditor
+                labelElement={<span>select Application</span>}
+                // initialValueObject={{ application: adminApplicationLibrary.uuid }}
+                formValueMLSchema={entityInstanceSelectorPanelSchema}
+                formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
+                // formikValuePathAsString={""}
+                deploymentUuid={deploymentUuid}
+                applicationSection={"data"}
+                formLabel={"Application Selector jzod"}
+                // onSubmit={async () => {}} // No-op for readonly
+                mode="create" // Readonly viewer mode, not relevant here
+                displaySubmitButton="noDisplay"
+                maxRenderDepth={3}
+                // readonly={true}
+              />
+            )
+          }
+
+          {/* local Application Selector */}
+          {/* <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>
+              Application:
+            </label>
+            <select
+              value={selectedApplicationUuid}
+              onChange={(e) => handleApplicationChange(e.target.value as Uuid)}
+              style={{
+                padding: "6px 12px",
+                fontSize: "14px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                backgroundColor: "white",
+                cursor: "pointer",
+                minWidth: "200px",
+              }}
+            >
+              {availableApplications.map((app) => (
+                <option key={app.uuid} value={app.uuid}>
+                  {app.name || app.uuid}
+                </option>
+              ))}
+            </select>
+          </div> */}
+
           {/* Entity Selector */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>Entity:</label>
+            <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>
+              Entity:
+            </label>
             <select
               value={selectedEntityUuid}
               onChange={(e) => handleEntityChange(e.target.value as Uuid)}
@@ -391,6 +544,7 @@ export function EntityInstanceSelectorPanel(props:{
               <div style={{ display: "flex", gap: "8px" }}>
                 <button
                   onClick={navigateToPreviousInstance}
+                  type="button"
                   style={{
                     padding: "4px 8px",
                     fontSize: "14px",
@@ -408,6 +562,7 @@ export function EntityInstanceSelectorPanel(props:{
                 </button>
                 <button
                   onClick={navigateToNextInstance}
+                  type="button"
                   style={{
                     padding: "4px 8px",
                     fontSize: "14px",
@@ -425,6 +580,7 @@ export function EntityInstanceSelectorPanel(props:{
                 </button>
                 <button
                   onClick={navigateToRandomInstance}
+                  type="button"
                   style={{
                     padding: "4px 8px",
                     fontSize: "14px",
