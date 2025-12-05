@@ -326,211 +326,218 @@ export function EntityInstanceSelectorPanel(props:{
 
   // ##############################################################################################
   return (
-    <ThemedContainer style={{ flex: 1 }}>
-      <ThemedHeaderSection style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <ThemedTitle>
-            {showAllInstances ? "All Entity Instances" : "Entity Instance"} (
-            {entityInstances.length} instances available)
-            {!showAllInstances && entityInstances.length > 0 && (
-              <span style={{ fontSize: "0.8em", marginLeft: "10px", color: "#666" }}>
-                (#{currentInstanceIndex + 1} of {entityInstances.length})
-              </span>
+    <>
+      <ThemedOnScreenDebug
+        label={`EntityInstanceSelectorPanel`}
+        data={props || {}}
+        // initiallyUnfolded={false}
+      />
+      <ThemedContainer style={{ flex: 1 }}>
+        <ThemedHeaderSection style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <ThemedTitle>
+              {showAllInstances ? "All Entity Instances" : "Entity Instance"} (
+              {entityInstances.length} instances available)
+              {!showAllInstances && entityInstances.length > 0 && (
+                <span style={{ fontSize: "0.8em", marginLeft: "10px", color: "#666" }}>
+                  (#{currentInstanceIndex + 1} of {entityInstances.length})
+                </span>
+              )}
+            </ThemedTitle>
+            {/* Toggle button for Single/All mode */}
+            {entityInstances.length > 1 && (
+              <button
+                onClick={handleToggleShowAll}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: "13px",
+                  backgroundColor: showAllInstances ? "#e6f3ff" : "#f0f0f0",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontWeight: showAllInstances ? "bold" : "normal",
+                }}
+                title={showAllInstances ? "Switch to single instance view" : "Show all instances"}
+              >
+                {showAllInstances ? "👤 Show Single" : "👥 Show All"}
+              </button>
             )}
-          </ThemedTitle>
-          {/* Toggle button for Single/All mode */}
-          {entityInstances.length > 1 && (
-            <button
-              onClick={handleToggleShowAll}
+          </div>
+
+          {/* Entity Selector */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>Entity:</label>
+            <select
+              value={selectedEntityUuid}
+              onChange={(e) => handleEntityChange(e.target.value as Uuid)}
               style={{
                 padding: "6px 12px",
-                fontSize: "13px",
-                backgroundColor: showAllInstances ? "#e6f3ff" : "#f0f0f0",
+                fontSize: "14px",
                 border: "1px solid #ccc",
                 borderRadius: "4px",
+                backgroundColor: "white",
                 cursor: "pointer",
-                fontWeight: showAllInstances ? "bold" : "normal",
+                minWidth: "200px",
               }}
-              title={showAllInstances ? "Switch to single instance view" : "Show all instances"}
             >
-              {showAllInstances ? "👤 Show Single" : "👥 Show All"}
-            </button>
-          )}
-        </div>
-
-        {/* Entity Selector */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>Entity:</label>
-          <select
-            value={selectedEntityUuid}
-            onChange={(e) => handleEntityChange(e.target.value as Uuid)}
-            style={{
-              padding: "6px 12px",
-              fontSize: "14px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              backgroundColor: "white",
-              cursor: "pointer",
-              minWidth: "200px",
-            }}
-          >
-            {currentReportDeploymentSectionEntities.map((entity) => (
-              <option key={entity.uuid} value={entity.uuid}>
-                {entity.name || entity.uuid}
-              </option>
-            ))}
-          </select>
-          {/* Navigation buttons - only show when in single instance mode */}
-          {!showAllInstances && entityInstances.length > 1 && (
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button
-                onClick={navigateToPreviousInstance}
-                style={{
-                  padding: "4px 8px",
-                  fontSize: "14px",
-                  backgroundColor: "#f0f0f0",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
-                title="Previous instance"
-              >
-                ↑ Prev
-              </button>
-              <button
-                onClick={navigateToNextInstance}
-                style={{
-                  padding: "4px 8px",
-                  fontSize: "14px",
-                  backgroundColor: "#f0f0f0",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
-                title="Next instance"
-              >
-                Next ↓
-              </button>
-              <button
-                onClick={navigateToRandomInstance}
-                style={{
-                  padding: "4px 8px",
-                  fontSize: "14px",
-                  backgroundColor: "#f0f0f0",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
-                title="Next instance"
-              >
-                Random 🔀
-              </button>
-            </div>
-          )}
-        </div>
-      </ThemedHeaderSection>
-      {showAllInstances ? (
-        /* Show all instances */
-        entityInstances.length > 0 ? (
-          <>
-            <ThemedOnScreenDebug
-              label={`TypedValueObjectEditor showing all ${
-                entityInstances.length
-              } instances of entity '${currentReportTargetEntityDefinition?.name || ""}`}
-              data={{
-                type: "object",
-                definition: {
-                  entityInstances: {
-                    definition: {
-                      type: "array",
-                      definition:
-                        currentReportTargetEntityDefinition?.jzodSchema ??
-                        createGenericObjectSchema(),
-                    },
-                  },
-                },
-              }}
-              initiallyUnfolded={false}
-            />
-            <ThemedFoldableContainer
-              style={{ flex: 1, padding: 0 }}
-              title="Selected Entity Instances"
-              initiallyFolded={true}
-            >
-              <TypedValueObjectEditorWithFormik
-                labelElement={<></>}
-                initialValueObject={{ entityInstances }}
-                formValueMLSchema={
-                  {
-                    type: "object",
-                    definition: {
-                      entityInstances: {
+              {currentReportDeploymentSectionEntities.map((entity) => (
+                <option key={entity.uuid} value={entity.uuid}>
+                  {entity.name || entity.uuid}
+                </option>
+              ))}
+            </select>
+            {/* Navigation buttons - only show when in single instance mode */}
+            {!showAllInstances && entityInstances.length > 1 && (
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  onClick={navigateToPreviousInstance}
+                  style={{
+                    padding: "4px 8px",
+                    fontSize: "14px",
+                    backgroundColor: "#f0f0f0",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                  title="Previous instance"
+                >
+                  ↑ Prev
+                </button>
+                <button
+                  onClick={navigateToNextInstance}
+                  style={{
+                    padding: "4px 8px",
+                    fontSize: "14px",
+                    backgroundColor: "#f0f0f0",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                  title="Next instance"
+                >
+                  Next ↓
+                </button>
+                <button
+                  onClick={navigateToRandomInstance}
+                  style={{
+                    padding: "4px 8px",
+                    fontSize: "14px",
+                    backgroundColor: "#f0f0f0",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                  title="Next instance"
+                >
+                  Random 🔀
+                </button>
+              </div>
+            )}
+          </div>
+        </ThemedHeaderSection>
+        {showAllInstances ? (
+          /* Show all instances */
+          entityInstances.length > 0 ? (
+            <>
+              <ThemedOnScreenDebug
+                label={`TypedValueObjectEditor showing all ${
+                  entityInstances.length
+                } instances of entity '${currentReportTargetEntityDefinition?.name || ""}`}
+                data={{
+                  type: "object",
+                  definition: {
+                    entityInstances: {
+                      definition: {
                         type: "array",
                         definition:
                           currentReportTargetEntityDefinition?.jzodSchema ??
                           createGenericObjectSchema(),
                       },
                     },
-                  } as any
-                } // TODO: ILL-TYPED!!
-                formikValuePathAsString="entityInstances"
-                deploymentUuid={deploymentUuid}
-                applicationSection={"data"}
-                formLabel={"All Entity Instances Viewer"}
-                onSubmit={async () => {}} // No-op for readonly
-                mode="create" // Readonly viewer mode, not relevant here
-                maxRenderDepth={3}
-                readonly={true}
+                  },
+                }}
+                initiallyUnfolded={false}
               />
-            </ThemedFoldableContainer>
-          </>
+              <ThemedFoldableContainer
+                style={{ flex: 1, padding: 0 }}
+                title="Selected Entity Instances"
+                initiallyFolded={true}
+              >
+                <TypedValueObjectEditorWithFormik
+                  labelElement={<></>}
+                  initialValueObject={{ entityInstances }}
+                  formValueMLSchema={
+                    {
+                      type: "object",
+                      definition: {
+                        entityInstances: {
+                          type: "array",
+                          definition:
+                            currentReportTargetEntityDefinition?.jzodSchema ??
+                            createGenericObjectSchema(),
+                        },
+                      },
+                    } as any
+                  } // TODO: ILL-TYPED!!
+                  formikValuePathAsString="entityInstances"
+                  deploymentUuid={deploymentUuid}
+                  applicationSection={"data"}
+                  formLabel={"All Entity Instances Viewer"}
+                  onSubmit={async () => {}} // No-op for readonly
+                  mode="create" // Readonly viewer mode, not relevant here
+                  maxRenderDepth={3}
+                  readonly={true}
+                />
+              </ThemedFoldableContainer>
+            </>
+          ) : (
+            <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
+              No entity instances found
+            </div>
+          )
+        ) : /* Show single instance */
+        selectedEntityInstance ? (
+          <ThemedFoldableContainer
+            style={{ flex: 1, padding: 0 }}
+            title="Selected Entity Instance"
+            initiallyFolded={false}
+          >
+            <TypedValueObjectEditorWithFormik
+              mode="create"
+              labelElement={<></>}
+              initialValueObject={{ selectedEntityInstance }}
+              // valueObjectMMLSchema={createGenericObjectSchema()}
+              formValueMLSchema={{
+                type: "object",
+                definition: {
+                  selectedEntityInstance:
+                    currentReportTargetEntityDefinition?.jzodSchema ?? createGenericObjectSchema(),
+                },
+              }}
+              formikValuePathAsString="selectedEntityInstance"
+              deploymentUuid={deploymentUuid}
+              applicationSection={"data"}
+              formLabel={"Entity Instance Viewer"}
+              onSubmit={async () => {}} // No-op for readonly
+              maxRenderDepth={3}
+              readonly={true}
+            />
+          </ThemedFoldableContainer>
         ) : (
           <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
             No entity instances found
           </div>
-        )
-      ) : /* Show single instance */
-      selectedEntityInstance ? (
-        <ThemedFoldableContainer
-          style={{ flex: 1, padding: 0 }}
-          title="Selected Entity Instance"
-          initiallyFolded={false}
-        >
-          <TypedValueObjectEditorWithFormik
-            mode="create"
-            labelElement={<></>}
-            initialValueObject={{ selectedEntityInstance }}
-            // valueObjectMMLSchema={createGenericObjectSchema()}
-            formValueMLSchema={{
-              type: "object",
-              definition: {
-                selectedEntityInstance:
-                  currentReportTargetEntityDefinition?.jzodSchema ?? createGenericObjectSchema(),
-              },
-            }}
-            formikValuePathAsString="selectedEntityInstance"
-            deploymentUuid={deploymentUuid}
-            applicationSection={"data"}
-            formLabel={"Entity Instance Viewer"}
-            onSubmit={async () => {}} // No-op for readonly
-            maxRenderDepth={3}
-            readonly={true}
-          />
-        </ThemedFoldableContainer>
-      ) : (
-        <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
-          No entity instances found
-        </div>
-      )}
-    </ThemedContainer>
+        )}
+      </ThemedContainer>
+    </>
   );
 }

@@ -52,6 +52,7 @@ import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
 import { TransformerBuilderPage } from "./miroir-fwk/4_view/routes/TransformerBuilderPage.js";
 import { RunnersPage } from "./miroir-fwk/4_view/routes/Runners.js";
 import { SettingsPage } from "./miroir-fwk/4_view/routes/SettingsPage.js";
+import { SearchPage } from "./miroir-fwk/4_view/routes/SearchPage.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -175,6 +176,11 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingsPage />,
+        // errorElement: <ErrorPage />,
+      },
+      {
+        path: "search",
+        element: <SearchPage />,
         // errorElement: <ErrorPage />,
       },
       // Renamed from action-logs to events
