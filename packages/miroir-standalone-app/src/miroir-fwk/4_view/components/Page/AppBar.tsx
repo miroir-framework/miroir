@@ -32,6 +32,17 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
   {
+    "label": "Search",
+    targetRoot: "search",
+    "section": "model",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
+    "icon": {
+      iconType: "mui",
+      name: "search",
+    }
+  },
+  {
     "label": "Transformer Builder",
     targetRoot: "transformerBuilder",
     "section": "model",
@@ -89,17 +100,6 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
     // "icon": "error"
   },
   {
-    "label": "Search",
-    targetRoot: "search",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-    "icon": {
-      iconType: "mui",
-      name: "search",
-    }
-  },
-  {
     "label": "settings",
     "section": "model",
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
@@ -108,12 +108,6 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
     "icon": {
       iconType: "mui",
       name: "settings",
-      // color: "#FF0000",
-      // color: "red",
-      // color: {
-      //   colorType: "themeColor",
-      //   currentThemeColorPath: "colors.warning"
-      // }
     }
   },
 ];

@@ -18,6 +18,7 @@ import {
 } from "../components/TransformerEditor/EntityInstanceSelectorPanel";
 import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
+import { useMiroirContextService } from "../MiroirContextReactProvider";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -37,6 +38,10 @@ export function SearchPage() {
     successMessage: `Report page configurations loaded for ${pageParams.deploymentUuid}`,
     actionName: "report page configuration fetch",
   });
+
+  const context = useMiroirContextService();
+  const persistedState = context.toolsPageState.transformerEditor;
+  const showAllInstances = persistedState?.showAllInstances || false;
 
   const deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid;
   
@@ -69,7 +74,7 @@ export function SearchPage() {
         <EntityInstanceSelectorPanel
           deploymentUuid={deploymentUuid}
           initialEntityUuid={initialEntityUuid}
-          showAllInstances={false}
+          showAllInstances={showAllInstances}
         />
         {/* )} */}
       </Formik>
