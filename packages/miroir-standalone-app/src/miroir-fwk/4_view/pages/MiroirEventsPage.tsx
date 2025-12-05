@@ -9,7 +9,7 @@ import {
   PlayArrow,
   Search,
   Visibility
-} from '@mui/icons-material';
+} from '../components/Themes/MaterialSymbolWrappers';
 import {
   Badge,
   Box,

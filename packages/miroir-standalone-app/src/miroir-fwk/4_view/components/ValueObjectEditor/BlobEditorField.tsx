@@ -1,41 +1,42 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { FC, useMemo, useState, useCallback, useRef } from "react";
+import {
+  CloudUploadIcon,
+  DescriptionIcon,
+  FolderZipIcon,
+  GetAppIcon,
+  ImageIcon,
+  InsertDriveFileIcon,
+  CircularProgress,
+  PictureAsPdfIcon
+} from "../Themes/MaterialSymbolWrappers";
 import { FormikProps } from "formik";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import ImageIcon from "@mui/icons-material/Image";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import DescriptionIcon from "@mui/icons-material/Description";
-import FolderZipIcon from "@mui/icons-material/FolderZip";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import GetAppIcon from "@mui/icons-material/GetApp";
-import CloseIcon from "@mui/icons-material/Close";
-import CircularProgress from "@mui/icons-material/Loop";
+import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 
 import {
-  LoggerInterface,
-  MiroirLoggerFactory,
-  getBlobFileIcon,
   base64ToBlob,
-  fileToBase64,
-  validateMimeType,
-  formatFileSize,
-  MAX_BLOB_FILE_SIZE,
   BLOB_SIZE_WARNING_THRESHOLD,
+  fileToBase64,
+  formatFileSize,
+  getBlobFileIcon,
+  LoggerInterface,
+  MAX_BLOB_FILE_SIZE,
+  MiroirLoggerFactory,
+  validateMimeType,
 } from "miroir-core";
 
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import {
-  ThemedBlobContainer,
-  ThemedBlobEmptyState,
-  ThemedBlobPreview,
-  ThemedBlobMetadata,
-  ThemedBlobIconDisplay,
-  ThemedBlobDropZone,
-} from "../Themes/index";
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
 import { DraggableContainer } from "../DraggableContainer";
+import {
+  ThemedBlobContainer,
+  ThemedBlobDropZone,
+  ThemedBlobEmptyState,
+  ThemedBlobIconDisplay,
+  ThemedBlobMetadata,
+  ThemedBlobPreview,
+} from "../Themes/index";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

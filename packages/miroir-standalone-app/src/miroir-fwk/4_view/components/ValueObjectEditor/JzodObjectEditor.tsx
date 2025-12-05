@@ -1,4 +1,4 @@
-import Clear from "@mui/icons-material/Clear";
+import { Clear } from "../Themes/MaterialSymbolWrappers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 

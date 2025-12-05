@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Formik, Field, FastField, Form } from 'formik';
+import React, { useCallback, useEffect, useMemo } from "react";
 
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import UnfoldLess from "@mui/icons-material/UnfoldLess";
-import UnfoldMore from "@mui/icons-material/UnfoldMore";
-import KeyboardDoubleArrowUp from "@mui/icons-material/KeyboardDoubleArrowUp";
-import KeyboardDoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown";
+import {
+  ExpandLess,
+  ExpandMore,
+  KeyboardDoubleArrowDown,
+  KeyboardDoubleArrowUp,
+  UnfoldLess,
+  UnfoldMore
+} from "../Themes/MaterialSymbolWrappers";
 
 import {
   EntityAttribute,
@@ -26,19 +27,18 @@ import {
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import { useReportPageContext } from "../Reports/ReportPageContext.js";
 import {
   ThemedCard,
   ThemedCardContent,
+  ThemedDisplayValue,
   ThemedLabeledEditor,
   ThemedLineIconButton,
   ThemedSelectWithPortal,
+  ThemedStackedLabeledEditor,
   ThemedSwitch,
-  ThemedTextEditor,
-  ThemedDisplayValue,
-  ThemedButton,
-  ThemedOnScreenHelper,
-  ThemedStackedLabeledEditor
-} from "../Themes/index"
+  ThemedTextEditor
+} from "../Themes/index";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
@@ -47,7 +47,6 @@ import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMi
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
-import { useReportPageContext } from "../Reports/ReportPageContext.js";
 
 
 

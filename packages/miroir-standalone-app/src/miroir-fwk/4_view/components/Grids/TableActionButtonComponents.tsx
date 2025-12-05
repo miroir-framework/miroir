@@ -1,6 +1,4 @@
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import CreateIcon from '@mui/icons-material/Create';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { ContentCopyIcon, CreateIcon, DeleteIcon } from '../Themes/MaterialSymbolWrappers';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import React from 'react';
 

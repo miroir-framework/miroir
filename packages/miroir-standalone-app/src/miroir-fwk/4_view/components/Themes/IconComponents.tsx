@@ -2,49 +2,6 @@
 import { css } from '@emotion/react';
 import React, { useMemo } from 'react';
 
-// Material-UI Icons
-import {
-  AccountBalance,
-  Add as AddIcon,
-  Architecture,
-  AutoStories as AutoStoriesIcon,
-  Book as BookIcon,
-  BugReportOutlined,
-  Category as CategoryIcon,
-  Delete as DeleteIcon,
-  Draw,
-  Edit as EditIcon,
-  Error as ErrorIcon,
-  Flag,
-  Folder,
-  HelpOutline as HelpOutlineIcon,
-  History,
-  Home as HomeIcon,
-  Interests as InterestsIcon,
-  Lightbulb,
-  List as ListIcon,
-  LocationOn as LocationOnIcon,
-  MenuBook as MenuBookIcon,
-  Menu as MenuIcon,
-  NotificationsOutlined as NotificationsIcon,
-  NotificationsOffOutlined as NotificationsOffIcon,
-  Person,
-  Remove as RemoveIcon,
-  Save as SaveIcon,
-  SavedSearch as SavedSearchIcon,
-  Science,
-  Search as SearchIcon,
-  Settings as SettingsIcon,
-  South as SouthIcon,
-  SpaceDashboard,
-  SquareFootSharp,
-  Star as StarIcon,
-  Sync,
-  TimerOffOutlined,
-  TimerOutlined,
-  WbIncandescent,
-} from "@mui/icons-material";
-
 import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from 'miroir-core';
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
@@ -376,51 +333,128 @@ const codePointToEmoji = (codePoint: string): string => {
   }
 };
 
-  // Map icon names to MUI icon components
-const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
-  account_balance: AccountBalance,
-  help_outline: HelpOutlineIcon,
-  menu: MenuIcon,
-  home: HomeIcon,
-  book: BookIcon,
-  menu_book: MenuBookIcon,
-  // 
-  add: AddIcon,
-  architecture: Architecture,
-  auto_stories: AutoStoriesIcon,
-  bugReport: BugReportOutlined,
-  category: CategoryIcon,
-  delete: DeleteIcon,
-  edit: EditIcon,
-  error: ErrorIcon,
-  folder: Folder,
-  history: History,
-  lightbulb: Lightbulb,
-  draw: Draw,
-  list: ListIcon,
-  location_on: LocationOnIcon,
-  south: SouthIcon,
-  flag: Flag,
-  interests: InterestsIcon,
-  notification: NotificationsIcon,
-  notificationOff: NotificationsOffIcon,
-  person: Person,
-  remove: RemoveIcon,
-  save: SaveIcon,
-  saved_search: SavedSearchIcon,
-  science: Science,
-  search: SearchIcon,
-  settings: SettingsIcon,
-  space_dashboard: SpaceDashboard,
-  squareFoot: SquareFootSharp,
-  star: StarIcon,
-  sync: Sync,
-  timer: TimerOutlined,
-  timerOff: TimerOffOutlined,
-  wbIncandescent: WbIncandescent,
+// Material Symbols font-based icon component
+interface MaterialSymbolProps {
+  name: string;
+  className?: string;
+  style?: React.CSSProperties;
+  'aria-label'?: string;
+  role?: string;
+}
+
+const MaterialSymbol: React.FC<MaterialSymbolProps> = ({ 
+  name, 
+  className, 
+  style, 
+  'aria-label': ariaLabel,
+  role = 'img',
+  ...rest 
+}) => {
+  const combinedClassName = className 
+    ? `material-symbols-outlined ${className}` 
+    : 'material-symbols-outlined';
+  
+  return (
+    <span 
+      className={combinedClassName}
+      style={style}
+      aria-label={ariaLabel}
+      role={role}
+      {...rest}
+    >
+      {name}
+    </span>
+  );
 };
 
-  // Map common MUI icon name variations to component keys
+// Map icon names to Material Symbols icon names
+const materialSymbolsIconMap: Record<string, string> = {
+  account_balance: 'account_balance',
+  help_outline: 'help_outline',
+  menu: 'menu',
+  home: 'home',
+  book: 'book',
+  menu_book: 'menu_book',
+  add: 'add',
+  add_box: 'add_box',
+  architecture: 'architecture',
+  auto_stories: 'auto_stories',
+  bug_report: 'bug_report',
+  category: 'category',
+  delete: 'delete',
+  edit: 'edit',
+  edit_off: 'edit_off',
+  error: 'error',
+  error_outline: 'error_outline',
+  folder: 'folder',
+  folder_open: 'folder_open',
+  folder_zip: 'folder_zip',
+  history: 'history',
+  lightbulb: 'lightbulb',
+  draw: 'draw',
+  list: 'list',
+  location_on: 'location_on',
+  south: 'south',
+  flag: 'flag',
+  interests: 'interests',
+  notifications: 'notifications',
+  notifications_off: 'notifications_off',
+  person: 'person',
+  remove: 'remove',
+  save: 'save',
+  saved_search: 'saved_search',
+  science: 'science',
+  search: 'search',
+  settings: 'settings',
+  space_dashboard: 'space_dashboard',
+  square_foot: 'square_foot',
+  star: 'star',
+  sync: 'sync',
+  timer: 'timer',
+  timer_off: 'timer_off',
+  lightbulb_outline: 'lightbulb_outline',
+  chevron_left: 'chevron_left',
+  chevron_right: 'chevron_right',
+  expand_more: 'expand_more',
+  expand_less: 'expand_less',
+  create: 'create',
+  content_copy: 'content_copy',
+  toc: 'toc',
+  cloud_upload: 'cloud_upload',
+  description: 'description',
+  get_app: 'get_app',
+  image: 'image',
+  insert_drive_file: 'insert_drive_file',
+  loop: 'loop',
+  picture_as_pdf: 'picture_as_pdf',
+  keyboard_double_arrow_down: 'keyboard_double_arrow_down',
+  keyboard_double_arrow_up: 'keyboard_double_arrow_up',
+  unfold_less: 'unfold_less',
+  unfold_more: 'unfold_more',
+  clear: 'clear',
+  close: 'close',
+  palette: 'palette',
+  dark_mode: 'dark_mode',
+  compress: 'compress',
+  style: 'style',
+  assignment: 'assignment',
+  assignment_turned_in: 'assignment_turned_in',
+  check_circle: 'check_circle',
+  download: 'download',
+  play_arrow: 'play_arrow',
+  visibility: 'visibility',
+  info: 'info',
+  warning: 'warning',
+  refresh: 'refresh',
+  filter_list: 'filter_list',
+  height: 'height',
+  code: 'code',
+  data_object: 'data_object',
+  menu_open: 'menu_open',
+  view_list: 'view_list',
+};
+
+// Map common icon name variations to Material Symbols names
 const muiIconNameMap: Record<string, string> = {
   savedSearch: "saved_search",
   SavedSearch: "saved_search",
@@ -438,6 +472,127 @@ const muiIconNameMap: Record<string, string> = {
   // Common fallback icons
   default: "menu",
   fallback: "menu",
+  ChevronLeft: "chevron_left",
+  ChevronRight: "chevron_right",
+  Edit: "edit",
+  EditOff: "edit_off",
+  BugReport: "bug_report",
+  ExpandLess: "expand_less",
+  ExpandMore: "expand_more",
+  Info: "info",
+  Warning: "warning",
+  Error: "error",
+  ErrorIcon: "error",
+  Create: "create",
+  CreateIcon: "create",
+  ContentCopy: "content_copy",
+  ContentCopyIcon: "content_copy",
+  Delete: "delete",
+  DeleteIcon: "delete",
+  Toc: "toc",
+  CloudUpload: "cloud_upload",
+  CloudUploadIcon: "cloud_upload",
+  Description: "description",
+  DescriptionIcon: "description",
+  FolderZip: "folder_zip",
+  FolderZipIcon: "folder_zip",
+  GetApp: "get_app",
+  GetAppIcon: "get_app",
+  Image: "image",
+  ImageIcon: "image",
+  InsertDriveFile: "insert_drive_file",
+  InsertDriveFileIcon: "insert_drive_file",
+  CircularProgress: "loop",
+  Loop: "loop",
+  PictureAsPdf: "picture_as_pdf",
+  PictureAsPdfIcon: "picture_as_pdf",
+  KeyboardDoubleArrowDown: "keyboard_double_arrow_down",
+  KeyboardDoubleArrowUp: "keyboard_double_arrow_up",
+  UnfoldLess: "unfold_less",
+  UnfoldMore: "unfold_more",
+  Clear: "clear",
+  ClearIcon: "clear",
+  Close: "close",
+  CloseIcon: "close",
+  Palette: "palette",
+  DarkMode: "dark_mode",
+  CompressOutlined: "compress",
+  Style: "style",
+  ExpandMoreIcon: "expand_more",
+  Assignment: "assignment",
+  AssignmentTurnedIn: "assignment_turned_in",
+  CheckCircle: "check_circle",
+  CheckCircleIcon: "check_circle",
+  Download: "download",
+  DownloadIcon: "download",
+  ErrorOutline: "error_outline",
+  History: "history",
+  PlayArrow: "play_arrow",
+  Search: "search",
+  SearchIcon: "search",
+  Visibility: "visibility",
+  VisibilityIcon: "visibility",
+  Refresh: "refresh",
+  RefreshIcon: "refresh",
+  FilterList: "filter_list",
+  FilterListIcon: "filter_list",
+  Science: "science",
+  Height: "height",
+  Add: "add",
+  AddIcon: "add",
+  AddBox: "add_box",
+  Remove: "remove",
+  RemoveIcon: "remove",
+  Save: "save",
+  SaveIcon: "save",
+  EditIcon: "edit",
+  Code: "code",
+  DataObject: "data_object",
+  Folder: "folder",
+  FolderOpen: "folder_open",
+  MenuOpen: "menu_open",
+  Settings: "settings",
+  SettingsIcon: "settings",
+  ViewList: "view_list",
+  AccountBalance: "account_balance",
+  Architecture: "architecture",
+  Flag: "flag",
+  Home: "home",
+  HomeIcon: "home",
+  Lightbulb: "lightbulb",
+  Draw: "draw",
+  LocationOn: "location_on",
+  LocationOnIcon: "location_on",
+  MenuBook: "menu_book",
+  MenuBookIcon: "menu_book",
+  Menu: "menu",
+  MenuIcon: "menu",
+  NotificationsOutlined: "notifications",
+  NotificationsIcon: "notifications",
+  NotificationsOffOutlined: "notifications_off",
+  NotificationsOffIcon: "notifications_off",
+  Person: "person",
+  SavedSearchIcon: "saved_search",
+  South: "south",
+  SouthIcon: "south",
+  SpaceDashboard: "space_dashboard",
+  SquareFootSharp: "square_foot",
+  Star: "star",
+  StarIcon: "star",
+  Sync: "sync",
+  TimerOffOutlined: "timer_off",
+  TimerOutlined: "timer",
+  WbIncandescent: "lightbulb_outline",
+  wbIncandescent: "lightbulb_outline",
+  wb_incandescent: "lightbulb_outline",
+  HelpOutline: "help_outline",
+  HelpOutlineIcon: "help_outline",
+  timerOff: "timer_off",
+  timer_off: "timer_off",
+  notificationOff: "notifications_off",
+  notification: "notifications",
+  bugReport: "bug_report",
+  bug_report: "bug_report",
 };
 
 
@@ -461,25 +616,16 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
       const iconSource = icon ?? (typeof children === 'string' ? children : null);
       
       if (!iconSource) {
-        const FallbackComponent = muiIconComponentMap[fallback] || HelpOutlineIcon;
-        return { type: 'mui', content: fallback, component: FallbackComponent, error: null, color: undefined };
+        const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
+        return { type: 'symbol', content: fallbackIconName, error: null, color: undefined };
       }
 
-            // Handle string (legacy MUI icon names)
+      // Handle string (legacy MUI icon names)
       if (typeof iconSource === 'string') {
-        // Default to MUI icon
+        // Default to Material Symbol
         const mappedName = muiIconNameMap[iconSource] || iconSource;
-        const IconComponent = muiIconComponentMap[mappedName];
-        if (IconComponent) {
-          return { type: 'mui', content: mappedName, component: IconComponent, error: null, color: undefined };
-        }
-        return {
-          type: "mui",
-          content: mappedName,
-          component: muiIconComponentMap[fallback] || HelpOutlineIcon,
-          error: `Unknown MUI icon: ${mappedName}`,
-          color: undefined,
-        };
+        const symbolName = materialSymbolsIconMap[mappedName] || mappedName;
+        return { type: 'symbol', content: symbolName, error: null, color: undefined };
       }
 
       // Handle MiroirIcon object types
@@ -498,7 +644,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
         
         if (iconSource.iconType === 'mui') {
           const mappedName = muiIconNameMap[iconSource.name] || iconSource.name;
-          const IconComponent = muiIconComponentMap[mappedName];
+          const symbolName = materialSymbolsIconMap[mappedName] || mappedName;
           
           // Resolve color
           let resolvedColor: string | undefined = undefined;
@@ -527,33 +673,24 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
             }
           }
           
-          if (IconComponent) {
-            return { type: 'mui', content: mappedName, component: IconComponent, error: null, color: resolvedColor };
-          }
-          return { 
-            type: 'mui', 
-            content: mappedName, 
-            component: muiIconComponentMap[fallback] || HelpOutlineIcon, 
-            error: `Unknown MUI icon: ${mappedName}`,
-            color: resolvedColor
-          };
+          return { type: 'symbol', content: symbolName, error: null, color: resolvedColor };
         }
       }
 
-      const FallbackComponent = muiIconComponentMap[fallback] || HelpOutlineIcon;
-      return { type: 'mui', content: fallback, component: FallbackComponent, error: 'Invalid icon format', color: undefined };
+      const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
+      return { type: 'symbol', content: fallbackIconName, error: 'Invalid icon format', color: undefined };
     } catch (error) {
       console.warn('Icon resolution error:', error);
-      const FallbackComponent = muiIconComponentMap[fallback] || HelpOutlineIcon;
+      const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
       return { 
         type: 'error', 
         content: `❓ ${fallback}`, 
-        component: FallbackComponent,
+        symbolName: fallbackIconName,
         error: error instanceof Error ? error.message : 'Unknown error',
         color: undefined
       };
     }
-  }, [icon, children, fallback, muiIconNameMap, muiIconComponentMap, currentTheme]);
+  }, [icon, children, fallback, muiIconNameMap, materialSymbolsIconMap, currentTheme]);
 
   // Size mapping
   const sizeMap = {
@@ -601,7 +738,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
   const accessibilityLabel = useMemo(() => {
     if (ariaLabel) return ariaLabel;
     
-    if (resolvedIcon.type === 'mui') {
+    if (resolvedIcon.type === 'symbol') {
       // Convert snake_case to readable format
       return resolvedIcon.content.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) + ' icon';
     }
@@ -622,25 +759,24 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
   // Render based on icon type
   const renderIcon = () => {
     switch (resolvedIcon.type) {
-      case 'mui':
-        const IconComponent = resolvedIcon.component || HelpOutlineIcon;
-        // const iconColor = resolvedIcon.color || currentTheme.colors.text;
+      case 'symbol':
         const iconColor = resolvedIcon.color || "inherit";
-        const muiIconStylesWithColor = css({
+        const symbolStyles: React.CSSProperties = {
           fontSize: sizeMap[size],
           lineHeight: 1,
           display: 'inline-block',
           color: iconColor,
           verticalAlign: 'middle',
-          userSelect: 'none' as const,
+          userSelect: 'none',
           minWidth: sizeMap[size],
-          textAlign: 'center',
-        });
+          textAlign: 'center' as const,
+          ...style,
+        };
         return (
-          <IconComponent
-            css={muiIconStylesWithColor}
+          <MaterialSymbol
+            name={resolvedIcon.content}
             className={className}
-            style={style}
+            style={symbolStyles}
             aria-label={accessibilityLabel}
             role="img"
             {...rest}
@@ -677,12 +813,22 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
         );
       
       default:
-        const FallbackComponent = muiIconComponentMap[fallback] || HelpOutlineIcon;
+        const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
+        const defaultSymbolStyles: React.CSSProperties = {
+          fontSize: sizeMap[size],
+          lineHeight: 1,
+          display: 'inline-block',
+          verticalAlign: 'middle',
+          userSelect: 'none',
+          minWidth: sizeMap[size],
+          textAlign: 'center' as const,
+          ...style,
+        };
         return (
-          <FallbackComponent
-            css={muiIconStyles}
+          <MaterialSymbol
+            name={fallbackIconName}
             className={className}
-            style={style}
+            style={defaultSymbolStyles}
             aria-label={accessibilityLabel}
             role="img"
             {...rest}

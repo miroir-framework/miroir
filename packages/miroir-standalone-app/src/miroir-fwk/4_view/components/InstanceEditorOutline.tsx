@@ -9,7 +9,7 @@ import {
   MenuOpen,
   Settings,
   ViewList
-} from '@mui/icons-material';
+} from './Themes/MaterialSymbolWrappers';
 import {
   Box,
   Collapse,

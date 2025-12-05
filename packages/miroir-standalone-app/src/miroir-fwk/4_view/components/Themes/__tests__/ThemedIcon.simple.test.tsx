@@ -25,7 +25,7 @@ describe('ThemedIcon', () => {
       const icon = screen.getByTestId('test-icon');
       expect(icon).toBeInTheDocument();
       expect(icon).toHaveTextContent('home');
-      expect(icon).toHaveClass('material-icons');
+      expect(icon).toHaveClass('material-symbols-outlined');
     });
 
     it('should render MUI icon from object', () => {
@@ -40,7 +40,7 @@ describe('ThemedIcon', () => {
       const icon = screen.getByTestId('test-icon');
       expect(icon).toBeInTheDocument();
       expect(icon).toHaveTextContent('settings');
-      expect(icon).toHaveClass('material-icons');
+      expect(icon).toHaveClass('material-symbols-outlined');
     });
 
     it('should render emoji from object', () => {

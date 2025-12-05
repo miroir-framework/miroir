@@ -1,7 +1,5 @@
-import { FC, useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft.js';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight.js';
 
 // import AutoStories from '@mui/icons-material/AutoStories';
 import {
@@ -10,33 +8,25 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
-  entityApplicationForAdmin,
   LoggerInterface,
   menuDefaultAdmin,
   menuDefaultLibrary,
   menuDefaultMiroir,
-  MiroirLoggerFactory,
-  selfApplicationLibrary,
-  type JzodObject
+  MiroirLoggerFactory
 } from "miroir-core";
-import { applicationParis, defaultMenuParisUuid, packageName, selfApplicationParis } from '../../../../constants.js';
+import { applicationParis, defaultMenuParisUuid, packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { SidebarSection } from './SidebarSection.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { 
-  ThemedDrawer, 
-  ThemedDrawerHeader, 
-  ThemedResizeHandle, 
-  ThemedDivider, 
-  ThemedIconButton,
-  ThemedScrollableContent 
-} from "../Themes/index"
-import { OuterRunnerView } from '../Runners/OuterRunnerView.js';
-import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
-import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
-import { useCurrentModelEnvironment } from '../../ReduxHooks.js';
 import { ApplicationSelector } from '../interactive/ApplicationSelector.js';
+import {
+  ThemedDivider,
+  ThemedDrawer,
+  ThemedDrawerHeader,
+  ThemedResizeHandle,
+  ThemedScrollableContent
+} from "../Themes/index";
+import { SidebarSection } from './SidebarSection.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

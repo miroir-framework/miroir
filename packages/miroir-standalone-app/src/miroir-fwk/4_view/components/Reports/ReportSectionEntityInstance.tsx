@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
   Domain2QueryReturnType,
-  DomainControllerInterface,
   Entity,
   EntityDefinition,
   EntityInstance,
-  InstanceAction,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -15,10 +13,8 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  defaultMiroirModelEnvironment,
   entityQueryVersion,
   entityTransformerTest,
-  getApplicationSection,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
@@ -29,12 +25,11 @@ import {
 } from "miroir-core";
 
 import {
-  useDomainControllerService,
   useMiroirContextService,
   useViewParams
 } from "../../MiroirContextReactProvider.js";
 
-import { Toc } from '@mui/icons-material';
+import { Toc } from '../Themes/MaterialSymbolWrappers';
 import { useFormikContext } from 'formik';
 import {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap

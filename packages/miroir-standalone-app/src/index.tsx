@@ -1,6 +1,6 @@
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import 'material-icons/iconfont/material-icons.css';
+import 'material-symbols/outlined.css';
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";

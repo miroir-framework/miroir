@@ -22,9 +22,7 @@ import {
   type JzodObject
 } from "miroir-core";
 
-import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
+import { CloseIcon, EditIcon, SaveIcon } from '../Themes/MaterialSymbolWrappers';
 import { deployments, packageName } from '../../../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';

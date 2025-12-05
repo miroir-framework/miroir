@@ -9,7 +9,7 @@ import {
   Chip,
   SelectChangeEvent 
 } from '@mui/material';
-import { Palette, DarkMode, CompressOutlined, Style } from '@mui/icons-material';
+import { Palette, DarkMode, CompressOutlined, Style } from './Themes/MaterialSymbolWrappers';
 import { useMiroirTheme, MiroirThemeOption } from '../contexts/MiroirThemeContext.js';
 import { AppTheme } from 'miroir-core';
 

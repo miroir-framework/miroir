@@ -54,7 +54,7 @@ export const IconExtractionDemo: React.FC = () => {
   return (
     <div style={{ padding: '20px' }}>
       <h3>Material Icon Runtime Extraction Demo</h3>
-      <p>Icons extracted at runtime from @mui/icons-material components:</p>
+      <p>Icons extracted at runtime from Material Symbols components:</p>
       <canvas 
         ref={canvasRef} 
         width={400} 

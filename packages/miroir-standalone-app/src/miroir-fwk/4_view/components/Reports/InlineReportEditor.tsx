@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormikContext } from 'formik';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ExpandMoreIcon } from '../Themes/MaterialSymbolWrappers';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 
 import {

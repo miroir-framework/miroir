@@ -17,11 +17,13 @@ import {
   ListItemText,
   ListItemIcon,
   Tooltip,
+  // Error as MuiError,
 } from '@mui/material';
 import {
+  ErrorIcon as MuiError,
   PlayArrow,
   CheckCircle,
-  Error as MuiError,
+// import {
   ExpandLess,
   ExpandMore,
   Refresh,
@@ -32,7 +34,7 @@ import {
   Assignment,
   AssignmentTurnedIn,
   Science,
-} from '@mui/icons-material';
+} from './Themes/MaterialSymbolWrappers';
 
 import { MiroirEventTrackingData, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { useMiroirEventTrackingData, useMiroirContextService } from '../MiroirContextReactProvider.js';

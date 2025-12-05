@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import CreateIcon from '@mui/icons-material/Create';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { CreateIcon, ContentCopyIcon, DeleteIcon } from './Themes/MaterialSymbolWrappers';
 
 // Material Design icon components
 const MATERIAL_ICON_COMPONENTS = {

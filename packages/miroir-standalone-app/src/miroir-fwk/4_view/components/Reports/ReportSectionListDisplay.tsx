@@ -45,7 +45,7 @@ import {
   type ReportSection
 } from "miroir-core";
 
-import AddBox from "@mui/icons-material/AddBox";
+import { AddBox } from "../Themes/MaterialSymbolWrappers";
 import { getMemoizedReduxDeploymentsStateSelectorForTemplateMap, getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { packageName } from "../../../../constants.js";
 import { deleteCascade } from "../../scripts.js";

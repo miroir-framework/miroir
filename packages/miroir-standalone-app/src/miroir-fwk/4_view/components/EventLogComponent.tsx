@@ -1,11 +1,11 @@
 import {
   BugReport,
-  Error as ErrorIcon,
+  ErrorIcon,
   ExpandLess,
   ExpandMore,
   Info,
   Warning
-} from '@mui/icons-material';
+} from './Themes/MaterialSymbolWrappers';
 import {
   Box,
   Chip,

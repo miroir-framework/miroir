@@ -1,27 +1,16 @@
 import { useState } from 'react';
 
+import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft.js';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight.js';
-
-import { styled } from '@mui/material/styles';
-import { 
-  Icon, 
-  Toolbar, 
-  Box, 
-  IconButton, 
-  Menu, 
-  MenuItem, 
-  Typography, 
-  Button, 
-  Tooltip, 
-  Avatar 
+import {
+  Box,
+  Button,
+  Icon,
+  IconButton,
+  Toolbar,
+  Tooltip
 } from '@mui/material';
-import AdbIcon from '@mui/icons-material/Adb';
-import MenuIcon from '@mui/icons-material/Menu';
-import TocIcon from '@mui/icons-material/Toc';
-import Edit from '@mui/icons-material/Edit';
-import EditOff from '@mui/icons-material/EditOff';
+import { styled } from '@mui/material/styles';
 
 import { defaultMiroirModelEnvironment, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
@@ -29,12 +18,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { SidebarWidth } from './SidebarSection.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../../MiroirContextReactProvider.js';
-import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { usePageConfiguration } from '../../services/index.js';
-import { ActionButton } from './ActionButton.js';
+import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
+import { ActionButton } from './ActionButton.js';
+import { SidebarWidth } from './SidebarSection.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -447,7 +436,7 @@ export function AppBar(props:AppBarProps) {
                   <ThemedIcon
                     icon={
                       context.showPerformanceDisplay
-                        ? { iconType: "mui", name: "timerOff" }
+                        ? { iconType: "mui", name: "timer_off" }
                         : { iconType: "mui", name: "timer" }
                     }
                   />
@@ -473,8 +462,8 @@ export function AppBar(props:AppBarProps) {
                   <ThemedIcon
                     icon={
                       context.showActionTimeline
-                        ? { iconType: "mui", name: "notificationOff" }
-                        : { iconType: "mui", name: "notification" }
+                        ? { iconType: "mui", name: "notifications_off" }
+                        : { iconType: "mui", name: "notifications" }
                     }
                   />
                 </ThemedIconButton>
@@ -498,7 +487,7 @@ export function AppBar(props:AppBarProps) {
                       context.showDebugInfo
                         ? {
                             iconType: "mui",
-                            name: "bugReport",
+                            name: "bug_report",
                             color: {
                               colorType: "themeColor",
                               currentThemeColorPath: "colors.warning",
@@ -506,7 +495,7 @@ export function AppBar(props:AppBarProps) {
                           }
                         : {
                             iconType: "mui",
-                            name: "bugReport",
+                            name: "bug_report",
                           }
                     }
                   />
