@@ -515,6 +515,7 @@ const muiIconNameMap: Record<string, string> = {
   ClearIcon: "clear",
   Close: "close",
   CloseIcon: "close",
+  DirectionsRun: "directions_run",
   Palette: "palette",
   DarkMode: "dark_mode",
   CompressOutlined: "compress",

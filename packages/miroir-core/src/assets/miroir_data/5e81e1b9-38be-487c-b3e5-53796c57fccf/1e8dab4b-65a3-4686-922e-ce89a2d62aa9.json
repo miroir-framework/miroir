@@ -245,10 +245,21 @@
                       "type": "string",
                       "optional": true
                     },
+                    "uuid": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "selector": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": ["portalSelector", "muiSelector"]
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
-                      "definition": ["left", "stacked"]
+                      "definition": ["left", "stacked", "hidden"]
                     },
                     "objectHideDeleteButton":{
                       "type": "boolean",

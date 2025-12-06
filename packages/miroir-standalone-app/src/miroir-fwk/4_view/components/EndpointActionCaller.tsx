@@ -10,12 +10,14 @@ import { useSelector } from "react-redux";
 
 
 import {
+  adminApplicationLibrary,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
   EndpointDefinition,
+  entityApplicationForAdmin,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   instanceEndpointVersionV1,
   JzodObject,
@@ -38,8 +40,11 @@ import { useDomainControllerService, useMiroirContextService, useSnackbar } from
 import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditorWithFormik } from './Reports/TypedValueObjectEditorWithFormik.js';
-import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
+import { ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
 import { useReportPageContext } from './Reports/ReportPageContext.js';
+import { Formik, type FormikProps } from 'formik';
+import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
+import { noValue } from './ValueObjectEditor/JzodElementEditorInterface.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -88,6 +93,17 @@ const miroirEndpoints: EndpointDefinition[] = [
   // }
 ];
 
+const formikPath_EndpointActionCaller = "EndpointActionCaller";
+type EndpointActionCallerFormikValueType = {
+  // actionFormValues: Record<string, any>;
+  [formikPath_EndpointActionCaller]: {
+    applicationUuid: string;
+    deploymentUuid: string;
+    endpointUuid: string;
+    actionIndex: number;
+    actionFormValues: Record<string, any>;
+  }
+};
 // #################################################################################################
 export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   const [selectedDeploymentUuid, setSelectedDeploymentUuid] = useState<string>('');
@@ -281,149 +297,241 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     }
   };
 
-  const getActionLabel = (action: Action, index: number): string => {
-    // Try to extract action type from the action parameters
-    // const actionTypeElement = action.actionParameters?.definition?.actionType as any;
-    log.info('getActionLabel', action, index);
-    const actionTypeElement = action.actionParameters?.actionType?.definition as any;
-    const actionType = actionTypeElement?.definition;
-    if (actionType) {
-      return actionType; // Just return the action type without index
+  // const getActionLabel = (action: Action, index: number): string => {
+  //   // Try to extract action type from the action parameters
+  //   // const actionTypeElement = action.actionParameters?.definition?.actionType as any;
+  //   log.info('getActionLabel', action, index);
+  //   const actionTypeElement = action.actionParameters?.actionType?.definition as any;
+  //   const actionType = actionTypeElement?.definition;
+  //   if (actionType) {
+  //     return actionType; // Just return the action type without index
+  //   }
+  //   return `Action ${index + 1}`;
+  // };
+  const initialFormValues = {
+    [formikPath_EndpointActionCaller]: {
+      applicationUuid: adminApplicationLibrary.uuid,
+      // deploymentUuid: '',
+      // endpointUuid: '',
+      // actionIndex: -1,
+      // actionFormValues: {},
     }
-    return `Action ${index + 1}`;
   };
 
-
+  const endpointActionCallerFormikSchema: JzodObject = {
+    type: 'object',
+    definition: {
+      [formikPath_EndpointActionCaller]: {
+        type: "object",
+        tag: {
+          value: {
+            defaultLabel: "Application Selector",
+            display: {
+              // unfoldSubLevels: 1,
+              objectWithoutHeader: true,
+              objectOrArrayWithoutFrame: true,
+              objectAttributesNoIndent: true,
+            }
+          }
+        },
+        definition: {
+          applicationUuid: {
+            type: "uuid",
+            tag: {
+              value: {
+                defaultLabel: "Application (mls)",
+                editable: true,
+                selectorParams: {
+                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                  targetEntity: entityApplicationForAdmin.uuid,
+                  targetEntityOrderInstancesBy: "name",
+                },
+                display: {
+                  objectUuidAttributeLabelPosition: "hidden",
+                  uuid: { selector: "muiSelector" }
+                },
+                initializeTo: {
+                  initializeToType: "value",
+                  value: noValue.uuid,
+                },
+              },
+            },
+          },
+        }
+      }
+      // applicationUuid: { type: 'string' },
+      // deploymentUuid: { type: 'string' },
+      // endpointUuid: { type: 'string' },
+      // actionIndex: { type: 'number' },
+      // actionFormValues: currentActionParametersMMLSchema || { type: 'object', definition: {} },
+    }
+  };
   return (
-    <ThemedPaper elevation={3} sx={{ p: 3, m: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Endpoint Action Caller
-      </Typography>
-      <Typography variant="body2" color="text.secondary" gutterBottom>
-        Use JzodElementEditor for dynamic form generation based on action parameters schema
-      </Typography>
+    <Formik
+      enableReinitialize={true}
+      initialValues={initialFormValues as any}
+      onSubmit={async (values, { setSubmitting, setErrors }) => {
+        try {
+          log.info("onSubmit formik values", values);
+          // await handleTransformerDefinitionSubmit(values);
+        } catch (e) {
+          log.error(e);
+        } finally {
+          setSubmitting(false);
+        }
+      }}
+      validateOnChange={false}
+      validateOnBlur={false}
+    >
+      {
+        (
+          formikContext: FormikProps<EndpointActionCallerFormikValueType>
+        ) => {
+          return (
+            <ThemedPaper elevation={3} sx={{ p: 3, m: 2 }}>
+              <Typography variant="h5" gutterBottom>
+                Endpoint Action Caller
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Use JzodElementEditor for dynamic form generation based on action parameters schema
+              </Typography>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        {/* Deployment Selection */}
-        <ThemedFormControl fullWidth>
-          <ThemedInputLabel id="deployment-select-label">Choose a Deployment</ThemedInputLabel>
-          <ThemedMUISelect
-            labelId="deployment-select-label"
-            id="deployment-select"
-            value={selectedDeploymentUuid}
-            label="Choose a Deployment"
-            onChange={handleDeploymentChange}
-          >
-            {deployments.map((deployment: SelfApplicationDeploymentConfiguration) => (
-              <MenuItem key={deployment.uuid} value={deployment.uuid}>
-                {deployment.description || deployment.name}
-              </MenuItem>
-            ))}
-          </ThemedMUISelect>
-        </ThemedFormControl>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
 
-        {/* Endpoint Selection */}
-        {selectedDeploymentUuid && (
-          <ThemedFormControl fullWidth>
-            <ThemedInputLabel id="endpoint-select-label">Choose an Endpoint</ThemedInputLabel>
-            <ThemedMUISelect
-              labelId="endpoint-select-label"
-              id="endpoint-select"
-              value={selectedEndpointUuid}
-              label="Choose an Endpoint"
-              onChange={handleEndpointChange}
-            >
-              {availableEndpoints.map((endpoint) => (
-                // <MenuItem key={endpoint.uuid} value={endpoint.uuid}>
-                <MenuItem key={endpoint.uuid} value={endpoint.uuid}>
-                  {/* {endpoint.name} */}
-                  {endpoint.description || endpoint.name}
-                </MenuItem>
-              ))}
-            </ThemedMUISelect>
-          </ThemedFormControl>
-        )}
-
-        {/* Action Selection */}
-        {selectedEndpointUuid && availableActions.length > 0 && (
-          <ThemedFormControl fullWidth>
-            <ThemedInputLabel id="action-select-label">Choose an Action</ThemedInputLabel>
-            <ThemedMUISelect
-              labelId="action-select-label"
-              id="action-select"
-              value={selectedActionIndex === -1 ? "" : selectedActionIndex.toString()}
-              label="Choose an Action"
-              onChange={handleActionChange}
-            >
-              {availableActions.map((action, index) => (
-                <MenuItem
-                  key={action.actionParameters.actionType.definition}
-                  value={index.toString()}
+                {/* Application Selector */}
+                {
+                  formikContext.values[formikPath_EndpointActionCaller] && (
+                    <TypedValueObjectEditor
+                      labelElement={<span>select Application</span>}
+                      formValueMLSchema={endpointActionCallerFormikSchema}
+                      formikValuePathAsString={formikPath_EndpointActionCaller}
+                      deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
+                      applicationSection={"data"}
+                      formLabel={"Application Selector jzod"}
+                      // onSubmit={async () => {}} // No-op for readonly
+                      mode="create" // Readonly viewer mode, not relevant here
+                      displaySubmitButton="noDisplay"
+                      maxRenderDepth={3}
+                      // readonly={true}
+                    />
+                  )
+                }
+                {/* Deployment Selection */}
+                <ThemedMUISelect
+                  labelId="deployment-select-label"
+                  id="deployment-select"
+                  value={selectedDeploymentUuid}
+                  label="Choose a Deployment"
+                  onChange={handleDeploymentChange}
+                  fullWidth
                 >
-                  {/* {getActionLabel(action, index)} */}
-                  {action.actionParameters.actionType.definition}
-                </MenuItem>
-              ))}
-            </ThemedMUISelect>
-          </ThemedFormControl>
-        )}
+                  {deployments.map((deployment: SelfApplicationDeploymentConfiguration) => (
+                    <MenuItem key={deployment.uuid} value={deployment.uuid}>
+                      {deployment.description || deployment.name}
+                    </MenuItem>
+                  ))}
+                </ThemedMUISelect>
 
-        {/* Dynamic Form with JzodElementEditor */}
-        {currentAction && currentActionParametersMMLSchema && (
-          <Box>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              Action Parameters
-            </Typography>
-            <TypedValueObjectEditorWithFormik
-              labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
-              mode="update"
-              initialValueObject={{ actionFormInitialValues }}
-              formValueMLSchema={{
-                type: "object",
-                definition: { actionFormInitialValues: currentActionParametersMMLSchema },
-              }}
-              formikValuePathAsString="actionFormInitialValues"
-              deploymentUuid={selectedDeploymentUuid}
-              // applicationSection={applicationSection}
-              applicationSection="data"
-              //
-              formLabel={"formLabel"}
-              onSubmit={handleSubmit}
-            />
-          </Box>
-        )}
+                {/* Endpoint Selection */}
+                {selectedDeploymentUuid && (
+                  <ThemedMUISelect
+                    labelId="endpoint-select-label"
+                    id="endpoint-select"
+                    value={selectedEndpointUuid}
+                    label="Choose an Endpoint"
+                    onChange={handleEndpointChange}
+                    fullWidth
+                  >
+                    {availableEndpoints.map((endpoint) => (
+                      <MenuItem key={endpoint.uuid} value={endpoint.uuid}>
+                        {endpoint.description || endpoint.name}
+                      </MenuItem>
+                    ))}
+                  </ThemedMUISelect>
+                )}
 
-        {/* Debug Information */}
-        {selectedDeploymentUuid && (
-          <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
-            <Typography variant="caption" display="block">
-              Selected Deployment:{" "}
-              {deployments.find((d) => d.uuid === selectedDeploymentUuid)?.name}
-            </Typography>
-            {selectedEndpointUuid && (
-              <Typography variant="caption" display="block">
-                Selected Endpoint:{" "}
-                {availableEndpoints.find((e) => e.uuid === selectedEndpointUuid)?.name}
-              </Typography>
-            )}
-            currentAction{JSON.stringify(currentAction, null, 2)}
-            {currentAction && (
-              <Typography variant="caption" display="block">
-                {/* Selected Action: {getActionLabel(currentAction, selectedActionIndex)} */}
-                Selected Action: {currentAction.actionParameters.actionType.definition}
-              </Typography>
-            )}
-            {currentActionParametersMMLSchema && (
-              <Typography variant="caption" display="block">
-                Form Schema:{" "}
-                {Object.keys(currentActionParametersMMLSchema.definition || {}).join(", ") ||
-                  "No parameters"}
-              </Typography>
-            )}
-          </Box>
-        )}
-      </Box>
-    </ThemedPaper>
+                {/* Action Selection */}
+                {selectedEndpointUuid && availableActions.length > 0 && (
+                  <ThemedMUISelect
+                    labelId="action-select-label"
+                    id="action-select"
+                    value={selectedActionIndex === -1 ? "" : selectedActionIndex.toString()}
+                    label="Choose an Action"
+                    onChange={handleActionChange}
+                    fullWidth
+                  >
+                    {availableActions.map((action, index) => (
+                      <MenuItem
+                        key={action.actionParameters.actionType.definition}
+                        value={index.toString()}
+                      >
+                        {action.actionParameters.actionType.definition}
+                      </MenuItem>
+                    ))}
+                  </ThemedMUISelect>
+                )}
+
+                {/* Dynamic Form with JzodElementEditor */}
+                {currentAction && currentActionParametersMMLSchema && (
+                  <Box>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="h6" gutterBottom>
+                      Action Parameters
+                    </Typography>
+                    <TypedValueObjectEditorWithFormik
+                      labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
+                      mode="update"
+                      initialValueObject={{ actionFormInitialValues }}
+                      formValueMLSchema={{
+                        type: "object",
+                        definition: { actionFormInitialValues: currentActionParametersMMLSchema },
+                      }}
+                      formikValuePathAsString="actionFormInitialValues"
+                      deploymentUuid={selectedDeploymentUuid}
+                      // applicationSection={applicationSection}
+                      applicationSection="data"
+                      //
+                      formLabel={"formLabel"}
+                      onSubmit={handleSubmit}
+                    />
+                  </Box>
+                )}
+
+                {/* Debug Information */}
+                {selectedDeploymentUuid && (
+                  <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
+                    <Typography variant="caption" display="block">
+                      Selected Deployment:{" "}
+                      {deployments.find((d) => d.uuid === selectedDeploymentUuid)?.name}
+                    </Typography>
+                    {selectedEndpointUuid && (
+                      <Typography variant="caption" display="block">
+                        Selected Endpoint:{" "}
+                        {availableEndpoints.find((e) => e.uuid === selectedEndpointUuid)?.name}
+                      </Typography>
+                    )}
+                    currentAction{JSON.stringify(currentAction, null, 2)}
+                    {currentAction && (
+                      <Typography variant="caption" display="block">
+                        {/* Selected Action: {getActionLabel(currentAction, selectedActionIndex)} */}
+                        Selected Action: {currentAction.actionParameters.actionType.definition}
+                      </Typography>
+                    )}
+                    {currentActionParametersMMLSchema && (
+                      <Typography variant="caption" display="block">
+                        Form Schema:{" "}
+                        {Object.keys(currentActionParametersMMLSchema.definition || {}).join(", ") ||
+                          "No parameters"}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </Box>
+            </ThemedPaper>
+          )
+      }
+
+      }
+    </Formik>
   );
 };

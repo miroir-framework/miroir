@@ -129,11 +129,31 @@ export const ThemedMenuItem: React.FC<MenuItemProps & ThemedComponentProps> = ({
   );
 };
 
-// Enhanced ThemedSelectWithPortal that wraps Material-UI Select with proper theming
-export const ThemedMUISelect: React.FC<SelectProps<any> & ThemedComponentProps> = ({ 
+// Enhanced ThemedMUISelect that wraps Material-UI Select with FormControl and InputLabel
+export interface ThemedMUISelectProps extends ThemedComponentProps {
+  label?: string;
+  labelId?: string;
+  fullWidth?: boolean;
+  id?: string;
+  value?: any;
+  onChange?: (event: any) => void;
+  name?: string;
+  variant?: 'filled' | 'outlined' | 'standard';
+  'data-testid'?: string;
+  'aria-label'?: string;
+  sx?: any; // Allow MUI sx prop
+  [key: string]: any; // Allow any other props
+}
+
+export const ThemedMUISelect: React.FC<ThemedMUISelectProps> = ({ 
   children, 
   className, 
   style,
+  label,
+  labelId,
+  fullWidth = false,
+  variant = 'outlined',
+  sx,
   ...props 
 }) => {
   const { currentTheme } = useMiroirTheme();
@@ -162,9 +182,12 @@ export const ThemedMUISelect: React.FC<SelectProps<any> & ThemedComponentProps> 
   });
 
   return (
-    <Select css={selectStyles} className={className} style={style} {...props}>
-      {children}
-    </Select>
+    <ThemedFormControl fullWidth={fullWidth}>
+      {label && <ThemedInputLabel id={labelId}>{label}</ThemedInputLabel>}
+      <Select css={selectStyles} labelId={labelId} label={label} variant={variant} sx={sx} className={className} style={style} {...props}>
+        {children}
+      </Select>
+    </ThemedFormControl>
   );
 };
 

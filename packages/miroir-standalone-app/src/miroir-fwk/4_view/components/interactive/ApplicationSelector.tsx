@@ -59,8 +59,8 @@ export const ApplicationSelector: FC<{
                 objectWithoutHeader: true,
                 objectOrArrayWithoutFrame: true,
                 objectAttributesNoIndent: true,
-              }
-            }
+              },
+            },
           },
           definition: {
             application: {
@@ -71,8 +71,11 @@ export const ApplicationSelector: FC<{
                   defaultLabel: "Application",
                   editable: true,
                   display: {
-                    objectUuidAttributeLabelPosition: "stacked",
+                    objectUuidAttributeLabelPosition: "hidden",
                     objectHideDeleteButton: true,
+                    uuid: {
+                      selector: "muiSelector", // "portalSelector" or "muiSelector"
+                    },
                   },
                   selectorParams: {
                     targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,

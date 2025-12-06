@@ -48,6 +48,39 @@ const testSubPart = resolvePathOnObject(
 const pageLabel = "Admin";
 
 // ################################################################################################
+// Runner configurations
+const runnerConfigs = [
+  {
+    title: "Endpoint Action Caller",
+    component: EndpointActionCaller,
+  },
+  {
+    title: "Lend Document",
+    component: LibraryRunner_LendDocument,
+  },
+  {
+    title: "Create Application & Deployment",
+    component: CreateApplicationRunner,
+  },
+  {
+    title: "Delete Application & Deployment",
+    component: DeleteApplicationRunner,
+  },
+  {
+    title: "Create Entity",
+    component: CreateEntityRunner,
+  },
+  {
+    title: "Drop Entity",
+    component: DeleteEntityRunner,
+  },
+  {
+    title: "Import Entity From Spreadsheet",
+    component: ImportEntityFromSpreadsheetRunner,
+  },
+] as const;
+
+// ################################################################################################
 function formatYYYYMMDD_HHMMSS(date = new Date()) {
   const pad = (n: number) => String(n).padStart(2, "0");
   const yyyy = date.getFullYear();
@@ -77,7 +110,7 @@ export const RunnersPage: React.FC<any> = (
   return (
     <ReportPageContextProvider>
       <PageContainer>
-        <h1>Admin</h1>
+        <h1>Runners</h1>
         This is the Admin page. It has been rendered {count} times.
         <br />
         {/* path: {testSubPartPathArray.join(".")} */}
@@ -86,81 +119,19 @@ export const RunnersPage: React.FC<any> = (
             onApplicationChange={setCurrentApplication}
           />
         <br /> */}
-        {/* Lend Library Document */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Lend Document</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <LibraryRunner_LendDocument
-              deploymentUuid={deploymentUuid}
-            />
-          </AccordionDetails>
-        </Accordion>
-        {/* Create Application & Deployment */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Create Application & Deployment</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <CreateApplicationRunner
-              deploymentUuid={deploymentUuid}
-            />
-          </AccordionDetails>
-        </Accordion>
-        {/* Delete Application & Deployment */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Delete Application & Deployment</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <DeleteApplicationRunner
-              deploymentUuid={deploymentUuid}
-            />
-          </AccordionDetails>
-        </Accordion>
-        {/* create entity */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Create Entity</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <CreateEntityRunner
-              deploymentUuid={deploymentUuid}
-            />
-          </AccordionDetails>
-        </Accordion>
-        {/* delete entity */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Drop Entity</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <DeleteEntityRunner
-              deploymentUuid={deploymentUuid}
-            />
-          </AccordionDetails>
-        </Accordion>
-        {/* create entity from import */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Import Entity From Spreadsheet</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <ImportEntityFromSpreadsheetRunner
-              deploymentUuid={deploymentUuid}
-            />
-          </AccordionDetails>
-        </Accordion>
-        {/* Endpoint Action Caller */}
-        <Accordion style={{ marginBottom: 12 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div style={{ fontWeight: 500 }}>Endpoint Action Caller</div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <EndpointActionCaller />
-          </AccordionDetails>
-        </Accordion>
+        {runnerConfigs.map((config, index) => {
+          const RunnerComponent = config.component;
+          return (
+            <Accordion key={index} style={{ marginBottom: 12 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <div style={{ fontWeight: 500 }}>{config.title}</div>
+              </AccordionSummary>
+              <AccordionDetails>
+                <RunnerComponent deploymentUuid={deploymentUuid} />
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
       </PageContainer>
     </ReportPageContextProvider>
   );

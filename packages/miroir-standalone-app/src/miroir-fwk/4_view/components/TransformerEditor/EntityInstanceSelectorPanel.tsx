@@ -153,16 +153,6 @@ export function EntityInstanceSelectorPanel(props:{
 
   const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
 
-  // Fetch available applications from the admin deployment
-  const adminModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
-  const availableApplications: Entity[] = useMemo(() => {
-    // Return hardcoded list of known applications with their names
-    return [
-      { uuid: adminLibraryApplication.uuid, name: "Library" } as Entity,
-      { uuid: applicationParis.uuid, name: "Paris" } as Entity,
-    ];
-  }, []);
-
   // Entities are always defined in the 'model' section, sorted by name
   const currentReportDeploymentSectionEntities: Entity[] = useMemo(() => {
     return [...currentModel.entities].sort((a, b) => {
@@ -357,20 +347,6 @@ export function EntityInstanceSelectorPanel(props:{
     });
   }, [context.toolsPageState.transformerEditor?.showAllInstances]); // Remove context from dependencies
 
-  // // ##############################################################################################
-  // // Handler for application change (with persistence)
-  // const handleApplicationChange = useCallback(
-  //   (newApplicationUuid: Uuid) => {
-  //     // setSelectedApplicationUuid(newApplicationUuid);
-  //     // Persist to context
-  //     context.updateTransformerEditorState({
-  //       ...context.toolsPageState.transformerEditor,
-  //       selectedApplicationUuid: newApplicationUuid,
-  //     });
-  //   },
-  //   [context.toolsPageState.transformerEditor]
-  // );
-
   // Handler for entity change (with persistence)
   const handleEntityChange = useCallback(
     (newEntityUuid: Uuid) => {
@@ -473,10 +449,8 @@ export function EntityInstanceSelectorPanel(props:{
             formikContext.values[formikPath_EntityInstanceSelectorPanel] && (
               <TypedValueObjectEditor
                 labelElement={<span>select Application</span>}
-                // initialValueObject={{ application: adminApplicationLibrary.uuid }}
                 formValueMLSchema={entityInstanceSelectorPanelSchema}
                 formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
-                // formikValuePathAsString={""}
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}
                 formLabel={"Application Selector jzod"}
@@ -488,32 +462,6 @@ export function EntityInstanceSelectorPanel(props:{
               />
             )
           }
-
-          {/* local Application Selector */}
-          {/* <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>
-              Application:
-            </label>
-            <select
-              value={selectedApplicationUuid}
-              onChange={(e) => handleApplicationChange(e.target.value as Uuid)}
-              style={{
-                padding: "6px 12px",
-                fontSize: "14px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                backgroundColor: "white",
-                cursor: "pointer",
-                minWidth: "200px",
-              }}
-            >
-              {availableApplications.map((app) => (
-                <option key={app.uuid} value={app.uuid}>
-                  {app.name || app.uuid}
-                </option>
-              ))}
-            </select>
-          </div> */}
 
           {/* Entity Selector */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

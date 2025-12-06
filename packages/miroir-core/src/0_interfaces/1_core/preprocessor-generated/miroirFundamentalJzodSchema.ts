@@ -255,12 +255,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "uuid": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "selector": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "portalSelector",
+                            "muiSelector"
+                          ]
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
                       "definition": [
                         "left",
-                        "stacked"
+                        "stacked",
+                        "hidden"
                       ]
                     },
                     "objectHideDeleteButton": {
@@ -22565,6 +22580,43 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "uuid": {
+                          "optional": true,
+                          "type": "union",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "selector": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "definition": [
+                                    {
+                                      "type": "enum",
+                                      "optional": true,
+                                      "definition": [
+                                        "portalSelector",
+                                        "muiSelector"
+                                      ]
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
                         "objectUuidAttributeLabelPosition": {
                           "type": "union",
                           "optional": true,
@@ -22574,7 +22626,8 @@ export const miroirFundamentalJzodSchema = {
                               "optional": true,
                               "definition": [
                                 "left",
-                                "stacked"
+                                "stacked",
+                                "hidden"
                               ]
                             },
                             {
@@ -49086,6 +49139,43 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "uuid": {
+                          "optional": true,
+                          "type": "union",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "selector": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "definition": [
+                                    {
+                                      "type": "enum",
+                                      "optional": true,
+                                      "definition": [
+                                        "portalSelector",
+                                        "muiSelector"
+                                      ]
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
                         "objectUuidAttributeLabelPosition": {
                           "type": "union",
                           "optional": true,
@@ -49095,7 +49185,8 @@ export const miroirFundamentalJzodSchema = {
                               "optional": true,
                               "definition": [
                                 "left",
-                                "stacked"
+                                "stacked",
+                                "hidden"
                               ]
                             },
                             {
@@ -49873,6 +49964,43 @@ export const miroirFundamentalJzodSchema = {
                                 }
                               ]
                             },
+                            "uuid": {
+                              "optional": true,
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "selector": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "enum",
+                                          "optional": true,
+                                          "definition": [
+                                            "portalSelector",
+                                            "muiSelector"
+                                          ]
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
+                            },
                             "objectUuidAttributeLabelPosition": {
                               "type": "union",
                               "optional": true,
@@ -49882,7 +50010,8 @@ export const miroirFundamentalJzodSchema = {
                                   "optional": true,
                                   "definition": [
                                     "left",
-                                    "stacked"
+                                    "stacked",
+                                    "hidden"
                                   ]
                                 },
                                 {
@@ -59605,12 +59734,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "uuid": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "selector": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "portalSelector",
+                            "muiSelector"
+                          ]
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
                       "definition": [
                         "left",
-                        "stacked"
+                        "stacked",
+                        "hidden"
                       ]
                     },
                     "objectHideDeleteButton": {
@@ -69308,12 +69452,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "uuid": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "selector": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "portalSelector",
+                            "muiSelector"
+                          ]
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
                       "definition": [
                         "left",
-                        "stacked"
+                        "stacked",
+                        "hidden"
                       ]
                     },
                     "objectHideDeleteButton": {
@@ -78965,12 +79124,27 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "uuid": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "selector": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "portalSelector",
+                            "muiSelector"
+                          ]
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
                       "definition": [
                         "left",
-                        "stacked"
+                        "stacked",
+                        "hidden"
                       ]
                     },
                     "objectHideDeleteButton": {

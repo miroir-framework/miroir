@@ -47,7 +47,6 @@ const runnerDefinition = {
 export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProps> = ({
 }) => {
 
-  // const deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid;
   const deploymentUuid: Uuid = defaultSelfApplicationDeploymentMap[runnerDefinition.application];
   const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
 
