@@ -3622,7 +3622,13 @@ export function transformer_extended_apply_wrapper(
     reduxDeploymentsState,
     activityTracker ? "with activityTracker" : "without activityTracker",
     "isTransformerTrackingEnabled():",
-    activityTracker?.isTransformerTrackingEnabled()
+    activityTracker?.isTransformerTrackingEnabled(),
+    "contextResults:",
+    // contextResults ? Object.keys(contextResults) : "no contextResults",
+    contextResults ? contextResults : "no contextResults",
+    "transformerParams:",
+    // Object.keys(transformerParams)
+    transformerParams
     // "eventTracker?.isTransformerTrackingEnabled()",
     // eventTracker?.isTransformerTrackingEnabled()
   );

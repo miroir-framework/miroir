@@ -10,14 +10,20 @@ import { useSelector } from "react-redux";
 
 
 import {
+  action,
   adminApplicationLibrary,
   adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  defaultAdminApplicationDeploymentMap,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
+  endpointDefinition,
   EndpointDefinition,
   entityApplicationForAdmin,
+  entityDefinitionEndpoint,
+  entityEndpointVersion,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   instanceEndpointVersionV1,
   JzodObject,
@@ -27,6 +33,7 @@ import {
   MiroirLoggerFactory,
   queryEndpointVersionV1,
   ReduxDeploymentsState,
+  resolvePathOnObject,
   SelfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodSchema,
@@ -34,17 +41,18 @@ import {
 } from 'miroir-core';
 import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
-import { FC, useMemo, useState } from 'react';
+import { act, FC, useEffect, useMemo, useState } from 'react';
 import { deployments, packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
 import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditorWithFormik } from './Reports/TypedValueObjectEditorWithFormik.js';
-import { ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
+import { ThemedInputLabel, ThemedMUISelect, ThemedOnScreenHelper, ThemedPaper } from './Themes/index.js';
 import { useReportPageContext } from './Reports/ReportPageContext.js';
 import { Formik, type FormikProps } from 'formik';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { noValue } from './ValueObjectEditor/JzodElementEditorInterface.js';
+import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -53,74 +61,37 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface EndpointActionCallerProps {}
 
-// interface Endpoint {
-//   uuid: string;
-//   name: string;
-//   definition: {
-//     actions: Array<{
-//       actionParameters: JzodObject;
-//     }>;
-//   };
-// }
 
-// interface Action {
-//   actionParameters: JzodObject;
-// }
-
-// Predefined endpoints from Miroir core
-const miroirEndpoints: EndpointDefinition[] = [
-  instanceEndpointVersionV1,
-  queryEndpointVersionV1,
-  // {
-  //   uuid: modelEndpointV1.uuid,
-  //   name: "Model Endpoint",
-  //   definition: modelEndpointV1.definition
-  // },
-  // {
-  //   uuid: instanceEndpointVersionV1.uuid, 
-  //   name: "Instance Endpoint",
-  //   definition: instanceEndpointVersionV1.definition
-  // },
-  // {
-  //   uuid: storeManagementEndpoint.uuid,
-  //   name: "Store Management Endpoint", 
-  //   definition: storeManagementEndpoint.definition
-  // },
-  // {
-  //   uuid: undoRedoEndpointVersionV1.uuid,
-  //   name: "Undo/Redo Endpoint",
-  //   definition: undoRedoEndpointVersionV1.definition
-  // }
-];
 
 const formikPath_EndpointActionCaller = "EndpointActionCaller";
-type EndpointActionCallerFormikValueType = {
-  // actionFormValues: Record<string, any>;
-  [formikPath_EndpointActionCaller]: {
-    applicationUuid: string;
-    deploymentUuid: string;
-    endpointUuid: string;
-    actionIndex: number;
-    actionFormValues: Record<string, any>;
-  }
-};
 // #################################################################################################
 export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
-  const [selectedDeploymentUuid, setSelectedDeploymentUuid] = useState<string>('');
-  const [selectedEndpointUuid, setSelectedEndpointUuid] = useState<string>('');
-  const [selectedActionIndex, setSelectedActionIndex] = useState<number>(-1);
-  const [actionFormInitialValues, setActionFormInitialValues] = useState<Record<string, any>>({});
+
+  // const formikPath_actionDefinition = formikPath_EndpointActionCaller + "actionDefinition";
+  const [actionFormInitialValues, setActionFormInitialValues] = useState<Record<string, any>>({
+    [formikPath_EndpointActionCaller]: {
+      applicationUuid: adminApplicationLibrary.uuid,
+      endpointUuid: noValue.uuid,
+      action: "",
+      actionCaller: undefined,
+    },
+  });
+
+  const [innerSelectedDeploymentUuid, setInnerSelectedDeploymentUuid] = useState<string>(
+    adminConfigurationDeploymentLibrary.uuid
+  );
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const reportContext = useReportPageContext();
   const context = useMiroirContextService();
   const { showSnackbar } = useSnackbar();
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  );
+  const currentModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
+    // context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
+  const deploymentMetaModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
+  // const [initialFormState, setInitialFormState] = useState<Record<string, any>>({});
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
       miroirFundamentalJzodSchema:
@@ -133,42 +104,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
   // const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
 
-  // Get available endpoints for selected deployment
-  const availableEndpoints = useMemo(() => {
-    if (!selectedDeploymentUuid) return [];
-    
-    // For all deployments, include the Miroir core endpoints
-    let endpoints = [...miroirEndpoints];
-    
-    // TODO: Add deployment-specific endpoints if they exist
-    // This would require querying the deployment's specific endpoints
-    
-    return endpoints;
-  }, [selectedDeploymentUuid]);
 
-  // Get available actions for selected endpoint
-  const availableActions = useMemo(() => {
-    if (!selectedEndpointUuid) return [];
-    
-    const endpoint = availableEndpoints.find(e => e.uuid === selectedEndpointUuid);
-    return endpoint?.definition?.actions || [];
-  }, [selectedEndpointUuid, availableEndpoints]);
-
-  // Get current action
-  const currentAction = useMemo(() => {
-    if (selectedActionIndex === -1 || !availableActions[selectedActionIndex]) return null;
-    return availableActions[selectedActionIndex];
-  }, [selectedActionIndex, availableActions]);
-
-  const currentActionParametersMMLSchema:JzodObject | undefined = useMemo(() => {
-    if (!currentAction?.actionParameters) return undefined;
-
-    return {
-      type: 'object',
-      definition: currentAction.actionParameters || {}
-    } as JzodObject;
-  }, [currentAction]);
-  log.info('EndpointActionCaller: currentActionParametersMMLSchema', currentActionParametersMMLSchema);
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -182,198 +118,63 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       )
   );
 
-  const handleDeploymentChange = (event: SelectChangeEvent) => {
-    setSelectedDeploymentUuid(event.target.value);
-    setSelectedEndpointUuid('');
-    setSelectedActionIndex(-1);
-    reportContext.setFoldedObjectAttributeOrArrayItems({});
-  };
 
-  const handleEndpointChange = (event: SelectChangeEvent<string>) => {
-    setSelectedEndpointUuid(event.target.value);
-    setSelectedActionIndex(-1);
-    reportContext.setFoldedObjectAttributeOrArrayItems({});
-  };
-
-  const handleActionChange = (event: SelectChangeEvent) => {
-    log.info('EndpointActionCaller: handleActionChange', event.target.value);
-    setSelectedActionIndex(parseInt(event.target.value));
-    reportContext.setFoldedObjectAttributeOrArrayItems({});
-    
-    const selectedActionIndex = parseInt(event.target.value);
-    const currentAction =
-      selectedActionIndex === -1 || !availableActions[selectedActionIndex]
-        ? null
-        : availableActions[selectedActionIndex];
-
-    const initialFormState: Record<string, any> =
-      !currentAction?.actionParameters ||
-      !context.miroirFundamentalJzodSchema ||
-      !selectedDeploymentUuid
-        ? {}
-        : getDefaultValueForJzodSchemaWithResolutionNonHook(
-            "build",
-            {
-              type: "object",
-              definition: currentAction.actionParameters || {},
-            },
-            undefined, // rootObject
-            "", // rootLessListKey,
-            undefined, // No need to pass currentDefaultValue here
-            [], // currentPath on value is root
-            false, // forceOptional
-            selectedDeploymentUuid,
-            currentMiroirModelEnvironment,
-            {}, // transformerParams
-            {}, // contextResults 
-            deploymentEntityState,
-            {} // relativeReferenceJzodContext
-          );
-    log.info(
-      "EndpointActionCaller: handleActionChange Initial form state",
-      initialFormState,
-      "currentAction",
-      currentAction
-    );
-    setActionFormInitialValues(initialFormState);
-  };
-
+          // ######################################################################################
   const handleSubmit = async (values: any) => {
-    if (!currentAction || !selectedDeploymentUuid || !selectedEndpointUuid) {
-      log.error('EndpointActionCaller: Missing required fields for submission');
-      return;
-    }
 
     try {
       // Extract action type from the current action parameters
-      // const actionTypeElement = currentAction.actionParameters?.definition?.actionType as any;
-      const actionTypeElement = currentAction.actionParameters?.actionType as any;
-      const actionType = actionTypeElement?.definition;
-      if (!actionType) {
-        log.error('EndpointActionCaller: Could not determine action type from action parameters');
-        return;
-      }
+      const formValues = values
+      const currentAction = formValues.actionCaller as any;
 
-      // Construct the action object based on the form data
-      const actionToSubmit = {
-        actionType,
-        endpoint: selectedEndpointUuid,
-        deploymentUuid: selectedDeploymentUuid,
-        ...values // Spread Formik values which should include payload and other fields
-      };
+      log.info("EndpointActionCaller: Submitting action", currentAction);
 
-      log.info('EndpointActionCaller: Submitting action', actionToSubmit);
-      
       // Call the domain controller with the action
       const result = await domainController.handleAction(
-        actionToSubmit as any, // Cast to any since we're dynamically constructing the action
-        defaultMiroirModelEnvironment
+        currentAction as any, // Cast to any since we're dynamically constructing the action
+        currentMiroirModelEnvironment
       );
 
-      log.info('EndpointActionCaller: Action result', result);
-      
-      if (result.status === 'error') {
+      log.info("EndpointActionCaller: Action result", result);
+
+      if (result.status === "error") {
         // Handle server errors with snackbar
         // if (result.isServerError && result.errorMessage) {
         if (result.errorMessage) {
           showSnackbar(`Server error: ${result.errorMessage}`, "error");
         } else {
-          showSnackbar(`Action failed: ${result.errorMessage || 'Unknown error'}`, "error");
+          showSnackbar(`Action failed: ${result.errorMessage || "Unknown error"}`, "error");
         }
       } else {
-        showSnackbar('Action submitted successfully!', "success");
-        log.info('Action submitted successfully! Check console for details.');
+        showSnackbar("Action submitted successfully!", "success");
+        log.info("Action submitted successfully! Check console for details.");
       }
-      
     } catch (error) {
-      log.error('EndpointActionCaller: Error submitting action', error);
-      
+      log.error("EndpointActionCaller: Error submitting action", error);
+
       // Check if the error has structured server error data
-      if (error && typeof error === 'object' && (error as any).isServerError) {
-        showSnackbar(`Server error: ${(error as any).errorMessage || (error as any).message || 'Unknown server error'}`, "error");
+      if (error && typeof error === "object" && (error as any).isServerError) {
+        showSnackbar(
+          `Server error: ${
+            (error as any).errorMessage || (error as any).message || "Unknown server error"
+          }`,
+          "error"
+        );
       } else {
-        showSnackbar('Error submitting action. Check console for details.', "error");
+        showSnackbar("Error submitting action. Check console for details.", "error");
       }
     }
   };
 
-  // const getActionLabel = (action: Action, index: number): string => {
-  //   // Try to extract action type from the action parameters
-  //   // const actionTypeElement = action.actionParameters?.definition?.actionType as any;
-  //   log.info('getActionLabel', action, index);
-  //   const actionTypeElement = action.actionParameters?.actionType?.definition as any;
-  //   const actionType = actionTypeElement?.definition;
-  //   if (actionType) {
-  //     return actionType; // Just return the action type without index
-  //   }
-  //   return `Action ${index + 1}`;
-  // };
-  const initialFormValues = {
-    [formikPath_EndpointActionCaller]: {
-      applicationUuid: adminApplicationLibrary.uuid,
-      // deploymentUuid: '',
-      // endpointUuid: '',
-      // actionIndex: -1,
-      // actionFormValues: {},
-    }
-  };
-
-  const endpointActionCallerFormikSchema: JzodObject = {
-    type: 'object',
-    definition: {
-      [formikPath_EndpointActionCaller]: {
-        type: "object",
-        tag: {
-          value: {
-            defaultLabel: "Application Selector",
-            display: {
-              // unfoldSubLevels: 1,
-              objectWithoutHeader: true,
-              objectOrArrayWithoutFrame: true,
-              objectAttributesNoIndent: true,
-            }
-          }
-        },
-        definition: {
-          applicationUuid: {
-            type: "uuid",
-            tag: {
-              value: {
-                defaultLabel: "Application (mls)",
-                editable: true,
-                selectorParams: {
-                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                  targetEntity: entityApplicationForAdmin.uuid,
-                  targetEntityOrderInstancesBy: "name",
-                },
-                display: {
-                  objectUuidAttributeLabelPosition: "hidden",
-                  uuid: { selector: "muiSelector" }
-                },
-                initializeTo: {
-                  initializeToType: "value",
-                  value: noValue.uuid,
-                },
-              },
-            },
-          },
-        }
-      }
-      // applicationUuid: { type: 'string' },
-      // deploymentUuid: { type: 'string' },
-      // endpointUuid: { type: 'string' },
-      // actionIndex: { type: 'number' },
-      // actionFormValues: currentActionParametersMMLSchema || { type: 'object', definition: {} },
-    }
-  };
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={initialFormValues as any}
+      initialValues={actionFormInitialValues as any}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
         try {
           log.info("onSubmit formik values", values);
           // await handleTransformerDefinitionSubmit(values);
+          await handleSubmit(values[formikPath_EndpointActionCaller]);
         } catch (e) {
           log.error(e);
         } finally {
@@ -385,8 +186,272 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     >
       {
         (
-          formikContext: FormikProps<EndpointActionCallerFormikValueType>
+          formikContext: FormikProps<typeof actionFormInitialValues>
         ) => {
+
+          const selectedDeploymentUuid =
+            // formikContext.values[formikPath_EndpointActionCaller].deploymentUuid;
+            defaultAdminApplicationDeploymentMap[
+              resolvePathOnObject(formikContext.values, [
+                formikPath_EndpointActionCaller,
+                "applicationUuid",
+              ])
+            ]
+          ;
+          const currentInnerModel: MetaModel = useCurrentModel(
+            selectedDeploymentUuid != noValue.uuid? selectedDeploymentUuid : adminConfigurationDeploymentMiroir.uuid
+          );
+
+          const selectedEndpointUuid =
+            formikContext.values[formikPath_EndpointActionCaller].endpointUuid;
+
+          // Get available endpoints for selected deployment
+          const availableEndpoints = currentInnerModel.endpoints;
+
+          // Get available actions for selected endpoint
+          const availableActions = useMemo(() => {
+            if (!selectedEndpointUuid) return [];
+            const endpoint = availableEndpoints.find((e) => e.uuid === selectedEndpointUuid);
+            return endpoint?.definition?.actions || [];
+          }, [selectedEndpointUuid, availableEndpoints]);
+
+          const selectedActionName = formikContext.values[formikPath_EndpointActionCaller].action;
+          const currentAction = availableActions.find(action => action.actionParameters.actionType.definition === selectedActionName)
+
+          const currentActionParametersMMLSchema:JzodObject = useMemo(() => {
+
+            return {
+              type: 'object',
+              definition: currentAction?.actionParameters || {}
+            } as JzodObject;
+          }, [currentAction]);
+
+          log.info('EndpointActionCaller: currentActionParametersMMLSchema', currentActionParametersMMLSchema);
+          const endpointActionCallerFormikSchema: JzodObject = useMemo(() => ({
+            type: "object",
+            definition: {
+              [formikPath_EndpointActionCaller]: {
+                type: "object",
+                tag: {
+                  value: {
+                    defaultLabel: "Application Selector",
+                    display: {
+                      // unfoldSubLevels: 1,
+                      objectWithoutHeader: true,
+                      objectOrArrayWithoutFrame: true,
+                      objectAttributesNoIndent: true,
+                    },
+                  },
+                },
+                definition: {
+                  applicationUuid: {
+                    type: "uuid",
+                    tag: {
+                      value: {
+                        defaultLabel: "Application",
+                        editable: true,
+                        selectorParams: {
+                          targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                          targetEntity: entityApplicationForAdmin.uuid,
+                          targetEntityOrderInstancesBy: "name",
+                        },
+                        display: {
+                          objectUuidAttributeLabelPosition: "hidden",
+                          uuid: { selector: "muiSelector" },
+                        },
+                        initializeTo: {
+                          initializeToType: "value",
+                          value: noValue.uuid,
+                        },
+                      },
+                    },
+                  },
+                  endpointUuid: {
+                    type: "uuid",
+                    optional: true,
+                    tag: {
+                      value: {
+                        defaultLabel: "Endpoint",
+                        editable: true,
+                        selectorParams: {
+                          targetDeploymentUuid: selectedDeploymentUuid,
+                          // targetDeploymentUuid: {
+                          //   transformerType: "!=",
+                          //   interpolation: "build",
+                          //   left: {
+                          //     transformerType: "getFromParameters",
+                          //     interpolation: "build",
+                          //     safe: true,
+                          //     referencePath: [
+                          //       formikPath_EndpointActionCaller,
+                          //       "deploymentUuidQuery",
+                          //       "deployments",
+                          //       "0",
+                          //       "uuid",
+                          //     ],
+                          //   },
+                          //   right: { transformerType: "returnValue", value: undefined },
+                          //   then: {
+                          //     transformerType: "getFromParameters",
+                          //     interpolation: "build",
+                          //     safe: true,
+                          //     referencePath: [
+                          //       formikPath_EndpointActionCaller,
+                          //       "deploymentUuidQuery",
+                          //       "deployments",
+                          //       "0",
+                          //       "uuid",
+                          //     ],
+                          //   },
+                          //   else: noValue.uuid,
+                          // },
+                          targetEntityApplicationSection: "model",
+                          targetEntity: entityEndpointVersion.uuid,
+                          targetEntityOrderInstancesBy: "name",
+                        },
+                        display: {
+                          objectUuidAttributeLabelPosition: "hidden",
+                          uuid: { selector: "muiSelector" },
+                          hidden: {
+                            transformerType: "==",
+                            label: "Hide Endpoint selector if Application not selected",
+                            left: {
+                              transformerType: "getFromContext",
+                              interpolation: "runtime",
+                              referencePath: ["rootValueObject", "applicationUuid"],
+                            },
+                            right: noValue.uuid,
+                            then: true,
+                            else: false,
+                          },
+                        },
+                        initializeTo: {
+                          initializeToType: "value",
+                          value: noValue.uuid,
+                        },
+                      },
+                    },
+                  },
+                  action: {
+                    type: "enum",
+                    optional: true,
+                    tag: {
+                      value: {
+                        defaultLabel: "Action",
+                        editable: true,
+                        // selectorParams: {
+                        //   targetDeploymentUuid: selectedDeploymentUuid,
+                        //   // targetDeploymentUuid: {
+                        //   //   transformerType: "!=",
+                        //   //   interpolation: "build",
+                        //   //   left: {
+                        //   //     transformerType: "getFromParameters",
+                        //   //     interpolation: "build",
+                        //   //     safe: true,
+                        //   //     referencePath: [
+                        //   //       formikPath_EndpointActionCaller,
+                        //   //       "deploymentUuidQuery",
+                        //   //       "deployments",
+                        //   //       "0",
+                        //   //       "uuid",
+                        //   //     ],
+                        //   //   },
+                        //   //   right: { transformerType: "returnValue", value: undefined },
+                        //   //   then: {
+                        //   //     transformerType: "getFromParameters",
+                        //   //     interpolation: "build",
+                        //   //     safe: true,
+                        //   //     referencePath: [
+                        //   //       formikPath_EndpointActionCaller,
+                        //   //       "deploymentUuidQuery",
+                        //   //       "deployments",
+                        //   //       "0",
+                        //   //       "uuid",
+                        //   //     ],
+                        //   //   },
+                        //   //   else: noValue.uuid,
+                        //   // },
+                        //   targetEntityApplicationSection: "model",
+                        //   targetEntity: entityEndpointVersion.uuid,
+                        //   targetEntityOrderInstancesBy: "name",
+                        // },
+                        display: {
+                          objectUuidAttributeLabelPosition: "hidden",
+                          uuid: { selector: "muiSelector" },
+                          hidden: {
+                            transformerType: "==",
+                            label: "Hide Endpoint selector if Application not selected",
+                            left: {
+                              transformerType: "getFromContext",
+                              interpolation: "runtime",
+                              referencePath: ["rootValueObject", "applicationUuid"],
+                            },
+                            right: noValue.uuid,
+                            then: true,
+                            else: false,
+                          },
+                        },
+                        initializeTo: {
+                          initializeToType: "value",
+                          value: noValue.uuid,
+                        },
+                      },
+                    },
+                    definition: availableActions.map(
+                      (action, index) => action.actionParameters.actionType.definition
+                    ),
+                  },
+                  actionCaller: currentActionParametersMMLSchema
+                },
+              },
+            },
+          }), [selectedDeploymentUuid, availableActions, currentActionParametersMMLSchema]);
+
+          useEffect(() => {
+            const initialFormState: Record<string, any> =
+              !currentAction?.actionParameters ||
+              !context.miroirFundamentalJzodSchema ||
+              !selectedDeploymentUuid
+                ? {}
+                : getDefaultValueForJzodSchemaWithResolutionNonHook(
+                    "build",
+                    currentActionParametersMMLSchema,
+                    undefined, // rootObject
+                    "", // rootLessListKey,
+                    undefined, // No need to pass currentDefaultValue here
+                    [], // currentPath on value is root
+                    false, // forceOptional
+                    selectedDeploymentUuid,
+                    currentMiroirModelEnvironment,
+                    {}, // transformerParams
+                    {}, // contextResults
+                    deploymentEntityState,
+                    {} // relativeReferenceJzodContext
+                  );
+            log.info(
+              "EndpointActionCaller useEffect: handleActionChange Initial form state",
+              initialFormState,
+              "currentAction",
+              currentAction
+            );
+
+            log.info(
+              "EndpointActionCaller useEffect: updating action caller w<ith currentActionParametersMMLSchema",
+              currentActionParametersMMLSchema,
+              "initialFormState",
+              initialFormState
+            );
+            // formikContext.setFieldValue(formikPath_EndpointActionCaller+ ".actionCaller", initialFormState);
+            setActionFormInitialValues({
+              ...formikContext.values,
+              [formikPath_EndpointActionCaller]: {
+                ...formikContext.values[formikPath_EndpointActionCaller],
+                actionCaller: initialFormState,
+              },
+            });
+          }, [currentActionParametersMMLSchema]);
+
+          // ######################################################################################
           return (
             <ThemedPaper elevation={3} sx={{ p: 3, m: 2 }}>
               <Typography variant="h5" gutterBottom>
@@ -397,138 +462,81 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
               </Typography>
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp selectedDeploymentUuid"
+                  data={selectedDeploymentUuid}
+                  initiallyUnfolded={false}
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp currentInnerModel"
+                  data={currentInnerModel}
+                  initiallyUnfolded={false}
+                  useCodeBlock
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp formikContext values"
+                  data={formikContext.values}
+                  initiallyUnfolded={false}
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp availableEndpoints"
+                  data={availableEndpoints.map((e) => ({ uuid: e.uuid, name: e.name }))}
+                  initiallyUnfolded={false}
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp selectedEndpointUuid"
+                  data={selectedEndpointUuid}
+                  initiallyUnfolded={false}
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp availableActions"
+                  data={availableActions}
+                  initiallyUnfolded={false}
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp currentAction"
+                  data={currentAction}
+                  useCodeBlock
+                  initiallyUnfolded={false}
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp currentActionParametersMMLSchema"
+                  data={currentActionParametersMMLSchema}
+                  useCodeBlock
+                  initiallyUnfolded={false}
+                />
+                <ThemedOnScreenDebug
+                  label="EndpointActionCallerHelp endpointActionCallerFormikSchema"
+                  data={endpointActionCallerFormikSchema}
+                  useCodeBlock
+                  initiallyUnfolded={false}
+                />
 
-                {/* Application Selector */}
-                {
-                  formikContext.values[formikPath_EndpointActionCaller] && (
-                    <TypedValueObjectEditor
-                      labelElement={<span>select Application</span>}
-                      formValueMLSchema={endpointActionCallerFormikSchema}
-                      formikValuePathAsString={formikPath_EndpointActionCaller}
-                      deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
-                      applicationSection={"data"}
-                      formLabel={"Application Selector jzod"}
-                      // onSubmit={async () => {}} // No-op for readonly
-                      mode="create" // Readonly viewer mode, not relevant here
-                      displaySubmitButton="noDisplay"
-                      maxRenderDepth={3}
-                      // readonly={true}
-                    />
-                  )
-                }
-                {/* Deployment Selection */}
-                <ThemedMUISelect
-                  labelId="deployment-select-label"
-                  id="deployment-select"
-                  value={selectedDeploymentUuid}
-                  label="Choose a Deployment"
-                  onChange={handleDeploymentChange}
-                  fullWidth
-                >
-                  {deployments.map((deployment: SelfApplicationDeploymentConfiguration) => (
-                    <MenuItem key={deployment.uuid} value={deployment.uuid}>
-                      {deployment.description || deployment.name}
-                    </MenuItem>
-                  ))}
-                </ThemedMUISelect>
-
-                {/* Endpoint Selection */}
-                {selectedDeploymentUuid && (
-                  <ThemedMUISelect
-                    labelId="endpoint-select-label"
-                    id="endpoint-select"
-                    value={selectedEndpointUuid}
-                    label="Choose an Endpoint"
-                    onChange={handleEndpointChange}
-                    fullWidth
-                  >
-                    {availableEndpoints.map((endpoint) => (
-                      <MenuItem key={endpoint.uuid} value={endpoint.uuid}>
-                        {endpoint.description || endpoint.name}
-                      </MenuItem>
-                    ))}
-                  </ThemedMUISelect>
+                {/* EndpointActionCaller */}
+                {formikContext.values[formikPath_EndpointActionCaller] && (
+                  <TypedValueObjectEditor
+                    labelElement={<span>select Application</span>}
+                    formValueMLSchema={endpointActionCallerFormikSchema}
+                    formikValuePathAsString={formikPath_EndpointActionCaller}
+                    deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
+                    applicationSection={"data"}
+                    formLabel={"Application Selector jzod"}
+                    // onSubmit={async (a: any) => {
+                    //   return handleSubmit(
+                    //     formikContext.values[formikPath_EndpointActionCaller].actionCaller
+                    //   );
+                    // }} // No-op for readonly
+                    mode="create" // Readonly viewer mode, not relevant here
+                    displaySubmitButton="onTop"
+                    // maxRenderDepth={3}
+                    // readonly={true}
+                  />
                 )}
 
-                {/* Action Selection */}
-                {selectedEndpointUuid && availableActions.length > 0 && (
-                  <ThemedMUISelect
-                    labelId="action-select-label"
-                    id="action-select"
-                    value={selectedActionIndex === -1 ? "" : selectedActionIndex.toString()}
-                    label="Choose an Action"
-                    onChange={handleActionChange}
-                    fullWidth
-                  >
-                    {availableActions.map((action, index) => (
-                      <MenuItem
-                        key={action.actionParameters.actionType.definition}
-                        value={index.toString()}
-                      >
-                        {action.actionParameters.actionType.definition}
-                      </MenuItem>
-                    ))}
-                  </ThemedMUISelect>
-                )}
 
-                {/* Dynamic Form with JzodElementEditor */}
-                {currentAction && currentActionParametersMMLSchema && (
-                  <Box>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h6" gutterBottom>
-                      Action Parameters
-                    </Typography>
-                    <TypedValueObjectEditorWithFormik
-                      labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
-                      mode="update"
-                      initialValueObject={{ actionFormInitialValues }}
-                      formValueMLSchema={{
-                        type: "object",
-                        definition: { actionFormInitialValues: currentActionParametersMMLSchema },
-                      }}
-                      formikValuePathAsString="actionFormInitialValues"
-                      deploymentUuid={selectedDeploymentUuid}
-                      // applicationSection={applicationSection}
-                      applicationSection="data"
-                      //
-                      formLabel={"formLabel"}
-                      onSubmit={handleSubmit}
-                    />
-                  </Box>
-                )}
-
-                {/* Debug Information */}
-                {selectedDeploymentUuid && (
-                  <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
-                    <Typography variant="caption" display="block">
-                      Selected Deployment:{" "}
-                      {deployments.find((d) => d.uuid === selectedDeploymentUuid)?.name}
-                    </Typography>
-                    {selectedEndpointUuid && (
-                      <Typography variant="caption" display="block">
-                        Selected Endpoint:{" "}
-                        {availableEndpoints.find((e) => e.uuid === selectedEndpointUuid)?.name}
-                      </Typography>
-                    )}
-                    currentAction{JSON.stringify(currentAction, null, 2)}
-                    {currentAction && (
-                      <Typography variant="caption" display="block">
-                        {/* Selected Action: {getActionLabel(currentAction, selectedActionIndex)} */}
-                        Selected Action: {currentAction.actionParameters.actionType.definition}
-                      </Typography>
-                    )}
-                    {currentActionParametersMMLSchema && (
-                      <Typography variant="caption" display="block">
-                        Form Schema:{" "}
-                        {Object.keys(currentActionParametersMMLSchema.definition || {}).join(", ") ||
-                          "No parameters"}
-                      </Typography>
-                    )}
-                  </Box>
-                )}
               </Box>
             </ThemedPaper>
-          )
+          );
       }
 
       }

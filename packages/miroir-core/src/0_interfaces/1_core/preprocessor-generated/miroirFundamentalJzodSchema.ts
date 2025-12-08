@@ -255,6 +255,23 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "hidden": {
+                      "type": "union",
+                      "optional": true,
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
+                        }
+                      ]
+                    },
                     "uuid": {
                       "type": "object",
                       "optional": true,
@@ -22571,6 +22588,29 @@ export const miroirFundamentalJzodSchema = {
                             {
                               "type": "string",
                               "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "hidden": {
+                          "type": "union",
+                          "optional": true,
+                          "discriminator": "transformerType",
+                          "definition": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntime"
+                              }
                             },
                             {
                               "type": "schemaReference",
@@ -49139,6 +49179,29 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "hidden": {
+                          "type": "union",
+                          "optional": true,
+                          "discriminator": "transformerType",
+                          "definition": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntime"
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
                         "uuid": {
                           "optional": true,
                           "type": "union",
@@ -49955,6 +50018,29 @@ export const miroirFundamentalJzodSchema = {
                                 {
                                   "type": "string",
                                   "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "hidden": {
+                              "type": "union",
+                              "optional": true,
+                              "discriminator": "transformerType",
+                              "definition": [
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "transformerForBuildPlusRuntime"
+                                  }
                                 },
                                 {
                                   "type": "schemaReference",
@@ -59734,6 +59820,23 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "hidden": {
+                      "type": "union",
+                      "optional": true,
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
+                        }
+                      ]
+                    },
                     "uuid": {
                       "type": "object",
                       "optional": true,
@@ -69452,6 +69555,23 @@ export const miroirFundamentalJzodSchema = {
                       "type": "string",
                       "optional": true
                     },
+                    "hidden": {
+                      "type": "union",
+                      "optional": true,
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
+                        }
+                      ]
+                    },
                     "uuid": {
                       "type": "object",
                       "optional": true,
@@ -79123,6 +79243,23 @@ export const miroirFundamentalJzodSchema = {
                     "displayedAttributeValueWhenFolded": {
                       "type": "string",
                       "optional": true
+                    },
+                    "hidden": {
+                      "type": "union",
+                      "optional": true,
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
+                        }
+                      ]
                     },
                     "uuid": {
                       "type": "object",

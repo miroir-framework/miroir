@@ -12,12 +12,17 @@ import {
 import { MenuItem } from "@mui/material";
 
 import {
+  defaultMiroirModelEnvironment,
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
   MiroirLoggerFactory,
-  mStringify
+  mStringify,
+  transformer_extended_apply_wrapper,
+  type TransformerForBuild,
+  type TransformerForBuildPlusRuntime,
+  type TransformerReturnType
 } from "miroir-core";
 
 import { packageName } from "../../../../constants.js";
@@ -614,6 +619,33 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         );
       }
 
+      if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden) {
+        const hidden: TransformerForBuildPlusRuntime = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden;
+        if (typeof hidden === "boolean" && hidden === true) {
+          return null;
+        }
+        const newContext = {
+          valueObject: currentValueObjectAtKey,
+          rootValueObject: formik.values[props.reportSectionPathAsString],
+        }; // contextResults - pass the instance to transform
+
+        const hiddenTransformerResult: TransformerReturnType<any> =
+          transformer_extended_apply_wrapper(
+            context.miroirContext.miroirActivityTracker, // activityTracker
+            "runtime", // step
+            [], // transformerPath
+            (hidden as any)?.label ?? "evaluation of hidden property", // label
+            hidden, // transformer
+            defaultMiroirModelEnvironment, // TODO: use the real environment
+            {}, // queryParams
+            newContext, // contextResults - pass the instance to transform
+            "value" // resolveBuildTransformersTo
+          );
+        if (hiddenTransformerResult === true) {
+          log.info("JzodElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);
+          return null;
+        }
+      }
       // Handle "any" type
       if (currentKeyMap?.rawSchema?.type === "any" && !props.insideAny) {
         return (
