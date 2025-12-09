@@ -174,7 +174,7 @@ const testCompositeActionParams: JzodElement = {
  * @returns
  */
 export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absolutePath: string, force?: boolean): any /** JzodElement */ {
-  // log.info("makeReferencesAbsolute received", JSON.stringify(jzodSchema), absolutePath, force);
+  // log.info("makeReferencesAbsolute called", JSON.stringify(jzodSchema), absolutePath, force);
   switch (jzodSchema.type) {
     case "schemaReference": {
       const convertedContext = Object.fromEntries(
@@ -329,6 +329,7 @@ export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absol
       break;
     }
     // case "simpleType":
+    case "any":
     case "enum":
     case "literal":
     default: {
@@ -889,6 +890,8 @@ export function getMiroirFundamentalJzodSchema(
         // ########################################################################################
         transformerForBuild_spreadSheetToJzodSchema:
           miroirTransformersForBuild.transformer_spreadSheetToJzodSchema,
+        //
+        transformerForBuild_getActiveDeployment: miroirTransformersForBuild.transformer_getActiveDeployment,
         //  
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
@@ -962,6 +965,8 @@ export function getMiroirFundamentalJzodSchema(
         // ########################################################################################
         transformerForRuntime_spreadSheetToJzodSchema:
           miroirTransformersForRuntime.transformer_spreadSheetToJzodSchema,
+        // 
+          transformerForRuntime_getActiveDeployment: miroirTransformersForRuntime.transformer_getActiveDeployment,
         // 
           transformerForRuntime_menu_addItem: miroirTransformersForRuntime.transformer_menu_addItem,
         //
@@ -1065,6 +1070,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuildPlusRuntime_spreadSheetToJzodSchema:
           miroirTransformersForBuildPlusRuntime.transformer_spreadSheetToJzodSchema,
         //
+        transformerForBuildPlusRuntime_getActiveDeployment: miroirTransformersForBuildPlusRuntime.transformer_getActiveDeployment,
+        // 
         transformerForBuildPlusRuntime_menu_addItem:
           miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         //

@@ -282,6 +282,10 @@
                       "type": "boolean",
                       "optional": true
                     },
+                    "objectHideOptionalButton":{
+                      "type": "boolean",
+                      "optional": true
+                    },
                     "objectWithoutHeader":{
                       "type": "boolean",
                       "optional": true

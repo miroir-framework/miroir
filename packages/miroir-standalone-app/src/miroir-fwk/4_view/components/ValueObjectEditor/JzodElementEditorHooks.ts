@@ -24,7 +24,11 @@ import {
   type Uuid,
   type MiroirModelEnvironment,
   miroirFundamentalJzodSchema,
-  type JzodSchema
+  type JzodSchema,
+  defaultMiroirModelEnvironment,
+  transformer_extended_apply_wrapper,
+  type TransformerReturnType,
+  TransformerFailure
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
@@ -202,12 +206,55 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !== noValue.uuid &&
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !== noValue.uuid
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid
       ) {
+
+        let deploymentUuid: TransformerReturnType<any> =
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid;
+        if (
+          typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+            ?.targetDeploymentUuid == "object"
+        ) {
+          deploymentUuid = transformer_extended_apply_wrapper(
+            context.miroirContext.miroirActivityTracker, // activityTracker
+            "runtime", // step
+            [], // transformerPath
+            (
+              currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+                ?.targetDeploymentUuid as any
+            )?.label ?? "evaluation of hidden property", // label
+            currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid, // transformer
+            defaultMiroirModelEnvironment, // TODO: use the real environment
+            formik.values, // queryParams
+            formik.values, // contextResults - pass the instance to transform
+            "value" // resolveBuildTransformersTo
+          );
+          log.info(
+            "useJzodElementEditorHooks resolved deploymentUuid:",
+            deploymentUuid,
+            "for",
+            (
+              currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+                ?.targetDeploymentUuid as any
+            )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
+          );
+          if (deploymentUuid instanceof TransformerFailure) {
+            throw new Error(
+              "JzodElementEditorHooks: deploymentUuid resolved from transformer is not a string: " +
+                deploymentUuid
+            );
+          }
+        }
+        // if (hiddenTransformerResult === true) {
+        //   log.info("JzodElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);
+        //   return null;
+        // }
+        // const deploymentUuid = currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid;
         const applicationSection = getApplicationSection(
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid ??
+          deploymentUuid ??
             currentDeploymentUuid,
           currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
         );
@@ -225,9 +272,7 @@ export function useJzodElementEditorHooks(
         return getQueryRunnerParamsForReduxDeploymentsState(
           {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
-            deploymentUuid:
-              currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid ??
-              currentDeploymentUuid,
+            deploymentUuid,
             pageParams: {},
             queryParams: {},
             contextResults: {},

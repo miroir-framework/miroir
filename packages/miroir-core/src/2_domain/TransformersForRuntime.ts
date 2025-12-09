@@ -59,6 +59,8 @@ import {
   type TransformerForBuild_InnerReference,
   type TransformerForRuntime_ifThenElse,
   type TransformerForRuntime_InnerReference,
+  type TransformerForBuild_getActiveDeployment,
+  type TransformerForBuildPlusRuntime_getActiveDeployment,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   defaultTransformerInput,
@@ -120,8 +122,10 @@ import {
   transformer_getUniqueValues,
   type ResolveBuildTransformersTo,
   type Step,
+  transformer_getActiveDeployment,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import { defaultAdminApplicationDeploymentMap } from "../1_core/Deployment";
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -139,7 +143,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 };
 
 // ################################################################################################
-export const defaultTransformers = {
+export const defaultTransformers = { // TODO: should it be exported? Should'nt it be only for local use?
   transformer_extended_apply,
   transformer_mustacheStringTemplate_apply,
   transformer_InnerReference_resolve,
@@ -152,6 +156,8 @@ export const defaultTransformers = {
   transformer_dynamicObjectAccess_apply,
   // ##############################
   handleTransformer_menu_AddItem: handleTransformer_menu_AddItem,
+  // ##############################
+  handleTransformer_getActiveDeployment,
 };
 
 // ################################################################################################
@@ -679,6 +685,8 @@ export function defaultValueForMLSchemaTransformer(
 
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   handleTransformer_menu_AddItem: defaultTransformers.handleTransformer_menu_AddItem,
+  // 
+    handleTransformer_getActiveDeployment,
   //
   handleCountTransformer,
   handleListPickElementTransformer,
@@ -717,6 +725,8 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
 // transformer_defaultValueForMLSchema
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   transformer_menu_addItem: transformer_menu_addItem,
+  // admin
+  getActiveDeployment: transformer_getActiveDeployment,
   //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   aggregate: transformer_aggregate,
@@ -752,6 +762,74 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
     ])
   ),
 };
+
+// ################################################################################################
+function handleTransformer_getActiveDeployment(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer:
+    | TransformerForBuild_getActiveDeployment
+    | TransformerForBuildPlusRuntime_getActiveDeployment,
+  // resolveBuildTransformersTo: ResolveBuildTransformersTo,
+    // | TransformerForBuild_createObjectFromPairs
+    // | TransformerForRuntime_createObjectFromPairs
+    // | TransformerForBuild_mergeIntoObject
+    // | TransformerForRuntime_mergeIntoObject,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+) {
+
+  if (typeof transformer.application == "object") {
+    const resolvedApplication = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "application"],
+      label,
+      transformer.application,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      queryParams,
+      contextResults
+    );
+    if (resolvedApplication instanceof TransformerFailure) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath: [...transformerPath, "application"],
+        failureOrigin: ["handleTransformer_getActiveDeployment"],
+        failureMessage:
+          "handleTransformer_getActiveDeployment failed to resolve application transformer",
+        queryContext: JSON.stringify(transformer),
+        queryParameters: queryParams as any,
+      });
+    }
+    // log.info(
+    //   "handleTransformer_getActiveDeployment called with",
+    //   "step", step,
+    //   "transformerPath", transformerPath,
+    //   "label", label,
+    //   "resolvedApplication", resolvedApplication,
+    //   "transformer", transformer,
+    //   "queryParams", queryParams,
+    //   "contextResults", contextResults,
+    // );
+    return defaultAdminApplicationDeploymentMap[resolvedApplication];
+  } else {
+    // log.info(
+    //   "handleTransformer_getActiveDeployment called with",
+    //   "step", step,
+    //   "transformerPath", transformerPath,
+    //   "label", label,
+    //   "transformer.application", transformer.application,
+    //   "transformer", transformer,
+    //   "queryParams", queryParams,
+    //   "contextResults", contextResults,
+    // );
+    return defaultAdminApplicationDeploymentMap[transformer.application];
+  }
+}
 
 // ################################################################################################
 function resolveApplyTo(
@@ -3610,12 +3688,9 @@ export function transformer_extended_apply_wrapper(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
-  // Start transformer tracking
-  // const eventTracker = TransformerGlobalContext.getEventTracker();
-  // let trackingId: string = "";
   log.info(
     "transformer_extended_apply_wrapper called for",
-    label,
+    "'" + label + "'",
     "step",
     step,
     "reduxDeploymentsState",

@@ -14,12 +14,17 @@ import {
   entityApplicationForAdmin,
   entityDefinitionTransformerDefinition,
   getInnermostTransformerError,
+  miroirFundamentalJzodSchema,
   safeStringify,
   transformer_extended_apply_wrapper,
   type JzodElement,
   type JzodObject,
+  type JzodSchema,
   type JzodUnion,
-  type MetaModel
+  type MetaModel,
+  type MiroirModelEnvironment,
+  type ReduxDeploymentsState,
+  type SyncBoxedExtractorOrQueryRunnerMap
 } from 'miroir-core';
 
 
@@ -55,6 +60,8 @@ import {
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 import { TransformationResultPanel } from './TransformationResultPanel';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
+import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
+import { useSelector } from 'react-redux';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -77,11 +84,36 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
   const { deploymentUuid: initialDeploymentUuid, entityUuid: initialEntityUuid } = props;
   const deploymentUuid: Uuid = initialDeploymentUuid;
+  const currentModel: MetaModel = useCurrentModel(deploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const context = useMiroirContextService();
   const reportContext = useReportPageContext();
   const miroirContextService = useMiroirContextService();
 
+ 
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+      miroirMetaModel: miroirMetaModel,
+      currentModel: currentModel,
+    };
+  }, [
+    miroirMetaModel,
+    currentModel,
+    context.miroirFundamentalJzodSchema,
+  ]);
+
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        () => ({}),
+        currentMiroirModelEnvironment
+      )
+  );
+  
   // Ref for debouncing transformer definition updates when mode='here'
   const transformerUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -495,7 +527,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 transformerParams,
                 // inputSelectorData, // contextResults - pass the instance to transform
                 transformerInput, // contextResults - pass the input to transform
-                "value" // resolveBuildTransformersTo
+                "value", // resolveBuildTransformersTo
+                // deploymentEntityState,
+                // deploymentUuid,
               );
               // }, [formikContext.values.transformerEditor_editor.currentTransformerDefinition]);
             }, [formikContext.values.transformerEditor_transformer_selector.transformer, transformerInput]);

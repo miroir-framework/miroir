@@ -153,6 +153,7 @@ const ProgressiveAttribute: FC<{
   onChangeVector?: Record<string, (newValue: any, rootLessListKey: string) => void>;
   handleAttributeNameChange: (newValue: string, attributeRootLessListKeyArray: (string | number)[]) => void;
   deleteElement: (formikRootLessListKeyArray: (string | number)[]) => () => void;
+  hideOptionalButton?: boolean;
   formik: any;
   currentMiroirFundamentalJzodSchema: any;
   currentModel: any;
@@ -188,6 +189,7 @@ const ProgressiveAttribute: FC<{
   onChangeVector,
   handleAttributeNameChange,
   deleteElement,
+  hideOptionalButton,
   formik,
   currentMiroirFundamentalJzodSchema,
   currentModel,
@@ -323,7 +325,7 @@ const ProgressiveAttribute: FC<{
             readOnly={readOnly}
             displayError={displayError}
             deleteButtonElement={
-              !readOnly ? (
+              !readOnly && !hideOptionalButton ? (
                 <>
                   <ThemedSmallIconButton
                     id={reportSectionPathAsString+ "." + attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
@@ -989,6 +991,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 onChangeVector={onChangeVector}
                 handleAttributeNameChange={handleAttributeNameChange}
                 deleteElement={deleteElement}
+                hideOptionalButton={localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
                 formik={formik}

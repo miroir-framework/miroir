@@ -31,6 +31,7 @@ import transformer_resolveConditionalSchema_json from '../assets/miroir_data/a55
 import transformer_resolveSchemaReferenceInContext_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a8f8e3c6-9876-4e2d-8b4f-123456789abc.json';
 import transformer_unfoldSchemaOnce_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d5c9f2e3-8741-4b9a-a1d2-4e5f6789abcd.json';
 import transformer_jzodTypeCheck_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a3f7b5c2-1e8d-4a9b-9c7e-6f2d3e8a1b5c.json';
+import transformer_getActiveDeployment_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d554c31b-638b-4774-95e3-b2e307035a82.json';
 
 // ################################################################################################
 export type ActionTemplate = any;
@@ -67,6 +68,12 @@ export const transformer_resolveConditionalSchema: TransformerDefinition = trans
 export const transformer_resolveSchemaReferenceInContext: TransformerDefinition = transformer_resolveSchemaReferenceInContext_json as TransformerDefinition;
 export const transformer_unfoldSchemaOnce: TransformerDefinition = transformer_unfoldSchemaOnce_json as TransformerDefinition;
 export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzodTypeCheck_json as TransformerDefinition;
+// admin
+export const transformer_getActiveDeployment: TransformerDefinition = transformer_getActiveDeployment_json as TransformerDefinition;
+
+export const adminTransformers: Record<string,TransformerDefinition> = {
+  transformer_getActiveDeployment,
+};
 
 export const spreadsheetTransformers: Record<string,TransformerDefinition> = {
   transformer_spreadSheetToJzodSchema,
@@ -107,6 +114,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
 };
 export const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_menu_addItem,
+  ...adminTransformers,
   ...spreadsheetTransformers,
   ...miroirCoreTransformers,
   ...mlsTransformers,

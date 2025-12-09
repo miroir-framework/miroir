@@ -19,6 +19,7 @@ import {
   ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
+  ThemedOnScreenHelper,
   ThemedTitle
 } from "../Themes/index";
 import { useFormikContext } from 'formik';
@@ -82,11 +83,7 @@ export const TransformationResultPanel: React.FC<{
         {transformationResult &&
         typeof transformationResult === "object" &&
         "queryFailure" in transformationResult ? (
-          <ThemedCodeBlock>
-            {typeof transformationResult === "string"
-              ? transformationResult
-              : safeStringify(transformationResult)}
-          </ThemedCodeBlock>
+          <ThemedOnScreenHelper label="result" data={transformationResult} />
         ) : transformationResult !== null ? (
           <TypedValueObjectEditorWithFormik
             labelElement={<div>target:</div>}
@@ -109,9 +106,9 @@ export const TransformationResultPanel: React.FC<{
             maxRenderDepth={3}
             readonly={true}
           />
-        // ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
+        ) : // ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
         // ) : (showAllInstances ? formikContext.values.entityInstances?.length > 0 : formikContext.values.selectedEntityInstance) ? (
-        ) : inputSelectorMode !== "instance" ? (
+        inputSelectorMode !== "instance" ? (
           <div>
             <div
               style={{
@@ -129,7 +126,8 @@ export const TransformationResultPanel: React.FC<{
               </div>
               <div style={{ fontSize: "0.9em", color: "#666" }}>
                 <div style={{ marginBottom: "4px" }}>
-                  Tip: Use getFromContext to access the input, using "defaultInput" as referenceName:
+                  Tip: Use getFromContext to access the input, using "defaultInput" as
+                  referenceName:
                 </div>
               </div>
             </div>

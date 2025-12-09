@@ -143,6 +143,7 @@
                           },
                           "note": {
                             "transformerType": "getFromParameters",
+                            "safe": true,
                             "referencePath": [
                               "payload",
                               "note"

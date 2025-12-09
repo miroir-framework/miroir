@@ -55,54 +55,6 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   const context = useMiroirContextService();
   const formikContext = useFormikContext<any>();
   
-  //   log.info("RunnerView handleSubmit", action.actionType, "values", values);
-
-  //   switch (action.actionType) {
-  //     case "onSubmit": {
-  //       return action.onSubmit(values, formikHelpers);
-  //       break;
-  //     }
-  //     case "compositeAction": {
-  //       log.info("RunnerView handleSubmit compositeAction", action.compositeAction);
-  //       const result = await domainController.handleCompositeAction(
-  //         action.compositeAction,
-  //         currentMiroirModelEnvironment,
-  //         values as Record<string, any>
-  //       );
-  //       formikHelpers.setSubmitting(false);
-  //       formikHelpers.setValues(initialValues);
-  //       return result;
-  //       break;
-  //     }
-  //     case "compositeActionTemplate": {
-  //       const result = await domainController.handleCompositeActionTemplate(
-  //         action.compositeActionTemplate,
-  //         currentMiroirModelEnvironment,
-  //         values as Record<string, any>
-  //       );
-  //       log.info(
-  //         "RunnerView handleSubmit compositeActionTemplate",
-  //         action.compositeActionTemplate,
-  //         "result",
-  //         result
-  //       );
-  //       formikHelpers.setSubmitting(false);
-  //       formikHelpers.setValues(initialValues);
-  //       return result;
-  //       break;
-  //     }
-  //     default: {
-  //       const exhaustiveCheck: never = action;
-  //       // throw new Error(`Unhandled action type: ${JSON.stringify(exhaustiveCheck)}`);
-  //       return new Action2Error(
-  //         "FailedToHandleAction",
-  //         `Unhandled action type: ${JSON.stringify(exhaustiveCheck)}`
-  //       );
-  //       break;
-  //     }
-  //   }
-  // };
-
   const deploymentUuidQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
@@ -190,13 +142,13 @@ export const InnerRunnerView = <T extends Record<string, any>>({
         deploymentUuid={deploymentUuid}
         applicationSection="model"
         formValueMLSchema={targetSchema}
-        // formValueMLSchema={formMlSchema}
         formikValuePathAsString={formikValuePathAsString}
         formLabel={formLabel}
         zoomInPath=""
         maxRenderDepth={Infinity}
         displaySubmitButton={displaySubmitButton}
         useActionButton={useActionButton}
+        mode="create" // N/A
       />
       {/* <ThemedOnScreenHelper
         label={`Runner ${runnerName} targetSchema`}

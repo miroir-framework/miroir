@@ -1,58 +1,44 @@
 import {
   Box,
-  Divider,
-  MenuItem,
-  SelectChangeEvent,
   Typography
 } from '@mui/material';
 
 import { useSelector } from "react-redux";
 
 
+import { Formik, type FormikProps } from 'formik';
 import {
-  action,
   adminApplicationLibrary,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultAdminApplicationDeploymentMap,
-  defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
   DomainControllerInterface,
-  endpointDefinition,
-  EndpointDefinition,
   entityApplicationForAdmin,
-  entityDefinitionEndpoint,
   entityEndpointVersion,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  instanceEndpointVersionV1,
   JzodObject,
   LoggerInterface,
   MetaModel,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
-  queryEndpointVersionV1,
   ReduxDeploymentsState,
   resolvePathOnObject,
-  SelfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodSchema,
   type MiroirModelEnvironment
 } from 'miroir-core';
-import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
-import { act, FC, useEffect, useMemo, useState } from 'react';
-import { deployments, packageName } from '../../../constants.js';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
 import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
-import { TypedValueObjectEditorWithFormik } from './Reports/TypedValueObjectEditorWithFormik.js';
-import { ThemedInputLabel, ThemedMUISelect, ThemedOnScreenHelper, ThemedPaper } from './Themes/index.js';
-import { useReportPageContext } from './Reports/ReportPageContext.js';
-import { Formik, type FormikProps } from 'formik';
+// import { useReportPageContext } from './Reports/ReportPageContext.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
-import { noValue } from './ValueObjectEditor/JzodElementEditorInterface.js';
 import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
+import { ThemedPaper } from './Themes/index.js';
+import { noValue } from './ValueObjectEditor/JzodElementEditorInterface.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -82,12 +68,12 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   );
 
   const domainController: DomainControllerInterface = useDomainControllerService();
-  const reportContext = useReportPageContext();
+  // const reportContext = useReportPageContext();
   const context = useMiroirContextService();
   const { showSnackbar } = useSnackbar();
   const currentModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
     // context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  // const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const deploymentMetaModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
@@ -190,7 +176,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
         ) => {
 
           const selectedDeploymentUuid =
-            // formikContext.values[formikPath_EndpointActionCaller].deploymentUuid;
             defaultAdminApplicationDeploymentMap[
               resolvePathOnObject(formikContext.values, [
                 formikPath_EndpointActionCaller,
@@ -236,7 +221,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                   value: {
                     defaultLabel: "Application Selector",
                     display: {
-                      // unfoldSubLevels: 1,
+                      objectHideOptionalButton: true,
                       objectWithoutHeader: true,
                       objectOrArrayWithoutFrame: true,
                       objectAttributesNoIndent: true,
@@ -274,37 +259,17 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                         defaultLabel: "Endpoint",
                         editable: true,
                         selectorParams: {
-                          targetDeploymentUuid: selectedDeploymentUuid,
-                          // targetDeploymentUuid: {
-                          //   transformerType: "!=",
-                          //   interpolation: "build",
-                          //   left: {
-                          //     transformerType: "getFromParameters",
-                          //     interpolation: "build",
-                          //     safe: true,
-                          //     referencePath: [
-                          //       formikPath_EndpointActionCaller,
-                          //       "deploymentUuidQuery",
-                          //       "deployments",
-                          //       "0",
-                          //       "uuid",
-                          //     ],
-                          //   },
-                          //   right: { transformerType: "returnValue", value: undefined },
-                          //   then: {
-                          //     transformerType: "getFromParameters",
-                          //     interpolation: "build",
-                          //     safe: true,
-                          //     referencePath: [
-                          //       formikPath_EndpointActionCaller,
-                          //       "deploymentUuidQuery",
-                          //       "deployments",
-                          //       "0",
-                          //       "uuid",
-                          //     ],
-                          //   },
-                          //   else: noValue.uuid,
-                          // },
+                          targetDeploymentUuid: {
+                            transformerType: "getActiveDeployment",
+                            label: "endpointUuid: Get Active Deployment for selected Application",
+                            application: {
+                              transformerType: "getFromParameters",
+                              referencePath: [
+                                formikPath_EndpointActionCaller,
+                                "applicationUuid",
+                              ],
+                            }
+                          } as any,
                           targetEntityApplicationSection: "model",
                           targetEntity: entityEndpointVersion.uuid,
                           targetEntityOrderInstancesBy: "name",
@@ -339,52 +304,16 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                       value: {
                         defaultLabel: "Action",
                         editable: true,
-                        // selectorParams: {
-                        //   targetDeploymentUuid: selectedDeploymentUuid,
-                        //   // targetDeploymentUuid: {
-                        //   //   transformerType: "!=",
-                        //   //   interpolation: "build",
-                        //   //   left: {
-                        //   //     transformerType: "getFromParameters",
-                        //   //     interpolation: "build",
-                        //   //     safe: true,
-                        //   //     referencePath: [
-                        //   //       formikPath_EndpointActionCaller,
-                        //   //       "deploymentUuidQuery",
-                        //   //       "deployments",
-                        //   //       "0",
-                        //   //       "uuid",
-                        //   //     ],
-                        //   //   },
-                        //   //   right: { transformerType: "returnValue", value: undefined },
-                        //   //   then: {
-                        //   //     transformerType: "getFromParameters",
-                        //   //     interpolation: "build",
-                        //   //     safe: true,
-                        //   //     referencePath: [
-                        //   //       formikPath_EndpointActionCaller,
-                        //   //       "deploymentUuidQuery",
-                        //   //       "deployments",
-                        //   //       "0",
-                        //   //       "uuid",
-                        //   //     ],
-                        //   //   },
-                        //   //   else: noValue.uuid,
-                        //   // },
-                        //   targetEntityApplicationSection: "model",
-                        //   targetEntity: entityEndpointVersion.uuid,
-                        //   targetEntityOrderInstancesBy: "name",
-                        // },
                         display: {
-                          objectUuidAttributeLabelPosition: "hidden",
-                          uuid: { selector: "muiSelector" },
+                          // objectUuidAttributeLabelPosition: "hidden",
+                          // uuid: { selector: "muiSelector" },
                           hidden: {
                             transformerType: "==",
-                            label: "Hide Endpoint selector if Application not selected",
+                            label: "Hide Action if Endpoint not selected",
                             left: {
                               transformerType: "getFromContext",
                               interpolation: "runtime",
-                              referencePath: ["rootValueObject", "applicationUuid"],
+                              referencePath: ["rootValueObject", "endpointUuid"],
                             },
                             right: noValue.uuid,
                             then: true,
@@ -520,16 +449,9 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     formikValuePathAsString={formikPath_EndpointActionCaller}
                     deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
                     applicationSection={"data"}
-                    formLabel={"Application Selector jzod"}
-                    // onSubmit={async (a: any) => {
-                    //   return handleSubmit(
-                    //     formikContext.values[formikPath_EndpointActionCaller].actionCaller
-                    //   );
-                    // }} // No-op for readonly
+                    formLabel={"Submit Action"}
                     mode="create" // Readonly viewer mode, not relevant here
                     displaySubmitButton="onTop"
-                    // maxRenderDepth={3}
-                    // readonly={true}
                   />
                 )}
 
