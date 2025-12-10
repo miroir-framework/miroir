@@ -126,7 +126,6 @@ export async function storeActionOrBundleActionStoreRunner(
         );
       }
 
-      // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
       const appModelStoreCreated: Action2ReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
       const appDataStoreCreated: Action2ReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
 
@@ -167,7 +166,6 @@ export async function storeActionOrBundleActionStoreRunner(
         "configuration",
         JSON.stringify(action.configuration, null, 2)
       );
-      // await persistenceStoreControllerManager.addPersistenceStoreController(action.deploymentUuid, action.configuration)
       const appModelStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.configuration.model);
       log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.deploymentUuid, "model store deleted");

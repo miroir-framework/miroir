@@ -14,6 +14,7 @@ import {
   book4,
   book5,
   book6,
+  createDeploymentCompositeAction,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
   entityAuthor,
@@ -36,17 +37,17 @@ import {
   publisher2,
   publisher3,
   resetAndInitApplicationDeployment,
+  resetAndinitializeDeploymentCompositeAction,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
+  type ApplicationEntitiesAndInstances,
 } from "miroir-core";
 
 import {
-  createDeploymentCompositeAction,
-  resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
@@ -63,13 +64,13 @@ import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_inter
 import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
-  ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
   testOnLibrary_resetLibraryDeployment
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 import { defaultMiroirModelEnvironment } from "miroir-core";
+import { adminMiroirApplication } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 
@@ -113,7 +114,7 @@ myConsoleLog("started registered loggers DONE");
 
 const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;
-const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
@@ -174,8 +175,11 @@ beforeAll(async () => {
   miroirContext = localmiroirContext;
 
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    // adminConfigurationDeploymentMiroir.uuid,
+    "miroir",
     adminConfigurationDeploymentMiroir.uuid,
-    miroirtDeploymentStorageConfiguration
+    adminMiroirApplication.uuid,
+    miroirDeploymentStorageConfiguration
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
@@ -223,7 +227,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
       // testType: "testCompositeAction",
       testLabel: "DomainController.integ.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
+        "TEST",
         testApplicationDeploymentUuid,
+        adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(

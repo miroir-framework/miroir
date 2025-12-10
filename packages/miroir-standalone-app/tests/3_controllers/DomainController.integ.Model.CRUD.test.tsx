@@ -71,6 +71,9 @@ import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 import { defaultMiroirModelEnvironment } from "miroir-core";
 import { createDeploymentCompositeAction } from "miroir-core";
+import { resetAndinitializeDeploymentCompositeAction } from "miroir-core";
+import type { ApplicationEntitiesAndInstances } from "miroir-core";
+import { adminMiroirApplication } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -119,7 +122,7 @@ const columnForTestDefinition: JzodElement = {
   tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
 };
 // const globalTimeOut = 10^9;
-const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
@@ -129,14 +132,14 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
-const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
-  adminConfigurationDeploymentLibrary as any;
+// const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
+//   adminConfigurationDeploymentLibrary as any;
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let miroirContext: MiroirContextInterface;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
-let globalTestSuiteResults: TestSuiteResult = {};
+// let globalTestSuiteResults: TestSuiteResult = {};
 
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   // {
@@ -179,8 +182,10 @@ beforeAll(async () => {
   miroirContext = localmiroirContext;
 
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    "miroir",
     adminConfigurationDeploymentMiroir.uuid,
-    miroirtDeploymentStorageConfiguration
+    adminMiroirApplication.uuid,
+    miroirDeploymentStorageConfiguration
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
@@ -188,6 +193,10 @@ beforeAll(async () => {
     {},
   );
   if (createDeploymentResult.status !== "ok") {
+    log.error(
+      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
+      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
+    );
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
@@ -222,6 +231,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Model.CRUD",
       beforeAll: createDeploymentCompositeAction(
+        "TEST",
+        testApplicationDeploymentUuid,
         adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration
       ),

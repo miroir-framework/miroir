@@ -123,6 +123,15 @@ export function createDeploymentCompositeAction(
     actionName: "sequence",
     definition: [
       {
+        actionType: "storeManagementAction_openStore",
+        actionLabel: "storeManagementAction_openStore for admin",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        configuration: {
+          [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin.configuration,
+        },
+      },
+      {
         // actionType: "storeManagementAction",
         actionType: "storeManagementAction_openStore",
         actionLabel: "storeManagementAction_openStore",
@@ -150,7 +159,7 @@ export function createDeploymentCompositeAction(
           objects: [
             {
               parentName: "Deployment",
-              parentUuid: deploymentUuid,
+              parentUuid: entityDeployment.uuid,
               applicationSection: "data",
               instances: [
                 // {

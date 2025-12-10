@@ -350,7 +350,7 @@ function handleInstanceAction(
           );
           if (illFormedInstances.length > 0) {
             throw new Error(
-              "createInstance action called with ill formed instances (missing uuid or bad parentUuid) for expecte parentUuid= '" +
+              "createInstance action called with ill formed instances (missing uuid or bad parentUuid) for expected parentUuid= '" +
                 instanceCollection.parentUuid +
                 "' and instances: " +
                 JSON.stringify(illFormedInstances, null, 2)
