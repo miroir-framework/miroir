@@ -5,7 +5,6 @@ type VitestNamespace = typeof vitest;
 chalk.level = 3;
 
 import {
-  TransformerForRuntime,
   type TestAssertionResult,
   type TestSuiteResult,
   type TransformerForBuildPlusRuntime,
@@ -280,7 +279,7 @@ export async function runTransformerTestInMemory(
   }
 
   const transformer: TransformerForBuildPlusRuntime = transformerTest.transformer;
-  const runtimeTransformer: TransformerForRuntime = transformer as any;
+  const runtimeTransformer: TransformerForBuildPlusRuntime = transformer as any;
   // log.info(
   //   "################################ runTransformerTestInMemory transformerTestParams",
   //   JSON.stringify(transformerTest, null, 2)
@@ -673,7 +672,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
   }
 
     // resolve the transformer to be used in the test
-    const resolvedTransformer: TransformerReturnType<TransformerForRuntime> =
+    const resolvedTransformer: TransformerReturnType<TransformerForBuildPlusRuntime> =
       transformer_extended_apply_wrapper(
         undefined, // activityTracker
         "build",

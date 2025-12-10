@@ -8,7 +8,6 @@ import {
   DomainElementString,
   DomainElementSuccess,
   EntityInstance,
-  ExtendedTransformerForRuntime,
   JzodElement,
   Transformer,
   Transformer_contextOrParameterReferenceTO_REMOVE,
@@ -35,32 +34,52 @@ import {
   TransformerForBuild_getFromParameters,
   TransformerForBuild_getUniqueValues,
   TransformerForBuildPlusRuntime,
-  TransformerForRuntime,
-  TransformerForRuntime_returnValue,
-  // TransformerForRuntime_constantArray,
-  TransformerForRuntime_constants,
-  TransformerForRuntime_getFromContext,
-  TransformerForRuntime_aggregate,
-  TransformerForRuntime_dataflowObject,
-  TransformerForRuntime_defaultValueForMLSchema,
-  TransformerForRuntime_createObject,
-  TransformerForRuntime_pickFromList,
-  TransformerForRuntime_indexListBy,
-  TransformerForRuntime_listReducerToSpreadObject,
-  TransformerForRuntime_mapList,
-  TransformerForRuntime_mustacheStringTemplate,
-  TransformerForRuntime_generateUuid,
-  TransformerForRuntime_createObjectFromPairs,
-  TransformerForRuntime_mergeIntoObject,
-  TransformerForRuntime_accessDynamicPath,
-  TransformerForRuntime_getObjectEntries,
-  TransformerForRuntime_getObjectValues,
-  TransformerForRuntime_getUniqueValues,
+  // TransformerForRuntime,
+  // TransformerForRuntime_returnValue,
+  // // TransformerForRuntime_constantArray,
+  // TransformerForRuntime_constants,
+  // TransformerForRuntime_getFromContext,
+  // TransformerForRuntime_aggregate,
+  // TransformerForRuntime_dataflowObject,
+  // TransformerForRuntime_defaultValueForMLSchema,
+  // TransformerForRuntime_createObject,
+  // TransformerForRuntime_pickFromList,
+  // TransformerForRuntime_indexListBy,
+  // TransformerForRuntime_listReducerToSpreadObject,
+  // TransformerForRuntime_mapList,
+  // TransformerForRuntime_mustacheStringTemplate,
+  // TransformerForRuntime_generateUuid,
+  // TransformerForRuntime_createObjectFromPairs,
+  // TransformerForRuntime_mergeIntoObject,
+  // TransformerForRuntime_accessDynamicPath,
+  // TransformerForRuntime_getObjectEntries,
+  // TransformerForRuntime_getObjectValues,
+  // TransformerForRuntime_getUniqueValues,
   type TransformerForBuild_InnerReference,
-  type TransformerForRuntime_ifThenElse,
-  type TransformerForRuntime_InnerReference,
+  // type TransformerForRuntime_ifThenElse,
+  // type TransformerForRuntime_InnerReference,
   type TransformerForBuild_getActiveDeployment,
   type TransformerForBuildPlusRuntime_getActiveDeployment,
+  type TransformerForBuildPlusRuntime_aggregate,
+  type TransformerForBuildPlusRuntime_defaultValueForMLSchema,
+  type TransformerForBuildPlusRuntime_createObjectFromPairs,
+  type TransformerForBuildPlusRuntime_mergeIntoObject,
+  type TransformerForBuildPlusRuntime_mapList,
+  type TransformerForBuildPlusRuntime_pickFromList,
+  type TransformerForBuildPlusRuntime_indexListBy,
+  type TransformerForBuildPlusRuntime_listReducerToSpreadObject,
+  type TransformerForBuildPlusRuntime_getObjectEntries,
+  type TransformerForBuildPlusRuntime_getObjectValues,
+  type TransformerForBuildPlusRuntime_getUniqueValues,
+  type TransformerForBuildPlusRuntime_InnerReference,
+  type TransformerForBuildPlusRuntime_mustacheStringTemplate,
+  type TransformerForBuildPlusRuntime_accessDynamicPath,
+  type TransformerForBuildPlusRuntime_createObject,
+  type TransformerForBuildPlusRuntime_dataflowObject,
+  type TransformerForBuildPlusRuntime_ifThenElse,
+  type TransformerForBuildPlusRuntime_returnValue,
+  type TransformerForBuildPlusRuntime_getFromContext,
+  type TransformerForBuildPlusRuntime_generateUuid,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   defaultTransformerInput,
@@ -640,7 +659,7 @@ export function defaultValueForMLSchemaTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForRuntime_defaultValueForMLSchema,
+  transformer: TransformerForBuildPlusRuntime_defaultValueForMLSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -838,9 +857,9 @@ function resolveApplyTo(
   label: string | undefined,
   transformer:
     | TransformerForBuild_createObjectFromPairs
-    | TransformerForRuntime_createObjectFromPairs
+    | TransformerForBuildPlusRuntime_createObjectFromPairs
     | TransformerForBuild_mergeIntoObject
-    | TransformerForRuntime_mergeIntoObject,
+    | TransformerForBuildPlusRuntime_mergeIntoObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -971,15 +990,15 @@ export function resolveApplyTo_legacy(
     | TransformerForBuild_getObjectEntries
     | TransformerForBuild_getObjectValues
     | TransformerForBuild_getUniqueValues
-    | TransformerForRuntime_aggregate
-    | TransformerForRuntime_mapList
-    | TransformerForRuntime_pickFromList
-    | TransformerForRuntime_indexListBy
+    | TransformerForBuildPlusRuntime_aggregate
+    | TransformerForBuildPlusRuntime_mapList
+    | TransformerForBuildPlusRuntime_pickFromList
+    | TransformerForBuildPlusRuntime_indexListBy
     // | TransformerForRuntime_mapper_listToObject
-    | TransformerForRuntime_listReducerToSpreadObject
-    | TransformerForRuntime_getObjectEntries
-    | TransformerForRuntime_getObjectValues
-    | TransformerForRuntime_getUniqueValues,
+    | TransformerForBuildPlusRuntime_listReducerToSpreadObject
+    | TransformerForBuildPlusRuntime_getObjectEntries
+    | TransformerForBuildPlusRuntime_getObjectValues
+    | TransformerForBuildPlusRuntime_getUniqueValues,
   step: Step,
   transformerPath: string[],
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
@@ -1092,7 +1111,7 @@ function transformerForBuild_list_listMapperToList_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForRuntime_mapList | TransformerForBuild_mapList,
+  transformer: TransformerForBuildPlusRuntime_mapList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1206,8 +1225,7 @@ function transformer_object_listReducerToSpreadObject_apply(
   transformerPath: string[],
   label: string | undefined,
   transformer:
-    | TransformerForBuild_listReducerToSpreadObject
-    | TransformerForRuntime_listReducerToSpreadObject,
+    | TransformerForBuildPlusRuntime_listReducerToSpreadObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1281,7 +1299,7 @@ function transformer_object_indexListBy_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_indexListBy | TransformerForRuntime_indexListBy,
+  transformer: TransformerForBuildPlusRuntime_indexListBy,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1351,9 +1369,7 @@ function handleTransformer_createObjectFromPairs(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer:
-    | TransformerForBuild_createObjectFromPairs
-    | TransformerForRuntime_createObjectFromPairs,
+  transformer: TransformerForBuildPlusRuntime_createObjectFromPairs,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1405,8 +1421,8 @@ function handleTransformer_createObjectFromPairs(
   const attributeEntries = transformer.definition.map(
     (
       innerEntry: {
-        attributeKey: TransformerForBuild | TransformerForRuntime | string;
-        attributeValue: TransformerForBuild | TransformerForRuntime;
+        attributeKey: TransformerForBuildPlusRuntime | string;
+        attributeValue: TransformerForBuildPlusRuntime;
       },
       index
     ): [
@@ -1524,7 +1540,7 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer: TransformerForBuild_mergeIntoObject | TransformerForRuntime_mergeIntoObject,
+  transformer: TransformerForBuildPlusRuntime_mergeIntoObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1727,9 +1743,9 @@ export function transformer_InnerReference_resolve(
   step: Step,
   transformerPath: string[],
   transformerInnerReference:
-    | TransformerForRuntime_constants
+    // | TransformerForBuildPlusRuntime_constants // TODO add TransformerForRuntime_constants
     | TransformerForBuild_InnerReference
-    | TransformerForRuntime_InnerReference,
+    | TransformerForBuildPlusRuntime_InnerReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -1797,7 +1813,7 @@ export function transformer_InnerReference_resolve(
         result = transformer_resolveReference(
           step,
           transformerPath,
-          transformerInnerReference,
+          transformerInnerReference as any, // TODO: fix type
           "context",
           localQueryParams,
           localContextResults
@@ -1822,7 +1838,7 @@ export function transformer_InnerReference_resolve(
         step,
         transformerPath,
         "none",
-        transformerInnerReference,
+        transformerInnerReference as any, // TODO: fix type
         resolveBuildTransformersTo,
         modelEnvironment,
         localQueryParams,
@@ -1870,9 +1886,7 @@ export function transformer_mustacheStringTemplate_apply(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer:
-    | TransformerForBuild_mustacheStringTemplate
-    | TransformerForRuntime_mustacheStringTemplate,
+  transformer: TransformerForBuildPlusRuntime_mustacheStringTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1922,7 +1936,7 @@ export function transformer_dynamicObjectAccess_apply(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer: TransformerForRuntime_accessDynamicPath | TransformerForBuild_accessDynamicPath,
+  transformer: TransformerForBuildPlusRuntime_accessDynamicPath,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2052,7 +2066,7 @@ export function handleCountTransformer(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
-  transformer: TransformerForBuild_aggregate | TransformerForRuntime_aggregate,
+  transformer: TransformerForBuildPlusRuntime_aggregate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2168,7 +2182,7 @@ export function handleUniqueTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_getUniqueValues | TransformerForRuntime_getUniqueValues,
+  transformer: TransformerForBuildPlusRuntime_getUniqueValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2252,7 +2266,7 @@ export function handleListPickElementTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_pickFromList | TransformerForRuntime_pickFromList,
+  transformer: TransformerForBuildPlusRuntime_pickFromList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2355,7 +2369,7 @@ export function handleTransformer_FreeObjectTemplate(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
-  transformer: TransformerForBuild_createObject | TransformerForRuntime_createObject,
+  transformer: TransformerForBuildPlusRuntime_createObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2416,7 +2430,7 @@ export function handleTransformer_getObjectEntries(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_getObjectEntries | TransformerForRuntime_getObjectEntries,
+  transformer: TransformerForBuildPlusRuntime_getObjectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -2474,7 +2488,7 @@ export function handleTransformer_getObjectValues(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_getObjectValues | TransformerForRuntime_getObjectValues,
+  transformer: TransformerForBuildPlusRuntime_getObjectValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2531,7 +2545,7 @@ export function handleTransformer_dataflowObject(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_dataflowObject | TransformerForRuntime_dataflowObject,
+  transformer: TransformerForBuildPlusRuntime_dataflowObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -2579,7 +2593,7 @@ export function handleTransformer_ifThenElse(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForRuntime_ifThenElse,
+  transformer: TransformerForBuildPlusRuntime_ifThenElse,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2849,7 +2863,7 @@ export function handleTransformer_constant(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_returnValue | TransformerForRuntime_returnValue,
+  transformer: TransformerForBuildPlusRuntime_returnValue,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -2902,7 +2916,7 @@ export function handleTransformer_getFromContext(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForRuntime_getFromContext,
+  transformer: TransformerForBuildPlusRuntime_getFromContext,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2974,7 +2988,7 @@ export function handleTransformer_generateUuid(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForBuild_generateUuid | TransformerForRuntime_generateUuid,
+  transformer: TransformerForBuildPlusRuntime_generateUuid,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -3199,8 +3213,6 @@ export function transformer_extended_apply(
   label: string | undefined,
   transformer:
     | TransformerForBuild
-    | TransformerForRuntime
-    | ExtendedTransformerForRuntime
     | TransformerForBuildPlusRuntime
     | undefined,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
@@ -3678,8 +3690,6 @@ export function transformer_extended_apply_wrapper(
   label: string | undefined,
   transformer:
     | TransformerForBuild
-    | TransformerForRuntime
-    | ExtendedTransformerForRuntime
     | TransformerForBuildPlusRuntime,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>, // includes queryParams

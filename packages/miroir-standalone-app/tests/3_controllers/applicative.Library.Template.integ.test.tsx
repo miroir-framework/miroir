@@ -65,9 +65,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
-  createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
-  resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
   setupMiroirTest,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
@@ -79,14 +77,18 @@ import {
 import { CompositeActionTemplate } from 'miroir-core';
 import { TransactionalInstanceAction } from 'miroir-core';
 import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction } from 'miroir-core';
-import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction, transformer } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import {
+  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction,
+  transformer,
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { entityReport } from 'miroir-core';
 import { displayTestSuiteResultsDetails } from 'miroir-core';
 import { runTransformerTestSuite } from 'miroir-core';
-import { TransformerForBuildOrRuntime } from 'miroir-core';
 import { entityMenu } from 'miroir-core';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { TestCompositeActionParams } from 'miroir-core';
+import { createDeploymentCompositeAction } from 'miroir-core';
+import { defaultMiroirModelEnvironment } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -179,12 +181,15 @@ const beforeAll = async () => {
   miroirContext = localmiroirContext;
 
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+    "library",
+    adminConfigurationDeploymentMiroir.uuid,
     typedAdminConfigurationDeploymentMiroir.uuid,
     typedAdminConfigurationDeploymentMiroir.configuration,
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
-    defaultMiroirMetaModel
+    defaultMiroirModelEnvironment,
+    {}
   );
   if (createDeploymentResult.status !== "ok") {
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
@@ -225,7 +230,13 @@ afterAll(
     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 
     // console.log("globalTestSuiteResults:\n", Object.values(globalTestSuiteResults).map((r) => "\"" + r.testLabel + "\": " + r.testResult).join("\n"));
-    displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuitesDEFUNCT!!!)[0]);
+    // displayTestSuiteResultsDetails(expect,Object.keys(testTemplateSuitesDEFUNCT!!!)[0]);
+  displayTestSuiteResultsDetails(
+    Object.keys(testTemplateSuitesDEFUNCT)[0],
+    // [{ testSuite: Object.keys(testActions)[0] }],
+    [],
+    miroirActivityTracker
+  );
   }
 )
 

@@ -20,7 +20,6 @@ import {
   Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
-  ExtendedTransformerForRuntime,
   ExtractorOrCombinerRecord,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
@@ -42,7 +41,8 @@ import {
   miroirFundamentalJzodSchema,
   type JzodSchema,
   resolvePathOnObject,
-  type ReportSection
+  type ReportSection,
+  type TransformerForBuildPlusRuntime
 } from "miroir-core";
 
 import { AddBox } from "../Themes/MaterialSymbolWrappers";
@@ -459,7 +459,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         ])
       );
       const runtimeTransformers: {
-        [x: string]: ExtendedTransformerForRuntime
+        [x: string]: TransformerForBuildPlusRuntime
       } = {
         ...Object.fromEntries(
           foreignKeyObjectsAttributeDefinition.map((e) => [

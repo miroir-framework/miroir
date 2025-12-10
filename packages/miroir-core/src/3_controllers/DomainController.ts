@@ -58,8 +58,9 @@ import {
   // TestRuntimeCompositeAction,
   // TestRuntimeCompositeActionSuite,
   TransactionalInstanceAction,
-  TransformerForRuntime,
-  UndoRedoAction
+  // TransformerForRuntime,
+  UndoRedoAction,
+  type TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -2121,7 +2122,7 @@ export class DomainController implements DomainControllerInterface {
               "runtime",
               [],
               currentAction.actionLabel,
-              currentAction as any as TransformerForRuntime,
+              currentAction as any as TransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
               actionParamValues, // queryParams
@@ -2184,7 +2185,7 @@ export class DomainController implements DomainControllerInterface {
               "build",
               [],
               currentAction.actionLabel,
-              currentAction as any as TransformerForRuntime,
+              currentAction as any as TransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
               actionParamValues, // queryParams
@@ -2222,7 +2223,7 @@ export class DomainController implements DomainControllerInterface {
               "build",
               [],
               currentAction.actionLabel,
-              currentAction as any as TransformerForRuntime,
+              currentAction as any as TransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
               actionParamValues, // queryParams
@@ -2243,7 +2244,7 @@ export class DomainController implements DomainControllerInterface {
               "runtime",
               [],
               currentAction.actionLabel,
-              currentAction as any as TransformerForRuntime,
+              currentAction as any as TransformerForBuildPlusRuntime,
               "value",
               modelEnvironment,
               actionParamValues, // queryParams
@@ -2409,7 +2410,7 @@ export class DomainController implements DomainControllerInterface {
         "build",
         [],
         buildPlusRuntimeCompositeAction.actionLabel,
-        buildPlusRuntimeCompositeAction.definition as any as TransformerForRuntime,
+        buildPlusRuntimeCompositeAction.definition as any as TransformerForBuildPlusRuntime,
         modelEnvironment,
         { ...actionParamValues, ...resolvedCompositeActionTemplates }, // queryParams
         localContext, // contextResults
@@ -2871,7 +2872,7 @@ export class DomainController implements DomainControllerInterface {
         "runtime",
         [],
         currentAction.actionLabel ?? "NO NAME",
-        currentAction as any as TransformerForRuntime, // TODO: correct type
+        currentAction as any as TransformerForBuildPlusRuntime, // TODO: correct type
         "value",
         modelEnvironment,
         localActionParams,

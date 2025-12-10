@@ -2873,7 +2873,7 @@ function sqlStringForParameterReferenceTransformer(
 
 // ################################################################################################
 function sqlStringForObjectDynamicAccessTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_accessDynamicPath,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_accessDynamicPath,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,

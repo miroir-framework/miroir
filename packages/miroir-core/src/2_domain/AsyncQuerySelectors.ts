@@ -10,7 +10,6 @@ import {
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
-  ExtendedTransformerForRuntime,
   ExtractorOrCombiner,
   QueryFailed,
   TransformerForBuildPlusRuntime
@@ -124,8 +123,7 @@ export const asyncExtractEntityInstanceListWithObjectListExtractor
 
 // ################################################################################################
 export async function asyncApplyExtractorTransformerInMemory(
-  // actionRuntimeTransformer: ExtendedTransformerForRuntime,
-  actionRuntimeTransformer: TransformerForBuildPlusRuntime | ExtendedTransformerForRuntime,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,

@@ -53,7 +53,6 @@ export function transformerInterfaceFromDefinition(
   let relativePath
   let innerReferenceRelativePath:
     | "transformerForBuild"
-    | "transformerForRuntime"
     | "transformerForBuildPlusRuntime"
     | undefined = undefined;
   switch (target) {
@@ -62,14 +61,6 @@ export function transformerInterfaceFromDefinition(
       relativePath = optionalInterpolation
         ? "transformerForBuild_optional_Abstract"
         : "transformerForBuild_Abstract";
-      break;
-    }
-    case "runtime": {
-      // innerReferenceRelativePath = "transformer_inner_referenced_transformerForRuntime";
-      innerReferenceRelativePath = "transformerForRuntime";
-      relativePath = optionalInterpolation
-        ? "transformerForRuntime_optional_Abstract"
-        : "transformerForRuntime_Abstract";
       break;
     }
     case "buildPlusRuntime":

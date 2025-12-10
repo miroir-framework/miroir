@@ -3,12 +3,12 @@ import { TransformerDefinition } from "../../src/0_interfaces/1_core/preprocesso
 import { transformerInterfaceFromDefinition } from "../../src/2_domain/Transformer_tools";
 
 const runtimeReferenceMap: Record<string, string> = {
-  transformer: "transformerForRuntime",
+  transformer: "transformerForBuildPlusRuntime",
   // transformer_InnerReference: "transformerForRuntime_InnerReference",
-  transformer_createObject: "transformerForRuntime_createObject",
-  transformer_getFromContext: "transformerForRuntime_getFromContext",
-  transformer_accessDynamicPath: "transformerForRuntime_accessDynamicPath",
-  transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate",
+  transformer_createObject: "transformerForBuildPlusRuntime_createObject",
+  transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
+  transformer_accessDynamicPath: "transformerForBuildPlusRuntime_accessDynamicPath",
+  transformer_mustacheStringTemplate: "transformerForBuildPlusRuntime_mustacheStringTemplate",
 };
 
 const buildReferenceMap: Record<string, string> = {
@@ -116,7 +116,7 @@ describe("transformerInterfaceFromDefinition", () => {
           definition: {
             eager: true,
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "transformerForRuntime_Abstract",
+            relativePath: "transformerForBuildPlusRuntime_Abstract",
           },
           context: {},
         },

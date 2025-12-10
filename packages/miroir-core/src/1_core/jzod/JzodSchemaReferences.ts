@@ -203,12 +203,16 @@ export function jzodTransitiveDependencySet(
   }
 
   function visit(element: string, miroirFundamentalJzodSchema: JzodReference) {
+    console.log("jzodTransitiveDependencySet visiting", element);
     if (!miroirFundamentalJzodSchema.context) {
       throw new Error("miroirFundamentalJzodSchema.context is not defined");
     }
     // if (!Object.hasOwn(miroirFundamentalJzodSchema.context, element) || !miroirFundamentalJzodSchema.context[element]) {
     if (!miroirFundamentalJzodSchema.context[element]) {
-      throw new Error(`Element ${element} not found in context`);
+      throw new Error(
+        `Element ${element} not found in context:` +
+          JSON.stringify(Object.keys(miroirFundamentalJzodSchema.context), null, 2)
+      );
     }
     if (visitedSet.has(element)) {
       return;

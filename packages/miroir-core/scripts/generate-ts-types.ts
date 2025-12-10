@@ -216,65 +216,6 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
   ]);
 });
 
-export type TransformerForRuntime =
-  | TransformerForRuntime_menu_addItem
-  | TransformerForRuntime_returnValue
-  | TransformerForRuntime_constantAsExtractor
-  | TransformerForRuntime_getFromContext
-  | TransformerForRuntime_aggregate
-  | TransformerForRuntime_dataflowObject
-  | TransformerForRuntime_createObject
-  | TransformerForRuntime_pickFromList
-  | TransformerForRuntime_indexListBy
-  | TransformerForRuntime_listReducerToSpreadObject
-  | TransformerForRuntime_mapList
-  | TransformerForRuntime_mustacheStringTemplate
-  | TransformerForRuntime_generateUuid
-  | TransformerForRuntime_mergeIntoObject
-  | TransformerForRuntime_accessDynamicPath
-  | TransformerForRuntime_getObjectEntries
-  | TransformerForRuntime_getObjectValues
-  | TransformerForRuntime_createObjectFromPairs
-  | TransformerForRuntime_getUniqueValues
-  // | TransformerForRuntime_constantBigint
-  | TransformerForRuntime_InnerReference
-  | TransformerForRuntime_dataflowSequence
-  // MLS
-  | ${Object.keys(mlsTransformers)
-    .map((e) => `${e.replace("transformer_", "TransformerForRuntime_")}`)
-    .join("\n  | ")}
-;
-
-export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
-  z.lazy(() => transformerForRuntime_menu_addItem),
-  // 
-  z.lazy(() => transformerForRuntime_returnValue),
-  z.lazy(() => transformerForRuntime_constantAsExtractor),
-  z.lazy(() => transformerForRuntime_getFromContext),
-  z.lazy(() => transformerForRuntime_aggregate),
-  z.lazy(() => transformerForRuntime_dataflowObject),
-  z.lazy(() => transformerForRuntime_createObject),
-  z.lazy(() => transformerForRuntime_pickFromList),
-  z.lazy(() => transformerForRuntime_indexListBy),
-  z.lazy(() => transformerForRuntime_listReducerToSpreadObject),
-  z.lazy(() => transformerForRuntime_mapList),
-  z.lazy(() => transformerForRuntime_mustacheStringTemplate),
-  z.lazy(() => transformerForRuntime_generateUuid),
-  z.lazy(() => transformerForRuntime_mergeIntoObject),
-  z.lazy(() => transformerForRuntime_accessDynamicPath),
-  z.lazy(() => transformerForRuntime_getObjectEntries),
-  z.lazy(() => transformerForRuntime_getObjectValues),
-  z.lazy(() => transformerForRuntime_createObjectFromPairs),
-  z.lazy(() => transformerForRuntime_getUniqueValues),
-  // z.lazy(() => transformerForRuntime_constantBigint),
-  z.lazy(() => transformerForRuntime_InnerReference),
-  z.lazy(() => transformerForRuntime_dataflowSequence),
-  // MLS
-  ${Object.keys(mlsTransformers)
-    .map((e) => `z.lazy(() => ${e.replace("transformer_", "transformerForRuntime_")})`)
-    .join(",\n   ")}
-]);
-
 export type TransformerForBuildPlusRuntime =
     | string
     | number
@@ -451,7 +392,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
           ([key, value]) =>
             ![
               "transformerForBuild",
-              "transformerForRuntime",
+              // "transformerForRuntime",
               "transformerForBuildPlusRuntime",
             ].includes(key)
         )
@@ -519,7 +460,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         type: "schemaReference",
         context: Object.fromEntries(extendedJzodSchemaContext),
         definition: {
-          relativePath: "transformerForRuntime_Abstract",
+          relativePath: "transformerForBuildPlusRuntime_Abstract",
         },
       };
       console.log(

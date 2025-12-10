@@ -2,7 +2,12 @@ import type { Step, ResolveBuildTransformersTo } from "../../2_domain/Transforme
 import type { Domain2QueryReturnType } from "../2_domain/DomainElement";
 import type { ReduxDeploymentsState } from "../2_domain/ReduxDeploymentsStateInterface";
 import type { Uuid } from "./EntityDefinition";
-import type { JzodSchema, MetaModel, TransformerForBuild, TransformerForRuntime } from "./preprocessor-generated/miroirFundamentalType";
+import type {
+  JzodSchema,
+  MetaModel,
+  TransformerForBuild,
+  TransformerForBuildPlusRuntime,
+} from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelEnvironment {
   miroirFundamentalJzodSchema: JzodSchema,
@@ -15,7 +20,8 @@ export interface MiroirModelEnvironment {
 export type ITransformerHandler<
   T extends
     | TransformerForBuild
-    | TransformerForRuntime,
+    // | TransformerForRuntime,
+    | TransformerForBuildPlusRuntime,
   // U extends MiroirModelEnvironment
     // | TransformerForRuntime_innerFullObjectTemplate
 > = (

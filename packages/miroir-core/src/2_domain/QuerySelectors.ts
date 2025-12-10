@@ -13,7 +13,6 @@ import {
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
-  ExtendedTransformerForRuntime,
   ExtractorByEntityReturningObjectList,
   ExtractorOrCombiner,
   ExtractorOrCombinerContextReference,
@@ -633,8 +632,7 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
 
 // ################################################################################################
 export const applyExtractorTransformerInMemory = (
-  // actionRuntimeTransformer: ExtendedTransformerForRuntime,
-  actionRuntimeTransformer: TransformerForBuildPlusRuntime| ExtendedTransformerForRuntime,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime,
   // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -1119,12 +1117,12 @@ export const runQuery = <StateType>(
   //   Object.keys(context)
   // );
 
-  for (const transformerForRuntime of 
+  for (const transformerForBuildPlusRuntime of 
     Object.entries(
     selectorParams.extractor.runtimeTransformers ?? {}
   )) {
     let result = applyExtractorTransformerInMemory(
-      transformerForRuntime[1],
+      transformerForBuildPlusRuntime[1],
       modelEnvironment,
       {
         ...selectorParams.extractor.pageParams,
@@ -1136,25 +1134,16 @@ export const runQuery = <StateType>(
     if (result instanceof Domain2ElementFailed) {
       log.error(
         "extractWithManyExtractor failed for transformer",
-        transformerForRuntime[0],
+        transformerForBuildPlusRuntime[0],
         "query",
-        transformerForRuntime[1],
+        transformerForBuildPlusRuntime[1],
         "result=",
         result
       );
       return ({})
       
     }
-    context[transformerForRuntime[0]] = result; // does side effect!
-    // context.elementValue[transformerForRuntime[0]] = result; // does side effect!
-    // log.info(
-    //   "runQuery done for transformerForRuntime",
-    //   transformerForRuntime[0],
-    //   "transformerForRuntime",
-    //   transformerForRuntime[1],
-    //   "result=",
-    //   result
-    // );
+    context[transformerForBuildPlusRuntime[0]] = result; // does side effect!
   }
 
   // log.info(

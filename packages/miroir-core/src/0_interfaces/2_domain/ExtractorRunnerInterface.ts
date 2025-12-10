@@ -4,7 +4,6 @@ import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedExtractorTemplateReturningObjectOrObjectList,
   DomainModelQueryTemplateJzodSchemaParams,
-  ExtendedTransformerForRuntime,
   JzodElement,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition,
@@ -250,8 +249,7 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
   //
   // TODO: called in AsyncQuerySelector
   applyExtractorTransformer(
-    // query: ExtendedTransformerForRuntime,
-    query: ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
+    query: TransformerForBuildPlusRuntime,
     modelEnvironment: MiroirModelEnvironment,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,

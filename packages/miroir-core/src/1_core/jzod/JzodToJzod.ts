@@ -681,7 +681,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
        * 
        */
       if (
-        ["transformerForBuild", "transformerForRuntime", "transformerForBuildPlusRuntime"].includes(
+        // ["transformerForBuild", "transformerForRuntime", "transformerForBuildPlusRuntime"].includes(
+        ["transformerForBuild", "transformerForBuildPlusRuntime"].includes(
           baseSchema?.definition?.relativePath ?? ""
         )
       ) {
