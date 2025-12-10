@@ -11,31 +11,29 @@ import {
   transformer_resolveReference,
   TransformerForBuild_createObject,
   TransformerForBuild_createObjectFromPairs,
-  TransformerForRuntime,
-  TransformerForRuntime_returnValue,
-  // TransformerForRuntime_constantArray,
-  TransformerForRuntime_constantAsExtractor,
-  TransformerForRuntime_getFromContext,
-  TransformerForRuntime_aggregate,
-  TransformerForRuntime_dataflowObject,
-  TransformerForRuntime_createObject,
-  TransformerForRuntime_pickFromList,
-  TransformerForRuntime_indexListBy,
-  TransformerForRuntime_listReducerToSpreadObject,
-  // TransformerForRuntime_innerFullObjectTemplate,
-  TransformerForRuntime_mapList,
-  TransformerForRuntime_mustacheStringTemplate,
-  TransformerForRuntime_generateUuid,
-  TransformerForRuntime_createObjectFromPairs,
-  TransformerForRuntime_mergeIntoObject,
-  TransformerForRuntime_accessDynamicPath,
-  TransformerForRuntime_getObjectEntries,
-  TransformerForRuntime_getObjectValues,
-  TransformerForRuntime_getUniqueValues,
+  TransformerForBuildPlusRuntime,
+  TransformerForBuildPlusRuntime_returnValue,
+  TransformerForBuildPlusRuntime_constantAsExtractor,
+  TransformerForBuildPlusRuntime_getFromContext,
+  TransformerForBuildPlusRuntime_aggregate,
+  TransformerForBuildPlusRuntime_dataflowObject,
+  TransformerForBuildPlusRuntime_createObject,
+  TransformerForBuildPlusRuntime_pickFromList,
+  TransformerForBuildPlusRuntime_indexListBy,
+  TransformerForBuildPlusRuntime_listReducerToSpreadObject,
+  TransformerForBuildPlusRuntime_mapList,
+  TransformerForBuildPlusRuntime_mustacheStringTemplate,
+  TransformerForBuildPlusRuntime_generateUuid,
+  TransformerForBuildPlusRuntime_createObjectFromPairs,
+  TransformerForBuildPlusRuntime_mergeIntoObject,
+  TransformerForBuildPlusRuntime_getObjectEntries,
+  TransformerForBuildPlusRuntime_getObjectValues,
+  TransformerForBuildPlusRuntime_getUniqueValues,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type TransformerForBuildPlusRuntime_ifThenElse,
   type MiroirModelEnvironment,
+  type TransformerForBuildPlusRuntime_accessDynamicPath,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -274,7 +272,7 @@ const getConstantSql = (
 // ################################################################################################
 // used only by legacy "typed" constants
 function sqlStringForConstantAnyTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_returnValue,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_returnValue,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -297,7 +295,7 @@ function sqlStringForConstantAnyTransformer(
 
 // ################################################################################################
 function sqlStringForConstantTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_returnValue,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_returnValue,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -444,17 +442,17 @@ export function sqlStringForExtractor(
 function sqlStringForApplyTo(
   actionRuntimeTransformer:
     | TransformerForBuild_createObjectFromPairs
-    | TransformerForRuntime_createObjectFromPairs
-    | TransformerForRuntime_aggregate
-    | TransformerForRuntime_pickFromList
-    | TransformerForRuntime_mapList
-    | TransformerForRuntime_mergeIntoObject
-    | TransformerForRuntime_getObjectValues
-    | TransformerForRuntime_getObjectEntries
-    | TransformerForRuntime_listReducerToSpreadObject
-    | TransformerForRuntime_indexListBy
-    | TransformerForRuntime_getUniqueValues
-    // | TransformerForRuntime_innerFullObjectTemplate
+    | TransformerForBuildPlusRuntime_createObjectFromPairs
+    | TransformerForBuildPlusRuntime_aggregate
+    | TransformerForBuildPlusRuntime_pickFromList
+    | TransformerForBuildPlusRuntime_mapList
+    | TransformerForBuildPlusRuntime_mergeIntoObject
+    | TransformerForBuildPlusRuntime_getObjectValues
+    | TransformerForBuildPlusRuntime_getObjectEntries
+    | TransformerForBuildPlusRuntime_listReducerToSpreadObject
+    | TransformerForBuildPlusRuntime_indexListBy
+    | TransformerForBuildPlusRuntime_getUniqueValues
+    // | TransformerForBuildPlusRuntime_innerFullObjectTemplate
   ,
   preparedStatementParametersIndex: number,
   indentLevel: number,
@@ -576,7 +574,7 @@ function sqlStringForApplyTo(
 
 // ################################################################################################
 function sqlStringForCountTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_aggregate,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_aggregate,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -755,7 +753,7 @@ function sqlStringForConditionalTransformer(
   let preparedStatementParameters: any[] = [];
 
   const left = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.left as TransformerForRuntime,
+    actionRuntimeTransformer.left as TransformerForBuildPlusRuntime,
     newPreparedStatementParametersCount,
     indentLevel,
     queryParams,
@@ -778,7 +776,7 @@ function sqlStringForConditionalTransformer(
   }
 
   const right = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.right as TransformerForRuntime,
+    actionRuntimeTransformer.right as TransformerForBuildPlusRuntime,
     newPreparedStatementParametersCount,
     indentLevel,
     queryParams,
@@ -800,7 +798,7 @@ function sqlStringForConditionalTransformer(
       right.preparedStatementParameters.length;
   }
   const _then = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.then as TransformerForRuntime,
+    actionRuntimeTransformer.then as TransformerForBuildPlusRuntime,
     newPreparedStatementParametersCount,
     indentLevel,
     queryParams,
@@ -822,7 +820,7 @@ function sqlStringForConditionalTransformer(
       _then.preparedStatementParameters.length;
   }
   const _else = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.else as TransformerForRuntime,
+    actionRuntimeTransformer.else as TransformerForBuildPlusRuntime,
     newPreparedStatementParametersCount,
     indentLevel,
     queryParams,
@@ -934,7 +932,7 @@ function getFreeObjectAttributesSql(
 function sqlStringForFreeObjectTransformer(
   actionRuntimeTransformer:
     | TransformerForBuild_createObject
-    | TransformerForRuntime_createObject,
+    | TransformerForBuildPlusRuntime_createObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1003,7 +1001,7 @@ function sqlStringForFreeObjectTransformer(
 
           if (f[1].transformerType) {
             const attributeSqlString = sqlStringForRuntimeTransformer(
-              f[1] as TransformerForRuntime,
+              f[1] as TransformerForBuildPlusRuntime,
               newPreparedStatementParametersCount,
               indentLevel,
               queryParams,
@@ -1214,7 +1212,7 @@ function sqlStringForFreeObjectTransformer(
 }
 // ################################################################################################
 function sqlStringForUniqueTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_getUniqueValues,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_getUniqueValues,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1293,7 +1291,7 @@ ${orderBy}
 
 // ################################################################################################
 function sqlStringForMapperListToListTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_mapList,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_mapList,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1318,7 +1316,7 @@ function sqlStringForMapperListToListTransformer(
     Object.hasOwn(actionRuntimeTransformer.elementTransformer, "transformerType") &&
     ((actionRuntimeTransformer.elementTransformer as any)["interpolation"]??"build") == "runtime"
       ? sqlStringForRuntimeTransformer(
-          actionRuntimeTransformer.elementTransformer as TransformerForRuntime,
+          actionRuntimeTransformer.elementTransformer as TransformerForBuildPlusRuntime,
           newPreparedStatementParametersCount,
           indentLevel,
           queryParams,
@@ -1497,7 +1495,7 @@ function sqlStringForMapperListToListTransformer(
 
 // ################################################################################################
 function sqlStringForListPickElementTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_pickFromList,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_pickFromList,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1638,8 +1636,8 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 // ################################################################################################
 // TODO: used for build, too, type is incorrect
 function sqlStringForObjectFullTemplateTransformer(
-  // actionRuntimeTransformer: TransformerForBuild_createObjectFromPairs | TransformerForRuntime_createObjectFromPairs,
-  actionRuntimeTransformer: TransformerForRuntime_createObjectFromPairs,
+  // actionRuntimeTransformer: TransformerForBuild_createObjectFromPairs | TransformerForBuildPlusRuntime_createObjectFromPairs,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_createObjectFromPairs,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1740,7 +1738,7 @@ function sqlStringForObjectFullTemplateTransformer(
           newPreparedStatementParametersCount += attributeValue.preparedStatementParameters.length;
         }
 
-        const attributeKey = typeof f.attributeKey == "object" && f.attributeKey.transformerType? sqlStringForRuntimeTransformer(
+        const attributeKey = typeof f.attributeKey == "object" && (f.attributeKey as any).transformerType? sqlStringForRuntimeTransformer(
           f.attributeKey,
           newPreparedStatementParametersCount,
           indentLevel,
@@ -1904,7 +1902,7 @@ function sqlStringForObjectFullTemplateTransformer(
           newPreparedStatementParametersCount += attributeValue.preparedStatementParameters.length;
         }
         const attributeKey =
-          typeof f.attributeKey == "object" && f.attributeKey.transformerType
+          typeof f.attributeKey == "object" && (f.attributeKey as any).transformerType
             ? sqlStringForRuntimeTransformer(
                 f.attributeKey,
                 newPreparedStatementParametersCount,
@@ -1986,7 +1984,7 @@ function sqlStringForObjectFullTemplateTransformer(
 
 // ################################################################################################
 function sqlStringForObjectAlterTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_mergeIntoObject,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_mergeIntoObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2044,7 +2042,7 @@ function sqlStringForObjectAlterTransformer(
   // #############################################
 
   const subQuery: Domain2QueryReturnType<SqlStringForTransformerElementValue> = sqlStringForRuntimeTransformer(
-    actionRuntimeTransformer.definition as TransformerForRuntime,
+    actionRuntimeTransformer.definition as TransformerForBuildPlusRuntime,
     newPreparedStatementParametersCount,
     indentLevel,
     queryParams,
@@ -2130,7 +2128,7 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "mergeIntoObject_subQuery
 
 // ################################################################################################
 function sqlStringForObjectEntriesTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_getObjectEntries,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_getObjectEntries,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2173,7 +2171,7 @@ function sqlStringForObjectEntriesTransformer(
 
 // ################################################################################################
 function sqlStringForObjectValuesTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_getObjectValues,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_getObjectValues,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2216,7 +2214,7 @@ function sqlStringForObjectValuesTransformer(
 
 // ################################################################################################
 function sqlStringForListReducerToIndexObjectTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_indexListBy,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_indexListBy,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2387,7 +2385,7 @@ function sqlStringForListReducerToIndexObjectTransformer(
 
 // ################################################################################################
 function sqlStringForListReducerToSpreadObjectTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_listReducerToSpreadObject,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_listReducerToSpreadObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2572,7 +2570,7 @@ function sqlStringForListReducerToSpreadObjectTransformer(
 
 // ################################################################################################
 function sqlStringForDataflowObjectTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_dataflowObject,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_dataflowObject,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2714,7 +2712,7 @@ function sqlStringForDataflowObjectTransformer(
 
 // ################################################################################################
 function sqlStringForContextReferenceTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_getFromContext,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_getFromContext,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2829,7 +2827,7 @@ function sqlStringForContextReferenceTransformer(
 
 // ################################################################################################
 function sqlStringForParameterReferenceTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_getFromContext,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_getFromContext,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2893,7 +2891,7 @@ function sqlStringForObjectDynamicAccessTransformer(
 
 // ################################################################################################
 function sqlStringForConstantAsExtractorTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_constantAsExtractor,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_constantAsExtractor,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -3030,7 +3028,7 @@ function sqlStringForConstantAsExtractorTransformer(
 
 // ################################################################################################
 function sqlStringForNewUuidTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_generateUuid,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_generateUuid,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -3068,7 +3066,7 @@ function sqlStringForNewUuidTransformer(
  * @returns 
  */
 function sqlStringForMustacheStringTemplateTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_mustacheStringTemplate,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_mustacheStringTemplate,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -3150,7 +3148,7 @@ function sqlStringForMustacheStringTemplateTransformer(
     // Handle dot notation in placeholder names (e.g., "book.name" -> ["book", "name"])
     const placeholderPath = placeholder.name.split(".");
     const isRuntimeInterpolation = (actionRuntimeTransformer as any)["interpolation"] === "runtime";
-    const placeholderTransformer: TransformerForRuntime_getFromContext = isRuntimeInterpolation
+    const placeholderTransformer: TransformerForBuildPlusRuntime_getFromContext = isRuntimeInterpolation
       ? {
           transformerType: "getFromContext",
           interpolation: "runtime",
@@ -3241,7 +3239,7 @@ function sqlStringForMustacheStringTemplateTransformer(
 
 // ################################################################################################
 export function sqlStringForRuntimeTransformer(
-  actionRuntimeTransformer: TransformerForRuntime,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any> = {},
@@ -3323,7 +3321,7 @@ export function sqlStringForRuntimeTransformer(
     }
     case "transformer":{
       const applicationTransformerSql = sqlStringForRuntimeTransformer(
-        foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
+        foundApplicationTransformer.transformerImplementation.definition as TransformerForBuildPlusRuntime,
         preparedStatementParametersCount,
         indentLevel,
         {
@@ -3474,7 +3472,7 @@ export function sqlStringForQuery(
     selectorParams.extractor.runtimeTransformers ?? {}
   ).map(([key, value]) => {
     const transformerRawQuery = sqlStringForRuntimeTransformer(
-      value as TransformerForRuntime,
+      value as TransformerForBuildPlusRuntime,
       newPreparedStatementParameters.length,
       1, // indentLevel,
       selectorParams.extractor.queryParams,

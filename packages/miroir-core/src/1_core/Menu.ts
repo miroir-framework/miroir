@@ -3,11 +3,11 @@ import {
   Menu,
   MiroirMenuItem,
   TransformerForBuild_menu_addItem,
-  TransformerForRuntime_menu_addItem
+  type TransformerForBuildPlusRuntime_menu_addItem
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Domain2QueryReturnType, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { defaultTransformers, ResolveBuildTransformersTo, Step } from "../2_domain/TransformersForRuntime";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -32,7 +32,7 @@ export function handleTransformer_menu_AddItem(
   transformerPath: string[],
   objectName: string | undefined,
   // transformers: any,
-  transformer: TransformerForBuild_menu_addItem | TransformerForRuntime_menu_addItem,
+  transformer: TransformerForBuild_menu_addItem | TransformerForBuildPlusRuntime_menu_addItem,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
