@@ -23,21 +23,8 @@
             "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"
           },
           "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -90,21 +77,8 @@
             "definition": "ddd9c928-2ceb-4f67-971b-5898090412d6"
           },
           "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
           },
           "deploymentUuid": {
             "type": "uuid",
