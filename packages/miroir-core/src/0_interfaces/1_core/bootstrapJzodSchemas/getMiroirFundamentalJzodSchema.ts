@@ -76,34 +76,34 @@ const testCompositeActionParams: JzodElement = {
         },
       },
     },
-    {
-      type: "object",
-      definition: {
-        testActionType: { type: "literal", definition: "testRuntimeCompositeActionSuite" },
-        testActionLabel: { type: "string" },
-        deploymentUuid: { type: "uuid" },
-        testCompositeAction: {
-          type: "schemaReference",
-          definition: {
-            relativePath: "testRuntimeCompositeActionSuite",
-          }
-        },
-      },
-    },
-    {
-      type: "object",
-      definition: {
-        testActionType: { type: "literal", definition: "testRuntimeCompositeAction" },
-        testActionLabel: { type: "string" },
-        deploymentUuid: { type: "uuid" },
-        testCompositeAction: {
-          type: "schemaReference",
-          definition: {
-            relativePath: "testRuntimeCompositeAction",
-          }
-        },
-      },
-    },
+    // {
+    //   type: "object",
+    //   definition: {
+    //     testActionType: { type: "literal", definition: "testRuntimeCompositeActionSuite" },
+    //     testActionLabel: { type: "string" },
+    //     deploymentUuid: { type: "uuid" },
+    //     testCompositeAction: {
+    //       type: "schemaReference",
+    //       definition: {
+    //         relativePath: "testRuntimeCompositeActionSuite",
+    //       }
+    //     },
+    //   },
+    // },
+    // {
+    //   type: "object",
+    //   definition: {
+    //     testActionType: { type: "literal", definition: "testRuntimeCompositeAction" },
+    //     testActionLabel: { type: "string" },
+    //     deploymentUuid: { type: "uuid" },
+    //     testCompositeAction: {
+    //       type: "schemaReference",
+    //       definition: {
+    //         relativePath: "testRuntimeCompositeAction",
+    //       }
+    //     },
+    //   },
+    // },
     {
       type: "object",
       definition: {
@@ -1539,16 +1539,16 @@ export function getMiroirFundamentalJzodSchema(
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildCompositeActionSuite"
         ),
-        testRuntimeCompositeAction: (
-          entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testRuntimeCompositeAction"
-        ),
-        testRuntimeCompositeActionSuite: (
-          entityDefinitionTest.jzodSchema as any
-        ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testRuntimeCompositeActionSuite"
-        ),
+        // testRuntimeCompositeAction: (
+        //   entityDefinitionTest.jzodSchema as any
+        // ).definition.definition.definition.fullTestDefinition.definition.find(
+        //   (e: any) => e.definition.testType.definition == "testRuntimeCompositeAction"
+        // ),
+        // testRuntimeCompositeActionSuite: (
+        //   entityDefinitionTest.jzodSchema as any
+        // ).definition.definition.definition.fullTestDefinition.definition.find(
+        //   (e: any) => e.definition.testType.definition == "testRuntimeCompositeActionSuite"
+        // ),
         testBuildPlusRuntimeCompositeAction: (
           entityDefinitionTest.jzodSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
@@ -3496,115 +3496,115 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        runtimeCompositeAction: {
-          type: "object",
-          definition: {
-            actionType: { type: "literal", definition: "compositeAction" },
-            actionName: { type: "literal", definition: "sequence" },
-            actionLabel: { type: "string", optional: true },
-            deploymentUuid: {
-              type: "uuid",
-              optional: true,
-              tag: { value: { defaultLabel: "Module Deployment Uuid", editable: false } },
-            },
-            templates: {
-              type: "record",
-              optional: true,
-              definition: {
-                type: "any",
-              },
-            },
-            definition: {
-              type: "array",
-              definition: {
-                type: "union",
-                discriminator: "actionType",
-                definition: [
-                  {
-                    type: "schemaReference",
-                    definition: {
-                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      relativePath: "runtimeDomainAction",
-                    },
-                  },
-                  {
-                    type: "schemaReference",
-                    definition: {
-                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      relativePath: "runtimeCompositeAction",
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: { type: "literal", definition: "compositeRunBoxedQueryAction" },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      queryTemplate: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "runBoxedQueryAction",
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: {
-                        type: "literal",
-                        definition: "compositeRunBoxedExtractorAction",
-                      },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      queryTemplate: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "runBoxedExtractorAction",
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: {
-                        type: "literal",
-                        definition: "compositeRunBoxedExtractorOrQueryAction",
-                      },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      query: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "runBoxedExtractorOrQueryAction",
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: { type: "literal", definition: "compositeRunTestAssertion" },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      testAssertion: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "testAssertion",
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
+        // runtimeCompositeAction: {
+        //   type: "object",
+        //   definition: {
+        //     actionType: { type: "literal", definition: "compositeAction" },
+        //     actionName: { type: "literal", definition: "sequence" },
+        //     actionLabel: { type: "string", optional: true },
+        //     deploymentUuid: {
+        //       type: "uuid",
+        //       optional: true,
+        //       tag: { value: { defaultLabel: "Module Deployment Uuid", editable: false } },
+        //     },
+        //     templates: {
+        //       type: "record",
+        //       optional: true,
+        //       definition: {
+        //         type: "any",
+        //       },
+        //     },
+        //     definition: {
+        //       type: "array",
+        //       definition: {
+        //         type: "union",
+        //         discriminator: "actionType",
+        //         definition: [
+        //           {
+        //             type: "schemaReference",
+        //             definition: {
+        //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //               relativePath: "runtimeDomainAction",
+        //             },
+        //           },
+        //           {
+        //             type: "schemaReference",
+        //             definition: {
+        //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //               relativePath: "runtimeCompositeAction",
+        //             },
+        //           },
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               actionType: { type: "literal", definition: "compositeRunBoxedQueryAction" },
+        //               actionLabel: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               queryTemplate: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //                   relativePath: "runBoxedQueryAction",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               actionType: {
+        //                 type: "literal",
+        //                 definition: "compositeRunBoxedExtractorAction",
+        //               },
+        //               actionLabel: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               queryTemplate: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //                   relativePath: "runBoxedExtractorAction",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               actionType: {
+        //                 type: "literal",
+        //                 definition: "compositeRunBoxedExtractorOrQueryAction",
+        //               },
+        //               actionLabel: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               query: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //                   relativePath: "runBoxedExtractorOrQueryAction",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //           {
+        //             type: "object",
+        //             definition: {
+        //               actionType: { type: "literal", definition: "compositeRunTestAssertion" },
+        //               actionLabel: { type: "string", optional: true },
+        //               nameGivenToResult: { type: "string" },
+        //               testAssertion: {
+        //                 type: "schemaReference",
+        //                 definition: {
+        //                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //                   relativePath: "testAssertion",
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         ],
+        //       },
+        //     },
+        //   },
+        // },
         // buildPlusRuntimeCompositeAction: {
         //   type: "object",
         //   definition: {
@@ -4180,20 +4180,20 @@ export function getMiroirFundamentalJzodSchema(
   );
 
 
-  const {
-    carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas: runtimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
-    domainActionLocalizedInnerResolutionStorePlainReferences: runtimeDomainActionLocalizedInnerResolutionStorePlainReferences,
-    carryOnDomainActionSchemaBuilder: runtimeDomainActionSchemaBuilder,
-  } = createDomainActionCarryOnSchemaResolver(
-    domainAction,
-    transformerForRuntimeDomainActionSchemaReference,
-    ["transformerType", "interpolation"],
-    domainActionDependencySet,
-    runtimeDomainActionReferencePrefix,
-    false, // alwaysPropagate
-    absoluteMiroirFundamentalJzodSchema,
-    extendedSchemas,
-  );
+  // const {
+  //   carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas: runtimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
+  //   domainActionLocalizedInnerResolutionStorePlainReferences: runtimeDomainActionLocalizedInnerResolutionStorePlainReferences,
+  //   carryOnDomainActionSchemaBuilder: runtimeDomainActionSchemaBuilder,
+  // } = createDomainActionCarryOnSchemaResolver(
+  //   domainAction,
+  //   transformerForRuntimeDomainActionSchemaReference,
+  //   ["transformerType", "interpolation"],
+  //   domainActionDependencySet,
+  //   runtimeDomainActionReferencePrefix,
+  //   false, // alwaysPropagate
+  //   absoluteMiroirFundamentalJzodSchema,
+  //   extendedSchemas,
+  // );
   const {
     carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas: buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
     domainActionLocalizedInnerResolutionStorePlainReferences: buildDomainActionLocalizedInnerResolutionStorePlainReferences,
@@ -4241,8 +4241,8 @@ export function getMiroirFundamentalJzodSchema(
       context: {
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
         ...localizedInnerResolutionStoreReferences,
-        ...runtimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
-        ...runtimeDomainActionLocalizedInnerResolutionStorePlainReferences,
+        // ...runtimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
+        // ...runtimeDomainActionLocalizedInnerResolutionStorePlainReferences,
         ...buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
         ...buildDomainActionLocalizedInnerResolutionStorePlainReferences,
         ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
@@ -4280,7 +4280,7 @@ export function getMiroirFundamentalJzodSchema(
             // TODO: use / define replayableActionTemplate (ModelAction + InstanceCUDAction) & Non-transactionalActionTemplate
             // non-transactional action templates can be used wich queries, they do not need to be replayable post-mortem.
             buildDomainAction: buildDomainActionSchemaBuilder.resultSchema,
-            runtimeDomainAction: runtimeDomainActionSchemaBuilder.resultSchema,
+            // runtimeDomainAction: runtimeDomainActionSchemaBuilder.resultSchema,
             buildPlusRuntimeDomainAction: buildPlusRuntimeDomainActionSchemaBuilder.resultSchema,
             compositeActionTemplate: compositeActionSchemaBuilder.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
           };

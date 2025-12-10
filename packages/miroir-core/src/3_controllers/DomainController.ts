@@ -46,7 +46,7 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  RuntimeCompositeAction,
+  // RuntimeCompositeAction,
   SelfApplicationDeploymentConfiguration,
   TestAssertion,
   TestBuildPlusRuntimeCompositeAction,
@@ -55,8 +55,8 @@ import {
   TestCompositeActionSuite,
   TestCompositeActionTemplateSuite,
   TestResult,
-  TestRuntimeCompositeAction,
-  TestRuntimeCompositeActionSuite,
+  // TestRuntimeCompositeAction,
+  // TestRuntimeCompositeActionSuite,
   TransactionalInstanceAction,
   TransformerForRuntime,
   UndoRedoAction
@@ -2001,7 +2001,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleRuntimeCompositeActionDO_NOT_USE(
-    runtimeCompositeAction: BuildPlusRuntimeCompositeAction,
+    buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -2010,14 +2010,14 @@ export class DomainController implements DomainControllerInterface {
 
     log.info(
       "handleRuntimeCompositeAction compositeAction",
-      JSON.stringify(runtimeCompositeAction, null, 2),
+      JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
       "localActionParams keys",
       Object.keys(localActionParams)
     );
     // log.info("handleRuntimeCompositeAction compositeAction", JSON.stringify(compositeAction, null, 2), "localActionParams keys", Object.keys(localActionParams));
     // log.info("handleRuntimeCompositeAction compositeAction", compositeAction, "localActionParams", localActionParams);
 
-    for (const currentAction of runtimeCompositeAction.definition) {
+    for (const currentAction of buildPlusRuntimeCompositeAction.definition) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
@@ -2451,7 +2451,7 @@ export class DomainController implements DomainControllerInterface {
       );
     }
 
-    const resolvedAction: RuntimeCompositeAction = {
+    const resolvedAction: BuildPlusRuntimeCompositeAction = {
       actionType: "compositeAction",
       actionName: buildPlusRuntimeCompositeAction.actionName,
       actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
@@ -3105,7 +3105,8 @@ export class DomainController implements DomainControllerInterface {
    * @returns
    */
   async handleTestCompositeAction(
-    testAction: TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction,
+    // testAction: TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction,
+    testAction: TestCompositeAction | TestBuildPlusRuntimeCompositeAction,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -3161,8 +3162,8 @@ export class DomainController implements DomainControllerInterface {
           localActionParams,
         );
       }
-      case "testRuntimeCompositeAction": {
-        const localCompositeAction: RuntimeCompositeAction = {
+      case "testBuildPlusRuntimeCompositeAction": {
+        const localCompositeAction: BuildPlusRuntimeCompositeAction = {
           ...testAction.compositeAction,
           definition: [
             ...testAction.compositeAction.definition,
@@ -3202,7 +3203,8 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleTestCompositeActionSuite(
-    testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
+    // testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
+    testAction: TestCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -3256,7 +3258,8 @@ export class DomainController implements DomainControllerInterface {
       // testAction.testCompositeActions
       for (const testCompositeAction of Object.entries(testAction.testCompositeActions) as [
         string,
-        TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction
+        // TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction
+        TestCompositeAction | TestBuildPlusRuntimeCompositeAction
       ][]) {
         // expect.getState().currentTestName = testCompositeAction[0];
         log.info("handleTestCompositeActionSuite test", testCompositeAction[0], "beforeEach");
@@ -3370,33 +3373,33 @@ export class DomainController implements DomainControllerInterface {
             // );
             break;
           }
-          case "testRuntimeCompositeAction": {
-            const localTestCompositeAction: RuntimeCompositeAction = {
-              ...testCompositeAction[1].compositeAction,
-              definition: [
-                ...testCompositeAction[1].compositeAction.definition,
-                ...testCompositeAction[1].testCompositeActionAssertions,
-              ],
-            };
-            // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
-            this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
-            testResult = await this.miroirContext.miroirActivityTracker.trackTest(
-              testCompositeAction[1].testLabel,
-              this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
-              async() => await this.handleRuntimeCompositeActionDO_NOT_USE(
-                localTestCompositeAction,
-                modelEnvironment,
-                localActionParams,
-              )
-            );
-            //
-            // testResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
-            //   localTestCompositeAction,
-            //   localActionParams,
-            //   currentModel
-            // );
-            break;
-          }
+          // case "testRuntimeCompositeAction": {
+          //   const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
+          //     ...testCompositeAction[1].compositeAction,
+          //     definition: [
+          //       ...testCompositeAction[1].compositeAction.definition,
+          //       ...testCompositeAction[1].testCompositeActionAssertions,
+          //     ],
+          //   };
+          //   // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
+          //   this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
+          //   testResult = await this.miroirContext.miroirActivityTracker.trackTest(
+          //     testCompositeAction[1].testLabel,
+          //     this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
+          //     async() => await this.handleRuntimeCompositeActionDO_NOT_USE(
+          //       localTestCompositeAction,
+          //       modelEnvironment,
+          //       localActionParams,
+          //     )
+          //   );
+          //   //
+          //   // testResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
+          //   //   localTestCompositeAction,
+          //   //   localActionParams,
+          //   //   currentModel
+          //   // );
+          //   break;
+          // }
           case "testCompositeAction": {
             const localTestCompositeAction: CompositeAction = {
               ...testCompositeAction[1].compositeAction,
