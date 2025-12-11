@@ -3211,17 +3211,64 @@ export function getMiroirFundamentalJzodSchema(
         transactionalInstanceAction: {
           type: "object",
           definition: domainEndpointVersionV1.definition.actions.find(
-          (a: any) =>
-            a.actionParameters.actionType &&
-            a.actionParameters.actionType.definition == "transactionalInstanceAction"
-        )?.actionParameters},
+            (a: any) =>
+              a.actionParameters.actionType &&
+              a.actionParameters.actionType.definition == "transactionalInstanceAction"
+          )?.actionParameters,
+        },
         localCacheAction: {
           type: "union",
           discriminator: "actionType",
-          definition: localCacheEndpointVersionV1.definition.actions.map(
-            (e: any) => e.actionParameters
-          ),
+          definition: [
+            // undoRedoAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "undoRedoAction",
+              },
+            },
+            // transactionalInstanceAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "transactionalInstanceAction",
+              },
+            },
+            // modelAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "modelAction",
+              },
+            },
+            // instanceAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "instanceAction",
+              },
+            },
+            ...localCacheEndpointVersionV1.definition.actions.map((e: Record<string, JzodElement>) => ({
+              type: "object",
+              definition: e.actionParameters,
+            })),
+          ],
         },
+        // localCacheAction: {
+        //   type: "union",
+        //   discriminator: "actionType",
+        //   definition: localCacheEndpointVersionV1.definition.actions.map(
+        //     (e: any) => e.actionParameters
+        //   ),
+        // },
         storeManagementAction: {
           type: "union",
           discriminator: "actionType",
@@ -3269,8 +3316,9 @@ export function getMiroirFundamentalJzodSchema(
         compositeAction: {
           type: "object",
           definition: domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
-        )?.actionParameters},
+            (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
+          )?.actionParameters,
+        },
         // ################################################################################
         // ################################################################################
         // ################################################################################
@@ -3405,9 +3453,7 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         // ################################################################################
         compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
-          .find(
-            (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
-          )
+          .find((a: any) => a.actionParameters?.actionType?.definition == "compositeAction")
           ?.actionParameters.payload.definition.definition.definition.definition.find(
             (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
           ),
