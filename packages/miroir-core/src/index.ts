@@ -1077,7 +1077,7 @@ const reportTransformerTestDetails = require("./assets/miroir_data/3f2baa83-3ef7
 const queryVersionBundleProducerV1 = require("./assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json");
 
 const applicationEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json");
-const deploymentEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json");
+// const deploymentEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json");
 const instanceEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json");
 const modelEndpointV1 = require("./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json");
 
@@ -1121,7 +1121,7 @@ export {
   // instanceEndpoint,
   // modelEndpoint,
   applicationEndpointV1,
-  deploymentEndpointV1,
+  storeManagementEndpoint as deploymentEndpointV1,
   // entityDefinitionSelfApplicationV1,
   domainEndpointVersionV1,
   entityAdminApplication,

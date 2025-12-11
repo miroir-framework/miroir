@@ -76,7 +76,6 @@ import applicationVersionInitialMiroirVersionCrossEntityDefinitionReport from '.
 import selfApplicationVersionInitialMiroirVersion from '../../../src/assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import jzodSchemajzodMiroirBootstrapSchema from "../../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json";
 import transformerJzodSchema from "../../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
-import instanceConfigurationReference from '../../../src/assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import menuDefaultMiroir from '../../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json';
 
 
@@ -117,7 +116,7 @@ import { miroirFundamentalJzodSchema} from "../../../src/0_interfaces/1_core/pre
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
-export const defaultMiroirMetaModel: MetaModel = {
+export const defaultMiroirMetaModel_DONOTUSE: MetaModel = {
   // configuration: [instanceConfigurationReference],
   entities: [
     entitySelfApplication as Entity,
@@ -144,6 +143,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionReport as EntityDefinition,
     entityDefinitionStoreBasedConfiguration as EntityDefinition,
   ],
+  endpoints: [],
+  storedQueries: [],
   jzodSchemas: [
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
   ],
@@ -196,8 +197,8 @@ function testResolveReferenceInContext(
     testSchema.context,
     defaultMiroirModelEnvironment,
     // miroirFundamentalJzodSchema,
-    // defaultMiroirMetaModel,
-    // defaultMiroirMetaModel,
+    // defaultMiroirMetaModel_DONOTUSE,
+    // defaultMiroirMetaModel_DONOTUSE,
   )
     expect(testResult).toEqual(expectedResult);
 }

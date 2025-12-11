@@ -3273,7 +3273,7 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           discriminator: "actionType",
           definition: storeManagementEndpoint.definition.actions.map(
-            (e: any) => e.actionParameters
+            (e: any) => ({type: "object", definition: e.actionParameters})
           ),
         },
         // persistenceAction: {
@@ -3810,13 +3810,21 @@ export function getMiroirFundamentalJzodSchema(
   );
 
   log.info(
-    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeRunTestAssertion:",
-    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["compositeRunTestAssertion"], null, 2)
+    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema actionError:",
+    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["actionError"], null, 2)
   );
   log.info(
-    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema transactionalInstanceAction:",
-    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.transactionalInstanceAction, null, 2)
+    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema storeManagementAction:",
+    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.storeManagementAction, null, 2)
   );
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeRunTestAssertion:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["compositeRunTestAssertion"], null, 2)
+  // );
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema transactionalInstanceAction:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.transactionalInstanceAction, null, 2)
+  // );
   // log.info(
   //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema domainAction:",
   //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["domainAction"], null, 2)
