@@ -132,39 +132,51 @@ export async function resetAndInitApplicationDeployment(
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
     await domainController.handleAction({
       actionType: "resetModel",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: selfAdminConfigurationDeployment.uuid,
     }, defaultMiroirModelEnvironment);
   }
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
-    await domainController.handleAction({
-      actionType: "initModel",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: selfAdminConfigurationDeployment.uuid,
-      payload : {
-        params: {
-          dataStoreType: selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid?"miroir":"app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-          metaModel: defaultMiroirMetaModel,
-          // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-          selfApplication: selfApplicationMiroir,
-          // selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
-          applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-          // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-          applicationVersion: selfApplicationVersionInitialMiroirVersion,
+    await domainController.handleAction(
+      {
+        actionType: "initModel",
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: selfAdminConfigurationDeployment.uuid,
+        payload: {
+          params: {
+            dataStoreType:
+              selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid
+                ? "miroir"
+                : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+            metaModel: defaultMiroirMetaModel,
+            // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            selfApplication: selfApplicationMiroir,
+            // selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
+            applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
+            // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
+            applicationVersion: selfApplicationVersionInitialMiroirVersion,
+          },
         },
-      }
-    }, defaultMiroirModelEnvironment);
+      },
+      defaultMiroirModelEnvironment
+    );
   }
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitApplicationDeployment APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   );
   for (const d of selfAdminConfigurationDeployments) {
     log.info("resetAndInitApplicationDeployment rollback for deployment", d.uuid);
-    await domainController.handleAction({
-      actionType: "rollback",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: d.uuid,
-    }, defaultMiroirModelEnvironment);
+    await domainController.handleAction(
+      {
+        actionType: "rollback",
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: d.uuid,
+      },
+      defaultMiroirModelEnvironment
+    );
   }
   return Promise.resolve(ACTION_OK);
 }
@@ -495,6 +507,7 @@ export class DomainController implements DomainControllerInterface {
             {
               actionType: "rollback",
               deploymentUuid,
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             }
           );
@@ -1222,6 +1235,7 @@ export class DomainController implements DomainControllerInterface {
                 actionType: "commit",
                 // deploymentUuid: modelAction.deploymentUuid,
                 deploymentUuid: currentDeploymentUuid,
+                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               }
             )
@@ -1393,6 +1407,7 @@ export class DomainController implements DomainControllerInterface {
                 // automatically commit after each model action from the UI if autocommit is enabled
                 const commitAction: ModelAction = {
                   actionType: "commit",
+                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: domainAction.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
                 };

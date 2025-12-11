@@ -12,24 +12,11 @@
           "actionType": { "type": "literal", "definition": "menuAction" },
           "actionName": { "type": "literal", "definition": "menuAddItem" },
           "actionLabel": { "type": "string", "optional": true },
-          "endpoint": { "type": "literal", "definition": "c6b849a3-d91f-4281-8c3a-595c17771b6e" },
           "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
           },
+          "endpoint": { "type": "literal", "definition": "c6b849a3-d91f-4281-8c3a-595c17771b6e" },
           "deploymentUuid": {
             "type": "uuid",
             "tag": {
@@ -44,6 +31,23 @@
           "payload": {
             "type": "object",
             "definition": {
+              "application": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "editable": false
+                  }
+                }
+              },
               "index": {
                 "type": "number",
                 "optional": true

@@ -237,12 +237,14 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "resetModel",
           actionLabel: "resetApplicationStore",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: deploymentUuid,
         },
         {
           actionType: "initModel",
           actionLabel: "initStore",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: deploymentUuid,
           payload: {
@@ -252,6 +254,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "rollback",
           actionLabel: "refreshLocalCacheForApplication",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: deploymentUuid,
         },
@@ -259,6 +262,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           actionType: "createEntity",
           actionLabel: "CreateApplicationStoreEntities",
           deploymentUuid: deploymentUuid,
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             entities: appEntitesAndInstances,
@@ -267,6 +271,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "commit",
           actionLabel: "CommitApplicationStoreEntities",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: deploymentUuid,
         },

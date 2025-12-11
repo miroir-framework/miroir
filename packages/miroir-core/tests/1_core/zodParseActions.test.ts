@@ -115,6 +115,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "commit",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
     },
@@ -123,6 +124,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "rollback",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
     },
@@ -131,6 +133,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "initModel",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -160,6 +163,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "resetModel",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
     },
@@ -168,6 +172,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "resetData",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
     },
@@ -176,6 +181,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "alterEntityAttribute",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -199,6 +205,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "renameEntity",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -213,6 +220,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "createEntity",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -229,6 +237,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "dropEntity",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
