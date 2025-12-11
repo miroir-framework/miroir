@@ -493,6 +493,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   actionType: "runBoxedExtractorAction",
                   actionName: action.actionName,
                   deploymentUuid: action.deploymentUuid,
+                  application: action.application,
                   endpoint: action.endpoint,
                   payload: {
                     applicationSection: action.payload.applicationSection,
@@ -513,6 +514,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   actionType: "runBoxedQueryAction",
                   actionName: action.actionName,
                   deploymentUuid: action.deploymentUuid,
+                  application: action.application,
                   endpoint: action.endpoint,
                   payload: {
                     applicationSection: action.payload.applicationSection,

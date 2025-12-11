@@ -85,6 +85,7 @@ export function fetchMiroirAndAppConfigurations(
   return domainController.handleAction(
     {
       actionType: "rollback",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
     },
@@ -123,6 +124,7 @@ export function fetchMiroirAndAppConfigurations(
         actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
         actionName: "runQuery",
         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         payload: {
           applicationSection: "data",
@@ -200,6 +202,7 @@ export function fetchMiroirAndAppConfigurations(
         rollbackActions.push(
           domainController.handleAction({
             actionType: "rollback",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
             deploymentUuid: deploymentData.uuid,
           }, defaultMiroirModelEnvironment)

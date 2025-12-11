@@ -6,6 +6,7 @@ import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncRunQuery,
+  defaultMiroirModelEnvironment,
   DomainState,
   ExtractorTemplatePersistenceStoreRunner,
   handleBoxedExtractorTemplateAction,
@@ -67,7 +68,12 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
       "runBoxedQueryTemplateAction",
       JSON.stringify(runBoxedQueryTemplateAction, null, 2)
     );
-    return handleQueryTemplateAction("FileSystemExtractorTemplateRunner", runBoxedQueryTemplateAction, this.selectorMap);
+    return handleQueryTemplateAction(
+      "FileSystemExtractorTemplateRunner",
+      runBoxedQueryTemplateAction,
+      this.selectorMap,
+      defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
+    );
   }
 
   // ################################################################################################
@@ -83,7 +89,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleBoxedExtractorTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedExtractorTemplateAction,
-      this.selectorMap
+      this.selectorMap,
+      defaultMiroirModelEnvironment // TODO: use actual current deployment environment
     );
   }
 
@@ -100,7 +107,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleBoxedExtractorTemplateOrQueryTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      this.selectorMap
+      this.selectorMap,
+      defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
     );
   }
 }

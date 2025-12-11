@@ -83,7 +83,8 @@ export async function handleQueryTemplateAction(
       actionType: "runBoxedQueryAction",
       actionName: queryTemplateAction.actionName,
       deploymentUuid: queryTemplateAction.deploymentUuid,
-      endpoint: queryTemplateAction.endpoint,
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
         applicationSection: queryTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
@@ -116,7 +117,8 @@ export async function handleBoxedExtractorTemplateAction(
     actionType: "runBoxedExtractorAction",
     actionName: boxedExtractorTemplateAction.actionName,
     deploymentUuid: boxedExtractorTemplateAction.deploymentUuid,
-    endpoint: boxedExtractorTemplateAction.endpoint,
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
     payload: {
       applicationSection: boxedExtractorTemplateAction.payload.applicationSection,
       query: resolvedQuery as any,
@@ -176,6 +178,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
         actionType: "runBoxedQueryAction",
         actionName: queryTemplateOrExtractorTemplateAction.actionName,
         deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
         payload: {
           applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
@@ -203,6 +206,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       actionType: "runBoxedExtractorAction",
       actionName: queryTemplateOrExtractorTemplateAction.actionName,
       deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
       payload: {
         applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,

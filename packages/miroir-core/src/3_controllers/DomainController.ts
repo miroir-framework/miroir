@@ -849,7 +849,7 @@ export class DomainController implements DomainControllerInterface {
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction?.actionType,
       "objects",
       JSON.stringify(
-        (runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any)["objects"],
+        (runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any).payload.objects,
         null,
         2
       )
