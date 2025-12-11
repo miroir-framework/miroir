@@ -689,7 +689,7 @@ function handleAction(
       break;
     }
     case "transactionalInstanceAction": {
-      return handleInstanceAction(state, action.instanceAction);
+      return handleInstanceAction(state, action.payload.instanceAction);
       break;
     }
     // case "instanceAction": {

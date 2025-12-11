@@ -1,3 +1,4 @@
+import type { Domain } from "domain";
 import {
   DomainControllerInterface,
   EntityInstance,
@@ -5,6 +6,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ViewParamsData,
+  type DomainAction,
 } from "miroir-core";
 
 export interface ViewParamsUpdate {
@@ -112,17 +114,18 @@ export class ViewParamsUpdateQueue {
 
     try {
       // Create the updateInstance action
-      const updateAction = {
-        actionType: "updateInstance" as const,
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" as const,
+      const updateAction: DomainAction = {
+        actionType: "updateInstance",
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         deploymentUuid: this.config.deploymentUuid,
         payload: {
-          applicationSection: "data" as const,
+          applicationSection: "data",
           objects: [
             {
               parentName: entityViewParams.name,
               parentUuid: entityViewParams.uuid, // ViewParams entity UUID
-              applicationSection: "data" as const,
+              applicationSection: "data",
               instances: [
                 {
                   ...this.pendingUpdates?.currentValue,

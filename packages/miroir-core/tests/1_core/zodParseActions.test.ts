@@ -243,6 +243,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "createInstance",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -263,6 +264,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "updateInstance",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -282,6 +284,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "deleteInstance",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -301,6 +304,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "deleteInstanceWithCascade",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -320,6 +324,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "getInstances",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -332,6 +337,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "getInstance",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -347,6 +353,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "loadNewInstancesInLocalCache",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
@@ -391,6 +398,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         instanceAction: {
           actionType: "createInstance",
           deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             applicationSection: "data",
@@ -652,6 +660,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         definition: [
           {
             actionType: "createInstance",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             payload: {
@@ -669,6 +678,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           },
           {
             actionType: "updateInstance",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             payload: {

@@ -76,7 +76,7 @@ export function createApplicationCompositeAction(
           actionType: "createInstance",
           actionLabel: "createApplicationForAdminAction",
           deploymentUuid: deploymentUuid,
-          // applicationSection: "data",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             applicationSection: "data",
@@ -160,6 +160,7 @@ export function createDeploymentCompositeAction(
           actionType: "createInstance",
           actionLabel: "CreateDeploymentInstances",
           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             applicationSection: "data",
@@ -272,6 +273,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "createInstance",
           actionLabel: "CreateApplicationStoreInstances",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           deploymentUuid: deploymentUuid,
           payload: {

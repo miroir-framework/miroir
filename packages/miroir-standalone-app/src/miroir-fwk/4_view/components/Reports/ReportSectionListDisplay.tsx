@@ -523,6 +523,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               payload: {
                 instanceAction: {
                   actionType: "createInstance",
+                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   deploymentUuid: props.displayedDeploymentDefinition.uuid,
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
@@ -532,15 +533,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                       {
                         parentName: data.name,
                         parentUuid: data.parentUuid,
-                        applicationSection:'model',
+                        applicationSection: "model",
                         instances: [
-                          // newEntity 
-                          data
-                        ]
-                      }
+                          // newEntity
+                          data,
+                        ],
+                      },
                     ],
-                  }
-                }
+                  },
+                },
               },
             },
             // props.tableComponentReportType == "EntityInstance"?currentModel:undefined
@@ -550,6 +551,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           const createAction: InstanceAction = {
             // actionType: "instanceAction",
             actionType: "createInstance",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: props.displayedDeploymentDefinition?.uuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
@@ -559,13 +561,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 {
                   parentName: data.name,
                   parentUuid: data.parentUuid,
-                  applicationSection:currentApplicationSection,
-                  instances: [
-                    data 
-                  ],
+                  applicationSection: currentApplicationSection,
+                  instances: [data],
                 },
               ],
-            }
+            },
           };
           await domainController.handleActionFromUI(createAction);
         }
@@ -595,6 +595,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 instanceAction: {
                   // actionType: "instanceAction",
                   actionType: "updateInstance",
+                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   deploymentUuid: props.displayedDeploymentDefinition.uuid,
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
@@ -609,7 +610,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                     ],
                   },
                 },
-              }
+              },
             },
             // props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
             currentMiroirModelEnvironment // TODO: use model environment for current deployment
@@ -619,6 +620,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             // actionType: "instanceAction",
             actionType: "updateInstance",
             deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               applicationSection: props.chosenApplicationSection
