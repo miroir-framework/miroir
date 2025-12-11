@@ -106,13 +106,16 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       actionType: "compositeAction",
       actionLabel: runnerDefinition.runnerLabel,
       actionName: "sequence",
+            "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
       definition: [
         {
           transformerType: "getFromParameters",
           interpolation: "build",
           referencePath: [runnerDefinition.runnerName],
         }
-      ],
+      ],}
     };
   }, [runnerDefinition]);
   

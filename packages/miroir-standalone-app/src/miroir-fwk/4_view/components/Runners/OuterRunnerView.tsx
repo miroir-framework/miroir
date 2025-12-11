@@ -4,7 +4,7 @@ import type {
   DomainControllerInterface,
   LoggerInterface,
   MiroirModelEnvironment,
-  TransformerForRuntime
+  TransformerForBuildPlusRuntime,
 } from "miroir-core";
 import {
   Action2Error,
@@ -58,7 +58,7 @@ export const OuterRunnerView = <T extends Record<string, any>>(props: RunnerProp
             "runtime", // step
             [], // transformerPath
             "initialFormValueAsTransformer", // transformerLabel
-            (initialFormValue as any).transformer as any as TransformerForRuntime, // TODO: correct type
+            (initialFormValue as any).transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type
             currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
             {}, // transformerParams
             {}, // contextResults

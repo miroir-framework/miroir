@@ -138,6 +138,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           // metaModel: defaultMiroirMetaModel,
           metaModel: {
+            endpoints: [],
             entities: [],
             entityDefinitions: [],
             jzodSchemas: [],
@@ -152,7 +153,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           applicationModelBranch: testApplicationConfig.applicationModelBranch,
           applicationVersion: testApplicationConfig.applicationVersion,
         },
-      }
+      },
     },
   },
   "resetModel ModelAction is parsable": {
@@ -191,7 +192,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             },
           },
         ],
-      }
+      },
     },
   },
   "renameEntity ModelAction is parsable": {
@@ -205,7 +206,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         entityName: "newEntity",
         entityUuid: "00000000-0000-0000-0000-000000000002",
         targetValue: "renamedEntity",
-      }
+      },
     },
   },
   "createEntity ModelAction is parsable": {
@@ -221,7 +222,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             entityDefinition: entityDefinitionEntity as EntityDefinition,
           },
         ],
-      }
+      },
     },
   },
   "dropEntity ModelAction is parsable": {
@@ -233,7 +234,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
         entityUuid: "00000000-0000-0000-0000-000000000002",
-      }
+      },
     },
   },
   // ##############################################################################################
@@ -256,7 +257,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           },
         ],
       },
-    }
+    },
   },
   "updateInstance InstanceAction is parsable": {
     zodSchema: domainAction,
@@ -274,7 +275,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             instances: [menuDefaultMiroir as EntityInstance],
           },
         ],
-      }
+      },
     },
   },
   "deleteInstance InstanceAction is parsable": {
@@ -293,7 +294,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             instances: [menuDefaultMiroir as Entity],
           },
         ],
-      }
+      },
     },
   },
   "deleteInstanceWithCascade InstanceAction is parsable": {
@@ -312,7 +313,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             instances: [menuDefaultMiroir as Entity],
           },
         ],
-      }
+      },
     },
   },
   "getInstances InstanceAction is parsable": {
@@ -324,7 +325,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         applicationSection: "data",
         parentUuid: entityMenu.uuid,
-      }
+      },
     },
   },
   "getInstance InstanceAction is parsable": {
@@ -337,7 +338,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         parentUuid: entityMenu.uuid,
         applicationSection: "data",
         uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
-      }
+      },
     },
   },
   // ##############################################################################################
@@ -357,7 +358,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             instances: [menuDefaultMiroir as Entity],
           },
         ],
-      }
+      },
     },
   },
   "undoRedoAction undo is parsable": {
@@ -383,24 +384,28 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       actionType: "transactionalInstanceAction",
       // endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      instanceAction: {
-        actionType: "createInstance",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        payload: {
-          applicationSection: "data",
-          parentUuid: entityMenu.uuid,
-          objects: [
-            {
-              parentName: entityMenu.name,
-              parentUuid: entityMenu.uuid,
-              applicationSection: "model",
-              instances: [menuDefaultMiroir as Entity],
-            },
-          ],
+      payload: {
+        instanceAction: {
+          actionType: "createInstance",
+          deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            applicationSection: "data",
+            parentUuid: entityMenu.uuid,
+            objects: [
+              {
+                parentName: entityMenu.name,
+                parentUuid: entityMenu.uuid,
+                applicationSection: "model",
+                instances: [menuDefaultMiroir as Entity],
+              },
+            ],
+          },
         },
-      }
+      },
     },
   },
   // ##############################################################################################
@@ -527,7 +532,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             instanceUuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
           },
         },
-      }
+      },
     },
   },
   "runBoxedQueryAction is parsable": {
@@ -556,7 +561,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           },
           combiners: {},
         },
-      }
+      },
     },
   },
   // ##############################################################################################
@@ -621,7 +626,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             attributeName: "name",
             value: {
               transformerType: "returnValue",
-              "mlSchema": {
+              mlSchema: {
                 type: "string",
               },
               interpolation: "build",
@@ -641,55 +646,58 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "compositeAction",
       actionName: "sequence",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      definition: [
-        {
-          actionType: "createInstance",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-          payload: {
-            applicationSection: "data",
-            parentUuid: entityMenu.uuid,
-            objects: [
-              {
-                parentName: entityMenu.name,
-                parentUuid: entityMenu.uuid,
-                applicationSection: "model",
-                instances: [menuDefaultMiroir as Entity],
-              },
-            ],
-          }
-        },
-        {
-          actionType: "updateInstance",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-          payload: {
-            applicationSection: "data",
-            objects: [
-              {
-                parentName: entityMenu.name,
-                parentUuid: entityMenu.uuid,
-                applicationSection: "model",
-                instances: [menuDefaultMiroir as EntityInstance],
-              },
-            ],
-          }
-        },
-      ],
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: {
+        definition: [
+          {
+            actionType: "createInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            payload: {
+              applicationSection: "data",
+              parentUuid: entityMenu.uuid,
+              objects: [
+                {
+                  parentName: entityMenu.name,
+                  parentUuid: entityMenu.uuid,
+                  applicationSection: "model",
+                  instances: [menuDefaultMiroir as Entity],
+                },
+              ],
+            },
+          },
+          {
+            actionType: "updateInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            payload: {
+              applicationSection: "data",
+              objects: [
+                {
+                  parentName: entityMenu.name,
+                  parentUuid: entityMenu.uuid,
+                  applicationSection: "model",
+                  instances: [menuDefaultMiroir as EntityInstance],
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
   },
   // ##############################################################################################
   // BuildPlusRuntimeCompositeAction ##############################################################
   // ##############################################################################################
   "buildPlusRuntimeCompositeAction.testCompositeAction.testCompositeActions is parsable": {
-    zodSchema: z.record(
-      z.string(),
-      testBuildPlusRuntimeCompositeAction),
-    action:
-      (getTestSuitesForBuildPlusRuntimeCompositeAction(undefined)
+    zodSchema: z.record(z.string(), testBuildPlusRuntimeCompositeAction),
+    action: (
+      getTestSuitesForBuildPlusRuntimeCompositeAction(undefined)
         .testSuitesForBuildPlusRuntimeCompositeAction[
         "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"
-      ] as any).testCompositeAction.testCompositeActions,
+      ] as any
+    ).testCompositeAction.testCompositeActions,
   },
   // "buildPlusRuntimeCompositeAction is parsable": {
   //   // zodSchema: buildPlusRuntimeCompositeAction,

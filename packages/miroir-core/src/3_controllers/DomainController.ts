@@ -1053,7 +1053,7 @@ export class DomainController implements DomainControllerInterface {
           }
           const currentDeploymentUuid: Uuid =
             currentTransactions[0].actionType == "transactionalInstanceAction"
-              ? currentTransactions[0].instanceAction.deploymentUuid
+              ? currentTransactions[0].payload.instanceAction.deploymentUuid
               : currentTransactions[0].deploymentUuid;
 
           if (currentDeploymentUuid != modelAction.deploymentUuid) {
@@ -1151,16 +1151,16 @@ export class DomainController implements DomainControllerInterface {
                   {
                     actionType: "RestPersistenceAction",
                     actionName:
-                      replayAction.instanceAction.actionType.toString() as CRUDActionName,
+                      replayAction.payload.instanceAction.actionType.toString() as CRUDActionName,
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                     // deploymentUuid: modelAction.deploymentUuid,
                     // deploymentUuid: replayAction.deploymentUuid,
-                    deploymentUuid: replayAction.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
+                    deploymentUuid: replayAction.payload.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
                     // payload: {
-                      section: replayAction.instanceAction.payload.applicationSection??"data",
-                      parentName: replayAction.instanceAction.payload.objects[0].parentName,
-                      parentUuid: replayAction.instanceAction.payload.objects[0].parentUuid,
-                      objects: replayAction.instanceAction.payload.objects[0].instances,
+                      section: replayAction.payload.instanceAction.payload.applicationSection??"data",
+                      parentName: replayAction.payload.instanceAction.payload.objects[0].parentName,
+                      parentUuid: replayAction.payload.instanceAction.payload.objects[0].parentUuid,
+                      objects: replayAction.payload.instanceAction.payload.objects[0].instances,
                     // }
                   }
                 );
@@ -1807,7 +1807,7 @@ export class DomainController implements DomainControllerInterface {
     // log.info("handleCompositeAction compositeAction", JSON.stringify(compositeAction, null, 2), "localActionParams keys", Object.keys(localActionParams));
     // log.info("handleCompositeAction compositeAction", compositeAction, "localActionParams", localActionParams);
 
-    for (const currentAction of compositeAction.definition) {
+    for (const currentAction of compositeAction.payload.definition) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
@@ -2018,7 +2018,7 @@ export class DomainController implements DomainControllerInterface {
     // log.info("handleRuntimeCompositeAction compositeAction", JSON.stringify(compositeAction, null, 2), "localActionParams keys", Object.keys(localActionParams));
     // log.info("handleRuntimeCompositeAction compositeAction", compositeAction, "localActionParams", localActionParams);
 
-    for (const currentAction of buildPlusRuntimeCompositeAction.definition) {
+    for (const currentAction of buildPlusRuntimeCompositeAction.payload.definition) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
@@ -2339,10 +2339,10 @@ export class DomainController implements DomainControllerInterface {
 
     const resolvedCompositeActionTemplates: any = {};
     // going imperatively to handle inner references
-    if (buildPlusRuntimeCompositeAction.templates) {
+    if (buildPlusRuntimeCompositeAction.payload.templates) {
       // log.info("handleBuildPlusRuntimeCompositeAction resolving templates", buildPlusRuntimeCompositeAction.templates);
 
-      for (const t of Object.entries(buildPlusRuntimeCompositeAction.templates)) {
+      for (const t of Object.entries(buildPlusRuntimeCompositeAction.payload.templates)) {
         // const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
         const newLocalParameters: Record<string, any> = {
           // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
@@ -2410,7 +2410,7 @@ export class DomainController implements DomainControllerInterface {
         "build",
         [],
         buildPlusRuntimeCompositeAction.actionLabel,
-        buildPlusRuntimeCompositeAction.definition as any as TransformerForBuildPlusRuntime,
+        buildPlusRuntimeCompositeAction.payload.definition as any as TransformerForBuildPlusRuntime,
         modelEnvironment,
         { ...actionParamValues, ...resolvedCompositeActionTemplates }, // queryParams
         localContext, // contextResults
@@ -2456,8 +2456,12 @@ export class DomainController implements DomainControllerInterface {
       actionType: "compositeAction",
       actionName: buildPlusRuntimeCompositeAction.actionName,
       actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
-      definition: resolvedActionDefinition as any,
-      templates: resolvedCompositeActionTemplates,
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: {
+        definition: resolvedActionDefinition as any,
+        templates: resolvedCompositeActionTemplates,
+      }
     };
 
     return this.handleRuntimeCompositeActionDO_NOT_USE(
@@ -2827,7 +2831,6 @@ export class DomainController implements DomainControllerInterface {
       localActionParams
     );
     const resolved: TransformerReturnType<{
-      // resolvedCompositeActionDefinition: CompositeActionDefinition;
       resolvedCompositeActionDefinition: CompositeAction;
       resolvedCompositeActionTemplates: Record<string, any>;
     }> = resolveCompositeActionTemplate(compositeAction, modelEnvironment, localActionParams,); // resolves "build" temp
@@ -2852,7 +2855,7 @@ export class DomainController implements DomainControllerInterface {
     // );
 
     // TODO: replace with handleCompositeAction
-    for (const currentAction of resolved.resolvedCompositeActionDefinition.definition) {
+    for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.definition) {
       log.info(
         "handleCompositeActionTemplate",
         actionLabel,
@@ -3152,10 +3155,14 @@ export class DomainController implements DomainControllerInterface {
       case "testCompositeAction": {
         const localCompositeAction: CompositeAction = {
           ...testAction.compositeAction,
-          definition: [
-            ...testAction.compositeAction.definition,
-            ...testAction.testCompositeActionAssertions,
-          ],
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          payload: {
+            definition: [
+              ...testAction.compositeAction.payload.definition,
+              ...testAction.testCompositeActionAssertions,
+            ]
+          }
         };
         const result = await this.handleCompositeAction(
           localCompositeAction,
@@ -3166,10 +3173,14 @@ export class DomainController implements DomainControllerInterface {
       case "testBuildPlusRuntimeCompositeAction": {
         const localCompositeAction: BuildPlusRuntimeCompositeAction = {
           ...testAction.compositeAction,
-          definition: [
-            ...testAction.compositeAction.definition,
-            ...testAction.testCompositeActionAssertions,
-          ],
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          payload: {
+            definition: [
+              ...testAction.compositeAction.payload.definition,
+              ...testAction.testCompositeActionAssertions,
+            ],
+          }
         };
         const result = await this.handleRuntimeCompositeActionDO_NOT_USE(
           localCompositeAction,
@@ -3349,10 +3360,14 @@ export class DomainController implements DomainControllerInterface {
           case 'testBuildPlusRuntimeCompositeAction': {
             const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
               ...testCompositeAction[1].compositeAction,
-              definition: [
-                ...testCompositeAction[1].compositeAction.definition,
-                ...testCompositeAction[1].testCompositeActionAssertions,
-              ],
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              payload: {
+                definition: [
+                  ...testCompositeAction[1].compositeAction.payload.definition,
+                  ...testCompositeAction[1].testCompositeActionAssertions,
+                ]
+              }
             };
             // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
             this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
@@ -3404,10 +3419,14 @@ export class DomainController implements DomainControllerInterface {
           case "testCompositeAction": {
             const localTestCompositeAction: CompositeAction = {
               ...testCompositeAction[1].compositeAction,
-              definition: [
-                ...testCompositeAction[1].compositeAction.definition,
-                ...testCompositeAction[1].testCompositeActionAssertions,
-              ],
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              payload: {
+                definition: [
+                  ...testCompositeAction[1].compositeAction.payload.definition,
+                  ...testCompositeAction[1].testCompositeActionAssertions,
+                ],
+              }
             };
             // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
             this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
@@ -3597,7 +3616,7 @@ export class DomainController implements DomainControllerInterface {
       resolvedAction.resolvedTestCompositeActionDefinition.testCompositeActions
     ).filter(
       (e: [string, TestCompositeAction]) =>
-        (e[1].compositeAction.definition as any).queryFailure != undefined
+        (e[1].compositeAction.payload.definition as any).queryFailure != undefined
     );
 
     if (resolveErrors.length > 0) {

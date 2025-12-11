@@ -62,76 +62,80 @@ describe('resolveTestCompositeActionTemplate', () => {
         actionType: "compositeAction",
         actionName: "sequence",
         actionLabel: "testCompositeAction",
-        templates: {
-          newEntityDefinition: {
-            name: {
-              transformerType: "getFromParameters",
-              interpolation: "build",
-              referenceName: "createEntity_newEntityName",
-            },
-            uuid: {
-              transformerType: "getFromParameters",
-              interpolation: "build",
-              referenceName: "createEntity_newEntityDefinitionUuid",
-            },
-            parentName: "EntityDefinition",
-            parentUuid: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: "{{entityEntityDefinition.uuid}}",
-            },
-            entityUuid: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: "{{createEntity_newEntity.uuid}}",
-            },
-            conceptLevel: "Model",
-            defaultInstanceDetailsReportUuid: {
-              transformerType: "getFromParameters",
-              interpolation: "build",
-              referenceName: "createEntity_newEntityDetailsReportUuid",
-            },
-            jzodSchema: {
-              // transformerType: "getFromParameters",
-              // referenceName: "jzodSchema",
-              type: "object",
-              definition: {
-                a: { type: "string" },
-                b: { type: "number" },
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        payload: {
+          templates: {
+            newEntityDefinition: {
+              name: {
+                transformerType: "getFromParameters",
+                interpolation: "build",
+                referenceName: "createEntity_newEntityName",
+              },
+              uuid: {
+                transformerType: "getFromParameters",
+                interpolation: "build",
+                referenceName: "createEntity_newEntityDefinitionUuid",
+              },
+              parentName: "EntityDefinition",
+              parentUuid: {
+                transformerType: "mustacheStringTemplate",
+                interpolation: "build",
+                definition: "{{entityEntityDefinition.uuid}}",
+              },
+              entityUuid: {
+                transformerType: "mustacheStringTemplate",
+                interpolation: "build",
+                definition: "{{createEntity_newEntity.uuid}}",
+              },
+              conceptLevel: "Model",
+              defaultInstanceDetailsReportUuid: {
+                transformerType: "getFromParameters",
+                interpolation: "build",
+                referenceName: "createEntity_newEntityDetailsReportUuid",
+              },
+              jzodSchema: {
+                // transformerType: "getFromParameters",
+                // referenceName: "jzodSchema",
+                type: "object",
+                definition: {
+                  a: { type: "string" },
+                  b: { type: "number" },
+                },
               },
             },
           },
-        },
-        definition: [
-          // createEntity
-          {
-            actionType: "createEntity",
-            actionLabel: "createEntity",
-            deploymentUuid: {
-              transformerType: "getFromParameters",
-              interpolation: "build",
-              referenceName: "currentDeploymentUuid",
+          definition: [
+            // createEntity
+            {
+              actionType: "createEntity",
+              actionLabel: "createEntity",
+              deploymentUuid: {
+                transformerType: "getFromParameters",
+                interpolation: "build",
+                referenceName: "currentDeploymentUuid",
+              },
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              payload: {
+                entities: [
+                  {
+                    entity: {
+                      transformerType: "getFromParameters",
+                      interpolation: "build",
+                      referenceName: "createEntity_newEntity",
+                    },
+                    entityDefinition: {
+                      transformerType: "getFromParameters",
+                      interpolation: "build",
+                      referenceName: "newEntityDefinition",
+                    },
+                  },
+                ],
+              },
             },
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              entities: [
-                {
-                  entity: {
-                    transformerType: "getFromParameters",
-                    interpolation: "build",
-                    referenceName: "createEntity_newEntity",
-                  },
-                  entityDefinition: {
-                    transformerType: "getFromParameters",
-                    interpolation: "build",
-                    referenceName: "newEntityDefinition",
-                  },
-                },
-              ],
-            }
-          },
-          // createReports
-        ],
+            // createReports
+          ],
+        },
       },
     };
     const actionParamValues = {};
@@ -191,44 +195,48 @@ describe('resolveTestCompositeActionTemplate', () => {
         actionLabel: "testCompositeAction",
         deploymentUuid: undefined,
         // templates: (testCompositeActionTemplate.compositeActionTemplate as any).templates,
-        definition: [
-          {
-            actionType: "createEntity",
-            actionLabel: "createEntity",
-            deploymentUuid: currentDeploymentUuid,
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              entities: [
-                {
-                  entity: {
-                    uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    selfApplication: currentApplicationUuid,
-                    description: "newEntityDescription",
-                    name: "newEntityName",
-                  },
-                  entityDefinition: {
-                    name: "newEntityName",
-                    uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
-                    parentName: "EntityDefinition",
-                    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                    entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                    conceptLevel: "Model",
-                    defaultInstanceDetailsReportUuid:
-                      actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
-                    jzodSchema: {
-                      type: "object",
-                      definition: {
-                        a: { type: "string" },
-                        b: { type: "number" },
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        payload: {
+          definition: [
+            {
+              actionType: "createEntity",
+              actionLabel: "createEntity",
+              deploymentUuid: currentDeploymentUuid,
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              payload: {
+                entities: [
+                  {
+                    entity: {
+                      uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
+                      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      selfApplication: currentApplicationUuid,
+                      description: "newEntityDescription",
+                      name: "newEntityName",
+                    },
+                    entityDefinition: {
+                      name: "newEntityName",
+                      uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
+                      parentName: "EntityDefinition",
+                      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                      entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
+                      conceptLevel: "Model",
+                      defaultInstanceDetailsReportUuid:
+                        actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
+                      jzodSchema: {
+                        type: "object",
+                        definition: {
+                          a: { type: "string" },
+                          b: { type: "number" },
+                        },
                       },
                     },
                   },
-                },
-              ],
-            }
-          },
-        ],
+                ],
+              },
+            },
+          ],
+        },
       },
     };
     expect(result.resolvedTestCompositeActionDefinition).toEqual(expectedResult);
@@ -292,50 +300,52 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
 
     const compositeActionTemplateSuite: TestCompositeActionTemplateSuite = {
       testType: "testCompositeActionTemplateSuite",
-      testLabel: 'Test Suite Label',
+      testLabel: "Test Suite Label",
       testCompositeActions: {
         action1: {
           testType: "testCompositeActionTemplate",
-          testLabel: 'Action 1',
-          compositeActionTemplate: { 
-            actionType: 'compositeAction',
+          testLabel: "Action 1",
+          compositeActionTemplate: {
+            actionType: "compositeAction",
             actionName: "sequence",
             actionLabel: "simpleAction1",
-            definition: [
-              {
-                actionType: "createEntity",
-                actionLabel: "createEntity",
-                deploymentUuid: {
-                  transformerType: "getFromParameters",
-                  interpolation: "build",
-                  referenceName: "currentDeploymentUuid",
-                },
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  entities: [
-                    {
-                      // entity: newEntity,
-                      entity: {
-                        transformerType: "getFromParameters",
-                        interpolation: "build",
-                        referenceName: "createEntity_newEntity",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            payload: {
+              definition: [
+                {
+                  actionType: "createEntity",
+                  actionLabel: "createEntity",
+                  deploymentUuid: {
+                    transformerType: "getFromParameters",
+                    interpolation: "build",
+                    referenceName: "currentDeploymentUuid",
+                  },
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: {
+                    entities: [
+                      {
+                        // entity: newEntity,
+                        entity: {
+                          transformerType: "getFromParameters",
+                          interpolation: "build",
+                          referenceName: "createEntity_newEntity",
+                        },
+                        entityDefinition: newEntityDefinition as any,
+                        // entityDefinition: {
+                        //   transformerType: "getFromParameters",
+                        //   referenceName: "newEntityDefinition",
+                        // },
                       },
-                      entityDefinition: newEntityDefinition as any,
-                      // entityDefinition: {
-                      //   transformerType: "getFromParameters",
-                      //   referenceName: "newEntityDefinition",
-                      // },
-                    },
-                  ],
-                }
-              },
-
-            ]
-
+                    ],
+                  },
+                },
+              ],
+            },
           },
-          testCompositeActionAssertions: []
-        }
-      }
+          testCompositeActionAssertions: [],
+        },
+      },
     };
     const actionParamValues = {
       currentDeploymentUuid,
@@ -360,47 +370,52 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
             actionType: "compositeAction",
             actionName: "sequence",
             actionLabel: "simpleAction1",
-            definition: [
-              {
-                actionType: "createEntity",
-                actionLabel: "createEntity",
-                deploymentUuid: currentDeploymentUuid,
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  entities: [
-                    {
-                      entity: {
-                        uuid: newEntity.uuid,
-                        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        selfApplication: newEntity.selfApplication,
-                        description: "newEntityDescription",
-                        name: "newEntityName",
-                      },
-                      entityDefinition: {
-                        name: "newEntityName",
-                        uuid: newEntityDefinition.uuid,
-                        parentName: "EntityDefinition",
-                        parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                        entityUuid: newEntity.uuid,
-                        conceptLevel: "Model",
-                        defaultInstanceDetailsReportUuid: (newEntityDefinition as any).defaultInstanceDetailsReportUuid,
-                        jzodSchema: {
-                          type: "object",
-                          definition: {
-                            a: {
-                              type: "string",
-                            },
-                            b: {
-                              type: "number",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            payload: {
+              definition: [
+                {
+                  actionType: "createEntity",
+                  actionLabel: "createEntity",
+                  deploymentUuid: currentDeploymentUuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: {
+                    entities: [
+                      {
+                        entity: {
+                          uuid: newEntity.uuid,
+                          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          selfApplication: newEntity.selfApplication,
+                          description: "newEntityDescription",
+                          name: "newEntityName",
+                        },
+                        entityDefinition: {
+                          name: "newEntityName",
+                          uuid: newEntityDefinition.uuid,
+                          parentName: "EntityDefinition",
+                          parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          entityUuid: newEntity.uuid,
+                          conceptLevel: "Model",
+                          defaultInstanceDetailsReportUuid: (newEntityDefinition as any)
+                            .defaultInstanceDetailsReportUuid,
+                          jzodSchema: {
+                            type: "object",
+                            definition: {
+                              a: {
+                                type: "string",
+                              },
+                              b: {
+                                type: "number",
+                              },
                             },
                           },
                         },
                       },
-                    },
-                  ],
-                }
-              },
-            ],
+                    ],
+                  },
+                },
+              ],
+            },
           },
         },
       },

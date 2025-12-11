@@ -434,255 +434,259 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
   actionType: "compositeAction",
   actionLabel: "createEntityCompositeActionTemplate",
   actionName: "sequence",
-  templates: {
-    // all
-    testAdminConfigurationDeploymentUuid,
-    // createEntity
-    newEntityName,
-    newEntityUuid,
-    newEntityDefinitionUuid,
-    testSelfApplicationUuid,
-    defaultInstanceDetailsReportUuid,
-    createEntity_newEntityDescription,
-    createEntity_newEntity: {
-      uuid: {
-        transformerType: "getFromContext",
-        referenceName: "newEntityUuid",
+  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  payload: {
+    templates: {
+      // all
+      testAdminConfigurationDeploymentUuid,
+      // createEntity
+      newEntityName,
+      newEntityUuid,
+      newEntityDefinitionUuid,
+      testSelfApplicationUuid,
+      defaultInstanceDetailsReportUuid,
+      createEntity_newEntityDescription,
+      createEntity_newEntity: {
+        uuid: {
+          transformerType: "getFromContext",
+          referenceName: "newEntityUuid",
+        },
+        parentUuid: entityEntity.uuid,
+        selfApplication: {
+          transformerType: "getFromContext",
+          referenceName: "testSelfApplicationUuid",
+        },
+        description: {
+          transformerType: "getFromContext",
+          referenceName: "createEntity_newEntityDescription",
+        },
+        name: {
+          transformerType: "getFromContext",
+          referenceName: "newEntityName",
+        },
       },
-      parentUuid: entityEntity.uuid,
-      selfApplication: {
-        transformerType: "getFromContext",
-        referenceName: "testSelfApplicationUuid",
+      spreadsheetContents: fileData,
+      newEntityJzodSchema: {
+        transformerType: "spreadSheetToJzodSchema",
+        interpolation: "runtime",
+        spreadsheetContents: {
+          transformerType: "getFromContext",
+          interpolation: "runtime",
+          referenceName: "spreadsheetContents",
+        },
       },
-      description: {
-        transformerType: "getFromContext",
-        referenceName: "createEntity_newEntityDescription",
+      // report creation
+      entityReport,
+      createEntity_newEntityListReportUuid,
+      createEntity_newEntityDetailsReportUuid,
+      createEntity_newEntityDefinition: {
+        name: {
+          transformerType: "getFromContext",
+          interpolation: "runtime",
+          referenceName: "newEntityName",
+        },
+        uuid: {
+          transformerType: "getFromContext",
+          interpolation: "runtime",
+          referenceName: "newEntityDefinitionUuid",
+        },
+        parentName: "EntityDefinition",
+        parentUuid: entityEntityDefinition.uuid,
+        entityUuid: {
+          transformerType: "getFromContext",
+          interpolation: "runtime",
+          referencePath: ["createEntity_newEntity", "uuid"],
+        },
+        conceptLevel: "Model",
+        defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
+        jzodSchema: {
+          transformerType: "getFromContext",
+          interpolation: "runtime",
+          referenceName: "newEntityJzodSchema",
+        },
       },
-      name: {
-        transformerType: "getFromContext",
-        referenceName: "newEntityName",
-      },
+      // newEntityListReport: {
+      //   uuid: {
+      //     transformerType: "getFromContext",
+      //     interpolation: "runtime",
+      //     referenceName: "createEntity_newEntityListReportUuid",
+      //   },
+      //   selfApplication: {
+      //     transformerType: "getFromContext",
+      //     interpolation: "runtime",
+      //     referenceName: "testSelfApplicationUuid",
+      //   },
+      //   parentName: "Report",
+      //   parentUuid: {
+      //     transformerType: "mustacheStringTemplate",
+      //     interpolation: "runtime",
+      //     definition: "{{entityReport.uuid}}",
+      //   },
+      //   conceptLevel: "Model",
+      //   name: {
+      //     transformerType: "mustacheStringTemplate",
+      //     interpolation: "runtime",
+      //     definition: "{{newEntityName}}List",
+      //   },
+      //   defaultLabel: {
+      //     transformerType: "mustacheStringTemplate",
+      //     interpolation: "runtime",
+      //     definition: "List of {{newEntityName}}s",
+      //   },
+      //   type: "list",
+      //   definition: {
+      //     extractors: {
+      //       instanceList: {
+      //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
+      //         parentName: {
+      //           transformerType: "getFromContext",
+      //           interpolation: "runtime",
+      //           referenceName: "newEntityName",
+      //         },
+      //         parentUuid: {
+      //           transformerType: "mustacheStringTemplate",
+      //           interpolation: "runtime",
+      //           definition: "{{createEntity_newEntity.uuid}}",
+      //         },
+      //       },
+      //     },
+      //     section: {
+      //       type: "objectListReportSection",
+      //       definition: {
+      //         label: {
+      //           transformerType: "mustacheStringTemplate",
+      //           interpolation: "runtime",
+      //           definition: "{{newEntityName}}s",
+      //         },
+      //         parentUuid: {
+      //           transformerType: "mustacheStringTemplate",
+      //           interpolation: "runtime",
+      //           definition: "{{createEntity_newEntity.uuid}}",
+      //         },
+      //         fetchedDataReference: "instanceList",
+      //       },
+      //     },
+      //   },
+      // },
+      // // Details of an instance Report Definition
+      // newEntityDetailsReport: {
+      //   uuid: {
+      //     transformerType: "getFromContext",
+      //     interpolation: "runtime",
+      //     referenceName: "createEntity_newEntityDetailsReportUuid",
+      //   },
+      //   selfApplication: {
+      //     transformerType: "getFromContext",
+      //     interpolation: "runtime",
+      //     referenceName: "testSelfApplicationUuid",
+      //   },
+      //   parentName: {
+      //     transformerType: "mustacheStringTemplate",
+      //     interpolation: "runtime",
+      //     definition: "{{entityReport.name}}",
+      //   },
+      //   parentUuid: {
+      //     transformerType: "mustacheStringTemplate",
+      //     interpolation: "runtime",
+      //     definition: "{{entityReport.uuid}}",
+      //   },
+      //   conceptLevel: "Model",
+      //   name: {
+      //     transformerType: "mustacheStringTemplate",
+      //     interpolation: "runtime",
+      //     definition: "{{newEntityName}}Details",
+      //   },
+      //   defaultLabel: {
+      //     transformerType: "mustacheStringTemplate",
+      //     interpolation: "runtime",
+      //     definition: "Details of {{newEntityName}}",
+      //   },
+      //   definition: {
+      //     extractorTemplates: {
+      //       elementToDisplay: {
+      //         transformerType: "returnValue",
+      //         interpolation: "runtime",
+      //         value: {
+      //           extractorTemplateType: "extractorForObjectByDirectReference",
+      //           parentName: {
+      //             transformerType: "getFromContext",
+      //             interpolation: "runtime",
+      //             referenceName: "newEntityName",
+      //           },
+      //           parentUuid: {
+      //             transformerType: "mustacheStringTemplate",
+      //             interpolation: "runtime",
+      //             definition: "{{newEntityUuid}}",
+      //           },
+      //           instanceUuid: {
+      //             transformerType: "constantObject",
+      //             value: {
+      //               transformerType: "getFromContext",
+      //               interpolation: "runtime",
+      //               referenceName: "instanceUuid",
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //     section: {
+      //       type: "list",
+      //       definition: [
+      //         {
+      //           type: "objectInstanceReportSection",
+      //           definition: {
+      //             label: {
+      //               transformerType: "mustacheStringTemplate",
+      //               interpolation: "runtime",
+      //               definition: "My {{newEntityName}}",
+      //             },
+      //             parentUuid: {
+      //               transformerType: "mustacheStringTemplate",
+      //               interpolation: "runtime",
+      //               definition: "{{newEntityUuid}}",
+      //             },
+      //             fetchedDataReference: "elementToDisplay",
+      //           },
+      //         },
+      //       ],
+      //     },
+      //   },
+      // },
+      // menu update
+      entityMenu,
     },
-    spreadsheetContents: fileData,
-    newEntityJzodSchema: {
-      transformerType: "spreadSheetToJzodSchema",
-      interpolation: "runtime",
-      spreadsheetContents: {
-        transformerType: "getFromContext",
-        interpolation: "runtime",
-        referenceName: "spreadsheetContents",
+    definition: [
+      // createEntity
+      {
+        // actionType: "modelAction",
+        actionType: "createEntity",
+        actionLabel: "createEntity",
+        deploymentUuid: {
+          transformerType: "getFromParameters",
+          interpolation: "build",
+          referenceName: "testAdminConfigurationDeploymentUuid",
+        },
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        payload: {
+          entities: [
+            {
+              entity: {
+                transformerType: "getFromParameters",
+                interpolation: "build",
+                referenceName: "createEntity_newEntity",
+              },
+              entityDefinition: {
+                transformerType: "getFromParameters",
+                interpolation: "build",
+                referenceName: "createEntity_newEntityDefinition",
+              },
+            },
+          ],
+        },
       },
-    },
-    // report creation
-    entityReport,
-    createEntity_newEntityListReportUuid,
-    createEntity_newEntityDetailsReportUuid,
-    createEntity_newEntityDefinition: {
-      name: {
-        transformerType: "getFromContext",
-        interpolation: "runtime",
-        referenceName: "newEntityName",
-      },
-      uuid: {
-        transformerType: "getFromContext",
-        interpolation: "runtime",
-        referenceName: "newEntityDefinitionUuid",
-      },
-      parentName: "EntityDefinition",
-      parentUuid: entityEntityDefinition.uuid,
-      entityUuid: {
-        transformerType: "getFromContext",
-        interpolation: "runtime",
-        referencePath: ["createEntity_newEntity", "uuid"],
-      },
-      conceptLevel: "Model",
-      defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-      jzodSchema: {
-        transformerType: "getFromContext",
-        interpolation: "runtime",
-        referenceName: "newEntityJzodSchema",
-      },
-    },
-    // newEntityListReport: {
-    //   uuid: {
-    //     transformerType: "getFromContext",
-    //     interpolation: "runtime",
-    //     referenceName: "createEntity_newEntityListReportUuid",
-    //   },
-    //   selfApplication: {
-    //     transformerType: "getFromContext",
-    //     interpolation: "runtime",
-    //     referenceName: "testSelfApplicationUuid",
-    //   },
-    //   parentName: "Report",
-    //   parentUuid: {
-    //     transformerType: "mustacheStringTemplate",
-    //     interpolation: "runtime",
-    //     definition: "{{entityReport.uuid}}",
-    //   },
-    //   conceptLevel: "Model",
-    //   name: {
-    //     transformerType: "mustacheStringTemplate",
-    //     interpolation: "runtime",
-    //     definition: "{{newEntityName}}List",
-    //   },
-    //   defaultLabel: {
-    //     transformerType: "mustacheStringTemplate",
-    //     interpolation: "runtime",
-    //     definition: "List of {{newEntityName}}s",
-    //   },
-    //   type: "list",
-    //   definition: {
-    //     extractors: {
-    //       instanceList: {
-    //         extractorOrCombinerType: "extractorByEntityReturningObjectList",
-    //         parentName: {
-    //           transformerType: "getFromContext",
-    //           interpolation: "runtime",
-    //           referenceName: "newEntityName",
-    //         },
-    //         parentUuid: {
-    //           transformerType: "mustacheStringTemplate",
-    //           interpolation: "runtime",
-    //           definition: "{{createEntity_newEntity.uuid}}",
-    //         },
-    //       },
-    //     },
-    //     section: {
-    //       type: "objectListReportSection",
-    //       definition: {
-    //         label: {
-    //           transformerType: "mustacheStringTemplate",
-    //           interpolation: "runtime",
-    //           definition: "{{newEntityName}}s",
-    //         },
-    //         parentUuid: {
-    //           transformerType: "mustacheStringTemplate",
-    //           interpolation: "runtime",
-    //           definition: "{{createEntity_newEntity.uuid}}",
-    //         },
-    //         fetchedDataReference: "instanceList",
-    //       },
-    //     },
-    //   },
-    // },
-    // // Details of an instance Report Definition
-    // newEntityDetailsReport: {
-    //   uuid: {
-    //     transformerType: "getFromContext",
-    //     interpolation: "runtime",
-    //     referenceName: "createEntity_newEntityDetailsReportUuid",
-    //   },
-    //   selfApplication: {
-    //     transformerType: "getFromContext",
-    //     interpolation: "runtime",
-    //     referenceName: "testSelfApplicationUuid",
-    //   },
-    //   parentName: {
-    //     transformerType: "mustacheStringTemplate",
-    //     interpolation: "runtime",
-    //     definition: "{{entityReport.name}}",
-    //   },
-    //   parentUuid: {
-    //     transformerType: "mustacheStringTemplate",
-    //     interpolation: "runtime",
-    //     definition: "{{entityReport.uuid}}",
-    //   },
-    //   conceptLevel: "Model",
-    //   name: {
-    //     transformerType: "mustacheStringTemplate",
-    //     interpolation: "runtime",
-    //     definition: "{{newEntityName}}Details",
-    //   },
-    //   defaultLabel: {
-    //     transformerType: "mustacheStringTemplate",
-    //     interpolation: "runtime",
-    //     definition: "Details of {{newEntityName}}",
-    //   },
-    //   definition: {
-    //     extractorTemplates: {
-    //       elementToDisplay: {
-    //         transformerType: "returnValue",
-    //         interpolation: "runtime",
-    //         value: {
-    //           extractorTemplateType: "extractorForObjectByDirectReference",
-    //           parentName: {
-    //             transformerType: "getFromContext",
-    //             interpolation: "runtime",
-    //             referenceName: "newEntityName",
-    //           },
-    //           parentUuid: {
-    //             transformerType: "mustacheStringTemplate",
-    //             interpolation: "runtime",
-    //             definition: "{{newEntityUuid}}",
-    //           },
-    //           instanceUuid: {
-    //             transformerType: "constantObject",
-    //             value: {
-    //               transformerType: "getFromContext",
-    //               interpolation: "runtime",
-    //               referenceName: "instanceUuid",
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //     section: {
-    //       type: "list",
-    //       definition: [
-    //         {
-    //           type: "objectInstanceReportSection",
-    //           definition: {
-    //             label: {
-    //               transformerType: "mustacheStringTemplate",
-    //               interpolation: "runtime",
-    //               definition: "My {{newEntityName}}",
-    //             },
-    //             parentUuid: {
-    //               transformerType: "mustacheStringTemplate",
-    //               interpolation: "runtime",
-    //               definition: "{{newEntityUuid}}",
-    //             },
-    //             fetchedDataReference: "elementToDisplay",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   },
-    // },
-    // menu update
-    entityMenu,
+    ],
   },
-  definition: [
-    // createEntity
-    {
-      // actionType: "modelAction",
-      actionType: "createEntity",
-      actionLabel: "createEntity",
-      deploymentUuid: {
-        transformerType: "getFromParameters",
-        interpolation: "build",
-        referenceName: "testAdminConfigurationDeploymentUuid",
-      },
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      payload: {
-        entities: [
-          {
-            entity: {
-              transformerType: "getFromParameters",
-              interpolation: "build",
-              referenceName: "createEntity_newEntity",
-            },
-            entityDefinition: {
-              transformerType: "getFromParameters",
-              interpolation: "build",
-              referenceName: "createEntity_newEntityDefinition",
-            },
-          },
-        ],
-      }
-    },
-  ],
 };
 // const createEntityCompositeActionTemplatePrepActions: CompositeActionTemplate["definition"] = [
 const createEntityCompositeActionTemplatePrepActions: any[] = [
@@ -1197,25 +1201,29 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
             actionType: "compositeAction",
             actionLabel: "createEntityAndReportFromSpreadsheet",
             actionName: "sequence",
-            templates: createEntityCompositeActionTemplate.templates,
-            definition: [
-              // ...(createEntityCompositeActionTemplate as any).definition,
-              createReportsCompositeActionTemplate,
-              // commit
-              {
-                // actionType: "modelAction",
-                actionType: "commit",
-                actionLabel: "commit",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid: {
-                  transformerType: "getFromParameters",
-                  interpolation: "build",
-                  referenceName: "testAdminConfigurationDeploymentUuid",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            payload: {
+              templates: createEntityCompositeActionTemplate.payload.templates,
+              definition: [
+                // ...(createEntityCompositeActionTemplate as any).definition,
+                createReportsCompositeActionTemplate,
+                // commit
+                {
+                  // actionType: "modelAction",
+                  actionType: "commit",
+                  actionLabel: "commit",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  deploymentUuid: {
+                    transformerType: "getFromParameters",
+                    interpolation: "build",
+                    referenceName: "testAdminConfigurationDeploymentUuid",
+                  },
                 },
-              },
-              // ...createEntityCompositeActionTemplatePrepActions,
-              ...createReportsCompositeActionPrepActions,
-            ],
+                // ...createEntityCompositeActionTemplatePrepActions,
+                ...createReportsCompositeActionPrepActions,
+              ],
+            },
           },
           testCompositeActionAssertions: [
             // ...createEntityCompositeActionTemplateAssertions,
@@ -1328,9 +1336,9 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //                 transformerType: "pickFromList",
         //                 interpolation: "runtime",
         //                 applyTo: {
-      //                     transformerType: "getFromContext",
-      //                     interpolation: "runtime",
-      //                     referenceName: "menuList",
+        //                     transformerType: "getFromContext",
+        //                     interpolation: "runtime",
+        //                     referenceName: "menuList",
         //                 },
         //                 index: 0,
         //               },

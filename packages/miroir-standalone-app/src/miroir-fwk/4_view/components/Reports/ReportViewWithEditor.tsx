@@ -364,22 +364,26 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             {
               actionType: "transactionalInstanceAction",
               deploymentUuid: props.deploymentUuid,
-              instanceAction: {
-                actionType: mode == "create"?"createInstance":"updateInstance",
-                deploymentUuid: props.deploymentUuid,
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                payload: {
-                  applicationSection,
-                  objects: [
-                    {
-                      parentName: currentInstance.parentName,
-                      parentUuid: currentInstance.parentUuid,
-                      applicationSection: applicationSection,
-                      instances: [currentInstance],
-                    },
-                  ],
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              payload: {
+                instanceAction: {
+                  actionType: mode == "create"?"createInstance":"updateInstance",
+                  deploymentUuid: props.deploymentUuid,
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  payload: {
+                    applicationSection,
+                    objects: [
+                      {
+                        parentName: currentInstance.parentName,
+                        parentUuid: currentInstance.parentUuid,
+                        applicationSection: applicationSection,
+                        instances: [currentInstance],
+                      },
+                    ],
+                  },
                 },
-              },
+              }
             },
             currentModelEnvironment // TODO: use correct model environment
           );

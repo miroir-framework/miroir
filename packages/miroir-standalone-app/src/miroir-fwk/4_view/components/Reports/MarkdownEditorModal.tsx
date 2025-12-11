@@ -154,23 +154,27 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
     await domainController.handleActionFromUI(
       {
         actionType: "transactionalInstanceAction",
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         deploymentUuid: props.deploymentUuid,
-        instanceAction: {
-          actionType: "updateInstance",
-          deploymentUuid: props.deploymentUuid,
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            applicationSection: applicationSection,
-            objects: [
-              {
-                parentName: newReportDefinition.name,
-                parentUuid: newReportDefinition.parentUuid,
-                applicationSection: applicationSection,
-                instances: [newReportDefinition],
-              },
-            ],
+        payload: {
+          instanceAction: {
+            actionType: "updateInstance",
+            deploymentUuid: props.deploymentUuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              applicationSection: applicationSection,
+              objects: [
+                {
+                  parentName: newReportDefinition.name,
+                  parentUuid: newReportDefinition.parentUuid,
+                  applicationSection: applicationSection,
+                  instances: [newReportDefinition],
+                },
+              ],
+            },
           },
-        },
+        }
       },
       defaultMiroirModelEnvironment // TODO: use correct model environment
     );

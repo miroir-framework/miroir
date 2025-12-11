@@ -817,8 +817,8 @@ export function getMiroirFundamentalJzodSchema(
                           editable: true,
                         },
                       },
-                    }
-                  }
+                    },
+                  },
                 },
                 color: {
                   type: "union",
@@ -842,9 +842,9 @@ export function getMiroirFundamentalJzodSchema(
                         currentThemeColorPath: {
                           type: "string",
                         },
-                      }
-                    }
-                  ]
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -894,33 +894,31 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_spreadSheetToJzodSchema:
           miroirTransformersForBuild.transformer_spreadSheetToJzodSchema,
         //
-        transformerForBuild_getActiveDeployment: miroirTransformersForBuild.transformer_getActiveDeployment,
-        //  
+        transformerForBuild_getActiveDeployment:
+          miroirTransformersForBuild.transformer_getActiveDeployment,
+        //
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
         transformerForBuild_ifThenElse: miroirTransformersForBuild.transformer_ifThenElse,
         transformerForBuild_returnValue: miroirTransformersForBuild.transformer_returnValue,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
-        transformerForBuild_getFromContext:
-          miroirTransformersForBuild.transformer_getFromContext,
+        transformerForBuild_getFromContext: miroirTransformersForBuild.transformer_getFromContext,
         transformerForBuild_aggregate: miroirTransformersForBuild.transformer_aggregate,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
-        transformerForBuild_mapList:
-          miroirTransformersForBuild.transformer_mapList,
-        transformerForBuild_createObject:
-          miroirTransformersForBuild.transformer_createObject,
+        transformerForBuild_mapList: miroirTransformersForBuild.transformer_mapList,
+        transformerForBuild_createObject: miroirTransformersForBuild.transformer_createObject,
         transformerForBuild_generateUuid: miroirTransformersForBuild.transformer_generateUuid,
         transformerForBuild_mustacheStringTemplate:
           miroirTransformersForBuild.transformer_mustacheStringTemplate,
         transformerForBuild_mergeIntoObject: miroirTransformersForBuild.transformer_mergeIntoObject,
         transformerForBuild_accessDynamicPath:
           miroirTransformersForBuild.transformer_accessDynamicPath,
-        transformerForBuild_getObjectEntries: miroirTransformersForBuild.transformer_getObjectEntries,
+        transformerForBuild_getObjectEntries:
+          miroirTransformersForBuild.transformer_getObjectEntries,
         transformerForBuild_getObjectValues: miroirTransformersForBuild.transformer_getObjectValues,
         transformerForBuild_pickFromList: miroirTransformersForBuild.transformer_pickFromList,
-        transformerForBuild_indexListBy:
-          miroirTransformersForBuild.transformer_indexListBy,
+        transformerForBuild_indexListBy: miroirTransformersForBuild.transformer_indexListBy,
         transformerForBuild_listReducerToSpreadObject:
           miroirTransformersForBuild.transformer_listReducerToSpreadObject,
         transformerForBuild_createObjectFromPairs:
@@ -964,112 +962,15 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        // // ########################################################################################
-        // transformerForRuntime_returnValue: miroirTransformersForRuntime.transformer_returnValue,
-        // transformerForRuntime_constantAsExtractor:
-        //   miroirTransformersForRuntime.transformer_constantAsExtractor,
-        //   transformerForRuntime_generateUuid: miroirTransformersForRuntime.transformer_generateUuid,
-        // transformerForRuntime_getFromContext:
-        //   miroirTransformersForRuntime.transformer_getFromContext,
-        // transformerForRuntime_accessDynamicPath:
-        //   miroirTransformersForRuntime.transformer_accessDynamicPath,
-        // 
-        // transformerForRuntime_spreadSheetToJzodSchema:
-        //   miroirTransformersForRuntime.transformer_spreadSheetToJzodSchema,
-        // // 
-        //   transformerForRuntime_getActiveDeployment: miroirTransformersForRuntime.transformer_getActiveDeployment,
-        // // 
-        //   transformerForRuntime_menu_addItem: miroirTransformersForRuntime.transformer_menu_addItem,
-        // //
-        // //
-        // transformerForRuntime_ifThenElse: miroirTransformersForRuntime.transformer_ifThenElse,
-        // 
-          // 
-        // transformerForRuntime_aggregate: miroirTransformersForRuntime.transformer_aggregate,
-        // transformerForRuntime_dataflowObject:
-        //   miroirTransformersForRuntime.transformer_dataflowObject,
-        // transformerForRuntime_createObject:
-        //   miroirTransformersForRuntime.transformer_createObject,
-        // transformerForRuntime_mapList:
-        //   miroirTransformersForRuntime.transformer_mapList,
-        // transformerForRuntime_pickFromList:
-        //   miroirTransformersForRuntime.transformer_pickFromList,
-        // transformerForRuntime_mustacheStringTemplate:
-        //   miroirTransformersForRuntime.transformer_mustacheStringTemplate,
-        // transformerForRuntime_indexListBy:
-        //   miroirTransformersForRuntime.transformer_indexListBy,
-        // transformerForRuntime_listReducerToSpreadObject:
-        //   miroirTransformersForRuntime.transformer_listReducerToSpreadObject,
-        // transformerForRuntime_mergeIntoObject: miroirTransformersForRuntime.transformer_mergeIntoObject,
-        // transformerForRuntime_getObjectEntries: miroirTransformersForRuntime.transformer_getObjectEntries,
-        // transformerForRuntime_getObjectValues: miroirTransformersForRuntime.transformer_getObjectValues,
-        // transformerForRuntime_createObjectFromPairs:
-        //   miroirTransformersForRuntime.transformer_createObjectFromPairs,
-        // transformerForRuntime_getUniqueValues: miroirTransformersForRuntime.transformer_getUniqueValues,
-        // // MLS
-        // ...Object.fromEntries(
-        //   Object.entries(mlsTransformers).map(([key, value]) => [
-        //     key.replace("transformer_", "transformerForRuntime_"),
-        //     miroirTransformersForBuild[key as keyof typeof miroirTransformersForRuntime],
-        //   ])
-        // ),
-        // transformerForRuntime: {
-        //   type: "union",
-        //   optInDiscriminator: true,
-        //   // discriminator: ["transformerType", "interpolation"],
-        //   discriminator: "transformerType",
-        //   definition: [
-        //     ...transformerForRuntimeNames.map((e: any) => ({
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: e,
-        //       },
-        //     })),
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "transformerForRuntime_InnerReference",
-        //       },
-        //     },
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "transformerForRuntime_dataflowSequence",
-        //       },
-        //     },
-        //   ],
-        // },
-        // extendedTransformerForRuntime: {
-        //   type: "union",
-        //   discriminator: "transformerType",
-        //   definition: [
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "transformerForRuntime",
-        //       },
-        //     },
-        //     {
-        //       type: "schemaReference",
-        //       definition: {
-        //         absolutePath: miroirFundamentalJzodSchemaUuid,
-        //         relativePath: "transformerForRuntime_menu_addItem",
-        //       },
-        //     },
-        //   ],
-        // },
         // ########################################################################################
         // WRONG!!!! (???)
-        // 
+        //
         transformerForBuildPlusRuntime_spreadSheetToJzodSchema:
           miroirTransformersForBuildPlusRuntime.transformer_spreadSheetToJzodSchema,
         //
-        transformerForBuildPlusRuntime_getActiveDeployment: miroirTransformersForBuildPlusRuntime.transformer_getActiveDeployment,
-        // 
+        transformerForBuildPlusRuntime_getActiveDeployment:
+          miroirTransformersForBuildPlusRuntime.transformer_getActiveDeployment,
+        //
         transformerForBuildPlusRuntime_menu_addItem:
           miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         //
@@ -1575,12 +1476,14 @@ export function getMiroirFundamentalJzodSchema(
         ...(entityDefinitionMenu.jzodSchema.definition.definition as any).context,
         menu: entityDefinitionMenu.jzodSchema as any,
         // menu: entityDefinitionMenu.jzodSchema as JzodObject,
-        graphConfig: (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context.graphReportSection.definition.definition.definition.config,
+        graphConfig: (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context
+          .graphReportSection.definition.definition.definition.config,
         ...Object.fromEntries(
           Object.entries(
             (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context
           ).filter((e) =>
-            [ // TODO: remove this filter, this introduces unnecessary coupling
+            [
+              // TODO: remove this filter, this introduces unnecessary coupling
               "objectInstanceReportSection",
               "objectListReportSection",
               "gridReportSection",
@@ -3305,11 +3208,13 @@ export function getMiroirFundamentalJzodSchema(
             definition: e.actionParameters,
           })),
         },
-        transactionalInstanceAction: domainEndpointVersionV1.definition.actions.find(
+        transactionalInstanceAction: {
+          type: "object",
+          definition: domainEndpointVersionV1.definition.actions.find(
           (a: any) =>
-            a.actionParameters.definition.actionType &&
-            a.actionParameters.definition.actionType.definition == "transactionalInstanceAction"
-        )?.actionParameters,
+            a.actionParameters.actionType &&
+            a.actionParameters.actionType.definition == "transactionalInstanceAction"
+        )?.actionParameters},
         localCacheAction: {
           type: "union",
           discriminator: "actionType",
@@ -3359,11 +3264,13 @@ export function getMiroirFundamentalJzodSchema(
         },
         // ################################################################################
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
-        )?.actionParameters.definition.definition,
-        compositeAction: domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
-        )?.actionParameters,
+          (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
+        )?.actionParameters.payload.definition.definition.definition,
+        compositeAction: {
+          type: "object",
+          definition: domainEndpointVersionV1.definition.actions.find(
+          (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
+        )?.actionParameters},
         // ################################################################################
         // ################################################################################
         // ################################################################################
@@ -3499,17 +3406,56 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
           .find(
-            (a: any) => a.actionParameters?.definition?.actionType?.definition == "compositeAction"
+            (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
           )
-          ?.actionParameters.definition.definition.definition.definition.find(
+          ?.actionParameters.payload.definition.definition.definition.definition.find(
             (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
           ),
         domainAction: {
           type: "union",
           discriminator: "actionType",
-          definition: domainEndpointVersionV1.definition.actions.map(
-            (e: any) => e.actionParameters
-          ),
+          definition: [
+            // undoRedoAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "undoRedoAction",
+              },
+            },
+            // storeOrBundleAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "storeOrBundleAction",
+              },
+            },
+            // modelAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "modelAction",
+              },
+            },
+            // instanceAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "instanceAction",
+              },
+            },
+            ...domainEndpointVersionV1.definition.actions.map((e: Record<string, JzodElement>) => ({
+              type: "object",
+              definition: e.actionParameters,
+            })),
+          ],
         },
         // ...(transformerJzodSchema as any).definition.context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
         modelActionReplayableAction: {
@@ -3718,9 +3664,32 @@ export function getMiroirFundamentalJzodSchema(
   );
 
   log.info(
-    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema transformerForBuild_accessDynamicPath:",
-    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["transformerForBuild_accessDynamicPath"], null, 2)
+    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeRunTestAssertion:",
+    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["compositeRunTestAssertion"], null, 2)
   );
+  log.info(
+    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema transactionalInstanceAction:",
+    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.transactionalInstanceAction, null, 2)
+  );
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema domainAction:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["domainAction"], null, 2)
+  // );
+
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema domainAction:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["domainAction"], null, 2)
+  // );
+
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeAction:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.compositeAction, null, 2)
+  // );
+
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeActionDefinition:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.compositeActionDefinition, null, 2)
+  // );
 
   // ##############################################################################################
   // ##############################################################################################

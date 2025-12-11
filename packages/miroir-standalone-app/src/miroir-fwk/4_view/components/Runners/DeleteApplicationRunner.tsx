@@ -77,38 +77,42 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
       actionType: "compositeAction",
       actionLabel: "deleteApplicationAndDeployment",
       actionName: "sequence",
-      definition: [
-        // Step 1: Query to get the deployment UUID from the selected application
-        {
-          actionType: "compositeRunBoxedExtractorOrQueryAction",
-          actionLabel: "getDeploymentForApplication",
-          nameGivenToResult: "deploymentInfo",
-          query: {
-            actionType: "runBoxedExtractorOrQueryAction",
-            actionName: "runQuery",
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-            payload: {
-              applicationSection: "data",
-              query: {
-                queryType: "boxedQueryWithExtractorCombinerTransformer",
-                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                extractors: {
-                  deployments: {
-                    label: "deployments of the application",
-                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                    parentUuid: entityDeployment.uuid,
-                    parentName: entityDeployment.name,
-                    applicationSection: "data",
-                    filter: {
-                      attributeName: "adminApplication",
-                      value: {
-                        transformerType: "mustacheStringTemplate",
-                        interpolation: "build",
-                        definition: "{{deleteApplicationAndDeployment.application}}",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: {
+        definition: [
+          // Step 1: Query to get the deployment UUID from the selected application
+          {
+            actionType: "compositeRunBoxedExtractorOrQueryAction",
+            actionLabel: "getDeploymentForApplication",
+            nameGivenToResult: "deploymentInfo",
+            query: {
+              actionType: "runBoxedExtractorOrQueryAction",
+              actionName: "runQuery",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+              payload: {
+                applicationSection: "data",
+                query: {
+                  queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  extractors: {
+                    deployments: {
+                      label: "deployments of the application",
+                      extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                      parentUuid: entityDeployment.uuid,
+                      parentName: entityDeployment.name,
+                      applicationSection: "data",
+                      filter: {
+                        attributeName: "adminApplication",
+                        value: {
+                          transformerType: "mustacheStringTemplate",
+                          interpolation: "build",
+                          definition: "{{deleteApplicationAndDeployment.application}}",
+                        },
                       },
                     },
                   },
@@ -116,77 +120,77 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
               },
             },
           },
-        },
-        // Step 2: Delete the store
-        {
-          actionType: "storeManagementAction_deleteStore",
-          actionLabel: "deleteStore",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: {
-            transformerType: "mustacheStringTemplate",
-            interpolation: "runtime",
-            definition: "{{deploymentInfo.deployments.0.uuid}}",
-          } as any,
-          configuration: {
-            transformerType: "getFromContext",
-            interpolation: "runtime",
-            // definition: "{{deploymentInfo.deployments.0.configuration}}",
-            referencePath: ["deploymentInfo","deployments",0,"configuration"],
-          } as any,
-        },
-        // Step 3: Delete the Deployment instance from admin
-        {
-          actionType: "deleteInstance",
-          actionLabel: "deleteDeployment",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-          payload: {
-            applicationSection: "data",
-            objects: [
-              {
-                parentUuid: entityDeployment.uuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    parentUuid: entityDeployment.uuid,
-                    uuid: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "runtime",
-                      definition: "{{deploymentInfo.deployments.0.uuid}}",
-                    } as any,
-                  },
-                ],
-              },
-            ],
-          } as any,
-        },
-        // Step 4: Delete the AdminApplication instance
-        {
-          actionType: "deleteInstance",
-          actionLabel: "deleteAdminApplication",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-          payload: {
-            applicationSection: "data",
-            objects: [
-              {
-                parentUuid: entityApplicationForAdmin.uuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    parentUuid: entityApplicationForAdmin.uuid,
-                    uuid: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{deleteApplicationAndDeployment.application}}",
-                    } as any,
-                  },
-                ],
-              },
-            ],
-          } as any,
-        },
-      ],
+          // Step 2: Delete the store
+          {
+            actionType: "storeManagementAction_deleteStore",
+            actionLabel: "deleteStore",
+            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            deploymentUuid: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "runtime",
+              definition: "{{deploymentInfo.deployments.0.uuid}}",
+            } as any,
+            configuration: {
+              transformerType: "getFromContext",
+              interpolation: "runtime",
+              // definition: "{{deploymentInfo.deployments.0.configuration}}",
+              referencePath: ["deploymentInfo", "deployments", 0, "configuration"],
+            } as any,
+          },
+          // Step 3: Delete the Deployment instance from admin
+          {
+            actionType: "deleteInstance",
+            actionLabel: "deleteDeployment",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            payload: {
+              applicationSection: "data",
+              objects: [
+                {
+                  parentUuid: entityDeployment.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    {
+                      parentUuid: entityDeployment.uuid,
+                      uuid: {
+                        transformerType: "mustacheStringTemplate",
+                        interpolation: "runtime",
+                        definition: "{{deploymentInfo.deployments.0.uuid}}",
+                      } as any,
+                    },
+                  ],
+                },
+              ],
+            } as any,
+          },
+          // Step 4: Delete the AdminApplication instance
+          {
+            actionType: "deleteInstance",
+            actionLabel: "deleteAdminApplication",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            payload: {
+              applicationSection: "data",
+              objects: [
+                {
+                  parentUuid: entityApplicationForAdmin.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    {
+                      parentUuid: entityApplicationForAdmin.uuid,
+                      uuid: {
+                        transformerType: "mustacheStringTemplate",
+                        interpolation: "build",
+                        definition: "{{deleteApplicationAndDeployment.application}}",
+                      } as any,
+                    },
+                  ],
+                },
+              ],
+            } as any,
+          },
+        ],
+      },
     };
   }, []);
 

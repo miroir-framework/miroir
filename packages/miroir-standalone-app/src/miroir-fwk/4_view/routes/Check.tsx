@@ -27,6 +27,7 @@ const testSubPartPathArray = [
   "testCompositeActions",
   "create new Entity and reports from spreadsheet",
   "compositeAction",
+  "payload",
   "templates",
 ];
 // const valuePath = "definition.testCompositeActions"
@@ -101,11 +102,10 @@ export const CheckPage: React.FC<any> = (
     <PageContainer>
       <h1>Check</h1>
       This is the Check page. It has been rendered {count} times.
-      <br />
+      {/* <br />
       path: {testSubPartPathArray.join(".")}
       <br />
       {testResult}
-      {/* <span style={{ color: "red" }}>{testResult}</span> */}
       <div>
         <form id={"form." + pageLabel} onSubmit={checkTestDefinition}>
           <button type="submit" name={pageLabel} form={"form." + pageLabel}>
@@ -117,15 +117,13 @@ export const CheckPage: React.FC<any> = (
             value={testInput}
             onChange={(e) => setTestInput(e.target.value)}
           />
-          {/* </input> */}
         </form>
       </div>
       <div>
         <pre>
-          {/* {JSON.stringify(test_createEntityAndReportFromSpreadsheetAndUpdateMenu, null, 2)} */}
           {JSON.stringify(testSubPart, null, 2)}
         </pre>
-      </div>
+      </div> */}
     </PageContainer>
   );
 };

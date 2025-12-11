@@ -17354,12 +17354,25 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "instanceAction": {
-            "type": "schemaReference",
-            "optional": false,
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "application": {
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+          },
+          "payload": {
+            "type": "object",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "instanceCUDAction"
+              "instanceAction": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "instanceCUDAction"
+                }
+              }
             }
           }
         }
@@ -18667,119 +18680,116 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "compositeActionDefinition": {
-        "type": "array",
-        "definition": {
-          "type": "union",
-          "discriminator": "actionType",
-          "definition": [
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "domainAction"
-              }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "compositeAction"
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "compositeRunBoxedQueryAction"
-                },
-                "actionLabel": {
-                  "type": "string",
-                  "optional": true
-                },
-                "nameGivenToResult": {
-                  "type": "string"
-                },
-                "queryTemplate": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runBoxedQueryAction"
-                  }
-                }
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "compositeRunBoxedExtractorAction"
-                },
-                "actionLabel": {
-                  "type": "string",
-                  "optional": true
-                },
-                "nameGivenToResult": {
-                  "type": "string"
-                },
-                "queryTemplate": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runBoxedExtractorAction"
-                  }
-                }
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "compositeRunBoxedExtractorOrQueryAction"
-                },
-                "actionLabel": {
-                  "type": "string",
-                  "optional": true
-                },
-                "nameGivenToResult": {
-                  "type": "string"
-                },
-                "query": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "runBoxedExtractorOrQueryAction"
-                  }
-                }
-              }
-            },
-            {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "compositeRunTestAssertion"
-                },
-                "actionLabel": {
-                  "type": "string",
-                  "optional": true
-                },
-                "nameGivenToResult": {
-                  "type": "string"
-                },
-                "testAssertion": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "testAssertion"
-                  }
+        "type": "union",
+        "discriminator": "actionType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeAction"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "compositeRunBoxedQueryAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "queryTemplate": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "runBoxedQueryAction"
                 }
               }
             }
-          ]
-        }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "compositeRunBoxedExtractorAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "queryTemplate": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "runBoxedExtractorAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "compositeRunBoxedExtractorOrQueryAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "query": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "runBoxedExtractorOrQueryAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "compositeRunTestAssertion"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "testAssertion": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "testAssertion"
+                }
+              }
+            }
+          }
+        ]
       },
       "compositeAction": {
         "type": "object",
@@ -18796,22 +18806,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "optional": true
           },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
           "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -18823,126 +18824,131 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "templates": {
-            "type": "record",
-            "optional": true,
+          "payload": {
+            "type": "object",
             "definition": {
-              "type": "any"
-            }
-          },
-          "definition": {
-            "type": "array",
-            "definition": {
-              "type": "union",
-              "discriminator": "actionType",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "domainAction"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "compositeAction"
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedQueryAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "queryTemplate": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "runBoxedQueryAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "queryTemplate": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "runBoxedExtractorAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorOrQueryAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "query": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "runBoxedExtractorOrQueryAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunTestAssertion"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "testAssertion": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "testAssertion"
-                      }
-                    }
-                  }
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
                 }
-              ]
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "discriminator": "actionType",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "domainAction"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "compositeAction"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedQueryAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runBoxedQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runBoxedExtractorAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorOrQueryAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "query": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runBoxedExtractorOrQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunTestAssertion"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "testAssertion": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "testAssertion"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
             }
           }
         }
@@ -19182,12 +19188,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "instanceAction": {
-                "type": "schemaReference",
-                "optional": false,
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "application": {
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+              },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "instanceCUDAction"
+                  "instanceAction": {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "instanceCUDAction"
+                    }
+                  }
                 }
               }
             }
@@ -19207,22 +19226,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
               "application": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -19234,126 +19244,131 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "templates": {
-                "type": "record",
-                "optional": true,
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "any"
-                }
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "union",
-                  "discriminator": "actionType",
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "domainAction"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "compositeAction"
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "runBoxedQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "runBoxedExtractorAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorOrQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "query": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "runBoxedExtractorOrQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunTestAssertion"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "testAssertion": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "testAssertion"
-                          }
-                        }
-                      }
+                  "templates": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
                     }
-                  ]
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "actionType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "domainAction"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "compositeAction"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "runBoxedQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "runBoxedExtractorAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorOrQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "query": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "runBoxedExtractorOrQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunTestAssertion"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "testAssertion": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "testAssertion"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -24573,40 +24588,27 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "application": {
+              "endpoint": {
                 "type": "union",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false,
-                    "isTemplate": true
-                  }
-                },
                 "definition": [
                   {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "selectorParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
+                    "type": "literal",
+                    "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
                     }
+                  }
+                ]
+              },
+              "application": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
                   },
                   {
                     "type": "schemaReference",
@@ -24645,348 +24647,364 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "templates": {
+              "payload": {
                 "type": "union",
-                "optional": true,
                 "definition": [
-                  {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "any"
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
-                          }
-                        }
-                      ]
-                    }
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "definition": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "array",
-                    "definition": {
-                      "type": "union",
-                      "discriminator": "actionType",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunBoxedQueryAction"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "queryTemplate": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunBoxedExtractorAction"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "queryTemplate": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunBoxedExtractorOrQueryAction"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "query": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunTestAssertion"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "testAssertion": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
-                          }
-                        }
-                      ]
-                    }
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                      "templates": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "record",
+                            "optional": true,
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "any"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "definition": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "union",
+                              "discriminator": "actionType",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunBoxedQueryAction"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "queryTemplate": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunBoxedExtractorAction"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "queryTemplate": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunBoxedExtractorOrQueryAction"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "query": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunTestAssertion"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "testAssertion": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -25092,22 +25110,68 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "instanceAction": {
+              "endpoint": {
                 "type": "union",
                 "definition": [
                   {
-                    "type": "schemaReference",
-                    "optional": false,
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
-                    },
-                    "context": {}
+                    "type": "literal",
+                    "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "application": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "payload": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "instanceAction": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "optional": false,
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -25163,40 +25227,27 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "application": {
+              "endpoint": {
                 "type": "union",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false,
-                    "isTemplate": true
-                  }
-                },
                 "definition": [
                   {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "selectorParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
+                    "type": "literal",
+                    "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
                     }
+                  }
+                ]
+              },
+              "application": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
                   },
                   {
                     "type": "schemaReference",
@@ -25235,348 +25286,364 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "templates": {
+              "payload": {
                 "type": "union",
-                "optional": true,
                 "definition": [
-                  {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "union",
-                      "definition": [
-                        {
-                          "type": "any"
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
-                          }
-                        }
-                      ]
-                    }
-                  },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
-                  }
-                ]
-              },
-              "definition": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "array",
-                    "definition": {
-                      "type": "union",
-                      "discriminator": "actionType",
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunBoxedQueryAction"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "queryTemplate": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunBoxedExtractorAction"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "queryTemplate": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunBoxedExtractorOrQueryAction"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "query": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "literal",
-                                  "definition": "compositeRunTestAssertion"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "actionLabel": {
-                              "type": "union",
-                              "optional": true,
-                              "definition": [
-                                {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "nameGivenToResult": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            },
-                            "testAssertion": {
-                              "type": "union",
-                              "definition": [
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
-                                  "definition": {
-                                    "relativePath": "transformerForBuildCarryOnObject"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "relativePath": "transformerForBuildCarryOnObject"
-                          }
-                        }
-                      ]
-                    }
                   },
                   {
-                    "type": "schemaReference",
+                    "type": "object",
                     "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
+                      "templates": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "record",
+                            "optional": true,
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "any"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "definition": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "union",
+                              "discriminator": "actionType",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunBoxedQueryAction"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "queryTemplate": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunBoxedExtractorAction"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "queryTemplate": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunBoxedExtractorOrQueryAction"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "query": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "actionType": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "literal",
+                                          "definition": "compositeRunTestAssertion"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "actionLabel": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "nameGivenToResult": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "testAssertion": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]
@@ -57147,12 +57214,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "instanceAction": {
-                "type": "schemaReference",
-                "optional": false,
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "application": {
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+              },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                  "instanceAction": {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                    }
+                  }
                 }
               }
             }
@@ -57172,22 +57252,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
               "application": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -57199,126 +57270,131 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "templates": {
-                "type": "record",
-                "optional": true,
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "any"
-                }
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "union",
-                  "discriminator": "actionType",
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorOrQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "query": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunTestAssertion"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "testAssertion": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                          }
-                        }
-                      }
+                  "templates": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
                     }
-                  ]
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "actionType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorOrQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "query": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunTestAssertion"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "testAssertion": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -59773,22 +59849,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "optional": true
           },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
           "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -59800,126 +59867,131 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "templates": {
-            "type": "record",
-            "optional": true,
+          "payload": {
+            "type": "object",
             "definition": {
-              "type": "any"
-            }
-          },
-          "definition": {
-            "type": "array",
-            "definition": {
-              "type": "union",
-              "discriminator": "actionType",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedQueryAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "queryTemplate": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "queryTemplate": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorOrQueryAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "query": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunTestAssertion"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "testAssertion": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                      }
-                    }
-                  }
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
                 }
-              ]
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "discriminator": "actionType",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedQueryAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorOrQueryAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "query": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunTestAssertion"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "testAssertion": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
             }
           }
         }
@@ -66318,12 +66390,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "instanceAction": {
-                "type": "schemaReference",
-                "optional": false,
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "application": {
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+              },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                  "instanceAction": {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                    }
+                  }
                 }
               }
             }
@@ -66343,22 +66428,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
               "application": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -66370,126 +66446,131 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "templates": {
-                "type": "record",
-                "optional": true,
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "any"
-                }
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "union",
-                  "discriminator": "actionType",
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorOrQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "query": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunTestAssertion"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "testAssertion": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                          }
-                        }
-                      }
+                  "templates": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
                     }
-                  ]
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "actionType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorOrQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "query": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunTestAssertion"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "testAssertion": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -68974,22 +69055,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "optional": true
           },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
           "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -69001,126 +69073,131 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "templates": {
-            "type": "record",
-            "optional": true,
+          "payload": {
+            "type": "object",
             "definition": {
-              "type": "any"
-            }
-          },
-          "definition": {
-            "type": "array",
-            "definition": {
-              "type": "union",
-              "discriminator": "actionType",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                  }
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedQueryAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "queryTemplate": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "queryTemplate": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunBoxedExtractorOrQueryAction"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "query": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "compositeRunTestAssertion"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "nameGivenToResult": {
-                      "type": "string"
-                    },
-                    "testAssertion": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                      }
-                    }
-                  }
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
                 }
-              ]
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "discriminator": "actionType",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedQueryAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorOrQueryAction"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "query": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunTestAssertion"
+                        },
+                        "actionLabel": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "nameGivenToResult": {
+                          "type": "string"
+                        },
+                        "testAssertion": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
             }
           }
         }
@@ -73865,12 +73942,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "instanceAction": {
-                "type": "schemaReference",
-                "optional": false,
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "application": {
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+              },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                  "instanceAction": {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                    }
+                  }
                 }
               }
             }
@@ -73890,22 +73980,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
               "application": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -73917,126 +73998,131 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "templates": {
-                "type": "record",
-                "optional": true,
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "any"
-                }
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "union",
-                  "discriminator": "actionType",
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorOrQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "query": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunTestAssertion"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "testAssertion": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                          }
-                        }
-                      }
+                  "templates": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
                     }
-                  ]
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "actionType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorOrQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "query": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunTestAssertion"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "testAssertion": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -74099,12 +74185,25 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "instanceAction": {
-                "type": "schemaReference",
-                "optional": false,
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "application": {
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+              },
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                  "instanceAction": {
+                    "type": "schemaReference",
+                    "optional": false,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
+                    }
+                  }
                 }
               }
             }
@@ -74124,22 +74223,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
               "application": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
               },
               "deploymentUuid": {
                 "type": "uuid",
@@ -74151,126 +74241,131 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "templates": {
-                "type": "record",
-                "optional": true,
+              "payload": {
+                "type": "object",
                 "definition": {
-                  "type": "any"
-                }
-              },
-              "definition": {
-                "type": "array",
-                "definition": {
-                  "type": "union",
-                  "discriminator": "actionType",
-                  "definition": [
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                      }
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunBoxedExtractorOrQueryAction"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "query": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "compositeRunTestAssertion"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "nameGivenToResult": {
-                          "type": "string"
-                        },
-                        "testAssertion": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                          }
-                        }
-                      }
+                  "templates": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
                     }
-                  ]
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "actionType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "queryTemplate": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunBoxedExtractorOrQueryAction"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "query": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "actionType": {
+                              "type": "literal",
+                              "definition": "compositeRunTestAssertion"
+                            },
+                            "actionLabel": {
+                              "type": "string",
+                              "optional": true
+                            },
+                            "nameGivenToResult": {
+                              "type": "string"
+                            },
+                            "testAssertion": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }

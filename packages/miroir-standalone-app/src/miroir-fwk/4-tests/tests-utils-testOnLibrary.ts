@@ -71,14 +71,18 @@ export function testOnLibrary_resetLibraryDeployment(
     actionType: "compositeAction",
     actionLabel: "afterEach",
     actionName: "sequence",
-    definition: [
-      {
-        actionType: "resetModel",
-        actionLabel: "resetLibraryStore",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid,
-      },
-    ],
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    payload: {
+      definition: [
+        {
+          actionType: "resetModel",
+          actionLabel: "resetLibraryStore",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid,
+        },
+      ],
+    },
   };
 }
 export function testOnLibrary_deleteLibraryDeployment(
@@ -90,17 +94,21 @@ export function testOnLibrary_deleteLibraryDeployment(
     actionType: "compositeAction",
     actionLabel: "deleteLibraryDeployment",
     actionName: "sequence",
-    definition: [
-      {
-        // actionType: "storeManagementAction",
-        actionType: "storeManagementAction_deleteStore",
-        actionLabel: "deleteLibraryStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        deploymentUuid,
-        configuration: miroirConfig.client.emulateServer
-          ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
-          : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
-      },
-    ],
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    payload: {
+      definition: [
+        {
+          // actionType: "storeManagementAction",
+          actionType: "storeManagementAction_deleteStore",
+          actionLabel: "deleteLibraryStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+          deploymentUuid,
+          configuration: miroirConfig.client.emulateServer
+            ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
+            : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
+        },
+      ],
+    },
   };
 }

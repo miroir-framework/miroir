@@ -9,76 +9,30 @@
     "actions": [
       {
         "actionParameters": {
-          "type": "schemaReference",
-          "optional": false,
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "undoRedoAction"
-          }
-        },
-        "actionErrors": {
-          "type": "literal",
-          "definition": "FailedToHandleUndoRedoAction"
-        }
-      },
-      {
-        "actionParameters": {
-          "type": "schemaReference",
-          "optional": false,
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "storeOrBundleAction"
-          }
-        },
-        "actionErrors": {
-          "type": "literal",
-          "definition": "FailedHandleStoreOrBundleAction"
-        }
-      },
-      {
-        "actionParameters": {
-          "type": "schemaReference",
-          "optional": false,
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "modelAction"
-          }
-        },
-        "actionErrors": {
-          "type": "literal",
-          "definition": "FailedHandleModelAction"
-        }
-      },
-      {
-        "actionParameters": {
-          "type": "schemaReference",
-          "optional": false,
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "instanceAction"
-          }
-        },
-        "actionErrors": {
-          "type": "literal",
-          "definition": "FailedHandleInstanceAction"
-        }
-      },
-      {
-        "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "transactionalInstanceAction" },
-            "actionLabel": { "type": "string", "optional": true },
-            "deploymentUuid": {
-              "type": "uuid",
-              "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
-            },
-            "instanceAction": {
-              "type": "schemaReference",
-              "optional": false,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "instanceCUDAction"
+          "actionType": { "type": "literal", "definition": "transactionalInstanceAction" },
+          "actionLabel": { "type": "string", "optional": true },
+          "deploymentUuid": {
+            "type": "uuid",
+            "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "application": {
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "instanceAction": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "instanceCUDAction"
+                }
               }
             }
           }
@@ -90,133 +44,126 @@
       },
       {
         "actionParameters": {
-          "type": "object",
-          "definition": {
-            "actionType": { "type": "literal", "definition": "compositeAction" },
-            "actionName": { "type": "literal", "definition": "sequence" },
-            "actionLabel": { "type": "string", "optional": true },
-            "application": {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "canBeTemplate": false,
-                  "defaultLabel": "Application",
-                  "selectorParams": {
-                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                    "targetEntityOrderInstancesBy": "name"
-                  },
-                  "editable": false
-                }
-              }
-            },
-            "deploymentUuid": {
-              "type": "uuid",
-              "optional": true,
-              "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
-            },
-            "templates": {
-              "type": "record",
-              "optional": true,
-              "definition": {
-                "type": "any"
-              }
-            },
+          "actionType": { "type": "literal", "definition": "compositeAction" },
+          "actionName": { "type": "literal", "definition": "sequence" },
+          "actionLabel": { "type": "string", "optional": true },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "application": {
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+          },
+          "deploymentUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": { "value": { "defaultLabel": "Module Deployment Uuid", "editable": false } }
+          },
+          "payload": {
+            "type": "object",
             "definition": {
-              "type": "array",
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
               "definition": {
-                "type": "union",
-                "discriminator": "actionType",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "domainAction"
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "compositeAction"
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunBoxedQueryAction"
-                      },
-                      "actionLabel": { "type": "string", "optional": true },
-                      "nameGivenToResult": { "type": "string" },
-                      "queryTemplate": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runBoxedQueryAction"
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "discriminator": "actionType",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "domainAction"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "compositeAction"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedQueryAction"
+                        },
+                        "actionLabel": { "type": "string", "optional": true },
+                        "nameGivenToResult": { "type": "string" },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runBoxedQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorAction"
+                        },
+                        "actionLabel": { "type": "string", "optional": true },
+                        "nameGivenToResult": { "type": "string" },
+                        "queryTemplate": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runBoxedExtractorAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunBoxedExtractorOrQueryAction"
+                        },
+                        "actionLabel": { "type": "string", "optional": true },
+                        "nameGivenToResult": { "type": "string" },
+                        "query": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runBoxedExtractorOrQueryAction"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "actionType": {
+                          "type": "literal",
+                          "definition": "compositeRunTestAssertion"
+                        },
+                        "actionLabel": { "type": "string", "optional": true },
+                        "nameGivenToResult": { "type": "string" },
+                        "testAssertion": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "testAssertion"
+                          }
                         }
                       }
                     }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunBoxedExtractorAction"
-                      },
-                      "actionLabel": { "type": "string", "optional": true },
-                      "nameGivenToResult": { "type": "string" },
-                      "queryTemplate": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runBoxedExtractorAction"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunBoxedExtractorOrQueryAction"
-                      },
-                      "actionLabel": { "type": "string", "optional": true },
-                      "nameGivenToResult": { "type": "string" },
-                      "query": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "runBoxedExtractorOrQueryAction"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunTestAssertion"
-                      },
-                      "actionLabel": { "type": "string", "optional": true },
-                      "nameGivenToResult": { "type": "string" },
-                      "testAssertion": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "testAssertion"
-                        }
-                      }
-                    }
-                  }
-                ]
+                  ]
+                }
               }
             }
           }

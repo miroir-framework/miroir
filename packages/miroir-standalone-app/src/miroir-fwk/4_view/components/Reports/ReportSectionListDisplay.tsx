@@ -517,27 +517,31 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5", // miroir application
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               deploymentUuid: props.displayedDeploymentDefinition.uuid,
-              instanceAction: {
-                actionType: "createInstance",
-                deploymentUuid: props.displayedDeploymentDefinition.uuid,
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                payload: {
-                  applicationSection: currentApplicationSection,
-                  parentUuid: data.parentUuid,
-                  objects: [
-                    {
-                      parentName: data.name,
-                      parentUuid: data.parentUuid,
-                      applicationSection:'model',
-                      instances: [
-                        // newEntity 
-                        data
-                      ]
-                    }
-                  ],
+              payload: {
+                instanceAction: {
+                  actionType: "createInstance",
+                  deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  payload: {
+                    applicationSection: currentApplicationSection,
+                    parentUuid: data.parentUuid,
+                    objects: [
+                      {
+                        parentName: data.name,
+                        parentUuid: data.parentUuid,
+                        applicationSection:'model',
+                        instances: [
+                          // newEntity 
+                          data
+                        ]
+                      }
+                    ],
+                  }
                 }
-              }
+              },
             },
             // props.tableComponentReportType == "EntityInstance"?currentModel:undefined
             currentMiroirModelEnvironment // TODO: use model environment for current deployment
@@ -584,24 +588,28 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           result = await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               deploymentUuid: props.displayedDeploymentDefinition.uuid,
-              instanceAction: {
-                // actionType: "instanceAction",
-                actionType: "updateInstance",
-                deploymentUuid: props.displayedDeploymentDefinition.uuid,
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                payload: {
-                  applicationSection: "model",
-                  objects: [
-                    {
-                      parentName: data.name,
-                      parentUuid: data.parentUuid,
-                      applicationSection: props.chosenApplicationSection,
-                      instances: [data],
-                    },
-                  ],
+              payload: {
+                instanceAction: {
+                  // actionType: "instanceAction",
+                  actionType: "updateInstance",
+                  deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  payload: {
+                    applicationSection: "model",
+                    objects: [
+                      {
+                        parentName: data.name,
+                        parentUuid: data.parentUuid,
+                        applicationSection: props.chosenApplicationSection,
+                        instances: [data],
+                      },
+                    ],
+                  },
                 },
-              },
+              }
             },
             // props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
             currentMiroirModelEnvironment // TODO: use model environment for current deployment

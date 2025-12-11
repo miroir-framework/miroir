@@ -32,18 +32,19 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 let count = 0;
 
-const testSubPartPathArray = [
-  "definition",
-  "testCompositeActions",
-  "create new Entity and reports from spreadsheet",
-  "compositeAction",
-  "templates",
-];
-// const valuePath = "definition.testCompositeActions"
-const testSubPart = resolvePathOnObject(
-  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-  testSubPartPathArray
-);
+// const testSubPartPathArray = [
+//   "definition",
+//   "testCompositeActions",
+//   "create new Entity and reports from spreadsheet",
+//   "compositeAction",
+//   "payload",
+//   "templates",
+// ];
+// // const valuePath = "definition.testCompositeActions"
+// const testSubPart = resolvePathOnObject(
+//   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
+//   testSubPartPathArray
+// );
 
 const pageLabel = "Admin";
 
