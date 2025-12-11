@@ -33,7 +33,6 @@ import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
   adminApplicationDeploymentConfigurations,
-  createDeploymentCompositeAction,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
   renderWithProviders,
@@ -53,6 +52,8 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { cleanLevel, packageName } from "./constants.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { LocalCacheInterface } from "miroir-core";
+import { defaultMiroirModelEnvironment } from "miroir-core";
+import { createDeploymentCompositeAction } from "miroir-core";
 
 
 
@@ -132,7 +133,7 @@ beforeAll(
       adminConfigurationDeploymentMiroir.uuid,
       miroirtDeploymentStorageConfiguration,
     );
-    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirMetaModel);
+    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirModelEnvironment);
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
@@ -215,7 +216,7 @@ describe.sequential(
                 application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-              }, defaultMiroirMetaModel);
+              }, defaultMiroirModelEnvironment);
               await domainController.handleAction(
                 {
                   // actionType: "modelAction",
@@ -224,7 +225,7 @@ describe.sequential(
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );
@@ -281,11 +282,11 @@ describe.sequential(
             async () => {
               await domainController.handleAction(
                 createAuthorAction,
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
               await domainController.handleAction(
                 createBookAction,
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );
@@ -325,8 +326,10 @@ describe.sequential(
                 actionName: "undo",
                 application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              }, defaultMiroirMetaModel);
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                payload: {
+                }
+              }, defaultMiroirModelEnvironment);
             }
           );
   
@@ -363,8 +366,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );
@@ -406,21 +411,29 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "undo",
+                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              }, defaultMiroirMetaModel);
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                payload: {
+                }
+              }, defaultMiroirModelEnvironment);
               await domainController.handleAction({
                 actionType: "undoRedoAction",
                 actionName: "redo",
+                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-                deploymentUuid:adminConfigurationDeploymentLibrary.uuid
-              }, defaultMiroirMetaModel);
+                deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                payload: {
+                }
+              }, defaultMiroirModelEnvironment);
             }
           );
       
@@ -452,8 +465,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );
@@ -469,8 +484,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
               await domainController.handleAction(
                 {
@@ -479,8 +496,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
               await domainController.handleAction(
                 {
@@ -489,8 +508,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
               await domainController.handleAction(
                 {
@@ -499,8 +520,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );
@@ -533,8 +556,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );
@@ -550,8 +575,10 @@ describe.sequential(
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                  }
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );
@@ -580,7 +607,7 @@ describe.sequential(
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
-                defaultMiroirMetaModel
+                defaultMiroirModelEnvironment
               );
             }
           );

@@ -278,8 +278,11 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleActionFromUI({
               actionType: "undoRedoAction",
               actionName: "undo",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              payload: {
+              }
             }, defaultMiroirModelEnvironment);
           }}
         >
@@ -293,8 +296,11 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleActionFromUI({
               actionType: "undoRedoAction",
               actionName: "redo",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              payload: {
+              }
             }, defaultMiroirModelEnvironment);
           }}
         >
@@ -344,6 +350,7 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleActionFromUI({
               // actionType: "modelAction",
               actionType: "rollback",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             }, defaultMiroirModelEnvironment);
@@ -373,6 +380,7 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleActionFromUI({
               // actionType: "modelAction",
               actionType: "resetData",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             }, defaultMiroirModelEnvironment);
@@ -382,6 +390,7 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleActionFromUI({
               // actionType: "modelAction",
               actionType: "rollback",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             }, defaultMiroirModelEnvironment);
