@@ -132,29 +132,39 @@ export function createDeploymentCompositeAction(
         {
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore for admin",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-          configuration: {
-            [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin.configuration,
+          payload: {
+            configuration: {
+              [adminConfigurationDeploymentAdmin.uuid]:
+                adminConfigurationDeploymentAdmin.configuration,
+            },
           },
         },
         {
           // actionType: "storeManagementAction",
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           deploymentUuid: deploymentUuid,
-          configuration: {
-            [deploymentUuid]: deploymentConfiguration,
+          payload: {
+            configuration: {
+              [deploymentUuid]: deploymentConfiguration,
+            },
           },
         },
         {
           // actionType: "storeManagementAction",
           actionType: "storeManagementAction_createStore",
           actionLabel: "storeManagementAction_createStore",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           deploymentUuid: deploymentUuid,
-          configuration: deploymentConfiguration,
+          payload: {
+            configuration: deploymentConfiguration,
+          },
         },
         {
           actionType: "createInstance",
@@ -200,7 +210,7 @@ export function createDeploymentCompositeAction(
           },
         },
       ],
-    }
+    },
   };
 }
 
@@ -319,11 +329,14 @@ export function deleteApplicationAndDeploymentCompositeAction(
         {
           actionType: "storeManagementAction_deleteStore",
           actionLabel: "deleteStore",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           deploymentUuid,
-          configuration: miroirConfig.client.emulateServer
-            ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
-            : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
+          payload: {
+            configuration: miroirConfig.client.emulateServer
+              ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
+              : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
+          }
         },
       ],
     }

@@ -435,14 +435,14 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      section: "data",
       payload: {
+        section: "data",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         parentName: entityMenu.name,
         parentUuid: entityMenu.uuid,
         uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
         objects: [menuDefaultMiroir as EntityInstance],
-      }
+      },
     },
   },
   // ##############################################################################################
@@ -451,18 +451,24 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_createStore",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+      payload: {
+        configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+      },
     },
   },
   "storeManagementAction_deleteStore is parsable": {
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_deleteStore",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+      payload: {
+        configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+      },
       // storeName: sqlDbStoreName,
     },
   },
@@ -471,49 +477,55 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       actionType: "storeManagementAction_resetAndInitApplicationDeployment",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      deployments: [
-        {
-          uuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-          parentName: "Deployment",
-          parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
-          parentDefinitionVersionUuid: "00000000-0000-0000-0000-000000000000",
-          name: "TestApplicationSqlDeployment",
-          defaultLabel: "TestApplicationSqlDeployment",
-          description: "The default Sql Deployment for TestApplication",
-          adminApplication: "00000000-0000-0000-0000-000000000001",
-          bundle: "00000000-0000-0000-0000-000000000002",
-          configuration: {
-            admin: {
-              emulatedServerType: "sql",
-              connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-              schema: "TestApplicationAdmin",
+      payload: {
+        deployments: [
+          {
+            uuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            parentName: "Deployment",
+            parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
+            parentDefinitionVersionUuid: "00000000-0000-0000-0000-000000000000",
+            name: "TestApplicationSqlDeployment",
+            defaultLabel: "TestApplicationSqlDeployment",
+            description: "The default Sql Deployment for TestApplication",
+            adminApplication: "00000000-0000-0000-0000-000000000001",
+            bundle: "00000000-0000-0000-0000-000000000002",
+            configuration: {
+              admin: {
+                emulatedServerType: "sql",
+                connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                schema: "TestApplicationAdmin",
+              },
+              model: {
+                emulatedServerType: "sql",
+                connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                schema: "TestApplicationModel",
+              },
+              data: {
+                emulatedServerType: "sql",
+                connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+                schema: "TestApplicationData",
+              },
             },
-            model: {
-              emulatedServerType: "sql",
-              connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-              schema: "TestApplicationModel",
-            },
-            data: {
-              emulatedServerType: "sql",
-              connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-              schema: "TestApplicationData",
-            },
+            // model?: JzodObject | undefined;
+            // data?: JzodObject | undefined;
           },
-          // model?: JzodObject | undefined;
-          // data?: JzodObject | undefined;
-        },
-      ],
+        ],
+      },
     },
   },
   "storeManagementAction_openStore is parsable": {
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_openStore",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      configuration: {
-        admin: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+      payload: {
+        configuration: {
+          admin: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+        },
       },
       // configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
       // storeName: sqlDbStoreName,
@@ -523,8 +535,12 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: storeManagementAction,
     action: {
       actionType: "storeManagementAction_closeStore",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      payload: {
+      //   deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      },
     },
   },
   // ##############################################################################################
@@ -536,6 +552,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "runBoxedExtractorAction",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       actionName: "runQuery",
       payload: {
         applicationSection: "data",
@@ -560,6 +577,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: persistenceAction,
     action: {
       actionType: "runBoxedQueryAction",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       actionName: "runQuery",

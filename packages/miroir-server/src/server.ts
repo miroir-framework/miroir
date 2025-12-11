@@ -218,11 +218,14 @@ for (const c of Object.entries(configurations)) {
   const openStoreAction: StoreOrBundleAction = {
     // actionType: "storeManagementAction",
     actionType: "storeManagementAction_openStore",
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-    configuration: {
-      [c[0]]: c[1] as StoreUnitConfiguration,
-    },
     deploymentUuid: c[0],
+    payload: {
+      configuration: {
+        [c[0]]: c[1] as StoreUnitConfiguration,
+      },
+    },
   };
   await domainController.handleAction(openStoreAction)
 }
@@ -241,6 +244,7 @@ for (const c of Object.entries(configurations)) {
 const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
   actionType: "runBoxedExtractorOrQueryAction",
   actionName: "runQuery",
+  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
   payload: {
@@ -281,11 +285,14 @@ for (const c of deploymentsToOpen) {
   const openStoreAction: StoreOrBundleAction = {
     // actionType: "storeManagementAction",
     actionType: "storeManagementAction_openStore",
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-    configuration: {
-      [c[0]]: c[1] as StoreUnitConfiguration,
-    },
     deploymentUuid: c[0],
+    payload: {
+      configuration: {
+        [c[0]]: c[1] as StoreUnitConfiguration,
+      },
+    },
   };
   await domainController.handleAction(openStoreAction)
 }

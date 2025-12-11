@@ -17608,13 +17608,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
               },
-              "configuration": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "storeUnitConfiguration"
-                }
-              },
               "deploymentUuid": {
                 "type": "uuid",
                 "tag": {
@@ -17642,6 +17635,13 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "editable": false
                       }
+                    }
+                  },
+                  "configuration": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "storeUnitConfiguration"
                     }
                   }
                 }
@@ -32519,25 +32519,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "configuration": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                    },
-                    "context": {}
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
               "deploymentUuid": {
                 "type": "union",
                 "tag": {
@@ -32611,6 +32592,25 @@ export const miroirFundamentalJzodSchema = {
                                 "editable": false
                               }
                             }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "configuration": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                            },
+                            "context": {}
                           },
                           {
                             "type": "schemaReference",

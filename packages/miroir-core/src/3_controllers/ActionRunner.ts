@@ -126,8 +126,10 @@ export async function storeActionOrBundleActionStoreRunner(
         );
       }
 
-      const appModelStoreCreated: Action2ReturnType = await localAppPersistenceStoreController.createStore(action.configuration.model)
-      const appDataStoreCreated: Action2ReturnType = await localAppPersistenceStoreController.createStore(action.configuration.data)
+      const appModelStoreCreated: Action2ReturnType =
+        await localAppPersistenceStoreController.createStore(action.payload.configuration.model);
+      const appDataStoreCreated: Action2ReturnType =
+        await localAppPersistenceStoreController.createStore(action.payload.configuration.data);
 
       if (appModelStoreCreated instanceof Action2Error || appDataStoreCreated instanceof Action2Error) {
         return new Action2Error(
@@ -164,14 +166,14 @@ export async function storeActionOrBundleActionStoreRunner(
         "storeActionOrBundleActionStoreRunner deleteStore for deployment",
         action.deploymentUuid,
         "configuration",
-        JSON.stringify(action.configuration, null, 2)
+        JSON.stringify(action.payload.configuration, null, 2)
       );
       const appModelStoreDeleted: Action2ReturnType =
-        await localAppPersistenceStoreController.deleteStore(action.configuration.model);
+        await localAppPersistenceStoreController.deleteStore(action.payload.configuration.model);
       log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.deploymentUuid, "model store deleted");
       
       const appDataStoreDeleted: Action2ReturnType =
-        await localAppPersistenceStoreController.deleteStore(action.configuration.data);
+        await localAppPersistenceStoreController.deleteStore(action.payload.configuration.data);
       log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.deploymentUuid, "data store deleted");
 
       if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
@@ -190,25 +192,35 @@ export async function storeActionOrBundleActionStoreRunner(
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addPersistenceStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
       // for (const deployment of Object.entries(action.configuration)) {
-      if (!action.configuration[action.deploymentUuid]) {
+      if (!action.payload.configuration[action.deploymentUuid]) {
         return new Action2Error(
           "FailedToOpenStore",
-          "no configuration entry found for deployment uuid " + action.deploymentUuid + " configuration: " + JSON.stringify(action.configuration, null, 2)
+          "no configuration entry found for deployment uuid " +
+            action.deploymentUuid +
+            " configuration: " +
+            JSON.stringify(action.payload.configuration, null, 2)
         );
       }
 
       await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
       await persistenceStoreControllerManager.addPersistenceStoreController(
         action.deploymentUuid,
-        action.configuration[action.deploymentUuid]
+        action.payload.configuration[action.deploymentUuid]
       );
 
       const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
       await localPersistenceStoreController?.open();
       log.info("storeActionOrBundleActionStoreRunner openStore for deployment", action.deploymentUuid, "opened! booting up...");
 
-      await localPersistenceStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
-      log.info("storeActionOrBundleActionStoreRunner openStore for deployment", action.deploymentUuid, "booted from persistent state...");
+      await localPersistenceStoreController?.bootFromPersistedState(
+        defaultMiroirMetaModel.entities,
+        defaultMiroirMetaModel.entityDefinitions
+      );
+      log.info(
+        "storeActionOrBundleActionStoreRunner openStore for deployment",
+        action.deploymentUuid,
+        "booted from persistent state..."
+      );
 
       log.info(
         "storeActionOrBundleActionStoreRunner openStore for deployment",

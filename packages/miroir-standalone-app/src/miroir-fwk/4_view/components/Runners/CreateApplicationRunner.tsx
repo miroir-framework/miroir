@@ -372,6 +372,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             // actionType: "storeManagementAction",
             actionType: "storeManagementAction_openStore",
             actionLabel: "storeManagementAction_openStore",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             deploymentUuid: testDeploymentUuid,
             configuration: {
@@ -382,6 +383,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             // actionType: "storeManagementAction",
             actionType: "storeManagementAction_createStore",
             actionLabel: "storeManagementAction_createStore",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             deploymentUuid: testDeploymentUuid,
             configuration: testDeploymentStorageConfiguration as any,
@@ -389,9 +391,9 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "createInstance",
             actionLabel: "CreateDeploymentInstances",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {
               applicationSection: "data",
               objects: [

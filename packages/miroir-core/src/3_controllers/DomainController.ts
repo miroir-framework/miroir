@@ -1667,7 +1667,7 @@ export class DomainController implements DomainControllerInterface {
           ) {
             await resetAndInitApplicationDeployment(
               this,
-              domainAction.deployments as any as SelfApplicationDeploymentConfiguration[]
+              domainAction.payload.deployments as any as SelfApplicationDeploymentConfiguration[]
             ); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
             // await this.callAsyncActionHandler(domainAction, "*", currentModel, this, domainAction.deployments);
           } else {
