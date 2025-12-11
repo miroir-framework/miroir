@@ -354,12 +354,15 @@ export class DomainController implements DomainControllerInterface {
           // deploymentUuid,
           {
             actionType: "RestPersistenceAction",
-            actionName: "read",
+            actionName: "read" as any,
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             deploymentUuid,
-            parentName: entityEntity.name,
-            parentUuid: entityEntity.uuid,
-            section: "model",
+            payload: {
+              section: "model",
+              parentName: entityEntity.name,
+              parentUuid: entityEntity.uuid,
+            },
           }
         )
         .then(async (context) => {
@@ -446,38 +449,46 @@ export class DomainController implements DomainControllerInterface {
           );
 
           // Batch all persistence operations for React 18 automatic batching
-          const fetchPromises = toFetchEntities.map((e) => {
+          const fetchPromises = toFetchEntities
+          // .slice(1)
+          .map((e) => {
             log.info(
               "DomainController loadConfigurationFromPersistenceStore fetching instances from server for entity",
               JSON.stringify(e, undefined, 2)
             );
-            return this.callUtil.callPersistenceAction(
-              {}, // context
-              {
-                addResultToContextAsName: "entityInstanceCollection",
-                expectedDomainElementType: "entityInstanceCollection",
-              }, // context update
-              {
-                actionType: "RestPersistenceAction",
-                actionName: "read",
-                endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                deploymentUuid,
-                parentName: e.entity.name,
-                parentUuid: e.entity.uuid,
-                section: e.section,
-              }
-            ).then((context: Record<string, any>) => {
-              log.info(
-                "DomainController loadConfigurationFromPersistenceStore found instances for section",
-                e.section,
-                "entity",
-                e.entity.name
-              );
-              return context["entityInstanceCollection"].returnedDomainElement;
-            }).catch((reason) => {
-              log.error("Failed to fetch entity instances for", e.entity.name, reason);
-              throw reason;
-            });
+            return this.callUtil
+              .callPersistenceAction(
+                {}, // context
+                {
+                  addResultToContextAsName: "entityInstanceCollection",
+                  expectedDomainElementType: "entityInstanceCollection",
+                }, // context update
+                {
+                  actionType: "RestPersistenceAction",
+                  actionName: "read" as any,
+                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+                  deploymentUuid,
+                  payload: {
+                    section: e.section,
+                    parentName: e.entity.name,
+                    parentUuid: e.entity.uuid,
+                  },
+                }
+              )
+              .then((context: Record<string, any>) => {
+                log.info(
+                  "DomainController loadConfigurationFromPersistenceStore found instances for section",
+                  e.section,
+                  "entity",
+                  e.entity.name
+                );
+                return context["entityInstanceCollection"].returnedDomainElement;
+              })
+              .catch((reason) => {
+                log.error("Failed to fetch entity instances for", e.entity.name, reason);
+                throw reason;
+              });
           });
 
           // Wait for all fetch operations to complete
@@ -1122,11 +1133,13 @@ export class DomainController implements DomainControllerInterface {
           const newModelVersionAction: RestPersistenceAction = {
             actionType: "RestPersistenceAction",
             actionName: "create",
-            // deploymentUuid: modelAction.deploymentUuid,
-            deploymentUuid: currentDeploymentUuid,
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-            section: sectionOfapplicationEntities,
-            objects: [newModelVersion],
+            deploymentUuid: currentDeploymentUuid,
+            payload: {
+              section: sectionOfapplicationEntities,
+              objects: [newModelVersion],
+            },
           };
 
           // in the case of the Miroir app, this should be done in the 'data' section
@@ -1165,17 +1178,17 @@ export class DomainController implements DomainControllerInterface {
                   {
                     actionType: "RestPersistenceAction",
                     actionName:
-                      replayAction.payload.instanceAction.actionType.toString() as CRUDActionName,
+                      replayAction.payload.instanceAction.actionType.toString() as CRUDActionName as any,
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                    // deploymentUuid: modelAction.deploymentUuid,
-                    // deploymentUuid: replayAction.deploymentUuid,
                     deploymentUuid: replayAction.payload.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
-                    // payload: {
-                      section: replayAction.payload.instanceAction.payload.applicationSection??"data",
+                    payload: {
+                      section:
+                        replayAction.payload.instanceAction.payload.applicationSection ?? "data",
                       parentName: replayAction.payload.instanceAction.payload.objects[0].parentName,
                       parentUuid: replayAction.payload.instanceAction.payload.objects[0].parentUuid,
                       objects: replayAction.payload.instanceAction.payload.objects[0].instances,
-                    // }
+                    },
                   }
                 );
                 if (replayActionResult instanceof Action2Error) {

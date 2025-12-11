@@ -17845,236 +17845,6 @@ export const miroirFundamentalJzodSchema = {
         "discriminator": "actionType",
         "definition": [
           {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "definition": "LocalPersistenceAction"
-              },
-              "actionName": {
-                "type": "enum",
-                "definition": [
-                  "create",
-                  "read",
-                  "update",
-                  "delete"
-                ]
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
-              },
-              "section": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "application": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
-              },
-              "deploymentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "parentName": {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Parent Name",
-                    "editable": false
-                  }
-                }
-              },
-              "parentUuid": {
-                "type": "string",
-                "optional": true,
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "uuid": {
-                "type": "string",
-                "optional": true,
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "objects": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": true,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstance"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "definition": "RestPersistenceAction"
-              },
-              "actionName": {
-                "type": "enum",
-                "definition": [
-                  "create",
-                  "read",
-                  "update",
-                  "delete"
-                ]
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
-              },
-              "section": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "application": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "canBeTemplate": false,
-                    "defaultLabel": "Application",
-                    "selectorParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
-              },
-              "deploymentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "parentName": {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Parent Name",
-                    "editable": false
-                  }
-                }
-              },
-              "parentUuid": {
-                "type": "string",
-                "optional": true,
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Parent Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "uuid": {
-                "type": "string",
-                "optional": true,
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                }
-              },
-              "objects": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": true,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstance"
-                  }
-                }
-              }
-            }
-          },
-          {
             "type": "schemaReference",
             "optional": false,
             "definition": {
@@ -18153,6 +17923,244 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "storeManagementAction"
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "LocalPersistenceAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "create"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "section": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "parentName": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Name",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "string",
+                    "optional": true,
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "string",
+                    "optional": true,
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": true,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstance"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "RestPersistenceAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "create"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "section": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "parentName": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Name",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "string",
+                    "optional": true,
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Parent Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "string",
+                    "optional": true,
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": true,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entityInstance"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -18164,45 +18172,20 @@ export const miroirFundamentalJzodSchema = {
             "definition": "LocalPersistenceAction"
           },
           "actionName": {
-            "type": "enum",
-            "definition": [
-              "create",
-              "read",
-              "update",
-              "delete"
-            ]
+            "type": "literal",
+            "definition": "create"
           },
           "actionLabel": {
             "type": "string",
             "optional": true
           },
+          "application": {
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+          },
           "endpoint": {
             "type": "literal",
             "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
-          },
-          "section": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "applicationSection"
-            }
-          },
-          "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -18214,58 +18197,87 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Parent Name",
-                "editable": false
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "string",
-            "optional": true,
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Parent Uuid",
-                "editable": false
-              }
-            }
-          },
-          "uuid": {
-            "type": "string",
-            "optional": true,
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false
-              }
-            }
-          },
-          "objects": {
-            "type": "array",
-            "optional": true,
+          "payload": {
+            "type": "object",
             "definition": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstance"
+              "application": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "editable": false
+                  }
+                }
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "parentName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "uuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "objects": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstance"
+                  }
+                }
               }
             }
           }
@@ -18279,45 +18291,20 @@ export const miroirFundamentalJzodSchema = {
             "definition": "RestPersistenceAction"
           },
           "actionName": {
-            "type": "enum",
-            "definition": [
-              "create",
-              "read",
-              "update",
-              "delete"
-            ]
+            "type": "literal",
+            "definition": "create"
           },
           "actionLabel": {
             "type": "string",
             "optional": true
           },
+          "application": {
+            "type": "literal",
+            "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
+          },
           "endpoint": {
             "type": "literal",
             "definition": "a93598b3-19b6-42e8-828c-f02042d212d4"
-          },
-          "section": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "applicationSection"
-            }
-          },
-          "application": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": false,
-                "defaultLabel": "Application",
-                "selectorParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                },
-                "editable": false
-              }
-            }
           },
           "deploymentUuid": {
             "type": "uuid",
@@ -18329,58 +18316,87 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Parent Name",
-                "editable": false
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "string",
-            "optional": true,
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Parent Uuid",
-                "editable": false
-              }
-            }
-          },
-          "uuid": {
-            "type": "string",
-            "optional": true,
-            "validations": [
-              {
-                "type": "uuid"
-              }
-            ],
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false
-              }
-            }
-          },
-          "objects": {
-            "type": "array",
-            "optional": true,
+          "payload": {
+            "type": "object",
             "definition": {
-              "type": "schemaReference",
-              "optional": true,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstance"
+              "application": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "editable": false
+                  }
+                }
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "parentName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Name",
+                    "editable": false
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "uuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "objects": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": true,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstance"
+                  }
+                }
               }
             }
           }

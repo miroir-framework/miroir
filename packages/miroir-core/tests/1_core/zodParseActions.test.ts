@@ -431,14 +431,18 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: persistenceAction,
     action: {
       actionType: "LocalPersistenceAction",
-      endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       actionName: "create",
+      endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       section: "data",
-      parentName: entityMenu.name,
-      parentUuid: entityMenu.uuid,
-      uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
-      objects: [menuDefaultMiroir as EntityInstance],
+      payload: {
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        parentName: entityMenu.name,
+        parentUuid: entityMenu.uuid,
+        uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
+        objects: [menuDefaultMiroir as EntityInstance],
+      }
     },
   },
   // ##############################################################################################

@@ -3276,15 +3276,115 @@ export function getMiroirFundamentalJzodSchema(
             (e: any) => e.actionParameters
           ),
         },
+        // persistenceAction: {
+        //   type: "union",
+        //   discriminator: "actionType",
+        //   definition: persistenceEndpointVersionV1.definition.actions.map(
+        //     (e: any) => e.actionParameters
+        //   ),
+        // },
         persistenceAction: {
           type: "union",
           discriminator: "actionType",
-          definition: persistenceEndpointVersionV1.definition.actions.map(
-            (e: any) => e.actionParameters
-          ),
+          definition: [
+            // runBoxedExtractorAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "runBoxedExtractorAction",
+              },
+            },
+            // runBoxedQueryAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "runBoxedQueryAction",
+              },
+            },
+            // runBoxedExtractorOrQueryAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "runBoxedExtractorOrQueryAction",
+              },
+            },
+            // runBoxedQueryTemplateAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "runBoxedQueryTemplateAction",
+              },
+            },
+            // runBoxedExtractorTemplateAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "runBoxedExtractorTemplateAction",
+              },
+            },
+            // runBoxedQueryTemplateOrBoxedExtractorTemplateAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+              },
+            },
+            // bundleAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "bundleAction",
+              },
+            },
+            // instanceAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "instanceAction",
+              },
+            },
+            // modelAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "modelAction",
+              },
+            },
+            // storeManagementAction
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "storeManagementAction",
+              },
+            },
+            ...persistenceEndpointVersionV1.definition.actions.map((e: Record<string, JzodElement>) => ({
+              type: "object",
+              definition: e.actionParameters,
+            })),
+          ],
         },
-        localPersistenceAction: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
-        restPersistenceAction: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
+        localPersistenceAction: {type: "object", definition: persistenceEndpointVersionV1.definition.actions[0].actionParameters},
+        restPersistenceAction: {type: "object", definition: persistenceEndpointVersionV1.definition.actions[1].actionParameters},
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction: {
           type: "object",
           definition: queryEndpointVersionV1.definition.actions[0].actionParameters,

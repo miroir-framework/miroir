@@ -406,21 +406,21 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         const localStoreAction: PersistenceStoreControllerAction = {
           // actionType: "instanceAction",
           actionType: actionMap[action.actionName],
-          parentName: action.parentName ?? "",
-          parentUuid: action.parentUuid ?? "",
+          parentName: action.payload.parentName ?? "",
+          parentUuid: action.payload.parentUuid ?? "",
           deploymentUuid: action.deploymentUuid,
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
-            applicationSection: action.section,
+            applicationSection: action.payload.section,
             objects: [
               {
                 // type issue: read action does not have "objects" attribute
-                parentName: action.parentName ?? "",
-                parentUuid: action.parentUuid ?? "",
-                applicationSection: action.section,
-                instances: (Array.isArray(action.objects)
-                  ? action.objects
+                parentName: action.payload.parentName ?? "",
+                parentUuid: action.payload.parentUuid ?? "",
+                applicationSection: action.payload.section,
+                instances: (Array.isArray(action.payload.objects)
+                  ? action.payload.objects
                   : []) as EntityInstance[],
               },
             ],
@@ -671,7 +671,6 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         action
       );
     }
-    // const clientResult: RestClientCallReturnType = await remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action);
     const clientResult: RestClientCallReturnType = yield* call(() =>
       remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action)
     );
@@ -685,8 +684,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         const result: Action2ReturnType = {
           status: "ok",
           returnedDomainElement: {
-            parentUuid: action.parentUuid ?? "", // TODO: action.parentUuid should not be optional!
-            applicationSection: action.section,
+            parentUuid: action.payload.parentUuid ?? "", // TODO: action.parentUuid should not be optional!
+            applicationSection: action.payload.section,
             instances: clientResult.data.instances,
           },
         };
@@ -844,6 +843,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
         const { action, currentModel } = p.payload;
+        // log.info(
+        //   "PersistenceReduxSaga handlePersistenceAction called with persistenceStoreAccessMode =",
+        //   this.params.persistenceStoreAccessMode,
+        //   "action",
+        //   action
+        // );
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             const localPersistenceStoreController =

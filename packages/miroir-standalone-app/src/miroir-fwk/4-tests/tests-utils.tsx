@@ -264,6 +264,7 @@ export async function addEntitiesAndInstancesForRealServer(
     actionType: "createEntity",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     payload: {
       entities: entities
     }
@@ -275,8 +276,9 @@ export async function addEntitiesAndInstancesForRealServer(
       await domainController.handleAction(
         {
           actionType: "commit",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         },
         localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
       );
@@ -286,8 +288,9 @@ export async function addEntitiesAndInstancesForRealServer(
     await domainController.handleAction(
       {
         actionType: "commit",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       },
       localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
     );
@@ -558,6 +561,7 @@ export async function resetApplicationDeployments(
   for (const d of deploymentConfigurations) {
     await domainController.handleAction({
       actionType: "resetModel",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: d.adminConfigurationDeployment.uuid,
     }, localCache?localCache.currentModelEnvironment(d.adminConfigurationDeployment.uuid):defaultMiroirModelEnvironment);
@@ -628,7 +632,7 @@ export async function runTestOrTestSuite(
   try {
     switch (testAction.testActionType) {
       case 'testBuildPlusRuntimeCompositeActionSuite':
-      case "testRuntimeCompositeActionSuite": 
+      // case "testRuntimeCompositeActionSuite": 
       case "testCompositeActionSuite": {
         const newParams = {...testActionParamValues??{}, ...(testAction.testCompositeAction as any)["testActionParams"]??{}};
         log.info(
@@ -671,7 +675,7 @@ export async function runTestOrTestSuite(
         return queryResult;
       }
       case 'testBuildPlusRuntimeCompositeAction':
-      case "testRuntimeCompositeAction": 
+      // case "testRuntimeCompositeAction": 
       case "testCompositeAction": {
         const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
           fullTestName,

@@ -103,16 +103,61 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     ) => Promise<RestClientCallReturnType>;
     url: string;
     args: any;
-  } {
-    const networkActionUrlMap: { [actionName: string]: string } = {
-      read:
-        "/" +
-        ((persistenceAction as RestPersistenceAction).uuid ??
-          (persistenceAction as RestPersistenceAction).parentUuid + "/all"),
-      create: "/" + ((persistenceAction as RestPersistenceAction).uuid ?? ""),
-      update: "/" + ((persistenceAction as RestPersistenceAction).uuid ?? ""),
-      delete: "/" + ((persistenceAction as RestPersistenceAction).uuid ?? ""),
-    };
+  } { 
+  let networkActionUrlMap: { [actionName: string]: string } = {};
+  switch (persistenceAction.actionType) {
+    case "LocalPersistenceAction":
+    case "RestPersistenceAction": {
+      networkActionUrlMap = {
+            read:
+              "/" +
+              (persistenceAction.payload.uuid ?? (persistenceAction.payload.parentUuid + "/all")),
+            create: "/" + (persistenceAction.payload.uuid ?? ""),
+            update: "/" + (persistenceAction.payload.uuid ?? ""),
+            delete: "/" + (persistenceAction.payload.uuid ?? ""),
+          };
+      break;
+    }
+    case "runBoxedQueryAction":
+    case "runBoxedExtractorOrQueryAction":
+    case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction":
+    case "runBoxedQueryTemplateAction":
+    case "runBoxedExtractorTemplateAction":
+    case "storeManagementAction_createStore":
+    case "storeManagementAction_deleteStore":
+    case "storeManagementAction_resetAndInitApplicationDeployment":
+    case "storeManagementAction_openStore":
+    case "storeManagementAction_closeStore":
+    case "createInstance":
+    case "deleteInstance":
+    case "deleteInstanceWithCascade":
+    case "updateInstance":
+    case "loadNewInstancesInLocalCache":
+    case "getInstance":
+    case "getInstances":
+    case "initModel":
+    case "commit":
+    case "rollback":
+    case "remoteLocalCacheRollback":
+    case "resetModel":
+    case "resetData":
+    case "alterEntityAttribute":
+    case "renameEntity":
+    case "createEntity":
+    case "dropEntity":
+    case "runBoxedExtractorAction":
+    case "bundleAction": {
+      networkActionUrlMap = {
+            read: "/" + ((persistenceAction as any).uuid ?? ((persistenceAction as any).parentUuid + "/all")),
+            create: "/" + ((persistenceAction as any).uuid ?? ""),
+            update: "/" + ((persistenceAction as any).uuid ?? ""),
+            delete: "/" + ((persistenceAction as any).uuid ?? ""),
+          }
+      break;
+    }
+    default:
+      break;
+  }
 
     let args;
     if (this.actionTypeArgsMap[persistenceAction.actionType]) {
@@ -250,27 +295,39 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
               JSON.stringify(action, undefined, 2)
           );
         }
+        if (typeof action.payload.parentUuid !== "string") {
+          throw new Error(
+            "handleNetworkPersistenceAction could not find payload.parentUuid in action " +
+              JSON.stringify(action, undefined, 2)
+          );
+        }
+        if (typeof action.payload.section !== "string") {
+          throw new Error(
+            "handleNetworkPersistenceAction could not find section in action " +
+              JSON.stringify(action, undefined, 2)
+          );
+        }
         const callParams = this.getRestCallParams(
           action,
           this.rootApiUrl +
             "/CRUD/" +
             action.deploymentUuid +
             "/" +
-            action.section.toString() +
+            action.payload.section.toString() +
             "/entity"
         );
         const completeArgs = {
           ...callParams.args,
           actionName: action.actionName,
           deploymentUuid: action.deploymentUuid,
-          section: action.section,
-          parentUuid: action.parentUuid,
+          section: action.payload.section,
+          parentUuid: action.payload.parentUuid,
         };
         log.debug(
           "handleNetworkPersistenceAction action",
           action,
           "section",
-          action.section,
+          action.payload.section,
           "callParams",
           callParams,
           "completeArgs",
@@ -278,7 +335,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         );
         const result = callParams.operation(
           "/CRUD/:deploymentUuid/:section/entity" +
-            (action.actionName == "read" ? "/:parentUuid/all" : ""),
+            ((action.actionName as any) == "read" ? "/:parentUuid/all" : ""),
           callParams.url,
           completeArgs
         );
