@@ -3174,13 +3174,18 @@ export function getMiroirFundamentalJzodSchema(
             definition: e.actionParameters,
           })),
         },
-        testAction_runTestCompositeAction: testEndpointVersionV1.definition.actions.find(
-          (a: any) =>
-            a.actionParameters.definition.actionName.definition == "runTestCompositeAction"
-        )?.actionParameters,
-        testAction_runTestCase: testEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.definition.actionName.definition == "runTestCase"
-        )?.actionParameters,
+        testAction_runTestCompositeAction: {
+          type: "object",
+          definition: testEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionName.definition == "runTestCompositeAction"
+          )?.actionParameters,
+        },
+        testAction_runTestCase: {
+          type: "object",
+          definition: testEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionName.definition == "runTestCase"
+          )?.actionParameters,
+        },
         instanceCUDAction: {
           type: "union",
           discriminator: "actionType",
@@ -3256,10 +3261,12 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "instanceAction",
               },
             },
-            ...localCacheEndpointVersionV1.definition.actions.map((e: Record<string, JzodElement>) => ({
-              type: "object",
-              definition: e.actionParameters,
-            })),
+            ...localCacheEndpointVersionV1.definition.actions.map(
+              (e: Record<string, JzodElement>) => ({
+                type: "object",
+                definition: e.actionParameters,
+              })
+            ),
           ],
         },
         // localCacheAction: {
@@ -3272,9 +3279,10 @@ export function getMiroirFundamentalJzodSchema(
         storeManagementAction: {
           type: "union",
           discriminator: "actionType",
-          definition: storeManagementEndpoint.definition.actions.map(
-            (e: any) => ({type: "object", definition: e.actionParameters})
-          ),
+          definition: storeManagementEndpoint.definition.actions.map((e: any) => ({
+            type: "object",
+            definition: e.actionParameters,
+          })),
         },
         // persistenceAction: {
         //   type: "union",
@@ -3377,14 +3385,22 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "storeManagementAction",
               },
             },
-            ...persistenceEndpointVersionV1.definition.actions.map((e: Record<string, JzodElement>) => ({
-              type: "object",
-              definition: e.actionParameters,
-            })),
+            ...persistenceEndpointVersionV1.definition.actions.map(
+              (e: Record<string, JzodElement>) => ({
+                type: "object",
+                definition: e.actionParameters,
+              })
+            ),
           ],
         },
-        localPersistenceAction: {type: "object", definition: persistenceEndpointVersionV1.definition.actions[0].actionParameters},
-        restPersistenceAction: {type: "object", definition: persistenceEndpointVersionV1.definition.actions[1].actionParameters},
+        localPersistenceAction: {
+          type: "object",
+          definition: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
+        },
+        restPersistenceAction: {
+          type: "object",
+          definition: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
+        },
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction: {
           type: "object",
           definition: queryEndpointVersionV1.definition.actions[0].actionParameters,
