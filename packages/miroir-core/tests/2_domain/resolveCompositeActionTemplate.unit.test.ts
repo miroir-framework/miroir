@@ -59,8 +59,7 @@ describe('resolveTestCompositeActionTemplate', () => {
       // compositeActionTemplate: { actionType: 'simpleAction' },
       testCompositeActionAssertions: [],
       compositeActionTemplate: {
-        actionType: "compositeAction",
-        actionName: "sequence",
+        actionType: "compositeActionSequence",
         actionLabel: "testCompositeAction",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
@@ -115,6 +114,7 @@ describe('resolveTestCompositeActionTemplate', () => {
                 interpolation: "build",
                 referenceName: "currentDeploymentUuid",
               },
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 entities: [
@@ -189,9 +189,8 @@ describe('resolveTestCompositeActionTemplate', () => {
       afterTestCleanupAction: undefined,
       beforeTestSetupAction: undefined,
       testCompositeActionAssertions: [],
-      compositeAction: {
-        actionType: "compositeAction",
-        actionName: "sequence",
+      compositeActionSequence: {
+        actionType: "compositeActionSequence",
         actionLabel: "testCompositeAction",
         deploymentUuid: undefined,
         // templates: (testCompositeActionTemplate.compositeActionTemplate as any).templates,
@@ -203,6 +202,7 @@ describe('resolveTestCompositeActionTemplate', () => {
               actionType: "createEntity",
               actionLabel: "createEntity",
               deploymentUuid: currentDeploymentUuid,
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 entities: [
@@ -306,8 +306,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
           testType: "testCompositeActionTemplate",
           testLabel: "Action 1",
           compositeActionTemplate: {
-            actionType: "compositeAction",
-            actionName: "sequence",
+            actionType: "compositeActionSequence",
             actionLabel: "simpleAction1",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
@@ -321,6 +320,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                     interpolation: "build",
                     referenceName: "currentDeploymentUuid",
                   },
+                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     entities: [
@@ -366,9 +366,8 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
           testLabel: "Action 1",
           testType: "testCompositeAction",
           testCompositeActionAssertions: [],
-          compositeAction: {
-            actionType: "compositeAction",
-            actionName: "sequence",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "simpleAction1",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
@@ -378,6 +377,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                   actionType: "createEntity",
                   actionLabel: "createEntity",
                   deploymentUuid: currentDeploymentUuid,
+                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     entities: [
@@ -432,7 +432,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
     // expect(result.resolvedTestCompositeActionDefinition.testType).toBe('testCompositeActionSuite');
     // expect(result.resolvedTestCompositeActionDefinition.testLabel).toBe('Test Suite Label');
     // expect(result.resolvedTestCompositeActionDefinition.testCompositeActions.action1.testLabel).toBe('Action 1');
-    // expect(result.resolvedTestCompositeActionDefinition.testCompositeActions.action1.compositeAction.actionType).toBe('simpleAction1');
+    // expect(result.resolvedTestCompositeActionDefinition.testCompositeActions.action1.compositeActionSequence.actionType).toBe('simpleAction1');
   });
 
   // it('should resolve beforeAll, beforeEach, afterEach, and afterAll actions', () => {

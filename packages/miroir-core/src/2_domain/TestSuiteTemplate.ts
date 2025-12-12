@@ -1,4 +1,4 @@
-import { compositeAction, MetaModel, TestCompositeAction, TestCompositeActionSuite, TestCompositeActionTemplate, TestCompositeActionTemplateSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { compositeActionSequence, MetaModel, TestCompositeAction, TestCompositeActionSuite, TestCompositeActionTemplate, TestCompositeActionTemplateSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -43,7 +43,7 @@ export function resolveTestCompositeActionTemplate(
         actionParamValues,
       ).resolvedCompositeActionDefinition: undefined,
       testCompositeActionAssertions: testCompositeActionTemplate.testCompositeActionAssertions,
-      compositeAction: compositeActionTemplateResolved.resolvedCompositeActionDefinition,
+      compositeActionSequence: compositeActionTemplateResolved.resolvedCompositeActionDefinition,
     },
     resolvedCompositeActionTemplates: {}
   }

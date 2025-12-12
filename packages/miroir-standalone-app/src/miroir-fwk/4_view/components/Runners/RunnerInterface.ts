@@ -1,5 +1,5 @@
 import type { FormikHelpers } from "formik";
-import type { CompositeAction, CompositeActionTemplate, TransformerForBuildPlusRuntime, JzodObject, BoxedQueryTemplateWithExtractorCombinerTransformer, BoxedQueryWithExtractorCombinerTransformer, MiroirModelEnvironment, Uuid } from "miroir-core";
+import type { CompositeActionSequence, CompositeActionTemplate, TransformerForBuildPlusRuntime, JzodObject, BoxedQueryTemplateWithExtractorCombinerTransformer, BoxedQueryWithExtractorCombinerTransformer, MiroirModelEnvironment, Uuid } from "miroir-core";
 import type { ReactElement } from "react";
 
 // ################################################################################################
@@ -9,8 +9,8 @@ export type RunnerAction<T extends Record<string, any>> =
       onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => void | Promise<void>;
     }
   | {
-      actionType: "compositeAction";
-      compositeAction: CompositeAction;
+      actionType: "compositeActionSequence";
+      compositeActionSequence: CompositeActionSequence;
     }
   | {
       actionType: "compositeActionTemplate";

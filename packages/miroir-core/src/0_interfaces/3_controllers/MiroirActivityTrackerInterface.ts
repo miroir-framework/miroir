@@ -141,9 +141,9 @@ export interface MiroirActivityTrackerInterface {
 
   /**
    * Set the current composite action name (similar to LoggerGlobalContext)
-   * @param compositeAction The composite action name or undefined to clear
+   * @param compositeActionSequence The composite action name or undefined to clear
    */
-  setCompositeAction(compositeAction: string | undefined): void;
+  setCompositeAction(compositeActionSequence: string | undefined): void;
 
   /**
    * Get the current composite action name

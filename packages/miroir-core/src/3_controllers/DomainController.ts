@@ -33,7 +33,7 @@ import {
   ApplicationSection,
   ApplicationVersion,
   BuildPlusRuntimeCompositeAction,
-  CompositeAction,
+  CompositeActionSequence,
   CompositeActionTemplate,
   DomainAction,
   EntityInstance,
@@ -1415,7 +1415,7 @@ export class DomainController implements DomainControllerInterface {
                 // domainAction.actionType == "commit" ||
                 // domainAction.actionType == "rollback" ||
                 // domainAction.actionType == "remoteLocalCacheRollback" ||
-                domainAction.actionType == "compositeAction"
+                domainAction.actionType == "compositeActionSequence"
               ) {
                 // automatically commit after each model action from the UI if autocommit is enabled
                 const commitAction: ModelAction = {
@@ -1619,10 +1619,10 @@ export class DomainController implements DomainControllerInterface {
       // Also set in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirActivityTracker.setAction(domainAction.actionType);
       switch (domainAction.actionType) {
-        case "compositeAction": {
+        case "compositeActionSequence": {
           // old school, not used anymore (or should not be used anymore)
           throw new Error(
-            "DomainController handleAction compositeAction should not be used anymore"
+            "DomainController handleAction compositeActionSequence should not be used anymore"
           );
           break;
         }
@@ -1804,15 +1804,15 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   // TODO: used in tests only?!
   async handleCompositeAction(
-    compositeAction: CompositeAction,
+    compositeActionSequence: CompositeActionSequence,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
     return this.miroirContext.miroirActivityTracker.trackAction(
-      "compositeAction",
-      compositeAction.actionLabel,
+      "compositeActionSequence",
+      compositeActionSequence.actionLabel,
       (async () =>
-        this.handleCompositeActionInternal(compositeAction, modelEnvironment, actionParamValues, )).bind(
+        this.handleCompositeActionInternal(compositeActionSequence, modelEnvironment, actionParamValues, )).bind(
         this
       )
     );
@@ -1820,7 +1820,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   private async handleCompositeActionInternal(
-    compositeAction: CompositeAction,
+    compositeActionSequence: CompositeActionSequence,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
     // currentModel: MiroirModelEnvironment // TODO: redundant with actionParamValues, remove it?
@@ -1830,15 +1830,15 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
-      "handleCompositeAction compositeAction",
-      JSON.stringify(compositeAction, null, 2),
+      "handleCompositeAction compositeActionSequence",
+      JSON.stringify(compositeActionSequence, null, 2),
       "localActionParams keys",
       Object.keys(localActionParams)
     );
-    // log.info("handleCompositeAction compositeAction", JSON.stringify(compositeAction, null, 2), "localActionParams keys", Object.keys(localActionParams));
-    // log.info("handleCompositeAction compositeAction", compositeAction, "localActionParams", localActionParams);
+    // log.info("handleCompositeAction compositeActionSequence", JSON.stringify(compositeActionSequence, null, 2), "localActionParams keys", Object.keys(localActionParams));
+    // log.info("handleCompositeAction compositeActionSequence", compositeActionSequence, "localActionParams", localActionParams);
 
-    for (const currentAction of compositeAction.payload.definition) {
+    for (const currentAction of compositeActionSequence.payload.definition) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
@@ -1852,10 +1852,10 @@ export class DomainController implements DomainControllerInterface {
         //   Object.keys(localContext),
         // );
         switch (currentAction.actionType) {
-          case "compositeAction": {
+          case "compositeActionSequence": {
             // composite pattern, recursive call
             log.info(
-              "handleCompositeAction compositeAction action to handle",
+              "handleCompositeAction compositeActionSequence action to handle",
               JSON.stringify(currentAction, null, 2)
             );
             actionResult = await this.handleCompositeAction(
@@ -2042,13 +2042,13 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
-      "handleRuntimeCompositeAction compositeAction",
+      "handleRuntimeCompositeAction compositeActionSequence",
       JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
       "localActionParams keys",
       Object.keys(localActionParams)
     );
-    // log.info("handleRuntimeCompositeAction compositeAction", JSON.stringify(compositeAction, null, 2), "localActionParams keys", Object.keys(localActionParams));
-    // log.info("handleRuntimeCompositeAction compositeAction", compositeAction, "localActionParams", localActionParams);
+    // log.info("handleRuntimeCompositeAction compositeActionSequence", JSON.stringify(compositeActionSequence, null, 2), "localActionParams keys", Object.keys(localActionParams));
+    // log.info("handleRuntimeCompositeAction compositeActionSequence", compositeActionSequence, "localActionParams", localActionParams);
 
     for (const currentAction of buildPlusRuntimeCompositeAction.payload.definition) {
       let actionResult: Action2ReturnType | undefined = undefined;
@@ -2093,10 +2093,10 @@ export class DomainController implements DomainControllerInterface {
         // }
 
         switch (currentAction.actionType) {
-          case "compositeAction": {
+          case "compositeActionSequence": {
             // composite pattern, recursive call
             log.info(
-              "handleRuntimeCompositeAction compositeAction action to handle",
+              "handleRuntimeCompositeAction compositeActionSequence action to handle",
               JSON.stringify(currentAction, null, 2)
             );
             actionResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
@@ -2364,7 +2364,7 @@ export class DomainController implements DomainControllerInterface {
     let localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
-      "handleBuildPlusRuntimeCompositeAction compositeAction",
+      "handleBuildPlusRuntimeCompositeAction compositeActionSequence",
       JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
       "localActionParams keys",
       Object.keys(localActionParams)
@@ -2486,8 +2486,7 @@ export class DomainController implements DomainControllerInterface {
     }
 
     const resolvedAction: BuildPlusRuntimeCompositeAction = {
-      actionType: "compositeAction",
-      actionName: buildPlusRuntimeCompositeAction.actionName,
+      actionType: "compositeActionSequence",
       actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
@@ -2848,25 +2847,25 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleCompositeActionTemplate(
-    compositeAction: CompositeActionTemplate,
+    compositeActionSequence: CompositeActionTemplate,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
-    const actionLabel = (compositeAction as any).actionLabel ?? "no action label";
+    const actionLabel = (compositeActionSequence as any).actionLabel ?? "no action label";
     log.info(
-      "handleCompositeActionTemplate called with compositeAction",
+      "handleCompositeActionTemplate called with compositeActionSequence",
       actionLabel,
-      "compositeAction",
-      compositeAction,
+      "compositeActionSequence",
+      compositeActionSequence,
       "localActionParams",
       localActionParams
     );
     const resolved: TransformerReturnType<{
-      resolvedCompositeActionDefinition: CompositeAction;
+      resolvedCompositeActionDefinition: CompositeActionSequence;
       resolvedCompositeActionTemplates: Record<string, any>;
-    }> = resolveCompositeActionTemplate(compositeAction, modelEnvironment, localActionParams,); // resolves "build" temp
+    }> = resolveCompositeActionTemplate(compositeActionSequence, modelEnvironment, localActionParams,); // resolves "build" temp
 
     if (resolved instanceof TransformerFailure) {
       return new Action2Error(
@@ -2874,7 +2873,7 @@ export class DomainController implements DomainControllerInterface {
         "handleCompositeActionTemplate error resolving composite action template",
         [actionLabel],
         resolved as any, // TODO: TransformerFailure to Action2Error
-        compositeAction
+        compositeActionSequence
       );
     }
     log.info("handleCompositeActionTemplate resolved Templates", {actionLabel, localActionParams, resolved});
@@ -3054,7 +3053,7 @@ export class DomainController implements DomainControllerInterface {
         case "dropEntity":
         //
         case "transactionalInstanceAction":
-        case "compositeAction":
+        case "compositeActionSequence":
         // case "storeManagementAction":
         case "storeManagementAction_createStore":
         case "storeManagementAction_deleteStore":
@@ -3187,13 +3186,13 @@ export class DomainController implements DomainControllerInterface {
 
     switch (testAction.testType) {
       case "testCompositeAction": {
-        const localCompositeAction: CompositeAction = {
-          ...testAction.compositeAction,
+        const localCompositeAction: CompositeActionSequence = {
+          ...testAction.compositeActionSequence,
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             definition: [
-              ...testAction.compositeAction.payload.definition,
+              ...testAction.compositeActionSequence.payload.definition,
               ...testAction.testCompositeActionAssertions,
             ]
           }
@@ -3206,12 +3205,12 @@ export class DomainController implements DomainControllerInterface {
       }
       case "testBuildPlusRuntimeCompositeAction": {
         const localCompositeAction: BuildPlusRuntimeCompositeAction = {
-          ...testAction.compositeAction,
+          ...testAction.compositeActionSequence,
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             definition: [
-              ...testAction.compositeAction.payload.definition,
+              ...testAction.compositeActionSequence.payload.definition,
               ...testAction.testCompositeActionAssertions,
             ],
           }
@@ -3393,12 +3392,12 @@ export class DomainController implements DomainControllerInterface {
         switch (testCompositeAction[1].testType) {
           case 'testBuildPlusRuntimeCompositeAction': {
             const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
-              ...testCompositeAction[1].compositeAction,
+              ...testCompositeAction[1].compositeActionSequence,
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 definition: [
-                  ...testCompositeAction[1].compositeAction.payload.definition,
+                  ...testCompositeAction[1].compositeActionSequence.payload.definition,
                   ...testCompositeAction[1].testCompositeActionAssertions,
                 ]
               }
@@ -3425,9 +3424,9 @@ export class DomainController implements DomainControllerInterface {
           }
           // case "testRuntimeCompositeAction": {
           //   const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
-          //     ...testCompositeAction[1].compositeAction,
+          //     ...testCompositeAction[1].compositeActionSequence,
           //     definition: [
-          //       ...testCompositeAction[1].compositeAction.definition,
+          //       ...testCompositeAction[1].compositeActionSequence.definition,
           //       ...testCompositeAction[1].testCompositeActionAssertions,
           //     ],
           //   };
@@ -3451,13 +3450,13 @@ export class DomainController implements DomainControllerInterface {
           //   break;
           // }
           case "testCompositeAction": {
-            const localTestCompositeAction: CompositeAction = {
-              ...testCompositeAction[1].compositeAction,
+            const localTestCompositeAction: CompositeActionSequence = {
+              ...testCompositeAction[1].compositeActionSequence,
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 definition: [
-                  ...testCompositeAction[1].compositeAction.payload.definition,
+                  ...testCompositeAction[1].compositeActionSequence.payload.definition,
                   ...testCompositeAction[1].testCompositeActionAssertions,
                 ],
               }
@@ -3650,7 +3649,7 @@ export class DomainController implements DomainControllerInterface {
       resolvedAction.resolvedTestCompositeActionDefinition.testCompositeActions
     ).filter(
       (e: [string, TestCompositeAction]) =>
-        (e[1].compositeAction.payload.definition as any).queryFailure != undefined
+        (e[1].compositeActionSequence.payload.definition as any).queryFailure != undefined
     );
 
     if (resolveErrors.length > 0) {
@@ -3781,7 +3780,7 @@ type AsyncHandlerClosure = () => Promise<Action2VoidReturnType>
 /**
  * actionType -> actionName -> handler
  * in the end, shall be:
- * actionType -> actionName -> {compositeAction, compositeActionParams}
+ * actionType -> actionName -> {compositeActionSequence, compositeActionParams}
  * also, the allowed actionNames shall be different for each actionType, depending on the actionType
  */
 // export type ActionHandler= Record<string, Record<string, (domainAction: DomainAction, currentModel?: MetaModel) => Promise<Action2VoidReturnType>>>;

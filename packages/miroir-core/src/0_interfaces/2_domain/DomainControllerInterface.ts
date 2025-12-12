@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import {
-  CompositeAction,
+  CompositeActionSequence,
   CompositeActionTemplate,
   DomainAction,
   EntityInstance,
@@ -106,7 +106,7 @@ export interface DomainControllerInterface {
     actionParamValues: any,
   ): Promise<Action2VoidReturnType>;
   handleCompositeAction(
-    action: CompositeAction,
+    action: CompositeActionSequence,
     currentModel: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType>;

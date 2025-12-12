@@ -44,8 +44,7 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal", "definition": "compositeAction" },
-          "actionName": { "type": "literal", "definition": "sequence" },
+          "actionType": { "type": "literal", "definition": "compositeActionSequence" },
           "actionLabel": { "type": "string", "optional": true },
           "endpoint": {
             "type": "literal",
@@ -87,7 +86,7 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "compositeAction"
+                        "relativePath": "compositeActionSequence"
                       }
                     },
                     {

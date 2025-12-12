@@ -8307,7 +8307,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterTestCleanupAction": {
@@ -8315,14 +8315,14 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
-          "compositeAction": {
+          "compositeActionSequence": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "testCompositeActionAssertions": {
@@ -8352,7 +8352,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "beforeEach": {
@@ -8360,7 +8360,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterEach": {
@@ -8368,7 +8368,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterAll": {
@@ -8376,7 +8376,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "testCompositeActions": {
@@ -8406,7 +8406,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterTestCleanupAction": {
@@ -8414,10 +8414,10 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
-          "compositeAction": {
+          "compositeActionSequence": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -8451,7 +8451,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "beforeEach": {
@@ -8459,7 +8459,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterEach": {
@@ -8467,7 +8467,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterAll": {
@@ -8475,7 +8475,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "testCompositeActions": {
@@ -8512,7 +8512,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterTestCleanupAction": {
@@ -8520,10 +8520,10 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
-          "compositeAction": {
+          "compositeActionSequence": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -8564,7 +8564,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "beforeEach": {
@@ -8572,7 +8572,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterEach": {
@@ -8580,7 +8580,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "afterAll": {
@@ -8588,7 +8588,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           "testCompositeActions": {
@@ -8866,7 +8866,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterTestCleanupAction": {
@@ -8874,14 +8874,14 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
-                      "compositeAction": {
+                      "compositeActionSequence": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActionAssertions": {
@@ -8911,7 +8911,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "beforeEach": {
@@ -8919,7 +8919,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterEach": {
@@ -8927,7 +8927,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterAll": {
@@ -8935,7 +8935,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActions": {
@@ -8965,7 +8965,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterTestCleanupAction": {
@@ -8973,10 +8973,10 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
-                      "compositeAction": {
+                      "compositeActionSequence": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -9010,7 +9010,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "beforeEach": {
@@ -9018,7 +9018,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterEach": {
@@ -9026,7 +9026,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterAll": {
@@ -9034,7 +9034,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActions": {
@@ -9071,7 +9071,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterTestCleanupAction": {
@@ -9079,10 +9079,10 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
-                      "compositeAction": {
+                      "compositeActionSequence": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -9123,7 +9123,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "beforeEach": {
@@ -9131,7 +9131,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterEach": {
@@ -9139,7 +9139,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterAll": {
@@ -9147,7 +9147,7 @@ export const miroirFundamentalJzodSchema = {
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActions": {
@@ -18945,7 +18945,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeAction"
+              "relativePath": "compositeActionSequence"
             }
           },
           {
@@ -19042,16 +19042,12 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "compositeAction": {
+      "compositeActionSequence": {
         "type": "object",
         "definition": {
           "actionType": {
             "type": "literal",
-            "definition": "compositeAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "sequence"
+            "definition": "compositeActionSequence"
           },
           "actionLabel": {
             "type": "string",
@@ -19102,7 +19098,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "compositeAction"
+                        "relativePath": "compositeActionSequence"
                       }
                     },
                     {
@@ -19209,7 +19205,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "actionType": {
             "type": "literal",
-            "definition": "compositeAction"
+            "definition": "compositeActionSequence"
           },
           "actionName": {
             "type": "literal",
@@ -19357,7 +19353,7 @@ export const miroirFundamentalJzodSchema = {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+          "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
         }
       },
       "compositeRunTestAssertion": {
@@ -19467,11 +19463,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "compositeAction"
-              },
-              "actionName": {
-                "type": "literal",
-                "definition": "sequence"
+                "definition": "compositeActionSequence"
               },
               "actionLabel": {
                 "type": "string",
@@ -19522,7 +19514,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
+                            "relativePath": "compositeActionSequence"
                           }
                         },
                         {
@@ -24781,7 +24773,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence": {
         "type": "union",
         "definition": [
           {
@@ -24798,22 +24790,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "compositeAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "sequence"
+                    "definition": "compositeActionSequence"
                   },
                   {
                     "type": "schemaReference",
@@ -24960,7 +24937,7 @@ export const miroirFundamentalJzodSchema = {
                                   "type": "schemaReference",
                                   "definition": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                                   }
                                 },
                                 {
@@ -25437,22 +25414,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "compositeAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "sequence"
+                    "definition": "compositeActionSequence"
                   },
                   {
                     "type": "schemaReference",
@@ -25599,7 +25561,7 @@ export const miroirFundamentalJzodSchema = {
                                   "type": "schemaReference",
                                   "definition": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                                   }
                                 },
                                 {
@@ -58065,11 +58027,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "compositeAction"
-              },
-              "actionName": {
-                "type": "literal",
-                "definition": "sequence"
+                "definition": "compositeActionSequence"
               },
               "actionLabel": {
                 "type": "string",
@@ -58120,7 +58078,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                           }
                         },
                         {
@@ -60767,16 +60725,12 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence": {
         "type": "object",
         "definition": {
           "actionType": {
             "type": "literal",
-            "definition": "compositeAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "sequence"
+            "definition": "compositeActionSequence"
           },
           "actionLabel": {
             "type": "string",
@@ -60827,7 +60781,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                       }
                     },
                     {
@@ -67351,11 +67305,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "compositeAction"
-              },
-              "actionName": {
-                "type": "literal",
-                "definition": "sequence"
+                "definition": "compositeActionSequence"
               },
               "actionLabel": {
                 "type": "string",
@@ -67406,7 +67356,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                           }
                         },
                         {
@@ -70083,16 +70033,12 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence": {
         "type": "object",
         "definition": {
           "actionType": {
             "type": "literal",
-            "definition": "compositeAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "sequence"
+            "definition": "compositeActionSequence"
           },
           "actionLabel": {
             "type": "string",
@@ -70143,7 +70089,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                       }
                     },
                     {
@@ -75013,11 +74959,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "compositeAction"
-              },
-              "actionName": {
-                "type": "literal",
-                "definition": "sequence"
+                "definition": "compositeActionSequence"
               },
               "actionLabel": {
                 "type": "string",
@@ -75068,7 +75010,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                           }
                         },
                         {
@@ -75256,11 +75198,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "compositeAction"
-              },
-              "actionName": {
-                "type": "literal",
-                "definition": "sequence"
+                "definition": "compositeActionSequence"
               },
               "actionLabel": {
                 "type": "string",
@@ -75311,7 +75249,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
                           }
                         },
                         {
@@ -75425,7 +75363,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
             }
           },
           {

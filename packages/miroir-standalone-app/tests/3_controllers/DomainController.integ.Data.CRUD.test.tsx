@@ -249,10 +249,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
         "Refresh all Instances": {
           testType: "testCompositeAction",
           testLabel: "Refresh all Instances",
-          compositeAction: {
-            actionType: "compositeAction",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "testLibraryBooks",
-            actionName: "sequence",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
@@ -279,7 +278,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   nameGivenToResult: "entityBookList",
                   query: {
                     actionType: "runBoxedExtractorOrQueryAction",
-                    actionName: "runQuery",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
@@ -366,10 +365,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
         "Add Book instance": {
           testType: "testCompositeAction",
           testLabel: "Add Book instance",
-          compositeAction: {
-            actionType: "compositeAction",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            actionName: "sequence",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
@@ -416,7 +414,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   nameGivenToResult: "entityBookList",
                   query: {
                     actionType: "runBoxedExtractorOrQueryAction",
-                    actionName: "runQuery",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
@@ -491,10 +489,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
         "Add Book instance then rollback": {
           testType: "testCompositeAction",
           testLabel: "Add Book instance then rollback",
-          compositeAction: {
-            actionType: "compositeAction",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            actionName: "sequence",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
@@ -541,7 +538,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   nameGivenToResult: "entityBookList",
                   query: {
                     actionType: "runBoxedExtractorOrQueryAction",
-                    actionName: "runQuery",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
@@ -616,10 +613,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
         "Remove Book instance": {
           testType: "testCompositeAction",
           testLabel: "Remove Book instance",
-          compositeAction: {
-            actionType: "compositeAction",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            actionName: "sequence",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
@@ -665,7 +661,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   nameGivenToResult: "entityBookList",
                   query: {
                     actionType: "runBoxedExtractorOrQueryAction",
-                    actionName: "runQuery",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
@@ -747,10 +743,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
         "Remove Book instance then rollback": {
           testType: "testCompositeAction",
           testLabel: "Remove Book instance then rollback",
-          compositeAction: {
-            actionType: "compositeAction",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            actionName: "sequence",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
@@ -804,7 +799,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   nameGivenToResult: "entityBookList",
                   query: {
                     actionType: "runBoxedExtractorOrQueryAction",
-                    actionName: "runQuery",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
@@ -886,10 +881,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
         "Update Book instance": {
           testType: "testCompositeAction",
           testLabel: "Update Book instance",
-          compositeAction: {
-            actionType: "compositeAction",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "AddBookInstanceThenRollback",
-            actionName: "sequence",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
@@ -940,7 +934,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   nameGivenToResult: "entityBookList",
                   query: {
                     actionType: "runBoxedExtractorOrQueryAction",
-                    actionName: "runQuery",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     deploymentUuid: testApplicationDeploymentUuid,
                     payload: {

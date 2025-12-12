@@ -1,11 +1,10 @@
 import {
-  CompositeAction,
+  CompositeActionSequence,
   CompositeActionTemplate,
-  MetaModel,
   TransformerForBuild
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { Domain2ElementFailed, TransformerFailure, type Action2VoidReturnType, type Domain2QueryReturnType, type ITransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { TransformerFailure, type ITransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -24,7 +23,7 @@ export function resolveCompositeActionTemplate(
   currentModel: MiroirModelEnvironment,
   actionParamValues: Record<string, any>,
 ): TransformerReturnType<{
-  resolvedCompositeActionDefinition: CompositeAction,
+  resolvedCompositeActionDefinition: CompositeActionSequence,
   resolvedCompositeActionTemplates: Record<string,any>
 }> {
   if (!compositeActionTemplate || !(compositeActionTemplate as any)["actionType"]) {
@@ -48,7 +47,6 @@ export function resolveCompositeActionTemplate(
         " as whole tranformer"
     );
   }
-  // const localeCompositeAction = compositeActionTemplate as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction;
   const localCompositeAction = compositeActionTemplate as any;
 
 
@@ -111,7 +109,7 @@ export function resolveCompositeActionTemplate(
   }
 
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
-  const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply_wrapper(
+  const resolvedCompositeActionDefinition: CompositeActionSequence = transformer_extended_apply_wrapper(
     undefined, // activityTracker
     "build",
     [],
@@ -141,11 +139,10 @@ export function resolveCompositeActionTemplate(
       innerError: resolvedCompositeActionDefinition as ITransformerFailure,
     });
   }
-  const resolvedCompositeAction: CompositeAction = {
-    actionType: "compositeAction",
-    actionName: "sequence",
+  const resolvedCompositeAction: CompositeActionSequence = {
+    actionType: "compositeActionSequence",
     actionLabel: compositeActionLabel,
-    deploymentUuid: (compositeActionTemplate as CompositeAction).deploymentUuid,
+    deploymentUuid: (compositeActionTemplate as CompositeActionSequence).deploymentUuid,
     // templates: resolvedCompositeActionTemplates, // TODO: TEMPLATES IN COMPOSITE ACTION?
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",

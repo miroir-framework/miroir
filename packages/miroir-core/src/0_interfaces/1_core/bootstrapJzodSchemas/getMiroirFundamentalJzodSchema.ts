@@ -3427,12 +3427,12 @@ export function getMiroirFundamentalJzodSchema(
         },
         // ################################################################################
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
+          (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence"
         )?.actionParameters.payload.definition.definition.definition,
-        compositeAction: {
+        compositeActionSequence: {
           type: "object",
           definition: domainEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters?.actionType?.definition == "compositeAction"
+            (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence"
           )?.actionParameters,
         },
         // ################################################################################
@@ -3445,7 +3445,7 @@ export function getMiroirFundamentalJzodSchema(
         buildCompositeAction: {
           type: "object",
           definition: {
-            actionType: { type: "literal", definition: "compositeAction" },
+            actionType: { type: "literal", definition: "compositeActionSequence" },
             actionName: { type: "literal", definition: "sequence" },
             actionLabel: { type: "string", optional: true },
             deploymentUuid: {
@@ -3556,7 +3556,7 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath:
-              "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+              "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
           },
         },
         // ################################################################################
@@ -3569,7 +3569,7 @@ export function getMiroirFundamentalJzodSchema(
         // ################################################################################
         // ################################################################################
         compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
-          .find((a: any) => a.actionParameters?.actionType?.definition == "compositeAction")
+          .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
           ?.actionParameters.payload.definition.definition.definition.definition.find(
             (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
           ),
@@ -3852,8 +3852,8 @@ export function getMiroirFundamentalJzodSchema(
   // );
 
   // log.info(
-  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeAction:",
-  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.compositeAction, null, 2)
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeActionSequence:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.compositeActionSequence, null, 2)
   // );
 
   // log.info(
@@ -3883,7 +3883,7 @@ export function getMiroirFundamentalJzodSchema(
 
   const oldCompositeActionDependencySet = jzodTransitiveDependencySet(
     miroirFundamentalJzodSchema.definition,
-    "compositeAction",
+    "compositeActionSequence",
     true, // includeExtend
   );
 
@@ -3892,7 +3892,7 @@ export function getMiroirFundamentalJzodSchema(
     oldCompositeActionDependencySet.add(key);
   });
 
-  // TODO: HACK!! forcing build transformer into compositeActionDependencySet, although the compositeAction does not directly reference it, it is used in the extendedSchemas
+  // TODO: HACK!! forcing build transformer into compositeActionDependencySet, although the compositeActionSequence does not directly reference it, it is used in the extendedSchemas
   [
     "transformerForBuild_Abstract", 
     "transformerForBuild_optional_Abstract",
@@ -4154,7 +4154,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 relativePath: forgeCarryOnReferenceName(
                   miroirFundamentalJzodSchemaUuid,
-                  "compositeAction"
+                  "compositeActionSequence"
                 ),
               },
             },

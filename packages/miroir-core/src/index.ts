@@ -52,8 +52,8 @@ export {
   // carryOnObject,
   // ApplicationSection,
   Commit,
-  CompositeAction,
-  compositeAction,
+  CompositeActionSequence,
+  compositeActionSequence,
   CompositeActionTemplate,
   compositeActionTemplate,
   // ===
@@ -910,7 +910,6 @@ export {
   transformer_resolveReference,
 } from "./2_domain/TransformersForRuntime";
 export {
-  modelActionStoreRunnerNotUsed,
   storeActionOrBundleActionStoreRunner,
 } from "./3_controllers/ActionRunner.js";
 export {

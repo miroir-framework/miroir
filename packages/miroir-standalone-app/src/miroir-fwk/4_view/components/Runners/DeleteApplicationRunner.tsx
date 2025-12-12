@@ -74,9 +74,8 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
 
   const deleteApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
     return {
-      actionType: "compositeAction",
+      actionType: "compositeActionSequence",
       actionLabel: "deleteApplicationAndDeployment",
-      actionName: "sequence",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -88,7 +87,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
             nameGivenToResult: "deploymentInfo",
             query: {
               actionType: "runBoxedExtractorOrQueryAction",
-              actionName: "runQuery",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               payload: {
@@ -124,23 +123,27 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
           {
             actionType: "storeManagementAction_deleteStore",
             actionLabel: "deleteStore",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             deploymentUuid: {
               transformerType: "mustacheStringTemplate",
               interpolation: "runtime",
               definition: "{{deploymentInfo.deployments.0.uuid}}",
             } as any,
-            configuration: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              // definition: "{{deploymentInfo.deployments.0.configuration}}",
-              referencePath: ["deploymentInfo", "deployments", 0, "configuration"],
-            } as any,
+            payload: {
+              configuration: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                // definition: "{{deploymentInfo.deployments.0.configuration}}",
+                referencePath: ["deploymentInfo", "deployments", 0, "configuration"],
+              } as any,
+            },
           },
           // Step 3: Delete the Deployment instance from admin
           {
             actionType: "deleteInstance",
             actionLabel: "deleteDeployment",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {
@@ -167,6 +170,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
           {
             actionType: "deleteInstance",
             actionLabel: "deleteAdminApplication",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {

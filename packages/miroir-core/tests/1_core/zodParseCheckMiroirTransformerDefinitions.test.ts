@@ -253,70 +253,70 @@ const createEntityZodParseTests: Record<string, ZodParseTest> = {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.createEntity_newEntity.definition.uuid
+      ].compositeActionSequence.templates.createEntity_newEntity.definition.uuid
   },
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity.definition is parsable": {
     zodSchema: z.record(transformerForBuild),
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.createEntity_newEntity.definition
+      ].compositeActionSequence.templates.createEntity_newEntity.definition
   },
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntity is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.createEntity_newEntity
+      ].compositeActionSequence.templates.createEntity_newEntity
   },
   // templates.createEntity_newEntityDefinition
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates createEntity_newEntityDefinition is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.createEntity_newEntityDefinition
+      ].compositeActionSequence.templates.createEntity_newEntityDefinition
   },
   // templates.newEntityListReport
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.uuid is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.newEntityListReport.definition.uuid
+      ].compositeActionSequence.templates.newEntityListReport.definition.uuid
   },
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.conceptLevel is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.newEntityListReport.definition.conceptLevel
+      ].compositeActionSequence.templates.newEntityListReport.definition.conceptLevel
   },
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.type is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.newEntityListReport.definition.type
+      ].compositeActionSequence.templates.newEntityListReport.definition.type
   },
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition.definition is parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.newEntityListReport.definition.definition
+      ].compositeActionSequence.templates.newEntityListReport.definition.definition
   },
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport.definition is parsable": {
     // zodSchema: z.record(z.string(), transformerForBuild),
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.newEntityListReport.definition
+      ].compositeActionSequence.templates.newEntityListReport.definition
   },
   "transformerForBuild: transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates newEntityListReport": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates.newEntityListReport
+      ].compositeActionSequence.templates.newEntityListReport
   },
   "transformerForBuild: test_createEntityAndReportFromSpreadsheetAndUpdateMenu templates are parsable": {
     zodSchema: transformerForBuild,
     transformer: test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         "create new Entity and reports from spreadsheet"
-      ].compositeAction.templates
+      ].compositeActionSequence.templates
   },
   // ##############################################################################################
   // ##############################################################################################

@@ -12,10 +12,9 @@
 //       "create new Entity and reports from spreadsheet": {
 //         testType: "testBuildPlusRuntimeCompositeAction",
 //         testLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
-//         compositeAction: {
-//           actionType: "compositeAction",
+//         compositeActionSequence: {
+//           actionType: "compositeActionSequence",
 //           actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
-//           actionName: "sequence",
 //           payload: {
 //             templates: {
 //               createEntity_newEntity: {

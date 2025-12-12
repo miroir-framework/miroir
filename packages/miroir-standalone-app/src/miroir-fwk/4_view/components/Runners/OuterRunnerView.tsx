@@ -74,10 +74,10 @@ export const OuterRunnerView = <T extends Record<string, any>>(props: RunnerProp
         return action.onSubmit(values, formikHelpers);
         break;
       }
-      case "compositeAction": {
-        log.info("RunnerView handleSubmit compositeAction", action.compositeAction);
+      case "compositeActionSequence": {
+        log.info("RunnerView handleSubmit compositeActionSequence", action.compositeActionSequence);
         const result = await domainController.handleCompositeAction(
-          action.compositeAction,
+          action.compositeActionSequence,
           currentMiroirModelEnvironment,
           values as Record<string, any>
         );

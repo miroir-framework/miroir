@@ -7,7 +7,7 @@ import {
   ActionError,
   buildPlusRuntimeCompositeAction,
   BuildPlusRuntimeCompositeAction,
-  CompositeAction,
+  CompositeActionSequence,
   domainAction,
   DomainAction,
   Entity,
@@ -90,7 +90,7 @@ type ZodParseTestActionType =
   | PersistenceAction
   | ExtractorOrCombinerTemplate
   | MiroirQueryTemplate
-  | CompositeAction
+  | CompositeActionSequence
   | BuildPlusRuntimeCompositeAction
   | TestBuildPlusRuntimeCompositeActionSuite
   | TestCompositeActionParams
@@ -679,13 +679,12 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     },
   },
   // ##############################################################################################
-  // CompositeAction ##############################################################################
+  // CompositeActionSequence ##############################################################################
   // ##############################################################################################
-  "compositeAction is parsable": {
+  "compositeActionSequence is parsable": {
     zodSchema: domainAction,
     action: {
-      actionType: "compositeAction",
-      actionName: "sequence",
+      actionType: "compositeActionSequence",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",

@@ -17,7 +17,7 @@ import {
   book4,
   book5,
   book6,
-  CompositeAction,
+  CompositeActionSequence,
   ConfigurationService,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
@@ -389,11 +389,10 @@ const createEntity_newEntityDefinition: EntityDefinition = {
   jzodSchema: newEntityJzodSchema,
 };
 
-const createEntityCompositeAction: CompositeAction = {
-  actionType: "compositeAction",
+const createEntityCompositeAction: CompositeActionSequence = {
+  actionType: "compositeActionSequence",
   // actionLabel: "createEntityCompositeActionTemplate",
   actionLabel: "createEntityCompositeAction",
-  actionName: "sequence",
   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
@@ -1097,9 +1096,8 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //   testType: "testCompositeActionTemplate",
         //   testLabel: "createEntityFromSpreadsheet",
         //   compositeActionTemplate: {
-        //     actionType: "compositeAction",
+        //     actionType: "compositeActionSequence",
         //     actionLabel: "selectEntityEntity",
-        //     actionName: "sequence",
         //     templates: createEntityCompositeActionTemplate.templates,
         //     definition: [
         //       ...((createEntityCompositeActionTemplate as any).definition),
@@ -1113,10 +1111,9 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         "create new Entity and reports from spreadsheet": {
           testType: "testBuildPlusRuntimeCompositeAction",
           testLabel: "createEntityAndReportFromSpreadsheet",
-          compositeAction: {
-            actionType: "compositeAction",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
             actionLabel: "createEntityAndReportFromSpreadsheet",
-            actionName: "sequence",
             // templates: createEntityCompositeAction.templates,
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
@@ -1391,9 +1388,8 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //   testType: "testCompositeActionTemplate",
         //   testLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
         //   compositeActionTemplate: {
-        //     actionType: "compositeAction",
+        //     actionType: "compositeActionSequence",
         //     actionLabel: "createEntityAndReportFromSpreadsheetAndUpdateMenu",
-        //     actionName: "sequence",
         //     templates: createEntityCompositeActionTemplate.templates,
         //     definition: [
         //       ...(createEntityCompositeActionTemplate as any).definition,

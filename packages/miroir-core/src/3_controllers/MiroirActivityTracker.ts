@@ -305,8 +305,8 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     return id;
   }
 
-  setCompositeAction(compositeAction: string | undefined): void {
-    this.currentCompositeAction = compositeAction;
+  setCompositeAction(compositeActionSequence: string | undefined): void {
+    this.currentCompositeAction = compositeActionSequence;
   }
 
   getCompositeAction(): string | undefined {

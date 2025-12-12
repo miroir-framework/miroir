@@ -9,8 +9,8 @@ describe('MiroirActivityTracker', () => {
     tracker = new MiroirActivityTracker();
   });
 
-  describe('Action and CompositeAction context tracking', () => {
-    it('should start with undefined action and compositeAction', () => {
+  describe('Action and CompositeActionSequence context tracking', () => {
+    it('should start with undefined action and compositeActionSequence', () => {
       expect(tracker.getAction()).toBeUndefined();
       expect(tracker.getCompositeAction()).toBeUndefined();
     });
@@ -21,7 +21,7 @@ describe('MiroirActivityTracker', () => {
       expect(tracker.getAction()).toBe(actionName);
     });
 
-    it('should set and get compositeAction context', () => {
+    it('should set and get compositeActionSequence context', () => {
       const compositeActionName = 'testCompositeAction';
       tracker.setCompositeAction(compositeActionName);
       expect(tracker.getCompositeAction()).toBe(compositeActionName);
@@ -35,7 +35,7 @@ describe('MiroirActivityTracker', () => {
       expect(tracker.getAction()).toBeUndefined();
     });
 
-    it('should allow clearing compositeAction context', () => {
+    it('should allow clearing compositeActionSequence context', () => {
       tracker.setCompositeAction('testCompositeAction');
       expect(tracker.getCompositeAction()).toBe('testCompositeAction');
       
@@ -43,7 +43,7 @@ describe('MiroirActivityTracker', () => {
       expect(tracker.getCompositeAction()).toBeUndefined();
     });
 
-    it('should maintain independent action and compositeAction contexts', () => {
+    it('should maintain independent action and compositeActionSequence contexts', () => {
       tracker.setAction('testAction');
       tracker.setCompositeAction('testCompositeAction');
       
@@ -55,7 +55,7 @@ describe('MiroirActivityTracker', () => {
       expect(tracker.getCompositeAction()).toBe('testCompositeAction');
     });
 
-    it('should clear action and compositeAction contexts when clearing all data', () => {
+    it('should clear action and compositeActionSequence contexts when clearing all data', () => {
       tracker.setAction('testAction');
       tracker.setCompositeAction('testCompositeAction');
       

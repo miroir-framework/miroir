@@ -3448,7 +3448,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterTestCleanupAction": {
@@ -3456,14 +3456,14 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
-                      "compositeAction": {
+                      "compositeActionSequence": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActionAssertions": {
@@ -3493,7 +3493,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "beforeEach": {
@@ -3501,7 +3501,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterEach": {
@@ -3509,7 +3509,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterAll": {
@@ -3517,7 +3517,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActions": {
@@ -3547,7 +3547,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterTestCleanupAction": {
@@ -3555,10 +3555,10 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
-                      "compositeAction": {
+                      "compositeActionSequence": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -3592,7 +3592,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "beforeEach": {
@@ -3600,7 +3600,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterEach": {
@@ -3608,7 +3608,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterAll": {
@@ -3616,7 +3616,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActions": {
@@ -3646,7 +3646,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterTestCleanupAction": {
@@ -3654,10 +3654,10 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
-                      "compositeAction": {
+                      "compositeActionSequence": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -3691,7 +3691,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "beforeEach": {
@@ -3699,7 +3699,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterEach": {
@@ -3707,7 +3707,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterAll": {
@@ -3715,7 +3715,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActions": {
@@ -3752,7 +3752,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterTestCleanupAction": {
@@ -3760,10 +3760,10 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
-                      "compositeAction": {
+                      "compositeActionSequence": {
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -3804,7 +3804,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "beforeEach": {
@@ -3812,7 +3812,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterEach": {
@@ -3820,7 +3820,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "afterAll": {
@@ -3828,7 +3828,7 @@
                         "optional": true,
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "compositeAction"
+                          "relativePath": "compositeActionSequence"
                         }
                       },
                       "testCompositeActions": {
@@ -4177,13 +4177,13 @@
                             "definition": {
                               "actionImplementationType": {
                                 "type": "literal",
-                                "definition": "compositeAction"
+                                "definition": "compositeActionSequence"
                               },
                               "definition": {
                                 "type": "schemaReference",
                                 "definition": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeAction"
+                                  "relativePath": "compositeActionSequence"
                                 }
                               }
                             }

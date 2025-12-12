@@ -146,8 +146,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     templates: {
   //     },
   //     compositeActionTemplate: {
-  //       actionType: "compositeAction",
-  //       actionName: "sequence",
+  //       actionType: "compositeActionSequence",
   //       definition: [
   //         // {
   //         //   actionType: "domainAction",
@@ -338,8 +337,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   log.info('createEntity adding instances',instances);
 
   //   // const actionHandlerCreateFountainEntity: CompositeActionTemplate = {
-  //   //   actionType: "compositeAction",
-  //   //   actionName: "sequence",
+  //   //   actionType: "compositeActionSequence",
   //   //   // interface: {
   //   //   //   actionJzodObjectSchema: {
   //   //   //     type: "object",
@@ -856,8 +854,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   }
 
   //   const compositeActionSplitFountainEntity: CompositeActionTemplate = {
-  //     actionType: "compositeAction",
-  //     actionName: "sequence",
+  //     actionType: "compositeActionSequence",
   //     templates: {
   //       splitEntity_newEntity: {
   //         uuid: {
@@ -1267,9 +1264,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   };
 
   //   const actionInsertMunicipalities: CompositeActionTemplate = {
-  //     actionType: "compositeAction",
+  //     actionType: "compositeActionSequence",
   //     actionLabel: "insertMunicipalities",
-  //     actionName: "sequence",
   //     definition: [
   //       // find getUniqueValues municipalities from fountains
   //       {
@@ -1750,8 +1746,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   log.info("#################################### splitEntity actionInsertMunicipalities", actionInsertMunicipalities);
   //   return {
   //     actionSplitFountainEntity: {
-  //       actionType: "compositeAction",
-  //       actionName: "sequence",
+  //       actionType: "compositeActionSequence",
   //       templates: {
   //         ...compositeActionSplitFountainEntity.templates,
   //         ...actionInsertMunicipalities.templates,
@@ -1815,8 +1810,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   // const createNewApplication: CompositeActionTemplate = useMemo(
   //   () => ({
-  //     actionType: "compositeAction",
-  //     actionName: "sequence",
+  //     actionType: "compositeActionSequence",
   //     templates: {
   //       // business objects
   //       newDeploymentStoreConfiguration: {
@@ -2292,8 +2286,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         // );
 
         // const createApplicationAndCreateEntityAndSplitEntity: CompositeActionTemplate = {
-        //   actionType: "compositeAction",
-        //   actionName: "sequence",
+        //   actionType: "compositeActionSequence",
         //   actionLabel: "createApplicationAndCreateEntityAndSplitEntity",
         //   templates: {
         //     ...createNewApplication.templates,

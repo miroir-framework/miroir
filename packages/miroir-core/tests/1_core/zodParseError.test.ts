@@ -379,7 +379,7 @@ describe("zodParseError", () => {
         }; //conceptLevel as a string, not a full-blown object
         // test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
         //     "create new Entity and reports from spreadsheet"
-        //   ].compositeAction.templates.newEntityListReport.definition.conceptLevel
+        //   ].compositeActionSequence.templates.newEntityListReport.definition.conceptLevel
         let zodParseError: ZodParseError | undefined = undefined;
         try {
           zodSchema.parse(transformer);

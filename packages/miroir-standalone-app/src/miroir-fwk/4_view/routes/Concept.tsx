@@ -370,8 +370,7 @@ export const ConceptPage: React.FC<any> = (
         }
       
         // const actionHandlerCreateFountainEntity: CompositeActionTemplate = {
-        //   actionType: "compositeAction",
-        //   actionName: "sequence",
+        //   actionType: "compositeActionSequence",
         //   // interface: {
         //   //   actionJzodObjectSchema: {
         //   //     type: "object",

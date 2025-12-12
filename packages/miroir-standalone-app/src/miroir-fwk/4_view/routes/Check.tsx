@@ -26,7 +26,7 @@ const testSubPartPathArray = [
   "definition",
   "testCompositeActions",
   "create new Entity and reports from spreadsheet",
-  "compositeAction",
+  "compositeActionSequence",
   "payload",
   "templates",
 ];

@@ -3,7 +3,7 @@ export interface LoggerContextElement {
   testSuite: string | undefined;
   test: string | undefined;
   testAssertion: string | undefined;
-  compositeAction: string | undefined;
+  compositeActionSequence: string | undefined;
   action: string | undefined;
   // testLogLabel: string | undefined;
 }
@@ -13,7 +13,7 @@ export const defaultLoggerContextElement: LoggerContextElement = {
   test: undefined,
   testAssertion: undefined,
   // testLogLabel: undefined,
-  compositeAction: undefined,
+  compositeActionSequence: undefined,
   action: undefined,
 };
 
@@ -22,7 +22,7 @@ export class LoggerGlobalContext {
   // private static testSuite: string | undefined = undefined;
   // private static test: string | undefined = undefined;
   // private static testAssertion: string | undefined = undefined;
-  // private static compositeAction: string | undefined = undefined;
+  // private static compositeActionSequence: string | undefined = undefined;
   // private static action: string | undefined = undefined;
 
   public static testLogLabel: string = "";
@@ -58,7 +58,7 @@ export class LoggerGlobalContext {
   }
 
   public static getCompositeAction(): string | undefined {
-    return LoggerGlobalContext.contextElement?.compositeAction;
+    return LoggerGlobalContext.contextElement?.compositeActionSequence;
   }
 
   public static getAction(): string | undefined {
@@ -80,8 +80,8 @@ export class LoggerGlobalContext {
     LoggerGlobalContext.testLogLabel = LoggerGlobalContext.computeTestLogLabel();
   }
 
-  public static setCompositeAction(compositeAction: string | undefined): void {
-    LoggerGlobalContext.contextElement.compositeAction = compositeAction;
+  public static setCompositeAction(compositeActionSequence: string | undefined): void {
+    LoggerGlobalContext.contextElement.compositeActionSequence = compositeActionSequence;
   }
 
   public static setAction(action: string | undefined): void {

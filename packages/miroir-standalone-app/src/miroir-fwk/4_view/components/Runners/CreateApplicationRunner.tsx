@@ -2,22 +2,19 @@ import { useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
-  CompositeAction,
+  CompositeActionSequence,
   CompositeActionTemplate,
   Deployment,
   DomainControllerInterface,
   InitApplicationParameters,
   JzodObject,
   LoggerInterface,
-  MetaModel,
   MiroirModelEnvironment,
   StoreUnitConfiguration,
-  TransformerForBuildPlusRuntime,
+  TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
   defaultMiroirMetaModel,
@@ -29,18 +26,15 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
+  selfApplicationVersionLibraryInitialVersion
 } from "miroir-core";
+import {
+  type AdminApplication,
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { InnerRunnerView } from "./InnerRunnerView.js";
-import {
-  transformer,
-  type AdminApplication,
-  type CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction,
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { OuterRunnerView } from "./OuterRunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -104,7 +98,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     []
   );
 
-  const createApplicationAction = useMemo((): CompositeAction => {
+  const createApplicationAction = useMemo((): CompositeActionSequence => {
     const testSelfApplicationUuid = uuidv4();
     const testDeploymentUuid = uuidv4();
     const testApplicationModelBranchUuid = uuidv4();
@@ -147,10 +141,9 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
       resetAndinitializeDeploymentCompositeAction(testDeploymentUuid, initParametersForTest, []);
 
     // Combine all three composite actions into one
-    const combinedCompositeAction: CompositeAction = {
-      actionType: "compositeAction",
+    const combinedCompositeAction: CompositeActionSequence = {
+      actionType: "compositeActionSequence",
       actionLabel: "createApplicationAndDeployment",
-      actionName: "sequence",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -308,9 +301,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     };
 
     const localCreateApplicationCompositeActionTemplate = {
-      actionType: "compositeAction",
+      actionType: "compositeActionSequence",
       actionLabel: "beforeAll",
-      actionName: "sequence",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -361,9 +353,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     };
 
     const localCreateDeploymentCompositeActionTemplate = {
-      actionType: "compositeAction",
+      actionType: "compositeActionSequence",
       actionLabel: "beforeAll",
-      actionName: "sequence",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -435,9 +426,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
 
     const appEntitesAndInstances: any[] = [];
     const localResetAndinitializeDeploymentCompositeActionTemplate = {
-      actionType: "compositeAction",
+      actionType: "compositeActionSequence",
       actionLabel: "beforeEach",
-      actionName: "sequence",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -507,9 +497,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
 
     // Combine all three composite actions into one
     const combinedCompositeActionTemplate: CompositeActionTemplate = {
-      actionType: "compositeAction",
+      actionType: "compositeActionSequence",
       actionLabel: "createApplicationAndDeployment",
-      actionName: "sequence",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {

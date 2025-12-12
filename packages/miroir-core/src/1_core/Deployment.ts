@@ -1,7 +1,7 @@
 import type { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type {
   AdminApplication,
-  CompositeAction,
+  CompositeActionSequence,
   Deployment,
   EntityDefinition,
   EntityInstance,
@@ -63,11 +63,10 @@ export function createApplicationCompositeAction(
   newSelfApplicationUuid: Uuid,
   newApplicationName: string,
   deploymentConfiguration: StoreUnitConfiguration
-): CompositeAction {
-  const result: CompositeAction = {
-    actionType: "compositeAction",
+): CompositeActionSequence {
+  const result: CompositeActionSequence = {
+    actionType: "compositeActionSequence",
     actionLabel: "beforeAll",
-    actionName: "sequence",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
@@ -113,7 +112,7 @@ export function createDeploymentCompositeAction(
   deploymentUuid: Uuid,
   adminApplicationUuid: Uuid,
   deploymentConfiguration: StoreUnitConfiguration
-): CompositeAction {
+): CompositeActionSequence {
   log.info(
     "createDeploymentCompositeAction deploymentConfiguration",
     "deploymentUuid:",
@@ -122,9 +121,8 @@ export function createDeploymentCompositeAction(
     deploymentConfiguration
   );
   return {
-    actionType: "compositeAction",
+    actionType: "compositeActionSequence",
     actionLabel: "beforeAll",
-    actionName: "sequence",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
@@ -226,7 +224,7 @@ export function resetAndinitializeDeploymentCompositeAction(
   adminApplicationDeploymentUuid: Uuid,
   initApplicationParameters: InitApplicationParameters,
   appEntitesAndInstances: ApplicationEntitiesAndInstances
-): CompositeAction {
+): CompositeActionSequence {
   // const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
 
   // const deploymentUuid = initApplicationParameters.selfApplicationDeploymentConfiguration.uuid;
@@ -237,9 +235,8 @@ export function resetAndinitializeDeploymentCompositeAction(
     adminApplicationDeploymentUuid
   );
   return {
-    actionType: "compositeAction",
+    actionType: "compositeActionSequence",
     actionLabel: "beforeEach",
-    actionName: "sequence",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
@@ -312,16 +309,15 @@ export function resetAndinitializeDeploymentCompositeAction(
 export function deleteApplicationAndDeploymentCompositeAction(
   miroirConfig: MiroirConfigClient,
   deploymentUuid: Uuid
-): CompositeAction {
+): CompositeActionSequence {
   console.log(
     "deleteApplicationAndDeploymentCompositeAction",
     deploymentUuid,
     JSON.stringify(miroirConfig, null, 2)
   );
   return {
-    actionType: "compositeAction",
+    actionType: "compositeActionSequence",
     actionLabel: "deleteApplicationAndDeployment",
-    actionName: "sequence",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {

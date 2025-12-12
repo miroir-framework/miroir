@@ -32,12 +32,12 @@ export function templateLogLevelOptionsFactory(
       testAssertion: (opts) =>
         testSeparator +
         (LoggerGlobalContext.getTestAssertion() ? LoggerGlobalContext.getTestAssertion() : "*"),
-      compositeAction: (opts) =>
+      compositeActionSequence: (opts) =>
         testSeparator +
         (LoggerGlobalContext.getCompositeAction() ? LoggerGlobalContext.getCompositeAction() : "*"),
       action: (opts) =>
         testSeparator + (LoggerGlobalContext.getAction() ? LoggerGlobalContext.getAction() : "*"),
-      template: "#{{testSuite}}{{test}}{{testAssertion}}{{compositeAction}}{{action}}# " + template,
+      template: "#{{testSuite}}{{test}}{{testAssertion}}{{compositeActionSequence}}{{action}}# " + template,
       time: () => new Date().toTimeString().split(" ")[0],
     },
   };
