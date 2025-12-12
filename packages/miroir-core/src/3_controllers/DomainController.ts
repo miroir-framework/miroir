@@ -1119,7 +1119,6 @@ export class DomainController implements DomainControllerInterface {
             parentUuid: entitySelfApplicationVersion?.uuid,
             description: "TODO: no description yet",
             name: "TODO: No label was given to this version.",
-            // previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
             previousVersion: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
             branch: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
             selfApplication: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!

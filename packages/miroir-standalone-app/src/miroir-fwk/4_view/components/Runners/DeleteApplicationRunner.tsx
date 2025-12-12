@@ -134,7 +134,6 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
               configuration: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
-                // definition: "{{deploymentInfo.deployments.0.configuration}}",
                 referencePath: ["deploymentInfo", "deployments", 0, "configuration"],
               } as any,
             },
