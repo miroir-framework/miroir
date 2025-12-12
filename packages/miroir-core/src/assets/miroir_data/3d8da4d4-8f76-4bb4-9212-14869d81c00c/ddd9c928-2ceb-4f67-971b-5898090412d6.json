@@ -11,10 +11,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "definition": "applicationAction"
-          },
-          "actionName": {
-            "type": "literal",
             "definition": "createApplication"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -64,10 +60,6 @@
       {
         "actionParameters": {
           "actionType": {
-            "type": "literal",
-            "definition": "applicationAction"
-          },
-          "actionName": {
             "type": "literal",
             "definition": "deleteApplication"
           },
