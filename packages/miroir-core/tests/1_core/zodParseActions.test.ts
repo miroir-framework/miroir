@@ -380,11 +380,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
   "undoRedoAction undo is parsable": {
     zodSchema: domainAction,
     action: {
-      actionType: "undoRedoAction",
+      actionType: "undo",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      actionName: "undo",
       payload: {
       }
     },
@@ -392,8 +391,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
   "undoRedoAction redo is parsable": {
     zodSchema: domainAction,
     action: {
-      actionType: "undoRedoAction",
-      actionName: "redo",
+      actionType: "redo",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",

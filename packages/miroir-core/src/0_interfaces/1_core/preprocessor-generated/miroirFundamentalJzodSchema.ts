@@ -17421,10 +17421,6 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "actionType": {
                 "type": "literal",
-                "definition": "undoRedoAction"
-              },
-              "actionName": {
-                "type": "literal",
                 "definition": "undo"
               },
               "actionLabel": {
@@ -17477,10 +17473,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "literal",
-                "definition": "undoRedoAction"
-              },
-              "actionName": {
                 "type": "literal",
                 "definition": "redo"
               },
@@ -26815,21 +26807,6 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "undoRedoAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
                     "definition": "undo"
                   },
                   {
@@ -26980,21 +26957,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "actionType": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "undoRedoAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
                 "type": "union",
                 "definition": [
                   {

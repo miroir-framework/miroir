@@ -287,14 +287,14 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<Action2VoidReturnType> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainUndoRedoAction start actionName",
-      undoRedoAction["actionName"],
+      undoRedoAction.actionType,
       "deployment",
       deploymentUuid,
       "action",
       undoRedoAction
     );
     try {
-      switch (undoRedoAction.actionName) {
+      switch (undoRedoAction.actionType) {
         case "undo":
         case "redo": {
           this.callUtil.callLocalCacheAction(
@@ -316,7 +316,7 @@ export class DomainController implements DomainControllerInterface {
     } catch (error) {
       log.warn(
         "DomainController handleDomainUndoRedoAction caught exception when handling",
-        undoRedoAction["actionName"],
+        undoRedoAction.actionType,
         "deployment",
         deploymentUuid,
         "action",
@@ -1741,7 +1741,8 @@ export class DomainController implements DomainControllerInterface {
           return Promise.resolve(ACTION_OK);
           break;
         }
-        case "undoRedoAction": {
+        case "undo": 
+        case "redo": {
           if (!currentModel) {
             throw new Error(
               "DomainController handleAction for undoRedoAction needs a currentModel argument"
@@ -1873,7 +1874,8 @@ export class DomainController implements DomainControllerInterface {
           case 'getInstance':
           case 'getInstances':
           // 
-          case "undoRedoAction":
+          case "undo":
+          case "redo":
           // case "modelAction":
           case 'initModel':
           case 'commit':
@@ -2114,7 +2116,8 @@ export class DomainController implements DomainControllerInterface {
           case 'getInstance':
           case 'getInstances':
           // 
-          case "undoRedoAction":
+          case "redo":
+          case "undo":
           // case "modelAction":
           // case 'compositeRunBoxedExtractorAction':
           case 'initModel':
@@ -3036,7 +3039,8 @@ export class DomainController implements DomainControllerInterface {
         case "getInstance":
         case "getInstances":
         //
-        case "undoRedoAction":
+        case "undo":
+        case "redo":
         // case "modelAction":
         case "initModel":
         case "commit":

@@ -664,7 +664,8 @@ function handleAction(
   //   action
   // );
   switch (action.actionType) {
-    case "undoRedoAction": {
+    case "undo": 
+    case "redo": {
       // log.debug(
       //   "localCacheSliceObject handleUndoRedoAction deploymentUuid",
       //   action.deploymentUuid,

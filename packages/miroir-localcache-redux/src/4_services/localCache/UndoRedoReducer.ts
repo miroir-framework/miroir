@@ -337,7 +337,7 @@ function handleUndoRedoAction(
     futureModelPatches,
     queriesResultsCache,
   } = state;
-  switch (action.payload.actionName) {
+  switch (action.payload.actionType) {
     case "undo": {
       if (pastModelPatches.length > 0) {
         const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
@@ -459,7 +459,8 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             );
             break;
           }
-          case "undoRedoAction":{
+          case "undo":
+          case "redo":{
             return handleUndoRedoAction(innerReducer, state, action as PayloadAction<UndoRedoAction>)
             break;
           }
