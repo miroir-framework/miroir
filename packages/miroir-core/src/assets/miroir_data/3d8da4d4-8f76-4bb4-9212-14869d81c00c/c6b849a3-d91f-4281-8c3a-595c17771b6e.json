@@ -9,8 +9,7 @@
     "actions": [
       {
         "actionParameters": {
-          "actionType": { "type": "literal", "definition": "menuAction" },
-          "actionName": { "type": "literal", "definition": "menuAddItem" },
+          "actionType": { "type": "literal", "definition": "menuAddItem" },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",

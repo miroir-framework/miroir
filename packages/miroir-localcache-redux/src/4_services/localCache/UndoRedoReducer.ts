@@ -464,7 +464,10 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             return handleUndoRedoAction(innerReducer, state, action as PayloadAction<UndoRedoAction>)
             break;
           }
-          case "RestPersistenceAction": 
+          case "RestPersistenceAction_create": 
+          case "RestPersistenceAction_read": 
+          case "RestPersistenceAction_update": 
+          case "RestPersistenceAction_delete": 
           default: {
             throw new Error(
               "reduceWithUndoRedo handleAction accepts only actionType=modelAction, found " +

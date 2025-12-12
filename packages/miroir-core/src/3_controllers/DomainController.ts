@@ -353,8 +353,7 @@ export class DomainController implements DomainControllerInterface {
           }, // context update
           // deploymentUuid,
           {
-            actionType: "RestPersistenceAction",
-            actionName: "read" as any,
+            actionType: "RestPersistenceAction_read",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             deploymentUuid,
@@ -450,7 +449,7 @@ export class DomainController implements DomainControllerInterface {
 
           // Batch all persistence operations for React 18 automatic batching
           const fetchPromises = toFetchEntities
-          // .slice(1)
+          .slice(1)
           .map((e) => {
             log.info(
               "DomainController loadConfigurationFromPersistenceStore fetching instances from server for entity",
@@ -464,8 +463,7 @@ export class DomainController implements DomainControllerInterface {
                   expectedDomainElementType: "entityInstanceCollection",
                 }, // context update
                 {
-                  actionType: "RestPersistenceAction",
-                  actionName: "read" as any,
+                  actionType: "RestPersistenceAction_read",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                   deploymentUuid,
@@ -1130,8 +1128,7 @@ export class DomainController implements DomainControllerInterface {
             newModelVersion
           );
           const newModelVersionAction: RestPersistenceAction = {
-            actionType: "RestPersistenceAction",
-            actionName: "create",
+            actionType: "RestPersistenceAction_create",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             deploymentUuid: currentDeploymentUuid,
@@ -1171,13 +1168,21 @@ export class DomainController implements DomainControllerInterface {
               case "transactionalInstanceAction": {
                 // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
                 //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
+                const replayActionType = replayAction.payload.instanceAction.actionType.toString();
+                const newActionType = replayActionType.includes('_')
+                  // ? replayActionType.slice(replayActionType.lastIndexOf('_') + 1)
+                  ? replayActionType.slice(replayActionType.lastIndexOf('_') + 1)
+                  : replayActionType;
+                log.info(
+                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction transactionalInstanceAction",
+                  "derived newActionType",
+                  newActionType
+                );
                 const replayActionResult = await this.callUtil.callPersistenceAction(
                   {}, // context
                   {}, // context update
                   {
-                    actionType: "RestPersistenceAction",
-                    actionName:
-                      replayAction.payload.instanceAction.actionType.toString() as CRUDActionName as any,
+                    actionType: newActionType,
                     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                     deploymentUuid: replayAction.payload.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
@@ -1188,7 +1193,7 @@ export class DomainController implements DomainControllerInterface {
                       parentUuid: replayAction.payload.instanceAction.payload.objects[0].parentUuid,
                       objects: replayAction.payload.instanceAction.payload.objects[0].instances,
                     },
-                  }
+                  } as any
                 );
                 if (replayActionResult instanceof Action2Error) {
                   log.warn(

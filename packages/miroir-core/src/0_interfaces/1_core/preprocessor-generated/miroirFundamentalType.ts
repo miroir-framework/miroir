@@ -5690,8 +5690,7 @@ export type StoreManagementAction = {
     };
 };
 export type PersistenceAction = RunBoxedExtractorAction | RunBoxedQueryAction | RunBoxedExtractorOrQueryAction | RunBoxedQueryTemplateAction | RunBoxedExtractorTemplateAction | RunBoxedQueryTemplateOrBoxedExtractorTemplateAction | BundleAction | InstanceAction | ModelAction | StoreManagementAction | {
-    actionType: "LocalPersistenceAction";
-    actionName: "create";
+    actionType: "LocalPersistenceAction_create";
     actionLabel?: string | undefined;
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
@@ -5705,8 +5704,91 @@ export type PersistenceAction = RunBoxedExtractorAction | RunBoxedQueryAction | 
         objects?: (EntityInstance | undefined)[] | undefined;
     };
 } | {
-    actionType: "RestPersistenceAction";
-    actionName: "create";
+    actionType: "LocalPersistenceAction_read";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "LocalPersistenceAction_update";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "LocalPersistenceAction_delete";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "RestPersistenceAction_create";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "RestPersistenceAction_read";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "RestPersistenceAction_update";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "RestPersistenceAction_delete";
     actionLabel?: string | undefined;
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
@@ -5721,8 +5803,35 @@ export type PersistenceAction = RunBoxedExtractorAction | RunBoxedQueryAction | 
     };
 };
 export type LocalPersistenceAction = {
-    actionType: "LocalPersistenceAction";
-    actionName: "create";
+    actionType: "LocalPersistenceAction_create";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "LocalPersistenceAction_read";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "LocalPersistenceAction_update";
     actionLabel?: string | undefined;
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
@@ -5737,8 +5846,49 @@ export type LocalPersistenceAction = {
     };
 };
 export type RestPersistenceAction = {
-    actionType: "RestPersistenceAction";
-    actionName: "create";
+    actionType: "RestPersistenceAction_create";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "RestPersistenceAction_read";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "RestPersistenceAction_update";
+    actionLabel?: string | undefined;
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
+    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
+    deploymentUuid: string;
+    payload: {
+        application?: string | undefined;
+        section: ApplicationSection;
+        parentName?: string | undefined;
+        parentUuid?: string | undefined;
+        uuid?: string | undefined;
+        objects?: (EntityInstance | undefined)[] | undefined;
+    };
+} | {
+    actionType: "RestPersistenceAction_delete";
     actionLabel?: string | undefined;
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5";
     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4";
@@ -14034,9 +14184,9 @@ export const undoRedoAction: z.ZodType<UndoRedoAction> = z.union([z.object({acti
 export const transactionalInstanceAction: z.ZodType<TransactionalInstanceAction> = z.object({actionType:z.literal("transactionalInstanceAction"), actionLabel:z.string().optional(), deploymentUuid:z.string().uuid(), endpoint:z.literal("1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), payload:z.object({instanceAction:z.lazy(() =>instanceCUDAction)}).strict()}).strict();
 export const localCacheAction: z.ZodType<LocalCacheAction> = z.union([z.lazy(() =>undoRedoAction), z.lazy(() =>transactionalInstanceAction), z.lazy(() =>modelAction), z.lazy(() =>instanceAction)]);
 export const storeManagementAction: z.ZodType<StoreManagementAction> = z.union([z.object({actionType:z.literal("storeManagementAction_createStore"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), configuration:z.lazy(() =>storeUnitConfiguration)}).strict()}).strict(), z.object({actionType:z.literal("storeManagementAction_deleteStore"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), configuration:z.lazy(() =>storeUnitConfiguration)}).strict()}).strict(), z.object({actionType:z.literal("storeManagementAction_resetAndInitApplicationDeployment"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), deployments:z.array(z.lazy(() =>deployment))}).strict()}).strict(), z.object({actionType:z.literal("storeManagementAction_openStore"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), configuration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration))}).strict()}).strict(), z.object({actionType:z.literal("storeManagementAction_closeStore"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional()}).strict()}).strict()]);
-export const persistenceAction: z.ZodType<PersistenceAction> = z.union([z.lazy(() =>runBoxedExtractorAction), z.lazy(() =>runBoxedQueryAction), z.lazy(() =>runBoxedExtractorOrQueryAction), z.lazy(() =>runBoxedQueryTemplateAction), z.lazy(() =>runBoxedExtractorTemplateAction), z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction), z.lazy(() =>bundleAction), z.lazy(() =>instanceAction), z.lazy(() =>modelAction), z.lazy(() =>storeManagementAction), z.object({actionType:z.literal("LocalPersistenceAction"), actionName:z.literal("create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.literal("create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict()]);
-export const localPersistenceAction: z.ZodType<LocalPersistenceAction> = z.object({actionType:z.literal("LocalPersistenceAction"), actionName:z.literal("create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict();
-export const restPersistenceAction: z.ZodType<RestPersistenceAction> = z.object({actionType:z.literal("RestPersistenceAction"), actionName:z.literal("create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict();
+export const persistenceAction: z.ZodType<PersistenceAction> = z.union([z.lazy(() =>runBoxedExtractorAction), z.lazy(() =>runBoxedQueryAction), z.lazy(() =>runBoxedExtractorOrQueryAction), z.lazy(() =>runBoxedQueryTemplateAction), z.lazy(() =>runBoxedExtractorTemplateAction), z.lazy(() =>runBoxedQueryTemplateOrBoxedExtractorTemplateAction), z.lazy(() =>bundleAction), z.lazy(() =>instanceAction), z.lazy(() =>modelAction), z.lazy(() =>storeManagementAction), z.object({actionType:z.literal("LocalPersistenceAction_create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("LocalPersistenceAction_read"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("LocalPersistenceAction_update"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("LocalPersistenceAction_delete"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction_create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction_read"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction_update"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction_delete"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict()]);
+export const localPersistenceAction: z.ZodType<LocalPersistenceAction> = z.union([z.object({actionType:z.literal("LocalPersistenceAction_create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("LocalPersistenceAction_read"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("LocalPersistenceAction_update"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict()]);
+export const restPersistenceAction: z.ZodType<RestPersistenceAction> = z.union([z.object({actionType:z.literal("RestPersistenceAction_create"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction_read"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction_update"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict(), z.object({actionType:z.literal("RestPersistenceAction_delete"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("a93598b3-19b6-42e8-828c-f02042d212d4"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), section:z.lazy(() =>applicationSection), parentName:z.string().optional(), parentUuid:z.string().optional(), uuid:z.string().optional(), objects:z.array(z.lazy(() =>entityInstance).optional()).optional()}).strict()}).strict()]);
 export const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: z.ZodType<RunBoxedQueryTemplateOrBoxedExtractorTemplateAction> = z.object({actionType:z.literal("runBoxedQueryTemplateOrBoxedExtractorTemplateAction"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), query:z.union([z.lazy(() =>boxedExtractorTemplateReturningObjectOrObjectList), z.lazy(() =>boxedQueryTemplateWithExtractorCombinerTransformer)])}).strict()}).strict();
 export const runBoxedExtractorOrQueryAction: z.ZodType<RunBoxedExtractorOrQueryAction> = z.object({actionType:z.literal("runBoxedExtractorOrQueryAction"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), queryExecutionStrategy:z.enum(["localCacheOrFail","localCacheOrFetch","ServerCache","storage"]).optional(), query:z.union([z.lazy(() =>boxedExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>boxedQueryWithExtractorCombinerTransformer)])}).strict()}).strict();
 export const runBoxedQueryTemplateAction: z.ZodType<RunBoxedQueryTemplateAction> = z.object({actionType:z.literal("runBoxedQueryTemplateAction"), actionLabel:z.string().optional(), application:z.literal("79a8fa03-cb64-45c8-9f85-7f8336bf92a5"), endpoint:z.literal("9e404b3c-368c-40cb-be8b-e3c28550c25e"), deploymentUuid:z.string().uuid(), payload:z.object({application:z.string().uuid().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), query:z.lazy(() =>boxedQueryTemplateWithExtractorCombinerTransformer)}).strict()}).strict();

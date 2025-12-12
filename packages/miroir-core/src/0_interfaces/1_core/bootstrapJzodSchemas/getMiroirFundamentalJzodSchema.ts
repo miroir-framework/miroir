@@ -3394,12 +3394,20 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         localPersistenceAction: {
-          type: "object",
-          definition: persistenceEndpointVersionV1.definition.actions[0].actionParameters,
+          type: "union",
+          discriminator: "actionType",
+          definition: persistenceEndpointVersionV1.definition.actions.slice(0, 3).map((e: any) => ({
+            type: "object",
+            definition: e.actionParameters,
+          })),
         },
         restPersistenceAction: {
-          type: "object",
-          definition: persistenceEndpointVersionV1.definition.actions[1].actionParameters,
+          type: "union",
+          discriminator: "actionType",
+          definition: persistenceEndpointVersionV1.definition.actions.slice(4).map((e: any) => ({
+            type: "object",
+            definition: e.actionParameters,
+          })),
         },
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction: {
           type: "object",

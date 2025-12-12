@@ -174,8 +174,14 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "getInstance":
       case "getInstances":
       //
-      case "LocalPersistenceAction":
-      case "RestPersistenceAction":
+      case "LocalPersistenceAction_create":
+      case "LocalPersistenceAction_read":
+      case "LocalPersistenceAction_update":
+      case "LocalPersistenceAction_delete": 
+      case "RestPersistenceAction_create":
+      case "RestPersistenceAction_read":
+      case "RestPersistenceAction_update":
+      case "RestPersistenceAction_delete":
       case "bundleAction":
       // case 'storeManagementAction':
       case "storeManagementAction_createStore":
@@ -388,7 +394,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         return localStoreResult;
         break;
       }
-      case "LocalPersistenceAction": {
+      case "LocalPersistenceAction_create":
+      case "LocalPersistenceAction_read":
+      case "LocalPersistenceAction_update":
+      case "LocalPersistenceAction_delete": {
         if (!localPersistenceStoreController) {
           throw new Error(
             "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
@@ -399,13 +408,14 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           [k: string]: "createInstance" | "deleteInstance" | "updateInstance" | "getInstances";
         } = {
           create: "createInstance",
-          delete: "deleteInstance",
-          update: "updateInstance",
           read: "getInstances",
+          update: "updateInstance",
+          delete: "deleteInstance",
         };
+        const newActionType = actionMap[action.actionType.split('_')[1]];
         const localStoreAction: PersistenceStoreControllerAction = {
           // actionType: "instanceAction",
-          actionType: actionMap[action.actionName],
+          actionType: actionMap[newActionType],
           parentName: action.payload.parentName ?? "",
           parentUuid: action.payload.parentUuid ?? "",
           deploymentUuid: action.deploymentUuid,
@@ -576,7 +586,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         return localStoreResult;
         break;
       }
-      case "RestPersistenceAction":
+      case "RestPersistenceAction_create":
+      case "RestPersistenceAction_read":
+      case "RestPersistenceAction_update":
+      case "RestPersistenceAction_delete":
       default: {
         throw new Error(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not handle action " +
@@ -680,7 +693,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     );
 
     switch (action.actionType) {
-      case "RestPersistenceAction": {
+      case "RestPersistenceAction_create":
+      case "RestPersistenceAction_read":
+      case "RestPersistenceAction_update":
+      case "RestPersistenceAction_delete": {
         const result: Action2ReturnType = {
           status: "ok",
           returnedDomainElement: {
@@ -765,7 +781,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "storeManagementAction_openStore":
       case "storeManagementAction_closeStore":
       //
-      case "LocalPersistenceAction":
+      case "LocalPersistenceAction_create":
+      case "LocalPersistenceAction_read":
+      case "LocalPersistenceAction_update":
+      case "LocalPersistenceAction_delete":
       default: {
         log.debug(
           "innerHandlePersistenceActionForRemoteStore received result",

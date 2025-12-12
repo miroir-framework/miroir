@@ -373,11 +373,10 @@ function handleInstanceAction(
             instanceCollection.instances
           );
 
-          // log.info('localCacheSliceObject handleInstanceAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
-          log.info(
-            "localCacheSliceObject handleInstanceAction createInstance result",
-            JSON.stringify(result, null, 2)
-          );
+          // log.info(
+          //   "localCacheSliceObject handleInstanceAction createInstance result",
+          //   JSON.stringify(result, null, 2)
+          // );
 
           if (instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {
             // TODO: does it work? How?

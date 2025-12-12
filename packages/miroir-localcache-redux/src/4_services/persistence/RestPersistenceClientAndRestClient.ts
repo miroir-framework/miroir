@@ -58,7 +58,11 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         | undefined;
     };
   } = {
-    RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
+    // RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
+    RestPersistenceAction_create: { "*": { attribute: "objects", result: "crudInstances" } },
+    RestPersistenceAction_read: { "*": { attribute: "objects", result: "crudInstances" } },
+    RestPersistenceAction_update: { "*": { attribute: "objects", result: "crudInstances" } },
+    RestPersistenceAction_delete: { "*": { attribute: "objects", result: "crudInstances" } },
     runBoxedQueryAction: { "*": { action: true } },
     runBoxedExtractorOrQueryAction: { "*": { action: true } },
     runBoxedQueryTemplateOrBoxedExtractorTemplateAction: { "*": { action: true } },
@@ -104,18 +108,48 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     url: string;
     args: any;
   } { 
+  let localHttpMethod: HttpMethod | undefined = undefined;
+  let url: string  | undefined= undefined;
   let networkActionUrlMap: { [actionName: string]: string } = {};
   switch (persistenceAction.actionType) {
-    case "LocalPersistenceAction":
-    case "RestPersistenceAction": {
-      networkActionUrlMap = {
-            read:
-              "/" +
-              (persistenceAction.payload.uuid ?? (persistenceAction.payload.parentUuid + "/all")),
-            create: "/" + (persistenceAction.payload.uuid ?? ""),
-            update: "/" + (persistenceAction.payload.uuid ?? ""),
-            delete: "/" + (persistenceAction.payload.uuid ?? ""),
-          };
+    case "LocalPersistenceAction_read": {
+      localHttpMethod = "get";
+      url = "/" + (persistenceAction.payload.uuid ?? (persistenceAction.payload.parentUuid + "/all"));
+      break;
+    }
+    case "LocalPersistenceAction_create":
+    case "LocalPersistenceAction_update": {
+      localHttpMethod = "put";
+      url = "/" + (persistenceAction.payload.uuid ?? "");
+      break;
+    }
+    case "LocalPersistenceAction_delete": {
+      localHttpMethod = "delete";
+      url = "/" + (persistenceAction.payload.uuid ?? "");
+      break;
+    }
+    case "RestPersistenceAction_read": {
+      localHttpMethod = "get";
+      url = "/" + (persistenceAction.payload.uuid ?? (persistenceAction.payload.parentUuid + "/all"));
+      break;
+    }
+    case "RestPersistenceAction_update": 
+    case "RestPersistenceAction_create": {
+      localHttpMethod = "put";
+      url = "/" + (persistenceAction.payload.uuid ?? "");
+      break;
+    }
+    case "RestPersistenceAction_delete": {
+      localHttpMethod = "delete";
+      url = "/" + (persistenceAction.payload.uuid ?? "");
+      // networkActionUrlMap = {
+      //       read:
+      //         "/" +
+      //         (persistenceAction.payload.uuid ?? (persistenceAction.payload.parentUuid + "/all")),
+      //       create: "/" + (persistenceAction.payload.uuid ?? ""),
+      //       update: "/" + (persistenceAction.payload.uuid ?? ""),
+      //       delete: "/" + (persistenceAction.payload.uuid ?? ""),
+      //     };
       break;
     }
     case "runBoxedQueryAction":
@@ -198,15 +232,15 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
 
     return {
       operation: (this.operationMethod as any)[
-        (actionHttpMethods as any)[
+        localHttpMethod??((actionHttpMethods as any)[
           (persistenceAction as any).actionName ?? persistenceAction.actionType
-        ] ?? "post"
+        ] ?? "post")
       ],
       url:
         rootApiUrl +
-        (networkActionUrlMap[
+        (url??(networkActionUrlMap[
           (persistenceAction as any).actionName ?? persistenceAction.actionType
-        ] ?? ""),
+        ] ?? "")),
       args,
     };
   }
@@ -259,7 +293,10 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         return Promise.resolve(result);
         break;
       }
-      case "LocalPersistenceAction": {
+      case "LocalPersistenceAction_create":
+      case "LocalPersistenceAction_read":
+      case "LocalPersistenceAction_update":
+      case "LocalPersistenceAction_delete": {
         throw new Error(
           "LocalPersistenceAction cannot be handled by RestPersistenceClientAndRestClient.handleNetworkPersistenceAction"
         );
@@ -288,7 +325,10 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         return result;
         break;
       }
-      case "RestPersistenceAction": {
+      case "RestPersistenceAction_create":
+      case "RestPersistenceAction_read":
+      case "RestPersistenceAction_update":
+      case "RestPersistenceAction_delete": {
         if (typeof action.deploymentUuid !== "string") {
           throw new Error(
             "handleNetworkPersistenceAction could not find deploymentUuid in action " +
@@ -307,6 +347,8 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
               JSON.stringify(action, undefined, 2)
           );
         }
+        const effectiveAction = action.actionType.split('_')[1];
+        log.debug("handleNetworkPersistenceAction effectiveAction", effectiveAction);
         const callParams = this.getRestCallParams(
           action,
           this.rootApiUrl +
@@ -318,7 +360,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         );
         const completeArgs = {
           ...callParams.args,
-          actionName: action.actionName,
+          // actionName: action.actionName,
           deploymentUuid: action.deploymentUuid,
           section: action.payload.section,
           parentUuid: action.payload.parentUuid,
@@ -335,7 +377,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         );
         const result = callParams.operation(
           "/CRUD/:deploymentUuid/:section/entity" +
-            ((action.actionName as any) == "read" ? "/:parentUuid/all" : ""),
+            (effectiveAction == "read" ? "/:parentUuid/all" : ""),
           callParams.url,
           completeArgs
         );
