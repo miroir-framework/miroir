@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 import {
-  CRUDActionName,
   DomainControllerInterface,
   DomainState,
   LocalCacheInfo
@@ -192,7 +191,7 @@ export async function resetAndInitApplicationDeployment(
  */
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
-  // private log: LoggerInterface;
+  // private actionHandler: ActionHandler;
   // ##############################################################################################
   constructor(
     private persistenceStoreAccessMode: "local" | "remote",
@@ -203,39 +202,6 @@ export class DomainController implements DomainControllerInterface {
   ) {
     // this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
     this.callUtil = new CallUtils(persistenceStoreLocalOrRemote);
-    const boundRemotePersistenceAction = this.callUtil.callPersistenceAction.bind(
-      this.callUtil
-    );
-    // actionType -> actionName -> actionHandlerKind -> handler
-    this.actionHandler = {
-      storeManagementAction: {
-        resetAndInitApplicationDeployment: { "*": resetAndInitApplicationDeployment },
-        "*": {
-          local: this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore.bind(
-            this.persistenceStoreLocalOrRemote
-          ),
-          // remote: this.callUtil.callPersistenceAction.bind(this.callUtil),
-          remote: boundRemotePersistenceAction,
-        },
-      },
-      bundleAction: {
-        // TODO: not used, not tested!
-        "*": {
-          "*": this.handleDomainUndoRedoAction.bind(this),
-        },
-      },
-      modelAction: {
-        resetModel: {
-          "*": boundRemotePersistenceAction,
-        },
-        resetData: {
-          "*": boundRemotePersistenceAction,
-        },
-        initModel: {
-          "*": boundRemotePersistenceAction,
-        },
-      },
-    };
   }
 
   getPersistenceStoreAccessMode(): "local" | "remote" {
@@ -286,7 +252,7 @@ export class DomainController implements DomainControllerInterface {
     currentModelEnvironment: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainUndoRedoAction start actionName",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainUndoRedoAction start actionType",
       undoRedoAction.actionType,
       "deployment",
       deploymentUuid,
@@ -567,8 +533,8 @@ export class DomainController implements DomainControllerInterface {
         // runBoxedExtractorOrQueryAction.deploymentUuid,
         "persistenceStoreAccessMode=",
         this.persistenceStoreAccessMode,
-        "actionName=",
-        (runBoxedExtractorOrQueryAction as any).actionName,
+        "actionType=",
+        (runBoxedExtractorOrQueryAction as any).actionType,
         "actionType=",
         runBoxedExtractorOrQueryAction?.actionType,
         "queryExecutionStrategy=",
@@ -674,8 +640,8 @@ export class DomainController implements DomainControllerInterface {
       log.error(
         "DomainController handleBoxedExtractorOrQueryAction caught exception",
         error,
-        "actionName",
-        (runBoxedExtractorOrQueryAction as any).actionName,
+        "actionType",
+        (runBoxedExtractorOrQueryAction as any).actionType,
         "actionType",
         runBoxedExtractorOrQueryAction?.actionType,
         "objects",
@@ -704,8 +670,8 @@ export class DomainController implements DomainControllerInterface {
       "handleQueryTemplateActionForServerONLY",
       // "deploymentUuid",
       // runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
-      "actionName",
-      (runBoxedQueryTemplateAction as any).actionName,
+      "actionType",
+      (runBoxedQueryTemplateAction as any).actionType,
       "actionType",
       runBoxedQueryTemplateAction?.actionType,
       "objects",
@@ -770,8 +736,8 @@ export class DomainController implements DomainControllerInterface {
       "handleBoxedExtractorTemplateActionForServerONLY",
       // "deploymentUuid",
       // runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
-      "actionName",
-      (runBoxedExtractorTemplateAction as any).actionName,
+      "actionType",
+      (runBoxedExtractorTemplateAction as any).actionType,
       "actionType",
       runBoxedExtractorTemplateAction?.actionType,
       "objects",
@@ -841,8 +807,8 @@ export class DomainController implements DomainControllerInterface {
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
       // "deploymentUuid",
       // runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
-      "actionName",
-      (runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any).actionName,
+      "actionType",
+      (runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any).actionType,
       "actionType",
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction?.actionType,
       "objects",
@@ -1047,7 +1013,6 @@ export class DomainController implements DomainControllerInterface {
         case "resetModel":
         case "resetData":
         case "initModel": {
-          // await this.callAsyncActionHandler(modelAction, "*", currentModel, {}, {}, modelAction);
           await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // context update
@@ -1298,8 +1263,7 @@ export class DomainController implements DomainControllerInterface {
             //     updatedConfiguration
             //   );
             //   const newStoreBasedConfiguration: RestPersistenceAction = {
-            //     actionType: "RestPersistenceAction",
-            //     actionName: "update",
+            //     actionType: "RestPersistenceAction_update",
             //     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             //     deploymentUuid,
             //     section: sectionOfapplicationEntities,
@@ -1351,7 +1315,7 @@ export class DomainController implements DomainControllerInterface {
       );
     }
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction DONE actionName=",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction DONE actionType=",
       modelAction["actionType"],
       "deployment",
       modelAction.deploymentUuid,
@@ -1596,8 +1560,8 @@ export class DomainController implements DomainControllerInterface {
     //   "handleAction",
     //   "deploymentUuid",
     //   domainAction.deploymentUuid,
-    //   "actionName",
-    //   (domainAction as any).actionName,
+    //   "actionType",
+    //   (domainAction as any).actionType,
     //   "actionType",
     //   domainAction?.actionType,
     //   "objects",
@@ -1665,7 +1629,6 @@ export class DomainController implements DomainControllerInterface {
         case "storeManagementAction_resetAndInitApplicationDeployment":
         case "storeManagementAction_openStore":
         case "storeManagementAction_closeStore": {
-          // if (domainAction.actionName == "storeManagementAction_resetAndInitApplicationDeployment") {
           if (
             domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment"
           ) {
@@ -1673,7 +1636,6 @@ export class DomainController implements DomainControllerInterface {
               this,
               domainAction.payload.deployments as any as SelfApplicationDeploymentConfiguration[]
             ); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
-            // await this.callAsyncActionHandler(domainAction, "*", currentModel, this, domainAction.deployments);
           } else {
             try {
               switch (this.persistenceStoreAccessMode) {
@@ -1681,7 +1643,6 @@ export class DomainController implements DomainControllerInterface {
                   await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
                     domainAction
                   );
-                  // await this.callAsyncActionHandler(domainAction, "local", currentModel, domainAction);
                   break;
                 }
                 case "remote": {
@@ -1690,7 +1651,6 @@ export class DomainController implements DomainControllerInterface {
                     {}, // context update
                     domainAction
                   );
-                  // await this.callAsyncActionHandler(domainAction, "remote", currentModel, {}, {}, domainAction);
                   break;
                 }
                 default: {
@@ -1753,7 +1713,6 @@ export class DomainController implements DomainControllerInterface {
             );
           }
           // TODO: create callSyncActionHandler
-          // return this.callAsyncActionHandler(domainAction, "*", currentModel, domainAction.deploymentUuid, domainAction, currentModel);
           return this.handleDomainUndoRedoAction(
             domainAction.deploymentUuid,
             domainAction,
@@ -3165,9 +3124,6 @@ export class DomainController implements DomainControllerInterface {
     //   "handleCompositeAction compositeInstanceAction resolvedCompositeActionDefinition",
     //   JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
     // );
-    // switch (testAction.actionName) {
-    //   case "runTestCompositeAction": {
-    // TestSuiteContext.setTest(testAction.testLabel);
     this.miroirContext.miroirActivityTracker.setTest(testAction.testLabel);
 
     if (testAction.beforeTestSetupAction) {
@@ -3682,78 +3638,6 @@ export class DomainController implements DomainControllerInterface {
       modelEnvironment,
       localActionParams,
     );
-  }
-
-  // ##############################################################################################
-  private actionHandler: ActionHandler;
-
-  getActionHandler(
-    domainAction: DomainAction,
-    actionHandlerKind: ActionHandlerKind,
-    currentModel?: MetaModel
-  ): AsyncHandlerFunction {
-    const levels = {
-      1: {
-        actionType: domainAction.actionType,
-        actionName: (domainAction as any).actionName,
-        actionHandlerKind: actionHandlerKind,
-      },
-      2: {
-        actionType: domainAction.actionType,
-        actionName: (domainAction as any).actionName,
-        actionHandlerKind: "*",
-      },
-      3: {
-        actionType: domainAction.actionType,
-        actionName: "*",
-        actionHandlerKind: actionHandlerKind,
-      },
-      4: {
-        actionType: domainAction.actionType,
-        actionName: "*",
-        actionHandlerKind: "*",
-      },
-    };
-    for (const l of Object.entries(levels)) {
-      if (
-        this.actionHandler[l[1].actionType] &&
-        this.actionHandler[l[1].actionType][l[1].actionName] &&
-        (this.actionHandler[l[1].actionType][l[1].actionName] as any)[l[1].actionHandlerKind]
-      ) {
-        const levelhandler = (this.actionHandler[l[1].actionType][l[1].actionName] as any)[
-          l[1].actionHandlerKind
-        ];
-        log.info(
-          "DomainController getActionHandler using level",
-          l[0],
-          "for actionType=" +
-            domainAction.actionType +
-            " actionName=" +
-            (domainAction as any).actionName +
-            " actionHandlerKind=" +
-            actionHandlerKind
-        );
-        return levelhandler;
-      }
-    }
-
-    throw new Error(
-      "DomainController getActionHandler could not find handler for actionType=" +
-        domainAction.actionType +
-        " actionName=" +
-        (domainAction as any).actionName
-    );
-  }
-
-  // ##############################################################################################
-  callAsyncActionHandler(
-    domainAction: DomainAction,
-    actionHandlerKind: ActionHandlerKind,
-    currentModel: MetaModel | undefined,
-    ...actionHandlerArgs: any[]
-  ): Promise<Action2ReturnType> {
-    const actionHandler = this.getActionHandler(domainAction, actionHandlerKind, currentModel);
-    return actionHandler(...actionHandlerArgs);
   }
 
 } // class DomainController

@@ -645,7 +645,6 @@ const createEntityCompositeActionPrepActions: any[] = [
     nameGivenToResult: "newApplicationEntityDefinitionList",
     query: {
       actionType: "runBoxedExtractorOrQueryAction",
-      actionName: "runQuery",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -679,7 +678,6 @@ const createEntityCompositeActionPrepActions: any[] = [
     nameGivenToResult: "newApplicationEntityList",
     query: {
       actionType: "runBoxedExtractorOrQueryAction",
-      actionName: "runQuery",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -954,7 +952,7 @@ const createReportsCompositeActionPrepActions: any[] = [
     nameGivenToResult: "newApplicationReportList",
     query: {
       actionType: "runBoxedExtractorOrQueryAction",
-      actionName: "runQuery",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -1146,7 +1144,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                     // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
                     // actionType: "runBoxedQueryTemplateAction",
                     actionType: "runBoxedQueryAction",
-                    actionName: "runQuery",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     applicationSection: "model",
                     deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -1216,8 +1214,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   payload: {
                     instanceAction: {
-                      actionType: "instanceAction",
-                      actionName: "updateInstance",
+                      actionType: "updateInstance",
                       applicationSection: "model",
                       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                       deploymentUuid: testAdminConfigurationDeploymentUuid,

@@ -434,8 +434,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
   "LocalPersistenceAction is parsable": {
     zodSchema: persistenceAction,
     action: {
-      actionType: "LocalPersistenceAction",
-      actionName: "create",
+      actionType: "LocalPersistenceAction_create",
       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",

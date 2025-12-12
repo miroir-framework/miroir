@@ -74,7 +74,6 @@ export const deleteCascade = async (p: {
   // // delete current list of objects (on a relational database, this would require suspending foreign key constraints for the involved relations)
   const deleteCurrentEntityInstancesAction: InstanceAction = {
     actionType: "deleteInstance",
-    // actionName: "deleteInstance",
     deploymentUuid: p.deploymentUuid,
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -134,7 +133,6 @@ export const deleteCascade = async (p: {
       await p.domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
         {
           actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          actionName: "runQuery",
           deploymentUuid:p.deploymentUuid,
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",

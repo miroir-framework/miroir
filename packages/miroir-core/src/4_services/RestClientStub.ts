@@ -98,7 +98,6 @@ export class RestClientStub implements RestClientInterface {
         body, // body
         {
           // params
-          // actionName,
           actionType,
           deploymentUuid,
           parentUuid,
