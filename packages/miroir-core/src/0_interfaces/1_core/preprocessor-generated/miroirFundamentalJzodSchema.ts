@@ -16280,10 +16280,6 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "actionType": {
             "type": "literal",
-            "definition": "testAction"
-          },
-          "actionName": {
-            "type": "literal",
             "definition": "runTestCompositeAction"
           },
           "application": {
@@ -16346,10 +16342,6 @@ export const miroirFundamentalJzodSchema = {
         "type": "object",
         "definition": {
           "actionType": {
-            "type": "literal",
-            "definition": "testAction"
-          },
-          "actionName": {
             "type": "literal",
             "definition": "runTestCase"
           },

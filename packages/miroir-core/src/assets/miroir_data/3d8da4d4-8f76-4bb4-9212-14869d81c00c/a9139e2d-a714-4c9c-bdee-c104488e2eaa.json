@@ -11,10 +11,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "definition": "testAction"
-          },
-          "actionName": {
-            "type": "literal",
             "definition": "runTestCompositeAction"
           },
           "application": {
@@ -80,10 +76,6 @@
       {
         "actionParameters": {
           "actionType": {
-            "type": "literal",
-            "definition": "testAction"
-          },
-          "actionName": {
             "type": "literal",
             "definition": "runTestCase"
           },

@@ -3177,13 +3177,13 @@ export function getMiroirFundamentalJzodSchema(
         testAction_runTestCompositeAction: {
           type: "object",
           definition: testEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionName.definition == "runTestCompositeAction"
+            (a: any) => a.actionParameters.actionType.definition == "runTestCompositeAction"
           )?.actionParameters,
         },
         testAction_runTestCase: {
           type: "object",
           definition: testEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionName.definition == "runTestCase"
+            (a: any) => a.actionParameters.actionType.definition == "runTestCase"
           )?.actionParameters,
         },
         instanceCUDAction: {
