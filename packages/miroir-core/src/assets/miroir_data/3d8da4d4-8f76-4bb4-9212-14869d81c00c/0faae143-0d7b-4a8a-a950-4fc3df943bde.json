@@ -13,7 +13,6 @@
             "type": "literal",
             "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction"
           },
-          "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -86,7 +85,6 @@
       {
         "actionParameters": {
           "actionType": { "type": "literal", "definition": "runBoxedExtractorOrQueryAction" },
-          "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -165,7 +163,6 @@
       {
         "actionParameters": {
           "actionType": { "type": "literal", "definition": "runBoxedQueryTemplateAction" },
-          "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -225,7 +222,6 @@
       {
         "actionParameters": {
           "actionType": { "type": "literal", "definition": "runBoxedExtractorTemplateAction" },
-          "actionName": { "type": "literal", "definition": "runQuery" },
           "application": {
             "type": "literal",
             "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
@@ -284,7 +280,6 @@
       {
         "actionParameters": {
           "actionType": { "type": "literal", "definition": "runBoxedQueryAction" },
-          "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -349,7 +344,6 @@
       {
         "actionParameters": {
           "actionType": { "type": "literal", "definition": "runBoxedExtractorAction" },
-          "actionName": { "type": "literal", "definition": "runQuery" },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",

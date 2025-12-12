@@ -55,7 +55,6 @@ export class RestClientStub implements RestClientInterface {
     const deploymentUuid = args["deploymentUuid"] ?? (body ?? {})["deploymentUuid"];
     const parentUuid = args["parentUuid"] ?? (body ?? {})["parentUuid"] ?? (body ?? {})["deploymentUuid"];
     const section = args["section"] ?? (body ?? {})["section"];
-    // const actionName = args["actionName"] ?? (body ?? {})["actionName"];
     const actionType = args["actionType"] ?? (body ?? {})["actionType"];
 
     let data;

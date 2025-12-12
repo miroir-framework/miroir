@@ -273,7 +273,6 @@ export async function restActionHandler(
   // else {
   //   log.info("restActionHandler called");
   // }
-  // const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
   const actionType: string =
     typeof params["actionType"] == "string" ? params["actionType"] : params["actionType"][0];
 

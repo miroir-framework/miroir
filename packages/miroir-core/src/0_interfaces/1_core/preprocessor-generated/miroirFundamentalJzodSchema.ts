@@ -18474,10 +18474,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runBoxedQueryTemplateOrBoxedExtractorTemplateAction"
           },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
-          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -18560,10 +18556,6 @@ export const miroirFundamentalJzodSchema = {
           "actionType": {
             "type": "literal",
             "definition": "runBoxedExtractorOrQueryAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
           },
           "actionLabel": {
             "type": "string",
@@ -18659,10 +18651,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runBoxedQueryTemplateAction"
           },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
-          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -18733,10 +18721,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runBoxedExtractorTemplateAction"
           },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
-          },
           "application": {
             "type": "literal",
             "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
@@ -18802,10 +18786,6 @@ export const miroirFundamentalJzodSchema = {
           "actionType": {
             "type": "literal",
             "definition": "runBoxedQueryAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
           },
           "actionLabel": {
             "type": "string",
@@ -18886,10 +18866,6 @@ export const miroirFundamentalJzodSchema = {
           "actionType": {
             "type": "literal",
             "definition": "runBoxedExtractorAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
           },
           "actionLabel": {
             "type": "string",
@@ -25960,21 +25936,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "runQuery"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
               "actionLabel": {
                 "type": "union",
                 "optional": true,
@@ -26204,21 +26165,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "runQuery"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
               "actionLabel": {
                 "type": "union",
                 "optional": true,
@@ -26417,21 +26363,6 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "literal",
                     "definition": "runBoxedExtractorOrQueryAction"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "actionName": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "literal",
-                    "definition": "runQuery"
                   },
                   {
                     "type": "schemaReference",
@@ -61005,10 +60936,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runBoxedQueryAction"
           },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
-          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -61113,10 +61040,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runBoxedExtractorAction"
           },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
-          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -61210,10 +61133,6 @@ export const miroirFundamentalJzodSchema = {
           "actionType": {
             "type": "literal",
             "definition": "runBoxedExtractorOrQueryAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
           },
           "actionLabel": {
             "type": "string",
@@ -70333,10 +70252,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runBoxedQueryAction"
           },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
-          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -70442,10 +70357,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "definition": "runBoxedExtractorAction"
           },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
-          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -70540,10 +70451,6 @@ export const miroirFundamentalJzodSchema = {
           "actionType": {
             "type": "literal",
             "definition": "runBoxedExtractorOrQueryAction"
-          },
-          "actionName": {
-            "type": "literal",
-            "definition": "runQuery"
           },
           "actionLabel": {
             "type": "string",

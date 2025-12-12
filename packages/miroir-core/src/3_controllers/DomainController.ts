@@ -560,9 +560,9 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     try {
-      LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionName);
+      LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionType);
       // Also set in MiroirActivityTracker for MiroirEventService
-      this.miroirContext.miroirActivityTracker.setAction(runBoxedExtractorOrQueryAction.actionName);
+      this.miroirContext.miroirActivityTracker.setAction(runBoxedExtractorOrQueryAction.actionType);
       log.info(
         "handleBoxedExtractorOrQueryAction",
         // "deploymentUuid",

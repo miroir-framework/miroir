@@ -357,7 +357,6 @@
                 "nameGivenToResult": "newApplicationEntityDefinitionList",
                 "query": {
                   "actionType": "runBoxedExtractorOrQueryAction",
-                  "actionName": "runQuery",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "deploymentUuid": {
                     "transformerType": "getFromParameters",
@@ -413,7 +412,6 @@
                 "nameGivenToResult": "newApplicationEntityList",
                 "query": {
                   "actionType": "runBoxedExtractorOrQueryAction",
-                  "actionName": "runQuery",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "deploymentUuid": {
                     "transformerType": "getFromParameters",
@@ -468,7 +466,6 @@
                 "nameGivenToResult": "newApplicationReportList",
                 "query": {
                   "actionType": "runBoxedExtractorOrQueryAction",
-                  "actionName": "runQuery",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "deploymentUuid": {
                     "transformerType": "getFromParameters",
@@ -524,7 +521,6 @@
                 "nameGivenToResult": "menuUpdateQueryResult",
                 "queryTemplate": {
                   "actionType": "runBoxedQueryAction",
-                  "actionName": "runQuery",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "deploymentUuid": {
                     "transformerType": "getFromParameters",
@@ -670,7 +666,6 @@
                 "nameGivenToResult": "newMenuList",
                 "queryTemplate": {
                   "actionType": "runBoxedQueryAction",
-                  "actionName": "runQuery",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "deploymentUuid": {
                     "transformerType": "getFromParameters",

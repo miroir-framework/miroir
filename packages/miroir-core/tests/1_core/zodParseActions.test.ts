@@ -557,7 +557,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      actionName: "runQuery",
       payload: {
         applicationSection: "data",
         query: {
@@ -584,7 +583,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      actionName: "runQuery",
       payload: {
         applicationSection: "data",
         query: {

@@ -81,7 +81,6 @@ export async function handleQueryTemplateAction(
     origin,
     {
       actionType: "runBoxedQueryAction",
-      actionName: queryTemplateAction.actionName,
       deploymentUuid: queryTemplateAction.deploymentUuid,
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -115,7 +114,6 @@ export async function handleBoxedExtractorTemplateAction(
 
   const extractorAction: RunBoxedExtractorAction = {
     actionType: "runBoxedExtractorAction",
-    actionName: boxedExtractorTemplateAction.actionName,
     deploymentUuid: boxedExtractorTemplateAction.deploymentUuid,
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -176,7 +174,6 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       origin,
       {
         actionType: "runBoxedQueryAction",
-        actionName: queryTemplateOrExtractorTemplateAction.actionName,
         deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
@@ -204,7 +201,6 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     );
     const extractorAction: RunBoxedExtractorAction = {
       actionType: "runBoxedExtractorAction",
-      actionName: queryTemplateOrExtractorTemplateAction.actionName,
       deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
