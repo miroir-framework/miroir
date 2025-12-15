@@ -14,7 +14,7 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { OuterRunnerView } from "./OuterRunnerView.js";
+import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -198,7 +198,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
   }, []);
 
   return (
-    <OuterRunnerView
+    <RunnerView
       runnerName={runnerName}
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}

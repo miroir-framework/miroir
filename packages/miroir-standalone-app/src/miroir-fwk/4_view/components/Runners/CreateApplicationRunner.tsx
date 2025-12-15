@@ -35,7 +35,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { OuterRunnerView } from "./OuterRunnerView.js";
+import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -518,7 +518,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
   }, []);
 
   return (
-    <OuterRunnerView
+    <RunnerView
       runnerName={runnerName} 
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}

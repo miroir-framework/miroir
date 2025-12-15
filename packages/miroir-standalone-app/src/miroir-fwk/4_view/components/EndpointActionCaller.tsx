@@ -25,11 +25,13 @@ import {
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   resolvePathOnObject,
+  selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   transformer_extended_apply_wrapper,
   type Action,
   type JzodSchema,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  type TransformerForBuildPlusRuntime
 } from 'miroir-core';
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { FC, useEffect, useMemo, useState } from 'react';
@@ -39,7 +41,7 @@ import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 // import { useReportPageContext } from './Reports/ReportPageContext.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
-import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
+import { ThemedOnScreenDebug, ThemedOnScreenHelper } from './Themes/BasicComponents.js';
 import { ThemedPaper } from './Themes/index.js';
 import { noValue } from './ValueObjectEditor/JzodElementEditorInterface.js';
 
@@ -53,6 +55,39 @@ export interface EndpointActionCallerProps {}
 
 
 const formikPath_EndpointActionCaller = "EndpointActionCaller";
+
+const runnerDefinition = {
+  application: selfApplicationMiroir.uuid,
+  runnerName: "EndpointActionCaller",
+  runnerLabel: "Call Endpoint Action",
+  // currentEndpointUuid : "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+  // domainActionType : "lendDocument",
+  transformer: {
+    transformerType: "dataflowObject",
+    label: "Get Actions for Endpoint",
+    definition: {
+      actions: {
+        transformerType: "getFromParameters",
+        referencePath: ["currentEndpoint", "definition", "actions"],
+      },
+      actionTypes: {
+        transformerType: "mapList",
+        elementTransformer: {
+          transformerType: "getFromContext",
+          referencePath: [
+            "defaultInput",
+            "actionParameters",
+          ],
+        },
+        applyTo: {
+          transformerType: "getFromContext",
+          referenceName: "actions",
+        },
+      },
+    },
+  } as TransformerForBuildPlusRuntime
+}
+
 // #################################################################################################
 export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
@@ -88,11 +123,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       miroirMetaModel: miroirMetaModel,
     };
   }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
-
-
-  // const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
-
-
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -207,59 +237,31 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             actions:Action[],
             actionTypes:Action["actionParameters"][]
           } = useMemo(() => {
-            return currentEndpoint?transformer_extended_apply_wrapper(
-              context.miroirContext.miroirActivityTracker, // activityTracker
-              "runtime", // step
-              ["rootTransformer"], // transformerPath
-              "TransformerEditor", // label
-              {
-                transformerType: "dataflowObject",
-                label: "Get Actions for Endpoint",
-                // target: "actions",
-                definition: {
-                  actions: {
-                    transformerType: "getFromParameters",
-                    referencePath: ["defaultInput", "definition", "actions"],
-                  },
-                  actionTypes: {
-                    transformerType: "mapList",
-                    elementTransformer: {
-                      transformerType: "getFromContext",
-                      referencePath: [
-                        "defaultInput",
-                        "actionParameters",
-                        // "actionType",
-                        // "definition",
-                      ],
-                    },
-                    applyTo: {
-                      transformerType: "getFromContext",
-                      referenceName: "actions",
-                    },
-                  },
-                },
-              }, // transformer
-              defaultMiroirModelEnvironment, // currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
-              { defaultInput: currentEndpoint || { actions: [] } }, // transformerParams
-              {}, // contextResults - pass the input to transform
-              "value" // resolveBuildTransformersTo
-              // deploymentEntityState,
-              // deploymentUuid,
-            ): {actions: [], actionTypes: []};
+            return currentEndpoint
+              ? transformer_extended_apply_wrapper(
+                  context.miroirContext.miroirActivityTracker, // activityTracker
+                  "runtime", // step
+                  ["rootTransformer"], // transformerPath
+                  "TransformerEditor", // label
+                  runnerDefinition.transformer, // transformer
+                  defaultMiroirModelEnvironment, // currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
+                  {
+                    defaultInput: currentEndpoint || { actions: [] },
+                    currentEndpoint: currentEndpoint || { actions: [] },
+                  }, // transformerParams
+                  {}, // contextResults - pass the input to transform
+                  "value" // resolveBuildTransformersTo
+                )
+              : { actions: [], actionTypes: [] };
           }, [selectedDeploymentUuid, currentEndpoint]);
-          // const availableActions = useMemo(() => {
-          //   if (!selectedEndpointUuid) return [];
-          //   const endpoint = availableEndpoints.find((e) => e.uuid === selectedEndpointUuid);
-          //   return endpoint?.definition?.actions || [];
-          // }, [selectedEndpointUuid, availableEndpoints]);
           log.info("EndpointActionCaller: availableActionsAndActionTypes", availableActionsAndActionTypes);
+
           const selectedActionName = formikContext.values[formikPath_EndpointActionCaller].action;
           const currentAction = availableActionsAndActionTypes.actions.find(
             (action) => action.actionParameters.actionType.definition === selectedActionName
           );
 
           const currentActionParametersMMLSchema:JzodObject = useMemo(() => {
-
             return {
               type: 'object',
               definition: currentAction?.actionParameters || {}
@@ -360,8 +362,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                         defaultLabel: "Action",
                         editable: true,
                         display: {
-                          // objectUuidAttributeLabelPosition: "hidden",
-                          // uuid: { selector: "muiSelector" },
                           hidden: {
                             transformerType: "==",
                             label: "Hide Action if Endpoint not selected",
@@ -445,6 +445,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 Use JzodElementEditor for dynamic form generation based on action parameters schema
               </Typography>
 
+              {/* ThemedOnScreenDebug */}
               <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <ThemedOnScreenDebug
                   label="EndpointActionCallerHelp selectedDeploymentUuid"
@@ -495,8 +496,21 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                   useCodeBlock
                   initiallyUnfolded={false}
                 />
-
-                {/* EndpointActionCaller */}
+                {/* {formikContext.values[formikPath_EndpointActionCaller] && (
+                  <TypedValueObjectEditor
+                    labelElement={<span>select Application</span>}
+                    formValueMLSchema={endpointActionCallerFormikSchema}
+                    formikValuePathAsString={formikPath_EndpointActionCaller}
+                    deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
+                    applicationSection={"data"}
+                    formLabel={"Submit Action"}
+                    mode="create" // Readonly viewer mode, not relevant here
+                    displaySubmitButton="onTop"
+                    />
+                  )} */}
+              </Box>
+              {/* EndpointActionCaller */}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {formikContext.values[formikPath_EndpointActionCaller] && (
                   <TypedValueObjectEditor
                     labelElement={<span>select Application</span>}
@@ -507,10 +521,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     formLabel={"Submit Action"}
                     mode="create" // Readonly viewer mode, not relevant here
                     displaySubmitButton="onTop"
-                  />
-                )}
-
-
+                    />
+                  )}
               </Box>
             </ThemedPaper>
           );

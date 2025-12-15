@@ -20,7 +20,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
-import { OuterRunnerView } from "./OuterRunnerView.js";
+import { RunnerView } from "./RunnerView.js";
 import type { FormMlSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -155,7 +155,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
           />
         </div>
       ) : (
-        <OuterRunnerView
+        <RunnerView
           runnerName={runnerDefinition.runnerName}
           deploymentUuid={deploymentUuid}
           formMlSchema={formMlSchema}

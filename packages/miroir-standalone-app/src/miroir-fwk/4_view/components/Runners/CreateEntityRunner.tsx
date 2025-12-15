@@ -24,7 +24,7 @@ import { useDomainControllerService } from "../../MiroirContextReactProvider.js"
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
-import { OuterRunnerView } from "./OuterRunnerView.js";
+import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -258,7 +258,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
   const createEntityActionTemplate = useMemo(() => getCreateEntityActionTemplate(runnerName, "Create Entity"), []);
 
   return (
-    <OuterRunnerView
+    <RunnerView
       runnerName={runnerName}
       deploymentUuid={deploymentUuid}
       formMlSchema={formMlSchema}

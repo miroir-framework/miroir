@@ -18,7 +18,7 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { OuterRunnerView } from "./OuterRunnerView.js";
+import { RunnerView } from "./RunnerView.js";
 import type { FormMlSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -305,7 +305,7 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
         label={`DeleteEntityRunner for ${runnerName} deploymentUuidQuery`}
         data={deploymentUuidQuery}
       /> */}
-      <OuterRunnerView
+      <RunnerView
         runnerName={runnerName}
         deploymentUuid={deploymentUuid}
         deploymentUuidQuery={deploymentUuidQuery}

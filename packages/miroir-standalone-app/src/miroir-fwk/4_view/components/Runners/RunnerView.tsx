@@ -20,14 +20,14 @@ import type { RunnerProps } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "OuterRunnerView"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
 
 // ################################################################################################
-export const OuterRunnerView = <T extends Record<string, any>>(props: RunnerProps<T>) => {
+export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>) => {
   const {
     runnerName,
     deploymentUuid,
@@ -114,28 +114,6 @@ export const OuterRunnerView = <T extends Record<string, any>>(props: RunnerProp
       }
     }
   };
-
-  // const targetSchema: JzodObject = useMemo(() => {
-  //   if (typeof formMlSchema === "object" && "formMlSchemaType" in formMlSchema) {
-  //     if (formMlSchema.formMlSchemaType === "mlSchema") {
-  //       return formMlSchema.mlSchema;
-  //     } else {
-  //       return transformer_extended_apply_wrapper(
-  //         context.miroirContext.miroirActivityTracker, // activityTracker
-  //         "runtime", // step
-  //         [], // transformerPath
-  //         "formMlSchemaAsTransformer", // transformerLabel
-  //         formMlSchema.transformer as any as TransformerForRuntime, // TODO: correct type
-  //         currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
-  //         {}, // transformerParams
-  //         {}, // contextResults
-  //         "value"
-  //       ) as JzodObject;
-  //     }
-  //   } else {
-  //     return formMlSchema as JzodObject;
-  //   }
-  // }, [formMlSchema, currentMiroirModelEnvironment, context.miroirContext.miroirActivityTracker]);
 
   return (
     <>

@@ -24,7 +24,7 @@ import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { OuterRunnerView } from "./OuterRunnerView.js";
+import { RunnerView } from "./RunnerView.js";
 import type { FormMlSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -572,7 +572,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         </p>
       ) : null}
       found row A:{JSON.stringify(fileData ? fileData[0] : "")}
-      <OuterRunnerView
+      <RunnerView
         runnerName={runnerName}
         deploymentUuid={deploymentUuid}
         deploymentUuidQuery={deploymentUuidQuery}
