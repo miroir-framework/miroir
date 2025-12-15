@@ -415,7 +415,7 @@ export class DomainController implements DomainControllerInterface {
 
           // Batch all persistence operations for React 18 automatic batching
           const fetchPromises = toFetchEntities
-          .slice(1)
+          // .slice(1)
           .map((e) => {
             log.info(
               "DomainController loadConfigurationFromPersistenceStore fetching instances from server for entity",

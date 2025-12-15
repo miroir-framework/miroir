@@ -3385,7 +3385,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": "dataflowObject"
           },
           "target": {
-            "type": "string"
+            "type": "string",
+            "optional": true
           },
           "definition": {
             "type": "record",
@@ -4919,7 +4920,8 @@ export const miroirFundamentalJzodSchema = {
             "definition": "dataflowObject"
           },
           "target": {
-            "type": "string"
+            "type": "string",
+            "optional": true
           },
           "definition": {
             "type": "record",
@@ -37839,9 +37841,11 @@ export const miroirFundamentalJzodSchema = {
               },
               "target": {
                 "type": "union",
+                "optional": true,
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",
@@ -50548,9 +50552,11 @@ export const miroirFundamentalJzodSchema = {
               },
               "target": {
                 "type": "union",
+                "optional": true,
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   {
                     "type": "schemaReference",

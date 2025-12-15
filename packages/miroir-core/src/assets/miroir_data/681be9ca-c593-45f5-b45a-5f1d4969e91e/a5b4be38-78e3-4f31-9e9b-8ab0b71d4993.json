@@ -32,16 +32,10 @@
                       "transformerType": "returnValue",
                       "mlSchema": { "type": "array", "definition": { "type": "string" } },
                       "interpolation": "build",
-                      "value": [
-                        "testA",
-                        "testB"
-                      ]
+                      "value": ["testA", "testB"]
                     },
                     "transformerParams": {},
-                    "expectedValue": [
-                      "testA",
-                      "testB"
-                    ]
+                    "expectedValue": ["testA", "testB"]
                   }
                 ]
               },
@@ -231,9 +225,7 @@
                   "definition": "{{newApplicationName}SelfApplication"
                 },
                 "transformerParams": {},
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "expectedValue": {
                   "queryFailure": "FailedTransformer"
                 }
@@ -258,11 +250,7 @@
                   }
                 },
                 "transformerParams": {
-                  "fileData": [
-                    "a",
-                    "b",
-                    "c"
-                  ]
+                  "fileData": ["a", "b", "c"]
                 },
                 "expectedValue": [
                   {
@@ -284,11 +272,7 @@
                   }
                 },
                 "transformerParams": {
-                  "smallStringArray": [
-                    "a",
-                    "b",
-                    "c"
-                  ]
+                  "smallStringArray": ["a", "b", "c"]
                 },
                 "expectedValue": [
                   {
@@ -321,16 +305,10 @@
                       "transformerType": "returnValue",
                       "mlSchema": { "type": "array", "definition": { "type": "string" } },
                       "interpolation": "runtime",
-                      "value": [
-                        "testA",
-                        "testB"
-                      ]
+                      "value": ["testA", "testB"]
                     },
                     "transformerParams": {},
-                    "expectedValue": [
-                      "testA",
-                      "testB"
-                    ]
+                    "expectedValue": ["testA", "testB"]
                   }
                 ]
               },
@@ -516,11 +494,7 @@
                           },
                           "conceptLevel": {
                             "type": "enum",
-                            "definition": [
-                              "MetaModel",
-                              "Model",
-                              "Data"
-                            ],
+                            "definition": ["MetaModel", "Model", "Data"],
                             "optional": true,
                             "tag": {
                               "value": {
@@ -573,10 +547,7 @@
                       }
                     },
                     "transformerParams": {},
-                    "ignoreAttributes": [
-                      "conceptLevel",
-                      "icon"
-                    ],
+                    "ignoreAttributes": ["conceptLevel", "icon"],
                     "expectedValue": {
                       "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
                       "parentName": "Country",
@@ -1117,11 +1088,7 @@
                     "transformerName": "getFromParametersForReferencePath",
                     "transformer": {
                       "transformerType": "getFromParameters",
-                      "referencePath": [
-                        "a",
-                        "b",
-                        "c"
-                      ]
+                      "referencePath": ["a", "b", "c"]
                     },
                     "transformerParams": {
                       "a": {
@@ -1141,9 +1108,7 @@
                       "referenceName": "nonExistentReference"
                     },
                     "transformerParams": {},
-                    "retainAttributes": [
-                      "queryFailure"
-                    ],
+                    "retainAttributes": ["queryFailure"],
                     "expectedValue": {
                       "queryFailure": "FailedTransformer"
                     }
@@ -1154,16 +1119,12 @@
                     "transformerName": "getFromParameters",
                     "transformer": {
                       "transformerType": "getFromParameters",
-                      "referencePath": [
-                        "invalidPath"
-                      ]
+                      "referencePath": ["invalidPath"]
                     },
                     "transformerParams": {
                       "a": "test"
                     },
-                    "retainAttributes": [
-                      "queryFailure"
-                    ],
+                    "retainAttributes": ["queryFailure"],
                     "expectedValue": {
                       "queryFailure": "FailedTransformer"
                     }
@@ -1196,11 +1157,7 @@
                     "transformer": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": [
-                        "a",
-                        "b",
-                        "c"
-                      ]
+                      "referencePath": ["a", "b", "c"]
                     },
                     "transformerParams": {},
                     "transformerRuntimeContext": {
@@ -1222,9 +1179,7 @@
                       "referenceName": "nonExistentReference"
                     },
                     "transformerParams": {},
-                    "retainAttributes": [
-                      "queryFailure"
-                    ],
+                    "retainAttributes": ["queryFailure"],
                     "integrationTestExpectedValue": {
                       "queryFailure": "QueryNotExecutable"
                     },
@@ -1239,10 +1194,7 @@
                     "transformer": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": [
-                        "a",
-                        "invalidPath"
-                      ]
+                      "referencePath": ["a", "invalidPath"]
                     },
                     "transformerParams": {},
                     "transformerRuntimeContext": {
@@ -1250,9 +1202,7 @@
                         "b": "test"
                       }
                     },
-                    "retainAttributes": [
-                      "queryFailure"
-                    ],
+                    "retainAttributes": ["queryFailure"],
                     "integrationTestExpectedValue": {
                       "queryFailure": "QueryNotExecutable"
                     },
@@ -1287,14 +1237,8 @@
                 },
                 "transformerParams": {},
                 "expectedValue": [
-                  [
-                    "a",
-                    "testA"
-                  ],
-                  [
-                    "b",
-                    "testB"
-                  ]
+                  ["a", "testA"],
+                  ["b", "testB"]
                 ]
               },
               {
@@ -1316,14 +1260,8 @@
                   }
                 },
                 "expectedValue": [
-                  [
-                    "a",
-                    "testA"
-                  ],
-                  [
-                    "b",
-                    "testB"
-                  ]
+                  ["a", "testA"],
+                  ["b", "testB"]
                 ]
               },
               {
@@ -1347,14 +1285,8 @@
                   }
                 },
                 "expectedValue": [
-                  [
-                    "a",
-                    "testA"
-                  ],
-                  [
-                    "b",
-                    "testB"
-                  ]
+                  ["a", "testA"],
+                  ["b", "testB"]
                 ]
               },
               {
@@ -1371,9 +1303,7 @@
                   }
                 },
                 "transformerParams": {},
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -1410,10 +1340,7 @@
                     "b": "testB"
                   }
                 },
-                "expectedValue": [
-                  "testA",
-                  "testB"
-                ]
+                "expectedValue": ["testA", "testB"]
               },
               {
                 "transformerTestType": "transformerTest",
@@ -1434,10 +1361,7 @@
                     "b": "testB"
                   }
                 },
-                "expectedValue": [
-                  "testA",
-                  "testB"
-                ]
+                "expectedValue": ["testA", "testB"]
               },
               {
                 "transformerTestType": "transformerTest",
@@ -1459,10 +1383,7 @@
                     "b": "testB"
                   }
                 },
-                "expectedValue": [
-                  "testA",
-                  "testB"
-                ]
+                "expectedValue": ["testA", "testB"]
               },
               {
                 "transformerTestType": "transformerTest",
@@ -1478,9 +1399,7 @@
                   }
                 },
                 "transformerParams": {},
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -1505,11 +1424,7 @@
                   "applyTo": {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
-                    "value": [
-                      "testA",
-                      "testB",
-                      "testC"
-                    ]
+                    "value": ["testA", "testB", "testC"]
                   },
                   "index": 1
                 },
@@ -1532,11 +1447,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "testList": [
-                    "testA",
-                    "testB",
-                    "testC"
-                  ]
+                  "testList": ["testA", "testB", "testC"]
                 },
                 "expectedValue": "testB"
               },
@@ -1589,11 +1500,7 @@
                         "type": "string"
                       }
                     },
-                    "value": [
-                      "testA",
-                      "testB",
-                      "testC"
-                    ]
+                    "value": ["testA", "testB", "testC"]
                   },
                   "index": 1
                 },
@@ -1657,11 +1564,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "testList": [
-                    "testA",
-                    "testB",
-                    "testC"
-                  ]
+                  "testList": ["testA", "testB", "testC"]
                 },
                 "expectedValue": null
               },
@@ -1681,11 +1584,7 @@
                 },
                 "transformerParams": {},
                 "transformerRuntimeContext": {
-                  "testList": [
-                    "testA",
-                    "testB",
-                    "testC"
-                  ]
+                  "testList": ["testA", "testB", "testC"]
                 },
                 "expectedValue": null
               }
@@ -1949,11 +1848,7 @@
                         "type": "string"
                       }
                     },
-                    "value": [
-                      "testA",
-                      "testB",
-                      "testC"
-                    ]
+                    "value": ["testA", "testB", "testC"]
                   }
                 },
                 "transformerParams": {},
@@ -2036,9 +1931,9 @@
                   ]
                 },
                 "expectedValue": [
-                  { "test": "testA", "aggregate": 2},
-                  { "test": "testB", "aggregate": 1},
-                  { "test": "testC", "aggregate": 1}
+                  { "test": "testA", "aggregate": 2 },
+                  { "test": "testB", "aggregate": 1 },
+                  { "test": "testC", "aggregate": 1 }
                 ]
               },
               {
@@ -2085,10 +1980,10 @@
                   ]
                 },
                 "expectedValue": [
-                  { "test1": "testA", "test2": 1, "aggregate": 1},
-                  { "test1": "testA", "test2": 2, "aggregate": 1},
-                  { "test1": "testB", "test2": 1, "aggregate": 2},
-                  { "test1": "testC", "test2": 2, "aggregate": 2}
+                  { "test1": "testA", "test2": 1, "aggregate": 1 },
+                  { "test1": "testA", "test2": 2, "aggregate": 1 },
+                  { "test1": "testB", "test2": 1, "aggregate": 2 },
+                  { "test1": "testC", "test2": 2, "aggregate": 2 }
                 ]
               }
             ]
@@ -2141,10 +2036,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": [
-                          "country",
-                          "iso3166-1Alpha-2"
-                        ]
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
                       }
                     }
                   ]
@@ -2195,10 +2087,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": [
-                          "country",
-                          "iso3166-1Alpha-2"
-                        ]
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
                       }
                     }
                   ]
@@ -2256,10 +2145,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": [
-                          "country",
-                          "iso3166-1Alpha-2"
-                        ]
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
                       }
                     }
                   ]
@@ -2326,11 +2212,7 @@
                         },
                         "conceptLevel": {
                           "type": "enum",
-                          "definition": [
-                            "MetaModel",
-                            "Model",
-                            "Data"
-                          ],
+                          "definition": ["MetaModel", "Model", "Data"],
                           "optional": true,
                           "tag": {
                             "value": {
@@ -2407,10 +2289,7 @@
                       "attributeValue": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": [
-                          "country",
-                          "iso3166-1Alpha-2"
-                        ]
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
                       }
                     }
                   ]
@@ -2485,10 +2364,7 @@
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": [
-                        "country",
-                        "iso3166-1Alpha-2"
-                      ]
+                      "referencePath": ["country", "iso3166-1Alpha-2"]
                     }
                   }
                 },
@@ -2524,28 +2400,22 @@
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": [
-                        "country",
-                        "iso3166-1Alpha-2"
-                      ]
+                      "referencePath": ["country", "iso3166-1Alpha-2"]
                     },
                     "country": {
                       "transformerType": "createObject",
                       "interpolation": "runtime",
                       "definition": {
                         "uuid": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                          "transformerType": "returnValue",
+                          "mlSchema": { "type": "uuid" },
                           "interpolation": "runtime",
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
                         "name": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": [
-                            "country",
-                            "iso3166-1Alpha-2"
-                          ]
+                          "referencePath": ["country", "iso3166-1Alpha-2"]
                         }
                       }
                     }
@@ -2587,10 +2457,7 @@
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": [
-                        "country",
-                        "nonExistingAttribute"
-                      ]
+                      "referencePath": ["country", "nonExistingAttribute"]
                     }
                   }
                 },
@@ -2604,9 +2471,7 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -2631,28 +2496,22 @@
                     "name": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": [
-                        "country",
-                        "name"
-                      ]
+                      "referencePath": ["country", "name"]
                     },
                     "country": {
                       "transformerType": "createObject",
                       "interpolation": "runtime",
                       "definition": {
                         "uuid": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                          "transformerType": "returnValue",
+                          "mlSchema": { "type": "uuid" },
                           "interpolation": "runtime",
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
                         "name": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": [
-                            "country",
-                            "nonExistingAttribute"
-                          ]
+                          "referencePath": ["country", "nonExistingAttribute"]
                         }
                       }
                     }
@@ -2668,9 +2527,7 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -2803,9 +2660,7 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -2832,10 +2687,7 @@
                       "iso3166-1Alpha-2": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": [
-                          "country",
-                          "nonExistingAttribute"
-                        ]
+                        "referencePath": ["country", "nonExistingAttribute"]
                       }
                     }
                   }
@@ -2850,9 +2702,7 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -2956,8 +2806,8 @@
                         "interpolation": "runtime",
                         "definition": {
                           "uuid": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                           },
@@ -3030,18 +2880,15 @@
                       },
                       {
                         "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                          "transformerType": "returnValue",
+                          "mlSchema": { "type": "uuid" },
                           "interpolation": "runtime",
                           "value": "name"
                         },
                         "attributeValue": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": [
-                            "country",
-                            "iso3166-1Alpha-2"
-                          ]
+                          "referencePath": ["country", "iso3166-1Alpha-2"]
                         }
                       }
                     ]
@@ -3108,18 +2955,12 @@
                         "id": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": [
-                            "country3",
-                            "uuid"
-                          ]
+                          "referencePath": ["country3", "uuid"]
                         },
                         "name": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": [
-                            "country3",
-                            "iso3166-1Alpha-2"
-                          ]
+                          "referencePath": ["country3", "iso3166-1Alpha-2"]
                         }
                       }
                     }
@@ -3192,8 +3033,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -3205,18 +3046,15 @@
                         },
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": [
-                              "country2",
-                              "iso3166-1Alpha-2"
-                            ]
+                            "referencePath": ["country2", "iso3166-1Alpha-2"]
                           }
                         }
                       ]
@@ -3261,8 +3099,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -3274,18 +3112,15 @@
                         },
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": [
-                              "country",
-                              "iso3166-1Alpha-2"
-                            ]
+                            "referencePath": ["country", "iso3166-1Alpha-2"]
                           }
                         }
                       ]
@@ -3303,8 +3138,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -3316,18 +3151,15 @@
                         },
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": [
-                              "newObject",
-                              "name"
-                            ]
+                            "referencePath": ["newObject", "name"]
                           }
                         }
                       ]
@@ -3353,6 +3185,117 @@
               },
               {
                 "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject with two entries and without target allows to render each entry based on the previous one",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "label": "newObject",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["country", "iso3166-1Alpha-2"]
+                          }
+                        }
+                      ]
+                    },
+                    "newObject2": {
+                      "transformerType": "createObjectFromPairs",
+                      "interpolation": "runtime",
+                      "label": "newObject2",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "newObject"
+                      },
+                      "referenceToOuterObject": "newObject",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "generateUuid2"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": ["newObject", "name"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "generateUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "generateUuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "newObject": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  },
+                  "newObject2": {
+                    "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    "name": "US"
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
                 "transformerTestLabel": "dataflowObject shall fail when an entry fails",
                 "transformerName": "dataflowObject",
                 "transformer": {
@@ -3372,8 +3315,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -3385,18 +3328,15 @@
                         },
                         {
                           "attributeKey": {
-                      "transformerType": "returnValue",
-                      "mlSchema": { "type": "uuid" },
+                            "transformerType": "returnValue",
+                            "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },
                           "attributeValue": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": [
-                              "country3",
-                              "nonExistingAttribute"
-                            ]
+                            "referencePath": ["country3", "nonExistingAttribute"]
                           }
                         }
                       ]
@@ -3414,9 +3354,7 @@
                     "iso3166-1Alpha-2": "US"
                   }
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -3514,9 +3452,7 @@
                     "name": "US"
                   }
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -3547,9 +3483,7 @@
                     "DE"
                   ]
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },
@@ -3658,9 +3592,7 @@
                     "name": "US"
                   }
                 },
-                "retainAttributes": [
-                  "queryFailure"
-                ],
+                "retainAttributes": ["queryFailure"],
                 "unitTestExpectedValue": {
                   "queryFailure": "FailedTransformer"
                 },

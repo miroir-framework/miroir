@@ -270,11 +270,14 @@ if (shouldSkip) {
     //   testList: {
     //     miroirCoreTransformers: {
     //       runtimeTransformerTests: {
-    //         "aggregate": [
-    //           // "count returns number of elements in an object list at runtime",
-    //           // "count returns number of elements in an object list with a group at runtime",
-    //           // "count returns number of elements in an object list with a multiple groupBy at runtime",
-    //           "count returns number of elements in a string list from an extractor at runtime",
+    //         // "aggregate": [
+    //         //   // "count returns number of elements in an object list at runtime",
+    //         //   // "count returns number of elements in an object list with a group at runtime",
+    //         //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
+    //         //   "count returns number of elements in a string list from an extractor at runtime",
+    //         // ],
+    //         "dataflowObject": [
+    //           "dataflowObject with two entries and without target allows to render each entry based on the previous one"
     //         ],
     //         // "pickFromList": [
     //         //   "pickFromList selects wanted element from a returnValue string list before runtime",

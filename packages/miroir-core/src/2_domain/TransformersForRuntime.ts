@@ -2579,7 +2579,7 @@ export function handleTransformer_dataflowObject(
     );
   }
   // return resultObject
-  return resultObject[transformer.target];
+  return transformer.target?resultObject[transformer.target]:resultObject;
 }
 
 // ################################################################################################

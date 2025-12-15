@@ -21,7 +21,8 @@
         "type": "object",
         "definition": {
           "target": {
-            "type": "string"
+            "type": "string",
+            "optional": true
           },
           "definition": {
             "type": "record",

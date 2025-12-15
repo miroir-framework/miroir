@@ -13,6 +13,7 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultAdminApplicationDeploymentMap,
+  defaultMiroirModelEnvironment,
   DomainControllerInterface,
   entityApplicationForAdmin,
   entityEndpointVersion,
@@ -25,6 +26,8 @@ import {
   ReduxDeploymentsState,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
+  transformer_extended_apply_wrapper,
+  type Action,
   type JzodSchema,
   type MiroirModelEnvironment
 } from 'miroir-core';
@@ -76,8 +79,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   // const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  const deploymentMetaModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
-  // const [initialFormState, setInitialFormState] = useState<Record<string, any>>({});
+  // const deploymentMetaModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
       miroirFundamentalJzodSchema:
@@ -105,7 +107,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   );
 
 
-          // ######################################################################################
+  // ######################################################################################
   const handleSubmit = async (values: any) => {
 
     try {
@@ -193,15 +195,68 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           // Get available endpoints for selected deployment
           const availableEndpoints = currentInnerModel.endpoints;
 
-          // Get available actions for selected endpoint
-          const availableActions = useMemo(() => {
+          const currentEndpoint = useMemo(() => {
             if (!selectedEndpointUuid) return [];
             const endpoint = availableEndpoints.find((e) => e.uuid === selectedEndpointUuid);
-            return endpoint?.definition?.actions || [];
+            return endpoint;
           }, [selectedEndpointUuid, availableEndpoints]);
 
+          log.info("EndpointActionCaller: currentEndpoint", currentEndpoint);
+          // Get available actions for selected endpoint
+          const availableActionsAndActionTypes: {
+            actions:Action[],
+            actionTypes:Action["actionParameters"][]
+          } = useMemo(() => {
+            return currentEndpoint?transformer_extended_apply_wrapper(
+              context.miroirContext.miroirActivityTracker, // activityTracker
+              "runtime", // step
+              ["rootTransformer"], // transformerPath
+              "TransformerEditor", // label
+              {
+                transformerType: "dataflowObject",
+                label: "Get Actions for Endpoint",
+                // target: "actions",
+                definition: {
+                  actions: {
+                    transformerType: "getFromParameters",
+                    referencePath: ["defaultInput", "definition", "actions"],
+                  },
+                  actionTypes: {
+                    transformerType: "mapList",
+                    elementTransformer: {
+                      transformerType: "getFromContext",
+                      referencePath: [
+                        "defaultInput",
+                        "actionParameters",
+                        // "actionType",
+                        // "definition",
+                      ],
+                    },
+                    applyTo: {
+                      transformerType: "getFromContext",
+                      referenceName: "actions",
+                    },
+                  },
+                },
+              }, // transformer
+              defaultMiroirModelEnvironment, // currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
+              { defaultInput: currentEndpoint || { actions: [] } }, // transformerParams
+              {}, // contextResults - pass the input to transform
+              "value" // resolveBuildTransformersTo
+              // deploymentEntityState,
+              // deploymentUuid,
+            ): {actions: [], actionTypes: []};
+          }, [selectedDeploymentUuid, currentEndpoint]);
+          // const availableActions = useMemo(() => {
+          //   if (!selectedEndpointUuid) return [];
+          //   const endpoint = availableEndpoints.find((e) => e.uuid === selectedEndpointUuid);
+          //   return endpoint?.definition?.actions || [];
+          // }, [selectedEndpointUuid, availableEndpoints]);
+          log.info("EndpointActionCaller: availableActionsAndActionTypes", availableActionsAndActionTypes);
           const selectedActionName = formikContext.values[formikPath_EndpointActionCaller].action;
-          const currentAction = availableActions.find(action => action.actionParameters.actionType.definition === selectedActionName)
+          const currentAction = availableActionsAndActionTypes.actions.find(
+            (action) => action.actionParameters.actionType.definition === selectedActionName
+          );
 
           const currentActionParametersMMLSchema:JzodObject = useMemo(() => {
 
@@ -326,7 +381,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                         },
                       },
                     },
-                    definition: availableActions.map(
+                    definition: availableActionsAndActionTypes.actions.map(
                       (action, index) => action.actionParameters.actionType.definition
                     ),
                   },
@@ -334,7 +389,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 },
               },
             },
-          }), [selectedDeploymentUuid, availableActions, currentActionParametersMMLSchema]);
+          }), [selectedDeploymentUuid, availableActionsAndActionTypes, currentActionParametersMMLSchema]);
 
           useEffect(() => {
             const initialFormState: Record<string, any> =
@@ -418,8 +473,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                   initiallyUnfolded={false}
                 />
                 <ThemedOnScreenDebug
-                  label="EndpointActionCallerHelp availableActions"
-                  data={availableActions}
+                  label="EndpointActionCallerHelp availableActionsAndActionTypes"
+                  data={availableActionsAndActionTypes}
                   initiallyUnfolded={false}
                 />
                 <ThemedOnScreenDebug

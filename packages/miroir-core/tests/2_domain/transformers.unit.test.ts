@@ -65,9 +65,12 @@ if (shouldSkip) {
     //       //   ]
     //       // },
     //       runtimeTransformerTests: {
-    //         "aggregate": [
-    //           "count returns number of elements in an object list with a multiple groupBy at runtime"
-    //         ]
+    //         // "aggregate": [
+    //         //   "count returns number of elements in an object list with a multiple groupBy at runtime"
+    //         // ],
+    //         "dataflowObject": [
+    //           "dataflowObject with two entries and without target allows to render each entry based on the previous one"
+    //         ],
     //         // ifThenElse: [
     //         //   "ifThenElse equality true - basic string comparison",
     //         //   "ifThenElse equality false - basic string comparison",
