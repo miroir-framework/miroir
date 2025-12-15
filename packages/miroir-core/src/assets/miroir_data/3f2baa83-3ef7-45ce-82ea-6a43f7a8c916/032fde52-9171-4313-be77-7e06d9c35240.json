@@ -1,0 +1,37 @@
+{
+  "uuid": "032fde52-9171-4313-be77-7e06d9c35240",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "RunnerDetails",
+  "defaultLabel": "Details of a Runner",
+  "definition": {
+    "extractorTemplates": {
+      "elementToDisplay": {
+        "extractorTemplateType": "extractorForObjectByDirectReference",
+        "parentName": "Runner",
+        "parentUuid": {
+          "transformerType": "returnValue",
+          "value": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd"
+        },
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+            "fetchedDataReference": "elementToDisplay"
+          }
+        }
+      ]
+    }
+  }
+}

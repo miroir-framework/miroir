@@ -36,6 +36,7 @@ import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../Re
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -161,6 +162,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   <ThemedIcon icon="error" />
                 </ThemedListMiroirIcon>
                 <ThemedListItemText primary="Failed to load menu" />
+                <ThemedOnScreenDebug
+                  label='miroirMenusDomainElementObject'
+                  data={miroirMenusDomainElementObject}
+                />
               </ThemedListItemButton>
             </ThemedListItem>
           </ThemedList>

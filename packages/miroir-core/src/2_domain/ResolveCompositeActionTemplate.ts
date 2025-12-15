@@ -114,7 +114,7 @@ export function resolveCompositeActionTemplate(
     "build",
     [],
     compositeActionLabel,
-    (compositeActionTemplate as any).definition as any as TransformerForBuild,
+    (compositeActionTemplate as any).payload.definition as any as TransformerForBuild,
     currentModel,
     actionParamsAndTemplates,
     undefined,// localContext,
@@ -125,7 +125,6 @@ export function resolveCompositeActionTemplate(
     "using actionParamsAndTemplates",
     JSON.stringify(Object.keys(actionParamsAndTemplates), null, 2),
     "got result resolvedCompositeActionDefinition",
-    // resolvedCompositeActionDefinition
     JSON.stringify(resolvedCompositeActionDefinition, null, 2)
   );
   if (resolvedCompositeActionDefinition instanceof TransformerFailure) {

@@ -48,6 +48,13 @@
             "icon": "list"
           },
           {
+            "label": "Miroir Runners",
+            "section": "data",
+            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
+            "icon": "list"
+          },
+          {
             "label": "Miroir Queries",
             "section": "data",
             "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",

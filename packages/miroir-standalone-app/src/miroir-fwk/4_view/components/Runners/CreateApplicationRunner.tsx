@@ -98,65 +98,65 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     []
   );
 
-  const createApplicationAction = useMemo((): CompositeActionSequence => {
-    const testSelfApplicationUuid = uuidv4();
-    const testDeploymentUuid = uuidv4();
-    const testApplicationModelBranchUuid = uuidv4();
-    const testApplicationVersionUuid = uuidv4();
+  // const createApplicationAction = useMemo((): CompositeActionSequence => {
+  //   const testSelfApplicationUuid = uuidv4();
+  //   const testDeploymentUuid = uuidv4();
+  //   const testApplicationModelBranchUuid = uuidv4();
+  //   const testApplicationVersionUuid = uuidv4();
 
-    // The applicationName will come from form values at runtime
-    // For now, we use a placeholder that will be replaced by RunnerView
-    const placeholderApplicationName = "PLACEHOLDER_APP_NAME";
+  //   // The applicationName will come from form values at runtime
+  //   // For now, we use a placeholder that will be replaced by RunnerView
+  //   const placeholderApplicationName = "PLACEHOLDER_APP_NAME";
 
-    const testDeploymentStorageConfiguration: StoreUnitConfiguration =
-      getBasicStoreUnitConfiguration(placeholderApplicationName, {
-        emulatedServerType: "sql",
-        connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-      });
+  //   const testDeploymentStorageConfiguration: StoreUnitConfiguration =
+  //     getBasicStoreUnitConfiguration(placeholderApplicationName, {
+  //       emulatedServerType: "sql",
+  //       connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //     });
 
-    const initParametersForTest: InitApplicationParameters = getBasicApplicationConfiguration(
-      placeholderApplicationName,
-      testSelfApplicationUuid,
-      testDeploymentUuid,
-      testApplicationModelBranchUuid,
-      testApplicationVersionUuid
-    );
+  //   const initParametersForTest: InitApplicationParameters = getBasicApplicationConfiguration(
+  //     placeholderApplicationName,
+  //     testSelfApplicationUuid,
+  //     testDeploymentUuid,
+  //     testApplicationModelBranchUuid,
+  //     testApplicationVersionUuid
+  //   );
 
-    const localCreateApplicationCompositeAction = createApplicationCompositeAction(
-      adminConfigurationDeploymentAdmin.uuid,
-      testSelfApplicationUuid,
-      testSelfApplicationUuid,
-      placeholderApplicationName,
-      testDeploymentStorageConfiguration
-    );
+  //   const localCreateApplicationCompositeAction = createApplicationCompositeAction(
+  //     adminConfigurationDeploymentAdmin.uuid,
+  //     testSelfApplicationUuid,
+  //     testSelfApplicationUuid,
+  //     placeholderApplicationName,
+  //     testDeploymentStorageConfiguration
+  //   );
 
-    const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
-      placeholderApplicationName,
-      testDeploymentUuid,
-      testSelfApplicationUuid,
-      testDeploymentStorageConfiguration
-    );
+  //   const localCreateDeploymentCompositeAction = createDeploymentCompositeAction(
+  //     placeholderApplicationName,
+  //     testDeploymentUuid,
+  //     testSelfApplicationUuid,
+  //     testDeploymentStorageConfiguration
+  //   );
 
-    const localResetAndinitializeDeploymentCompositeAction =
-      resetAndinitializeDeploymentCompositeAction(testDeploymentUuid, initParametersForTest, []);
+  //   const localResetAndinitializeDeploymentCompositeAction =
+  //     resetAndinitializeDeploymentCompositeAction(testDeploymentUuid, initParametersForTest, []);
 
-    // Combine all three composite actions into one
-    const combinedCompositeAction: CompositeActionSequence = {
-      actionType: "compositeActionSequence",
-      actionLabel: "createApplicationAndDeployment",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-      payload: {
-        definition: [
-          ...localCreateApplicationCompositeAction.payload.definition,
-          ...localCreateDeploymentCompositeAction.payload.definition,
-          ...localResetAndinitializeDeploymentCompositeAction.payload.definition,
-        ],
-      },
-    };
+  //   // Combine all three composite actions into one
+  //   const combinedCompositeAction: CompositeActionSequence = {
+  //     actionType: "compositeActionSequence",
+  //     actionLabel: "createApplicationAndDeployment",
+  //     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  //     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  //     payload: {
+  //       definition: [
+  //         ...localCreateApplicationCompositeAction.payload.definition,
+  //         ...localCreateDeploymentCompositeAction.payload.definition,
+  //         ...localResetAndinitializeDeploymentCompositeAction.payload.definition,
+  //       ],
+  //     },
+  //   };
 
-    return combinedCompositeAction;
-  }, []);
+  //   return combinedCompositeAction;
+  // }, []);
 
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
     const testSelfApplicationUuid = uuidv4();

@@ -5,7 +5,9 @@ import type {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   CompositeActionTemplate,
-  LoggerInterface
+  JzodElement,
+  LoggerInterface,
+  TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
@@ -13,7 +15,9 @@ import {
   entityDeployment,
   entityEntity,
   entityEntityDefinition,
-  MiroirLoggerFactory
+  MiroirLoggerFactory,
+  selfApplicationLibrary,
+  selfApplicationMiroir
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
@@ -35,15 +39,99 @@ export interface CreateEntityToolProps {
 }
 
 // ################################################################################################
+// custom action runner definition
+const runnerDefinition = {
+  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15", //selfApplicationMiroir.uuid,
+  runnerName: "dropEntity",
+  runnerLabel: "Drop Entity",
+  // currentEndpointUuid : "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+  // domainActionType : "dropEntity",
+  formMLSchema: {
+    formMlSchemaType: "transformer",
+    transformer: {
+      type: "object",
+      definition: {
+        ["dropEntity"]: {
+          type: "object",
+          definition: {
+            application: {
+              type: "uuid",
+              nullable: true,
+              tag: {
+                value: {
+                  defaultLabel: "Application",
+                  editable: true,
+                  selectorParams: {
+                    targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                    targetEntity: entityApplicationForAdmin.uuid,
+                    targetEntityOrderInstancesBy: "name",
+                  },
+                },
+              },
+            },
+            entity: {
+              type: "uuid",
+              nullable: true,
+              tag: {
+                value: {
+                  defaultLabel: "Entity",
+                  editable: true,
+                  selectorParams: {
+                    targetDeploymentUuid: {
+                      transformerType: "!=",
+                      interpolation: "build",
+                      left: {
+                        transformerType: "getFromParameters",
+                        interpolation: "build",
+                        safe: true,
+                        referencePath: [
+                          "dropEntity",
+                          "deploymentUuidQuery",
+                          "deployments",
+                          "0",
+                          "uuid",
+                        ],
+                      },
+                      right: { transformerType: "returnValue", value: undefined },
+                      then: {
+                        transformerType: "getFromParameters",
+                        interpolation: "build",
+                        safe: true,
+                        referencePath: [
+                          "dropEntity",
+                          "deploymentUuidQuery",
+                          "deployments",
+                          "0",
+                          "uuid",
+                        ],
+                      },
+                      else: noValue.uuid,
+                    },
+                    targetEntity: entityEntity.uuid,
+                    targetEntityApplicationSection: "model",
+                    targetEntityOrderInstancesBy: "name",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  } as FormMlSchema,
+};
+
+// ################################################################################################
 export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
   deploymentUuid,
 }) => {
-  const runnerName: string = "deleteEntity";
-  const runnerLabel: string = "Delete Entity";
+  // const runnerName: string = "deleteEntity";
+  // const runnerLabel: string = "Delete Entity";
+  const runnerName: string = runnerDefinition.runnerName;
+  const runnerLabel: string = runnerDefinition.runnerLabel;
   // const localDeploymentUuid = "c0569263-bf2e-428a-af4b-37b7d3953f4b";
   const formMlSchema: FormMlSchema = useMemo(
     () => ({
-      // formMlSchemaType: "mlSchema",
       formMlSchemaType: "transformer",
       transformer: {
         type: "object",
@@ -122,7 +210,7 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
   const initialFormValue = useMemo(() => {
     const entityUuid = uuidv4();
     return {
-      deleteEntity: {
+      [runnerName]: {
         application: noValue.uuid,
         entity: noValue.uuid,
       },
@@ -309,7 +397,8 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
         runnerName={runnerName}
         deploymentUuid={deploymentUuid}
         deploymentUuidQuery={deploymentUuidQuery}
-        formMlSchema={formMlSchema}
+        formMlSchema={runnerDefinition.formMLSchema}
+        // formMlSchema={formMlSchema}
         initialFormValue={initialFormValue}
         action={{
           actionType: "compositeActionTemplate",
