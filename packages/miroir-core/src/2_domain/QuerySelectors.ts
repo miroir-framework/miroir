@@ -1062,7 +1062,16 @@ export const runQuery = <StateType>(
     );
     // TODO: test for error!
     if (result instanceof Domain2ElementFailed) {
-      log.error("runQuery failed for extractor", extractor[0], "query", extractor[1], "result=", result);
+      log.error(
+        "runQuery failed for deployment",
+        selectorParams.extractor.deploymentUuid,
+        "extractor",
+        extractor[0],
+        "query",
+        extractor[1],
+        "result=",
+        result
+      );
       context[extractor[0]] = result;
       return new Domain2ElementFailed({
         queryFailure: "ReferenceNotFound",

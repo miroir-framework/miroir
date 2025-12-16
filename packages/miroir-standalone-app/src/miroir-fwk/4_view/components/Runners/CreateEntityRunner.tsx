@@ -144,7 +144,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
   // const localDeploymentUuid = deploymentUuid;
   // const localDeploymentUuid = "1b3f973b-a000-4a85-9d42-2639ecd0c473"; // WRONG, it's the application's uuid
   // const localDeploymentUuid = "c0569263-bf2e-428a-af4b-37b7d3953f4b";
-  const formMlSchema: JzodObject = useMemo(
+  const formMLSchema: JzodObject = useMemo(
     () => ({
       type: "object",
       definition: {
@@ -261,7 +261,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
     <RunnerView
       runnerName={runnerName}
       deploymentUuid={deploymentUuid}
-      formMlSchema={formMlSchema}
+      formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
       action={{
         actionType: "compositeActionTemplate",

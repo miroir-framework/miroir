@@ -3970,6 +3970,7 @@ export function getMiroirFundamentalJzodSchema(
   const transformerForBuildCarryOnSchemaReference: JzodReference = {
     type: "schemaReference",
     definition: {
+      absolutePath: miroirFundamentalJzodSchemaUuid,
       relativePath: "transformerForBuildCarryOnObject",
     },
   };
@@ -4185,6 +4186,13 @@ export function getMiroirFundamentalJzodSchema(
             buildDomainAction: buildDomainActionSchemaBuilder.resultSchema,
             buildPlusRuntimeDomainAction: buildPlusRuntimeDomainActionSchemaBuilder.resultSchema,
             compositeActionTemplate: compositeActionSchemaBuilder.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+            mlSchemaTemplate: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
+              },
+            }
           };
         })(),
       } as Record<string, any /**JzodElement */>,

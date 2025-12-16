@@ -1,10 +1,11 @@
 export {
   getMiroirFundamentalJzodSchema,
-  miroirFundamentalJzodSchemaUuid,
+  miroirFundamentalJzodSchemaUuid
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
 
 export {
-  ActionEntityInstanceCollectionReturnType,
+  Action,
+  action, ActionEntityInstanceCollectionReturnType,
   actionEntityInstanceCollectionReturnType,
   ActionEntityInstanceCollectionSuccess,
   actionEntityInstanceCollectionSuccess,
@@ -55,13 +56,14 @@ export {
   CompositeActionSequence,
   compositeActionSequence,
   CompositeActionTemplate,
-  compositeActionTemplate,
+  compositeActionTemplate, CompositeRunTestAssertion,
+  compositeRunTestAssertion,
   // ===
   ConceptLevel,
   conceptLevel,
-  StorageAccess,
-  storageAccess,
-  DeploymentStorageConfig,
+  // 
+  Deployment,
+  deployment, DeploymentStorageConfig,
   deploymentStorageConfig,
   // CompositeInstanceActionTemplate,
   // compositeInstanceActionTemplate,
@@ -90,8 +92,8 @@ export {
   DomainElementVoid,
   domainElementVoid,
   DomainModelQueryTemplateJzodSchemaParams,
-  domainModelQueryTemplateJzodSchemaParams,
-  Entity,
+  domainModelQueryTemplateJzodSchemaParams, EndpointDefinition,
+  endpointDefinition, Entity,
   entity,
   EntityArrayAttribute,
   entityArrayAttribute,
@@ -157,8 +159,14 @@ export {
   extractorWrapperReturningList,
   ExtractorWrapperReturningObject,
   extractorWrapperReturningObject,
-  FilesystemDbStoreSectionConfiguration,
-  GridReportSection,
+  FilesystemDbStoreSectionConfiguration, GraphConfig,
+  graphConfig,
+  // those are zod schemas, not imported. Importing MLS with the same name.
+  // jzodUnion_RecursivelyUnfold_ReturnType,
+  // jzodUnion_RecursivelyUnfold_ReturnTypeError,
+  // jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  GraphReportSection,
+  graphReportSection, GridReportSection,
   gridReportSection,
   IndexedDbStoreSectionConfiguration,
   InstanceAction,
@@ -215,8 +223,9 @@ export {
   JzodTuple,
   jzodTuple,
   JzodUnion,
-  jzodUnion,
-  ListReportSection,
+  jzodUnion, JzodUnion_RecursivelyUnfold_ReturnType, JzodUnion_RecursivelyUnfold_ReturnTypeError,
+  JzodUnion_RecursivelyUnfold_ReturnTypeOK, KeyMapEntry,
+  keyMapEntry, ListReportSection,
   listReportSection,
   LocalCacheAction,
   LocalCacheExtractor,
@@ -234,16 +243,13 @@ export {
   MiroirConfigServer,
   // MiroirCustomQueryParams,
   // miroirCustomQueryParams,
-  MiroirFundamentalType,
-  MiroirMenuItem,
+  MiroirFundamentalType, MiroirIcon,
+  miroirIcon, MiroirMenuItem,
   miroirMenuItem,
   MiroirQuery,
   miroirQuery,
   MiroirQueryTemplate,
-  miroirQueryTemplate,
-  Action,
-  action,
-  ModelAction,
+  miroirQueryTemplate, ModelAction,
   modelAction,
   ModelActionAlterEntityAttribute,
   modelActionAlterEntityAttribute,
@@ -259,8 +265,8 @@ export {
   objectInstanceReportSection,
   ObjectListReportSection,
   objectListReportSection,
-  PersistenceAction,
-  QueryByEntityUuidGetEntityDefinition,
+  PersistenceAction, Query,
+  query, QueryByEntityUuidGetEntityDefinition,
   queryByEntityUuidGetEntityDefinition,
   QueryByQuery2GetParamJzodSchema,
   queryByQuery2GetParamJzodSchema,
@@ -274,14 +280,15 @@ export {
   QueryJzodSchemaParams,
   queryJzodSchemaParams,
   QueryTemplateWithExtractorCombinerTransformer,
-  queryTemplateWithExtractorCombinerTransformer,
-  Query,
-  query,
-  Report,
+  queryTemplateWithExtractorCombinerTransformer, Report,
   report,
   ReportSection,
-  reportSection,
-  RestPersistenceAction,
+  reportSection, ResolvedJzodSchemaReturnType,
+  resolvedJzodSchemaReturnType,
+  ResolvedJzodSchemaReturnTypeError,
+  resolvedJzodSchemaReturnTypeError,
+  ResolvedJzodSchemaReturnTypeOK,
+  resolvedJzodSchemaReturnTypeOK, RestPersistenceAction,
   RootReport,
   rootReport,
   RunBoxedExtractorAction,
@@ -306,8 +313,8 @@ export {
   serverConfigForClientConfig,
   ShippingBox,
   shippingBox,
-  SqlDbStoreSectionConfiguration,
-  StoreBasedConfiguration,
+  SqlDbStoreSectionConfiguration, StorageAccess,
+  storageAccess, StoreBasedConfiguration,
   storeBasedConfiguration,
   StoreManagementAction,
   // ===
@@ -322,147 +329,85 @@ export {
   TestAction_runTestCompositeAction,
   testAction_runTestCompositeAction,
   TestCompositeAction,
-  testCompositeAction,
-  TestCompositeActionSuite,
+  testCompositeAction, TestCompositeActionParams,
+  testCompositeActionParams, TestCompositeActionSuite,
   testCompositeActionSuite,
   TestCompositeActionTemplate,
   testCompositeActionTemplate,
   TestCompositeActionTemplateSuite,
-  testCompositeActionTemplateSuite,
-  TransactionalInstanceAction,
+  testCompositeActionTemplateSuite, TestResult,
+  testResult,
+  TestSuiteResult,
+  testSuiteResult,
+  TestSuitesResults, TransactionalInstanceAction,
   transactionalInstanceAction,
   transformer_contextOrParameterReferenceTO_REMOVE,
   Transformer_inner_label,
   transformer_inner_label,
-  TransformerForBuild_menu_addItem,
-  transformerForBuild_menu_addItem,
-  TransformerForBuildPlusRuntime_menu_addItem,
-  transformerForBuildPlusRuntime_menu_addItem,
-  TransformerForBuild_mustacheStringTemplate,
-  transformerForBuild_mustacheStringTemplate,
-  TransformerForBuildPlusRuntime_mustacheStringTemplate,
-  transformerForBuildPlusRuntime_mustacheStringTemplate,
   // Transformer_orderBy,
   // transformer_orderBy,
   TransformerForBuild,
   // transformerForBuild_InnerReference,
-  transformerForBuild,
-  TransformerForBuild_returnValue,
-  transformerForBuild_returnValue,
-  // TransformerForBuild_constantArray,
-  TransformerForBuild_dataflowObject,
-  TransformerForBuild_createObject,
-  transformerForBuild_createObject,
-  TransformerForBuild_InnerReference,
-  transformerForBuild_InnerReference,
-  TransformerForBuild_generateUuid,
-  transformerForBuild_generateUuid,
-  TransformerForBuild_createObjectFromPairs,
+  transformerForBuild, TransformerForBuild_accessDynamicPath,
+  transformerForBuild_accessDynamicPath, TransformerForBuild_constantAsExtractor,
+  transformerForBuild_constantAsExtractor, TransformerForBuild_createObject,
+  transformerForBuild_createObject, TransformerForBuild_createObjectFromPairs,
   transformerForBuild_createObjectFromPairs,
+  // TransformerForBuild_constantArray,
+  TransformerForBuild_dataflowObject, TransformerForBuild_generateUuid,
+  transformerForBuild_generateUuid, TransformerForBuild_getFromParameters,
+  transformerForBuild_getFromParameters,
+  // TransformerForBuild_getObjectEntries_root,
+  // transformerForBuild_getObjectEntries_root,
+  TransformerForBuild_getObjectEntries,
+  TransformerForBuild_getObjectValues, transformerForBuild_getUniqueValues,
   // TransformerForBuild_getObjectValues_root,
   // transformerForBuild_getObjectValues_root,
   // TransformerForRuntime_indexListBy,
   // transformerForRuntime_indexListBy,
   TransformerForBuild_indexListBy,
-  transformerForBuild_indexListBy,
-  TransformerForBuild_accessDynamicPath,
-  transformerForBuild_accessDynamicPath,
-  // TransformerForBuild_getObjectEntries_root,
-  // transformerForBuild_getObjectEntries_root,
-  TransformerForBuild_getObjectEntries,
-  TransformerForBuild_getObjectValues,
-  TransformerForBuild_constantAsExtractor,
-  transformerForBuild_constantAsExtractor,
-  TransformerForBuild_getFromParameters,
-  transformerForBuild_getFromParameters,
-  transformerForBuild_getUniqueValues,
+  transformerForBuild_indexListBy, TransformerForBuild_InnerReference,
+  transformerForBuild_InnerReference, TransformerForBuild_menu_addItem,
+  transformerForBuild_menu_addItem, TransformerForBuild_mustacheStringTemplate,
+  transformerForBuild_mustacheStringTemplate, TransformerForBuild_returnValue,
+  transformerForBuild_returnValue,
   // 
   TransformerForBuildPlusRuntime,
-  transformerForBuildPlusRuntime,
-  TransformerForBuildPlusRuntime_ifThenElse,
-  transformerForBuildPlusRuntime_ifThenElse,
-  // 
-  // TransformerForRuntime,
-  // transformerForRuntime,
-  TransformerForBuildPlusRuntime_returnValue,
-  transformerForBuildPlusRuntime_returnValue,
-  TransformerForBuildPlusRuntime_constantAsExtractor,
-  transformerForBuildPlusRuntime_constantAsExtractor,
-  // TransformerForRuntime_constantArray,
-  TransformerForBuildPlusRuntime_getFromContext,
-  transformerForBuildPlusRuntime_getFromContext,
-  TransformerForBuildPlusRuntime_aggregate,
-  TransformerForBuildPlusRuntime_dataflowObject,
-  TransformerForBuildPlusRuntime_createObject,
-  // TransformerForRuntime_innerFullObjectTemplate,
-  // transformerForRuntime_innerFullObjectTemplate,
-  // TransformerForRuntime_constants,
-  TransformerForBuildPlusRuntime_InnerReference,
-  TransformerForBuildPlusRuntime_mapList,
-  TransformerForBuildPlusRuntime_pickFromList,
+  transformerForBuildPlusRuntime, TransformerForBuildPlusRuntime_accessDynamicPath,
+  transformerForBuildPlusRuntime_accessDynamicPath, TransformerForBuildPlusRuntime_aggregate, TransformerForBuildPlusRuntime_constantAsExtractor,
+  transformerForBuildPlusRuntime_constantAsExtractor, TransformerForBuildPlusRuntime_createObject, TransformerForBuildPlusRuntime_createObjectFromPairs,
+  transformerForBuildPlusRuntime_createObjectFromPairs, TransformerForBuildPlusRuntime_dataflowObject,
   // TransformerForRuntime_mapper_listToObject,
   // TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
   TransformerForBuildPlusRuntime_generateUuid,
   transformerForBuildPlusRuntime_generateUuid,
-  TransformerForBuildPlusRuntime_mergeIntoObject,
-  TransformerForBuildPlusRuntime_createObjectFromPairs,
-  transformerForBuildPlusRuntime_createObjectFromPairs,
-  TransformerForBuildPlusRuntime_indexListBy,
-  TransformerForBuildPlusRuntime_listReducerToSpreadObject,
-  TransformerForBuildPlusRuntime_accessDynamicPath,
-  transformerForBuildPlusRuntime_accessDynamicPath,
-  TransformerForBuildPlusRuntime_getObjectEntries,
+  // TransformerForRuntime_constantArray,
+  TransformerForBuildPlusRuntime_getFromContext,
+  transformerForBuildPlusRuntime_getFromContext, TransformerForBuildPlusRuntime_getObjectEntries,
   TransformerForBuildPlusRuntime_getObjectValues,
   // TransformerForRuntime_orderedTransformer,
   // transformerForRuntime_orderedTransformer,
-  TransformerForBuildPlusRuntime_getUniqueValues,
-  TestCompositeActionParams,
-  testCompositeActionParams,
-  UndoRedoAction,
+  TransformerForBuildPlusRuntime_getUniqueValues, TransformerForBuildPlusRuntime_ifThenElse,
+  transformerForBuildPlusRuntime_ifThenElse, TransformerForBuildPlusRuntime_indexListBy,
+  // TransformerForRuntime_innerFullObjectTemplate,
+  // transformerForRuntime_innerFullObjectTemplate,
+  // TransformerForRuntime_constants,
+  TransformerForBuildPlusRuntime_InnerReference, TransformerForBuildPlusRuntime_listReducerToSpreadObject, TransformerForBuildPlusRuntime_mapList, TransformerForBuildPlusRuntime_menu_addItem,
+  transformerForBuildPlusRuntime_menu_addItem, TransformerForBuildPlusRuntime_mergeIntoObject, TransformerForBuildPlusRuntime_mustacheStringTemplate,
+  transformerForBuildPlusRuntime_mustacheStringTemplate, TransformerForBuildPlusRuntime_pickFromList,
+  // 
+  // TransformerForRuntime,
+  // transformerForRuntime,
+  TransformerForBuildPlusRuntime_returnValue,
+  transformerForBuildPlusRuntime_returnValue, TransformerTest,
+  transformerTest, TransformerTestDefinition,
+  transformerTestDefinition, TransformerTestSuite,
+  transformerTestSuite, UndoRedoAction,
   undoRedoAction,
   ZodParseError,
   zodParseError,
   ZodParseErrorIssue,
-  zodParseErrorIssue,
-  CompositeRunTestAssertion,
-  compositeRunTestAssertion,
-  EndpointDefinition,
-  endpointDefinition,
-  TransformerTest,
-  transformerTest,
-  TransformerTestSuite,
-  transformerTestSuite,
-  TransformerTestDefinition,
-  transformerTestDefinition,
-  TestResult,
-  testResult,
-  TestSuiteResult,
-  testSuiteResult,
-  TestSuitesResults,
-  JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-  JzodUnion_RecursivelyUnfold_ReturnType,
-  KeyMapEntry,
-  keyMapEntry,
-  ResolvedJzodSchemaReturnType,
-  resolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  resolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
-  resolvedJzodSchemaReturnTypeOK,
-  MiroirIcon,
-  miroirIcon,
-  // those are zod schemas, not imported. Importing MLS with the same name.
-  // jzodUnion_RecursivelyUnfold_ReturnType,
-  // jzodUnion_RecursivelyUnfold_ReturnTypeError,
-  // jzodUnion_RecursivelyUnfold_ReturnTypeOK,
-  GraphReportSection,
-  graphReportSection,
-  GraphConfig,
-  graphConfig,
-  // 
-  Deployment,
-  deployment,
+  zodParseErrorIssue
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -470,41 +415,45 @@ export {
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 export {
+  BlobContents, BlobUploadResult, BlobValidationResult
+} from "./0_interfaces/1_core/Blob.js";
+export {
   InstanceDictionary,
   InstanceDictionaryNum,
   MetaEntity,
   MetaEntitySchema,
   Uuid,
-  UuidSchema,
+  UuidSchema
 } from "./0_interfaces/1_core/EntityDefinition.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
   ApplicationSectionOpposite,
   EntityInstanceWithName,
-  EntityInstanceWithNameSchema,
+  EntityInstanceWithNameSchema
 } from "./0_interfaces/1_core/Instance.js";
-export {
-  BlobContents,
-  BlobValidationResult,
-  BlobUploadResult,
-} from "./0_interfaces/1_core/Blob.js";
 // export {
 //   JzodSchemaDefinition,
 //   jzodSchemaDefinitionSchema,
 // } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
+export {
+  JzodUnionResolvedTypeForArrayReturnTypeOK, JzodUnionResolvedTypeForObjectReturnTypeOK,
+  JzodUnionResolvedTypeReturnType, JzodUnionResolvedTypeReturnTypeError, SelectUnionBranchFromDiscriminatorReturnType,
+  SelectUnionBranchFromDiscriminatorReturnTypeError,
+  SelectUnionBranchFromDiscriminatorReturnTypeOK
+} from "./0_interfaces/1_core/jzodTypeCheckInterface";
 export {
   // JzodUnion_RecursivelyUnfold_ReturnType,
   // JzodUnion_RecursivelyUnfold_ReturnTypeError,
   // JzodUnion_RecursivelyUnfold_ReturnTypeOK,
   jzodUnion_RecursivelyUnfold_ReturnType,
   jzodUnion_RecursivelyUnfold_ReturnTypeError,
-  jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  jzodUnion_RecursivelyUnfold_ReturnTypeOK
 } from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export {
   DeploymentUuidToReportsEntitiesDefinitions,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
-  foldableElementTypes,
+  foldableElementTypes
 } from "./0_interfaces/1_core/Model.js";
 export {
   // SelfApplicationDeploymentConfigurationSchema,
@@ -522,31 +471,17 @@ export {
   ServerSqlStorage,
   ServerStorageLocation,
   StorageLocation,
-  StorageTypeSchema,
+  StorageTypeSchema
 } from "./0_interfaces/1_core/StorageConfiguration.js";
 export {
   TestImplementation,
-  TestImplementationExpect,
+  TestImplementationExpect
 } from "./0_interfaces/1_core/TestImplementation.js";
-export {
-  JzodUnionResolvedTypeForArrayReturnTypeOK,
-  JzodUnionResolvedTypeReturnTypeError,
-  JzodUnionResolvedTypeForObjectReturnTypeOK,
-  JzodUnionResolvedTypeReturnType,
-  SelectUnionBranchFromDiscriminatorReturnType,
-  SelectUnionBranchFromDiscriminatorReturnTypeError,
-  SelectUnionBranchFromDiscriminatorReturnTypeOK,
-} from "./0_interfaces/1_core/jzodTypeCheckInterface";
 export {
   defaultTransformerInput,
   ITransformerHandler,
   MiroirModelEnvironment
 } from "./0_interfaces/1_core/Transformer";
-export {
-  ReduxDeploymentsState,
-  ZEntityState,
-  zEntityStateSchema as ZEntityStateSchema,
-} from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
 export {
   CRUDActionName,
   CRUDActionNamesArray,
@@ -565,7 +500,7 @@ export {
   EntitiesDomainStateReducer,
   EntitiesDomainStateTransformer,
   EntityInstancesUuidIndexEntityInstanceArraySelector,
-  LocalCacheInfo,
+  LocalCacheInfo
 } from "./0_interfaces/2_domain/DomainControllerInterface.js";
 export {
   Action2EntityInstanceCollection,
@@ -584,11 +519,11 @@ export {
   TransformerFailure,
   TransformerFailureType,
   TransformerResult,
-  TransformerReturnType,
+  TransformerReturnType
 } from "./0_interfaces/2_domain/DomainElement.js";
 export {
   RecordOfJzodElement,
-  RecordOfJzodObject,
+  RecordOfJzodObject
 } from "./0_interfaces/2_domain/DomainStateQuerySelectorInterface.js";
 export {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -620,47 +555,34 @@ export {
   SyncQueryRunner,
   SyncQueryRunnerParams,
   SyncQueryTemplateRunner,
-  SyncQueryTemplateRunnerParams,
+  SyncQueryTemplateRunnerParams
 } from "./0_interfaces/2_domain/ExtractorRunnerInterface.js";
 export {
+  ReduxDeploymentsState,
+  ZEntityState,
+  zEntityStateSchema as ZEntityStateSchema
+} from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
+export {
   DataStoreApplicationType,
-  DataStoreApplicationTypeSchema,
+  DataStoreApplicationTypeSchema
 } from "./0_interfaces/3_controllers/ApplicationControllerInterface.js";
 export { EndpointInterfaceNOTUSED } from "./0_interfaces/3_controllers/EndpointInterface.js";
 export {
   ErrorLogServiceInterface,
-  MError,
+  MError
 } from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
-export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
-export { 
+export {
   MiroirActivityTrackerInterface,
-  MiroirActivity as MiroirEventTrackingData,
+  MiroirActivity as MiroirEventTrackingData
 } from "./0_interfaces/3_controllers/MiroirActivityTrackerInterface.js";
+export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
 // export {
 //   TransformerEventServiceInterface,
 //   TransformerEntry,
 //   TransformerEvent,
 //   TransformerEventFilter,
 // } from "./0_interfaces/3_controllers/TransformerEventInterface.js";
-export {
-  ActionEvent,
-  TestEvent,
-  TransformerEvent,
-  MiroirEventServiceInterface,
-  MiroirEventLog,
-  MiroirEvent,
-  MiroirEventService,
-  EventFilter,
-} from "./3_controllers/MiroirEventService.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
-export {
-  ViewParams,
-  ViewParamsData,
-  GridType,
-  AppTheme,
-  ToolsPageState,
-  viewParams,
-} from "./0_interfaces/4-views/ViewParams";
 export {
   defaultLevels,
   LoggerFactoryAsyncInterface,
@@ -669,7 +591,7 @@ export {
   LoggerOptions,
   LogLevelOptions,
   SpecificLoggerOptions,
-  SpecificLoggerOptionsMap,
+  SpecificLoggerOptionsMap
 } from "./0_interfaces/4-services/LoggerInterface";
 export {
   HttpRequestBodyFormat,
@@ -681,7 +603,7 @@ export {
   RestMethodHandler,
   RestPersistenceClientAndRestClientInterface,
   RestServiceHandler,
-  StoreInterface,
+  StoreInterface
 } from "./0_interfaces/4-services/PersistenceInterface";
 export {
   AdminStoreFactoryRegister,
@@ -699,135 +621,93 @@ export {
   PersistenceStoreModelSectionInterface,
   PersistenceStoreSectionFactory,
   StorageSpaceHandlerInterface,
-  StoreSectionFactoryRegister,
+  StoreSectionFactoryRegister
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
-export { ACTION_OK, MAX_BLOB_FILE_SIZE, BLOB_SIZE_WARNING_THRESHOLD } from "./1_core/constants.js";
 export {
-  defaultSelfApplicationDeploymentMap,
-  defaultAdminApplicationDeploymentMap,
+  AppTheme, GridType, ToolsPageState, ViewParams, viewParams, ViewParamsData
+} from "./0_interfaces/4-views/ViewParams";
+export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_core/constants.js";
+export {
   ApplicationEntitiesAndInstances,
   createApplicationCompositeAction,
-  createDeploymentCompositeAction,
-  deleteApplicationAndDeploymentCompositeAction,
-  resetAndinitializeDeploymentCompositeAction,
+  createDeploymentCompositeAction, defaultAdminApplicationDeploymentMap, defaultSelfApplicationDeploymentMap, deleteApplicationAndDeploymentCompositeAction,
+  resetAndinitializeDeploymentCompositeAction
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
+export {
+  ActionEvent, EventFilter, MiroirEvent, MiroirEventLog, MiroirEventService, MiroirEventServiceInterface, TestEvent,
+  TransformerEvent
+} from "./3_controllers/MiroirEventService.js";
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
 export {
   // getDefaultValueForJzodSchemaDEFUNCT,
   getDefaultValueForJzodSchemaWithResolution,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForJzodSchemaWithResolutionNonHook
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
-export {
-  jzodTypeCheck,
-  jzodUnionResolvedTypeForObject,
-  unionObjectChoices,
-  selectUnionBranchFromDiscriminator,
-} from "./1_core/jzod/jzodTypeCheck.js";
 export {
   getObjectUniondiscriminatorValuesFromResolvedSchema
 } from "./1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
 export {
-  jzodUnion_recursivelyUnfold,
-} from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
-export {
   resolveJzodSchemaReference,
-  resolveJzodSchemaReferenceInContext,
+  resolveJzodSchemaReferenceInContext
 } from "./1_core/jzod/jzodResolveSchemaReferenceInContext";
-export { 
-  UnfoldJzodSchemaOnceReturnType,
+export {
+  jzodTypeCheck,
+  jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
+} from "./1_core/jzod/jzodTypeCheck.js";
+export {
+  localizeJzodSchemaReferenceContext,
+  unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,
   UnfoldJzodSchemaOnceReturnTypeError,
-  UnfoldJzodSchemaOnceReturnTypeOK,
-   localizeJzodSchemaReferenceContext,
-  unfoldJzodSchemaOnce,
+  UnfoldJzodSchemaOnceReturnTypeOK
 } from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
 export {
-  getInnermostTypeCheckError,
+  jzodUnion_recursivelyUnfold
+} from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
+export {
+  getInnermostTypeCheckError
 } from "./1_core/jzod/mlsTypeCheckError";
 export {
   defaultLibraryAppModel,
-  defaultLibraryModelEnvironment,
+  defaultLibraryModelEnvironment
 } from "./1_core/Library";
 export {
-  applicationModelEntities,
-  defaultMiroirMetaModel,
-  defaultMetaModelEnvironment,
-  defaultMiroirModelEnvironment,
+  applicationModelEntities, defaultMetaModelEnvironment, defaultMiroirMetaModel, defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
   getApplicationSection,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
-  miroirModelEntities,
+  miroirModelEntities
 } from "./1_core/Model.js";
+export { defaultReport } from "./1_core/Report.js";
 export {
   describe,
   expect,
-  TestFramework,
+  TestFramework
 } from "./1_core/test-expect";
 export {
-  fileToBase64,
-  base64ToBlob,
-  validateMimeType,
-  getBlobFileIcon,
-  formatFileSize,
-  pushIfUnique,
-  mergeIfUnique,
+  base64ToBlob, fileToBase64, formatFileSize, getBlobFileIcon, mergeIfUnique, pushIfUnique, validateMimeType
 } from "./1_core/tools.js";
-export {defaultReport} from "./1_core/Report.js";
-export { zodErrorFirstIssueLeaf, zodErrorDeepestIssueLeaves } from "./1_core/zodParseErrorHandler";
+export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/zodParseErrorHandler";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncInnerSelectElementFromQuery,
-  asyncRunQuery,
+  asyncRunQuery
 } from "./2_domain/AsyncQuerySelectors.js";
 export {
   getBasicApplicationConfiguration,
-  getBasicStoreUnitConfiguration,
+  getBasicStoreUnitConfiguration
 } from "./2_domain/Deployment.js";
-export {
-  getReduxDeploymentsStateIndex,
-  getLocalCacheIndexDeploymentSection,
-  getLocalCacheIndexDeploymentUuid,
-  getLocalCacheIndexEntityUuid,
-} from "./2_domain/ReduxDeploymentsState.js";
-export {
-  extractEntityJzodSchemaFromReduxDeploymentsState,
-  getReduxDeploymentsStateJzodSchemaSelectorMap,
-  getReduxDeploymentsStateSelectorMap,
-  GetExtractorRunnerParamsForReduxDeploymentsState,
-  getExtractorRunnerParamsForReduxDeploymentsState,
-  GetQueryRunnerParamsForReduxDeploymentsState,
-  getQueryRunnerParamsForReduxDeploymentsState,
-  runQueryFromReduxDeploymentsState,
-  selectEntityInstanceFromReduxDeploymentsState,
-  selectEntityInstanceListFromReduxDeploymentsState,
-  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
-} from "./2_domain/ReduxDeploymentsStateQuerySelectors.js";
-export {
-  createReduxDeploymentsStateSelectorMap,
-  executeReduxDeploymentsStateQuery,
-  getEntityInstancesUuidIndexNonHook,
-  getMultipleEntityInstancesUuidIndexNonHook,
-} from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
-export {
-  getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
-  getReduxDeploymentsStateSelectorTemplateMap,
-  getExtractorTemplateRunnerParamsForReduxDeploymentsState,
-  GetExtractorTemplateRunnerParamsForReduxDeploymentsState,
-  getQueryTemplateRunnerParamsForReduxDeploymentsState,
-  GetQueryTemplateRunnerParamsForReduxDeploymentsState,
-  runQueryTemplateFromReduxDeploymentsState,
-} from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 export {
   selectCurrentDeploymentModel,
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,
-  selectReportDefinitionFromReportUuid,
+  selectReportDefinitionFromReportUuid
 } from "./2_domain/DomainDataAccess.js";
 export {
   dummyDomainManyQueryTemplateWithDeploymentUuid,
@@ -850,7 +730,7 @@ export {
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNew
 } from "./2_domain/DomainStateQuerySelectors.js";
 export {
   ExtractorTemplateRunnerForDomainState,
@@ -866,7 +746,7 @@ export {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
 } from "./2_domain/DomainStateQueryTemplateSelector.js";
 export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
@@ -880,7 +760,7 @@ export {
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   extractzodSchemaForSingleSelectQuery,
   plainObjectToDomainElementDEFUNCT,
-  runQuery,
+  runQuery
 } from "./2_domain/QuerySelectors.js";
 export {
   extractFetchQueryTemplateJzodSchema,
@@ -889,14 +769,42 @@ export {
   handleBoxedExtractorTemplateAction,
   handleBoxedExtractorTemplateOrQueryTemplateAction,
   handleQueryTemplateAction,
-  runQueryTemplateWithExtractorCombinerTransformer,
+  runQueryTemplateWithExtractorCombinerTransformer
 } from "./2_domain/QueryTemplateSelectors.js";
+export {
+  getLocalCacheIndexDeploymentSection,
+  getLocalCacheIndexDeploymentUuid,
+  getLocalCacheIndexEntityUuid, getReduxDeploymentsStateIndex
+} from "./2_domain/ReduxDeploymentsState.js";
+export {
+  createReduxDeploymentsStateSelectorMap,
+  executeReduxDeploymentsStateQuery,
+  getEntityInstancesUuidIndexNonHook,
+  getMultipleEntityInstancesUuidIndexNonHook
+} from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
+export {
+  extractEntityJzodSchemaFromReduxDeploymentsState, GetExtractorRunnerParamsForReduxDeploymentsState,
+  getExtractorRunnerParamsForReduxDeploymentsState,
+  GetQueryRunnerParamsForReduxDeploymentsState,
+  getQueryRunnerParamsForReduxDeploymentsState, getReduxDeploymentsStateJzodSchemaSelectorMap,
+  getReduxDeploymentsStateSelectorMap, runQueryFromReduxDeploymentsState,
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState
+} from "./2_domain/ReduxDeploymentsStateQuerySelectors.js";
+export {
+  getExtractorTemplateRunnerParamsForReduxDeploymentsState,
+  GetExtractorTemplateRunnerParamsForReduxDeploymentsState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState,
+  GetQueryTemplateRunnerParamsForReduxDeploymentsState, getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  getReduxDeploymentsStateSelectorTemplateMap, runQueryTemplateFromReduxDeploymentsState
+} from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 export {
   resolveExtractorOrQueryTemplate,
   resolveExtractorTemplate,
   resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList,
   resolveQueryTemplateSelectExtractorWrapper,
-  resolveQueryTemplateWithExtractorCombinerTransformer,
+  resolveQueryTemplateWithExtractorCombinerTransformer
 } from "./2_domain/Templates";
 export {
   applicationTransformerDefinitions,
@@ -907,60 +815,55 @@ export {
   transformer_extended_apply_wrapper,
   transformer_InnerReference_resolve,
   transformer_mustacheStringTemplate_apply,
-  transformer_resolveReference,
+  transformer_resolveReference
 } from "./2_domain/TransformersForRuntime";
 export {
-  storeActionOrBundleActionStoreRunner,
+  storeActionOrBundleActionStoreRunner
 } from "./3_controllers/ActionRunner.js";
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,
   PackageConfiguration,
-  undoRedoHistorization,
+  undoRedoHistorization
 } from "./3_controllers/ConfigurationService";
 export {
   DeploymentConfiguration,
   DomainController,
-  resetAndInitApplicationDeployment,
+  resetAndInitApplicationDeployment
 } from "./3_controllers/DomainController";
 export { Endpoint } from "./3_controllers/Endpoint.js";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
-export { MiroirContext } from "./3_controllers/MiroirContext.js";
 export { getActivityTopic, MiroirActivityTracker } from "./3_controllers/MiroirActivityTracker.js";
+export { MiroirContext } from "./3_controllers/MiroirContext.js";
 // export { TransformerEventService } from "./3_controllers/TransformerEventService.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
-export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
 export {
   PersistenceStoreController,
-  PersistenceStoreControllerFactoryReturnType,
+  PersistenceStoreControllerFactoryReturnType
 } from "./4_services/PersistenceStoreController.js";
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
   // createPersistenceStoreControllers,
-  startLocalPersistenceStoreControllers,
+  startLocalPersistenceStoreControllers
 } from "./4_services/PersistenceStoreControllerTools.js";
 export { RestClient } from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export {
-  // displayTestSuiteResults,
-  RunTransformerTest,
-  RunTransformerTests,
-  runUnitTransformerTests,
   displayTestSuiteResultsDetails,
-  runTransformerTestInMemory,
-  runTransformerTestSuite,
-  testSuites,
+  // displayTestSuiteResults,
+  RunTransformerTest, runTransformerTestInMemory, RunTransformerTests, runTransformerTestSuite, runUnitTransformerTests, testSuites,
   transformerTestsDisplayResults,
-  type TestSuiteListFilter,
+  type TestSuiteListFilter
 } from "./4_services/TestTools.js";
+export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 
 export {
@@ -972,37 +875,22 @@ export {
   isJsonArray,
   removeUndefinedProperties,
   safeStringify,
-  unNullify,
+  unNullify
 } from "./4_services/otherTools.js";
 export {
-  performanceMetrics,
-  measurePerformance,
+  measurePerformance, performanceMetrics
 } from "./4_services/performanceMetrics.js";
 export { miroirCoreStartup } from "./startup.js";
 export {
-  circularReplacer,
-  evaluateExpression,
-  interpolateExpression,
-  domainStateToReduxDeploymentsState,
-  resolvePathOnObject,
-  AbsolutePath as ResultAccessPath,
-  safeResolvePathOnObject,
-  stringTuple,
-  mStringify,
   alterObjectAtPath,
   alterObjectAtPath2,
-  alterObjectAtPathWithCreate,
-  cleanupObject,
-  deleteObjectAtPath,
-  resolveRelativePath,
-
-  RelativePath,
-  ResolveRelativePathError,
-  ResolveRelativePathResult,
+  alterObjectAtPathWithCreate, circularReplacer, cleanupObject,
+  deleteObjectAtPath, domainStateToReduxDeploymentsState, evaluateExpression,
   // 
   getSchemaAtPath,
-  getValueAtPath,
-  setValueAtPath,
+  getValueAtPath, interpolateExpression, mStringify, RelativePath, resolvePathOnObject, resolveRelativePath, ResolveRelativePathError,
+  ResolveRelativePathResult, AbsolutePath as ResultAccessPath,
+  safeResolvePathOnObject, setValueAtPath, stringTuple
 } from "./tools";
 
 export {
@@ -1022,6 +910,7 @@ const entityEntityDefinition = require("./assets/miroir_model/16dbfe28-e1d7-4f20
 const entityJzodSchema = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json");
 const entityMenu = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json");
 const entityReport = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
+const entityRunner = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd.json");
 const entitySelfApplication = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json");
 const entitySelfApplicationDeploymentConfiguration = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json");
 const entitySelfApplicationVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json");
@@ -1040,6 +929,7 @@ const entityDefinitionMenu = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9
 const entityDefinitionJzodSchema = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json");
 const entityDefinitionQuery = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json");
 const entityDefinitionReport = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json");
+const entityDefinitionRunner = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/daa38a5f-f1b5-4d4f-94b7-54e97fe6782e.json");
 const entityDefinitionSelfApplication = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json");
 const entityDefinitionSelfApplicationDeploymentConfiguration = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json");
 const entityDefinitionSelfApplicationVersion = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json");
@@ -1067,6 +957,8 @@ const reportJzodSchemaList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82
 const reportQueryList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json");
 const reportQueryDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/4bbf3894-93ea-4c7f-9d8a-827152a0118e.json");
 const reportReportList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json");
+const reportRunnerList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/3c26c31e-c988-40b2-af47-d7380e35ba80.json");
+const reportRunnerDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/032fde52-9171-4313-be77-7e06d9c35240.json");
 const reportReportDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ef57aada-6b77-4384-8007-12f13eddd337.json");
 const reportTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json");
 const reportTestDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d65d8dc8-2a7f-4111-81b1-0324e816c1a8.json");
@@ -1120,6 +1012,7 @@ export {
   // instanceEndpoint,
   // modelEndpoint,
   applicationEndpointV1,
+  defaultAdminViewParams,
   storeManagementEndpoint as deploymentEndpointV1,
   // entityDefinitionSelfApplicationV1,
   domainEndpointVersionV1,
@@ -1139,6 +1032,7 @@ export {
   // entityDefinitionJzodSchemaV1,
   entityDefinitionQueryVersionV1,
   entityDefinitionReport,
+  entityDefinitionRunner,
   // entityDefinitionReportV1,
   entityDefinitionSelfApplication,
   entityDefinitionSelfApplicationDeploymentConfiguration,
@@ -1146,8 +1040,9 @@ export {
   entityDefinitionSelfApplicationVersion,
   entityDefinitionStoreBasedConfiguration,
   entityDefinitionTest,
-  entityDefinitionTransformerTest,
   entityDefinitionTransformerDefinition,
+  entityDefinitionTransformerTest,
+  entityDefinitionViewParams,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -1156,14 +1051,17 @@ export {
   // entityQuery,
   entityQueryVersion,
   entityReport,
+  entityRunner,
   entitySelfApplication,
   entitySelfApplicationDeploymentConfiguration,
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
   entityTest,
-  entityTransformerTest,
   entityTransformerDefinition,
+  entityTransformerTest,
+  // admin
+  entityViewParams,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -1187,32 +1085,30 @@ export {
   reportEntityList,
   reportJzodSchemaList,
   reportMenuList,
-  reportQueryList,
   reportQueryDetails,
-  reportReportList,
+  reportQueryList,
   reportReportDetails,
+  reportReportList,
+  reportRunnerList,
+  reportRunnerDetails,
   reportTestDetails,
   reportTestList,
-  reportTransformerTestList,
   reportTransformerTestDetails,
+  reportTransformerTestList,
+  reportViewParamsDetails,
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationStoreBasedConfigurationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
-  testEndpointVersionV1,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-  transformerTest_resolveConditionalSchema,
+  testEndpointVersionV1,
   //
   transformerJzodSchema,
   transformerMenuV1,
+  transformerTest_resolveConditionalSchema,
   undoRedoEndpointVersionV1,
-  // admin
-  entityViewParams,
-  entityDefinitionViewParams,
-  defaultAdminViewParams,
-  reportViewParamsDetails,
 };
 
 // ################################################################################################
@@ -1269,7 +1165,8 @@ const publisher2 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618b
 const publisher3 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json");
 
 export {
-  author1,
+  // reportTestList,
+  adminApplicationLibrary, author1,
   author2,
   author3,
   author4,
@@ -1310,14 +1207,11 @@ export {
   reportCountryList,
   reportPublisherList,
   //
-  selfApplicationDeploymentLibrary,
-  // reportTestList,
-  adminApplicationLibrary,
-  selfApplicationLibrary,
+  selfApplicationDeploymentLibrary, selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationStoreBasedConfigurationLibrary,
   selfApplicationVersionLibraryInitialVersion,
-  springer,
+  springer
 };
 
 const adminAdminApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/f3e04bb2-005f-484b-aaf2-072232f60f2c.json"); //assert { type: "json" };
@@ -1338,19 +1232,17 @@ const test1SelfApplication = require("./assets/test1_model/a659d350-dd97-4da9-91
 const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"); //assert { type: "json" };
 
 export {
-  adminAdminApplication,
-  adminLibraryApplication,
-  adminMiroirApplication,
-  adminSelfApplication,
-  adminConfigurationDeploymentAdmin,
+  adminAdminApplication, adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
-  entityApplicationForAdmin,
+  adminConfigurationDeploymentParis, adminLibraryApplication,
+  adminMiroirApplication,
+  adminSelfApplication, entityApplicationForAdmin,
   entityDefinitionDeployment,
   entityDeployment,
   menuDefaultAdmin,
-  selfApplicationStoreBasedConfigurationAdmin,
+  selfApplicationStoreBasedConfigurationAdmin
 };
 
-export { menuDefaultTest1, test1SelfApplication };
+  export { menuDefaultTest1, test1SelfApplication };
+

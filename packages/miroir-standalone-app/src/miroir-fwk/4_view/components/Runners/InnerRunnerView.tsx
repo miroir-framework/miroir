@@ -8,7 +8,7 @@ import type {
   JzodObject,
   LoggerInterface,
   MiroirModelEnvironment,
-  TransformerForRuntime
+  TransformerForBuildPlusRuntime,
 } from "miroir-core";
 import {
   Domain2ElementFailed,
@@ -23,6 +23,7 @@ import { useQueryTemplateResults } from "../Reports/ReportHooks.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import type { RunnerProps } from "./RunnerInterface.js";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -37,7 +38,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const InnerRunnerView = <T extends Record<string, any>>({
   runnerName,
   deploymentUuid,
-  formMlSchema,
+  formMLSchema,
   initialFormValue,
   action,
   labelElement,
@@ -92,16 +93,16 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   const {reportData: deploymentUuidFromApplicationUuid, resolvedQuery} = deploymentUuidQueryResults;
 
   const targetSchema: JzodObject = useMemo(() => {
-    if (typeof formMlSchema === "object" && "formMlSchemaType" in formMlSchema) {
-      if (formMlSchema.formMlSchemaType === "mlSchema") {
-        return formMlSchema.mlSchema;
+    if (typeof formMLSchema === "object" && "formMLSchemaType" in formMLSchema) {
+      if (formMLSchema.formMLSchemaType === "mlSchema") {
+        return formMLSchema.mlSchema;
       } else {
         return transformer_extended_apply_wrapper(
           context.miroirContext.miroirActivityTracker, // activityTracker
           "runtime", // step
           [], // transformerPath
           "formMlSchemaAsTransformer", // transformerLabel
-          formMlSchema.transformer as any as TransformerForRuntime, // TODO: correct type
+          formMLSchema.transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type
           currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
           { [runnerName]: { deploymentUuidQuery: deploymentUuidFromApplicationUuid } }, // transformerParams
           {}, // contextResults
@@ -109,10 +110,10 @@ export const InnerRunnerView = <T extends Record<string, any>>({
         ) as JzodObject;
       }
     } else {
-      return formMlSchema as JzodObject;
+      return formMLSchema as JzodObject;
     }
   }, [
-    formMlSchema,
+    formMLSchema,
     deploymentUuidFromApplicationUuid,
     currentMiroirModelEnvironment,
     context.miroirContext.miroirActivityTracker,
@@ -120,23 +121,23 @@ export const InnerRunnerView = <T extends Record<string, any>>({
 
   return (
     <>
-      {/* <ThemedOnScreenHelper
+      <ThemedOnScreenDebug
         label={`Runner ${runnerName} formik values`}
         data={formikContext.values}
-      /> */}
-      {/* <ThemedOnScreenHelper label={`Runner ${runnerName} targetSchema`} data={targetSchema} /> */}
-      {/* <ThemedOnScreenHelper
+      />
+      <ThemedOnScreenDebug label={`Runner ${runnerName} targetSchema`} data={targetSchema} />
+      {/* <ThemedOnScreenDebug
         label={`Runner ${runnerName} application`}
         data={(formikContext.values as any)[runnerName]?.application}
       /> */}
-      {/* <ThemedOnScreenHelper
+      {/* <ThemedOnScreenDebug
         label={`Runner ${runnerName} deploymentUuidQuery`}
         data={deploymentUuidQuery}
       /> */}
-      {/* <ThemedOnScreenHelper
+      <ThemedOnScreenDebug
         label={`Runner ${runnerName} deploymentUuidFromApplicationUuid`}
         data={deploymentUuidFromApplicationUuid}
-      /> */}
+      />
       <TypedValueObjectEditor
         labelElement={labelElement}
         deploymentUuid={deploymentUuid}

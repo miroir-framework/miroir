@@ -435,6 +435,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // );
 
   const submitButton = useActionButton ? (
+    // TODO: using ActionButton is useless, formik.submitForm does not return a result (only Promise<void>)
     <ActionButton
       onAction={async () => {
         log.info("TypedValueObjectEditor ActionButton async submit button clicked", formikValuePathAsString);
@@ -442,6 +443,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         const result = await formik.submitForm();
         log.info("TypedValueObjectEditor async submit button action done", result);
         return Promise.resolve(ACTION_OK);
+        // return Promise.resolve(result);
       }}
       successMessage={`${formLabel} completed successfully`}
       label={formLabel}

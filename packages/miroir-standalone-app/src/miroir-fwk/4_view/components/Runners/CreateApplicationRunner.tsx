@@ -29,6 +29,7 @@ import {
   selfApplicationVersionLibraryInitialVersion
 } from "miroir-core";
 import {
+  transformer,
   type AdminApplication,
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { packageName } from "../../../../constants.js";
@@ -66,7 +67,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
   const currentMiroirModelEnvironment: MiroirModelEnvironment =
     useCurrentModelEnvironment(deploymentUuid);
 
-  const formMlSchema: JzodObject = useMemo(
+  const formMLSchema: JzodObject = useMemo(
     () => ({
       type: "object",
       definition: {
@@ -302,14 +303,14 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
 
     const localCreateApplicationCompositeActionTemplate = {
       actionType: "compositeActionSequence",
-      actionLabel: "beforeAll",
+      actionLabel: "createApplicationForAdminAction",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         definition: [
           {
             actionType: "createInstance",
-            actionLabel: "createApplicationForAdminAction",
+            actionLabel: "createApplicationForAdminAction_instances",
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -325,7 +326,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
                       uuid: testSelfApplicationUuid,
                       parentName: entityApplicationForAdmin.name,
                       parentUuid: entityApplicationForAdmin.uuid,
-                      // name: placeholderApplicationName,
                       name: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
@@ -354,13 +354,12 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
 
     const localCreateDeploymentCompositeActionTemplate = {
       actionType: "compositeActionSequence",
-      actionLabel: "beforeAll",
+      actionLabel: "createDeployment",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         definition: [
           {
-            // actionType: "storeManagementAction",
             actionType: "storeManagementAction_openStore",
             actionLabel: "storeManagementAction_openStore",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
@@ -373,7 +372,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             }
           },
           {
-            // actionType: "storeManagementAction",
             actionType: "storeManagementAction_createStore",
             actionLabel: "storeManagementAction_createStore",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
@@ -431,7 +429,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     const appEntitesAndInstances: any[] = [];
     const localResetAndinitializeDeploymentCompositeActionTemplate = {
       actionType: "compositeActionSequence",
-      actionLabel: "beforeEach",
+      actionLabel: "resetAndInitializeDeployment",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -450,7 +448,12 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid: testDeploymentUuid,
             payload: {
-              params: initParametersForTest,
+              // params: initParametersForTest
+              params: {
+                transformerType: "returnValue",
+                interpolation: "runtime",
+                value: initParametersForTest
+              },
             },
           },
           {
@@ -521,7 +524,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     <RunnerView
       runnerName={runnerName} 
       deploymentUuid={deploymentUuid}
-      formMlSchema={formMlSchema}
+      formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
       action={{
         actionType: "compositeActionTemplate",

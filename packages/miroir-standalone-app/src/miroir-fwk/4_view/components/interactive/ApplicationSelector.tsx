@@ -45,7 +45,7 @@ export const ApplicationSelector: FC<{
   const formLabel = "Select Application to delete";
 
   // ##############################################################################################
-  const formMlSchema: JzodObject = useMemo(
+  const formMLSchema: JzodObject = useMemo(
     () => ({
       type: "object",
       definition: {
@@ -191,7 +191,7 @@ export const ApplicationSelector: FC<{
         deploymentUuid={deploymentUuid}
         applicationSection="model"
         initialValueObject={initialFormValue}
-        formValueMLSchema={formMlSchema}
+        formValueMLSchema={formMLSchema}
         formikValuePathAsString={formikValuePathAsString}
         formLabel={formLabel}
         zoomInPath=""

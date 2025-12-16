@@ -70,9 +70,9 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
     (ac) => ac.actionParameters.actionType.definition == runnerDefinition.domainActionType
   );
 
-  const formMlSchema: FormMlSchema = useMemo(
+  const formMLSchema: FormMlSchema = useMemo(
     () => ({
-      formMlSchemaType: "mlSchema",
+      formMLSchemaType: "mlSchema",
       mlSchema: {
         type: "object",
         definition: {
@@ -86,7 +86,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
   const initialFormValue = useMemo(() => {
     const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
       "build",
-      formMlSchema.mlSchema,
+      formMLSchema.mlSchema,
       undefined, // rootObject
       "", // rootLessListKey,
       undefined, // No need to pass currentDefaultValue here
@@ -99,7 +99,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       deploymentEntityState // TODO: keep this? improve so that it does not depend on entire deployment state
     );
     return result;
-  }, [formMlSchema]);
+  }, [formMLSchema]);
 
   const action: CompositeActionTemplate = useMemo((): CompositeActionTemplate => {
     return {
@@ -127,8 +127,8 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
         initiallyUnfolded={false}
       />
       <ThemedOnScreenDebug
-        label={`DeleteEntityRunner for ${runnerDefinition.runnerName} formMlSchema`}
-        data={formMlSchema}
+        label={`DeleteEntityRunner for ${runnerDefinition.runnerName} formMLSchema`}
+        data={formMLSchema}
         initiallyUnfolded={false}
       />
       <ThemedOnScreenDebug
@@ -158,7 +158,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
         <RunnerView
           runnerName={runnerDefinition.runnerName}
           deploymentUuid={deploymentUuid}
-          formMlSchema={formMlSchema}
+          formMLSchema={formMLSchema}
           initialFormValue={initialFormValue}
           action={{
             actionType: "compositeActionTemplate",

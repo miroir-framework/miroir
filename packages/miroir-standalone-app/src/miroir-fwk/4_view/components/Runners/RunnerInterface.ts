@@ -28,13 +28,13 @@ export type InitialFormValue<T extends Record<string, any>> = {
 
 // #
 export type FormMlSchema =
-  | JzodObject
+  // | JzodObject
   | {
-      formMlSchemaType: "mlSchema";
+      formMLSchemaType: "mlSchema";
       mlSchema: JzodObject;
     }
   | {
-      formMlSchemaType: "transformer";
+      formMLSchemaType: "transformer";
       transformer: TransformerForBuildPlusRuntime;
     };
 
@@ -42,8 +42,8 @@ export type FormMlSchema =
 export interface RunnerProps<T extends Record<string, any>> {
   runnerName: string;
   deploymentUuid: Uuid;
-  // formMlSchema: JzodObject;
-  formMlSchema: FormMlSchema;
+  // formMLSchema: JzodObject;
+  formMLSchema: FormMlSchema;
   initialFormValue: T | InitialFormValue<T>;
   action: RunnerAction<T>;
   // miroirModelEnvironment?: MiroirModelEnvironment;

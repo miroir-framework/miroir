@@ -250,14 +250,14 @@ function loadNewEntityInstancesInLocalCache(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  // log.info(
-  //   "loadNewEntityInstancesInLocalCache called with deployment",
-  //   deploymentUuid,
-  //   "section",
-  //   section,
-  //   "instanceCollection",
-  //   instanceCollection
-  // );
+  log.info(
+    "loadNewEntityInstancesInLocalCache called with deployment",
+    deploymentUuid,
+    "section",
+    section,
+    "instanceCollection",
+    instanceCollection
+  );
   const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
   // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",
@@ -278,7 +278,8 @@ function loadNewEntityInstancesInLocalCache(
   );
 
   // gets rid of most warnings: "A non-serializable value was detected in the state"
-  const serializableInstances = instanceCollection.instances.map((i: EntityInstance) =>
+  // TODO: instanceCollection should never be null/undefined! to be corrected in the REST / network / server level!
+  const serializableInstances = (instanceCollection.instances??[]).map((i: EntityInstance) =>
     (i as any)["createdAt"]
       ? {
           ...i,

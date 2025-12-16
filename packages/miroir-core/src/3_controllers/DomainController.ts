@@ -303,11 +303,11 @@ export class DomainController implements DomainControllerInterface {
    * @returns undefined when loading is finished
    */
   public async loadConfigurationFromPersistenceStore(
-    deploymentUuid: string
+    adminDeploymentUuid: string
   ): Promise<Action2VoidReturnType> {
     log.info(
-      "DomainController loadConfigurationFromPersistenceStore called for deployment",
-      deploymentUuid
+      "DomainController loadConfigurationFromPersistenceStore called for admin deployment",
+      adminDeploymentUuid
     );
     try {
       await this.callUtil
@@ -322,7 +322,7 @@ export class DomainController implements DomainControllerInterface {
             actionType: "RestPersistenceAction_read",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-            deploymentUuid,
+            deploymentUuid: adminDeploymentUuid,
             payload: {
               section: "model",
               parentName: entityEntity.name,
@@ -340,7 +340,7 @@ export class DomainController implements DomainControllerInterface {
 
           log.info(
             "DomainController loadConfigurationFromPersistenceStore fetched list of Entities for deployment",
-            deploymentUuid,
+            adminDeploymentUuid,
             "found data entities from Model Section dataEntitiesFromModelSection",
             context.dataEntitiesFromModelSection
           );
@@ -368,11 +368,11 @@ export class DomainController implements DomainControllerInterface {
 
           // TODO: information has to come from localCacheSlice, not from hard-coded source!
           const modelEntitiesToFetch: MetaEntity[] =
-            deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+            adminDeploymentUuid == adminConfigurationDeploymentMiroir.uuid
               ? miroirModelEntities
               : metaModelEntities;
           const dataEntitiesToFetch: MetaEntity[] =
-            deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+            adminDeploymentUuid == adminConfigurationDeploymentMiroir.uuid
               ? (
                   context.dataEntitiesFromModelSection.returnedDomainElement?.instances ?? []
                 ).filter(
@@ -385,7 +385,7 @@ export class DomainController implements DomainControllerInterface {
 
           log.info(
             "DomainController loadConfigurationFromPersistenceStore for deployment",
-            deploymentUuid,
+            adminDeploymentUuid,
             "found data entities to fetch",
             dataEntitiesToFetch.map((e) => e.name),
             "model entities to fetch",
@@ -404,7 +404,7 @@ export class DomainController implements DomainControllerInterface {
           ];
           log.debug(
             "DomainController loadConfigurationFromPersistenceStore for deployment",
-            deploymentUuid,
+            adminDeploymentUuid,
             "found entities to fetch",
             toFetchEntities.map((e) => ({
               section: e.section,
@@ -432,7 +432,7 @@ export class DomainController implements DomainControllerInterface {
                   actionType: "RestPersistenceAction_read",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                  deploymentUuid,
+                  deploymentUuid: adminDeploymentUuid,
                   payload: {
                     section: e.section,
                     parentName: e.entity.name,
@@ -465,7 +465,7 @@ export class DomainController implements DomainControllerInterface {
               {}, // context update
               {
                 actionType: "loadNewInstancesInLocalCache",
-                deploymentUuid,
+                deploymentUuid: adminDeploymentUuid,
                 application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
@@ -481,7 +481,7 @@ export class DomainController implements DomainControllerInterface {
             {}, // context update
             {
               actionType: "rollback",
-              deploymentUuid,
+              deploymentUuid: adminDeploymentUuid,
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             }
@@ -494,7 +494,7 @@ export class DomainController implements DomainControllerInterface {
 
           log.debug(
             "DomainController loadConfigurationFromPersistenceStore",
-            deploymentUuid,
+            adminDeploymentUuid,
             "all instances stored!",
             toFetchEntities.map((e) => ({ section: e.section, uuid: e.entity.uuid }))
             // JSON.stringify(this.localCache.getState(), circularReplacer())
@@ -1804,6 +1804,10 @@ export class DomainController implements DomainControllerInterface {
     for (const currentAction of compositeActionSequence.payload.definition) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
+        log.info(
+          "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& handleCompositeAction compositeActionSequence handling sub action",
+          currentAction,
+        );
         LoggerGlobalContext.setAction(currentAction.actionLabel);
         // Also set in MiroirActivityTracker for MiroirEventService
         this.miroirContext.miroirActivityTracker.setAction(currentAction.actionLabel);
@@ -2195,6 +2199,9 @@ export class DomainController implements DomainControllerInterface {
               // modelEnvironment,
               localContext
             );
+            if (actionResult instanceof Action2Error) {
+              return actionResult;
+            }
 
             break;
           }
@@ -2233,6 +2240,9 @@ export class DomainController implements DomainControllerInterface {
               // actionResult,
               localContext
             );
+            if (actionResult instanceof Action2Error) {
+              return actionResult;
+            }
             break;
           }
           case "compositeRunTestAssertion": {
@@ -2634,20 +2644,34 @@ export class DomainController implements DomainControllerInterface {
     );
 
     const actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.query); // TODO: pass the current model
-    if (actionResult instanceof Action2Error) {
+    if (actionResult.status == "error"/* actionResult instanceof Action2Error */) {
       log.error(
         "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
         currentAction.nameGivenToResult,
         "query=",
         JSON.stringify(actionResult, null, 2)
       );
+      return new Action2Error(
+        "FailedToRunBoxedExtractorOrQueryAction",
+        "handleCompositeRunBoxedExtractorOrQueryAction error: " +
+          JSON.stringify(actionResult, null, 2),
+        [currentAction.actionLabel ?? currentAction.actionType],
+        actionResult as any
+      );
     } else {
-      if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+      if ((actionResult as any).returnedDomainElement instanceof Domain2ElementFailed) {
         log.error(
-          "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
+          "Error on runBoxedExtractorOrQueryAction (Domain2ElementFailed) with nameGivenToResult",
           currentAction.nameGivenToResult,
           "query=",
           JSON.stringify(actionResult, null, 2)
+        );
+        return new Action2Error(
+          "FailedToRunBoxedExtractorOrQueryAction",
+          "handleCompositeRunBoxedExtractorOrQueryAction error: " +
+            JSON.stringify(actionResult, null, 2),
+          [currentAction.actionLabel ?? currentAction.actionType],
+          actionResult as any
         );
       } else {
         log.info(
@@ -2656,7 +2680,7 @@ export class DomainController implements DomainControllerInterface {
           "value",
           JSON.stringify(actionResult, null, 2)
         );
-        localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+        localContext[currentAction.nameGivenToResult] = (actionResult as any).returnedDomainElement;
       }
     }
     return actionResult;
@@ -2682,22 +2706,24 @@ export class DomainController implements DomainControllerInterface {
     const actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.queryTemplate); // TODO: pass the current model
     if (actionResult instanceof Action2Error) {
       log.error(
-        "Error on handleCompositeAction with nameGivenToResult",
+        "Error (Action2Error) on handleCompositeRunBoxedQueryAction with nameGivenToResult",
         currentAction.nameGivenToResult,
         "query=",
         JSON.stringify(actionResult, null, 2)
       );
+      return actionResult;
     } else {
       if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
         log.error(
-          "Error on handleCompositeAction with nameGivenToResult",
+          "Error (Domain2ElementFailed) on handleCompositeRunBoxedQueryAction with nameGivenToResult",
           currentAction.nameGivenToResult,
           "query=",
           JSON.stringify(actionResult, null, 2)
         );
+        return actionResult;
       } else {
         log.info(
-          "handleCompositeActionTemplate adding result to context as",
+          "handleCompositeRunBoxedQueryAction adding result to context as",
           currentAction.nameGivenToResult,
           "value",
           actionResult
@@ -2758,55 +2784,55 @@ export class DomainController implements DomainControllerInterface {
   //   return actionResult;
   // }
 
-  // ##############################################################################################
-  private async handleCompositeRunBoxedQueryTemplateAction(
-    currentAction: {
-      actionType: "compositeRunBoxedQueryTemplateAction";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      queryTemplate: RunBoxedQueryTemplateAction;
-    },
-    actionParamValues: Record<string, any>,
-    // actionResult: Action2ReturnType | undefined,
-    localContext: Record<string, any>
-  ) {
-    log.info(
-      "handleCompositeRunBoxedQueryTemplateAction to handle",
-      currentAction,
-      "with actionParamValues",
-      actionParamValues
-    );
+  // // ##############################################################################################
+  // private async handleCompositeRunBoxedQueryTemplateAction(
+  //   currentAction: {
+  //     actionType: "compositeRunBoxedQueryTemplateAction";
+  //     actionLabel?: string | undefined;
+  //     nameGivenToResult: string;
+  //     queryTemplate: RunBoxedQueryTemplateAction;
+  //   },
+  //   actionParamValues: Record<string, any>,
+  //   // actionResult: Action2ReturnType | undefined,
+  //   localContext: Record<string, any>
+  // ) {
+  //   log.info(
+  //     "handleCompositeRunBoxedQueryTemplateAction to handle",
+  //     currentAction,
+  //     "with actionParamValues",
+  //     actionParamValues
+  //   );
 
-    const actionResult = await this.handleQueryTemplateActionForServerONLY(
-      currentAction.queryTemplate
-    );
-    if (actionResult instanceof Action2Error) {
-      log.error(
-        "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
-        currentAction.nameGivenToResult,
-        "query=",
-        JSON.stringify(actionResult, null, 2)
-      );
-    } else {
-      if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-        log.error(
-          "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
-          currentAction.nameGivenToResult,
-          "query=",
-          JSON.stringify(actionResult, null, 2)
-        );
-      } else {
-        log.info(
-          "handleCompositeActionTemplate handleCompositeRunBoxedQueryTemplateAction adding result to context as",
-          currentAction.nameGivenToResult,
-          "value",
-          actionResult
-        );
-        localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-      }
-    }
-    return actionResult;
-  }
+  //   const actionResult = await this.handleQueryTemplateActionForServerONLY(
+  //     currentAction.queryTemplate
+  //   );
+  //   if (actionResult instanceof Action2Error) {
+  //     log.error(
+  //       "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+  //       currentAction.nameGivenToResult,
+  //       "query=",
+  //       JSON.stringify(actionResult, null, 2)
+  //     );
+  //   } else {
+  //     if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+  //       log.error(
+  //         "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+  //         currentAction.nameGivenToResult,
+  //         "query=",
+  //         JSON.stringify(actionResult, null, 2)
+  //       );
+  //     } else {
+  //       log.info(
+  //         "handleCompositeActionTemplate handleCompositeRunBoxedQueryTemplateAction adding result to context as",
+  //         currentAction.nameGivenToResult,
+  //         "value",
+  //         actionResult
+  //       );
+  //       localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+  //     }
+  //   }
+  //   return actionResult;
+  // }
 
   // ##############################################################################################
   async handleCompositeActionTemplate(
@@ -2911,8 +2937,10 @@ export class DomainController implements DomainControllerInterface {
           log.info(
             "handleCompositeActionTemplate",
             actionLabel,
-            "resolved query action",
+            "handled compositeRunBoxedQueryAction",
             currentAction,
+            "is error",
+            actionResult instanceof Action2Error,
             "with actionParamValues",
             actionParamValues,
             "resulting context",
@@ -2955,8 +2983,11 @@ export class DomainController implements DomainControllerInterface {
           );
           log.info(
             "handleCompositeActionTemplate",
-            actionLabel,
-            "resolved extractor or query action",
+            "'" + actionLabel + "'",
+            "handled compositeRunBoxedExtractorOrQueryAction",
+            "result is error",
+            actionResult instanceof Action2Error,
+            "action",
             currentAction,
             "with actionParamValues",
             actionParamValues, 

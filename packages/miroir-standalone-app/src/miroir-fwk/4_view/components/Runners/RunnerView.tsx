@@ -13,7 +13,7 @@ import {
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { RunnerProps } from "./RunnerInterface.js";
@@ -31,7 +31,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
   const {
     runnerName,
     deploymentUuid,
-    formMlSchema,
+    formMLSchema,
     initialFormValue,
     action,
     // miroirModelEnvironment,
@@ -48,6 +48,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
   const currentMiroirModelEnvironment: MiroirModelEnvironment =
     useCurrentModelEnvironment(deploymentUuid);
   const context = useMiroirContextService();
+  const { handleAsyncAction } = useSnackbar();
 
   const initialValues =
     typeof initialFormValue === "object" && "initFormValueType" in initialFormValue
@@ -76,31 +77,35 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
       }
       case "compositeActionSequence": {
         log.info("RunnerView handleSubmit compositeActionSequence", action.compositeActionSequence);
-        const result = await domainController.handleCompositeAction(
-          action.compositeActionSequence,
-          currentMiroirModelEnvironment,
-          values as Record<string, any>
-        );
-        formikHelpers.setSubmitting(false);
-        formikHelpers.setValues(initialValues);
-        return result;
+        return handleAsyncAction(async () => {
+          const result = await domainController.handleCompositeAction(
+            action.compositeActionSequence,
+            currentMiroirModelEnvironment,
+            values as Record<string, any>
+          );
+          formikHelpers.setSubmitting(false);
+          formikHelpers.setValues(initialValues);
+          return Promise.resolve(result);
+        },"Run composite action sequence successful","RunnerView compositeActionSequence");
         break;
       }
       case "compositeActionTemplate": {
-        const result = await domainController.handleCompositeActionTemplate(
-          action.compositeActionTemplate,
-          currentMiroirModelEnvironment,
-          values as Record<string, any>
-        );
-        log.info(
-          "RunnerView handleSubmit compositeActionTemplate",
-          action.compositeActionTemplate,
-          "result",
-          result
-        );
-        formikHelpers.setSubmitting(false);
-        formikHelpers.setValues(initialValues);
-        return result;
+        return handleAsyncAction(async () => {
+          const result = await domainController.handleCompositeActionTemplate(
+            action.compositeActionTemplate,
+            currentMiroirModelEnvironment,
+            values as Record<string, any>
+          );
+          log.info(
+            "RunnerView handleSubmit done for compositeActionTemplate",
+            action.compositeActionTemplate,
+            "result",
+            result
+          );
+          formikHelpers.setSubmitting(false);
+          formikHelpers.setValues(initialValues);
+          return Promise.resolve(result);
+        }, "Run composite action template successful","RunnerView compositeActionTemplate");
         break;
       }
       default: {

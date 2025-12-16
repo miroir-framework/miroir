@@ -3,5 +3,206 @@
   "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
   "name": "DropEntity",
   "defaultLabel": "Drop Entity",
-  "parentName": "Runner"
+  "parentName": "Runner",
+  "formMLSchema": {
+    "formMLSchemaType": "transformer",
+    "transformer": {
+      "type": "object",
+      "definition": {
+        "dropEntity": {
+          "type": "object",
+          "definition": {
+            "application": {
+              "type": "uuid",
+              "nullable": true,
+              "tag": {
+                "value": {
+                  "defaultLabel": "Application",
+                  "editable": true,
+                  "selectorParams": {
+                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                    "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            },
+            "entity": {
+              "type": "uuid",
+              "nullable": true,
+              "tag": {
+                "value": {
+                  "defaultLabel": "Entity",
+                  "editable": true,
+                  "selectorParams": {
+                    "targetDeploymentUuid": {
+                      "transformerType": "!=",
+                      "interpolation": "build",
+                      "left": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "safe": true,
+                        "referencePath": [
+                          "dropEntity",
+                          "deploymentUuidQuery",
+                          "deployments",
+                          "0",
+                          "uuid"
+                        ]
+                      },
+                      "right": { "transformerType": "returnValue", "value": null },
+                      "then": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "safe": true,
+                        "referencePath": [
+                          "dropEntity",
+                          "deploymentUuidQuery",
+                          "deployments",
+                          "0",
+                          "uuid"
+                        ]
+                      },
+                      "else": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                    },
+                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "targetEntityApplicationSection": "model",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "actionTemplate": {
+    "actionType": "compositeActionSequence",
+    "actionLabel": "Drop Entity",
+    "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+    "payload": {
+      "definition": [
+        {
+          "actionType": "compositeRunBoxedExtractorOrQueryAction",
+          "actionLabel": "getDeploymentForApplication",
+          "nameGivenToResult": "deploymentInfo",
+          "query": {
+            "actionType": "runBoxedExtractorOrQueryAction",
+            "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "payload": {
+              "applicationSection": "data",
+              "query": {
+                "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                "pageParams": {},
+                "queryParams": {},
+                "contextResults": {},
+                "extractors": {
+                  "deployments": {
+                    "label": "deployments of the application",
+                    "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                    "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+                    "parentName": "Deployment",
+                    "applicationSection": "data",
+                    "filter": {
+                      "attributeName": "adminApplication",
+                      "value": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "build",
+                        "definition": "{{dropEntity.application}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "actionType": "compositeRunBoxedExtractorOrQueryAction",
+          "actionLabel": "getEntityDefinitionForEntity",
+          "nameGivenToResult": "entityDefinitionInfo",
+          "query": {
+            "actionType": "runBoxedExtractorOrQueryAction",
+            "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            "deploymentUuid": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["deploymentInfo", "deployments", "0", "uuid"]
+            },
+            "payload": {
+              "applicationSection": "model",
+              "query": {
+                "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                "deploymentUuid": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": ["deploymentInfo", "deployments", "0", "uuid"]
+                },
+                "pageParams": {},
+                "queryParams": {},
+                "contextResults": {},
+                "extractors": {
+                  "entityDefinitions": {
+                    "label": "entityDefinitions of the deployment",
+                    "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                    "parentName": "EntityDefinition",
+                    "applicationSection": "model",
+                    "filter": {
+                      "attributeName": "entityUuid",
+                      "value": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "build",
+                        "definition": "{{dropEntity.entity}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "actionType": "dropEntity",
+          "actionLabel": "dropEntity",
+          "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "deploymentUuid": {
+            "transformerType": "mustacheStringTemplate",
+            "interpolation": "runtime",
+            "definition": "{{deploymentInfo.deployments.0.uuid}}"
+          },
+          "payload": {
+            "entityUuid": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referencePath": ["dropEntity", "entity"]
+            },
+            "entityDefinitionUuid": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": ["entityDefinitionInfo", "entityDefinitions", "0", "uuid"]
+            }
+          }
+        },
+        {
+          "actionType": "commit",
+          "actionLabel": "commit",
+          "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+          "deploymentUuid": {
+            "transformerType": "mustacheStringTemplate",
+            "interpolation": "runtime",
+            "definition": "{{deploymentInfo.deployments.0.uuid}}"
+          }
+        }
+      ]
+    }
+  }
 }

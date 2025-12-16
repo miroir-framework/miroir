@@ -9,6 +9,7 @@ const entityJzodSchema = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4
 const entityMenu = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json");
 const entityQueryVersion = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json");
 const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
+const entityRunner = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd.json");
 // const entityStoreBasedConfiguration = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json');
 
 
@@ -19,9 +20,10 @@ const entityDefinitionSelfApplicationModelBranch = require("../assets/miroir_mod
 const entityDefinitionSelfApplication = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json");
 const entityDefinitionMenu = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json");
 const entityDefinitionQuery = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json");
-const entityDefinitionReport = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json");
 const entityDefinitionSelfApplicationDeploymentConfiguration = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json");
 const entityDefinitionEntityDefinition = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json");
+const entityDefinitionReport = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json");
+const entityDefinitionRunner = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/daa38a5f-f1b5-4d4f-94b7-54e97fe6782e.json");
 // const entityDefinitionModelVersion = require('../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json');
 // const entityDefinitionStoreBasedConfiguration = require('../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json');
 
@@ -37,6 +39,8 @@ const reportEntityDefinitionList = require("../assets/miroir_data/3f2baa83-3ef7-
 const reportEntityDetails = require("../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/074d1de9-594d-42d6-8848-467baeb6f3e0.json");
 const reportMenuList = require("../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ecfd8787-09cc-417d-8d2c-173633c9f998.json");
 const reportReportList = require("../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json");
+const reportRunnerList = require("../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/3c26c31e-c988-40b2-af47-d7380e35ba80.json");
+const reportRunnerDetails = require("../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/032fde52-9171-4313-be77-7e06d9c35240.json");
 const reportApplicationModelBranchList = require("../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json");
 const reportJzodSchemaList = require("../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json");
 const jzodSchemajzodMiroirBootstrapSchema = require("../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json");
@@ -67,7 +71,7 @@ const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f7
 // import { entityDefinitionQueryVersionV1, entityQueryVersion } from "..";
 // import { entityJzodSchema, entitySelfApplicationDeploymentConfiguration, entityStoreBasedConfiguration } from "..";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import type { DeploymentUuidToReportsEntitiesDefinitions, DeploymentUuidToReportsEntitiesDefinitionsMapping } from "../0_interfaces/1_core/Model";
+import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 import {
@@ -103,6 +107,7 @@ export const metaModelEntities: MetaEntity[] = [
   entityMenu,
   entityQueryVersion,
   entityReport,
+  entityRunner,
   entityEndpointVersion,
   // entityStoreBasedConfiguration,
 ] as MetaEntity[];
@@ -135,6 +140,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityMenu as Entity,
     entityQueryVersion as Entity,
     entityReport as Entity,
+    entityRunner as Entity,
     entitySelfApplicationVersion as Entity,
   ],
   entityDefinitions: [
@@ -147,8 +153,9 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionJzodSchema as EntityDefinition, //
     entityDefinitionMenu as EntityDefinition,
-    entityDefinitionQuery as EntityDefinition,
     entityDefinitionReport as EntityDefinition,
+    entityDefinitionRunner as EntityDefinition,
+    entityDefinitionQuery as EntityDefinition,
   ],
   endpoints: [
     applicationEndpointV1 as EndpointDefinition,
@@ -178,6 +185,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportJzodSchemaList as Report,
     reportMenuList as Report,
     reportReportList as Report,
+    reportRunnerList as Report,
+    reportRunnerDetails as Report,
   ],
   applicationVersionCrossEntityDefinition: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,

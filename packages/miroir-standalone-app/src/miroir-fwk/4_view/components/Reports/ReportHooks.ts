@@ -10,6 +10,8 @@ import {
   Domain2ElementFailed,
   Domain2QueryReturnType,
   entityDeployment,
+  EntityInstance,
+  entityRunner,
   entityTransformerDefinition,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
@@ -27,13 +29,15 @@ import {
 
 import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
+import type { TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap
 } from "miroir-localcache-redux";
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
-import type { TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+
+// Entity constants
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -338,4 +342,68 @@ export function useTransformer(
   }, [transformerQueryResults]);
 
   return currentFetchedTransformerDefinition;
+}
+
+// ################################################################################################
+export function useRunner(
+  deploymentUuid: Uuid,
+  runnerUuid: Uuid | undefined
+): Domain2ElementFailed | EntityInstance | undefined {
+  const runnerApplicationSection = getApplicationSection(
+    deploymentUuid,
+    entityRunner.uuid
+  );
+
+  const runnerQuery:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = useMemo(
+    () =>
+      deploymentUuid && deploymentUuid !== noValue.uuid
+        ? ({
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            deploymentUuid: deploymentUuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: {
+              runners: {
+                label: "runners of the given application",
+                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                parentUuid: entityRunner.uuid,
+                parentName: entityRunner.name,
+                applicationSection: runnerApplicationSection,
+                filter: {
+                  attributeName: "uuid",
+                  value: runnerUuid
+                },
+              },
+            },
+          } as BoxedQueryTemplateWithExtractorCombinerTransformer)
+        : {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            deploymentUuid: "",
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractors: {},
+          },
+    [deploymentUuid, runnerApplicationSection, runnerUuid]
+  );
+
+  const runnerQueryResults: Domain2QueryReturnType<
+    Domain2QueryReturnType<Record<string, any>>
+  > = useQueryTemplateResults({} as any, runnerQuery);
+
+  if (runnerQueryResults instanceof Domain2ElementFailed) {
+    return runnerQueryResults;
+  }
+  const currentFetchedRunner: EntityInstance | undefined = useMemo(() => {
+    return runnerQueryResults?.reportData?.runners &&
+      runnerQueryResults?.reportData?.runners.length == 1
+      ? runnerQueryResults?.reportData?.runners[0]
+      : undefined;
+  }, [runnerQueryResults]);
+
+  return currentFetchedRunner;
 }

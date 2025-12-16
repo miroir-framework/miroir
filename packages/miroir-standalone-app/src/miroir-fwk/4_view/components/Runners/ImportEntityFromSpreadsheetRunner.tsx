@@ -60,10 +60,10 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
 
   // const localDeploymentUuid = deploymentUuid;
   // const localDeploymentUuid = "1b3f973b-a000-4a85-9d42-2639ecd0c473"; // WRONG, it's the application's uuid
-  const formMlSchema: FormMlSchema = useMemo(
+  const formMLSchema: FormMlSchema = useMemo(
     () => ({
-      // formMlSchemaType: "mlSchema",
-      formMlSchemaType: "transformer",
+      // formMLSchemaType: "mlSchema",
+      formMLSchemaType: "transformer",
       transformer: {
         type: "object",
         definition: {
@@ -576,7 +576,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         runnerName={runnerName}
         deploymentUuid={deploymentUuid}
         deploymentUuidQuery={deploymentUuidQuery}
-        formMlSchema={formMlSchema}
+        formMLSchema={formMLSchema}
         initialFormValue={initialFormValue}
         action={{
           actionType: "onSubmit",

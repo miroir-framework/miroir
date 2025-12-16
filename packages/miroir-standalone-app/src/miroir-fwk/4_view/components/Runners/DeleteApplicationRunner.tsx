@@ -35,7 +35,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
 }) => {
   const runnerName: string = "deleteApplication";
 
-  const formMlSchema: JzodObject = useMemo(
+  const formMLSchema: JzodObject = useMemo(
     () => ({
       type: "object",
       definition: {
@@ -201,7 +201,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
     <RunnerView
       runnerName={runnerName}
       deploymentUuid={deploymentUuid}
-      formMlSchema={formMlSchema}
+      formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
       action={{
         actionType: "compositeActionTemplate",
