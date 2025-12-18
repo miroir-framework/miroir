@@ -243,8 +243,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
         },
         libraryEntitiesAndInstancesWithoutBook3
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
-      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
+      afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
+      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",

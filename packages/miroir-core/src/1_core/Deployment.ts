@@ -109,14 +109,14 @@ export function createApplicationCompositeAction(
 // ################################################################################################
 export function createDeploymentCompositeAction(
   applicationName: string,
-  deploymentUuid: Uuid,
-  adminApplicationUuid: Uuid,
+  adminDeploymentUuid: Uuid,
+  selfApplicationUuid: Uuid,
   deploymentConfiguration: StoreUnitConfiguration
 ): CompositeActionSequence {
   log.info(
     "createDeploymentCompositeAction deploymentConfiguration",
-    "deploymentUuid:",
-    deploymentUuid,
+    "adminDeploymentUuid:",
+    adminDeploymentUuid,
     "deploymentConfiguration:",
     deploymentConfiguration
   );
@@ -146,10 +146,10 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_openStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: deploymentUuid,
+          deploymentUuid: adminDeploymentUuid,
           payload: {
             configuration: {
-              [deploymentUuid]: deploymentConfiguration,
+              [adminDeploymentUuid]: deploymentConfiguration,
             },
           },
         },
@@ -159,7 +159,7 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_createStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: deploymentUuid,
+          deploymentUuid: adminDeploymentUuid,
           payload: {
             configuration: deploymentConfiguration,
           },
@@ -178,28 +178,14 @@ export function createDeploymentCompositeAction(
                 parentUuid: entityDeployment.uuid,
                 applicationSection: "data",
                 instances: [
-                  // {
-                  //     uuid: string;
-                  //     parentName?: string | undefined;
-                  //     parentUuid: string;
-                  //     parentDefinitionVersionUuid?: string | undefined;
-                  //     name: string;
-                  //     defaultLabel: string;
-                  //     description?: string | undefined;
-                  //     adminApplication: string;
-                  //     bundle: string;
-                  //     configuration?: StoreUnitConfiguration | undefined;
-                  //     model?: JzodObject | undefined;
-                  //     data?: JzodObject | undefined;
-                  // }
                   {
-                    uuid: deploymentUuid,
+                    uuid: adminDeploymentUuid,
                     parentName: "Deployment",
                     parentUuid: entityDeployment.uuid,
                     name: `Deployment of application ${applicationName}`,
                     defaultLabel: `The deployment of application ${applicationName}`,
                     description: `The description of deployment of application ${applicationName}`,
-                    adminApplication: adminApplicationUuid,
+                    adminApplication: selfApplicationUuid, // TODO: this should be selfApplication
                     configuration: deploymentConfiguration,
                   } as Deployment,
                 ],
@@ -236,11 +222,15 @@ export function resetAndinitializeDeploymentCompositeAction(
   );
   return {
     actionType: "compositeActionSequence",
-    actionLabel: "beforeEach",
+    actionLabel: "resetAndinitializeDeploymentCompositeAction",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
-      definition: [
+      // transformerType: "returnValue",
+      // interpolation: "runtime",
+      // value: {
+      definition: 
+      [
         {
           actionType: "resetModel",
           actionLabel: "resetApplicationStore",
@@ -255,7 +245,12 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           deploymentUuid: deploymentUuid,
           payload: {
-            params: initApplicationParameters,
+             params: initApplicationParameters,
+            //  this is not a template, no transformer interpolation occurs before runtime
+            // transformerType: "returnValue",
+            // label: "initParametersForTest",
+            // interpolation: "runtime",
+            // value: {params: initApplicationParameters},
           },
         },
         {
@@ -301,7 +296,8 @@ export function resetAndinitializeDeploymentCompositeAction(
           },
         },
       ],
-    }
+      // },
+    } as any
   };
 }
 

@@ -48,6 +48,7 @@ const miroirJzodSchemaBootstrap = require('../assets/miroir_data/5e81e1b9-38be-4
 const menuDefaultMiroir = require('../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json');
 const menuDefaultLibrary = require("../assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json");
 
+import { entityDefinitionRunner, entityRunner } from "..";
 import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
 import {
   EntityDefinition,
@@ -69,7 +70,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-
+// ################################################################################################
 export async function modelInitialize(
   metaModel:MetaModel,
   persistenceStoreController:PersistenceStoreControllerInterface,
@@ -140,9 +141,13 @@ export async function modelInitialize(
     await persistenceStoreController.createEntity(entityJzodSchema as MetaEntity, entityDefinitionJzodSchema as EntityDefinition);
     log.info(logHeader, 'created entity JzodSchema',persistenceStoreController.getEntityUuids());
     
-    // bootstrap EntityStoreBasedConfiguration
+    // bootstrap EntityReport
     await persistenceStoreController.createEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);
     log.info(logHeader, 'created entity EntityReport',persistenceStoreController.getEntityUuids());
+    
+    // bootstrap EntityRunner
+    await persistenceStoreController.createEntity(entityRunner as MetaEntity, entityDefinitionRunner as EntityDefinition);
+    log.info(logHeader, 'created entity EntityRunner',persistenceStoreController.getEntityUuids());
     
     // bootstrap EntityQuery
     await persistenceStoreController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQuery as EntityDefinition);
@@ -268,12 +273,19 @@ export async function modelInitialize(
     );
 
     // bootstrap EntityReport
-    log.info(logHeader, "app initialized entity Report", persistenceStoreController.getEntityUuids());
+    log.info(logHeader, "app initializing entity Report", persistenceStoreController.getEntityUuids());
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityReport as MetaEntity,
       entityDefinitionReport as EntityDefinition
     );
     log.info(logHeader, "app initialized entity Report", persistenceStoreController.getEntityUuids());
+
+    log.info(logHeader, "app initializing entity Runner", persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityRunner as MetaEntity,
+      entityDefinitionRunner as EntityDefinition
+    );
+    log.info(logHeader, "app initialized entity Runner", persistenceStoreController.getEntityUuids());
 
     // // bootstrap EntityStoreBasedConfiguration
     // await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(

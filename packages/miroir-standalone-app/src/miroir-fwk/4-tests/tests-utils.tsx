@@ -480,8 +480,10 @@ export interface BeforeAllReturnType {
   localAppPersistenceStoreController: PersistenceStoreControllerInterface | undefined,
 }
 export async function createDeploymentGetPersistenceStoreController(
+  applicationName: string,
   miroirConfig: MiroirConfigClient,
-  deploymentUuid: Uuid,
+  adminConfigurationDeploymentUuid: Uuid,
+  selfApplicationDeploymentUuid: Uuid,
   storeUnitConfiguration: StoreUnitConfiguration,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   domainController: DomainControllerInterface,
@@ -490,7 +492,9 @@ export async function createDeploymentGetPersistenceStoreController(
   let result:any = undefined;
   try {
     const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(
-      deploymentUuid,
+      applicationName,
+      adminConfigurationDeploymentUuid, // adminConfigurationDeploymentUuid
+      selfApplicationDeploymentUuid,
       storeUnitConfiguration
     );
     const createDeploymentResult = await domainController.handleCompositeAction(
@@ -513,7 +517,7 @@ export async function createDeploymentGetPersistenceStoreController(
     log.info("createDeploymentGetPersistenceStoreController set persistenceStoreControllerManager on manager DONE");
 
     const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-      deploymentUuid
+      adminConfigurationDeploymentUuid
     );
     if (!localPersistenceStoreController) {
       throw new Error(
@@ -521,7 +525,7 @@ export async function createDeploymentGetPersistenceStoreController(
           localPersistenceStoreController
       );
     } else {
-      log.info("createDeploymentGetPersistenceStoreController localPersistenceStoreController ok",deploymentUuid)
+      log.info("createDeploymentGetPersistenceStoreController localPersistenceStoreController ok",adminConfigurationDeploymentUuid)
     }
     return Promise.resolve(localPersistenceStoreController);
   } catch (error) {
@@ -532,6 +536,7 @@ export async function createDeploymentGetPersistenceStoreController(
 }
 
 // ################################################################################################
+// creates the meta-model Miroi app deployment
 export async function createMiroirDeploymentGetPersistenceStoreController(
   miroirConfig: MiroirConfigClient,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
@@ -539,8 +544,10 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
 ):Promise< BeforeAllReturnType | undefined > {
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT started');
   const localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
+    "miroir",
     miroirConfig,
     adminConfigurationDeploymentMiroir.uuid,
+    selfApplicationDeploymentMiroir.uuid,
     miroirConfig.client.emulateServer
     ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid],

@@ -181,6 +181,7 @@ beforeAll(async () => {
   localCache = locallocalCache;
   miroirContext = localmiroirContext;
 
+  // create the Miroir app deployment containing the meta-model
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
     "miroir",
     adminConfigurationDeploymentMiroir.uuid,
@@ -204,6 +205,7 @@ beforeAll(async () => {
   return Promise.resolve();
 });
 
+// executed only once like beforeAll, since there is only 1 test suite
 beforeEach(async () => {
   await resetAndInitApplicationDeployment(domainController, [
     selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
@@ -259,8 +261,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
           },
         ]
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(miroirConfig),
-      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig),
+      afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
+      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",
