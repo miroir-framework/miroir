@@ -27,7 +27,7 @@ export type InitialFormValue<T extends Record<string, any>> = {
 }
 
 // #
-export type FormMlSchema =
+export type FormMLSchema =
   // | JzodObject
   | {
       formMLSchemaType: "mlSchema";
@@ -43,7 +43,7 @@ export interface RunnerProps<T extends Record<string, any>> {
   runnerName: string;
   deploymentUuid: Uuid;
   // formMLSchema: JzodObject;
-  formMLSchema: FormMlSchema;
+  formMLSchema: FormMLSchema;
   initialFormValue: T | InitialFormValue<T>;
   action: RunnerAction<T>;
   // miroirModelEnvironment?: MiroirModelEnvironment;

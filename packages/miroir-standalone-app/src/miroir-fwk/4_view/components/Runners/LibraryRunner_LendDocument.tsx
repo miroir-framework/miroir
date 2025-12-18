@@ -21,7 +21,7 @@ import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
 import { RunnerView } from "./RunnerView.js";
-import type { FormMlSchema } from "./RunnerInterface.js";
+import type { FormMLSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -70,7 +70,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
     (ac) => ac.actionParameters.actionType.definition == runnerDefinition.domainActionType
   );
 
-  const formMLSchema: FormMlSchema = useMemo(
+  const formMLSchema: FormMLSchema = useMemo(
     () => ({
       formMLSchemaType: "mlSchema",
       mlSchema: {

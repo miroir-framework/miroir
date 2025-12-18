@@ -1,13 +1,22 @@
 import { Formik, FormikHelpers } from "formik";
 
 import type {
+  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   DomainControllerInterface,
   LoggerInterface,
   MiroirModelEnvironment,
+  Runner,
   TransformerForBuildPlusRuntime,
+  Uuid,
 } from "miroir-core";
 import {
   Action2Error,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentParis,
+  defaultAdminApplicationDeploymentMap,
+  entityDeployment,
   MiroirLoggerFactory,
   transformer_extended_apply_wrapper
 } from "miroir-core";
@@ -16,7 +25,10 @@ import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
-import type { RunnerProps } from "./RunnerInterface.js";
+import type { FormMLSchema, RunnerProps } from "./RunnerInterface.js";
+import { useMemo } from "react";
+import { useRunner } from "../Reports/ReportHooks.js";
+import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -26,12 +38,78 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+export function StoredRunnerView(props: {
+  applicationUuid: Uuid,
+  storedRunner: Runner,
+}) {
+  const runnerName: string = props.storedRunner.name;
+  const runnerLabel: string = props.storedRunner.defaultLabel;
+
+  // const runnerDefinitionFromLocalCache: any = useRunner(adminConfigurationDeploymentMiroir.uuid, "44313751-b0e5-4132-bb12-a544806e759b");
+
+  const initialFormValue = useMemo(() => {
+    return {
+      [runnerName]: {
+        application: noValue.uuid,
+        entity: noValue.uuid,
+      },
+    };
+  }, [runnerName]);
+
+  // const deploymentUuid = defaultAdminApplicationDeploymentMap[props.applicationUuid];
+  const deploymentUuid = adminConfigurationDeploymentParis.uuid;
+  const deploymentUuidQuery:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = {
+    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+    pageParams: {},
+    queryParams: {},
+    contextResults: {},
+    extractorTemplates: {
+      deployments: {
+        label: "deployments of the application",
+        // extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorTemplateType: "extractorTemplateForObjectListByEntity",
+        parentUuid: entityDeployment.uuid,
+        parentName: entityDeployment.name,
+        applicationSection: "data",
+        filter: {
+          attributeName: "adminApplication",
+          value: {
+            transformerType: "mustacheStringTemplate",
+            interpolation: "build",
+            definition: `{{${runnerName}.application}}`,
+          },
+        },
+      },
+    },
+  } as BoxedQueryTemplateWithExtractorCombinerTransformer;
+
+  return (<RunnerView
+    runnerName={runnerName}
+    deploymentUuid={deploymentUuid}
+    deploymentUuidQuery={deploymentUuidQuery}
+    formMLSchema={props.storedRunner.formMLSchema as FormMLSchema}
+    initialFormValue={initialFormValue}
+    action={{
+      actionType: "compositeActionTemplate",
+      compositeActionTemplate: props.storedRunner.actionTemplate,
+    }}
+    labelElement={<h2>{runnerLabel}</h2>}
+    formikValuePathAsString={runnerName}
+    formLabel={runnerLabel}
+    displaySubmitButton="onFirstLine"
+    useActionButton={false}
+  />);
+}
 // ################################################################################################
 export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>) => {
   const {
     runnerName,
-    deploymentUuid,
     formMLSchema,
+    deploymentUuid,
     initialFormValue,
     action,
     // miroirModelEnvironment,

@@ -22,7 +22,8 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid,
-  type Report
+  type Report,
+  type Runner
 } from "miroir-core";
 
 
@@ -348,7 +349,7 @@ export function useTransformer(
 export function useRunner(
   deploymentUuid: Uuid,
   runnerUuid: Uuid | undefined
-): Domain2ElementFailed | EntityInstance | undefined {
+): Domain2QueryReturnType<Runner | undefined>  {
   const runnerApplicationSection = getApplicationSection(
     deploymentUuid,
     entityRunner.uuid
@@ -398,7 +399,7 @@ export function useRunner(
   if (runnerQueryResults instanceof Domain2ElementFailed) {
     return runnerQueryResults;
   }
-  const currentFetchedRunner: EntityInstance | undefined = useMemo(() => {
+  const currentFetchedRunner: Runner | undefined = useMemo(() => {
     return runnerQueryResults?.reportData?.runners &&
       runnerQueryResults?.reportData?.runners.length == 1
       ? runnerQueryResults?.reportData?.runners[0]

@@ -25,7 +25,7 @@ import { useDomainControllerService } from "../../MiroirContextReactProvider.js"
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { RunnerView } from "./RunnerView.js";
-import type { FormMlSchema } from "./RunnerInterface.js";
+import type { FormMLSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -60,7 +60,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
 
   // const localDeploymentUuid = deploymentUuid;
   // const localDeploymentUuid = "1b3f973b-a000-4a85-9d42-2639ecd0c473"; // WRONG, it's the application's uuid
-  const formMLSchema: FormMlSchema = useMemo(
+  const formMLSchema: FormMLSchema = useMemo(
     () => ({
       // formMLSchemaType: "mlSchema",
       formMLSchemaType: "transformer",

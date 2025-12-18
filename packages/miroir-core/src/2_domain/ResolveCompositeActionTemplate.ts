@@ -34,7 +34,7 @@ export function resolveCompositeActionTemplate(
   const compositeActionLabel = (compositeActionTemplate as any).actionLabel??"NO_ACTION_LABEL";
 
   log.info(
-    "resolveCompositeActionTemplate compositeActionTemplate",
+    "resolveCompositeActionTemplate called with compositeActionTemplate",
     compositeActionLabel,
     compositeActionTemplate,
     "localActionParams",
@@ -53,7 +53,7 @@ export function resolveCompositeActionTemplate(
   const resolvedCompositeActionTemplates: any = {}
   // going imperatively to handle inner references
   if (localCompositeAction.templates) {
-    // log.info("resolveCompositeActionTemplate resolving templates", localCompositeAction.templates);
+    log.info("resolveCompositeActionTemplate resolving templates", localCompositeAction.templates);
     for (const t of Object.entries(localCompositeAction.templates)) {
       const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
       // log.info(
@@ -107,14 +107,19 @@ export function resolveCompositeActionTemplate(
       }
     }
   }
-
+  log.info(
+    "resolveCompositeActionTemplate",
+    compositeActionLabel,
+    "resolvedCompositeActionTemplates DONE",
+    resolvedCompositeActionTemplates
+  );
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
   const resolvedCompositeActionDefinition: CompositeActionSequence = transformer_extended_apply_wrapper(
     undefined, // activityTracker
     "build",
     [],
     compositeActionLabel,
-    (compositeActionTemplate as any).payload.definition as any as TransformerForBuild,
+    (compositeActionTemplate as any).payload.definition,
     currentModel,
     actionParamsAndTemplates,
     undefined,// localContext,

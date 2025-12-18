@@ -14622,6 +14622,138 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "______________________________________________runners_____________________________________________": {
+        "type": "never"
+      },
+      "runner": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "editable": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "editable": true
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Default Label",
+                "editable": true
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description",
+                "editable": true
+              }
+            }
+          },
+          "formMLSchema": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "formMLSchema",
+                "editable": true
+              }
+            },
+            "discriminator": "formMLSchemaType",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "formMLSchemaType": {
+                    "type": "literal",
+                    "definition": "mlSchema"
+                  },
+                  "mlSchema": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodElement"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "formMLSchemaType": {
+                    "type": "literal",
+                    "definition": "transformer"
+                  },
+                  "transformer": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlSchemaTemplate"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "actionTemplate": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionTemplate"
+            }
+          }
+        }
+      },
       "______________________________________________actions_____________________________________________": {
         "type": "never"
       },

@@ -305,6 +305,8 @@ export {
   // extractorTemplateReturningObjectOrObjectList,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  Runner,
+  runner,
   SelfApplication,
   selfApplication,
   SelfApplicationDeploymentConfiguration,
@@ -317,8 +319,8 @@ export {
   storageAccess, StoreBasedConfiguration,
   storeBasedConfiguration,
   StoreManagementAction,
-  // ===
   storeManagementAction,
+  // ===
   StoreOrBundleAction,
   StoreSectionConfiguration,
   storeSectionConfiguration,
@@ -1088,10 +1090,7 @@ export {
   reportQueryDetails,
   reportQueryList,
   reportReportDetails,
-  reportReportList,
-  reportRunnerList,
-  reportRunnerDetails,
-  reportTestDetails,
+  reportReportList, reportRunnerDetails, reportRunnerList, reportTestDetails,
   reportTestList,
   reportTransformerTestDetails,
   reportTransformerTestList,
@@ -1108,7 +1107,7 @@ export {
   transformerJzodSchema,
   transformerMenuV1,
   transformerTest_resolveConditionalSchema,
-  undoRedoEndpointVersionV1,
+  undoRedoEndpointVersionV1
 };
 
 // ################################################################################################

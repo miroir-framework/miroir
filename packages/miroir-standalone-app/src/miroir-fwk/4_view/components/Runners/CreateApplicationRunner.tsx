@@ -37,6 +37,7 @@ import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { RunnerView } from "./RunnerView.js";
+import type { FormMLSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -67,19 +68,22 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
   const currentMiroirModelEnvironment: MiroirModelEnvironment =
     useCurrentModelEnvironment(deploymentUuid);
 
-  const formMLSchema: JzodObject = useMemo(
+  const formMLSchema: FormMLSchema = useMemo(
     () => ({
-      type: "object",
-      definition: {
-        createApplicationAndDeployment: {
-          type: "object",
-          definition: {
-            applicationName: {
-              type: "string",
-              tag: {
-                value: {
-                  defaultLabel: "Application Name",
-                  editable: true,
+      formMLSchemaType: "mlSchema",
+      mlSchema: {
+        type: "object",
+        definition: {
+          createApplicationAndDeployment: {
+            type: "object",
+            definition: {
+              applicationName: {
+                type: "string",
+                tag: {
+                  value: {
+                    defaultLabel: "Application Name",
+                    editable: true,
+                  },
                 },
               },
             },
@@ -451,6 +455,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
               // params: initParametersForTest
               params: {
                 transformerType: "returnValue",
+                label: "initParametersForTest",
                 interpolation: "runtime",
                 value: initParametersForTest
               },

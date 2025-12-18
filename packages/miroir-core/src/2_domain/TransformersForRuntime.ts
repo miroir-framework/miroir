@@ -2811,53 +2811,11 @@ export function handleTransformer_ifThenElse(
   // return { transformerReturnType: "success", returnedValue: finalResult };
 }
 
-// function resolveOperand(
-//   operand: any,
-//   transformerParams: any,
-//   contextResults?: Record<string, any>
-// ): any {
-//   switch (operand.type) {
-//     case "getFromContext":
-//       return contextResults ? safeResolvePathOnObject(contextResults, operand.path || []) : undefined;
-//     case "getFromParameters":
-//       return safeResolvePathOnObject(transformerParams, operand.path || []);
-//     case "returnValue":
-//       return operand.value;
-//     default:
-//       return undefined;
-//   }
-// }
-
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// ################################################################################################
-// export function handleTransformer_constantArray(
-//   step: Step,
-//   transformerPath: string[],
-//   label: string | undefined,
-//   transformer:
-//   | TransformerForBuild_constantArray
-//   | TransformerForRuntime_constantArray,
-//   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-//   queryParams: Record<string, any>,
-//   contextResults?: Record<string, any>
-// ): TransformerReturnType<any> {
-//   if (Array.isArray(transformer.value)) {
-//     return transformer.value;
-//   } else {
-//     return transformer.value; // TODO: fail! is it relevant?
-//     // return JSON.stringify(transformer.value)
-//     // return new TransformerFailure({
-//     //   queryFailure: "FailedTransformer_constantArray",
-//     //   failureOrigin: ["innerTransformer_apply"],
-//     //   queryContext: "constantArrayValue is not an array",
-//     // });
-//   }
-// }
-
 // ################################################################################################
 export function handleTransformer_constant(
   step: Step,
@@ -2870,6 +2828,13 @@ export function handleTransformer_constant(
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
+  if (transformer.interpolation == "runtime" && step == "build") {
+    log.warn(
+      "handleTransformer_constant with runtime interpolation called during build",
+      transformer.label??transformer.transformerType
+    );
+    // return transformer.value;
+  }
   switch (typeof transformer.value) {
     case "undefined":
     case "string":
@@ -3223,26 +3188,29 @@ export function transformer_extended_apply(
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   const transformerLabel = label ?? (transformer as any)?.label ?? (transformer as any)?.transformerType ?? "unnamed_transformer";
-  // log.info(
-  //   "transformer_extended_apply called for label",
-  //   label,
-  //   "step:",
-  //   step,
-  //   "transformer.interpolation:",
-  //   (transformer as any)?.interpolation ?? "build",
-  //   " step==transformer.interpolation ",
-  //   ((transformer as any)?.interpolation ?? "build") == step,
-  //   typeof transformer,
-  //   "transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   "queryParams elements",
-  //   Object.keys(transformerParams ?? {}),
-  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-  //   "contextResults elements",
-  //   Object.keys(contextResults ?? {})
-  //   // contextResults
-  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  // );
+  // if (transformerLabel == "initParametersForTest") {
+  if ((transformer as any)?.transformerType == "returnValue") {
+    log.info(
+      "transformer_extended_apply called for label",
+      label,
+      "step:",
+      step,
+      "transformer.interpolation:",
+      (transformer as any)?.interpolation ?? "build",
+      " step==transformer.interpolation ",
+      ((transformer as any)?.interpolation ?? "build") == step,
+      typeof transformer,
+      "transformer",
+      JSON.stringify(transformer, null, 2),
+      "queryParams elements",
+      Object.keys(transformerParams ?? {}),
+      // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+      "contextResults elements",
+      Object.keys(contextResults ?? {})
+      // contextResults
+      // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+    );
+  }
   let result: TransformerReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {
@@ -3595,19 +3563,31 @@ export function transformer_extended_apply(
           //   "transformer",
           //   JSON.stringify(transformer, null, 2)
           // );
-
-          result = innerTransformer_plainObject_apply(
-            step,
-            transformerPath,
-            label,
-            transformer,
-            newResolveBuildTransformersTo,
-            modelEnvironment,
-            transformerParams,
-            contextResults,
-            reduxDeploymentsState,
-            deploymentUuid,
-          );
+          // we have a transformerType but we're in the wrong step, treat as plain object in the case this is not a "returnValue" transformer
+          if ((transformer as any).transformerType !== "returnValue") {
+            result = innerTransformer_plainObject_apply(
+              step,
+              transformerPath,
+              label,
+              transformer,
+              newResolveBuildTransformersTo,
+              modelEnvironment,
+              transformerParams,
+              contextResults,
+              reduxDeploymentsState,
+              deploymentUuid,
+            );
+          } else {
+            log.info(
+              "transformer_extended_apply called for",
+              label,
+              "protects its returnValue for step:",
+              step,
+              "transformer",
+              transformer,
+            );
+          }
+          result = transformer;
           // log.info(
           //   "transformer_extended_apply called for",
           //   label,

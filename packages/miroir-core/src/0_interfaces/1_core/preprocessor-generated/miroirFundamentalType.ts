@@ -5180,6 +5180,24 @@ export type DomainModelQueryTemplateJzodSchemaParams = QueryByEntityUuidGetEntit
 export type QueryJzodSchemaParams = QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;
 export type MiroirQueryTemplate = BoxedExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByTemplateGetParamJzodSchema | QueryByQueryTemplateGetParamJzodSchema;
 export type MiroirQuery = BoxedExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer | LocalCacheExtractor | QueryByEntityUuidGetEntityDefinition | QueryByQuery2GetParamJzodSchema | QueryByQueryGetParamJzodSchema;
+export type ______________________________________________runners_____________________________________________ = never;
+export type Runner = {
+    uuid: string;
+    parentName?: string | undefined;
+    parentUuid: string;
+    parentDefinitionVersionUuid?: string | undefined;
+    name: string;
+    defaultLabel: string;
+    description?: string | undefined;
+    formMLSchema?: ({
+        formMLSchemaType: "mlSchema";
+        mlSchema: JzodElement;
+    } | {
+        formMLSchemaType: "transformer";
+        transformer: MlSchemaTemplate;
+    }) | undefined;
+    actionTemplate: CompositeActionTemplate;
+};
 export type ______________________________________________actions_____________________________________________ = never;
 export type ActionError = {
     status: "error";
@@ -14156,6 +14174,8 @@ export const domainModelQueryTemplateJzodSchemaParams: z.ZodType<DomainModelQuer
 export const queryJzodSchemaParams: z.ZodType<QueryJzodSchemaParams> = z.union([z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByQuery2GetParamJzodSchema), z.lazy(() =>queryByQueryGetParamJzodSchema)]);
 export const miroirQueryTemplate: z.ZodType<MiroirQueryTemplate> = z.union([z.lazy(() =>boxedExtractorTemplateReturningObjectOrObjectList), z.lazy(() =>boxedQueryTemplateWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByTemplateGetParamJzodSchema), z.lazy(() =>queryByQueryTemplateGetParamJzodSchema)]);
 export const miroirQuery: z.ZodType<MiroirQuery> = z.union([z.lazy(() =>boxedExtractorOrCombinerReturningObjectOrObjectList), z.lazy(() =>boxedQueryWithExtractorCombinerTransformer), z.lazy(() =>localCacheExtractor), z.lazy(() =>queryByEntityUuidGetEntityDefinition), z.lazy(() =>queryByQuery2GetParamJzodSchema), z.lazy(() =>queryByQueryGetParamJzodSchema)]);
+export const ______________________________________________runners_____________________________________________: z.ZodType<______________________________________________runners_____________________________________________> = z.never();
+export const runner: z.ZodType<Runner> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), formMLSchema:z.union([z.object({formMLSchemaType:z.literal("mlSchema"), mlSchema:z.lazy(() =>jzodElement)}).strict(), z.object({formMLSchemaType:z.literal("transformer"), transformer:z.lazy(() =>mlSchemaTemplate)}).strict()]).optional(), actionTemplate:z.lazy(() =>compositeActionTemplate)}).strict();
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
 export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToResetAndInitMiroirAndApplicationDatabase"), z.literal("FailedToOpenStore"), z.literal("FailedToCloseStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToDeleteInstance"), z.literal("FailedToDeleteInstanceWithCascade"), z.literal("FailedToUpdateInstance"), z.literal("FailedToLoadNewInstancesInLocalCache"), z.literal("FailedToGetInstance"), z.literal("FailedToGetInstances"), z.literal("FailedToResolveTemplate")]), errorMessage:z.string().optional(), errorStack:z.array(z.string().optional()).optional(), innerError:z.lazy(() =>actionError).optional()}).strict();
 export const actionVoidSuccess: z.ZodType<ActionVoidSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElementVoid)}).strict();
