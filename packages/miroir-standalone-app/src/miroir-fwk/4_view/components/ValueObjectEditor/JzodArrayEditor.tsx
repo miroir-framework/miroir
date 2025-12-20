@@ -24,6 +24,8 @@ import {
   type JzodSchema,
   type MiroirModelEnvironment,
   type KeyMapEntry,
+  resolveJzodSchemaReferenceInContext,
+  type JzodReference,
   // unfoldJzodSchemaOnce,
   // UnfoldJzodSchemaOnceReturnType,
   // UnfoldJzodSchemaOnceReturnTypeOK
@@ -429,10 +431,20 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     async (e:any) => {
       e.stopPropagation();
       e.preventDefault();
-      if (!currentTypeCheckKeyMap?.rawSchema || currentTypeCheckKeyMap.rawSchema.type !== "array") {
+      let schema: JzodElement | undefined = currentTypeCheckKeyMap?.rawSchema;
+
+      if (schema?.type === "schemaReference") {
+        schema = resolveJzodSchemaReferenceInContext(
+          schema as JzodReference,
+          {},
+          currentMiroirModelEnvironment
+        );
+      }
+
+      if (!schema || schema.type !== "array") {
         throw new Error(
           "JzodArrayEditor addNewArrayItem called with a non-array schema: " +
-            JSON.stringify(currentTypeCheckKeyMap?.rawSchema, null, 2)
+            JSON.stringify(schema, null, 2)
         );
       }
 
@@ -455,10 +467,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         currentValue,
       );
 
-      let newItemSchema: JzodElement | undefined = currentTypeCheckKeyMap?.rawSchema.definition;
+      let newItemSchema: JzodElement | undefined = schema.definition;
 
-      if ((currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath) {
-        const entityPath = (currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath;
+      if ((schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath) {
+        const entityPath = (schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath;
         const goUp =
           typeof  entityPath=== "string"
             ? (entityPath as string).split("#").length - 1

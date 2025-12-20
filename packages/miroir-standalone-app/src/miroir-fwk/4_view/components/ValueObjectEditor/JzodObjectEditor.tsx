@@ -632,7 +632,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // Handle attribute name changes for Record objects
   const handleAttributeNameChange = useCallback(
     (newAttributeName: string, formikAttributeRootLessListKeyArray: (string | number)[]) => {
-      const localAttributeRootLessListKeyArray: (string | number)[] = formikAttributeRootLessListKeyArray.slice();
+      const localAttributeRootLessListKeyArray: (string | number)[] = formikAttributeRootLessListKeyArray.slice(1);
       const oldAttributeName =
         localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
 
@@ -649,6 +649,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
       // Get the value at the old attribute path
       const subObject = resolvePathOnObject(currentValueObject, localAttributeRootLessListKeyArray);
+      // const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
 
       // Delete the old attribute path
       const newFormState1: any = deleteObjectAtPath(

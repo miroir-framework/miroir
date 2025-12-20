@@ -108,7 +108,7 @@ export const ThemedSizedButton: React.FC<ThemedComponentProps> = ({
   id,
   name,
   'aria-label': ariaLabel,
-  title
+  title,
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -135,6 +135,7 @@ export const ThemedSizedButton: React.FC<ThemedComponentProps> = ({
 
   return (
     <button 
+      type="button"
       css={buttonStyles} 
       className={className} 
       style={style} 

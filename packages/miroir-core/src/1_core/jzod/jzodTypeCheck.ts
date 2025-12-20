@@ -371,7 +371,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
     }
     possibleDiscriminators = flattenedUnionChoices.map((objectChoice) => {
       const objectChoiceKeys = Object.keys(objectChoice.definition);
-      return discriminators.map(
+      return discriminators.flatMap(
         (discriminator) =>
           objectChoiceKeys.includes(discriminator) &&
           (objectChoice as any).definition[discriminator]?.type == "literal"
