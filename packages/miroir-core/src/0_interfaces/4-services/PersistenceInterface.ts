@@ -10,7 +10,7 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
-import { Action2ReturnType } from "../2_domain/DomainElement";
+import { Action2ReturnType, type Action2Error } from "../2_domain/DomainElement";
 import { MError } from "../3_controllers/ErrorLogServiceInterface";
 import { LocalCacheInterface } from "./LocalCacheInterface";
 import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface";
@@ -61,12 +61,17 @@ export interface RestClientInterface {
 }
 
 // ################################################################################################
-export interface RestClientCallReturnType {
+export type RestClientCallReturnType = Action2Error | {
   status: number;
   data: any;
   headers: Headers;
   url: string;
-}
+// export interface RestClientCallReturnType {
+//   status: number;
+//   data: any;
+//   headers: Headers;
+//   url: string;
+};
 
 // ################################################################################################
 export interface RemoteStoreActionReturnType {

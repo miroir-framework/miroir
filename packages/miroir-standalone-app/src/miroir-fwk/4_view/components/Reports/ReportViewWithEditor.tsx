@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { Formik } from 'formik';
 
 import {
+  Action2Error,
   adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnvironment,
   Domain2ElementFailed,
@@ -30,7 +31,7 @@ import {
 import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
-import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 import { useCurrentModel, useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
@@ -57,6 +58,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   log.info(`ReportViewWithEditor Render Count: ${count}`);
   const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
+  const { showSnackbar, handleAsyncAction } = useSnackbar();
   
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid);
   const currentDeploymentReportsEntitiesDefinitionsMapping =
@@ -122,7 +124,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
   }
   const {reportData, resolvedQuery} = reportDataQueryResults;
-  log.info("reportData", reportData);
+  // log.info("reportData", reportData);
 
   const reportViewData = useMemo(() => ({
       ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
@@ -130,7 +132,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       storedQueryData: props.storedQueryData
   }), [reportData, props.storedQueryData]);
 
-  log.info("ReportView reportViewData", reportViewData);
+  // log.info("ReportView reportViewData", reportViewData);
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
@@ -147,12 +149,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   // ##############################################################################################
   const initialReportSectionsFormValue = useMemo(() => {
-    log.info(
-      "############################################## reportSectionsFormValue",
-      props.reportDefinition?.definition.section,
-      "reportViewData",
-      reportViewData,
-    );
+    // log.info(
+    //   "############################################## reportSectionsFormValue",
+    //   props.reportDefinition?.definition.section,
+    //   "reportViewData",
+    //   reportViewData,
+    // );
     const reportSectionsData = reportSectionsFormValue(
       props.reportDefinition?.definition.section,
       reportData,
@@ -168,7 +170,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       [entityDefinitionReportKey ]: entityDefinitionReport,
       [reportName]: props.reportDefinition,
     };
-    log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
+    // log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
   }, [props.reportDefinition, entityDefinitionReportKey, reportData, reportViewData]);
@@ -198,18 +200,18 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       }
     };
     // log.info("reportSectionsFormSchema formValueSchema", result);
-    log.info(
-      "############################################## computing formValueMLSchema",
-      "props.reportDefinition",
-      props.reportDefinition,
-      "initialReportSectionsFormValue",
-      initialReportSectionsFormValue,
-      "reportData",
-      reportData,
-      "formValueMLSchema",
-      result,
-      []
-    );
+    // log.info(
+    //   "############################################## computing formValueMLSchema",
+    //   "props.reportDefinition",
+    //   props.reportDefinition,
+    //   "initialReportSectionsFormValue",
+    //   initialReportSectionsFormValue,
+    //   "reportData",
+    //   reportData,
+    //   "formValueMLSchema",
+    //   result,
+    //   []
+    // );
     // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
     return result;
   }, [
@@ -348,7 +350,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           "currentInstance", currentInstance, "applicationSection", applicationSection);
         
         if (props.deploymentUuid === adminConfigurationDeploymentMiroir.uuid && applicationSection === "model") {
-          throw new Error("Editing model definitions in the miroir (meta-model) deployment is not allowed.");
+          // throw new Error("Editing model definitions in the miroir (meta-model) deployment is not allowed.");
+          return Promise.resolve(new Action2Error(
+            "FailedToHandleAction",
+            "Editing model definitions in the miroir (meta-model) deployment is not allowed.",
+            []
+          ));
         }
 
         // if (applicationSection === "model" && currentInstance.parentUuid === entityEntityDefinition.uuid) {
@@ -360,7 +367,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           props.deploymentUuid == adminConfigurationDeploymentMiroir.uuid || // modifying the meta-model is always transactional
           applicationSection == "model" // in an application, modifying the model must be transactional
         ) { // meta-model or model change, need transaction
-          await domainController.handleActionFromUI(
+          return domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
               deploymentUuid: props.deploymentUuid,
@@ -374,6 +381,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     applicationSection,
+                    parentUuid: currentInstance.parentUuid,
                     objects: [
                       {
                         parentName: currentInstance.parentName,
@@ -409,7 +417,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             },
           };
           log.info("onEditValueObjectFormSubmit dispatching updateAction", updateAction);
-          await domainController.handleActionFromUI(updateAction);
+          return domainController.handleActionFromUI(updateAction);
         }
       } else {
         throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
@@ -439,7 +447,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               <Formik
                 enableReinitialize={true}
                 initialValues={initialReportSectionsFormValue}
-                onSubmit={async (values, { setSubmitting, setErrors }) => {
+                onSubmit={(values, { setSubmitting, setErrors }) => {
                   try {
                     log.info("ReportViewWithEditor onSubmit formik values", values);
                     // Handle zoom case: merge changes back into the full object for submission
@@ -448,10 +456,13 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     //   : values;
 
                     // await onSubmit(values);
-                    await onEditValueObjectFormSubmit(values); // TODO: make it return Promise, no await because handler should return immediately
+                    handleAsyncAction(
+                      () => onEditValueObjectFormSubmit(values),
+                      "Instance edited successfully",
+                      "submit instance edition"
+                    ).finally(() => setSubmitting(false)); // TODO: make it return Promise, no await because handler should return immediately
                   } catch (e) {
                     log.error(e);
-                  } finally {
                     setSubmitting(false);
                   }
                 }}

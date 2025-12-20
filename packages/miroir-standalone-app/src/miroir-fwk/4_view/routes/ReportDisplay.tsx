@@ -92,18 +92,18 @@ export const ReportDisplay: React.FC<{
     ?.filter((sq) => !!sq.storedQuery)
     .map((sq) => sq.storedQuery) as Uuid[];
 
-  log.info(
-    "currentMiroirReport",
-    currentMiroirReport,
-    "currentReportQueries",
-    currentReportQueries,
-    "availableStoredQueries",
-    availableStoredQueries
-  );
+  // log.info(
+  //   "currentMiroirReport",
+  //   currentMiroirReport,
+  //   "currentReportQueries",
+  //   currentReportQueries,
+  //   "availableStoredQueries",
+  //   availableStoredQueries
+  // );
   const currentStoredQueries: { definition: Query }[] = availableStoredQueries.filter(
     (q: any /* StoredQuery*/) => currentReportQueries.includes(q.uuid)
   ) as any;
-  log.info("currentStoredQueries", currentStoredQueries);
+  // log.info("currentStoredQueries", currentStoredQueries);
 
   const currentStoredQuery:
     | BoxedQueryWithExtractorCombinerTransformer
@@ -149,7 +149,7 @@ export const ReportDisplay: React.FC<{
   }
   const { reportData: currentStoredQueryData, resolvedQuery: currentResolvedStoredQuery } =
     currentStoredQueryResults;
-  log.info("currentStoredQueryData", currentStoredQueryData);
+  // log.info("currentStoredQueryData", currentStoredQueryData);
 
   return (
     <>

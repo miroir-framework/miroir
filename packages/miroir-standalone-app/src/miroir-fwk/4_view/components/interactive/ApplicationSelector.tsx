@@ -95,11 +95,11 @@ export const ApplicationSelector: FC<{
   // ##################################################################################
   // transformerEditor_transformer_selector initial load, persistedState -> formik
   const initialSelectorValue = useMemo(() => {
-    log.info(
-      "ApplicationSelector: got new mode:",
-      // formikContext.values.transformerEditor_transformer_selector.mode
-      persistedToolsPageState?.applicationSelector
-    );
+    // log.info(
+    //   "ApplicationSelector: got new mode:",
+    //   // formikContext.values.transformerEditor_transformer_selector.mode
+    //   persistedToolsPageState?.applicationSelector
+    // );
     return persistedToolsPageState?.applicationSelector?? noValue.uuid;
   }, []);
 
@@ -122,13 +122,13 @@ export const ApplicationSelector: FC<{
       const vector = {
         // "applicationSelector.application": (value: any, rootLessListKey: string) => {
         application: (value: any, rootLessListKey: string) => {
-          log.info("ApplicationSelector observed application change", value, rootLessListKey);
+          // log.info("ApplicationSelector observed application change", value, rootLessListKey);
           onApplicationChange(value);
           // setCurrentInnerApplication(value);
           // log.info("ApplicationSelector set currentInnerApplication done:", applicationUuid);
         },
       };
-      log.info("ApplicationSelector creating onChangeVector", Object.keys(vector), vector);
+      // log.info("ApplicationSelector creating onChangeVector", Object.keys(vector), vector);
       return vector;
     },
     [onApplicationChange]
@@ -153,10 +153,10 @@ export const ApplicationSelector: FC<{
     
     // Debounce the update - only push to context after 2 seconds of no changes
     updateTimeoutRef.current = setTimeout(() => {
-      log.info(
-        "ApplicationSelector: debounced update - pushing applicationUuid to context:",
-        applicationUuid
-      );
+      // log.info(
+      //   "ApplicationSelector: debounced update - pushing applicationUuid to context:",
+      //   applicationUuid
+      // );
       // context.updateToolsPageStateDEFUNCT({
       //   ...persistedToolsPageState,
       //   applicationSelector: applicationUuid,

@@ -298,7 +298,6 @@ function loadNewEntityInstancesInLocalCache(
 
   (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
     (state as any).loading[instanceCollectionEntityIndex],
-    // instanceCollection.instances
     serializableInstances
   );
   // log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))

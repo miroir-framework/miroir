@@ -91,14 +91,14 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
 
   const formik = useFormikContext<Record<string, any>>();
 
-  log.info(
-    "ReportSectionViewWithEditor: formik values =",
-    formik.values,
-    "props.formikReportDefinitionPathString =",
-    props.formikReportDefinitionPathString,
-    "props.reportSectionPath =",
-    props.reportSectionPath
-  );
+  // log.info(
+  //   "ReportSectionViewWithEditor: formik values =",
+  //   formik.values,
+  //   "props.formikReportDefinitionPathString =",
+  //   props.formikReportDefinitionPathString,
+  //   "props.reportSectionPath =",
+  //   props.reportSectionPath
+  // );
   const reportDefinitionFromFormik: Report  | undefined =
     formik.values &&
     props.formikReportDefinitionPathString &&
@@ -131,15 +131,15 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
-  log.info(
-    "ReportSectionViewWithEditor render",
-    reportSectionDefinitionFromFormik?.type,
-    currentNavigationKey,
-    "reportSectionDefinitionFromFormik",
-    reportSectionDefinitionFromFormik,
-    "props",
-    props
-  );
+  // log.info(
+  //   "ReportSectionViewWithEditor render",
+  //   reportSectionDefinitionFromFormik?.type,
+  //   currentNavigationKey,
+  //   "reportSectionDefinitionFromFormik",
+  //   reportSectionDefinitionFromFormik,
+  //   "props",
+  //   props
+  // );
 
   // const [isEditing, setIsEditing] = useState(false);
   // // const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(undefined);

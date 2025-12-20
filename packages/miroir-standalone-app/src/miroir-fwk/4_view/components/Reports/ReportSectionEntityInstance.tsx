@@ -160,16 +160,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // const formikValuePath = props.formikValuePath?.join("_") || "";
   // const formikReportDefinition: Report = formikContext.values[props.reportSectionPath.join("_")];
 
-  log.info(
-    "ReportSectionEntityInstance: formik values =",
-    formikContext.values,
-    "props.formikReportDefinitionPathString =",
-    props.formikReportDefinitionPathString,
-    // "props.formikReportDefinitionEntityDefinitionPathString =",
-    // props.formikReportDefinitionEntityDefinitionPathString,
-    "props.reportSectionPath =",
-    props.reportSectionPath
-  );
+  // log.info(
+  //   "ReportSectionEntityInstance: formik values =",
+  //   formikContext.values,
+  //   "props.formikReportDefinitionPathString =",
+  //   props.formikReportDefinitionPathString,
+  //   // "props.formikReportDefinitionEntityDefinitionPathString =",
+  //   // props.formikReportDefinitionEntityDefinitionPathString,
+  //   "props.reportSectionPath =",
+  //   props.reportSectionPath
+  // );
 
   // const localReportDefinition: Report | undefined = props.formikReportDefinitionPathString
   //   ? formikContext.values[props.formikReportDefinitionPathString]
@@ -196,27 +196,27 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   
   // const entityUuid: Uuid | undefined = (reportSectionDefinitionFromFormik?.definition as any)?.parentUuid;
 
-  log.info(
-    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionEntityInstance render",
-    ++count,
-    "start",
-    "formikValuePathAsString:",
-    formikValuePathAsString,
-    "props.formikAlreadyAvailable", 
-    props.formikAlreadyAvailable, 
-    "formikContext:",
-    formikContext.values,
-    "reportDefinitionFromFormik:",
-    reportDefinitionFromFormik,
-    "reportSectionDefinitionFromFormik",
-    reportSectionDefinitionFromFormik,
-    // "entityUuid",
-    // entityUuid,
-    "with props:",
-    props,
-    // "formikContext:",
-    // formikContext
-  );
+  // log.info(
+  //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionEntityInstance render",
+  //   ++count,
+  //   "start",
+  //   "formikValuePathAsString:",
+  //   formikValuePathAsString,
+  //   "props.formikAlreadyAvailable", 
+  //   props.formikAlreadyAvailable, 
+  //   "formikContext:",
+  //   formikContext.values,
+  //   "reportDefinitionFromFormik:",
+  //   reportDefinitionFromFormik,
+  //   "reportSectionDefinitionFromFormik",
+  //   reportSectionDefinitionFromFormik,
+  //   // "entityUuid",
+  //   // entityUuid,
+  //   "with props:",
+  //   props,
+  //   // "formikContext:",
+  //   // formikContext
+  // );
   // const errorLog = useErrorLogService();
   if (reportSectionDefinitionFromFormik?.type && reportSectionDefinitionFromFormik?.type !== "objectInstanceReportSection") {
     throw new Error(
@@ -280,17 +280,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     formikContext?.values,
   ]) as EntityInstance;
 
-  log.info(
-    "ReportSectionEntityInstance",
-    "instance to display:",
-    instance,
-    "formik:",
-    formikContext,
-    "props.formikAlreadyAvailable",
-    props.formikAlreadyAvailable,
-    "formikContext.values[reportSectionPathAsString]",
-    formikContext?.values[formikValuePathAsString]
-  );
+  // log.info(
+  //   "ReportSectionEntityInstance",
+  //   "instance to display:",
+  //   instance,
+  //   "formik:",
+  //   formikContext,
+  //   "props.formikAlreadyAvailable",
+  //   props.formikAlreadyAvailable,
+  //   "formikContext.values[reportSectionPathAsString]",
+  //   formikContext?.values[formikValuePathAsString]
+  // );
 
   // // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
   // // const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
@@ -352,15 +352,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         (e) => e?.entityUuid === targetEntityUuid
   );
 
-  log.info(
-    "ReportSectionEntityInstance",
-    "props.applicationSection",
-    props.applicationSection,
-    // "currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??'data']?.entityDefinitions",
-    // currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions,
-    "currentReportSectionTargetEntityDefinition:",
-    currentReportSectionTargetEntityDefinition,
-  );
+  // log.info(
+  //   "ReportSectionEntityInstance",
+  //   "props.applicationSection",
+  //   props.applicationSection,
+  //   // "currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??'data']?.entityDefinitions",
+  //   // currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions,
+  //   "currentReportSectionTargetEntityDefinition:",
+  //   currentReportSectionTargetEntityDefinition,
+  // );
 
   // ##############################################################################################
   // ##############################################################################################
@@ -368,7 +368,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // CALLS reportContext.setFoldedObjectAttributeOrArrayItems
   useEffect(() => {
-    log.info("ReportSectionEntityInstance: useEffect setting initial folded paths");
+    // log.info("ReportSectionEntityInstance: useEffect setting initial folded paths");
     const foldedStringPaths = currentReportSectionTargetEntityDefinition?.display?.foldSubLevels
       ? Object.entries(currentReportSectionTargetEntityDefinition?.display?.foldSubLevels).filter(
           ([key, value]) => value
@@ -392,10 +392,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         }
       });
     });
-    log.info(
-      "Setting initial folded paths newFoldedObjectAttributeOrArrayItems:",
-      newFoldedObjectAttributeOrArrayItems
-    );
+    // log.info(
+    //   "Setting initial folded paths newFoldedObjectAttributeOrArrayItems:",
+    //   newFoldedObjectAttributeOrArrayItems
+    // );
 
     reportContext.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
   }, [
@@ -414,7 +414,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // CALLS setOutlineTitle and setReportInstance
   useEffect(() => {
-    log.info("ReportSectionEntityInstance: useEffect setting outline title and report instance");
+    // log.info("ReportSectionEntityInstance: useEffect setting outline title and report instance");
     if (currentReportTargetEntity?.name) {
       // log.info(
       //   "ReportSectionEntityInstance: setting outline title and report instance for entity:",
@@ -534,7 +534,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const isQueryEntity = instance?.parentUuid === entityQueryVersion.uuid;
 
   const currentQuery: any | undefined = isQueryEntity ? instance : undefined;
-  log.info("ReportSectionEntityInstance: isQueryEntity", isQueryEntity, "currentQuery", currentQuery);
+  // log.info("ReportSectionEntityInstance: isQueryEntity", isQueryEntity, "currentQuery", currentQuery);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateSelectorForTemplateMap(),
     []
@@ -575,7 +575,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       instance?.uuid,
     ]);
 
-  log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
+  // log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
   const queryTestRunParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
     () => {
       // if (!queryForExecution) return undefined;

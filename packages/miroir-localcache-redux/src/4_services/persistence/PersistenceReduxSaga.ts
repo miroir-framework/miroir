@@ -26,7 +26,6 @@ import {
   RestPersistenceClientAndRestClientInterface,
   StoreOrBundleAction,
   storeActionOrBundleActionStoreRunner,
-  type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
@@ -383,14 +382,16 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             // this.persistenceStoreControllerManager.getPersistenceStoreControllers()
           );
         }
-        log.info(
-          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore",
-          action
-          // JSON.stringify(action, undefined, 2)
-        );
         const localStoreResult = yield* call(() =>
           localPersistenceStoreController.handleAction(action)
-        );
+      );
+      log.info(
+        "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore done for action",
+        action,
+        "result=",
+        localStoreResult
+        // JSON.stringify(action, undefined, 2)
+      );
         return localStoreResult;
         break;
       }
@@ -666,133 +667,155 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   ): Generator<
     Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
   > {
-    if (this.params.persistenceStoreAccessMode != "remote") {
-      throw new Error(
-        "PersistenceActionReduxSaga innerHandlePersistenceActionForRemoteStore called with persistenceStoreAccessMode = local, this is not allowed!" +
-          JSON.stringify(action)
+    try {
+      if (this.params.persistenceStoreAccessMode != "remote") {
+        throw new Error(
+          "PersistenceActionReduxSaga innerHandlePersistenceActionForRemoteStore called with persistenceStoreAccessMode = local, this is not allowed!" +
+            JSON.stringify(action)
+        );
+      }
+      // indirect access to a remote storeController through the network
+      if (action && (action as any).actionType !== "initModel") {
+        log.info(
+          "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
+          JSON.stringify(action, undefined, 2)
+        );
+      } else {
+        log.info(
+          "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
+          action
+        );
+      }
+      const clientResult: RestClientCallReturnType = yield* call(() =>
+        remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action)
       );
-    }
-    // indirect access to a remote storeController through the network
-    if (action && (action as any).actionType !== "initModel") {
+      log.debug(
+        "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
+        clientResult
+      );
+      // redux can not return class instances, which are not serializable, redux accomodates only plain objects.
+      // clientResult instanceof Action2Error === false
+      if (clientResult.status === "error" || clientResult instanceof Action2Error) {
+        return clientResult;
+      }
+      switch (action.actionType) {
+        case "RestPersistenceAction_create":
+        case "RestPersistenceAction_read":
+        case "RestPersistenceAction_update":
+        case "RestPersistenceAction_delete": {
+          const result: Action2ReturnType = {
+            status: "ok",
+            returnedDomainElement: {
+              parentUuid: action.payload.parentUuid ?? "", // TODO: action.parentUuid should not be optional!
+              applicationSection: action.payload.section,
+              instances: clientResult.data.instances,
+            },
+          };
+          log.debug(
+            "innerHandlePersistenceActionForRemoteStore remoteStoreNetworkClient received result",
+            result.status
+          );
+          return result;
+          break;
+        }
+        case "runBoxedExtractorOrQueryAction": {
+          log.info(
+            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult",
+            JSON.stringify(clientResult, undefined, 2)
+          );
+          log.debug(
+            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction remoteStoreNetworkClient received status",
+            clientResult.status
+          );
+          return clientResult.data;
+          break;
+        }
+        case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
+          log.info(
+            "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult",
+            clientResult
+          );
+          log.debug(
+            "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result",
+            clientResult.status
+          );
+          return clientResult.data;
+          break;
+        }
+        case "runBoxedExtractorAction":
+        case "runBoxedQueryAction":
+        case "runBoxedQueryTemplateAction":
+        case "runBoxedExtractorTemplateAction": {
+          log.info(
+            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction received from remoteStoreNetworkClient clientResult",
+            clientResult
+          );
+          log.debug(
+            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction remoteStoreNetworkClient received result",
+            clientResult.status
+          );
+          return clientResult.data;
+          break;
+        }
+        case "getInstance":
+        case "getInstances":
+        case "createInstance":
+        case "deleteInstance":
+        case "deleteInstanceWithCascade":
+        case "updateInstance": {
+          return clientResult.data as Action2ReturnType;
+        }
+        case "bundleAction":
+        // case "instanceAction":
+        case "loadNewInstancesInLocalCache":
+        //
+        // case "modelAction":
+        case "initModel":
+        case "commit":
+        case "rollback":
+        case "remoteLocalCacheRollback":
+        case "resetModel":
+        case "resetData":
+        case "alterEntityAttribute":
+        case "renameEntity":
+        case "createEntity":
+        case "dropEntity":
+        // case "storeManagementAction":
+        case "storeManagementAction_createStore":
+        case "storeManagementAction_deleteStore":
+        case "storeManagementAction_resetAndInitApplicationDeployment":
+        case "storeManagementAction_openStore":
+        case "storeManagementAction_closeStore":
+        //
+        case "LocalPersistenceAction_create":
+        case "LocalPersistenceAction_read":
+        case "LocalPersistenceAction_update":
+        case "LocalPersistenceAction_delete":
+        default: {
+          log.debug(
+            "innerHandlePersistenceActionForRemoteStore received result",
+            clientResult.status
+          );
+          return yield ACTION_OK;
+          break;
+        }
+      }
+    } catch (error) {
       log.info(
-        "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
-        JSON.stringify(action, undefined, 2)
+        "innerHandlePersistenceActionForRemoteStore exception",
+        (error as any).message,
+        "for action",
+        action,
+        "full error:",
+        error,
       );
-    } else {
-      log.info(
-        "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
-        action
-      );
-    }
-    const clientResult: RestClientCallReturnType = yield* call(() =>
-      remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action)
-    );
-    log.debug(
-      "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
-      clientResult
-    );
-
-    switch (action.actionType) {
-      case "RestPersistenceAction_create":
-      case "RestPersistenceAction_read":
-      case "RestPersistenceAction_update":
-      case "RestPersistenceAction_delete": {
-        const result: Action2ReturnType = {
-          status: "ok",
-          returnedDomainElement: {
-            parentUuid: action.payload.parentUuid ?? "", // TODO: action.parentUuid should not be optional!
-            applicationSection: action.payload.section,
-            instances: clientResult.data.instances,
-          },
-        };
-        log.debug(
-          "innerHandlePersistenceActionForRemoteStore remoteStoreNetworkClient received result",
-          result.status
-        );
-        return result;
-        break;
-      }
-      case "runBoxedExtractorOrQueryAction": {
-        log.info(
-          "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult",
-          JSON.stringify(clientResult, undefined, 2)
-        );
-        log.debug(
-          "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction remoteStoreNetworkClient received status",
-          clientResult.status
-        );
-        return clientResult.data;
-        break;
-      }
-      case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-        log.info(
-          "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult",
-          clientResult
-        );
-        log.debug(
-          "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result",
-          clientResult.status
-        );
-        return clientResult.data;
-        break;
-      }
-      case "runBoxedExtractorAction":
-      case "runBoxedQueryAction":
-      case "runBoxedQueryTemplateAction":
-      case "runBoxedExtractorTemplateAction": {
-        log.info(
-          "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction received from remoteStoreNetworkClient clientResult",
-          clientResult
-        );
-        log.debug(
-          "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction remoteStoreNetworkClient received result",
-          clientResult.status
-        );
-        return clientResult.data;
-        break;
-      }
-      case "getInstance":
-      case "getInstances":
-      case "createInstance":
-      case "deleteInstance":
-      case "deleteInstanceWithCascade":
-      case "updateInstance": {
-        return clientResult.data as Action2ReturnType;
-      }
-      case "bundleAction":
-      // case "instanceAction":
-      case "loadNewInstancesInLocalCache":
-      //
-      // case "modelAction":
-      case "initModel":
-      case "commit":
-      case "rollback":
-      case "remoteLocalCacheRollback":
-      case "resetModel":
-      case "resetData":
-      case "alterEntityAttribute":
-      case "renameEntity":
-      case "createEntity":
-      case "dropEntity":
-      // case "storeManagementAction":
-      case "storeManagementAction_createStore":
-      case "storeManagementAction_deleteStore":
-      case "storeManagementAction_resetAndInitApplicationDeployment":
-      case "storeManagementAction_openStore":
-      case "storeManagementAction_closeStore":
-      //
-      case "LocalPersistenceAction_create":
-      case "LocalPersistenceAction_read":
-      case "LocalPersistenceAction_update":
-      case "LocalPersistenceAction_delete":
-      default: {
-        log.debug(
-          "innerHandlePersistenceActionForRemoteStore received result",
-          clientResult.status
-        );
-        return yield ACTION_OK;
-        break;
-      }
+      return {
+        ...new Action2Error(
+          "FailedToHandlePersistenceAction",
+          "could not handle action " + ((action as any).actionLabel ?? action.actionType),
+          [(error as any).message ?? "Unknown error"]
+        )
+      };
     }
   }
 

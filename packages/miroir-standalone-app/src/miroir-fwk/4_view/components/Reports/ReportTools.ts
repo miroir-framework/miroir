@@ -25,7 +25,7 @@ export const reportSectionsFormSchema = (
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
 ): Record<string, JzodElement> => {
-  log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
+  // log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
   switch (reportSection.type) {
     case "list":
       return reportSection.definition.reduce(
@@ -105,7 +105,7 @@ export const reportSectionsFormValue = (
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
 ): Record<string, any> => {
-  log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
+  // log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
   switch (reportSection.type) {
     case "list":
       return reportSection.definition.reduce(

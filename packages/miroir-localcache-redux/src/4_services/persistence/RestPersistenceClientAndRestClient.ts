@@ -1,8 +1,10 @@
 import {
+  Action2Error,
   HttpMethod,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceAction,
+  resolvePathOnObject,
   RestClientCallReturnType,
   RestClientInterface,
   RestPersistenceAction,
@@ -54,12 +56,14 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   private actionTypeArgsMap: {
     [actionType: string]: {
       [actionNamePattern: string]:
-        | { action?: boolean; attribute?: string; result?: string }
+        | { action?: boolean; attribute?: string | string[]; result?: string }
         | undefined;
     };
   } = {
     // RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
-    RestPersistenceAction_create: { "*": { attribute: "objects", result: "crudInstances" } },
+    RestPersistenceAction_create: { "*": { attribute: ["payload", "objects"], result: "crudInstances" } },
+    // RestPersistenceAction_create: { "*": { attribute: "payload", result: "crudInstances" } },
+    // RestPersistenceAction_create: { "*": { attribute: "objects", result: "crudInstances" } },
     RestPersistenceAction_read: { "*": { attribute: "objects", result: "crudInstances" } },
     RestPersistenceAction_update: { "*": { attribute: "objects", result: "crudInstances" } },
     RestPersistenceAction_delete: { "*": { attribute: "objects", result: "crudInstances" } },
@@ -200,9 +204,15 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           args = persistenceAction;
         } else {
           args = {
-            [this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.result ?? "ERROR"]: (
+            [this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.result ?? "ERROR"]:( 
+            Array.isArray(this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.attribute) ? 
+            resolvePathOnObject(
               persistenceAction as any
-            )[this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.attribute ?? "ERROR"],
+            , this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.attribute as any)
+            :
+             (
+              persistenceAction as any
+            )[(this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.attribute as string) ?? "ERROR"]),
           };
         }
       } else {
@@ -212,11 +222,22 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           ? {
               [(this.actionTypeArgsMap as any)[persistenceAction.actionType][
                 (persistenceAction as any)?.actionName ?? "*"
-              ].result ?? "ERROR"]: (persistenceAction as any)[
-                this.actionTypeArgsMap[persistenceAction.actionType][
+              ].result ?? "ERROR"]: (
+                Array.isArray(this.actionTypeArgsMap[persistenceAction.actionType][
                   (persistenceAction as any)?.actionName ?? "*"
-                ]?.attribute ?? "ERROR"
-              ],
+                ]?.attribute) ?
+                resolvePathOnObject(
+                  persistenceAction as any,
+                  this.actionTypeArgsMap[persistenceAction.actionType][
+                    (persistenceAction as any)?.actionName ?? "*"
+                  ]?.attribute as any
+                )
+                :
+                (persistenceAction as any)[
+                (this.actionTypeArgsMap[persistenceAction.actionType][
+                  (persistenceAction as any)?.actionName ?? "*"
+                ]?.attribute as string) ?? "ERROR"
+              ]),
             }
           : {};
       }
@@ -249,6 +270,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   async handleNetworkPersistenceAction(
     action: PersistenceAction
   ): Promise<RestClientCallReturnType> {
+    log.info("handleNetworkPersistenceAction called for action", action);
     switch (action.actionType) {
       // case "instanceAction":
       case "createInstance":
@@ -282,7 +304,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           // this.rootApiUrl + "/action/" + ((action as any).actionName ?? action.actionType)
           this.rootApiUrl + "/action/" + action.actionType
         );
-        log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
+        log.info("handleNetworkPersistenceAction called for action", action, "callParams", callParams);
         const result = await callParams.operation(
           // "/action/:actionName",
           "/action/:actionType",
@@ -331,24 +353,27 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "RestPersistenceAction_delete": {
         if (typeof action.deploymentUuid !== "string") {
           throw new Error(
-            "handleNetworkPersistenceAction could not find deploymentUuid in action " +
-              JSON.stringify(action, undefined, 2)
+            "handleNetworkPersistenceAction could not find deploymentUuid"
           );
         }
         if (typeof action.payload.parentUuid !== "string") {
-          throw new Error(
-            "handleNetworkPersistenceAction could not find payload.parentUuid in action " +
-              JSON.stringify(action, undefined, 2)
-          );
+          return Promise.resolve({
+            ...new Action2Error(
+              "FailedToHandlePersistenceAction",
+              "handleNetworkPersistenceAction could not find payload.parentUuid for action " + action.actionType,
+              ["handleNetworkPersistenceAction"],
+              undefined,
+              { domainAction: action }
+            )
+          });
         }
         if (typeof action.payload.section !== "string") {
           throw new Error(
-            "handleNetworkPersistenceAction could not find section in action " +
-              JSON.stringify(action, undefined, 2)
+            "handleNetworkPersistenceAction could not find section"
           );
         }
         const effectiveAction = action.actionType.split('_')[1];
-        log.debug("handleNetworkPersistenceAction effectiveAction", effectiveAction);
+        log.info("handleNetworkPersistenceAction effectiveAction", effectiveAction);
         const callParams = this.getRestCallParams(
           action,
           this.rootApiUrl +
@@ -365,7 +390,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           section: action.payload.section,
           parentUuid: action.payload.parentUuid,
         };
-        log.debug(
+        log.info(
           "handleNetworkPersistenceAction action",
           action,
           "section",

@@ -97,7 +97,12 @@ export class CallUtils {
       const error: MError = { errorMessage: JSON.stringify(result) };
       // this.errorLogService.pushError(error);
       // throw error;
-      return result;
+      return Promise.resolve(new Action2Error(
+        "FailedToHandlePersistenceAction",
+        "could not handle action " + ((action as any).actionLabel ?? action.actionType),
+        [],
+        result
+      ));
     } else {
       // log.info("CallUtils callPersistenceAction ok", result);
       // log.info("CallUtils callPersistenceAction continuation", continuation);

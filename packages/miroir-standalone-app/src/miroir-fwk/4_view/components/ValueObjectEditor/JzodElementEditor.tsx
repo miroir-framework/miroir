@@ -895,16 +895,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
                 onChange={(e) => {
                   const newValue = e.target.value === "" ? undefined : e.target.value;
-                  log.info(
-                    "JzodElementEditor UUID selector onChange",
-                    formikRootLessListKey,
-                    "newValue",
-                    newValue,
-                    "onChangeCallback",
-                    !!onChangeCallback,
-                    "props.onChangeVector",
-                    JSON.stringify(Object.keys(props.onChangeVector || {}))
-                  );
+                  // log.info(
+                  //   "JzodElementEditor UUID selector onChange",
+                  //   formikRootLessListKey,
+                  //   "newValue",
+                  //   newValue,
+                  //   "onChangeCallback",
+                  //   !!onChangeCallback,
+                  //   "props.onChangeVector",
+                  //   JSON.stringify(Object.keys(props.onChangeVector || {}))
+                  // );
                   // Invoke onChangeVector callback if registered for this field
                   if (onChangeCallback) {
                     onChangeCallback(newValue, props.rootLessListKey);
@@ -927,16 +927,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 value={currentValueObjectAtKey === undefined ? "" : currentValueObjectAtKey}
                 onChange={(e) => {
                   const newValue = e.target.value === "" ? undefined : e.target.value;
-                  log.info(
-                    "JzodElementEditor UUID selector onChange",
-                    formikRootLessListKey,
-                    "newValue",
-                    newValue,
-                    "onChangeCallback",
-                    !!onChangeCallback,
-                    "props.onChangeVector",
-                    JSON.stringify(Object.keys(props.onChangeVector || {}))
-                  );
+                  // log.info(
+                  //   "JzodElementEditor UUID selector onChange",
+                  //   formikRootLessListKey,
+                  //   "newValue",
+                  //   newValue,
+                  //   "onChangeCallback",
+                  //   !!onChangeCallback,
+                  //   "props.onChangeVector",
+                  //   JSON.stringify(Object.keys(props.onChangeVector || {}))
+                  // );
                   // Invoke onChangeVector callback if registered for this field
                   if (onChangeCallback) {
                     onChangeCallback(newValue, props.rootLessListKey);

@@ -16858,6 +16858,22 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
                   "objects": {
                     "type": "array",
                     "tag": {
@@ -17292,6 +17308,22 @@ export const miroirFundamentalJzodSchema = {
                   "includeInTransaction": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
                   },
                   "objects": {
                     "type": "array",
@@ -32163,6 +32195,48 @@ export const miroirFundamentalJzodSchema = {
                           }
                         ]
                       },
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 3,
+                            "defaultLabel": "Entity Uuid",
+                            "editable": true,
+                            "selectorParams": {
+                              "targetEntityApplicationSection": "model",
+                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                              "targetEntityOrderInstancesBy": "name"
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 3,
+                                "defaultLabel": "Entity Uuid",
+                                "editable": true,
+                                "selectorParams": {
+                                  "targetEntityApplicationSection": "model",
+                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                  "targetEntityOrderInstancesBy": "name"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
                       "objects": {
                         "type": "union",
                         "tag": {
@@ -33833,6 +33907,48 @@ export const miroirFundamentalJzodSchema = {
                           {
                             "type": "boolean",
                             "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 3,
+                            "defaultLabel": "Entity Uuid",
+                            "editable": true,
+                            "selectorParams": {
+                              "targetEntityApplicationSection": "model",
+                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                              "targetEntityOrderInstancesBy": "name"
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 3,
+                                "defaultLabel": "Entity Uuid",
+                                "editable": true,
+                                "selectorParams": {
+                                  "targetEntityApplicationSection": "model",
+                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                  "targetEntityOrderInstancesBy": "name"
+                                }
+                              }
+                            }
                           },
                           {
                             "type": "schemaReference",
@@ -62821,6 +62937,22 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
                   "objects": {
                     "type": "array",
                     "tag": {
@@ -63685,6 +63817,22 @@ export const miroirFundamentalJzodSchema = {
                   "includeInTransaction": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
                   },
                   "objects": {
                     "type": "array",
@@ -72142,6 +72290,22 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
                   "objects": {
                     "type": "array",
                     "tag": {
@@ -73006,6 +73170,22 @@ export const miroirFundamentalJzodSchema = {
                   "includeInTransaction": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
                   },
                   "objects": {
                     "type": "array",

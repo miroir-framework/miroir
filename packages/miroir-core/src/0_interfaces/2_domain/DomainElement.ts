@@ -196,7 +196,8 @@ export type ActionErrorType =
 | "InvalidAction"
 ;
 
-export class Action2Error extends Error {
+// export class Action2Error extends Error {
+export class Action2Error {
   public status: string = "error";
 
   constructor(
@@ -206,7 +207,7 @@ export class Action2Error extends Error {
     public innerError?: Action2Error | Action2Error[] | ActionError | Domain2ElementFailed | undefined,
     public errorContext?: Record<string, any> | undefined
   ){
-    super(errorMessage);
+    // super(errorMessage);
   };
 }
 

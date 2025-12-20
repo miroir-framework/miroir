@@ -206,14 +206,14 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !== noValue.uuid &&
+        // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
+        // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !== noValue.uuid &&
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity &&
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid
       ) {
 
-        let deploymentUuid: TransformerReturnType<any> =
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid;
+        let deploymentUuid: TransformerReturnType<any> = currentDeploymentUuid;
+          // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid;
         if (
           typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
             ?.targetDeploymentUuid == "object"
@@ -233,7 +233,9 @@ export function useJzodElementEditorHooks(
             "value" // resolveBuildTransformersTo
           );
           log.info(
-            "useJzodElementEditorHooks resolved deploymentUuid:",
+            "useJzodElementEditorHooks",
+            "rootLessListKey:", rootLessListKey,
+            "resolved deploymentUuid:",
             deploymentUuid,
             "for",
             (
@@ -254,12 +256,14 @@ export function useJzodElementEditorHooks(
         // }
         // const deploymentUuid = currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid;
         const applicationSection = getApplicationSection(
-          deploymentUuid ??
-            currentDeploymentUuid,
+          deploymentUuid,
           currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
         );
         // log.info(
-        //   "useJzodElementEditorHooks foreignKeyObjectsFetchQueryParams",
+        //   "useJzodElementEditorHooks",
+        //   "rootLessListKey",
+        //   rootLessListKey,
+        //   "foreignKeyObjectsFetchQueryParams",
         //   "rawSchema",
         //   currentTypecheckKeyMap.rawSchema,
         //   "deploymentUuid",
@@ -313,6 +317,23 @@ export function useJzodElementEditorHooks(
       foreignKeyObjectsFetchQueryParams
   ) || {};
 
+  // log.info(
+  //   "useJzodElementEditorHooks",
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "currentTypecheckKeyMap",
+  //   currentTypecheckKeyMap,
+  //   "selectorParams",
+  //   currentTypecheckKeyMap?.rawSchema?.tag?.value?.selectorParams,
+  //   "aggregate",
+  //   count,
+  //   "caller",
+  //   caller,
+  //   "foreignKeyObjects",
+  //   foreignKeyObjects
+  // );
+
+  // ######################### optional attributes #########################
   const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =
     typeCheckKeyMap !== undefined &&
     typeCheckKeyMap[rootLessListKey] !== undefined &&

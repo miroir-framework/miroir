@@ -1028,9 +1028,16 @@ export class DomainController implements DomainControllerInterface {
 
           // TODO: disable autocommit and do all operations in one transaction
           if (!currentModelEnvironment) {
-            throw new Error(
-              "commit operation did not receive current model. It requires the current model, to access the pre-existing transactions."
-            );
+            // throw new Error(
+            //   "commit operation did not receive current model. It requires the current model, to access the pre-existing transactions."
+            // );
+            return Promise.resolve(new Action2Error(
+              "FailedToHandleAction",
+              "commit operation did not receive current model. It requires the current model, to access the pre-existing transactions.",
+              [],
+              undefined,
+              { domainAction: modelAction }
+            ));
           }
           const currentTransactions = this.localCache.currentTransaction();
           if (currentTransactions.length == 0) {
@@ -1078,8 +1085,8 @@ export class DomainController implements DomainControllerInterface {
           const newModelVersion: ApplicationVersion = {
             uuid: newModelVersionUuid,
             // conceptLevel: "Data",
-            parentName: entitySelfApplicationVersion?.name,
-            parentUuid: entitySelfApplicationVersion?.uuid,
+            parentName: entitySelfApplicationVersion.name,
+            parentUuid: entitySelfApplicationVersion.uuid,
             description: "TODO: no description yet",
             name: "TODO: No label was given to this version.",
             previousVersion: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
@@ -1099,21 +1106,37 @@ export class DomainController implements DomainControllerInterface {
             deploymentUuid: currentDeploymentUuid,
             payload: {
               section: sectionOfapplicationEntities,
+              parentName: entitySelfApplicationVersion.name ?? "Self Application",
+              parentUuid: entitySelfApplicationVersion.uuid,
               objects: [newModelVersion],
+              // objects: [{
+              //   parentUuid: entitySelfApplicationVersion.uuid,
+              //   instances: [newModelVersion]
+              // }],
             },
           };
 
           // in the case of the Miroir app, this should be done in the 'data' section
-          await this.callUtil.callPersistenceAction(
+          const newModelVersionActionResult = await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // context update
             // deploymentUuid,
             newModelVersionAction
           );
           log.info(
-            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created",
-            newModelVersion
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit persistenceActionResult for new version",
+            newModelVersionActionResult,
+            "newModelVersionActionResult instanceof Action2Error",
+            newModelVersionActionResult instanceof Action2Error
           );
+          if (newModelVersionActionResult instanceof Action2Error) {
+            return Promise.resolve(new Action2Error(
+              "FailedToHandleAction",
+              "handleModelAction commit create new model version failed",
+              [],
+              newModelVersionActionResult
+            ));
+          }
 
           log.info(
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replaying currentTransaction",
@@ -1156,7 +1179,8 @@ export class DomainController implements DomainControllerInterface {
                         replayAction.payload.instanceAction.payload.applicationSection ?? "data",
                       parentName: replayAction.payload.instanceAction.payload.objects[0].parentName,
                       parentUuid: replayAction.payload.instanceAction.payload.objects[0].parentUuid,
-                      objects: replayAction.payload.instanceAction.payload.objects[0].instances,
+                      // objects: replayAction.payload.instanceAction.payload.objects[0].instances,
+                      objects: replayAction.payload.instanceAction.payload.objects,
                     },
                   } as any
                 );
@@ -1249,33 +1273,6 @@ export class DomainController implements DomainControllerInterface {
                 }
               );
             })
-            // TODO: STORE-BASED CONFIGURATION IS NOT IN DATABASE MODEL ANYMORE WHERE SHOUND IT BE?
-            // .then((context) => {
-            //   // const updatedConfiguration = Object.assign({}, instanceConfigurationReference, {
-            //   //   definition: { currentApplicationVersion: newModelVersionUuid },
-            //   // });
-            //   const updatedConfiguration = {
-            //     ...instanceConfigurationReference, 
-            //     definition: { currentApplicationVersion: newModelVersionUuid },
-            //   };
-            //   log.debug(
-            //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit updating configuration",
-            //     updatedConfiguration
-            //   );
-            //   const newStoreBasedConfiguration: RestPersistenceAction = {
-            //     actionType: "RestPersistenceAction_update",
-            //     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-            //     deploymentUuid,
-            //     section: sectionOfapplicationEntities,
-            //     objects: [updatedConfiguration],
-            //   };
-            //   // TODO: in the case of the Miroir app, this should be in the 'data'section
-            //   return this.callUtil.callPersistenceAction(
-            //     {}, // context
-            //     {}, // context update
-            //     newStoreBasedConfiguration
-            //   );
-            // })
           ;
           log.info(
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!"
@@ -1362,27 +1359,39 @@ export class DomainController implements DomainControllerInterface {
         );
         if (autocommit) {
           return this.handleActionInternal(domainAction, currentModelEnvironment).then(
-            async (result) => {
+            async (result: Action2ReturnType) => {
+              if (result instanceof Action2Error) {
+                log.error(
+                  "handleActionFromUI not autocommitting due to error result for action",
+                  domainAction.actionType,
+                  "deployment",
+                  domainAction.deploymentUuid,
+                  "domainAction",
+                  domainAction,
+                  "result",
+                  result
+                );
+                return result;
+              } else {
+                log.info(
+                  "handleActionFromUI autocommitting (if necessary) for action",
+                  domainAction.actionType,
+                  "deployment",
+                  domainAction.deploymentUuid,
+                  "domainAction",
+                  domainAction,
+                  "result instance of Action2Error",
+                  result instanceof Action2Error,
+                  "result",
+                  result
+                );
+              }
               if (
-                // domainAction.actionType == "modelAction" ||
                 domainAction.actionType == "transactionalInstanceAction" ||
                 domainAction.actionType == "alterEntityAttribute" ||
                 domainAction.actionType == "createEntity" ||
                 domainAction.actionType == "renameEntity" ||
                 domainAction.actionType == "dropEntity" ||
-                // domainAction.actionType == "updateInstance" ||
-                // domainAction.actionType == "createInstance" ||
-                // domainAction.actionType == "deleteInstance" ||
-                // domainAction.actionType == "deleteInstanceWithCascade" ||
-                // domainAction.actionType == "loadNewInstancesInLocalCache" ||
-                // domainAction.actionType == "getInstance" ||
-                // domainAction.actionType == "getInstances" ||
-                // domainAction.actionType == "resetModel" ||
-                // domainAction.actionType == "resetData" ||
-                // domainAction.actionType == "initModel" ||
-                // domainAction.actionType == "commit" ||
-                // domainAction.actionType == "rollback" ||
-                // domainAction.actionType == "remoteLocalCacheRollback" ||
                 domainAction.actionType == "compositeActionSequence"
               ) {
                 // automatically commit after each model action from the UI if autocommit is enabled
@@ -1392,7 +1401,20 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: domainAction.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
                 };
-                return this.handleActionInternal(commitAction, currentModelEnvironment);
+                const result = await this.handleActionInternal(commitAction, currentModelEnvironment);
+                log.info(
+                  "handleActionFromUI autocommit done for action",
+                  domainAction.actionType,
+                  "deployment",
+                  domainAction.deploymentUuid,
+                  "domainAction",
+                  domainAction,
+                  "result instance of Action2Error",
+                  result instanceof Action2Error,
+                  "commit result",
+                  result
+                );
+                return Promise.resolve(result);
               } else {
                 log.info(
                   "handleActionFromUI no autocommit for action",
@@ -1606,9 +1628,16 @@ export class DomainController implements DomainControllerInterface {
         case "createEntity":
         case "dropEntity": {
           if (!currentModel) {
-            throw new Error(
-              "DomainController handleAction for modelAction needs a currentModel argument"
-            );
+            // throw new Error(
+            //   "DomainController handleAction for modelAction needs a currentModel argument"
+            // );
+            return Promise.resolve(new Action2Error(
+              "InvalidAction",
+              "DomainController handleAction for modelAction needs a currentModel argument",
+              [],
+              undefined,
+              { domainAction }
+            ));
           }
           // return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
           return this.handleModelAction(domainAction, currentModel);
