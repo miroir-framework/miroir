@@ -6,7 +6,7 @@
   "entityUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel": "Model",
   "name": "Report",
-  "icon": "Interests",
+  "icon": "newspaper",
   "defaultInstanceDetailsReportUuid": "ef57aada-6b77-4384-8007-12f13eddd337",
   "viewAttributes": [
     "name",
