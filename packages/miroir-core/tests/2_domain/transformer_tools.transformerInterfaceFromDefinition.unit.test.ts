@@ -98,7 +98,7 @@ describe("transformerInterfaceFromDefinition", () => {
   };
 
   it("should return a valid JzodElement for runtime target", () => {
-    const result = transformerInterfaceFromDefinition(transformerDefinition, "runtime", runtimeReferenceMap);
+    const result = transformerInterfaceFromDefinition(transformerDefinition, "buildPlusRuntime", runtimeReferenceMap);
     // console.log("result", JSON.stringify(result, null, 2));
     expect(result).toEqual({
       type: "object",
@@ -116,7 +116,7 @@ describe("transformerInterfaceFromDefinition", () => {
           definition: {
             eager: true,
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "transformerForBuildPlusRuntime_Abstract",
+            relativePath: "transformerForBuildPlusRuntime_optional_Abstract",
           },
           context: {},
         },
@@ -130,7 +130,7 @@ describe("transformerInterfaceFromDefinition", () => {
           type: "schemaReference",
           optional: true,
           definition: {
-            relativePath: "transformerForRuntime",
+            relativePath: "transformerForBuildPlusRuntime",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           },
           context: {},
@@ -146,13 +146,13 @@ describe("transformerInterfaceFromDefinition", () => {
               attributeKey: {
                 type: "schemaReference",
                 definition: {
-                  relativePath: "transformerForRuntime",
+                  relativePath: "transformerForBuildPlusRuntime",
                 },
               },
               attributeValue: {
                 type: "schemaReference",
                 definition: {
-                  relativePath: "transformerForRuntime",
+                  relativePath: "transformerForBuildPlusRuntime",
                 },
               },
             },

@@ -12,6 +12,7 @@ import type {
 import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
+import { getInnermostTypeCheckError } from "../../../src/1_core/jzod/mlsTypeCheckError";
 
 import { miroirFundamentalJzodSchemaUuid } from '../../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema';
 
@@ -19,6 +20,7 @@ import { KeyMapEntry } from '../../../dist';
 import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
 import { MiroirActivityTracker } from '../../../src/3_controllers/MiroirActivityTracker';
 import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../../src/4_services/TestTools';
+import { log } from 'console';
 
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
@@ -39,6 +41,61 @@ const testSuiteName = "transformers.unit.test";
 // Skip this test when running resolveConditionalSchema pattern
 const shouldSkip = filePattern.includes('resolveConditionalSchema');
 
+const extradisplayAttributes = {
+  hidden: {
+    definition: [
+      {
+        type: "boolean",
+      },
+      {
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "transformerForBuildPlusRuntime",
+        },
+        type: "schemaReference",
+      },
+    ],
+    discriminator: "transformerType",
+    optional: true,
+    type: "union",
+  },
+  objectAttributesNoIndent: {
+    optional: true,
+    type: "boolean",
+  },
+  objectHideDeleteButton: {
+    optional: true,
+    type: "boolean",
+  },
+  objectHideOptionalButton: {
+    optional: true,
+    type: "boolean",
+  },
+  objectOrArrayWithoutFrame: {
+    optional: true,
+    type: "boolean",
+  },
+  objectUuidAttributeLabelPosition: {
+    definition: ["left", "stacked", "hidden"],
+    optional: true,
+    type: "enum",
+  },
+  objectWithoutHeader: {
+    optional: true,
+    type: "boolean",
+  },
+  uuid: {
+    optional: true,
+    type: "object",
+    definition: {
+      selector: {
+        definition: ["portalSelector", "muiSelector"],
+        optional: true,
+        type: "enum",
+      },
+    },
+  },
+};
 // // ##################################################################################################
 // export const transformerTestSuite_jzodTypeCheck: TransformerTestSuite = {
 //   transformerTestType: "transformerTestSuite",
@@ -142,12 +199,15 @@ function testResolve(
     expect(testResult, testId).toEqual(expectedResult);
   }
   // console.log("test", testId, "has result", testResult, );
-  expect(testResult.status, testId).toEqual("ok");
   if (testResult.status !== "ok") { // defensive code, never happens
-    throw new Error(
-      `Test ${testId} failed with status ${testResult.status}: ${JSON.stringify(testResult.error)}`
-    );
+    console.log("test", testId, "failed with status", testResult.status, "and error", JSON.stringify(getInnermostTypeCheckError(testResult), null, 2));
+    // throw new Error(
+    //   `Test ${testId} failed with status ${testResult.status}: ${JSON.stringify(testResult.error)}`
+    // );
+    expect(testResult.status, testId).toEqual("ok"); // will always fail
+    return;
   }
+  expect(testResult.status, testId).toEqual("ok");
   console.log("test", testId, "has resolvedSchema", JSON.stringify(testResult.resolvedSchema, replacer, 2));
   // if (ignoreResolvedSchemaTag) {
   //   if (testResult.resolvedSchema.tag) delete testResult.resolvedSchema.tag;
@@ -4344,9 +4404,62 @@ const tests: { [k: string]: testFormat } = {
                       type: "string",
                       optional: true,
                     },
+                    hidden: {
+                      definition: [
+                        {
+                          type: "boolean",
+                        },
+                        {
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "transformerForBuildPlusRuntime",
+                          },
+                          type: "schemaReference",
+                        },
+                      ],
+                      discriminator: "transformerType",
+                      optional: true,
+                      type: "union",
+                    },
+                    objectAttributesNoIndent: {
+                      optional: true,
+                      type: "boolean",
+                    },
+                    objectHideDeleteButton: {
+                      optional: true,
+                      type: "boolean",
+                    },
+                    objectHideOptionalButton: {
+                      optional: true,
+                      type: "boolean",
+                    },
+                    objectOrArrayWithoutFrame: {
+                      optional: true,
+                      type: "boolean",
+                    },
+                    objectUuidAttributeLabelPosition: {
+                      definition: ["left", "stacked", "hidden"],
+                      optional: true,
+                      type: "enum",
+                    },
+                    objectWithoutHeader: {
+                      optional: true,
+                      type: "boolean",
+                    },
                     unfoldSubLevels: {
                       type: "number",
                       optional: true,
+                    },
+                    uuid: {
+                      definition: {
+                        selector: {
+                          definition: ["portalSelector", "muiSelector"],
+                          optional: true,
+                          type: "enum",
+                        },
+                      },
+                      optional: true,
+                      type: "object",
                     },
                   },
                 },
@@ -4358,10 +4471,10 @@ const tests: { [k: string]: testFormat } = {
     },
     expectedKeyMap: undefined,
   },
-  //     // // ##########################################################################################
-  //     // // ################################# JZOD SCHEMAS ###########################################
-  //     // // ##########################################################################################
-  //     // JzodSchema: literal
+      // // ##########################################################################################
+      // // ################################# JZOD SCHEMAS ###########################################
+      // // ##########################################################################################
+      // JzodSchema: literal
   test300: {
     testSchema: {
       type: "schemaReference",
@@ -4619,9 +4732,62 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
+                  hidden: {
+                    definition: [
+                      {
+                        type: "boolean",
+                      },
+                      {
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "transformerForBuildPlusRuntime",
+                        },
+                        type: "schemaReference",
+                      },
+                    ],
+                    discriminator: "transformerType",
+                    optional: true,
+                    type: "union",
+                  },
+                  objectAttributesNoIndent: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectHideDeleteButton: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectHideOptionalButton: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectOrArrayWithoutFrame: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectUuidAttributeLabelPosition: {
+                    definition: ["left", "stacked", "hidden"],
+                    optional: true,
+                    type: "enum",
+                  },
+                  objectWithoutHeader: {
+                    optional: true,
+                    type: "boolean",
+                  },
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
+                  },
+                  uuid: {
+                    optional: true,
+                    type: "object",
+                    definition: {
+                      selector: {
+                        definition: ["portalSelector", "muiSelector"],
+                        optional: true,
+                        type: "enum",
+                      },
+                    },
                   },
                 },
               },
@@ -4888,9 +5054,62 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
+                  hidden: {
+                    definition: [
+                      {
+                        type: "boolean",
+                      },
+                      {
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "transformerForBuildPlusRuntime",
+                        },
+                        type: "schemaReference",
+                      },
+                    ],
+                    discriminator: "transformerType",
+                    optional: true,
+                    type: "union",
+                  },
+                  objectAttributesNoIndent: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectHideDeleteButton: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectHideOptionalButton: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectOrArrayWithoutFrame: {
+                    optional: true,
+                    type: "boolean",
+                  },
+                  objectUuidAttributeLabelPosition: {
+                    definition: ["left", "stacked", "hidden"],
+                    optional: true,
+                    type: "enum",
+                  },
+                  objectWithoutHeader: {
+                    optional: true,
+                    type: "boolean",
+                  },
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
+                  },
+                  uuid: {
+                    optional: true,
+                    type: "object",
+                    definition: {
+                      selector: {
+                        definition: ["portalSelector", "muiSelector"],
+                        optional: true,
+                        type: "enum",
+                      },
+                    },
                   },
                 },
               },
@@ -5167,6 +5386,59 @@ const tests: { [k: string]: testFormat } = {
                           displayedAttributeValueWhenFolded: {
                             type: "string",
                             optional: true,
+                          },
+                          hidden: {
+                            definition: [
+                              {
+                                type: "boolean",
+                              },
+                              {
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "transformerForBuildPlusRuntime",
+                                },
+                                type: "schemaReference",
+                              },
+                            ],
+                            discriminator: "transformerType",
+                            optional: true,
+                            type: "union",
+                          },
+                          objectAttributesNoIndent: {
+                            optional: true,
+                            type: "boolean",
+                          },
+                          objectHideDeleteButton: {
+                            optional: true,
+                            type: "boolean",
+                          },
+                          objectHideOptionalButton: {
+                            optional: true,
+                            type: "boolean",
+                          },
+                          objectOrArrayWithoutFrame: {
+                            optional: true,
+                            type: "boolean",
+                          },
+                          objectUuidAttributeLabelPosition: {
+                            definition: ["left", "stacked", "hidden"],
+                            optional: true,
+                            type: "enum",
+                          },
+                          objectWithoutHeader: {
+                            optional: true,
+                            type: "boolean",
+                          },
+                          uuid: {
+                            optional: true,
+                            type: "object",
+                            definition: {
+                              selector: {
+                                definition: ["portalSelector", "muiSelector"],
+                                optional: true,
+                                type: "enum",
+                              },
+                            },
                           },
                           unfoldSubLevels: {
                             type: "number",
@@ -5467,6 +5739,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
+                  ...extradisplayAttributes as any,
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
@@ -5757,6 +6030,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "string",
                             optional: true,
                           },
+                          ...extradisplayAttributes as any,
                           unfoldSubLevels: {
                             type: "number",
                             optional: true,
@@ -6017,6 +6291,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
+                  ...extradisplayAttributes as any,
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
@@ -6387,6 +6662,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
+                  ...extradisplayAttributes as any,
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
@@ -7461,6 +7737,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "string",
                                 optional: true,
                               },
+                              ...extradisplayAttributes as any,
                               unfoldSubLevels: {
                                 type: "number",
                                 optional: true,
@@ -7481,6 +7758,7 @@ const tests: { [k: string]: testFormat } = {
                     },
                     extend: {
                       type: "array",
+                       discriminator: "type", // TODO: NO discriminator in arrays
                       optional: true,
                       definition: {
                         type: "object",
@@ -7745,6 +8023,7 @@ const tests: { [k: string]: testFormat } = {
                                       type: "string",
                                       optional: true,
                                     },
+                                    ...extradisplayAttributes as any,
                                     unfoldSubLevels: {
                                       type: "number",
                                       optional: true,
@@ -7756,7 +8035,7 @@ const tests: { [k: string]: testFormat } = {
                           },
                         },
                       },
-                    },
+                    } as any,
                     definition: {
                       type: "object",
                       definition: {
@@ -8049,6 +8328,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "string",
                                         optional: true,
                                       },
+                                      ...extradisplayAttributes as any,
                                       unfoldSubLevels: {
                                         type: "number",
                                         optional: true,
@@ -8308,6 +8588,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "string",
                                         optional: true,
                                       },
+                                      ...extradisplayAttributes as any,
                                       unfoldSubLevels: {
                                         type: "number",
                                         optional: true,
@@ -8579,6 +8860,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "string",
                                         optional: true,
                                       },
+                                      ...extradisplayAttributes as any,
                                       unfoldSubLevels: {
                                         type: "number",
                                         optional: true,
@@ -8889,6 +9171,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "string",
                             optional: true,
                           },
+                          ...extradisplayAttributes as any,
                           unfoldSubLevels: {
                             type: "number",
                             optional: true,
@@ -8922,401 +9205,215 @@ const tests: { [k: string]: testFormat } = {
     },
     expectedKeyMap: undefined,
   },
-  //     // ##########################################################################################
-  //     // ########################### QUERIES ######################################
-  //     // ##########################################################################################
-  //     test700: {
-  //       testSchema: {
-  //         type: "schemaReference",
-  //         definition: {
-  //           absolutePath: castMiroirFundamentalJzodSchema.uuid,
-  //           relativePath: "boxedQueryWithExtractorCombinerTransformer",
-  //         },
-  //       },
-  //       testValueObject: {
-  //         queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //         deploymentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-  //         // deploymentUuid: {
-  //         //   transformerType: "getFromParameters",
-  //         //   interpolation: "build",
-  //         //   referenceName: "testDeploymentUuid",
-  //         // },
-  //         pageParams: {},
-  //         queryParams: {},
-  //         contextResults: {},
-  //         extractors: {
-  //           menuList: {
-  //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
-  //             applicationSection: "model",
-  //             parentName: "Menu",
-  //             // parentName: {
-  //             //   transformerType: "getFromParameters",
-  //             //   interpolation: "build",
-  //             //   referencePath: ["entityMenu", "name"],
-  //             // },
-  //             parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-  //             // parentUuid: "0000000-0000-0000-0000-000000000000",
-  //             // parentUuid: {
-  //             //   transformerType: "getFromParameters",
-  //             //   interpolation: "build",
-  //             //   referencePath: ["entityMenu", "uuid"],
-  //             // },
-  //           },
-  //         },
-  //         runtimeTransformers: {
-  //           menu: {
-  //             transformerType: "pickFromList",
-  //             interpolation: "runtime",
-  //             applyTo: {
-  //               referenceType: "referencedTransformer",
-  //               reference: {
-  //                 transformerType: "getFromContext",
-  //                 interpolation: "runtime",
-  //                 referenceName: "menuList",
-  //               },
-  //             },
-  //             index: 0,
-  //           },
-  //           menuItem: {
-  //             transformerType: "createObject",
-  //             interpolation: "runtime",
-  //             definition: {
-  //               reportUuid: {
-  //                 transformerType: "getFromParameters",
-  //                 interpolation: "build",
-  //                 referenceName: "createEntity_newEntityListReportUuid",
-  //               },
-  //               label: {
-  //                 transformerType: "mustacheStringTemplate",
-  //                 interpolation: "build",
-  //                 definition: "List of {{newEntityName}}s",
-  //               },
-  //               section: "data",
-  //               selfApplication: {
-  //                 transformerType: "getFromParameters",
-  //                 interpolation: "build",
-  //                 referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-  //               },
-  //               icon: "local_drink",
-  //             },
-  //           },
-  //           updatedMenu: {
-  //             transformerType: "transformer_menu_addItem",
-  //             interpolation: "runtime",
-  //             menuItemReference: {
-  //               transformerType: "getFromContext",
-  //               interpolation: "runtime",
-  //               referenceName: "menuItem",
-  //             },
-  //             menuReference: {
-  //               transformerType: "getFromContext",
-  //               interpolation: "runtime",
-  //               referenceName: "menu",
-  //             },
-  //             menuSectionItemInsertionIndex: -1,
-  //           },
-  //         },
-  //       },
-  //       expectedResolvedSchema: {
-  //   "type": "object",
-  //   "definition": {
-  //     "transformerType": {
-  //       "type": "literal",
-  //       "definition": "createObject"
-  //     },
-  //     "interpolation": {
-  //       "type": "enum",
-  //       "optional": true,
-  //       "tag": {
-  //         "value": {
-  //           "id": 1,
-  //           "defaultLabel": "Interpolation",
-  //           "editable": true,
-  //           "initializeTo": {
-  //             "initializeToType": "value",
-  //             "value": "build"
-  //           }
-  //         }
-  //       },
-  //       "definition": [
-  //         "build",
-  //         "runtime"
-  //       ]
-  //     },
-  //     "definition": {
-  //       "type": "object",
-  //       "definition": {
-  //         "reportUuid": {
-  //           "type": "object",
-  //           "definition": {
-  //             "transformerType": {
-  //               "type": "literal",
-  //               "definition": "getFromParameters"
-  //             },
-  //             "interpolation": {
-  //               "type": "enum",
-  //               "optional": true,
-  //               "tag": {
-  //                 "value": {
-  //                   "id": 1,
-  //                   "defaultLabel": "Interpolation",
-  //                   "editable": true,
-  //                   "initializeTo": {
-  //                     "initializeToType": "value",
-  //                     "value": "build"
-  //                   }
-  //                 }
-  //               },
-  //               "definition": [
-  //                 "build",
-  //                 "runtime"
-  //               ]
-  //             },
-  //             "referenceName": {
-  //               "optional": true,
-  //               "type": "string"
-  //             }
-  //           },
-  //           "tag": {
-  //             "value": {
-  //               "editable": true,
-  //               "editorButton": {
-  //                 "label": "Apply Transformer to a List",
-  //                 "transformer": {
-  //                   "transformerType": "createObject",
-  //                   "definition": {
-  //                     "transformerType": "mapList",
-  //                     "elementTransformer": {
-  //                       "transformerType": "getFromContext",
-  //                       "referenceName": "originTransformer"
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         },
-  //         "label": {
-  //           "type": "object",
-  //           "definition": {
-  //             "transformerType": {
-  //               "type": "literal",
-  //               "definition": "mustacheStringTemplate"
-  //             },
-  //             "interpolation": {
-  //               "type": "enum",
-  //               "optional": true,
-  //               "tag": {
-  //                 "value": {
-  //                   "id": 1,
-  //                   "defaultLabel": "Interpolation",
-  //                   "editable": true,
-  //                   "initializeTo": {
-  //                     "initializeToType": "value",
-  //                     "value": "build"
-  //                   }
-  //                 }
-  //               },
-  //               "definition": [
-  //                 "build",
-  //                 "runtime"
-  //               ]
-  //             },
-  //             "definition": {
-  //               "type": "string"
-  //             }
-  //           },
-  //           "tag": {
-  //             "value": {
-  //               "editable": true,
-  //               "editorButton": {
-  //                 "label": "Apply Transformer to a List",
-  //                 "transformer": {
-  //                   "transformerType": "createObject",
-  //                   "definition": {
-  //                     "transformerType": "mapList",
-  //                     "elementTransformer": {
-  //                       "transformerType": "getFromContext",
-  //                       "referenceName": "originTransformer"
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         },
-  //         "section": {
-  //           "type": "string"
-  //         },
-  //         "selfApplication": {
-  //           "type": "object",
-  //           "definition": {
-  //             "transformerType": {
-  //               "type": "literal",
-  //               "definition": "getFromParameters"
-  //             },
-  //             "interpolation": {
-  //               "type": "enum",
-  //               "optional": true,
-  //               "tag": {
-  //                 "value": {
-  //                   "id": 1,
-  //                   "defaultLabel": "Interpolation",
-  //                   "editable": true,
-  //                   "initializeTo": {
-  //                     "initializeToType": "value",
-  //                     "value": "build"
-  //                   }
-  //                 }
-  //               },
-  //               "definition": [
-  //                 "build",
-  //                 "runtime"
-  //               ]
-  //             },
-  //             "referencePath": {
-  //               "optional": true,
-  //               "type": "tuple",
-  //               "definition": [
-  //                 {
-  //                   "type": "string"
-  //                 },
-  //                 {
-  //                   "type": "string"
-  //                 }
-  //               ]
-  //             }
-  //           },
-  //           "tag": {
-  //             "value": {
-  //               "editable": true,
-  //               "editorButton": {
-  //                 "label": "Apply Transformer to a List",
-  //                 "transformer": {
-  //                   "transformerType": "createObject",
-  //                   "definition": {
-  //                     "transformerType": "mapList",
-  //                     "elementTransformer": {
-  //                       "transformerType": "getFromContext",
-  //                       "referenceName": "originTransformer"
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         },
-  //         "icon": {
-  //           "type": "string"
-  //         }
-  //       }
-  //     }
-  //   },
-  //   "tag": {
-  //     "value": {
-  //       "editable": true,
-  //       "editorButton": {
-  //         "label": "Apply Transformer to a List",
-  //         "transformer": {
-  //           "transformerType": "createObject",
-  //           "definition": {
-  //             "transformerType": "mapList",
-  //             "elementTransformer": {
-  //               "transformerType": "getFromContext",
-  //               "referenceName": "originTransformer"
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // },
-  //       expectedKeyMap: undefined,
-  //     },
   // ##########################################################################################
-  // ################################## ACTIONS ###############################################
+  // ########################### QUERIES ######################################
   // ##########################################################################################
-  test800: {
+  test700: {
     testSchema: {
       type: "schemaReference",
       definition: {
         absolutePath: castMiroirFundamentalJzodSchema.uuid,
-        relativePath: "buildPlusRuntimeCompositeAction",
+        relativePath: "boxedQueryWithExtractorCombinerTransformer",
       },
     },
     testValueObject: {
-      actionType: "compositeActionSequence",
-      actionLabel: "test",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-      payload: {
-        templates: {},
-        definition: [
-          {
-            actionType: "createEntity",
-            actionLabel: "createEntity",
-            deploymentUuid: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      deploymentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+      // deploymentUuid: {
+      //   transformerType: "getFromParameters",
+      //   interpolation: "build",
+      //   referenceName: "testDeploymentUuid",
+      // },
+      pageParams: {},
+      queryParams: {},
+      contextResults: {},
+      extractors: {
+        menuList: {
+          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          applicationSection: "model",
+          parentName: "Menu",
+          // parentName: {
+          //   transformerType: "getFromParameters",
+          //   interpolation: "build",
+          //   referencePath: ["entityMenu", "name"],
+          // },
+          parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+          // parentUuid: "0000000-0000-0000-0000-000000000000",
+          // parentUuid: {
+          //   transformerType: "getFromParameters",
+          //   interpolation: "build",
+          //   referencePath: ["entityMenu", "uuid"],
+          // },
+        },
+      },
+      runtimeTransformers: {
+        menu: {
+          transformerType: "pickFromList",
+          interpolation: "runtime",
+          applyTo: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "menuList",
+          },
+          index: 0,
+        },
+        menuItem: {
+          transformerType: "createObject",
+          interpolation: "runtime",
+          definition: {
+            reportUuid: {
               transformerType: "getFromParameters",
               interpolation: "build",
-              referenceName: "testDeploymentUuid",
+              referenceName: "createEntity_newEntityListReportUuid",
             },
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              entities: [
-                {
-                  entity: {
-                    transformerType: "getFromParameters",
-                    interpolation: "build",
-                    referenceName: "createEntity_newEntity",
-                  },
-                  entityDefinition: {
-                    transformerType: "getFromParameters",
-                    interpolation: "build",
-                    referenceName: "createEntity_newEntityDefinition",
-                  },
-                },
-              ],
+            label: {
+              transformerType: "mustacheStringTemplate",
+              interpolation: "build",
+              definition: "List of {{newEntityName}}s",
             },
+            section: "data",
+            selfApplication: {
+              transformerType: "getFromParameters",
+              interpolation: "build",
+              referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+            },
+            icon: "local_drink",
           },
-        ],
+        },
+        updatedMenu: {
+          transformerType: "transformer_menu_addItem",
+          interpolation: "runtime",
+          menuItemReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "menuItem",
+          },
+          menuReference: {
+            transformerType: "getFromContext",
+            interpolation: "runtime",
+            referenceName: "menu",
+          },
+          menuSectionItemInsertionIndex: -1,
+        },
       },
     },
     expectedResolvedSchema: {
       type: "object",
       definition: {
-        actionType: {
+        queryType: {
           type: "literal",
-          definition: "compositeActionSequence",
+          definition: "boxedQueryWithExtractorCombinerTransformer",
         },
-        actionLabel: {
-          type: "string",
-          optional: true,
+        deploymentUuid: {
+          type: "uuid",
+          tag: {
+            value: {
+              id: 1,
+              canBeTemplate: true,
+              defaultLabel: "Uuid",
+              editable: false,
+            },
+          },
         },
-        templates: {
+        pageParams: {
           type: "object",
-          optional: true,
           definition: {},
         },
-        definition: {
-          type: "tuple",
-          definition: [
-            {
+        queryParams: {
+          type: "object",
+          definition: {},
+        },
+        contextResults: {
+          type: "object",
+          definition: {},
+        },
+        extractors: {
+          type: "object",
+          definition: {
+            menuList: {
               type: "object",
               definition: {
-                actionType: {
+                extractorOrCombinerType: {
                   type: "literal",
-                  definition: "createEntity",
+                  definition: "extractorByEntityReturningObjectList",
                 },
-                actionLabel: {
+                applicationSection: {
+                  type: "enum",
+                  tag: {
+                    value: {
+                      defaultLabel: "Application Section",
+                      initializeTo: {
+                        initializeToType: "value",
+                        value: "data",
+                      },
+                    },
+                  },
+                  definition: ["model", "data"],
+                },
+                parentName: {
                   type: "string",
                   optional: true,
+                  tag: {
+                    value: {
+                      id: 3,
+                      canBeTemplate: true,
+                      defaultLabel: "Parent Name",
+                      editable: false,
+                    },
+                  },
                 },
-                deploymentUuid: {
+                parentUuid: {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 4,
+                      editable: false,
+                      canBeTemplate: true,
+                      defaultLabel: "Parent Uuid",
+                      targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      selectorParams: {
+                        targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        runtimeTransformers: {
+          type: "object",
+          optional: true,
+          definition: {
+            menu: {
+              type: "object",
+              definition: {
+                transformerType: {
+                  type: "literal",
+                  definition: "pickFromList",
+                },
+                interpolation: {
+                  type: "enum",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 1,
+                      defaultLabel: "Interpolation",
+                      editable: true,
+                      initializeTo: {
+                        initializeToType: "value",
+                        value: "build",
+                      },
+                    },
+                  },
+                  definition: ["build", "runtime"],
+                },
+                applyTo: {
                   type: "object",
                   definition: {
                     transformerType: {
                       type: "literal",
-                      definition: "getFromParameters",
+                      definition: "getFromContext",
                     },
                     interpolation: {
                       type: "enum",
@@ -9358,122 +9455,637 @@ const tests: { [k: string]: testFormat } = {
                     },
                   },
                 },
-                endpoint: {
-                  type: "literal",
-                  definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                index: {
+                  type: "number",
                 },
-                payload: {
-                  type: "object",
-                  definition: {
-                    entities: {
-                      type: "tuple",
-                      definition: [
-                        {
-                          type: "object",
-                          definition: {
-                            entity: {
-                              type: "object",
-                              definition: {
-                                transformerType: {
-                                  type: "literal",
-                                  definition: "getFromParameters",
-                                },
-                                interpolation: {
-                                  type: "enum",
-                                  optional: true,
-                                  tag: {
-                                    value: {
-                                      id: 1,
-                                      defaultLabel: "Interpolation",
-                                      editable: true,
-                                      initializeTo: {
-                                        initializeToType: "value",
-                                        value: "build",
-                                      },
-                                    },
-                                  },
-                                  definition: ["build", "runtime"],
-                                },
-                                referenceName: {
-                                  optional: true,
-                                  type: "string",
-                                },
-                              },
-                              tag: {
-                                value: {
-                                  editable: true,
-                                  editorButton: {
-                                    label: "Apply Transformer to a List",
-                                    transformer: {
-                                      transformerType: "createObject",
-                                      definition: {
-                                        transformerType: "mapList",
-                                        elementTransformer: {
-                                          transformerType: "getFromContext",
-                                          referenceName: "originTransformer",
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                            entityDefinition: {
-                              type: "object",
-                              definition: {
-                                transformerType: {
-                                  type: "literal",
-                                  definition: "getFromParameters",
-                                },
-                                interpolation: {
-                                  type: "enum",
-                                  optional: true,
-                                  tag: {
-                                    value: {
-                                      id: 1,
-                                      defaultLabel: "Interpolation",
-                                      editable: true,
-                                      initializeTo: {
-                                        initializeToType: "value",
-                                        value: "build",
-                                      },
-                                    },
-                                  },
-                                  definition: ["build", "runtime"],
-                                },
-                                referenceName: {
-                                  optional: true,
-                                  type: "string",
-                                },
-                              },
-                              tag: {
-                                value: {
-                                  editable: true,
-                                  editorButton: {
-                                    label: "Apply Transformer to a List",
-                                    transformer: {
-                                      transformerType: "createObject",
-                                      definition: {
-                                        transformerType: "mapList",
-                                        elementTransformer: {
-                                          transformerType: "getFromContext",
-                                          referenceName: "originTransformer",
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
+              },
+              tag: {
+                value: {
+                  editable: true,
+                  editorButton: {
+                    label: "Apply Transformer to a List",
+                    transformer: {
+                      transformerType: "createObject",
+                      definition: {
+                        transformerType: "mapList",
+                        elementTransformer: {
+                          transformerType: "getFromContext",
+                          referenceName: "originTransformer",
                         },
-                      ],
+                      },
                     },
                   },
                 },
               },
             },
-          ],
+            menuItem: {
+              type: "object",
+              definition: {
+                transformerType: {
+                  type: "literal",
+                  definition: "createObject",
+                },
+                interpolation: {
+                  type: "enum",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 1,
+                      defaultLabel: "Interpolation",
+                      editable: true,
+                      initializeTo: {
+                        initializeToType: "value",
+                        value: "build",
+                      },
+                    },
+                  },
+                  definition: ["build", "runtime"],
+                },
+                definition: {
+                  type: "object",
+                  definition: {
+                    reportUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "getFromParameters",
+                        },
+                        interpolation: {
+                          type: "enum",
+                          optional: true,
+                          tag: {
+                            value: {
+                              id: 1,
+                              defaultLabel: "Interpolation",
+                              editable: true,
+                              initializeTo: {
+                                initializeToType: "value",
+                                value: "build",
+                              },
+                            },
+                          },
+                          definition: ["build", "runtime"],
+                        },
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
+                      tag: {
+                        value: {
+                          editable: true,
+                          editorButton: {
+                            label: "Apply Transformer to a List",
+                            transformer: {
+                              transformerType: "createObject",
+                              definition: {
+                                transformerType: "mapList",
+                                elementTransformer: {
+                                  transformerType: "getFromContext",
+                                  referenceName: "originTransformer",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    label: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "mustacheStringTemplate",
+                        },
+                        interpolation: {
+                          type: "enum",
+                          optional: true,
+                          tag: {
+                            value: {
+                              id: 1,
+                              defaultLabel: "Interpolation",
+                              editable: true,
+                              initializeTo: {
+                                initializeToType: "value",
+                                value: "build",
+                              },
+                            },
+                          },
+                          definition: ["build", "runtime"],
+                        },
+                        definition: {
+                          type: "string",
+                        },
+                      },
+                      tag: {
+                        value: {
+                          editable: true,
+                          editorButton: {
+                            label: "Apply Transformer to a List",
+                            transformer: {
+                              transformerType: "createObject",
+                              definition: {
+                                transformerType: "mapList",
+                                elementTransformer: {
+                                  transformerType: "getFromContext",
+                                  referenceName: "originTransformer",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    section: {
+                      type: "string",
+                    },
+                    selfApplication: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "getFromParameters",
+                        },
+                        interpolation: {
+                          type: "enum",
+                          optional: true,
+                          tag: {
+                            value: {
+                              id: 1,
+                              defaultLabel: "Interpolation",
+                              editable: true,
+                              initializeTo: {
+                                initializeToType: "value",
+                                value: "build",
+                              },
+                            },
+                          },
+                          definition: ["build", "runtime"],
+                        },
+                        referencePath: {
+                          optional: true,
+                          type: "tuple",
+                          definition: [
+                            {
+                              type: "string",
+                            },
+                            {
+                              type: "string",
+                            },
+                          ],
+                        },
+                      },
+                      tag: {
+                        value: {
+                          editable: true,
+                          editorButton: {
+                            label: "Apply Transformer to a List",
+                            transformer: {
+                              transformerType: "createObject",
+                              definition: {
+                                transformerType: "mapList",
+                                elementTransformer: {
+                                  transformerType: "getFromContext",
+                                  referenceName: "originTransformer",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    icon: {
+                      type: "string",
+                    },
+                  },
+                },
+              },
+              tag: {
+                value: {
+                  editable: true,
+                  editorButton: {
+                    label: "Apply Transformer to a List",
+                    transformer: {
+                      transformerType: "createObject",
+                      definition: {
+                        transformerType: "mapList",
+                        elementTransformer: {
+                          transformerType: "getFromContext",
+                          referenceName: "originTransformer",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            updatedMenu: {
+              type: "object",
+              definition: {
+                transformerType: {
+                  type: "literal",
+                  definition: "transformer_menu_addItem",
+                },
+                interpolation: {
+                  type: "enum",
+                  optional: true,
+                  tag: {
+                    value: {
+                      id: 1,
+                      defaultLabel: "Interpolation",
+                      editable: true,
+                      initializeTo: {
+                        initializeToType: "value",
+                        value: "build",
+                      },
+                    },
+                  },
+                  definition: ["build", "runtime"],
+                },
+                menuItemReference: {
+                  type: "object",
+                  definition: {
+                    transformerType: {
+                      type: "literal",
+                      definition: "getFromContext",
+                    },
+                    interpolation: {
+                      type: "enum",
+                      optional: true,
+                      tag: {
+                        value: {
+                          id: 1,
+                          defaultLabel: "Interpolation",
+                          editable: true,
+                          initializeTo: {
+                            initializeToType: "value",
+                            value: "build",
+                          },
+                        },
+                      },
+                      definition: ["build", "runtime"],
+                    },
+                    referenceName: {
+                      optional: true,
+                      type: "string",
+                    },
+                  },
+                  tag: {
+                    value: {
+                      editable: true,
+                      editorButton: {
+                        label: "Apply Transformer to a List",
+                        transformer: {
+                          transformerType: "createObject",
+                          definition: {
+                            transformerType: "mapList",
+                            elementTransformer: {
+                              transformerType: "getFromContext",
+                              referenceName: "originTransformer",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                menuReference: {
+                  type: "object",
+                  definition: {
+                    transformerType: {
+                      type: "literal",
+                      definition: "getFromContext",
+                    },
+                    interpolation: {
+                      type: "enum",
+                      optional: true,
+                      tag: {
+                        value: {
+                          id: 1,
+                          defaultLabel: "Interpolation",
+                          editable: true,
+                          initializeTo: {
+                            initializeToType: "value",
+                            value: "build",
+                          },
+                        },
+                      },
+                      definition: ["build", "runtime"],
+                    },
+                    referenceName: {
+                      optional: true,
+                      type: "string",
+                    },
+                  },
+                  tag: {
+                    value: {
+                      editable: true,
+                      editorButton: {
+                        label: "Apply Transformer to a List",
+                        transformer: {
+                          transformerType: "createObject",
+                          definition: {
+                            transformerType: "mapList",
+                            elementTransformer: {
+                              transformerType: "getFromContext",
+                              referenceName: "originTransformer",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                menuSectionItemInsertionIndex: {
+                  type: "number",
+                  optional: true,
+                },
+              },
+              tag: {
+                value: {
+                  editable: true,
+                  editorButton: {
+                    label: "Apply Transformer to a List",
+                    transformer: {
+                      transformerType: "createObject",
+                      definition: {
+                        transformerType: "mapList",
+                        elementTransformer: {
+                          transformerType: "getFromContext",
+                          referenceName: "originTransformer",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    expectedKeyMap: undefined,
+  },
+  // ##########################################################################################
+  // ################################## ACTIONS ###############################################
+  // ##########################################################################################
+  test800: {
+    testSchema: {
+      type: "schemaReference",
+      definition: {
+        absolutePath: castMiroirFundamentalJzodSchema.uuid,
+        relativePath: "buildPlusRuntimeCompositeAction",
+      },
+    },
+    testValueObject: {
+      actionType: "compositeActionSequence",
+      actionLabel: "test",
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: {
+        templates: {},
+        definition: [
+          {
+            actionType: "createEntity",
+            actionLabel: "createEntity",
+            deploymentUuid: {
+              transformerType: "getFromParameters",
+              interpolation: "build",
+              referenceName: "testDeploymentUuid",
+            },
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              entities: [
+                {
+                  entity: {
+                    transformerType: "getFromParameters",
+                    interpolation: "build",
+                    referenceName: "createEntity_newEntity",
+                  },
+                  entityDefinition: {
+                    transformerType: "getFromParameters",
+                    interpolation: "build",
+                    referenceName: "createEntity_newEntityDefinition",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    expectedResolvedSchema: {
+      type: "object",
+      definition: {
+        actionType: {
+          type: "literal",
+          definition: "compositeActionSequence",
+        },
+        actionLabel: {
+          type: "string",
+          optional: true,
+        },
+        application: {
+          type: "literal",
+          definition: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        },
+        endpoint: {
+          type: "literal",
+          definition: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        },
+        payload: {
+          type: "object",
+          definition: {
+            templates: {
+              type: "object",
+              optional: true,
+              definition: {},
+            },
+            definition: {
+              type: "tuple",
+              definition: [
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "createEntity",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    deploymentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "getFromParameters",
+                        },
+                        interpolation: {
+                          type: "enum",
+                          optional: true,
+                          tag: {
+                            value: {
+                              id: 1,
+                              defaultLabel: "Interpolation",
+                              editable: true,
+                              initializeTo: {
+                                initializeToType: "value",
+                                value: "build",
+                              },
+                            },
+                          },
+                          definition: ["build", "runtime"],
+                        },
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
+                      tag: {
+                        value: {
+                          editable: true,
+                          editorButton: {
+                            label: "Apply Transformer to a List",
+                            transformer: {
+                              transformerType: "createObject",
+                              definition: {
+                                transformerType: "mapList",
+                                elementTransformer: {
+                                  transformerType: "getFromContext",
+                                  referenceName: "originTransformer",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    application: {
+                      type: "literal",
+                      definition: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                    },
+                    endpoint: {
+                      type: "literal",
+                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    },
+                    payload: {
+                      type: "object",
+                      definition: {
+                        entities: {
+                          type: "tuple",
+                          definition: [
+                            {
+                              type: "object",
+                              definition: {
+                                entity: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "getFromParameters",
+                                    },
+                                    interpolation: {
+                                      type: "enum",
+                                      optional: true,
+                                      tag: {
+                                        value: {
+                                          id: 1,
+                                          defaultLabel: "Interpolation",
+                                          editable: true,
+                                          initializeTo: {
+                                            initializeToType: "value",
+                                            value: "build",
+                                          },
+                                        },
+                                      },
+                                      definition: ["build", "runtime"],
+                                    },
+                                    referenceName: {
+                                      optional: true,
+                                      type: "string",
+                                    },
+                                  },
+                                  tag: {
+                                    value: {
+                                      editable: true,
+                                      editorButton: {
+                                        label: "Apply Transformer to a List",
+                                        transformer: {
+                                          transformerType: "createObject",
+                                          definition: {
+                                            transformerType: "mapList",
+                                            elementTransformer: {
+                                              transformerType: "getFromContext",
+                                              referenceName: "originTransformer",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                entityDefinition: {
+                                  type: "object",
+                                  definition: {
+                                    transformerType: {
+                                      type: "literal",
+                                      definition: "getFromParameters",
+                                    },
+                                    interpolation: {
+                                      type: "enum",
+                                      optional: true,
+                                      tag: {
+                                        value: {
+                                          id: 1,
+                                          defaultLabel: "Interpolation",
+                                          editable: true,
+                                          initializeTo: {
+                                            initializeToType: "value",
+                                            value: "build",
+                                          },
+                                        },
+                                      },
+                                      definition: ["build", "runtime"],
+                                    },
+                                    referenceName: {
+                                      optional: true,
+                                      type: "string",
+                                    },
+                                  },
+                                  tag: {
+                                    value: {
+                                      editable: true,
+                                      editorButton: {
+                                        label: "Apply Transformer to a List",
+                                        transformer: {
+                                          transformerType: "createObject",
+                                          definition: {
+                                            transformerType: "mapList",
+                                            elementTransformer: {
+                                              transformerType: "getFromContext",
+                                              referenceName: "originTransformer",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
         },
       },
     },
@@ -10266,6 +10878,59 @@ const tests: { [k: string]: testFormat } = {
                                 type: "string",
                                 optional: true,
                               },
+                              hidden: {
+                                type: "union",
+                                optional: true,
+                                discriminator: "transformerType",
+                                definition: [
+                                  {
+                                    type: "boolean",
+                                  },
+                                  {
+                                    type: "schemaReference",
+                                    definition: {
+                                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      relativePath: "transformerForBuildPlusRuntime",
+                                    },
+                                  },
+                                ],
+                              },
+                              uuid: {
+                                type: "object",
+                                optional: true,
+                                definition: {
+                                  selector: {
+                                    type: "enum",
+                                    optional: true,
+                                    definition: ["portalSelector", "muiSelector"],
+                                  },
+                                },
+                              },
+                              objectUuidAttributeLabelPosition: {
+                                type: "enum",
+                                optional: true,
+                                definition: ["left", "stacked", "hidden"],
+                              },
+                              objectHideDeleteButton: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectHideOptionalButton: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectWithoutHeader: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectAttributesNoIndent: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectOrArrayWithoutFrame: {
+                                type: "boolean",
+                                optional: true,
+                              },
                               unfoldSubLevels: {
                                 type: "number",
                                 optional: true,
@@ -10629,6 +11294,59 @@ const tests: { [k: string]: testFormat } = {
                                 type: "string",
                                 optional: true,
                               },
+                              hidden: {
+                                type: "union",
+                                optional: true,
+                                discriminator: "transformerType",
+                                definition: [
+                                  {
+                                    type: "boolean",
+                                  },
+                                  {
+                                    type: "schemaReference",
+                                    definition: {
+                                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      relativePath: "transformerForBuildPlusRuntime",
+                                    },
+                                  },
+                                ],
+                              },
+                              uuid: {
+                                type: "object",
+                                optional: true,
+                                definition: {
+                                  selector: {
+                                    type: "enum",
+                                    optional: true,
+                                    definition: ["portalSelector", "muiSelector"],
+                                  },
+                                },
+                              },
+                              objectUuidAttributeLabelPosition: {
+                                type: "enum",
+                                optional: true,
+                                definition: ["left", "stacked", "hidden"],
+                              },
+                              objectHideDeleteButton: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectHideOptionalButton: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectWithoutHeader: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectAttributesNoIndent: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectOrArrayWithoutFrame: {
+                                type: "boolean",
+                                optional: true,
+                              },
                               unfoldSubLevels: {
                                 type: "number",
                                 optional: true,
@@ -10908,6 +11626,59 @@ const tests: { [k: string]: testFormat } = {
                             definition: {
                               displayedAttributeValueWhenFolded: {
                                 type: "string",
+                                optional: true,
+                              },
+                              hidden: {
+                                type: "union",
+                                optional: true,
+                                discriminator: "transformerType",
+                                definition: [
+                                  {
+                                    type: "boolean",
+                                  },
+                                  {
+                                    type: "schemaReference",
+                                    definition: {
+                                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      relativePath: "transformerForBuildPlusRuntime",
+                                    },
+                                  },
+                                ],
+                              },
+                              uuid: {
+                                type: "object",
+                                optional: true,
+                                definition: {
+                                  selector: {
+                                    type: "enum",
+                                    optional: true,
+                                    definition: ["portalSelector", "muiSelector"],
+                                  },
+                                },
+                              },
+                              objectUuidAttributeLabelPosition: {
+                                type: "enum",
+                                optional: true,
+                                definition: ["left", "stacked", "hidden"],
+                              },
+                              objectHideDeleteButton: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectHideOptionalButton: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectWithoutHeader: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectAttributesNoIndent: {
+                                type: "boolean",
+                                optional: true,
+                              },
+                              objectOrArrayWithoutFrame: {
+                                type: "boolean",
                                 optional: true,
                               },
                               unfoldSubLevels: {

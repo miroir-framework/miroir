@@ -11,6 +11,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestSuiteTemplate")
 ).then((logger: LoggerInterface) => {log = logger});
 
+// #################################################################################################
 export function resolveTestCompositeActionTemplate(
   testCompositeActionTemplate: TestCompositeActionTemplate,
   currentModelEnvironment: MiroirModelEnvironment,
@@ -19,6 +20,7 @@ export function resolveTestCompositeActionTemplate(
   resolvedTestCompositeActionDefinition: TestCompositeAction,
   resolvedCompositeActionTemplates: Record<string,any>
 } {
+  // TODO: take transformer failures in template into account
   const compositeActionTemplateResolved = resolveCompositeActionTemplate(
     testCompositeActionTemplate.compositeActionTemplate,
     currentModelEnvironment,

@@ -47,14 +47,14 @@ export function resolveCompositeActionTemplate(
         " as whole tranformer"
     );
   }
-  const localCompositeAction = compositeActionTemplate as any;
+  const localCompositeAction = compositeActionTemplate as any; // TODO: fix type
 
 
   const resolvedCompositeActionTemplates: any = {}
   // going imperatively to handle inner references
-  if (localCompositeAction.templates) {
+  if (localCompositeAction.payload.templates) {
     log.info("resolveCompositeActionTemplate resolving templates", localCompositeAction.templates);
-    for (const t of Object.entries(localCompositeAction.templates)) {
+    for (const t of Object.entries(localCompositeAction.payload.templates)) {
       const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
       // log.info(
       //   "resolveCompositeActionTemplate",
@@ -127,10 +127,10 @@ export function resolveCompositeActionTemplate(
   );
   log.info(
     "resolveCompositeActionTemplate for action", compositeActionLabel,
+    "got result resolvedCompositeActionDefinition",
+    JSON.stringify(resolvedCompositeActionDefinition, null, 2),
     "using actionParamsAndTemplates",
     JSON.stringify(Object.keys(actionParamsAndTemplates), null, 2),
-    "got result resolvedCompositeActionDefinition",
-    JSON.stringify(resolvedCompositeActionDefinition, null, 2)
   );
   if (resolvedCompositeActionDefinition instanceof TransformerFailure) {
     return new TransformerFailure({

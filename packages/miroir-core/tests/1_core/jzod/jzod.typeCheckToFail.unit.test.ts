@@ -611,6 +611,17 @@ interface testFormat {
               status: "error",
               error:
                 "jzodTypeCheck value attribute 'unknownAttribute' not found in schema definition",
+              errorOnSchemaAttributes: {
+                definition: {
+                  age: {
+                    type: "number",
+                  },
+                  name: {
+                    type: "string",
+                  },
+                },
+                type: "object",
+              } as any  ,
               rawJzodSchemaType: "object",
               valuePath: ["unknownAttribute"],
               typePath: [],

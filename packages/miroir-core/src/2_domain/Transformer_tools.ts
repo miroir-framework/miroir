@@ -46,7 +46,7 @@ export function substituteTransformerReferencesInJzodElement<T>(
 // ################################################################################################
 export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
-  target: "build" | "runtime" | "buildPlusRuntime",
+  target: "build" | "buildPlusRuntime",
   referenceMap: Record<string, string> = {},
   optionalInterpolation: boolean = false
 ): JzodElement {
