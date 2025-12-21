@@ -4471,10 +4471,80 @@ const tests: { [k: string]: testFormat } = {
     },
     expectedKeyMap: undefined,
   },
-      // // ##########################################################################################
-      // // ################################# JZOD SCHEMAS ###########################################
-      // // ##########################################################################################
-      // JzodSchema: literal
+  // union type for discriminated union with alternative discriminator
+  test240: {
+    testValueObject: [
+      { kind: "circle", radius: 10 },
+      { type: "square", sideLength: 5 },
+    ],
+    testSchema: {
+      type: "array",
+      definition: {
+        type: "union",
+        discriminator: [["kind", "type"]],
+        definition: [
+          {
+            type: "object",
+            definition: {
+              kind: {
+                type: "literal",
+                definition: "circle",
+              },
+              radius: {
+                type: "number",
+              },
+            },
+          },
+          {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "square",
+              },
+              sideLength: {
+                type: "number",
+              },
+            },
+          },
+        ],
+      },
+    },
+    expectedResolvedSchema: {
+      type: "tuple",
+      definition: [
+        {
+          type: "object",
+          definition: {
+            kind: {
+              type: "literal",
+              definition: "circle",
+            },
+            radius: {
+              type: "number",
+            },
+          },
+        },
+        {
+          type: "object",
+          definition: {
+            type: {
+              type: "literal",
+              definition: "square",
+            },
+            sideLength: {
+              type: "number",
+            },
+          },
+        },
+      ],
+    },
+    expectedKeyMap: undefined,
+  },
+  // // ##########################################################################################
+  // // ################################# JZOD SCHEMAS ###########################################
+  // // ##########################################################################################
+  // JzodSchema: literal
   test300: {
     testSchema: {
       type: "schemaReference",
@@ -4483,6 +4553,7 @@ const tests: { [k: string]: testFormat } = {
         relativePath: "jzodElement",
       },
     },
+    testValueObject: { type: "literal", definition: "myLiteral" },
     expectedResolvedSchema: {
       type: "object",
       definition: {
@@ -4796,7 +4867,6 @@ const tests: { [k: string]: testFormat } = {
         },
       },
     },
-    testValueObject: { type: "literal", definition: "myLiteral" },
     expectedKeyMap: undefined,
   },
   //     // JzodSchema: string
@@ -5739,7 +5809,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
-                  ...extradisplayAttributes as any,
+                  ...(extradisplayAttributes as any),
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
@@ -6030,7 +6100,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "string",
                             optional: true,
                           },
-                          ...extradisplayAttributes as any,
+                          ...(extradisplayAttributes as any),
                           unfoldSubLevels: {
                             type: "number",
                             optional: true,
@@ -6291,7 +6361,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
-                  ...extradisplayAttributes as any,
+                  ...(extradisplayAttributes as any),
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
@@ -6662,7 +6732,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "string",
                     optional: true,
                   },
-                  ...extradisplayAttributes as any,
+                  ...(extradisplayAttributes as any),
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
@@ -7737,7 +7807,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "string",
                                 optional: true,
                               },
-                              ...extradisplayAttributes as any,
+                              ...(extradisplayAttributes as any),
                               unfoldSubLevels: {
                                 type: "number",
                                 optional: true,
@@ -7758,7 +7828,7 @@ const tests: { [k: string]: testFormat } = {
                     },
                     extend: {
                       type: "array",
-                       discriminator: "type", // TODO: NO discriminator in arrays
+                      discriminator: "type", // TODO: NO discriminator in arrays
                       optional: true,
                       definition: {
                         type: "object",
@@ -8023,7 +8093,7 @@ const tests: { [k: string]: testFormat } = {
                                       type: "string",
                                       optional: true,
                                     },
-                                    ...extradisplayAttributes as any,
+                                    ...(extradisplayAttributes as any),
                                     unfoldSubLevels: {
                                       type: "number",
                                       optional: true,
@@ -8328,7 +8398,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "string",
                                         optional: true,
                                       },
-                                      ...extradisplayAttributes as any,
+                                      ...(extradisplayAttributes as any),
                                       unfoldSubLevels: {
                                         type: "number",
                                         optional: true,
@@ -8588,7 +8658,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "string",
                                         optional: true,
                                       },
-                                      ...extradisplayAttributes as any,
+                                      ...(extradisplayAttributes as any),
                                       unfoldSubLevels: {
                                         type: "number",
                                         optional: true,
@@ -8860,7 +8930,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "string",
                                         optional: true,
                                       },
-                                      ...extradisplayAttributes as any,
+                                      ...(extradisplayAttributes as any),
                                       unfoldSubLevels: {
                                         type: "number",
                                         optional: true,
@@ -9171,7 +9241,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "string",
                             optional: true,
                           },
-                          ...extradisplayAttributes as any,
+                          ...(extradisplayAttributes as any),
                           unfoldSubLevels: {
                             type: "number",
                             optional: true,

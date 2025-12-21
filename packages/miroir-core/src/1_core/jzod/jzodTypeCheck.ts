@@ -231,7 +231,7 @@ export function unionArrayChoices<T extends MiroirModelEnvironment> (
 // #####################################################################################################
 export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironment>(
   objectUnionChoices: JzodObject[],
-  discriminator: string | string[] | undefined,
+  discriminator: string | (string | string[])[] | undefined,
   valueObject: Record<string,any>,
   valueObjectPath: (string | number)[],
   typePath: (string | number)[], // for logging purposes only
@@ -250,7 +250,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
       objectUnionChoices,
     };
   }
-  const discriminators: string[]  = Array.isArray(discriminator)
+  const discriminators: (string | string[])[]  = Array.isArray(discriminator)
     ? discriminator
     : [discriminator];
 
@@ -298,7 +298,27 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
     return flatteningErrors[0] as SelectUnionBranchFromDiscriminatorReturnTypeError;
   }
 
-  const discriminatorValues = discriminators.map((d) => valueObject[d]);
+  const discriminatorValues: any[] = [];
+  discriminators.forEach((d) => {
+    if (Array.isArray(d)) {
+      const valuesForThisDiscriminatorArray = d.map((subD) => valueObject[subD]);
+      const nonNullValues = valuesForThisDiscriminatorArray.filter(v => v !== null && v !== undefined);
+      if (nonNullValues.length > 1) {
+        return {
+          status: "error",
+          error: "selectUnionBranchFromDiscriminator called for union-type value object with multi-part discriminator but multiple values found",
+          discriminator,
+          valuePath: valueObjectPath,
+          typePath,
+          value: valueObject,
+        }
+      }
+      discriminatorValues.push(nonNullValues[0]);
+    } else {
+      discriminatorValues.push(valueObject[d]);
+    }
+    // return valueObject[d];
+  });
 
   // Extract successful results
   const flattenedUnionChoices:JzodObject[] = flatteningResults.map(r => (r as any).result) as JzodObject[];
@@ -322,7 +342,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   //   flattenedUnionChoices
   //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
   // );
-
+  const flatDiscriminators: string [] = discriminators.flatMap(d => d);
   let i = 0;
   let chosenDiscriminator = [];
   let filteredFlattenedUnionChoices: JzodObject[] = flattenedUnionChoices;
@@ -339,12 +359,14 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
       );
     });
   } else {
-    const hasDiscriminatorValues = discriminators.some(d => valueObject[d] !== undefined);
+    const hasDiscriminatorValues = flatDiscriminators.some((d) =>
+      valueObject[d] !== undefined
+    );
     if (!hasDiscriminatorValues) {
       const choiceWithNoDiscriminator: JzodObject[] = flattenedUnionChoices.filter(
         (objectChoice: any) => // TODO: typing!
           Object.keys(objectChoice.definition).every(
-            (key) => !discriminator.includes(key) // TODO: invert loop, will be faster!
+            (key) => !flatDiscriminators.includes(key) // TODO: invert loop, will be faster!
             // (key) => objectChoice.definition[key]?.type != "literal" ||
             //   objectChoice.definition[key]?.definition == valueObject[key]
           )
@@ -369,37 +391,41 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
         };
       }
     }
-    possibleDiscriminators = flattenedUnionChoices.map((objectChoice) => {
-      const objectChoiceKeys = Object.keys(objectChoice.definition);
-      return discriminators.flatMap(
-        (discriminator) =>
-          objectChoiceKeys.includes(discriminator) &&
-          (objectChoice as any).definition[discriminator]?.type == "literal"
-            ? (objectChoice as any).definition[discriminator]?.definition
-            :(objectChoice as any).definition[discriminator]?.type == "enum"
-            ? (objectChoice as any).definition[discriminator]?.definition
-            : undefined
-        // : "NO VALUE FOR DISCRIMINATOR " + discriminator
-      );
-    });
-    // const valueObjectPathString = valueObjectPath.join(".")
+
+    // filtering possible union branches by discriminator values
     while (i < discriminators.length && filteredFlattenedUnionChoices.length > 1) {
-      const disc = discriminators[i];
+      const localDiscriminator = discriminators[i];
+      const localChosenDiscriminator = Array.isArray(localDiscriminator)
+        ? localDiscriminator.find((d) => valueObject[d] !== undefined)
+        : localDiscriminator;
+        if (!localChosenDiscriminator) { // defensive code, impossible to be here since hasDiscriminatorValues is true
+          return {
+            status: "error",
+            error: "selectUnionBranchFromDiscriminator: no discriminator value found in valueObject for multi-part discriminator " +
+              JSON.stringify(localDiscriminator),
+            discriminator,
+            valuePath: valueObjectPath,
+            typePath,
+            value: valueObject,
+            objectUnionChoices,
+            flattenedUnionChoices: filteredFlattenedUnionChoices,
+          };
+        }
       const newfilteredFlattenedUnionChoices = filteredFlattenedUnionChoices.filter(
         (a) =>{
           return (
             a.type == "object" &&
-            a.definition[disc]?.type == "literal" &&
-            (a.definition[disc] as JzodLiteral).definition == valueObject[disc]
+            a.definition[localChosenDiscriminator]?.type == "literal" &&
+            (a.definition[localChosenDiscriminator] as JzodLiteral).definition == valueObject[localChosenDiscriminator]
           ) ||
           (
             a.type == "object" &&
-            a.definition[disc]?.type == "enum" &&
-            (a.definition[disc] as JzodEnum).definition.includes(valueObject[disc])
+            a.definition[localChosenDiscriminator]?.type == "enum" &&
+            (a.definition[localChosenDiscriminator] as JzodEnum).definition.includes(valueObject[localChosenDiscriminator])
           )
         }
       );
-      chosenDiscriminator.push({discriminator: disc, value: valueObject[disc]});
+      chosenDiscriminator.push({discriminator: localChosenDiscriminator, value: valueObject[localChosenDiscriminator]});
       filteredFlattenedUnionChoices = newfilteredFlattenedUnionChoices;
       i++;
     }
@@ -419,6 +445,22 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 
 
   if (filteredFlattenedUnionChoices.length == 0) {
+    possibleDiscriminators = flattenedUnionChoices.map((objectChoice) => {
+      const objectChoiceKeys = Object.keys(objectChoice.definition);
+      return discriminators.flatMap(
+        (discriminator) =>
+          Array.isArray(discriminator)
+            ? undefined
+            : objectChoiceKeys.includes(discriminator) &&
+              (objectChoice as any).definition[discriminator]?.type == "literal"
+            ? (objectChoice as any).definition[discriminator]?.definition
+            : (objectChoice as any).definition[discriminator]?.type == "enum"
+            ? (objectChoice as any).definition[discriminator]?.definition
+            : undefined
+        // : "NO VALUE FOR DISCRIMINATOR " + discriminator
+      );
+    });
+
     return {
       status: "error",
       error: "selectUnionBranchFromDiscriminator called for union-type value object found no match with discriminator(s)=" +
@@ -485,7 +527,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 // ################################################################################################
 export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
   concreteUnrolledJzodSchemas: JzodElement[],
-  discriminator: string | string[] | undefined,
+  discriminator: string | (string | string[])[] | undefined,
   valueArray: any[],
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
@@ -538,7 +580,7 @@ export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
 // ################################################################################################
 export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>(
   concreteUnrolledJzodSchemas: JzodElement[],
-  discriminator: string | string[] | undefined,
+  discriminator: string | (string | string[])[] | undefined,
   valueObject: Record<string, any>,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],

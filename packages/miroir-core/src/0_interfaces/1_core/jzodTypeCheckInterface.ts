@@ -21,7 +21,7 @@ export interface SelectUnionBranchFromDiscriminatorReturnTypeOK {
 export interface SelectUnionBranchFromDiscriminatorReturnTypeError {
   status: "error";
   error: string;
-  discriminator?: string | string[] | undefined;
+  discriminator?: string | (string | string[])[] | undefined;
   discriminatorValues?: any;
   possibleDiscriminators?: (string | undefined)[][];
   valuePath: (string | number)[];
@@ -52,7 +52,7 @@ export interface JzodUnionResolvedTypeForArrayReturnTypeOK {
 export interface JzodUnionResolvedTypeReturnTypeError {
   status: "error";
   error: string;
-  discriminator?: string | string[] | undefined;
+  discriminator?: string | (string | string[])[] | undefined;
   valuePath: (string | number)[];
   typePath: (string | number)[];
   value?: any;

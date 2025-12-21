@@ -1405,7 +1405,18 @@
               {
                 "type": "array",
                 "definition": {
-                  "type": "string"
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "definition": {
+                        "type": "string"
+                      }
+                    }
+                  ]
                 }
               }
             ]
