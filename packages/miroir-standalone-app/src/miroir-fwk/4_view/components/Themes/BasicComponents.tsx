@@ -392,13 +392,15 @@ export const ThemedOnScreenDebug: React.FC<ThemedComponentProps & {
   data: any;
   initiallyUnfolded?: boolean;
   useCodeBlock?: boolean;
+  copyButton?: boolean;
 }> = ({ 
   label,
   data,
   className, 
   style,
   initiallyUnfolded = true,
-  useCodeBlock = false
+  useCodeBlock = false,
+  copyButton = false
 }) => {
   const context = useMiroirContextService();
   const { currentTheme } = useMiroirTheme();
@@ -413,6 +415,7 @@ export const ThemedOnScreenDebug: React.FC<ThemedComponentProps & {
       style={{...style, background: currentTheme.colors.warningLight}}
       initiallyUnfolded={initiallyUnfolded}
       useCodeBlock={useCodeBlock}
+      copyButton={copyButton}
     />
   );
 }
@@ -423,13 +426,15 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
   data: any;
   initiallyUnfolded?: boolean;
   useCodeBlock?: boolean;
+  copyButton?: boolean;
 }> = ({ 
   label,
   data,
   className, 
   style,
   initiallyUnfolded = true,
-  useCodeBlock = false
+  useCodeBlock = false,
+  copyButton = false
 }) => {
   const { currentTheme } = useMiroirTheme();
   const [isUnfolded, setIsUnfolded] = React.useState(initiallyUnfolded);
@@ -466,6 +471,21 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
     color: currentTheme.colors.textSecondary,
   });
 
+  const copyButtonStyles = css({
+    marginLeft: 'auto',
+    padding: `${currentTheme.spacing.xs || '4px'} ${currentTheme.spacing.sm}`,
+    backgroundColor: currentTheme.colors.primary,
+    color: currentTheme.colors.surface,
+    border: 'none',
+    borderRadius: currentTheme.borderRadius.sm,
+    cursor: 'pointer',
+    fontSize: currentTheme.typography.fontSize.sm,
+    fontFamily: currentTheme.typography.fontFamily,
+    '&:hover': {
+      backgroundColor: currentTheme.colors.primaryDark,
+    },
+  });
+
   const dataStyles = css({
     fontSize: currentTheme.typography.fontSize.sm,
     whiteSpace: 'pre-wrap',
@@ -477,6 +497,15 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
     setIsUnfolded(!isUnfolded);
   };
 
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(jsonString);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+    }
+  };
+
   const jsonString = JSON.stringify(data, null, 2);
 
   return (
@@ -484,6 +513,11 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
       <div css={headerStyles} onClick={handleToggle}>
         <span css={iconStyles}>▶</span>
         {label && <span css={labelStyles}>{label}</span>}
+        {copyButton && (
+          <button css={copyButtonStyles} onClick={handleCopy}>
+            Copy
+          </button>
+        )}
       </div>
       {isUnfolded && (
         useCodeBlock ? (

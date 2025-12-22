@@ -11,6 +11,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "createApplication"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -61,6 +66,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "deleteApplication"
           },
           "actionLabel": { "type": "string", "optional": true },

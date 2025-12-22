@@ -34,7 +34,13 @@ export const jzodUnion_RecursivelyUnfold_ReturnTypeOK: JzodElement = {
       optional: true,
       definition: [
         { type: "string" },
-        { type: "array", definition: { type: "string" } },
+        {
+          type: "array",
+          definition: {
+            type: "union",
+            definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
+          },
+        },
       ],
     }, // the discriminator that was used, if any
   },

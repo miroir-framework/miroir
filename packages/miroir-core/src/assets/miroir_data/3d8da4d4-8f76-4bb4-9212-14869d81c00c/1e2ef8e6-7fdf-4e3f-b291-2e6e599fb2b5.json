@@ -9,7 +9,15 @@
     "actions": [
       {
         "actionParameters": {
-          "actionType": { "type": "literal", "definition": "transactionalInstanceAction" },
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "transactionalInstanceAction"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "deploymentUuid": {
             "type": "uuid",
@@ -44,7 +52,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal", "definition": "compositeActionSequence" },
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "compositeActionSequence"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "endpoint": {
             "type": "literal",
@@ -94,6 +110,11 @@
                       "definition": {
                         "actionType": {
                           "type": "literal",
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": false
+                            }
+                          },
                           "definition": "compositeRunBoxedQueryAction"
                         },
                         "actionLabel": { "type": "string", "optional": true },
@@ -112,6 +133,11 @@
                       "definition": {
                         "actionType": {
                           "type": "literal",
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": false
+                            }
+                          },
                           "definition": "compositeRunBoxedExtractorAction"
                         },
                         "actionLabel": { "type": "string", "optional": true },
@@ -130,6 +156,11 @@
                       "definition": {
                         "actionType": {
                           "type": "literal",
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": false
+                            }
+                          },
                           "definition": "compositeRunBoxedExtractorOrQueryAction"
                         },
                         "actionLabel": { "type": "string", "optional": true },
@@ -148,6 +179,11 @@
                       "definition": {
                         "actionType": {
                           "type": "literal",
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": false
+                            }
+                          },
                           "definition": "compositeRunTestAssertion"
                         },
                         "actionLabel": { "type": "string", "optional": true },

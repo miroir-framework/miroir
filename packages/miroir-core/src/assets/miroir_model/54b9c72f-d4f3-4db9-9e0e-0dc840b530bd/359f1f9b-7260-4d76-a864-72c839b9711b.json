@@ -11,12 +11,7 @@
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
-  "viewAttributes": [
-    "name",
-    "defaultLabel",
-    "description",
-    "uuid"
-  ],
+  "viewAttributes": ["name", "defaultLabel", "description", "uuid"],
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -362,10 +357,7 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": [
-                      "ASC",
-                      "DESC"
-                    ]
+                    "definition": ["ASC", "DESC"]
                   }
                 }
               },
@@ -386,7 +378,7 @@
                 }
               }
             }
-          },  
+          },
           "extractorTemplateByRelationReturningObjectList": {
             "type": "object",
             "extend": {
@@ -411,10 +403,7 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": [
-                      "ASC",
-                      "DESC"
-                    ]
+                    "definition": ["ASC", "DESC"]
                   }
                 }
               },
@@ -466,10 +455,7 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": [
-                      "ASC",
-                      "DESC"
-                    ]
+                    "definition": ["ASC", "DESC"]
                   }
                 }
               },
@@ -758,6 +744,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "extractorOrCombinerContextReference"
               },
               "extractorOrCombinerContextReference": {
@@ -777,6 +770,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "combinerForObjectByRelation"
               },
               "objectReference": {
@@ -807,6 +807,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "extractorForObjectByDirectReference"
               },
               "instanceUuid": {
@@ -859,6 +866,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "extractorByEntityReturningObjectList"
               },
               "orderBy": {
@@ -871,10 +885,7 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": [
-                      "ASC",
-                      "DESC"
-                    ]
+                    "definition": ["ASC", "DESC"]
                   }
                 }
               },
@@ -922,6 +933,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "combinerByRelationReturningObjectList"
               },
               "orderBy": {
@@ -934,10 +952,7 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": [
-                      "ASC",
-                      "DESC"
-                    ]
+                    "definition": ["ASC", "DESC"]
                   }
                 }
               },
@@ -973,6 +988,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "combinerByManyToManyRelationReturningObjectList"
               },
               "orderBy": {
@@ -985,10 +1007,7 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": [
-                      "ASC",
-                      "DESC"
-                    ]
+                    "definition": ["ASC", "DESC"]
                   }
                 }
               },
@@ -1084,6 +1103,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
               },
               "orderBy": {
@@ -1096,10 +1122,7 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": [
-                      "ASC",
-                      "DESC"
-                    ]
+                    "definition": ["ASC", "DESC"]
                   }
                 }
               },
@@ -1145,6 +1168,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "extractorWrapperReturningObject"
               },
               "definition": {
@@ -1175,6 +1205,13 @@
             "definition": {
               "extractorOrCombinerType": {
                 "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "editable": false,
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
                 "definition": "extractorWrapperReturningList"
               },
               "definition": {
@@ -1257,6 +1294,13 @@
                 "definition": {
                   "extractorOrCombinerType": {
                     "type": "literal",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "editable": false,
+                        "defaultLabel": "Extractor Or Combiner Type"
+                      }
+                    },
                     "definition": "literal"
                   },
                   "definition": {

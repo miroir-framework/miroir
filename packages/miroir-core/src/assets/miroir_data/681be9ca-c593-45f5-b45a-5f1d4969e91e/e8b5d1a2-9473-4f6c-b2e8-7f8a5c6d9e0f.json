@@ -377,6 +377,13 @@
                   "definition": {
                     "extractorOrCombinerType": {
                       "type": "literal",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": false,
+                          "editable": false,
+                          "defaultLabel": "Extractor Or Combiner Type"
+                        }
+                      },
                       "definition": "literal"
                     },
                     "definition": {
@@ -422,6 +429,13 @@
                   "definition": {
                     "extractorOrCombinerType": {
                       "type": "literal",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": false,
+                          "editable": false,
+                          "defaultLabel": "Extractor Or Combiner Type"
+                        }
+                      },
                       "definition": "literal"
                     },
                     "definition": {

@@ -1,16 +1,21 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import React from "react";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "@codemirror/view";
 import { javascript } from '@codemirror/lang-javascript';
 import { ThemedCodeBlock } from "../Themes/index.js";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 
 const codeMirrorExtensions = [javascript()];
 
 interface CodeBlockProps {
   value: string;
+  copyButton?: boolean;
 }
 
-export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value }) => {
+export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value, copyButton = false }) => {
+  const { currentTheme } = useMiroirTheme();
   const jsonString = value;
   const lines = jsonString?.split("\n");
   const lineCount = lines?.length || 1;
@@ -23,10 +28,48 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value }) => {
   const padding = 20;
   const calculatedHeight = Math.min((lineCount * lineHeight) + padding, 400);
   const heightPx = `${calculatedHeight}px`;
+
+  const containerStyles = css({
+    position: 'relative',
+    display: 'inline-block',
+    width: `${fixedWidth}px`,
+    maxWidth: "90vw",
+  });
+
+  const copyButtonStyles = css({
+    position: 'absolute',
+    top: currentTheme.spacing.sm,
+    right: currentTheme.spacing.sm,
+    padding: `${currentTheme.spacing.xs || '4px'} ${currentTheme.spacing.sm}`,
+    backgroundColor: currentTheme.colors.primary,
+    color: currentTheme.colors.surface,
+    border: 'none',
+    borderRadius: currentTheme.borderRadius.sm,
+    cursor: 'pointer',
+    fontSize: currentTheme.typography.fontSize.sm,
+    fontFamily: currentTheme.typography.fontFamily,
+    zIndex: 10,
+    '&:hover': {
+      backgroundColor: currentTheme.colors.primaryDark,
+    },
+  });
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(jsonString);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+    }
+  };
   
   return (
-    // <ThemedCodeBlock>
-    <ReactCodeMirror
+    <div css={containerStyles}>
+      {copyButton && (
+        <button css={copyButtonStyles} onClick={handleCopy}>
+          Copy
+        </button>
+      )}
+      <ReactCodeMirror
       editable={false}
       height={heightPx}
       style={{
@@ -58,6 +101,6 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value }) => {
         lineNumbers: true,
       }}
     />
-    // </ThemedCodeBlock>
+    </div>
   );
 };

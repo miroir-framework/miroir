@@ -414,7 +414,7 @@ function createLocalizedInnerResolutionStoreForExtendedSchemas(
   localizedResolutionStore: JzodReference,
   extendedSchemas: string[],
   carryOnSchemaReference: JzodReference,
-  carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
+  carryOnSchemaDiscriminator: undefined | string | string[] | (string | string[])[] = undefined,
   resolveReferencesWithCarryOn: JzodReferenceResolutionFunction,
   prefix: string = "carryOn_",
   alwaysPropagate: boolean = false,
@@ -2334,6 +2334,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "localCacheEntityInstancesExtractor",
             },
             definition: {
@@ -2414,6 +2419,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "boxedExtractorOrCombinerReturningObject",
             },
             select: {
@@ -2438,6 +2448,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "boxedExtractorOrCombinerReturningObjectList",
             },
             select: {
@@ -2482,6 +2497,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "boxedQueryWithExtractorCombinerTransformer",
             },
             runAsSql: {
@@ -2554,6 +2574,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "boxedExtractorTemplateReturningObjectList",
             },
             select: {
@@ -2598,6 +2623,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "boxedQueryTemplateWithExtractorCombinerTransformer",
             },
             runAsSql: {
@@ -2672,6 +2702,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "queryByTemplateGetParamJzodSchema",
             },
             fetchParams: {
@@ -2744,6 +2779,11 @@ export function getMiroirFundamentalJzodSchema(
           definition: {
             queryType: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false
+                }
+              },
               definition: "getQueryJzodSchema", // TODO: CORRECT!!!
             },
             select: {
@@ -3840,19 +3880,20 @@ export function getMiroirFundamentalJzodSchema(
       },
     },
   };
-  log.info(
-    "################## miroirFundamentalJzodSchema",
-    JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2)
-  );
 
-  log.info(
-    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema actionError:",
-    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["actionError"], null, 2)
-  );
-  log.info(
-    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema storeManagementAction:",
-    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.storeManagementAction, null, 2)
-  );
+  // log.info(
+  //   "################## miroirFundamentalJzodSchema",
+  //   JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2)
+  // );
+
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema actionError:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["actionError"], null, 2)
+  // );
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema storeManagementAction:",
+  //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context.storeManagementAction, null, 2)
+  // );
   // log.info(
   //   "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema compositeRunTestAssertion:",
   //   JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["compositeRunTestAssertion"], null, 2)
@@ -3901,7 +3942,7 @@ export function getMiroirFundamentalJzodSchema(
     }
   }
 
-  const oldCompositeActionDependencySet = jzodTransitiveDependencySet(
+  const compositeActionSequenceDependencySet = jzodTransitiveDependencySet(
     miroirFundamentalJzodSchema.definition,
     "compositeActionSequence",
     true, // includeExtend
@@ -3909,7 +3950,7 @@ export function getMiroirFundamentalJzodSchema(
 
   // TODO: HACK!! forcing jzod schema definition into compositeActionDependencySet
   Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
-    oldCompositeActionDependencySet.add(key);
+    compositeActionSequenceDependencySet.add(key);
   });
 
   // TODO: HACK!! forcing build transformer into compositeActionDependencySet, although the compositeActionSequence does not directly reference it, it is used in the extendedSchemas
@@ -3941,18 +3982,18 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_getUniqueValues",
     // "transformerForBuild_InnerReference"
   ].forEach((key) => {
-    oldCompositeActionDependencySet.add(key);
+    compositeActionSequenceDependencySet.add(key);
   });
 
   log.info(
-    "oldCompositeActionDependencySet",
-    Array.from(oldCompositeActionDependencySet.keys()).length,
-    JSON.stringify(Array.from(oldCompositeActionDependencySet.keys()), null, 2),
+    "compositeActionSequenceDependencySet",
+    Array.from(compositeActionSequenceDependencySet.keys()).length,
+    JSON.stringify(Array.from(compositeActionSequenceDependencySet.keys()), null, 2),
   );
-  const oldCompositeActionDependenciesJzodReference: JzodReference = {
+  const compositeActionSequenceDependenciesJzodReference: JzodReference = {
     type: "schemaReference",
     context: Object.fromEntries(
-      Array.from(oldCompositeActionDependencySet.keys()).map((key) => {
+      Array.from(compositeActionSequenceDependencySet.keys()).map((key) => {
         if (!absoluteMiroirFundamentalJzodSchema.definition.context[key]) {
           throw new Error(
             `Key ${key} not found in miroirFundamentalJzodSchema.context, existing keys are: ${Object.keys(
@@ -3971,8 +4012,8 @@ export function getMiroirFundamentalJzodSchema(
 
   log.info(
     "getMiroirFundamentalJzodSchema oldCompositeActionDependenciesInnerResolutionStore keys:",
-    Object.keys(oldCompositeActionDependenciesJzodReference.context??{}).length,
-    JSON.stringify(Object.keys(oldCompositeActionDependenciesJzodReference.context??{}), null, 2)
+    Object.keys(compositeActionSequenceDependenciesJzodReference.context??{}).length,
+    JSON.stringify(Object.keys(compositeActionSequenceDependenciesJzodReference.context??{}), null, 2)
   );
 
 
@@ -4000,14 +4041,14 @@ export function getMiroirFundamentalJzodSchema(
 
   const oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas =
     createLocalizedInnerResolutionStoreForExtendedSchemas(
-      oldCompositeActionDependenciesJzodReference,
+      compositeActionSequenceDependenciesJzodReference,
       extendedSchemas,
       transformerForBuildCarryOnSchemaReference,
-      undefined, // carryOnSchemaDiscriminator
+      "transformerType", // carryOnSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(
         undefined,
         {
-          [miroirFundamentalJzodSchemaUuid]:oldCompositeActionDependenciesJzodReference
+          [miroirFundamentalJzodSchemaUuid]:compositeActionSequenceDependenciesJzodReference
         }
       ),
       "carryOn_", // prefix
@@ -4021,12 +4062,12 @@ export function getMiroirFundamentalJzodSchema(
 
   const oldCompositeActionLocalizedInnerResolutionStorePlainReferences =
     createLocalizedInnerResolutionStoreWithCarryOn(
-      oldCompositeActionDependenciesJzodReference,
+      compositeActionSequenceDependenciesJzodReference,
       extendedSchemas,
       transformerForBuildCarryOnSchemaReference,
-      undefined, // carryOnSchemaDiscriminator
+      "transformerType", // carryOnSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(undefined, {
-        [miroirFundamentalJzodSchemaUuid]: oldCompositeActionDependenciesJzodReference,
+        [miroirFundamentalJzodSchemaUuid]: compositeActionSequenceDependenciesJzodReference,
       }),
       "carryOn_", // prefix
       true, // alwaysPropagate
@@ -4098,20 +4139,6 @@ export function getMiroirFundamentalJzodSchema(
   );
 
 
-  // const {
-  //   carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas: runtimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
-  //   domainActionLocalizedInnerResolutionStorePlainReferences: runtimeDomainActionLocalizedInnerResolutionStorePlainReferences,
-  //   carryOnDomainActionSchemaBuilder: runtimeDomainActionSchemaBuilder,
-  // } = createDomainActionCarryOnSchemaResolver(
-  //   domainAction,
-  //   transformerForRuntimeDomainActionSchemaReference,
-  //   ["transformerType", "interpolation"],
-  //   domainActionDependencySet,
-  //   runtimeDomainActionReferencePrefix,
-  //   false, // alwaysPropagate
-  //   absoluteMiroirFundamentalJzodSchema,
-  //   extendedSchemas,
-  // );
   const {
     carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas: buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
     domainActionLocalizedInnerResolutionStorePlainReferences: buildDomainActionLocalizedInnerResolutionStorePlainReferences,
@@ -4158,11 +4185,17 @@ export function getMiroirFundamentalJzodSchema(
       ...miroirFundamentalJzodSchema.definition,
       context: {
         ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
+        "______________________________________________localizedInnerResolutionStoreReferences________________________________________________": { type: "any"},
         ...localizedInnerResolutionStoreReferences,
+        "______________________________________________buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas_______________________": { type: "any"},
         ...buildDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
+        "______________________________________________buildDomainActionLocalizedInnerResolutionStorePlainReferences_______________________": { type: "any"},
         ...buildDomainActionLocalizedInnerResolutionStorePlainReferences,
+        "______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas_______________________": { type: "any"},
         ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas,
+        "______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences_______________________": { type: "any"},
         ...buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences,
+        "______________________________________________transformerForBuildCarryOnObject_______________________": { type: "any"},
         transformerForBuildCarryOnObject: transformerForBuildCarryOnSchema,
         // transformerForRuntimeCarryOnObject: transformerForRuntimeCarryOnSchema,
         transformerForBuildPlusRuntimeCarryOnObject: miroirFundamentalJzodSchema.definition.context
@@ -4173,6 +4206,7 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
+                // absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: forgeCarryOnReferenceName(
                   miroirFundamentalJzodSchemaUuid,
                   "compositeActionSequence"
@@ -4187,7 +4221,7 @@ export function getMiroirFundamentalJzodSchema(
             undefined, // reference suffix
             resolveReferencesWithCarryOn.bind(
               undefined,
-              oldCompositeActionDependenciesJzodReference
+              compositeActionSequenceDependenciesJzodReference
             )
           );
           return {
@@ -4197,14 +4231,17 @@ export function getMiroirFundamentalJzodSchema(
             // non-transactional action templates can be used wich queries, they do not need to be replayable post-mortem.
             buildDomainAction: buildDomainActionSchemaBuilder.resultSchema,
             buildPlusRuntimeDomainAction: buildPlusRuntimeDomainActionSchemaBuilder.resultSchema,
-            compositeActionTemplate: compositeActionSchemaBuilder.resultSchema, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+            compositeActionTemplate: makeReferencesAbsolute(
+              compositeActionSchemaBuilder.resultSchema,
+              miroirFundamentalJzodSchemaUuid
+            ), // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
             mlSchemaTemplate: {
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
               },
-            }
+            },
           };
         })(),
       } as Record<string, any /**JzodElement */>,

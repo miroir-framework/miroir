@@ -247,6 +247,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
       valuePath: valueObjectPath,
       typePath,
       value: valueObject,
+      // type: 
       objectUnionChoices,
     };
   }
@@ -1101,7 +1102,11 @@ export function jzodTypeCheck(
         case "string": {
           // TODO: the following line may introduce some non-determinism, in the case many records actually match the "find" predicate! BAD!
           const resultJzodSchema = recursivelyUnfoldedUnionSchema.result.find(
-            (a) => a.type == "string" || (a.type == "literal" && a.definition == valueObject)
+            (a) =>
+              a.type == "string" ||
+              a.type == "uuid" ||
+              (a.type == "literal" && a.definition == valueObject) ||
+              (a.type == "enum" && (a.definition as string[]).includes(valueObject))
           );
           if (resultJzodSchema) {
             // log.info(
@@ -1132,7 +1137,7 @@ export function jzodTypeCheck(
           } else {
             return {
               status: "error",
-              error: "jzodTypeCheck could not find type for value in resolved union",
+              error: "jzodTypeCheck could not find type for string value in resolved union",
               rawJzodSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,

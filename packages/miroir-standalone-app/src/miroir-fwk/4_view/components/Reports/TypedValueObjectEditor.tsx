@@ -364,7 +364,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           data={valueObject}
           // initiallyUnfolded={false}
         />
-        <CodeBlock_ReadOnly value={jsonString} />;
+        <CodeBlock_ReadOnly value={jsonString} copyButton={true} />;
         </div>
     } else {
       typeError = <div>Could not resolve jzod schema

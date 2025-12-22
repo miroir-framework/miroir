@@ -11,6 +11,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "createInstance"
           },
           "actionLabel": {
@@ -185,6 +190,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "deleteInstance"
           },
           "actionLabel": {
@@ -271,6 +281,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "deleteInstanceWithCascade"
           },
           "actionLabel": {
@@ -357,6 +372,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "updateInstance"
           },
           "actionLabel": {
@@ -464,6 +484,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "loadNewInstancesInLocalCache"
           },
           "actionLabel": {
@@ -539,6 +564,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "getInstance"
           },
           "actionLabel": {
@@ -623,6 +653,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "getInstances"
           },
           "actionLabel": {

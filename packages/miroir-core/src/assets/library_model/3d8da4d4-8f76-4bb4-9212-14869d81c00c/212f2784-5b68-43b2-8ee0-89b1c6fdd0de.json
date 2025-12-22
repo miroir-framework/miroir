@@ -10,6 +10,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "lendDocument"
           },
           "actionLabel": {

@@ -11,6 +11,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "runTestCompositeAction"
           },
           "application": {
@@ -77,6 +82,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "runTestCase"
           },
           "application": {

@@ -11,6 +11,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "initModel"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -102,6 +107,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "commit"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -153,6 +163,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "rollback"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -204,6 +219,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "remoteLocalCacheRollback"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -255,6 +275,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "resetModel"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -306,6 +331,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "resetData"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -357,6 +387,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "alterEntityAttribute"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -464,6 +499,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "renameEntity"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -541,6 +581,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "createEntity"
           },
           "actionLabel": { "type": "string", "optional": true },
@@ -619,6 +664,11 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "dropEntity"
           },
           "actionLabel": { "type": "string", "optional": true },

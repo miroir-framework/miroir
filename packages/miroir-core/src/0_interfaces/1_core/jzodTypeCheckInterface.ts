@@ -27,6 +27,7 @@ export interface SelectUnionBranchFromDiscriminatorReturnTypeError {
   valuePath: (string | number)[];
   typePath: (string | number)[];
   value?: any;
+  type?: JzodElement;
   objectUnionChoices?: JzodObject[];
   flattenedUnionChoices?: JzodObject[];
 }
@@ -75,7 +76,7 @@ export interface KeyMapEntry {
   resolvedSchema: JzodElement;
   chosenUnionBranchRawSchema?: JzodElement; // for unions, this is the raw schema of the chosen branch
   discriminatorValues?: string[][]; // for unions, this is the list of possible discriminator values
-  discriminator?: string | string[]; // for unions, this is the discriminator used to select the branch
+  discriminator?: string | (string | string[])[]; // for unions, this is the discriminator used to select the branch
 }
 export const keyMapEntry: JzodElement = {
   type: "object",
@@ -126,16 +127,25 @@ export const keyMapEntry: JzodElement = {
     discriminator: {
       type: "union",
       optional: true,
-      definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
+      definition: [
+        { type: "string" },
+        {
+          type: "array",
+          definition: {
+            type: "union",
+            definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
+          },
+        },
+      ],
     }, // for unions, this is the discriminator used to select the branch
-        valuePath: {
+    valuePath: {
       type: "array",
       definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
     },
     typePath: {
       type: "array",
       definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
-    }
+    },
   },
 };
 
