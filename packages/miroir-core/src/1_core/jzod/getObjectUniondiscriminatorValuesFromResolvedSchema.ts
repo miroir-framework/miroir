@@ -1,3 +1,4 @@
+import type { JzodUnionResolvedTypeForObjectReturnTypeOK } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
 import { JzodElement, type JzodObject, type JzodRecord } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
@@ -25,12 +26,13 @@ function safeStringify(obj: any, maxLength: number = 1000): string {
 }
 
 // #####################################################################################################
-export function getObjectUniondiscriminatorValuesFromResolvedSchema(
+export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
   // resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
   currentValuePathString: string,
   unfoldedRawSchema: JzodElement | undefined, // is it needed?
   recursivelyUnfoldedRawSchemaList: JzodElement[],
   unionObjectChoices: (JzodObject | JzodRecord)[],
+  resolveUnionResult: JzodUnionResolvedTypeForObjectReturnTypeOK
 ): string[][] {
   // log.info(
   //   "getObjectUniondiscriminatorValuesFromResolvedSchema for jzodTypeCheck called with",
@@ -175,7 +177,21 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
     //   "unionObjectChoices",
     //   unionObjectChoices.length
     // );
-    const result: string[][] = discriminator.map((disc: string) => {
+    const result: string[][] = discriminator.map((disc: string | string[]) => {
+      let effectiveDiscriminator: string = "UNKNOWN_DISCRIMINATOR";
+      if (Array.isArray(disc)) {
+        log.info(
+          "getObjectUniondiscriminatorValuesFromResolvedSchema processing array sub-discriminator",
+          currentValuePathString,
+          disc,
+          resolveUnionResult
+        );
+        effectiveDiscriminator = resolveUnionResult?.chosenDiscriminator
+          ? (resolveUnionResult?.chosenDiscriminator[0] as any)?.discriminator
+          : undefined;
+      } else {
+        effectiveDiscriminator = disc;
+      }
       return [
         ...new Set(
           // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
@@ -197,7 +213,16 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
             })
             .flatMap((branch: any /** JzodObject */, index) => {
               // if (index == 1) log.info("getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing disc", disc, "on branch", branch);
-              if (!branch || !branch.definition || !branch.definition[disc]) {
+              log.info(
+                "getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing",
+                currentValuePathString,
+                "effectiveDiscriminator",
+                effectiveDiscriminator,
+                "on branch with matching key",
+                branch.definition[effectiveDiscriminator],
+                Object.keys(branch.definition),
+              );
+              if (!branch || !branch.definition || !branch.definition[effectiveDiscriminator]) {
                 // ATTENTION:
                 // there can be one object branch without discriminator, the one that will be chosen
                 //  when the value does not include any discriminator attribute
@@ -214,16 +239,17 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
               }
               switch (
                 // typeof branch.definition[discriminator] == "string"
-                typeof branch.definition[disc] == "object"
-                  ? "literal"
-                  : branch.definition[disc]?.type
+                // typeof branch.definition[disc] == "object"
+                //   ? "literal"
+                //   : 
+                  branch.definition[effectiveDiscriminator]?.type
               ) {
                 case "literal": {
-                  return branch.definition[disc].definition;
+                  return branch.definition[effectiveDiscriminator].definition;
                   break;
                 }
                 case "enum": {
-                  return branch.definition[disc].definition;
+                  return branch.definition[effectiveDiscriminator].definition;
                 }
                 case "object":
                 case "string":
@@ -254,9 +280,9 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
                   throw new Error(
                     "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
                       " array discriminator " +
-                      disc +
+                      effectiveDiscriminator +
                       ", found branch discriminator " +
-                      safeStringify(branch.definition[disc], 200) +
+                      safeStringify(branch.definition[effectiveDiscriminator], 200) +
                       ", for branch " +
                       safeStringify(branch, 500) +
                       ", for union " +
@@ -271,17 +297,21 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
       ];
     });
     // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
-    // log.info(
-    //   "getObjectUniondiscriminatorValuesFromResolvedSchema called with resolvedElementJzodSchema:",
-    //   resolvedElementJzodSchema,
-    //   "unfoldedRawSchema:",
-    //   unfoldedRawSchema,
-    //   // "recursivelyUnfoldedRawSchemaList:",
-    //   // recursivelyUnfoldedRawSchemaList,
-    //   "unionObjectChoices",
-    //   unionObjectChoices,
-    //   "result:", result
-    // );
+    log.info(
+      "getObjectUniondiscriminatorValuesFromResolvedSchema processing array discriminator DONE on path",
+      currentValuePathString,
+      "for discriminator",
+      discriminator,
+      "unionObjectChoices",
+      unionObjectChoices.length,
+      "unfoldedRawSchema:",
+      unfoldedRawSchema,
+      // "recursivelyUnfoldedRawSchemaList:",
+      // recursivelyUnfoldedRawSchemaList,
+      "unionObjectChoices",
+      unionObjectChoices,
+      "result:", result
+    );
 
     return result;
   }

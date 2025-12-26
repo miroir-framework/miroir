@@ -12,7 +12,8 @@ import {
   JzodSchema,
   MiroirModelEnvironment,
   jzodUnionResolvedTypeForObject,
-  KeyMapEntry
+  KeyMapEntry,
+  type JzodObject
 } from "miroir-core";
 import React, { FC, useMemo, useCallback } from "react";
 import { useFormikContext } from "formik";
@@ -65,6 +66,7 @@ const handleDiscriminatorChange = (
   //   );
   // }
   let newJzodSchema: JzodElement | undefined = undefined;
+  let localChosenDiscriminator: string | undefined = undefined;
   if (Array.isArray(parentKeyMap.discriminator)) {
     if (!parentKeyMap.recursivelyUnfoldedUnionSchema) {
       throw new Error(
@@ -76,8 +78,19 @@ const handleDiscriminatorChange = (
         "handleDiscriminatorChange called but current object is not of type object, cannot proceed!"
       );
     }
-    const discriminator = parentKeyMap.discriminator[0];
-    const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
+    const discriminator: string | string[] = parentKeyMap.discriminator[0];
+    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as JzodObject).definition);
+    localChosenDiscriminator = !Array.isArray(discriminator)
+      ? discriminator
+      : parentKeyMap.discriminator.flat().find((d) =>
+            currentObjectKeys.includes(d)
+        );
+    if (!localChosenDiscriminator) {
+      throw new Error(
+        `handleDiscriminatorChange could not find local chosen discriminator for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+      );
+    }
+    const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[localChosenDiscriminator]?.type;
     if (!discriminatorTypeLocal) {
       throw new Error(
         `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
@@ -117,6 +130,7 @@ const handleDiscriminatorChange = (
     }
     newJzodSchema = resolveUnionResult.resolvedJzodObjectSchema;
   } else {
+    localChosenDiscriminator = parentKeyMap.discriminator as string;
     newJzodSchema =
       parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
         if (a.type !== "object") return false;
@@ -170,7 +184,8 @@ const handleDiscriminatorChange = (
         currentDeploymentUuid,
         modelEnvironment,
       ),
-      [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+      // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+      [localChosenDiscriminator]: selectedValue,
     }
     : undefined;
 
@@ -259,7 +274,9 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     ? -1
     : typeof parentKeyMap?.discriminator == "string"
     ? 0
-    : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
+    : parentKeyMap?.discriminator?.findIndex((d: string | string[]) =>
+        Array.isArray(d) ? d.includes(name) : d === name
+      );
 
   const isDiscriminator =
     parentKeyMap?.discriminator &&

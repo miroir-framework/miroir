@@ -76,6 +76,7 @@ const handleDiscriminatorChange = (
   //   );
   // }
   let newJzodSchema: JzodElement | undefined = undefined;
+  let localChosenDiscriminator: string | undefined = undefined;
   if (Array.isArray(parentKeyMap.discriminator)) {
     if (!parentKeyMap.recursivelyUnfoldedUnionSchema) {
       throw new Error(
@@ -87,7 +88,19 @@ const handleDiscriminatorChange = (
         "handleDiscriminatorChange called but current object is not of type object, cannot proceed!"
       );
     }
-    const discriminator = parentKeyMap.discriminator[0];
+    // const discriminator = parentKeyMap.discriminator[0];
+    const discriminator: string | string[] = parentKeyMap.discriminator[0];
+    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as JzodObject).definition);
+    localChosenDiscriminator = !Array.isArray(discriminator)
+      ? discriminator
+      : parentKeyMap.discriminator.flat().find((d) =>
+            currentObjectKeys.includes(d)
+        );
+    if (!localChosenDiscriminator) {
+      throw new Error(
+        `handleDiscriminatorChange could not find local chosen discriminator for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+      );
+    }
     // const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
     const parentNewUnionBranch:JzodObject | undefined = parentKeyMap.recursivelyUnfoldedUnionSchema.result.find((a: JzodElement) => {
       if (a.type !== "object") return false;
@@ -98,7 +111,7 @@ const handleDiscriminatorChange = (
 
     log.info("handleDiscriminatorChange found parentNewUnionBranch", parentNewUnionBranch);
 
-    const discriminatorTypeLocal: string | undefined = parentNewUnionBranch?.definition[discriminator as string].type;
+    const discriminatorTypeLocal: string | undefined = parentNewUnionBranch?.definition[localChosenDiscriminator as string].type;
 
     if (!discriminatorTypeLocal) {
       throw new Error(
@@ -175,6 +188,7 @@ const handleDiscriminatorChange = (
       //   }
       // });
   } else {
+    localChosenDiscriminator = parentKeyMap.discriminator as string;
     newJzodSchema =
       parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
         if (a.type !== "object") return false;
@@ -238,7 +252,8 @@ const handleDiscriminatorChange = (
         currentDeploymentUuid,
         modelEnvironment
       ),
-      [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+      // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+      [localChosenDiscriminator]: selectedValue,
     }
     : undefined;
 
@@ -335,32 +350,39 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     !!parentKeyMap?.discriminator && 
     !!parentKeyMap?.discriminatorValues;
 
-  // log.info(
-  //   "JzodLiteralEditor render count",
-  //   JzodLiteralEditorRenderCount,
-  //   "rootLessListKey",
-  //   rootLessListKey,
-  //   "name",
-  //   name,
-  //   "parentKey",
-  //   parentKey,
-  //   "parentKeyMap",
-  //   parentKeyMap,
-  //   "isDiscriminator",
-  //   JSON.stringify(isDiscriminator),
-  //   "parentKeyMap?.discriminator",
-  //   JSON.stringify(parentKeyMap?.discriminator),
-  //   "parentKeyMap?.discriminatorValues",
-  //   JSON.stringify(parentKeyMap?.discriminatorValues),
-  //   // "currentKeyMap",
-  //   // currentKeyMap,
-  // );
+  log.info(
+    "JzodLiteralEditor render count",
+    JzodLiteralEditorRenderCount,
+    "rootLessListKey",
+    rootLessListKey,
+    "name",
+    name,
+    "parentKey",
+    parentKey,
+    "parentKeyMap",
+    parentKeyMap,
+    "isDiscriminator",
+    JSON.stringify(isDiscriminator),
+    "parentKeyMap?.discriminator",
+    JSON.stringify(parentKeyMap?.discriminator),
+    "parentKeyMap?.discriminatorValues",
+    JSON.stringify(parentKeyMap?.discriminatorValues),
+    // "currentKeyMap",
+    // currentKeyMap,
+  );
   
+  // const discriminatorIndex: number = !parentKeyMap?.discriminator
+  //   ? -1
+  //   : typeof parentKeyMap?.discriminator == "string"
+  //   ? 0
+  //   : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
   const discriminatorIndex: number = !parentKeyMap?.discriminator
     ? -1
     : typeof parentKeyMap?.discriminator == "string"
     ? 0
-    : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
+    : parentKeyMap?.discriminator?.findIndex((d: string | string[]) =>
+        Array.isArray(d) ? d.includes(name) : d === name
+      );
   if (isDiscriminator && discriminatorIndex === -1) {
     throw new Error(
       `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`

@@ -649,8 +649,8 @@ export {
   getDefaultValueForJzodSchemaWithResolutionNonHook
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
-  getObjectUniondiscriminatorValuesFromResolvedSchema
-} from "./1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
+  getObjectUnionDiscriminatorValuesFromResolvedSchema as getObjectUniondiscriminatorValuesFromResolvedSchema
+} from "./1_core/jzod/getObjectUnionDiscriminatorValuesFromResolvedSchema";
 export {
   resolveJzodSchemaReference,
   resolveJzodSchemaReferenceInContext

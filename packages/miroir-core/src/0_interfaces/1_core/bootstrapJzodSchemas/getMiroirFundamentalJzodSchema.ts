@@ -4028,6 +4028,14 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
+  const transformerForBuildPlusRuntimeCarryOnSchemaReference: JzodReference = {
+    type: "schemaReference",
+    definition: {
+      absolutePath: miroirFundamentalJzodSchemaUuid,
+      relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+    },
+  };
+
   // const transformerForRuntimeCarryOnSchema: any = miroirFundamentalJzodSchema.definition.context
   //   .transformerForBuild as any;
 
@@ -4213,7 +4221,8 @@ export function getMiroirFundamentalJzodSchema(
                 ),
               },
             },
-            transformerForBuildCarryOnSchemaReference as any,
+            // transformerForBuildCarryOnSchemaReference as any,
+            transformerForBuildPlusRuntimeCarryOnSchemaReference as any,
             ["transformerType", "interpolation"],
             true, // alwaysPropagate
             undefined, // carryOnPrefix,
@@ -4224,6 +4233,18 @@ export function getMiroirFundamentalJzodSchema(
               compositeActionSequenceDependenciesJzodReference
             )
           );
+          log.info(
+            "compositeActionSchemaBuilder.resultSchema",
+              compositeActionSchemaBuilder.resultSchema,
+          );
+          // log.info(
+          //   "compositeActionSchemaBuilder.resolvedReferences",
+          //   JSON.stringify(
+          //     // Object.keys(compositeActionSchemaBuilder.resolvedReferences),
+          //     null,
+          //     2
+          //   )
+          // );
           return {
             ...compositeActionSchemaBuilder.resolvedReferences,
             // ...runtimeDomainActionSchemaBuilder.resolvedReferences,
