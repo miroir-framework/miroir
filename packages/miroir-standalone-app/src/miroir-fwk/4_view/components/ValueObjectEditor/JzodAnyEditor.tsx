@@ -95,7 +95,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
 
   return (
     <div key={rootLessListKey}>
-      {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
+      <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} />
       <div>
         <ChangeValueTypeSelect
           onChange={(type: JzodElement) => {
@@ -120,7 +120,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           }}
         />
         {/* <label>{label || "Any Value"}</label> */}
-        {labelElement ?? <></>}
+        {labelElement ?? <>No label</>}
       </div>
       <div>
         <JzodElementEditor

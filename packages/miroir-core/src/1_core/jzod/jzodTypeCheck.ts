@@ -39,6 +39,7 @@ import { defaultMiroirModelEnvironment } from "../Model";
 import { getObjectUnionDiscriminatorValuesFromResolvedSchema } from "./getObjectUnionDiscriminatorValuesFromResolvedSchema";
 import { jzodObjectFlatten } from "./jzodObjectFlatten";
 import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
+import { TransformerFailure } from "../../0_interfaces/2_domain/DomainElement";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -1203,11 +1204,23 @@ export function jzodTypeCheck(
               };
             }
             // TODO: schema of different items may vary!
-            const arrayItemSchema = jzodTypeCheck(
-              resolveUnionResult.resolvedJzodObjectSchema.definition,
-              valueObject[0], // we take the first element of the array to determine the type
+            // const arrayItemSchema = jzodTypeCheck(
+            //   resolveUnionResult.resolvedJzodObjectSchema.definition,
+            //   valueObject[0], // we take the first element of the array to determine the type
+            //   currentValuePath,
+            //   [...currentTypePath, "0"],
+            //   modelEnvironment,
+            //   relativeReferenceJzodContext,
+            //   currentDefaultValue,
+            //   reduxDeploymentsState,
+            //   deploymentUuid,
+            //   rootObject
+            // );
+            const concreteArraySchema = jzodTypeCheck(
+              resolveUnionResult.resolvedJzodObjectSchema,
+              valueObject, // resolving the valueObject a second time as an array, not as a union
               currentValuePath,
-              [...currentTypePath, "0"],
+              currentTypePath,
               modelEnvironment,
               relativeReferenceJzodContext,
               currentDefaultValue,
@@ -1215,22 +1228,34 @@ export function jzodTypeCheck(
               deploymentUuid,
               rootObject
             );
-            if (arrayItemSchema.status === "error") {
+            if (concreteArraySchema.status === "error") {
               return {
                 status: "error",
-                error: "jzodTypeCheck failed to match array item with schema",
+                error: "jzodTypeCheck failed to match array (resolved from union) with schema",
                 rawJzodSchemaType: effectiveRawSchema.type,
                 valuePath: currentValuePath,
                 typePath: currentTypePath,
-                innerError: arrayItemSchema,
+                innerError: concreteArraySchema,
                 value: valueObject,
                 rawSchema: effectiveRawSchema,
               };
             }
+            // if (arrayItemSchema.status === "error") {
+            //   return {
+            //     status: "error",
+            //     error: "jzodTypeCheck failed to match array item with schema",
+            //     rawJzodSchemaType: effectiveRawSchema.type,
+            //     valuePath: currentValuePath,
+            //     typePath: currentTypePath,
+            //     innerError: arrayItemSchema,
+            //     value: valueObject,
+            //     rawSchema: effectiveRawSchema,
+            //   };
+            // }
             const resolvedSchema: JzodElement = {
               ...effectiveRawSchema,
-              type: "array",
-              definition: arrayItemSchema.resolvedSchema,
+              // type: "array",
+              ...(concreteArraySchema.resolvedSchema as JzodTuple),
             };
 
             return {
@@ -1240,7 +1265,8 @@ export function jzodTypeCheck(
               rawSchema: effectiveRawSchema,
               resolvedSchema,
               keyMap: {
-                ...(arrayItemSchema.keyMap ?? {}),
+                // ...(arrayItemSchema.keyMap ?? {}),
+                ...(concreteArraySchema.keyMap ?? {}),
                 [currentValuePath.join(".")]: {
                   rawSchema: effectiveRawSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
@@ -1313,7 +1339,6 @@ export function jzodTypeCheck(
           const objectUniondiscriminatorValues =
             subResolvedSchemas.resolvedSchema.type == "object" && effectiveRawSchema.discriminator
               ? getObjectUnionDiscriminatorValuesFromResolvedSchema(
-                  // subResolvedSchemas.resolvedSchema,
                   currentValuePath.join("."),
                   effectiveRawSchema,
                   recursivelyUnfoldedUnionSchema?.result ?? [],
@@ -1321,7 +1346,20 @@ export function jzodTypeCheck(
                   resolveUnionResult
                 )
               : [];
-
+          if (objectUniondiscriminatorValues instanceof TransformerFailure) {
+            return {
+              status: "error",
+              error:
+                "jzodTypeCheck failed to get object union discriminator values: " +
+                objectUniondiscriminatorValues.failureMessage,
+              rawJzodSchemaType: effectiveRawSchema.type,
+              valuePath: currentValuePath,
+              typePath: currentTypePath,
+              value: valueObject,
+              rawSchema: effectiveRawSchema,
+              innerError: objectUniondiscriminatorValues as any,
+            };
+          }
           // log.info(
           //   "jzodTypeCheck object at",
           //   currentValuePath.join("."),
@@ -1679,13 +1717,9 @@ export function jzodTypeCheck(
             [...currentValuePath, index],
             [...currentTypePath, index],
             modelEnvironment,
-            // miroirFundamentalJzodSchema,
-            // currentModel,
-            // miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
             reduxDeploymentsState,
-            // getEntityInstancesUuidIndex,
             deploymentUuid,
             rootObject
           );

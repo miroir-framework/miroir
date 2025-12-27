@@ -699,7 +699,6 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -716,10 +715,20 @@
                 "optional": true
               },
               "entityUuid": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "entityDefinitionUuid": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               }
             }
           }

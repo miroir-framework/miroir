@@ -87,6 +87,7 @@
               },
               "definition": {
                 "type": "array",
+                "tag": { "value": { "defaultLabel": "Actions Definition", "editable": true, "canBeTemplate": false } },
                 "definition": {
                   "type": "union",
                   "discriminator": "actionType",

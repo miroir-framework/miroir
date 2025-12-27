@@ -635,7 +635,7 @@ function createDomainActionCarryOnSchemaResolver(
     },
     // ["transformerType", "interpolation"], // carryOnSchemaDiscriminator
     carryOnSchemaDiscriminator,
-    false, // alwaysPropagate
+    alwaysPropagate,// false, // alwaysPropagate
     false, // applyOnFirstLevel
     prefix, // carryOnPrefix,
     undefined, // reference prefix
@@ -4011,7 +4011,7 @@ export function getMiroirFundamentalJzodSchema(
   };
 
   log.info(
-    "getMiroirFundamentalJzodSchema oldCompositeActionDependenciesInnerResolutionStore keys:",
+    "getMiroirFundamentalJzodSchema compositeActionDependenciesInnerResolutionStore keys:",
     Object.keys(compositeActionSequenceDependenciesJzodReference.context??{}).length,
     JSON.stringify(Object.keys(compositeActionSequenceDependenciesJzodReference.context??{}), null, 2)
   );
@@ -4210,7 +4210,7 @@ export function getMiroirFundamentalJzodSchema(
           .transformerForBuildPlusRuntime as any,
         ...(() => {
           // defining a function, which is called immediately (just one time)
-          const compositeActionSchemaBuilder = applyLimitedCarryOnSchema(
+          const compositeActionSchemaBuilder = applyLimitedCarryOnSchema( //useful?
             {
               type: "schemaReference",
               definition: {
@@ -4222,8 +4222,10 @@ export function getMiroirFundamentalJzodSchema(
               },
             },
             // transformerForBuildCarryOnSchemaReference as any,
-            transformerForBuildPlusRuntimeCarryOnSchemaReference as any,
-            ["transformerType", "interpolation"],
+            transformerForBuildPlusRuntimeCarryOnSchemaReference, // carryOnSchema
+            // ["transformerType", "interpolation"],
+            "transformerType",
+            // ["actionType"],
             true, // alwaysPropagate
             undefined, // carryOnPrefix,
             undefined, // reference prefix
@@ -4252,10 +4254,22 @@ export function getMiroirFundamentalJzodSchema(
             // non-transactional action templates can be used wich queries, they do not need to be replayable post-mortem.
             buildDomainAction: buildDomainActionSchemaBuilder.resultSchema,
             buildPlusRuntimeDomainAction: buildPlusRuntimeDomainActionSchemaBuilder.resultSchema,
-            compositeActionTemplate: makeReferencesAbsolute(
-              compositeActionSchemaBuilder.resultSchema,
-              miroirFundamentalJzodSchemaUuid
-            ), // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+            compositeActionTemplate: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "buildPlusRuntimeCompositeAction"
+                // relativePath: "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
+                // relativePath: forgeCarryOnReferenceName(
+                //   miroirFundamentalJzodSchemaUuid,
+                //   "compositeActionSequence"
+                // ),
+              },
+            }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+            // compositeActionTemplate: makeReferencesAbsolute(
+            //   compositeActionSchemaBuilder.resultSchema,
+            //   miroirFundamentalJzodSchemaUuid
+            // ), // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
             mlSchemaTemplate: {
               type: "schemaReference",
               definition: {

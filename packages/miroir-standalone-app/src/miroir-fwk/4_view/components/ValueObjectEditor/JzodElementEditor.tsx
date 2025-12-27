@@ -649,6 +649,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       // Handle "any" type
       if (currentKeyMap?.rawSchema?.type === "any" && !props.insideAny) {
         return (
+          <>
+            <ThemedOnScreenDebug label={`Rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || 'ROOT'}`}
+             data={props.rootLessListKey}
+            />
             <JzodAnyEditor
               name={props.name}
               labelElement={props.labelElement}
@@ -665,6 +669,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
             />
+          </>
         );
       }
       // Generate element based on schema type
@@ -1318,20 +1323,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             >
               {props.submitButton}
               {displayAsCodeEditor ? (
-                <JzodElementEditorReactCodeMirror
-                  formikRootLessListKey={formikRootLessListKey}
-                  initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
-                  codeMirrorValue={codeMirrorValue}
-                  setCodeMirrorValue={setCodeMirrorValue}
-                  codeMirrorIsValidJson={codeMirrorIsValidJson}
-                  setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                  rootLessListKey={props.rootLessListKey}
-                  rootLessListKeyArray={props.rootLessListKeyArray}
-                  hidden={!displayAsCodeEditor}
-                  insideAny={props.insideAny}
-                  isUnderTest={isUnderTest}
-                  displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-                />
+                <>
+                  JzodElementEditor rendering as JzodElementEditorReactCodeMirror 1
+                  <JzodElementEditorReactCodeMirror
+                    formikRootLessListKey={formikRootLessListKey}
+                    initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
+                    codeMirrorValue={codeMirrorValue}
+                    setCodeMirrorValue={setCodeMirrorValue}
+                    codeMirrorIsValidJson={codeMirrorIsValidJson}
+                    setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+                    rootLessListKey={props.rootLessListKey}
+                    rootLessListKeyArray={props.rootLessListKeyArray}
+                    hidden={!displayAsCodeEditor}
+                    insideAny={props.insideAny}
+                    isUnderTest={isUnderTest}
+                    displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+                  />
+                </>
               ) : (
                 mainElement
               )}
@@ -1373,20 +1381,41 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               >
                 {props.submitButton}
                 {displayAsCodeEditor ? (
-                  <JzodElementEditorReactCodeMirror
-                    formikRootLessListKey={formikRootLessListKey}
-                    initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
-                    codeMirrorValue={codeMirrorValue}
-                    setCodeMirrorValue={setCodeMirrorValue}
-                    codeMirrorIsValidJson={codeMirrorIsValidJson}
-                    setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                    rootLessListKey={props.rootLessListKey}
-                    rootLessListKeyArray={props.rootLessListKeyArray}
-                    hidden={!displayAsCodeEditor}
-                    insideAny={props.insideAny}
-                    isUnderTest={isUnderTest}
-                    displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-                  />
+                  <>
+                    JzodElementEditor rendering {
+                      props.rootLessListKey
+                    } as JzodElementEditorReactCodeMirror 2
+                    <ThemedOnScreenDebug
+                      label={`JzodElementEditor: rendering as code editor for key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
+                      data={{
+                        formikRootLessListKey,
+                        rootLessListKey: props.rootLessListKey,
+                        displayAsCodeEditor,
+                        displayAsStructuredElement,
+                        // !props.typeCheckKeyMap ||
+                        localResolvedElementJzodSchemaBasedOnValue: localResolvedElementJzodSchemaBasedOnValue??"localResolvedElementJzodSchemaBasedOnValue is undefined",
+                        currentKeyMapRawSchemaType: currentKeyMap?.rawSchema?.type,
+                        currentKeyMap,
+                      }}
+                      copyButton={true}
+                      // initiallyUnfolded={false}
+                      useCodeBlock={true}
+                    />
+                    <JzodElementEditorReactCodeMirror
+                      formikRootLessListKey={formikRootLessListKey}
+                      initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
+                      codeMirrorValue={codeMirrorValue}
+                      setCodeMirrorValue={setCodeMirrorValue}
+                      codeMirrorIsValidJson={codeMirrorIsValidJson}
+                      setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+                      rootLessListKey={props.rootLessListKey}
+                      rootLessListKeyArray={props.rootLessListKeyArray}
+                      hidden={!displayAsCodeEditor}
+                      insideAny={props.insideAny}
+                      isUnderTest={isUnderTest}
+                      displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+                    />
+                  </>
                 ) : (
                   <span
                     style={{
@@ -1423,8 +1452,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* simple type */}
             {/* <span>{props.deleteButtonElement ?? <></>}</span> */}
             {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
-              ?.objectHideDeleteButton &&
-              props.deleteButtonElement}
+              ?.objectHideDeleteButton && props.deleteButtonElement}
             {/* <span
               style={{
                 // display: !hideSubJzodEditor ? "none" : "inline-block",

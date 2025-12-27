@@ -27,6 +27,7 @@ import { useCurrentModel } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
+  ThemedOnScreenHelper,
   ThemedSelectWithPortal
 } from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
@@ -319,6 +320,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   }
 ) => {
   JzodLiteralEditorRenderCount++;
+  let error: JSX.Element | undefined = undefined;
   const context = useMiroirContextService();
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
@@ -384,9 +386,31 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         Array.isArray(d) ? d.includes(name) : d === name
       );
   if (isDiscriminator && discriminatorIndex === -1) {
-    throw new Error(
-      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
+    error = (
+      <div>
+        <ThemedOnScreenHelper
+          label="JzodLiteralEditor error"
+          data={{
+            rootLessListKey,
+            name,
+            parentKeyMapDiscriminator: parentKeyMap?.discriminator,
+            parentKeyMapDiscriminatorValues: parentKeyMap?.discriminatorValues,
+          }}
+          // initiallyUnfolded={false}
+          copyButton={true}
+          useCodeBlock={true}
+        />
+        {/* <div style={{ color: "red" }}>
+          Error: JzodLiteralEditor: {rootLessListKey} isDiscriminator is true but could not find
+          discriminator index for name "{name}" in parentKeyMap.discriminator{" "}
+          {JSON.stringify(parentKeyMap?.discriminator)} with values{" "}
+          {JSON.stringify(parentKeyMap?.discriminatorValues)}
+        </div> */}
+      </div>
     );
+    // throw new Error(
+    //   `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
+    // );
   }
   const currentReportSectionFormikValues = formik.values[reportSectionPathAsString] ?? formik.values;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
@@ -548,15 +572,14 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   //   ))}
   // </select>
 
-  return (
+  return error ? (
+    <>{error}</>
+  ) : (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}
       editor={
         readOnly ? (
-          <ThemedDisplayValue 
-            value={currentValue} 
-            type="literal" 
-          />
+          <ThemedDisplayValue value={currentValue} type="literal" />
         ) : isDiscriminator ? (
           <>
             <ThemedSelectWithPortal
@@ -571,8 +594,10 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
               minWidth="200px"
               // error={hasPathError}
             />
-            
-            <span style={{ fontSize: '1.2em', color: '#87CEEB' }} title="Literal discriminator">★</span>
+
+            <span style={{ fontSize: "1.2em", color: "#87CEEB" }} title="Literal discriminator">
+              ★
+            </span>
           </>
         ) : (
           <>

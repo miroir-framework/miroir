@@ -1,5 +1,6 @@
 import type { JzodUnionResolvedTypeForObjectReturnTypeOK } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
 import { JzodElement, type JzodObject, type JzodRecord } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { TransformerFailure, type TransformerReturnType } from "../../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
@@ -33,7 +34,7 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
   recursivelyUnfoldedRawSchemaList: JzodElement[],
   unionObjectChoices: (JzodObject | JzodRecord)[],
   resolveUnionResult: JzodUnionResolvedTypeForObjectReturnTypeOK
-): string[][] {
+): TransformerReturnType<string[][]> {
   // log.info(
   //   "getObjectUniondiscriminatorValuesFromResolvedSchema for jzodTypeCheck called with",
   //   currentValuePathString,
@@ -277,6 +278,21 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
                 case "tuple":
                 case "union":
                 default: {
+                  return new TransformerFailure({
+                    queryFailure: "FailedTransformer",
+                    queryContext: {
+                      currentValuePathString,
+                      effectiveDiscriminator,
+                      branchDiscriminator: branch.definition[effectiveDiscriminator],
+                      branch,
+                      recursivelyUnfoldedRawSchemaList,
+                    } as any
+                    // transformerPath: currentValuePathString, //: [...transformerPath, transformer.transformerType],
+                    // failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
+                    // queryContext:
+                    //   "transformerForBuild_list_listMapperToList_apply can not apply to failed resolvedReference",
+                    // innerError: resolvedApplyTo,
+                  });
                   throw new Error(
                     "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
                       " array discriminator " +

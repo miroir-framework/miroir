@@ -1,6 +1,7 @@
 import {
   LoggerInterface,
-  MiroirLoggerFactory
+  MiroirLoggerFactory,
+  resolvePathOnObject
 } from "miroir-core";
 import React from "react";
 import { packageName } from "../../../constants";
@@ -61,19 +62,47 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
     "error",
     error
   );
-
+  // const currentObjectValue = resolvePathOnObject(formikValues, attributeRootLessListKeyArray??[]);
   return (
     <div role="alert">
       <div style={{ color: "red" }}>
-        <p>Something went wrong in {origin??"unspecified"}</p>
-        <div key="1">{objectType} {rootLessListKey}</div>
+        <p>Something went wrong in {origin ?? "unspecified"}</p>
+        <div key="1">
+          {objectType} {rootLessListKey}
+        </div>
         {rootLessListKeyArray && Array.isArray(rootLessListKeyArray) && (
           <div key="1a">path {rootLessListKeyArray.join(".")}</div>
         )}
         {attributeRootLessListKeyArray && Array.isArray(attributeRootLessListKeyArray) && (
           <div key="2">attribute {attributeRootLessListKeyArray.join(".")}</div>
         )}
-        {currentValue && (<ThemedOnScreenHelper label="ErrorFallbackComponent currentValue" data={currentValue} />)}
+        <ThemedOnScreenHelper
+          label="ErrorFallbackComponent error"
+          data={error.toString()}
+          initiallyUnfolded={true}
+          copyButton={true}
+          useCodeBlock={true}
+        />
+        {/* <ThemedOnScreenHelper
+          label="ErrorFallbackComponent context"
+          data={context}
+          initiallyUnfolded={true}
+          copyButton={true}
+          useCodeBlock={true}
+        /> */}
+        {/* <ThemedOnScreenHelper
+          label="ErrorFallbackComponent attributeRootLessListKeyArray"
+          data={attributeRootLessListKeyArray?.join(".")}
+          // initiallyUnfolded={true}
+          /> */}
+        {/* <ThemedOnScreenHelper
+          label="ErrorFallbackComponent currentObjectValue"
+          data={currentObjectValue}
+          initiallyUnfolded={true}
+          /> */}
+          {/* {currentValue && (
+            <ThemedOnScreenHelper label="ErrorFallbackComponent currentValue" data={currentValue} />
+          )} */}
         {/* {attributeRootLessListKeyArray && formikValues && (
           <div>
             calc attribute value{" "}
@@ -84,9 +113,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
             )}
           </div>
         )} */}
-        {attributeName && (
-          <div key="3">attribute name {attributeName}</div>
-        )}
+        {/* {attributeName && <div key="3">attribute name {attributeName}</div>} */}
         {/* {attributeName && currentValue && (
           <div>
             attribute value{" "}

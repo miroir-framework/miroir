@@ -514,7 +514,7 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
         <span css={iconStyles}>▶</span>
         {label && <span css={labelStyles}>{label}</span>}
         {copyButton && (
-          <button css={copyButtonStyles} onClick={handleCopy}>
+          <button type="button" css={copyButtonStyles} onClick={handleCopy}>
             Copy
           </button>
         )}

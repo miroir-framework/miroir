@@ -1,15 +1,9 @@
 ﻿import { FormikContextType, useFormikContext } from "formik";
-import { ErrorBoundary } from "react-error-boundary";
 import {
   adminConfigurationDeploymentMiroir,
-  ReduxDeploymentsState,
-  entity,
-  entityDefinition,
   EntityDefinition,
   entityEntityDefinition,
-  EntityInstance,
   foldableElementTypes,
-  getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   getEntityInstancesUuidIndexNonHook,
   JzodArray,
@@ -17,41 +11,40 @@ import {
   JzodTuple,
   LoggerInterface,
   MetaModel,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
+  resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
-  miroirFundamentalJzodSchema,
-  type JzodSchema,
-  type MiroirModelEnvironment,
-  type KeyMapEntry,
-  resolveJzodSchemaReferenceInContext,
   type JzodReference,
-  // unfoldJzodSchemaOnce,
-  // UnfoldJzodSchemaOnceReturnType,
-  // UnfoldJzodSchemaOnceReturnTypeOK
+  type JzodSchema,
+  type KeyMapEntry,
+  type MiroirModelEnvironment
 } from "miroir-core";
-import React, { useCallback, useMemo, useState, useEffect } from "react";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import {
   useMiroirContextService
 } from "../../MiroirContextReactProvider";
 import { useCurrentModel } from "../../ReduxHooks";
-import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
-import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
-import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
-import { 
-  ThemedSizedButton, 
-  ThemedAddIcon,
-  ThemedStyledButton,
-  ThemedFoldedValueDisplay,
-  ThemedFlexRow
-} from "../Themes/index"
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
-import { useSelector } from "react-redux";
 import { useReportPageContext } from "../Reports/ReportPageContext";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
+import {
+  ThemedAddIcon,
+  ThemedFlexRow,
+  ThemedFoldedValueDisplay,
+  ThemedSizedButton,
+  ThemedStyledButton
+} from "../Themes/index";
+import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
+import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
+import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -144,8 +137,8 @@ interface ProgressiveArrayItemProps {
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
-  currentArrayElementRawDefinition: JzodElement | undefined;
-  resolvedElementJzodSchema: JzodElement | undefined;
+  currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined;
+  resolvedElementJzodSchemaDEFUNCT: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   usedIndentLevel: number;
   currentDeploymentUuid: string | undefined;
@@ -176,8 +169,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   rootLessListKey,
   rootLessListKeyArray,
   reportSectionPathAsString,
-  currentArrayElementRawDefinition,
-  resolvedElementJzodSchema,
+  currentArrayElementRawDefinitionDEFUNCT,
+  resolvedElementJzodSchemaDEFUNCT,
   typeCheckKeyMap,
   usedIndentLevel,
   currentDeploymentUuid,
@@ -218,7 +211,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
     <div key={rootLessListKey + "." + index}>
       <div key={listKey + "." + index} style={{ marginLeft: `calc(${indentShift})` }}>
         {!isRendered ? (
-          <div style={{ fontStyle: 'italic', color: '#666', padding: '4px' }}>
+          <div style={{ fontStyle: "italic", color: "#666", padding: "4px" }}>
             Loading array item {index}...
           </div>
         ) : (
@@ -258,21 +251,36 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   context={{
                     origin: "JzodArrayEditor",
                     objectType: "array",
-                    rootLessListKey: rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index,
+                    rootLessListKey:
+                      rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index,
                     attributeRootLessListKeyArray: [...rootLessListKeyArray, "" + index],
                     attributeName: "" + index,
                     attributeListKey: listKey + "." + index,
                     currentValue: currentValue,
                     formikValues: formik.values,
                     // rawJzodSchema: currentArrayElementRawDefinition.element,
-                    rawJzodSchema: currentArrayElementRawDefinition,
-                    localResolvedElementJzodSchemaBasedOnValue: resolvedElementJzodSchema?.type == "array"
-                      ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
-                      : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement),
+                    rawJzodSchema: currentArrayElementRawDefinitionDEFUNCT,
+                    localResolvedElementJzodSchemaBasedOnValue:
+                      resolvedElementJzodSchemaDEFUNCT?.type == "array"
+                        ? ((resolvedElementJzodSchemaDEFUNCT as JzodArray)?.definition as any)
+                        : ((resolvedElementJzodSchemaDEFUNCT as JzodTuple).definition[
+                            index
+                          ] as JzodElement),
                   }}
                 />
               )}
             >
+              <ThemedOnScreenDebug
+                label={`ProgressiveArrayItem rendering item at ${itemRootLessListKey}`}
+                data={{ 
+                  itemRootLessListKey,
+                  // typeCheckKeyMap,
+                  // resolvedElementJzodSchemaDEFUNCT,
+                 }}
+                // copyButton={true}
+                initiallyUnfolded={false}
+                useCodeBlock={true}
+              />
               <JzodElementEditor
                 name={"" + index}
                 listKey={listKey + "." + index}
@@ -286,11 +294,13 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
                 reportSectionPathAsString={reportSectionPathAsString}
                 resolvedElementJzodSchemaDEFUNCT={
-                  resolvedElementJzodSchema?.type == "array"
-                    ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
-                    : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
+                  resolvedElementJzodSchemaDEFUNCT?.type == "array"
+                    ? ((resolvedElementJzodSchemaDEFUNCT as JzodArray)?.definition as any)
+                    : ((resolvedElementJzodSchemaDEFUNCT as JzodTuple).definition[
+                        index
+                      ] as JzodElement)
                 }
-                typeCheckKeyMap={ typeCheckKeyMap }
+                typeCheckKeyMap={typeCheckKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
                 insideAny={insideAny}
                 maxRenderDepth={maxRenderDepth}
@@ -638,7 +648,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               //   "typeCheckKeyMap",
               //   typeCheckKeyMap,
               // );
-              const currentArrayElementRawDefinition: JzodElement | undefined =
+              const currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined =
                 typeCheckKeyMap &&
                 typeCheckKeyMap[rootLessListKey].rawSchema &&
                 typeCheckKeyMap[rootLessListKey].rawSchema.type !== "any" &&
@@ -647,7 +657,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   ? typeCheckKeyMap[attributeRootLessListKey].rawSchema
                   : { type: "any" };
               // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
-              if (!currentArrayElementRawDefinition) {
+              if (!currentArrayElementRawDefinitionDEFUNCT) {
                 log.error(
                   "JzodArrayEditor could not find typeCheckKeyMap for attribute",
                   index,
@@ -676,8 +686,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   rootLessListKey={rootLessListKey}
                   rootLessListKeyArray={rootLessListKeyArray}
                   reportSectionPathAsString={reportSectionPathAsString}
-                  currentArrayElementRawDefinition={currentArrayElementRawDefinition}
-                  resolvedElementJzodSchema={resolvedElementJzodSchema}
+                  currentArrayElementRawDefinitionDEFUNCT={currentArrayElementRawDefinitionDEFUNCT}
+                  resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
                   typeCheckKeyMap={typeCheckKeyMap}
                   usedIndentLevel={usedIndentLevel}
                   currentDeploymentUuid={currentDeploymentUuid}
@@ -717,6 +727,13 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // ##############################################################################################
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
+      <ThemedOnScreenDebug
+        label={`Rendering JzodArrayEditor for array at ${rootLessListKey || "ROOT"}`}
+        data={{rootLessListKey, typeCheckKeyMap,}}
+        copyButton={true}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      />
       <div>
         <ThemedFlexRow justify="start" align="center">
           <span>
@@ -801,13 +818,21 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           id={listKey + ".inner"}
           style={{
             marginLeft: `calc(${indentShift})`,
-            display:
-              reportContext.isNodeFolded(rootLessListKeyArray)
-                ? "none"
-                : "block",
+            display: reportContext.isNodeFolded(rootLessListKeyArray) ? "none" : "block",
           }}
           key={`${rootLessListKey}|body`}
         >
+          <ThemedOnScreenDebug
+            label={`JzodArrayEditor rendering items for array at ${rootLessListKey || "ROOT"}`}
+            data={{ 
+              rootLessListKey,
+              typeCheckKeyMap,
+              // resolvedElementJzodSchema,
+             }}
+            copyButton={true}
+            initiallyUnfolded={false}
+            useCodeBlock={true}
+          />
           {arrayItems}
         </div>
       </div>

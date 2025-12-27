@@ -1,10 +1,11 @@
-import { Clear } from "../Themes/MaterialSymbolWrappers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { Clear } from "../Themes/MaterialSymbolWrappers";
 
 import {
   alterObjectAtPath,
   ApplicationSection,
+  defaultMetaModelEnvironment,
   deleteObjectAtPath,
   EntityInstancesUuidIndex,
   foldableElementTypes,
@@ -18,9 +19,8 @@ import {
   ReduxDeploymentsState,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
-  Uuid,
-  defaultMetaModelEnvironment,
   transformer_extended_apply_wrapper,
+  Uuid,
   type TransformerReturnType
 } from "miroir-core";
 
@@ -34,6 +34,8 @@ import {
   measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { useReportPageContext } from "../Reports/ReportPageContext";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
 import {
   ThemedAddIcon,
   ThemedAttributeLabel,
@@ -42,19 +44,15 @@ import {
   ThemedEditableInput,
   ThemedFlexRow,
   ThemedFoldedValueDisplay,
-  ThemedIndentedContainer,
   ThemedLoadingCard,
-  ThemedOnScreenHelper,
   ThemedOptionalAttributeContainer,
   ThemedOptionalAttributeItem,
   ThemedSizedButton,
   ThemedSmallIconButton
-} from "../Themes/index"
-import { indentShift } from "./JzodArrayEditor";
+} from "../Themes/index";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
-import { useJzodElementEditorHooks, getFoldedDisplayValue } from "./JzodElementEditorHooks";
+import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
-import { useReportPageContext } from "../Reports/ReportPageContext";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -288,7 +286,7 @@ const ProgressiveAttribute: FC<{
               error={error}
               resetErrorBoundary={resetErrorBoundary}
               context={{
-                origin: "JzodObjectEditor",
+                origin: "JzodObjectEditor_ProgressiveAttribute",
                 objectType: "object",
                 rootLessListKey,
                 attributeRootLessListKeyArray,
@@ -922,7 +920,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             error={error}
             resetErrorBoundary={resetErrorBoundary}
             context={{
-              origin: "JzodObjectEditor - BlobEditorField",
+              origin: "JzodObjectEditor-BlobEditorField",
               objectType: "blob",
               rootLessListKey,
               rootLessListKeyArray,
@@ -1034,10 +1032,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      {/* <ThemedOnScreenHelper
+      <ThemedOnScreenDebug
         label={`JzodObjectEditor: ${rootLessListKey}`}
         data={{ rootLessListKey, formikRootLessListKey, currentValueObjectAtKey }}
-      /> */}
+        copyButton={true}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      />
         {/* Performance statistics */}
         {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (
           <ThemedFlexRow justify="start" align="center">
