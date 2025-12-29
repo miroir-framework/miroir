@@ -362,7 +362,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         <ThemedOnScreenHelper
           label={`TypedValueObjectEditor for valueObject`}
           data={valueObject}
-          // initiallyUnfolded={false}
+          initiallyUnfolded={false}
         />
         <CodeBlock_ReadOnly value={jsonString} copyButton={true} />;
         </div>

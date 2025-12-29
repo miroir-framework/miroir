@@ -150,6 +150,7 @@ interface ProgressiveArrayItemProps {
   currentValue: any;
   maxRenderDepth?: number;
   readOnly?: boolean;
+  existingObject?: boolean;
   displayError?: {
     errorPath: string[];
     errorMessage: string;
@@ -182,6 +183,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   currentValue,
   maxRenderDepth,
   readOnly,
+  existingObject,
   displayError,
   onChangeVector,
 }) => {
@@ -305,6 +307,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 insideAny={insideAny}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
+                existingObject={existingObject}
                 displayError={displayError}
               />
             </ErrorBoundary>
@@ -342,6 +345,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     displayAsStructuredElementSwitch,
     maxRenderDepth,
     readOnly,
+    existingObject,
     displayError,
     onChangeVector,
   }
@@ -699,6 +703,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   currentValue={currentValue}
                   maxRenderDepth={maxRenderDepth}
                   readOnly={readOnly}
+                  
                   displayError={displayError}
                   onChangeVector={onChangeVector}
                 />

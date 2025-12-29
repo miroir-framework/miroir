@@ -278,6 +278,26 @@ export const miroirFundamentalJzodSchema = {
                         }
                       ]
                     },
+                    "editable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is editable in UIs upon instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
+                    "modifiable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
                     "uuid": {
                       "type": "object",
                       "optional": true,
@@ -601,6 +621,26 @@ export const miroirFundamentalJzodSchema = {
                             ]
                           }
                         }
+                      },
+                      "editable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is editable in UIs upon instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
+                      },
+                      "modifiable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
                       },
                       "objectUuidAttributeLabelPosition": {
                         "type": "enum",
@@ -22272,7 +22312,6 @@ export const miroirFundamentalJzodSchema = {
         "type": "object",
         "tag": {
           "value": {
-            "id": 10,
             "defaultLabel": "Action",
             "editable": true,
             "display": {
@@ -22451,7 +22490,6 @@ export const miroirFundamentalJzodSchema = {
         "type": "object",
         "tag": {
           "value": {
-            "id": 1,
             "defaultLabel": "Endpoint",
             "editable": false,
             "display": {
@@ -22464,7 +22502,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Uuid",
                 "editable": false
               }
@@ -22474,7 +22511,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "tag": {
               "value": {
-                "id": 2,
                 "defaultLabel": "Entity Name",
                 "editable": false
               }
@@ -22484,7 +22520,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 3,
                 "defaultLabel": "Entity Uuid",
                 "editable": false
               }
@@ -22495,7 +22530,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 4,
                 "defaultLabel": "Entity Definition Version Uuid",
                 "editable": false
               }
@@ -22505,7 +22539,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "tag": {
               "value": {
-                "id": 6,
                 "defaultLabel": "Name",
                 "editable": false
               }
@@ -22515,8 +22548,16 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "tag": {
               "value": {
-                "id": 7,
                 "defaultLabel": "Version",
+                "editable": false
+              }
+            }
+          },
+          "application": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Application",
                 "editable": false
               }
             }
@@ -22526,7 +22567,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 8,
                 "defaultLabel": "Description",
                 "editable": true
               }
@@ -22537,7 +22577,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 9,
                 "defaultLabel": "Transactional Endpoint",
                 "editable": true
               }
@@ -22547,7 +22586,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "tag": {
               "value": {
-                "id": 10,
                 "defaultLabel": "Definition",
                 "editable": true
               }
@@ -22560,7 +22598,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "object",
                     "tag": {
                       "value": {
-                        "id": 10,
                         "defaultLabel": "Action",
                         "editable": true,
                         "display": {
@@ -23536,6 +23573,26 @@ export const miroirFundamentalJzodSchema = {
                               }
                             }
                           ]
+                        },
+                        "editable": {
+                          "type": "boolean",
+                          "tag": {
+                            "value": {
+                              "description": "Whether the attribute is editable in UIs upon instance creation.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "optional": true
+                        },
+                        "modifiable": {
+                          "type": "boolean",
+                          "tag": {
+                            "value": {
+                              "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "optional": true
                         },
                         "uuid": {
                           "optional": true,
@@ -24567,6 +24624,26 @@ export const miroirFundamentalJzodSchema = {
                                         }
                                       }
                                     ]
+                                  },
+                                  "editable": {
+                                    "type": "boolean",
+                                    "tag": {
+                                      "value": {
+                                        "description": "Whether the attribute is editable in UIs upon instance creation.",
+                                        "canBeTemplate": false
+                                      }
+                                    },
+                                    "optional": true
+                                  },
+                                  "modifiable": {
+                                    "type": "boolean",
+                                    "tag": {
+                                      "value": {
+                                        "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                                        "canBeTemplate": false
+                                      }
+                                    },
+                                    "optional": true
                                   },
                                   "objectUuidAttributeLabelPosition": {
                                     "type": "union",
@@ -27980,6 +28057,26 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "editable": {
+                          "type": "boolean",
+                          "tag": {
+                            "value": {
+                              "description": "Whether the attribute is editable in UIs upon instance creation.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "optional": true
+                        },
+                        "modifiable": {
+                          "type": "boolean",
+                          "tag": {
+                            "value": {
+                              "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "optional": true
+                        },
                         "uuid": {
                           "optional": true,
                           "type": "union",
@@ -28929,6 +29026,26 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 }
                               ]
+                            },
+                            "editable": {
+                              "type": "boolean",
+                              "tag": {
+                                "value": {
+                                  "description": "Whether the attribute is editable in UIs upon instance creation.",
+                                  "canBeTemplate": false
+                                }
+                              },
+                              "optional": true
+                            },
+                            "modifiable": {
+                              "type": "boolean",
+                              "tag": {
+                                "value": {
+                                  "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                                  "canBeTemplate": false
+                                }
+                              },
+                              "optional": true
                             },
                             "uuid": {
                               "optional": true,
@@ -29960,6 +30077,26 @@ export const miroirFundamentalJzodSchema = {
                                             }
                                           }
                                         ]
+                                      },
+                                      "editable": {
+                                        "type": "boolean",
+                                        "tag": {
+                                          "value": {
+                                            "description": "Whether the attribute is editable in UIs upon instance creation.",
+                                            "canBeTemplate": false
+                                          }
+                                        },
+                                        "optional": true
+                                      },
+                                      "modifiable": {
+                                        "type": "boolean",
+                                        "tag": {
+                                          "value": {
+                                            "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                                            "canBeTemplate": false
+                                          }
+                                        },
+                                        "optional": true
                                       },
                                       "objectUuidAttributeLabelPosition": {
                                         "type": "union",
@@ -33147,7 +33284,6 @@ export const miroirFundamentalJzodSchema = {
       "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_endpointDefinition": {
         "tag": {
           "value": {
-            "id": 1,
             "defaultLabel": "Endpoint",
             "editable": false,
             "display": {
@@ -33170,7 +33306,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Endpoint",
                 "editable": false,
                 "display": {
@@ -33184,7 +33319,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Uuid",
                     "editable": false,
                     "isTemplate": true
@@ -33196,7 +33330,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -33215,7 +33348,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 2,
                     "defaultLabel": "Entity Name",
                     "editable": false,
                     "isTemplate": true
@@ -33227,7 +33359,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "id": 2,
                         "defaultLabel": "Entity Name",
                         "editable": false
                       }
@@ -33246,7 +33377,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 3,
                     "defaultLabel": "Entity Uuid",
                     "editable": false,
                     "isTemplate": true
@@ -33258,7 +33388,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 3,
                         "defaultLabel": "Entity Uuid",
                         "editable": false
                       }
@@ -33278,7 +33407,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
                     "editable": false,
                     "isTemplate": true
@@ -33291,7 +33419,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 4,
                         "defaultLabel": "Entity Definition Version Uuid",
                         "editable": false
                       }
@@ -33310,7 +33437,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 6,
                     "defaultLabel": "Name",
                     "editable": false,
                     "isTemplate": true
@@ -33322,7 +33448,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "id": 6,
                         "defaultLabel": "Name",
                         "editable": false
                       }
@@ -33341,7 +33466,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 7,
                     "defaultLabel": "Version",
                     "editable": false,
                     "isTemplate": true
@@ -33353,8 +33477,36 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "id": 7,
                         "defaultLabel": "Version",
+                        "editable": false
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "application": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Application",
+                    "editable": false,
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
                         "editable": false
                       }
                     }
@@ -33373,7 +33525,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 8,
                     "defaultLabel": "Description",
                     "editable": true,
                     "isTemplate": true
@@ -33386,7 +33537,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 8,
                         "defaultLabel": "Description",
                         "editable": true
                       }
@@ -33406,7 +33556,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 9,
                     "defaultLabel": "Transactional Endpoint",
                     "editable": true,
                     "isTemplate": true
@@ -33419,7 +33568,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 9,
                         "defaultLabel": "Transactional Endpoint",
                         "editable": true
                       }
@@ -33437,7 +33585,6 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "tag": {
                   "value": {
-                    "id": 10,
                     "defaultLabel": "Definition",
                     "editable": true,
                     "isTemplate": true
@@ -33457,7 +33604,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "object",
                     "tag": {
                       "value": {
-                        "id": 10,
                         "defaultLabel": "Definition",
                         "editable": true,
                         "isTemplate": true
@@ -33488,7 +33634,6 @@ export const miroirFundamentalJzodSchema = {
                                 "type": "object",
                                 "tag": {
                                   "value": {
-                                    "id": 10,
                                     "defaultLabel": "Action",
                                     "editable": true,
                                     "display": {
@@ -36000,7 +36145,6 @@ export const miroirFundamentalJzodSchema = {
       "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_action": {
         "tag": {
           "value": {
-            "id": 10,
             "defaultLabel": "Action",
             "editable": true,
             "display": {
@@ -36023,7 +36167,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "tag": {
               "value": {
-                "id": 10,
                 "defaultLabel": "Action",
                 "editable": true,
                 "display": {
@@ -41510,6 +41653,26 @@ export const miroirFundamentalJzodSchema = {
                         }
                       ]
                     },
+                    "editable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is editable in UIs upon instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
+                    "modifiable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
                     "uuid": {
                       "type": "object",
                       "optional": true,
@@ -41833,6 +41996,26 @@ export const miroirFundamentalJzodSchema = {
                             ]
                           }
                         }
+                      },
+                      "editable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is editable in UIs upon instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
+                      },
+                      "modifiable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
                       },
                       "objectUuidAttributeLabelPosition": {
                         "type": "enum",
@@ -49829,6 +50012,26 @@ export const miroirFundamentalJzodSchema = {
                         }
                       ]
                     },
+                    "editable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is editable in UIs upon instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
+                    "modifiable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
                     "uuid": {
                       "type": "object",
                       "optional": true,
@@ -50152,6 +50355,26 @@ export const miroirFundamentalJzodSchema = {
                             ]
                           }
                         }
+                      },
+                      "editable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is editable in UIs upon instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
+                      },
+                      "modifiable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
                       },
                       "objectUuidAttributeLabelPosition": {
                         "type": "enum",

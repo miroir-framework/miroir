@@ -125,6 +125,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       <div>
         <JzodElementEditor
           name={name}
+          existingObject={props.existingObject}
           listKey={listKey}
           rootLessListKey={rootLessListKey}
           rootLessListKeyArray={rootLessListKeyArray}

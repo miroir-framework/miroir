@@ -164,6 +164,7 @@ const ProgressiveAttribute: FC<{
   insideAny?: boolean;
   maxRenderDepth?: number;
   readOnly?: boolean;
+  existingObject?: boolean;
 
   displayError?: {
     errorPath: string[];
@@ -195,6 +196,7 @@ const ProgressiveAttribute: FC<{
   measuredUnfoldJzodSchemaOnce,
   maxRenderDepth,
   readOnly,
+  existingObject,
   // Direct props
   currentDeploymentUuid,
   currentApplicationSection,
@@ -304,6 +306,7 @@ const ProgressiveAttribute: FC<{
           {/* <ThemedOnScreenHelper label="attribute" data={attribute[0]}/> */}
           <JzodElementEditor
             name={attribute[0]}
+            existingObject={existingObject}
             labelElement={editableLabel}
             key={attribute[0]}
             listKey={attributeListKey}
@@ -380,6 +383,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     displayError,
     maxRenderDepth,
     readOnly,
+    existingObject,
     foreignKeyObjects = {}, // Add default empty object
     onChangeVector,
   } = props;
@@ -993,6 +997,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 hideOptionalButton={localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
+                existingObject={existingObject}
                 formik={formik}
                 currentMiroirFundamentalJzodSchema={currentMiroirFundamentalJzodSchema}
                 currentModel={currentModel}

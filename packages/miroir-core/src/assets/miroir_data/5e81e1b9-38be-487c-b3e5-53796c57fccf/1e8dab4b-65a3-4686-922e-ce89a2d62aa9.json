@@ -268,6 +268,26 @@
                         }
                       ]
                     },
+                    "editable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is editable in UIs upon instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
+                    "modifiable": {
+                      "type": "boolean",
+                      "tag": {
+                        "value": {
+                          "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                          "canBeTemplate": false
+                        }
+                      },
+                      "optional": true
+                    },
                     "uuid": {
                       "type": "object",
                       "optional": true,
@@ -570,6 +590,26 @@
                             "definition": ["portalSelector", "muiSelector"]
                           }
                         }
+                      },
+                      "editable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is editable in UIs upon instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
+                      },
+                      "modifiable": {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "Whether the attribute is modifiable in UIs after instance creation.",
+                            "canBeTemplate": false
+                          }
+                        },
+                        "optional": true
                       },
                       "objectUuidAttributeLabelPosition": {
                         "type": "enum",

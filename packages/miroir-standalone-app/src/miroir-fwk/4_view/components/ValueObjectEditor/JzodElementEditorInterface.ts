@@ -23,6 +23,7 @@ export interface UnionInformation {
 
 export interface JzodEditorPropsRoot {
   labelElement?: JSX.Element; // used to display a label in the editor
+  existingObject?: boolean; // used to control if the editor is for an existing object or a new one
   name: string;
   listKey: string;
   rootLessListKey: string;

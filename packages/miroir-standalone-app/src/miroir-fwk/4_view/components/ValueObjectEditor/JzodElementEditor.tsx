@@ -304,6 +304,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   
   count++;
 
+  const existingObject = props.existingObject ?? true;
   // Create a getUniqueValues key for this component instance
   const componentKey = `JzodElementEditor-${props.rootLessListKey || 'ROOT'}`;
 
@@ -672,6 +673,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           </>
         );
       }
+      const localReadOnly =
+        props.readOnly ||
+        localResolvedElementJzodSchemaBasedOnValue.tag?.value?.editable === false ||
+        localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable === false ||
+        (existingObject === false &&
+          localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.modifiable === false);
       // Generate element based on schema type
       switch (localResolvedElementJzodSchemaBasedOnValue.type) {
         case "object": {
@@ -737,7 +744,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={enhancedLabelElement}
               editor={
-                props.readOnly ? (
+                localReadOnly ? (
                   <ThemedDisplayValue value={currentValueObjectAtKey} type="boolean" />
                 ) : (
                   <ThemedSwitch
@@ -746,7 +753,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     aria-label={props.rootLessListKey}
                     {...fieldProps}
                     // name={props.rootLessListKey}
-                    checked={currentValueObjectAtKey}// TODO: get other fieldProps: name, checked, onChange, onBlur
+                    checked={currentValueObjectAtKey} // TODO: get other fieldProps: name, checked, onChange, onBlur
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       // Invoke onChangeVector callback if registered for this field
                       if (onChangeCallback) {
@@ -879,7 +886,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 e[1].uuid,
             }));
 
-            const editor = props.readOnly ? (
+            const editor = localReadOnly ? (
               <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
             ) : !localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ||
               localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ==
@@ -996,7 +1003,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   <ThemedLabeledEditor
                     labelElement={enhancedLabelElement}
                     editor={
-                      props.readOnly ? (
+                      props.readOnly || localResolvedElementJzodSchemaBasedOnValue.tag?.value?.editable === false ? (
                         <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
                       ) : (
                         <ThemedTextEditor
