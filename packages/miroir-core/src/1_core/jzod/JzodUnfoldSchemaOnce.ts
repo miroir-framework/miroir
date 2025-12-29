@@ -620,7 +620,7 @@ export function unfoldJzodSchemaOnce(
     case "any":
     case "date":
     case "never":
-    case "null":
+    // case "null":
     case "unknown":
     case "void":
     // other types

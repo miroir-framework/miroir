@@ -23,10 +23,10 @@ export function forgeCarryOnReferenceName(
   absolutePath: string,
   relativePath: string | undefined,
   suffix?: string,
-  prefix: string = "carryOn_",
+  prefix: string = "mlElementTemplate_",
 ) {
   return (
-    // "carryOn_" +
+    // "mlElementTemplate_" +
     prefix +
     absolutePath?.replace(/-/g, "$") +
     "_" +
@@ -139,6 +139,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
   convertedReferences?: Record<string, JzodElement>, // converted reference lookup
   skipObjectAttributesOnFirstLevel?: string[],
+  skipReference?: (name:string, defn: JzodReference) => boolean,
 ): ApplyCarryOnSchemaOnLevelReturnType
 // {
 //   resultSchema: JzodElement;
@@ -230,10 +231,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
     case "boolean":
     case "date":
     case "enum":
-    case "literal":
     case "map": // TODO!!!
     case "never":
-    case "null":
+    // case "null":
     case "number":
     case "string":
     case "uuid":
@@ -273,6 +273,13 @@ export function applyLimitedCarryOnSchemaOnLevel(
       return resultSchema;
       break;
     }
+    case "literal": {
+      return {
+        resultSchema: baseSchema,
+        hasBeenApplied: false,
+      };
+      break;
+    }
     case "record": {
       // const convertedSubSchemas: JzodElement[] = [];
       const convertedSubSchemasReferences: Record<string, JzodElement> = {};
@@ -286,7 +293,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
         localReferencePrefix,
         suffixForReferences,
         resolveJzodReference,
-        convertedReferences
+        convertedReferences,
+        undefined, // skipObjectAttributesOnFirstLevel,
+        skipReference,
       );
       for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
         convertedSubSchemasReferences[c[0]] = c[1];
@@ -358,7 +367,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
         localReferencePrefix,
         suffixForReferences,
         resolveJzodReference,
-        convertedReferences
+        convertedReferences,
+        undefined, // skipObjectAttributesOnFirstLevel,
+        skipReference,
       );
       for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
         convertedSubSchemasReferences[c[0]] = c[1];
@@ -418,7 +429,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
         localReferencePrefix,
         suffixForReferences,
         resolveJzodReference,
-        convertedReferences
+        convertedReferences,
+        undefined, // skipObjectAttributesOnFirstLevel,
+        skipReference,
       );
       for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
         convertedSubSchemasReferences[c[0]] = c[1];
@@ -478,7 +491,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
           {
             ...convertedReferences,
             ...convertedSubSchemasReferences,
-          }
+          }, // resolved references
+          undefined, // skipObjectAttributesOnFirstLevel,
+          skipReference,
         );
         convertedSubSchemas.push(convertedSubSchema.resultSchema);
         convertedSubSchemasHasBeenApplied.push(convertedSubSchema.hasBeenApplied);
@@ -541,7 +556,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
             suffixForReferences,
             resolveJzodReference,
             convertedReferences,
-            flatDiscriminators,
+            flatDiscriminators, // skipObjectAttributesOnFirstLevel,
+            skipReference,
           )
         );
       const newResolvedReferences = subConvertedSchemas.filter((e) => e.resolvedReferences);
@@ -612,7 +628,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
           localReferencePrefix,
           undefined, // do not add suffixForReferences to definition of an object, only to extended references
           resolveJzodReference,
-          { ...convertedReferences, ...convertedSubSchemasReferences }
+          { ...convertedReferences, ...convertedSubSchemasReferences }, // resolved references
+          undefined, // skipObjectAttributesOnFirstLevel,
+          skipReference,
         );
         convertedSubSchemas[subSchema[0]] = convertedSubSchema.resultSchema;
         convertedSubSchemasHasBeenApplied.push(convertedSubSchema.hasBeenApplied);
@@ -637,7 +655,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
                   localReferencePrefix,
                   "extend", //suffixForReferences,
                   resolveJzodReference,
-                  convertedReferences
+                  convertedReferences,
+                  undefined, // skipObjectAttributesOnFirstLevel,
+                  skipReference,
                 ),
               ]
             : (baseSchema.extend as (JzodObject | JzodReference)[]).map(
@@ -652,7 +672,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
                     localReferencePrefix,
                     "extend", //suffixForReferences,
                     resolveJzodReference,
-                    convertedReferences
+                    convertedReferences,
+                    undefined, // skipObjectAttributesOnFirstLevel,
+                    skipReference,
                   )
               )
           : undefined; // TODO: apply carryOn object
@@ -748,8 +770,13 @@ export function applyLimitedCarryOnSchemaOnLevel(
         // ["transformerForBuild", "transformerForRuntime", "transformerForBuildPlusRuntime"].includes(
         ["transformerForBuild", "transformerForBuildPlusRuntime"].includes(
           baseSchema?.definition?.relativePath ?? ""
-        )
+        ) ||
+        (skipReference && skipReference(baseSchema?.definition?.relativePath ?? "", baseSchema)) // redundant with above test?
       ) {
+        // log.info(
+        //   "applyCarryOnSchemaOnLevel: skipping carryOn application for transformer reference",
+        //   baseSchema?.definition?.relativePath ?? ""
+        // );
         return {
           resultSchema: baseSchema,
           hasBeenApplied: false,
@@ -805,6 +832,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
               [localReferenceName]: { type: "never" },
             },
             skipObjectAttributesOnFirstLevel,
+            skipReference,
           );
           convertedContextSubSchemasHasBeenApplied.push(convertedReference.hasBeenApplied);
           convertedAbosulteReferences[localReferenceName] = convertedReference.resultSchema; // what about local references of absolute references?
@@ -857,7 +885,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
             ...convertedReferences,
             ...convertedContextSubSchemasReferences,
             [contextSubSchema[0]]: { type: "never" },
-          }
+          }, // resolved references
+          undefined, // skipObjectAttributesOnFirstLevel,
+          skipReference,
         );
         if (!convertedContextSubSchemas) {
           convertedContextSubSchemas = {};

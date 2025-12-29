@@ -373,8 +373,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return new Date();
     }
     case "any":
-    case "undefined":
-    case "null": {
+    // case "null": {
+    case "undefined": {
       return undefined;
     }
     case "uuid": {

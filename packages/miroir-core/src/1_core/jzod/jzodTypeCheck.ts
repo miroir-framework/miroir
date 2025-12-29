@@ -739,7 +739,7 @@ export function jzodTypeCheck(
     const isOptional = jzodSchema.optional === true;
     const isNullable = jzodSchema.nullable === true;
     
-    if (!isOptional && !isNullable && jzodSchema.type !== "any" && jzodSchema.type !== "undefined" && jzodSchema.type !== "null") {
+    if (!isOptional && !isNullable && jzodSchema.type !== "any" && jzodSchema.type !== "undefined") {
       return {
         status: "error",
         error: `jzodTypeCheck expected a value but got ${valueObject === null ? 'null' : 'undefined'} for non-optional schema`,
@@ -758,6 +758,16 @@ export function jzodTypeCheck(
       typePath: currentTypePath,
       rawSchema: jzodSchema,
       resolvedSchema: jzodSchema,
+      keyMap: {
+        [currentValuePath.join(".")]: {
+          rawSchema: jzodSchema,
+          // resolvedSchema: effectiveSchema
+          // resolvedSchema: valueToJzod(valueObject) as JzodElement,
+          resolvedSchema: jzodSchema,
+          valuePath: currentValuePath,
+          typePath: currentTypePath,
+        }, // map the current value path to the resolved schema
+      },
     };
   }
 
@@ -1992,7 +2002,6 @@ export function jzodTypeCheck(
     }
     case "undefined":
     case "never":
-    case "null":
     case "unknown":
     case "void":
     // other schema types

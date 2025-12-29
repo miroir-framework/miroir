@@ -76,10 +76,11 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { CompositeActionTemplate } from 'miroir-core';
 import { TransactionalInstanceAction } from 'miroir-core';
-import { CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction } from 'miroir-core';
+import { MlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction } from 'miroir-core';
 import {
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction,
+  MlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction,
   transformer,
+  type BuildPlusRuntimeDomainAction,
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { entityReport } from 'miroir-core';
 import { displayTestSuiteResultsDetails } from 'miroir-core';
@@ -842,12 +843,13 @@ const createEntityCompositeActionTemplateAssertions = [
 ];
 
 // ##############################################################################################
-const createReportsCompositeActionTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction =
+// const createReportsCompositeActionTemplate: MlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction =
+const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
   {
     actionType: "transactionalInstanceAction",
     actionLabel: "createReports",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       instanceAction: {
         actionType: "instanceAction",
@@ -1037,7 +1039,7 @@ const createReportsCompositeActionTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1
             },
           ],
         }
-      } as any as CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction,
+      } as any as MlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction,
     }
   };
 

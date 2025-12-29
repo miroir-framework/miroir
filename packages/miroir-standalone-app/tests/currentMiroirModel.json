@@ -5113,7 +5113,7 @@
                 "type": "boolean",
                 "optional": true
               },
-              "carryOn": {
+              "mlElementTemplate": {
                 "type": "union",
                 "optional": true,
                 "definition": [
@@ -5219,7 +5219,7 @@
                   }
                 }
               },
-              "carryOn": {
+              "mlElementTemplate": {
                 "type": "union",
                 "optional": true,
                 "definition": [
@@ -5365,7 +5365,7 @@
                   }
                 ]
               },
-              "carryOn": {
+              "mlElementTemplate": {
                 "optional": true,
                 "type": "schemaReference",
                 "definition": {

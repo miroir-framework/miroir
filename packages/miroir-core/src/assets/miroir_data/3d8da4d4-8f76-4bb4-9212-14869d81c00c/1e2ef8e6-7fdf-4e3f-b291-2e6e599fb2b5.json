@@ -90,6 +90,11 @@
                 "tag": { "value": { "defaultLabel": "Actions Definition", "editable": true, "canBeTemplate": false } },
                 "definition": {
                   "type": "union",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": false
+                    }
+                  },
                   "discriminator": "actionType",
                   "definition": [
                     {
@@ -108,6 +113,13 @@
                     },
                     {
                       "type": "object",
+                      "tag": {
+                        "value": {
+                          "display":{
+                            "displayedAttributeValueWhenFolded": "actionLabel"
+                          }
+                        }
+                      },
                       "definition": {
                         "actionType": {
                           "type": "literal",
@@ -131,6 +143,13 @@
                     },
                     {
                       "type": "object",
+                      "tag": {
+                        "value": {
+                          "display":{
+                            "displayedAttributeValueWhenFolded": "actionLabel"
+                          }
+                        }
+                      },
                       "definition": {
                         "actionType": {
                           "type": "literal",
@@ -154,6 +173,13 @@
                     },
                     {
                       "type": "object",
+                      "tag": {
+                        "value": {
+                          "display":{
+                            "displayedAttributeValueWhenFolded": "actionLabel"
+                          }
+                        }
+                      },
                       "definition": {
                         "actionType": {
                           "type": "literal",
@@ -177,6 +203,13 @@
                     },
                     {
                       "type": "object",
+                      "tag": {
+                        "value": {
+                          "display":{
+                            "displayedAttributeValueWhenFolded": "actionLabel"
+                          }
+                        }
+                      },
                       "definition": {
                         "actionType": {
                           "type": "literal",

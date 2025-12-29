@@ -78,7 +78,7 @@
                           "ifThenElseMMLS": {
                             "mmlsReference": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "transformerForBuild"
+                              "relativePath": "transformerForBuildPlusRuntime"
                             }
                           }
                         }
@@ -121,7 +121,7 @@
                               "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "transformerForBuild"
+                                  "relativePath": "transformerForBuildPlusRuntime"
                                 }
                               }
                             }
@@ -255,6 +255,12 @@
                         },
                         {
                           "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "description": "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
+                              "canBeTemplate": false
+                            }
+                          },
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "transformerForBuildPlusRuntime"
@@ -364,7 +370,7 @@
                             "ifThenElseMMLS": {
                               "mmlsReference": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuild"
+                                "relativePath": "transformerForBuildPlusRuntime"
                               }
                             }
                           }
@@ -407,7 +413,7 @@
                                 "ifThenElseMMLS": {
                                   "mmlsReference": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "transformerForBuild"
+                                    "relativePath": "transformerForBuildPlusRuntime"
                                   }
                                 }
                               }
@@ -440,8 +446,7 @@
                         "definition": ["model", "data", "metaModel"]
                       },
                       "targetEntity": {
-                        "type": "uuid",
-                        "optional": true
+                        "type": "uuid"
                       },
                       "targetEntityOrderInstancesBy": {
                         "type": "string",
@@ -532,11 +537,66 @@
                         "type": "string",
                         "optional": true
                       },
-                      "objectWithoutHeader":{
+                      "hidden": {
+                        "type": "union",
+                        "optional": true,
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
+                                "canBeTemplate": false
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "uuid": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "selector": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": ["portalSelector", "muiSelector"]
+                          }
+                        }
+                      },
+                      "objectUuidAttributeLabelPosition": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": ["left", "stacked", "hidden"]
+                      },
+                      "objectHideDeleteButton": {
                         "type": "boolean",
                         "optional": true
                       },
-                      "unfoldSubLevels":{
+                      "objectHideOptionalButton": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "objectWithoutHeader": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "objectAttributesNoIndent": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "objectOrArrayWithoutFrame": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "unfoldSubLevels": {
                         "type": "number",
                         "optional": true
                       }
@@ -616,7 +676,6 @@
               "bigint",
               "boolean",
               "never",
-              "null",
               "uuid",
               "undefined",
               "unknown",

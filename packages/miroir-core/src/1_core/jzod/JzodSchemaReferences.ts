@@ -107,7 +107,7 @@ function traverseJzodSchema(
     case "any":
     case "date":
     case "never":
-    case "null":
+    // case "null":
     case "uuid":
     case "unknown":
     case "void":

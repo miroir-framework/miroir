@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import type {
   JzodElement,
   JzodSchema,
+  KeyMapEntry,
   TransformerTestSuite
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -14,13 +15,17 @@ import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/pr
 import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
 import { getInnermostTypeCheckError } from "../../../src/1_core/jzod/mlsTypeCheckError";
 
-import { miroirFundamentalJzodSchemaUuid } from '../../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema';
 
-import { KeyMapEntry } from '../../../dist';
+// import { KeyMapEntry, miroirFundamentalJzodSchemaUuid } from '../../../dist';
 import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
 import { MiroirActivityTracker } from '../../../src/3_controllers/MiroirActivityTracker';
-import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../../src/4_services/TestTools';
+import {
+  runTransformerTestInMemory,
+  runTransformerTestSuite,
+  transformerTestsDisplayResults,
+} from "../../../src/4_services/TestTools";
 import { log } from 'console';
+import { miroirFundamentalJzodSchemaUuid } from '../../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers';
 
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
@@ -254,6 +259,17 @@ const tests: { [k: string]: testFormat } = {
       definition: "myLiteral",
     },
     testValueObject: "myLiteral",
+  },
+  // simpleType: string
+  test012: {
+    testSchema: {
+      type: "any",
+    },
+    expectedResolvedSchema: {
+      type: "any",
+    },
+    testValueObject: null,
+    expectedKeyMap: { "": { rawSchema: { type: "any" }, resolvedSchema: { type: "any" }, valuePath: [], typePath: [] } },
   },
   // simpleType: string
   test020: {

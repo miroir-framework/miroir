@@ -1183,7 +1183,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         }
         case "function":
         case "never":
-        case "null":
+        // case "null":
         case "unknown":
         case "void":
         case "lazy":
@@ -1382,9 +1382,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 {props.submitButton}
                 {displayAsCodeEditor ? (
                   <>
-                    JzodElementEditor rendering {
+                    {/* JzodElementEditor rendering {
                       props.rootLessListKey
-                    } as JzodElementEditorReactCodeMirror 2
+                    } as JzodElementEditorReactCodeMirror 2 */}
                     <ThemedOnScreenDebug
                       label={`JzodElementEditor: rendering as code editor for key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
                       data={{
@@ -1395,7 +1395,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         // !props.typeCheckKeyMap ||
                         localResolvedElementJzodSchemaBasedOnValue: localResolvedElementJzodSchemaBasedOnValue??"localResolvedElementJzodSchemaBasedOnValue is undefined",
                         currentKeyMapRawSchemaType: currentKeyMap?.rawSchema?.type,
-                        currentKeyMap,
+                        // currentKeyMap,
+                        // typeCheckKeyMapKeys: Object.keys( props.typeCheckKeyMap || {} ),
                       }}
                       copyButton={true}
                       // initiallyUnfolded={false}

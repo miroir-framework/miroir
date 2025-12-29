@@ -1,7 +1,9 @@
 export {
   getMiroirFundamentalJzodSchema,
-  miroirFundamentalJzodSchemaUuid
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
+export {
+  miroirFundamentalJzodSchemaUuid
+} from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 
 export {
   Action,
@@ -45,12 +47,12 @@ export {
   boxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   boxedQueryWithExtractorCombinerTransformer,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
-  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
-  CarryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
-  carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
+  // MlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  // mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
+  // MlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
+  // mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration,
   // CarryOnObject,
-  // carryOnObject,
+  // mlElementTemplateObject,
   // ApplicationSection,
   Commit,
   CompositeActionSequence,

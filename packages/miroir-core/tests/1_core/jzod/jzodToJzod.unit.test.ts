@@ -14,8 +14,8 @@ type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | 
 interface TestCase {
   name: string,
   testJzodSchema: JzodElement,
-  carryOnJzodSchema: JzodObject | JzodReference,
-  carryOnSchemaDiscriminator?:undefined | string | string[],
+  mlElementTemplateJzodSchema: JzodObject | JzodReference,
+  mlElementTemplateSchemaDiscriminator?:undefined | string | string[],
   alwaysPropagate?: boolean,
   expectedReferences: Record<string,JzodElement>,
   expectedResult: {schema: JzodElement, hasBeenApplied: boolean},
@@ -27,10 +27,10 @@ function runTest(
 ) {
   const testResult = cleanupObject(applyLimitedCarryOnSchema(
     t.testJzodSchema,
-    t.carryOnJzodSchema,
-    t.carryOnSchemaDiscriminator,
+    t.mlElementTemplateJzodSchema,
+    t.mlElementTemplateSchemaDiscriminator,
     t.alwaysPropagate??false, // alwaysPropagate
-    undefined, // carryOnPrefix
+    undefined, // mlElementTemplatePrefix
     undefined, // prefixForReference
     undefined, // suffixForReference
     t.resolveJzodReference,
@@ -56,7 +56,7 @@ describe(
   () => {
 
     // ###########################################################################################
-    it('jzod carryOn conversion',
+    it('jzod mlElementTemplate conversion',
       () => {
         const tests: TestCase[] = [
           // test000: simple string, canBeTemplate=false
@@ -65,7 +65,7 @@ describe(
             testJzodSchema: {
               type: "string",
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "string" },
@@ -86,7 +86,7 @@ describe(
               type: "string",
               tag: { value: { canBeTemplate: true } } as any,
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "string" },
@@ -138,7 +138,7 @@ describe(
                 },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "string" },
@@ -247,7 +247,7 @@ describe(
                 },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "string" },
@@ -363,7 +363,7 @@ describe(
                 },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "string" },
@@ -452,7 +452,7 @@ describe(
             },
             expectedReferences: {},
           },
-          // test020: absolutePath schemaReference with complex carryOn type, NO canBeTemplate!
+          // test020: absolutePath schemaReference with complex mlElementTemplate type, NO canBeTemplate!
           {
             name: "test020",
             testJzodSchema: {
@@ -462,7 +462,7 @@ describe(
                 relativePath: "myObject",
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 d: { type: "string" },
@@ -502,13 +502,13 @@ describe(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                  relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
                 },
               },
               hasBeenApplied: false,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject: {
                 type: "object",
                 definition: {
                   a: {
@@ -517,7 +517,7 @@ describe(
                   b: {
                     type: "schemaReference",
                     definition: {
-                      relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                      relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
                     },
                   },
                   c: {
@@ -525,7 +525,7 @@ describe(
                     definition: {
                       type: "schemaReference",
                       definition: {
-                        relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
+                        relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myObject",
                       },
                     },
                   },
@@ -533,7 +533,7 @@ describe(
               },
             },
           },
-          // test030: simple base type with absolute schemaReference and simple carryOn type
+          // test030: simple base type with absolute schemaReference and simple mlElementTemplate type
           {
             name: "test30",
             testJzodSchema: {
@@ -543,7 +543,7 @@ describe(
                 relativePath: "myString",
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -569,13 +569,13 @@ describe(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                  relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                 },
               },
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
                 tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
@@ -595,7 +595,7 @@ describe(
               },
             },
           },
-          // test040: simple base type with absolute schemaReference within object and simple carryOn type
+          // test040: simple base type with absolute schemaReference within object and simple mlElementTemplate type
           {
             name: "test040",
             testJzodSchema: {
@@ -611,7 +611,7 @@ describe(
                 },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -663,7 +663,7 @@ describe(
                         type: "schemaReference",
                         definition: {
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                          relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                         },
                       },
                     },
@@ -673,7 +673,7 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
                 tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
@@ -693,7 +693,7 @@ describe(
               },
             },
           },
-          // test050: simple base type with absolute schemaReference within object and union and simple carryOn type
+          // test050: simple base type with absolute schemaReference within object and union and simple mlElementTemplate type
           {
             name: "test050",
             testJzodSchema: {
@@ -719,7 +719,7 @@ describe(
                 },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -780,7 +780,7 @@ describe(
                             type: "schemaReference",
                             definition: {
                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                              relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                              relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                             },
                           },
                           {
@@ -803,7 +803,7 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
                 tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
@@ -823,7 +823,7 @@ describe(
               },
             },
           },
-          // test060: complex base type with one inner relative schemaReference and one inner absolute schemaReference, on a simple carryOn type
+          // test060: complex base type with one inner relative schemaReference and one inner absolute schemaReference, on a simple mlElementTemplate type
           {
             name: "test060",
             testJzodSchema: {
@@ -853,7 +853,7 @@ describe(
                 },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -940,14 +940,14 @@ describe(
                         type: "schemaReference",
                         definition: {
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                          relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                         },
                       },
                       d: {
                         type: "schemaReference",
                         definition: {
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
+                          relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
                         },
                       },
                     },
@@ -957,7 +957,7 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
                 tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
@@ -995,7 +995,7 @@ describe(
                 a: { type: "string", tag: { value: { canBeTemplate: true } } },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -1050,7 +1050,7 @@ describe(
                           eager: true,
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           relativePath:
-                            "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
                         },
                       },
                     ],
@@ -1095,7 +1095,7 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
                 type: "union",
                 tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
@@ -1163,7 +1163,7 @@ describe(
                 a: { type: "string", tag: { value: { canBeTemplate: true } } },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -1224,7 +1224,7 @@ describe(
                           eager: true,
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           relativePath:
-                            "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend",
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend",
                         },
                       },
                       {
@@ -1233,7 +1233,7 @@ describe(
                           eager: true,
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           relativePath:
-                            "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend",
+                            "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend",
                         },
                       },
                     ],
@@ -1278,7 +1278,7 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend: {
                 type: "union",
                 tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
@@ -1316,7 +1316,7 @@ describe(
                   },
                 ],
               },
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend: {
                 type: "union",
                 tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
@@ -1356,7 +1356,7 @@ describe(
               },
             },
           },
-          // test090: non-altered object with extend clause using schemaReference with carryOn type
+          // test090: non-altered object with extend clause using schemaReference with mlElementTemplate type
           {
             name: "test090",
             testJzodSchema: {
@@ -1374,7 +1374,7 @@ describe(
                 a: { type: "string" },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -1410,7 +1410,7 @@ describe(
                       absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                       eager: true,
                       relativePath:
-                        "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
+                        "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
                     },
                   },
                 ],
@@ -1423,7 +1423,7 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
                 type: "object",
                 definition: {
                   b: {
@@ -1458,7 +1458,7 @@ describe(
                 tag: { value: { canBeTemplate: true } },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
@@ -1508,7 +1508,7 @@ describe(
               // tag: { value: { canBeTemplate: true } },
               definition: { type: "string", tag: { value: { canBeTemplate: true } } },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "schemaReference",
               definition: {
                 eager: true,
@@ -1516,7 +1516,7 @@ describe(
                 relativePath: "discriminatedUnion",
               },
             },
-            carryOnSchemaDiscriminator: "type",
+            mlElementTemplateSchemaDiscriminator: "type",
             resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
               const store: Record<string, JzodReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
@@ -1595,7 +1595,7 @@ describe(
               // tag: { value: { canBeTemplate: true } },
               definition: { type: "string", tag: { value: { canBeTemplate: true } } },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "schemaReference",
               definition: {
                 eager: true,
@@ -1603,7 +1603,7 @@ describe(
                 relativePath: "discriminatedUnion",
               },
             },
-            carryOnSchemaDiscriminator: "type",
+            mlElementTemplateSchemaDiscriminator: "type",
             alwaysPropagate: true,
             resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
               const store: Record<string, JzodReference> = {
@@ -1704,7 +1704,7 @@ describe(
                 },
               },
             },
-            carryOnJzodSchema: {
+            mlElementTemplateJzodSchema: {
               type: "schemaReference",
               definition: {
                 eager: true,
@@ -1712,7 +1712,7 @@ describe(
                 relativePath: "discriminatedUnion",
               },
             },
-            carryOnSchemaDiscriminator: "type",
+            mlElementTemplateSchemaDiscriminator: "type",
             resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
               const store: Record<string, JzodReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
@@ -1772,7 +1772,7 @@ describe(
                       },
                       definition: {
                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                        relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
+                        relativePath: "mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
                       },
                     },
                     {
@@ -1789,7 +1789,7 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {
-              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
+              mlElementTemplate_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
                 type: "string",
               },
             },

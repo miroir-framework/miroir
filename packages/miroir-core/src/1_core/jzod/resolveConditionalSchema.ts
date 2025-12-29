@@ -7,7 +7,6 @@ import {
   JzodElement,
   type TransformerForBuild_resolveConditionalSchema,
   type TransformerForBuildPlusRuntime_resolveConditionalSchema,
-  type TransformerForRuntime_resolveConditionalSchema
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
@@ -44,7 +43,6 @@ export function resolveConditionalSchemaTransformer(
   label: string | undefined,
   transformer:
     | TransformerForBuild_resolveConditionalSchema
-    | TransformerForRuntime_resolveConditionalSchema
     | TransformerForBuildPlusRuntime_resolveConditionalSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
