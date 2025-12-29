@@ -33,6 +33,7 @@ import {
   SyncQueryTemplateRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
+  defaultDeploymentUuids,
   defaultMetaModelEnvironment,
   miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
@@ -302,15 +303,30 @@ export function useCurrentModelEnvironment(deploymentUuid: Uuid | undefined): Mi
   const context = useMiroirContextService();
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(deploymentUuid);
+  const endpointsByUuid: Record<Uuid, any> = useEndpointsOfDeployments(
+    defaultDeploymentUuids
+  ).reduce((acc, endpoint) => {
+    acc[endpoint.uuid] = endpoint;
+    return acc;
+  }, {} as Record<Uuid, any>);
 
   return useMemo(() => {
     return {
       miroirFundamentalJzodSchema:
         context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
       miroirMetaModel: miroirMetaModel,
+      endpointsByUuid,
       currentModel: currentModel,
+      deploymentUuid,
     };
   }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
+}
+
+// ################################################################################################
+export function useEndpointsOfDeployments(deploymentUuids: Uuid[]) {
+  const models = deploymentUuids.map((deploymentUuid) => useCurrentModel(deploymentUuid));
+  const endpoints = models.flatMap((model) => model.endpoints ?? []); // TODO: deal with applications having many deployments
+  return endpoints;
 }
 
 // ################################################################################################

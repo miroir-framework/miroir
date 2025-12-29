@@ -82,10 +82,12 @@ function local_test(schema: JzodUnion, instance: any): string[][] {
   console.log("resolveUnionResult:", JSON.stringify(resolveUnionResult, null, 2));
   
   return getObjectUniondiscriminatorValuesFromResolvedSchema(
+    "",
     // resolvedElementJzodSchema.resolvedSchema,
     unfoldedRawSchema.element,
     recursivelyUnfoldedSchema.result,
-    resolveUnionResult.objectUnionChoices
+    resolveUnionResult.objectUnionChoices,
+    resolveUnionResult
     // (unfoldedRawSchema.element as JzodUnion).discriminator
   );
 }

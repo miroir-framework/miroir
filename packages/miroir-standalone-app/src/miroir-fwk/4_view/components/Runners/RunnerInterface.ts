@@ -55,10 +55,6 @@ export interface RunnerProps<T extends Record<string, any>> {
   validateOnChange?: boolean;
   validateOnBlur?: boolean;
   enableReinitialize?: boolean;
-  deploymentUuidQuery?:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined;
 }
 
 // ################################################################################################

@@ -499,11 +499,7 @@ export async function queryTemplateActionHandler(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
             extractorRunnerMapOnDomainState
           ),
-          {
-            miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-            // TODO: current model for app / deployment?
-            miroirMetaModel: defaultMiroirMetaModel,
-          }
+          defaultMiroirModelEnvironment
         );
         break;
       }
@@ -514,11 +510,7 @@ export async function queryTemplateActionHandler(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
             extractorRunnerMapOnDomainState
           ),
-          {
-            miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-            // TODO: current model for app / deployment?
-            miroirMetaModel: defaultMiroirMetaModel,
-          }
+          defaultMiroirModelEnvironment
         );
 
         break;

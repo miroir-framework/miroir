@@ -200,14 +200,24 @@ export const defaultMiroirMetaModel: MetaModel = {
 };
 
 // #################################################################################################
+const defaultEndpointsByUuid: Record<Uuid, EndpointDefinition> = {
+  ...Object.fromEntries(
+    defaultMiroirMetaModel.endpoints.map((endpoint) => [endpoint.uuid, endpoint]),
+  ),
+};
+
 export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
   miroirMetaModel: defaultMiroirMetaModel,
+  endpointsByUuid: defaultEndpointsByUuid,
+  // currentModel: defaultMiroirMetaModel,
+  // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
-  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
   miroirMetaModel: defaultMiroirMetaModel,
+  endpointsByUuid: defaultEndpointsByUuid,
+  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
   currentModel: defaultMiroirMetaModel,
 };
 

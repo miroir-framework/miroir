@@ -11,8 +11,9 @@ import type {
 
 export interface MiroirModelEnvironment {
   miroirFundamentalJzodSchema: JzodSchema,
-  currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
+  endpointsByUuid: Record<Uuid, any>,
+  currentModel?: MetaModel,
   deploymentUuid?: Uuid,
 };
 

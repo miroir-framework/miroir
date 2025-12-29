@@ -153,6 +153,7 @@ let recursionLevel = 0;
 // NOT CONSISTENT AT ALL, SHOULD RETURN ONLY ERROR CODES, NOT THROW EXCEPTIONS!
 export function unfoldJzodSchemaOnce(
   miroirFundamentalJzodSchema: JzodSchema,
+  currentModelEnvironment: MiroirModelEnvironment,
   jzodSchema: JzodElement | undefined,
   path: string[],
   unfoldingReference: string[],
@@ -214,10 +215,10 @@ export function unfoldJzodSchemaOnce(
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const unfoldedReferenceJzodSchema = localizeJzodSchemaReferenceContext(
-        miroirFundamentalJzodSchema,
+        currentModelEnvironment.miroirFundamentalJzodSchema,
         jzodSchema,
-        currentModel,
-        miroirMetaModel,
+        currentModelEnvironment.currentModel,
+        currentModelEnvironment.miroirMetaModel,
         {...relativeReferenceJzodContext, ...jzodSchema.context}
       );
 
@@ -228,7 +229,7 @@ export function unfoldJzodSchemaOnce(
           definition: jzodSchema.definition,
         },
         { ...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context }, // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
-        { miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
+        currentModelEnvironment,//{ miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
       );
 
       // log.info("unfoldJzodSchemaOnce resolvedJzodSchema", resolvedJzodSchema);
@@ -280,7 +281,7 @@ export function unfoldJzodSchemaOnce(
         const extension = resolveJzodSchemaReferenceInContext(
           jzodSchema.extend,
           relativeReferenceJzodContext,
-          { miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
+          currentModelEnvironment,// { miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
         );
         if (extension.type == "object") {
           extendedJzodSchema = {
@@ -309,6 +310,7 @@ export function unfoldJzodSchemaOnce(
           if (extendedJzodSchema.definition[e[0]]) {
             const resultSchemaTmp = unfoldJzodSchemaOnce(
               miroirFundamentalJzodSchema,
+              currentModelEnvironment,
               e[1],
               path.concat(e[0]), // path
               unfoldingReference,
@@ -372,6 +374,7 @@ export function unfoldJzodSchemaOnce(
               referenceRelativeName: a.type == "schemaReference" ? a.definition.relativePath : undefined,
               unfolded: unfoldJzodSchemaOnce(
                 miroirFundamentalJzodSchema,
+                currentModelEnvironment,
                 a,
                 path,
                 unfoldingReference,
@@ -429,6 +432,7 @@ export function unfoldJzodSchemaOnce(
           // }
           return unfoldJzodSchemaOnce(
             miroirFundamentalJzodSchema,
+            currentModelEnvironment,
             s.unfolded,
             path,
             s.referenceRelativeName?[...unfoldingReference, s.referenceRelativeName]: unfoldingReference, // path
@@ -480,6 +484,7 @@ export function unfoldJzodSchemaOnce(
     case "record": {
       const resultSchemaTmp: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
+        currentModelEnvironment,
         jzodSchema.definition,
         path.concat("recordEntry"), // path
         unfoldingReference,
@@ -533,6 +538,7 @@ export function unfoldJzodSchemaOnce(
       const subTypes = jzodSchema.definition.map((e) =>
         unfoldJzodSchemaOnce(
           miroirFundamentalJzodSchema,
+          currentModelEnvironment,
           e,
           path.concat("tupleItem"), // path
           unfoldingReference,
@@ -571,6 +577,7 @@ export function unfoldJzodSchemaOnce(
     case "array": {
       const subType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
+        currentModelEnvironment,
         jzodSchema.definition,
         path.concat("arrayItem"), // path
         unfoldingReference,
@@ -663,6 +670,7 @@ export function unfoldSchemaOnceTransformer(
 ): UnfoldJzodSchemaOnceReturnType {
   return unfoldJzodSchemaOnce(
     transformer.miroirFundamentalJzodSchema,
+    modelEnvironment,
     transformer.jzodSchema,
     transformer.path || [],
     transformer.unfoldingReference || [],

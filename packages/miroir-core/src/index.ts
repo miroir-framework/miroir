@@ -636,8 +636,13 @@ export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_
 export {
   ApplicationEntitiesAndInstances,
   createApplicationCompositeAction,
-  createDeploymentCompositeAction, defaultAdminApplicationDeploymentMapNOTGOOD as defaultAdminApplicationDeploymentMapNOTGOOD, defaultSelfApplicationDeploymentMap, deleteApplicationAndDeploymentCompositeAction,
-  resetAndinitializeDeploymentCompositeAction
+  createDeploymentCompositeAction,
+  defaultDeployments,
+  defaultDeploymentUuids,
+  defaultAdminApplicationDeploymentMapNOTGOOD as defaultAdminApplicationDeploymentMapNOTGOOD,
+  defaultSelfApplicationDeploymentMap,
+  deleteApplicationAndDeploymentCompositeAction,
+  resetAndinitializeDeploymentCompositeAction,
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 export {

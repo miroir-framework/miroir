@@ -36,6 +36,13 @@ import adminLibraryApplication from "../assets/admin_data/25d935e7-9e93-42c2-aad
 import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 // import selfApplicationDeploymentLibrary from "../assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
+export const defaultDeployments: Deployment[] = [
+  adminConfigurationDeploymentMiroir as Deployment,
+  adminConfigurationDeploymentAdmin as Deployment,
+  adminConfigurationDeploymentLibrary as Deployment,
+];
+export const defaultDeploymentUuids = defaultDeployments.map(deployment => deployment.uuid);
+
 export const defaultSelfApplicationDeploymentMap: Record<Uuid, Uuid> = {
   [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
   [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,

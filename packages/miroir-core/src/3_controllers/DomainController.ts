@@ -1480,12 +1480,11 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   private async handleApplicationAction(
     domainAction: DomainAction,
-    currentModelEnvironment?: MiroirModelEnvironment
+    currentModelEnvironment?: MiroirModelEnvironment,
   ): Promise<Action2VoidReturnType> {
     log.info(
       "DomainController handleApplicationAction domainAction",
       JSON.stringify(domainAction, null, 2),
-      // currentModelEnvironment
     );
     if (!currentModelEnvironment) {
       return Promise.resolve(new Action2Error(
@@ -1494,13 +1493,6 @@ export class DomainController implements DomainControllerInterface {
         []
       ));
     }
-    // if (!(domainAction as any).application) {
-    //   return Promise.resolve(new Action2Error(
-    //     "InvalidAction",
-    //     "DomainController handleApplicationAction missing application in action",
-    //     []
-    //   ));
-    // }
     if (!(domainAction as any).endpoint) {
       return Promise.resolve(new Action2Error(
         "InvalidAction",
@@ -1517,9 +1509,8 @@ export class DomainController implements DomainControllerInterface {
     }
     // look up the action implementation in the currentModelEnvironment
     const currentEndpointDefinition: EndpointDefinition | undefined =
-      currentModelEnvironment?.currentModel?.endpoints?.find(
-        (ep) => ep.uuid == (domainAction as any).endpoint
-      );
+      currentModelEnvironment?.endpointsByUuid[(domainAction as any).endpoint];
+
     log.info(
       "DomainController handleApplicationAction currentEndpointDefinition",
       currentEndpointDefinition

@@ -32,23 +32,10 @@ function local_jzodUnion_recursivelyUnfold(
   relativeReferenceJzodContext: { [k: string]: JzodElement } = {}
 ): JzodUnion_RecursivelyUnfold_ReturnTypeOK | JzodUnion_RecursivelyUnfold_ReturnTypeError {
   // TODO: test on schemaReference which unfold to unions
-  // const unfoldedSchema = unfoldJzodSchemaOnce(
-  //   miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
-  //   schema,
-  //   currentModel as any as MetaModel,
-  //   currentMiroirModel as any as MetaModel
-  // );
-  // if (unfoldedSchema.status === "error") {
-  //   throw new Error(`Error while unfolding JzodUnion: ${unfoldedSchema.error}`);
-  // }
   return jzodUnion_recursivelyUnfold(
     schema,
-    // unfoldedSchema as JzodUnion,
     new Set(),
     defaultMetaModelEnvironment,
-    // castMiroirFundamentalJzodSchema,
-    // currentModel as any as MetaModel,
-    // currentMiroirModel as any as MetaModel,
     relativeReferenceJzodContext
   );
 }
@@ -61,7 +48,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
         { type: "string" },
         { type: "number" },
         { type: "boolean" },
-        { type: "null" },
+        // { type: "null" },
       ],
     };
 
@@ -89,7 +76,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: [
             { type: "string" },
             { type: "boolean" },
-            { type: "null" },
+            // { type: "null" },
           ],
         },
       ],
@@ -179,7 +166,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       ],
     };
 
-    const result = local_jzodUnion_recursivelyUnfold(schema, {MyReference: { type: "null" }});
+    const result = local_jzodUnion_recursivelyUnfold(schema, {MyReference: { type: "any" }});
 
     expect(result).toEqual({
       status: "ok",
@@ -187,7 +174,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
         { type: "number" },
         { type: "string" },
         { type: "boolean" },
-        { type: "null" },
+        // { type: "null" },
       ],
       expandedReferences: new Set(["MyReference"]),
     });

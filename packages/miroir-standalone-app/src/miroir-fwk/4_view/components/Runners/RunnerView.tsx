@@ -4,6 +4,7 @@ import type {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   DomainControllerInterface,
+  EndpointDefinition,
   LoggerInterface,
   MiroirModelEnvironment,
   Runner,
@@ -60,39 +61,18 @@ export function StoredRunnerView(props: {
   // const deploymentUuid = defaultAdminApplicationDeploymentMapNOTGOOD[props.applicationUuid];
   // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
   const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
-  const deploymentUuidQuery:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined = {
-    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-    pageParams: {},
-    queryParams: {},
-    contextResults: {},
-    extractorTemplates: {
-      deployments: {
-        label: "deployments of the application",
-        // extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        extractorTemplateType: "extractorTemplateForObjectListByEntity",
-        parentUuid: entityDeployment.uuid,
-        parentName: entityDeployment.name,
-        applicationSection: "data",
-        filter: {
-          attributeName: "adminApplication",
-          value: {
-            transformerType: "mustacheStringTemplate",
-            interpolation: "build",
-            definition: `{{${runnerName}.application}}`,
-          },
-        },
-      },
-    },
-  } as BoxedQueryTemplateWithExtractorCombinerTransformer;
+
+  // // look up the action implementation in the currentModelEnvironment
+  // const currentEndpointDefinition: EndpointDefinition | undefined =
+  //   currentModelEnvironment?.currentModel?.endpoints?.find(
+  //     (ep) => ep.uuid == (domainAction as any).endpoint
+  //   );
+
 
   return (<RunnerView
     runnerName={runnerName}
     deploymentUuid={deploymentUuid}
-    deploymentUuidQuery={deploymentUuidQuery}
+    // deploymentUuidQuery={deploymentUuidQuery}
     formMLSchema={props.storedRunner.formMLSchema as FormMLSchema}
     initialFormValue={initialFormValue}
     action={{
@@ -146,7 +126,6 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
             "value"
           )
       : initialFormValue;
-
   const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
     log.info("RunnerView handleSubmit", action.actionType, "values", values);
 
@@ -198,7 +177,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         break;
       }
     }
-  };
+  }; // end handleSubmit
 
   return (
     <>
