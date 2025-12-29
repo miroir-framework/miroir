@@ -2,6 +2,7 @@
   "uuid": "0faae143-0d7b-4a8a-a950-4fc3df943bde",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "name": "QueryEndpoint",
   "version": "1",
   "description": "Query Endpoint",

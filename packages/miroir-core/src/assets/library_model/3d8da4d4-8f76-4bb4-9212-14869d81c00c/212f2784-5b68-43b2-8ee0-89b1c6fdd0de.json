@@ -2,6 +2,7 @@
   "uuid": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "name": "Lending",
   "version": "1",
   "definition": {

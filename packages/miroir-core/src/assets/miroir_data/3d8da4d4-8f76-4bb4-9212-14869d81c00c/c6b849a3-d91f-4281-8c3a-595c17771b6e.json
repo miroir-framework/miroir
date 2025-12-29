@@ -2,6 +2,7 @@
   "uuid": "c6b849a3-d91f-4281-8c3a-595c17771b6e",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "name": "MenuEndpoint",
   "version": "1",
   "description": "Menu Endpoint IS IT RELEVANT?",

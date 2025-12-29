@@ -26,7 +26,6 @@
     "type": "object",
     "tag": {
       "value": {
-        "id": 1,
         "defaultLabel": "Endpoint",
         "editable": false,
         "display": {
@@ -39,7 +38,6 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 1,
             "defaultLabel": "Uuid",
             "editable": false
           }
@@ -49,7 +47,6 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 2,
             "defaultLabel": "Entity Name",
             "editable": false
           }
@@ -59,7 +56,6 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 3,
             "defaultLabel": "Entity Uuid",
             "editable": false
           }
@@ -70,7 +66,6 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
             "editable": false
           }
@@ -80,7 +75,6 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 6,
             "defaultLabel": "Name",
             "editable": false
           }
@@ -90,8 +84,16 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 7,
             "defaultLabel": "Version",
+            "editable": false
+          }
+        }
+      },
+      "application": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Application",
             "editable": false
           }
         }
@@ -101,7 +103,6 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 8,
             "defaultLabel": "Description",
             "editable": true
           }
@@ -112,7 +113,6 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 9,
             "defaultLabel": "Transactional Endpoint",
             "editable": true
           }
@@ -122,7 +122,6 @@
         "type": "object",
         "tag": {
           "value": {
-            "id": 10,
             "defaultLabel": "Definition",
             "editable": true
           }
@@ -135,7 +134,6 @@
                 "type": "object",
                 "tag": {
                   "value": {
-                    "id": 10,
                     "defaultLabel": "Action",
                     "editable": true,
                     "display": {

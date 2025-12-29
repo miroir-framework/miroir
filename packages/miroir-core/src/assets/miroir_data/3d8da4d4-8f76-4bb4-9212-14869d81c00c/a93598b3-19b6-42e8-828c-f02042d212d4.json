@@ -2,6 +2,7 @@
   "uuid": "a93598b3-19b6-42e8-828c-f02042d212d4",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "name": "PersistenceEndpoint",
   "version": "1",
   "description": "Persistence Endpoint",
@@ -9,12 +10,15 @@
     "actions": [
       {
         "actionParameters": {
-          "actionType": { "type": "literal",             "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
-"definition": "LocalPersistenceAction_create" },
+            "definition": "LocalPersistenceAction_create"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -91,12 +95,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal",             "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
-"definition": "LocalPersistenceAction_read" },
+            "definition": "LocalPersistenceAction_read"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -173,12 +180,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal",            "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
- "definition": "LocalPersistenceAction_update" },
+            "definition": "LocalPersistenceAction_update"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -255,12 +265,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal",            "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
- "definition": "LocalPersistenceAction_delete" },
+            "definition": "LocalPersistenceAction_delete"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -337,12 +350,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal",             "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
-"definition": "RestPersistenceAction_create" },
+            "definition": "RestPersistenceAction_create"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -419,12 +435,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal",             "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
-"definition": "RestPersistenceAction_read" },
+            "definition": "RestPersistenceAction_read"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -501,12 +520,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal",             "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
-"definition": "RestPersistenceAction_update" },
+            "definition": "RestPersistenceAction_update"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
@@ -583,12 +605,15 @@
       },
       {
         "actionParameters": {
-          "actionType": { "type": "literal",             "tag": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
               "value": {
                 "canBeTemplate": false
               }
             },
-"definition": "RestPersistenceAction_delete" },
+            "definition": "RestPersistenceAction_delete"
+          },
           "actionLabel": { "type": "string", "optional": true },
           "application": {
             "type": "literal",
