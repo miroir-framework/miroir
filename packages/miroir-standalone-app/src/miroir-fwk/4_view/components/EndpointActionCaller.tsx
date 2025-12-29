@@ -12,7 +12,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  defaultAdminApplicationDeploymentMap,
+  defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
   entityApplicationForAdmin,
@@ -208,7 +208,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
         ) => {
 
           const selectedDeploymentUuid =
-            defaultAdminApplicationDeploymentMap[
+            defaultAdminApplicationDeploymentMapNOTGOOD[
               resolvePathOnObject(formikContext.values, [
                 formikPath_EndpointActionCaller,
                 "applicationUuid",

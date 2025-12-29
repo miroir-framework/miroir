@@ -1125,10 +1125,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //   currentValue
           // );
           
-          // Convert string to Date if needed or use existing Date
-          const dateValue = typeof currentValueObjectAtKey === 'string' 
-            ? new Date(currentValueObjectAtKey) 
-            : (currentValueObjectAtKey instanceof Date ? currentValueObjectAtKey : null);
+          // Convert to Date for display, handling various input formats
+          let dateValue: Date | null = null;
+          if (currentValueObjectAtKey) {
+            if (typeof currentValueObjectAtKey === 'string') {
+              dateValue = new Date(currentValueObjectAtKey);
+            } else if (currentValueObjectAtKey instanceof Date) {
+              dateValue = currentValueObjectAtKey;
+            } else if (typeof currentValueObjectAtKey === 'object') {
+              // Handle serialized Date objects or other formats
+              try {
+                dateValue = new Date(currentValueObjectAtKey);
+              } catch (e) {
+                dateValue = null;
+              }
+            }
+          }
           
           // Format the date as YYYY-MM-DD for the input
           const formattedDate = dateValue && !isNaN(dateValue.getTime())
@@ -1138,7 +1150,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={enhancedLabelElement}
               editor={
-                props.readOnly ? (
+                localReadOnly ? (
                   <ThemedDisplayValue value={currentValueObjectAtKey} type="date" />
                 ) : (
                   <input
@@ -1148,10 +1160,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     role="textbox"
                     style={{ width: "100%" }}
                     {...formik.getFieldProps(formikRootLessListKey)}
-                    value={formattedDate} // TODO: get other formik.getFieldProps: name, value, onChange, onBlur
+                    value={formattedDate}
                     onChange={(e) => {
-                      const value = e.target.value;
-                      const newValue = value ? new Date(value) : null;
+                      const value: string = e.target.value;
+                      // Store as ISO string for JSON serialization, or undefined if empty
+                      const newValue = value ? new Date(value).toISOString() : undefined;
+                      
                       // Invoke onChangeVector callback if registered for this field
                       if (onChangeCallback) {
                         onChangeCallback(newValue, props.rootLessListKey);

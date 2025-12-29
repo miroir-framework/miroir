@@ -212,8 +212,12 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid
       ) {
 
-        let deploymentUuid: TransformerReturnType<any> = currentDeploymentUuid;
-          // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid;
+        let deploymentUuid: TransformerReturnType<any> =
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !==
+            noValue.uuid
+            ? currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
+            : currentDeploymentUuid;
         if (
           typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
             ?.targetDeploymentUuid == "object"

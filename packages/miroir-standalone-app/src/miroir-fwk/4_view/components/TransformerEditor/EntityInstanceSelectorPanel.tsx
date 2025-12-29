@@ -8,7 +8,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   adminLibraryApplication,
-  defaultAdminApplicationDeploymentMap,
+  defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
   defaultTransformers,
@@ -149,7 +149,7 @@ export function EntityInstanceSelectorPanel(props:{
   const inputSelector_deploymentUuidFromApplicationUuid: Uuid = 
     !inputSelector_applicationUuid || inputSelector_applicationUuid == noValue.uuid
       ? deploymentUuid
-      : defaultAdminApplicationDeploymentMap[inputSelector_applicationUuid];
+      : defaultAdminApplicationDeploymentMapNOTGOOD[inputSelector_applicationUuid];
 
   const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
 

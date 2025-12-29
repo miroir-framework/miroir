@@ -1961,7 +1961,22 @@ export function jzodTypeCheck(
     }
     case "date": {
       try {
-        if (valueObject instanceof Date || new Date(valueObject).toString() !== "Invalid Date") {
+        // Handle Date instances, strings, numbers (timestamps), and objects (serialized Dates)
+        let isValidDate = false;
+        
+        if (valueObject instanceof Date) {
+          isValidDate = !isNaN(valueObject.getTime());
+        } else if (typeof valueObject === 'string' || typeof valueObject === 'number') {
+          const dateTest = new Date(valueObject);
+          isValidDate = dateTest.toString() !== "Invalid Date" && !isNaN(dateTest.getTime());
+        } else if (typeof valueObject === 'object' && valueObject !== null) {
+          // Handle serialized Date objects (plain objects from JSON or formik)
+          // Try to convert to Date and check if valid
+          const dateTest = new Date(valueObject);
+          isValidDate = dateTest.toString() !== "Invalid Date" && !isNaN(dateTest.getTime());
+        }
+        
+        if (isValidDate) {
           return {
             status: "ok",
             valuePath: currentValuePath,
@@ -1980,11 +1995,11 @@ export function jzodTypeCheck(
         } else {
           return {
             status: "error",
-            error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+            error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema. ${typeof valueObject} could not be converted to Date. Value: ${JSON.stringify(valueObject)}`,
             rawJzodSchemaType: effectiveRawSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
-            value: valueObject,
+            value: JSON.stringify(valueObject),
             rawSchema: effectiveRawSchema,
           };
         }

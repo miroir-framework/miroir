@@ -15070,7 +15070,6 @@ export const miroirFundamentalJzodSchema = {
           },
           "formMLSchema": {
             "type": "union",
-            "optional": true,
             "tag": {
               "value": {
                 "defaultLabel": "formMLSchema",
@@ -15115,7 +15114,6 @@ export const miroirFundamentalJzodSchema = {
           },
           "actionTemplate": {
             "type": "schemaReference",
-            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "compositeActionTemplate"

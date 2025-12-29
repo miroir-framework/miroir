@@ -3,6 +3,7 @@ import { ExpandMoreIcon } from '../components/Themes/MaterialSymbolWrappers';
 
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import {
+  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentParis,
   MiroirLoggerFactory,
   resolvePathOnObject,
@@ -51,34 +52,34 @@ const pageLabel = "Admin";
 // ################################################################################################
 // Runner configurations
 const runnerConfigs = [
-  {
-    title: "Endpoint Action Caller",
-    component: EndpointActionCaller,
-  },
+  // {
+  //   title: "Endpoint Action Caller",
+  //   component: EndpointActionCaller,
+  // },
   {
     title: "Lend Document",
     component: LibraryRunner_LendDocument,
   },
-  {
-    title: "Create Application & Deployment",
-    component: CreateApplicationRunner,
-  },
-  {
-    title: "Delete Application & Deployment",
-    component: DeleteApplicationRunner,
-  },
-  {
-    title: "Create Entity",
-    component: CreateEntityRunner,
-  },
-  {
-    title: "Drop Entity",
-    component: DeleteEntityRunner,
-  },
-  {
-    title: "Import Entity From Spreadsheet",
-    component: ImportEntityFromSpreadsheetRunner,
-  },
+  // {
+  //   title: "Create Application & Deployment",
+  //   component: CreateApplicationRunner,
+  // },
+  // {
+  //   title: "Delete Application & Deployment",
+  //   component: DeleteApplicationRunner,
+  // },
+  // {
+  //   title: "Create Entity",
+  //   component: CreateEntityRunner,
+  // },
+  // {
+  //   title: "Drop Entity",
+  //   component: DeleteEntityRunner,
+  // },
+  // {
+  //   title: "Import Entity From Spreadsheet",
+  //   component: ImportEntityFromSpreadsheetRunner,
+  // },
 ] as const;
 
 // ################################################################################################
@@ -106,7 +107,8 @@ export const RunnersPage: React.FC<any> = (
     actionName: "check page configuration fetch"
   });
   
-  const deploymentUuid = adminConfigurationDeploymentParis.uuid;
+  // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
+  const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 
   return (
     <ReportPageContextProvider>

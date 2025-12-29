@@ -124,19 +124,34 @@ export const InnerRunnerView = <T extends Record<string, any>>({
       <ThemedOnScreenDebug
         label={`Runner ${runnerName} formik values`}
         data={formikContext.values}
+        initiallyUnfolded={false}
+        copyButton={true}
+        useCodeBlock={true}
       />
-      <ThemedOnScreenDebug label={`Runner ${runnerName} targetSchema`} data={targetSchema} />
+      <ThemedOnScreenDebug
+        label={`Runner ${runnerName} targetSchema`}
+        data={targetSchema}
+        initiallyUnfolded={false}
+        copyButton={true}
+        useCodeBlock={true}
+      />
       {/* <ThemedOnScreenDebug
         label={`Runner ${runnerName} application`}
         data={(formikContext.values as any)[runnerName]?.application}
       /> */}
-      {/* <ThemedOnScreenDebug
+      <ThemedOnScreenDebug
         label={`Runner ${runnerName} deploymentUuidQuery`}
         data={deploymentUuidQuery}
-      /> */}
+        initiallyUnfolded={false}
+        copyButton={true}
+        useCodeBlock={true}
+      />
       <ThemedOnScreenDebug
         label={`Runner ${runnerName} deploymentUuidFromApplicationUuid`}
         data={deploymentUuidFromApplicationUuid}
+        initiallyUnfolded={false}
+        copyButton={true}
+        useCodeBlock={true}
       />
       <TypedValueObjectEditor
         labelElement={labelElement}

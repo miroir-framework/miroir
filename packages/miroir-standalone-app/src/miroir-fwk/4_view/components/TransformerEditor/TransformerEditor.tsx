@@ -8,7 +8,7 @@ import {
   Uuid,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  defaultAdminApplicationDeploymentMap,
+  defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
   entityApplicationForAdmin,
@@ -776,8 +776,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       initiallyUnfolded={false}
                     /> */}
                   <ThemedOnScreenDebug
-                    label="inputSelector defaultAdminApplicationDeploymentMap"
-                    data={defaultAdminApplicationDeploymentMap}
+                    label="inputSelector defaultAdminApplicationDeploymentMapNOTGOOD"
+                    data={defaultAdminApplicationDeploymentMapNOTGOOD}
                     // initiallyUnfolded={false}
                   />
                   {/* <ThemedOnScreenHelper

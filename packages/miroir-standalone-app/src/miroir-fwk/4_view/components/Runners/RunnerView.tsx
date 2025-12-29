@@ -13,9 +13,10 @@ import type {
 import {
   Action2Error,
   adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
-  defaultAdminApplicationDeploymentMap,
+  defaultAdminApplicationDeploymentMapNOTGOOD,
   entityDeployment,
   MiroirLoggerFactory,
   transformer_extended_apply_wrapper
@@ -56,8 +57,9 @@ export function StoredRunnerView(props: {
     };
   }, [runnerName]);
 
-  // const deploymentUuid = defaultAdminApplicationDeploymentMap[props.applicationUuid];
-  const deploymentUuid = adminConfigurationDeploymentParis.uuid;
+  // const deploymentUuid = defaultAdminApplicationDeploymentMapNOTGOOD[props.applicationUuid];
+  // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
+  const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
   const deploymentUuidQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer

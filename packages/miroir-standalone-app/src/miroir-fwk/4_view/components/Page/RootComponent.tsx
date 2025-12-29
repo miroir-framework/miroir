@@ -170,7 +170,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
   // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
-  const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
+  // const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
@@ -200,15 +200,16 @@ export const RootComponent = (props: RootComponentProps) => {
         //   miroirMetaModel, 
         //   test4AppModel,
         // ),
-        [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentParis.uuid,
-          miroirMetaModel, 
-          parisAppModel,
-        ),
+        // [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        //   adminConfigurationDeploymentParis.uuid,
+        //   miroirMetaModel, 
+        //   parisAppModel,
+        // ),
       }
     ),
     // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
-    [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
+    // [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
+    [miroirMetaModel, libraryAppModel, adminAppModel]
   );
 
   useEffect(() =>

@@ -349,25 +349,25 @@ export const ConceptPage: React.FC<any> = (
           name: actionCreateEntityParamValues.newEntityName,
         }
 
-        const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
-          currentApplicationName: "Paris",
-          currentApplicationUuid: currentApplicationUuid,
-          currentDeploymentUuid: currentDeploymentUuid,
-          createEntity_newEntityName: actionCreateEntityParamValues.newEntityName,
-          // createEntity_newEntityDescription: createEntity_newEntityDescription,
-          createEntity_newEntityDescription: actionCreateEntityParamValues.newEntityDescription,
-          createEntity_newEntityUuid: newEntityUuid,
-          createEntity_newEntityDefinitionUuid: newEntityDefinitionUuid,
-          createEntity_newEntityDetailsReportUuid: uuidv4(),
-          createEntity_newEntityListReportUuid: uuidv4(),
-          adminConfigurationDeploymentParis,
-          //TODO: tag params, should be passed as context instead?
-          jzodSchema,
-          entityEntityDefinition,
-          entityReport,
-          createEntity_newEntity: newEntity,
-          entityMenu,
-        }
+        // const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
+        //   currentApplicationName: "Paris",
+        //   currentApplicationUuid: currentApplicationUuid,
+        //   currentDeploymentUuid: currentDeploymentUuid,
+        //   createEntity_newEntityName: actionCreateEntityParamValues.newEntityName,
+        //   // createEntity_newEntityDescription: createEntity_newEntityDescription,
+        //   createEntity_newEntityDescription: actionCreateEntityParamValues.newEntityDescription,
+        //   createEntity_newEntityUuid: newEntityUuid,
+        //   createEntity_newEntityDefinitionUuid: newEntityDefinitionUuid,
+        //   createEntity_newEntityDetailsReportUuid: uuidv4(),
+        //   createEntity_newEntityListReportUuid: uuidv4(),
+        //   adminConfigurationDeploymentParis,
+        //   //TODO: tag params, should be passed as context instead?
+        //   jzodSchema,
+        //   entityEntityDefinition,
+        //   entityReport,
+        //   createEntity_newEntity: newEntity,
+        //   entityMenu,
+        // }
       
         // const actionHandlerCreateFountainEntity: CompositeActionTemplate = {
         //   actionType: "compositeActionSequence",

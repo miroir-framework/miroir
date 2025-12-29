@@ -37,7 +37,9 @@
               "value": {
                 "id": 1,
                 "defaultLabel": "deployment Uuid",
-                "editable": false
+                "display": {
+                  "editable": false
+                }
               }
             }
           },
@@ -48,7 +50,6 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "editable": false,
                     "defaultLabel": "User",
                     "initializeTo": {
                       "initializeToType": "value",
@@ -66,7 +67,6 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "editable": false,
                     "defaultLabel": "Book",
                     "initializeTo": {
                       "initializeToType": "value",
@@ -84,9 +84,7 @@
                 "type": "date",
                 "tag": {
                   "value": {
-                    "id": 3,
-                    "defaultLabel": "Start Date",
-                    "editable": true
+                    "defaultLabel": "Start Date"
                   }
                 }
               },

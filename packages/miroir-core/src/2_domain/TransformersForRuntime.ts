@@ -144,7 +144,7 @@ import {
   transformer_getActiveDeployment,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
-import { defaultAdminApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultAdminApplicationDeploymentMapNOTGOOD } from "../1_core/Deployment";
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -370,7 +370,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return false;
     }
     case "date": {
-      return new Date();
+      return new Date().toISOString();
     }
     case "any":
     // case "null": {
@@ -834,7 +834,7 @@ function handleTransformer_getActiveDeployment(
     //   "queryParams", queryParams,
     //   "contextResults", contextResults,
     // );
-    return defaultAdminApplicationDeploymentMap[resolvedApplication];
+    return defaultAdminApplicationDeploymentMapNOTGOOD[resolvedApplication];
   } else {
     // log.info(
     //   "handleTransformer_getActiveDeployment called with",
@@ -846,7 +846,7 @@ function handleTransformer_getActiveDeployment(
     //   "queryParams", queryParams,
     //   "contextResults", contextResults,
     // );
-    return defaultAdminApplicationDeploymentMap[transformer.application];
+    return defaultAdminApplicationDeploymentMapNOTGOOD[transformer.application];
   }
 }
 

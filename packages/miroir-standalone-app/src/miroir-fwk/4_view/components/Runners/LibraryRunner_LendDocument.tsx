@@ -113,7 +113,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
             transformerType: "getFromParameters",
             interpolation: "build",
             referencePath: [runnerDefinition.runnerName],
-          },
+          } as any, // TODO: fix type!!
         ],
       },
     };

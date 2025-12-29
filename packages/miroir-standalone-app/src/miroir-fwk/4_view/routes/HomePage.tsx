@@ -29,7 +29,8 @@ import {
   reportEntityDetails,
   reportEntityList,
   resetAndInitApplicationDeployment,
-  SelfApplicationDeploymentConfiguration
+  SelfApplicationDeploymentConfiguration,
+  selfApplicationLibrary
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -121,7 +122,7 @@ export const HomePage = (props: RootComponentProps) => {
 
   // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
   // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
-  const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
+  // const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
@@ -527,11 +528,11 @@ export const HomePage = (props: RootComponentProps) => {
         // currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
         // currentDeploymentUuid="f97cce64-78e9-419f-a4bd-5cbf52833ede" // test4
         // currentDeploymentUuid="3d15b8c8-a74c-48ce-81d5-c76853803b90" // Paris
-        currentDeploymentUuid={adminConfigurationDeploymentParis.uuid}
+        currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
         // currentApplicationUuid={test1SelfApplication.uuid}
         // currentApplicationUuid="478d3a5d-d866-41c8-944c-121aca3ab87f" // test4
         // currentApplicationUuid="2c1d14d5-691f-42cf-9850-887122170a43" // Paris
-        currentApplicationUuid={selfApplicationParis.uuid} // Paris
+        currentApplicationUuid={selfApplicationLibrary.uuid} 
       ></Importer>
       <p />
       {/* <Box sx={{ minWidth: 50 }}> */}

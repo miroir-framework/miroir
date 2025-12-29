@@ -59,6 +59,7 @@ import {
   TransactionalInstanceAction,
   // TransformerForRuntime,
   UndoRedoAction,
+  type EndpointDefinition,
   type TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -1484,7 +1485,7 @@ export class DomainController implements DomainControllerInterface {
     log.info(
       "DomainController handleApplicationAction domainAction",
       JSON.stringify(domainAction, null, 2),
-      currentModelEnvironment
+      // currentModelEnvironment
     );
     if (!currentModelEnvironment) {
       return Promise.resolve(new Action2Error(
@@ -1493,13 +1494,13 @@ export class DomainController implements DomainControllerInterface {
         []
       ));
     }
-    if (!(domainAction as any).application) {
-      return Promise.resolve(new Action2Error(
-        "InvalidAction",
-        "DomainController handleApplicationAction missing application in action",
-        []
-      ));
-    }
+    // if (!(domainAction as any).application) {
+    //   return Promise.resolve(new Action2Error(
+    //     "InvalidAction",
+    //     "DomainController handleApplicationAction missing application in action",
+    //     []
+    //   ));
+    // }
     if (!(domainAction as any).endpoint) {
       return Promise.resolve(new Action2Error(
         "InvalidAction",
@@ -1515,9 +1516,10 @@ export class DomainController implements DomainControllerInterface {
       ));
     }
     // look up the action implementation in the currentModelEnvironment
-    const currentEndpointDefinition = currentModelEnvironment?.currentModel?.endpoints?.find(
-      (ep) => ep.uuid == (domainAction as any).endpoint
-    );
+    const currentEndpointDefinition: EndpointDefinition | undefined =
+      currentModelEnvironment?.currentModel?.endpoints?.find(
+        (ep) => ep.uuid == (domainAction as any).endpoint
+      );
     log.info(
       "DomainController handleApplicationAction currentEndpointDefinition",
       currentEndpointDefinition
@@ -1562,7 +1564,8 @@ export class DomainController implements DomainControllerInterface {
       currentActionDefinition.actionImplementation.definition as CompositeActionTemplate,
       currentModelEnvironment,
       {...domainAction,
-        deploymentUuid: defaultSelfApplicationDeploymentMap[(domainAction as any).application],
+        // deploymentUuid: defaultSelfApplicationDeploymentMap[(domainAction as any).application],
+        deploymentUuid: defaultSelfApplicationDeploymentMap[currentEndpointDefinition.application],
       }
     );
     return result;
