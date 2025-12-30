@@ -17,9 +17,9 @@ interface ActionButtonProps {
 }
 
 /**
- * ActionButton - wraps handleAsyncAction and ThemedButton for async actions with feedback
+ * ActionButtonWithSnackbar - wraps handleAsyncAction and ThemedButton for async actions with feedback
  */
-export const ActionButton: React.FC<ActionButtonProps> = ({
+export const ActionButtonWithSnackbar: React.FC<ActionButtonProps> = ({
   onAction,
   successMessage,
   label,

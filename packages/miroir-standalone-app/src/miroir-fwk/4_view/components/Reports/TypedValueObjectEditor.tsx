@@ -56,7 +56,7 @@ import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
-import { ActionButton } from '../Page/ActionButton.js';
+import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -97,7 +97,7 @@ export interface TypedValueObjectEditorProps {
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
   // error highlighting
   displaySubmitButton?: "onTop" | "onFirstLine" | "noDisplay";
-  useActionButton?: boolean; // Whether to use ActionButton (async) instead of ThemedStyledButton
+  useActionButton?: boolean; // Whether to use ActionButtonWithSnackbar (async) instead of ThemedStyledButton
   // navigationCount: number;
   // external field change observation
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
@@ -435,15 +435,15 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // );
 
   const submitButton = useActionButton ? (
-    // TODO: using ActionButton is useless, formik.submitForm does not return a result (only Promise<void>)
-    <ActionButton
+    // TODO: using ActionButtonWithSnackbar is useless, formik.submitForm does not return a result (only Promise<void>)
+    <ActionButtonWithSnackbar
       onAction={async () => {
-        log.info("TypedValueObjectEditor ActionButton async submit button clicked", formikValuePathAsString);
+        log.info("TypedValueObjectEditor ActionButtonWithSnackbar async submit button clicked", formikValuePathAsString);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
         const result = await formik.submitForm();
         log.info("TypedValueObjectEditor async submit button action done", result);
-        return Promise.resolve(ACTION_OK);
         // return Promise.resolve(result);
+        return Promise.resolve(ACTION_OK);
       }}
       successMessage={`${formLabel} completed successfully`}
       label={formLabel}

@@ -99,7 +99,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     formikValuePathAsString,
     formLabel,
     displaySubmitButton,
-    useActionButton = true,
+    useActionButton = false,
     validateOnChange = false,
     validateOnBlur = false,
     // enableReinitialize = true,
@@ -126,6 +126,8 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
             "value"
           )
       : initialFormValue;
+
+  
   const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
     log.info("RunnerView handleSubmit", action.actionType, "values", values);
 
@@ -137,6 +139,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
       case "compositeActionSequence": {
         log.info("RunnerView handleSubmit compositeActionSequence", action.compositeActionSequence);
         return handleAsyncAction(async () => {
+        // return async () => {
           const result = await domainController.handleCompositeAction(
             action.compositeActionSequence,
             currentMiroirModelEnvironment,
@@ -145,11 +148,13 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
           formikHelpers.setSubmitting(false);
           formikHelpers.setValues(initialValues);
           return Promise.resolve(result);
+        // };
         },"Run composite action sequence successful","RunnerView compositeActionSequence");
         break;
       }
       case "compositeActionTemplate": {
         return handleAsyncAction(async () => {
+        // return async () => {
           const result = await domainController.handleCompositeActionTemplate(
             action.compositeActionTemplate,
             currentMiroirModelEnvironment,
@@ -164,6 +169,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
           formikHelpers.setSubmitting(false);
           formikHelpers.setValues(initialValues);
           return Promise.resolve(result);
+        // };
         }, "Run composite action template successful","RunnerView compositeActionTemplate");
         break;
       }

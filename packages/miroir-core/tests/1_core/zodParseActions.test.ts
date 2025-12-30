@@ -254,8 +254,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "createInstance",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         parentUuid: entityMenu.uuid,
         objects: [
@@ -410,10 +410,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         instanceAction: {
           actionType: "createInstance",
-          deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
+            deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             applicationSection: "data",
             parentUuid: entityMenu.uuid,
             objects: [
@@ -693,8 +693,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             actionType: "createInstance",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             payload: {
+              deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               applicationSection: "data",
               parentUuid: entityMenu.uuid,
               objects: [

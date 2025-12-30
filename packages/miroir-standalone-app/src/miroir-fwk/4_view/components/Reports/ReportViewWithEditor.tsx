@@ -377,9 +377,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 instanceAction: {
                   actionType: mode == "create" ? "createInstance" : "updateInstance",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-                  deploymentUuid: props.deploymentUuid,
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  deploymentUuid: props.deploymentUuid, // NOT FOR createInstance
                   payload: {
+                    deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
                     applicationSection,
                     parentUuid: currentInstance.parentUuid,
                     objects: [
@@ -399,11 +400,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         } else { // only data is modified, no transaction is needed
           const updateAction: InstanceAction = {
             actionType: mode == "create" ? "createInstance" : "updateInstance",
-            deploymentUuid: props.deploymentUuid,
+            deploymentUuid: props.deploymentUuid, // NOT FOR createInstance
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               // applicationSection: "data",
+              deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
               applicationSection: applicationSection,
               objects: [
                 {

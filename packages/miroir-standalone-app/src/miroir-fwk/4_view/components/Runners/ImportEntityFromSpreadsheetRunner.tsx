@@ -398,13 +398,13 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
           {
             actionType: "createInstance",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-            deploymentUuid: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-            } as any,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              deploymentUuid: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+              } as any,
               applicationSection: "data",
               objects: [
                 {

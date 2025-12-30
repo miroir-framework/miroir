@@ -1049,7 +1049,9 @@ export class DomainController implements DomainControllerInterface {
           }
           const currentDeploymentUuid: Uuid =
             currentTransactions[0].actionType == "transactionalInstanceAction"
-              ? currentTransactions[0].payload.instanceAction.deploymentUuid
+              ? currentTransactions[0].payload.instanceAction.actionType == "createInstance"
+                ? currentTransactions[0].payload.instanceAction.payload.deploymentUuid
+                : currentTransactions[0].payload.instanceAction.deploymentUuid
               : currentTransactions[0].deploymentUuid;
 
           if (currentDeploymentUuid != modelAction.deploymentUuid) {
@@ -1174,7 +1176,10 @@ export class DomainController implements DomainControllerInterface {
                     actionType: newActionType,
                     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                    deploymentUuid: replayAction.payload.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
+                    deploymentUuid:
+                      replayAction.payload.instanceAction.actionType == "createInstance"
+                        ? replayAction.payload.instanceAction.payload.deploymentUuid
+                        : replayAction.payload.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
                     payload: {
                       section:
                         replayAction.payload.instanceAction.payload.applicationSection ?? "data",
@@ -1259,8 +1264,8 @@ export class DomainController implements DomainControllerInterface {
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   // deploymentUuid: modelAction.deploymentUuid,
-                  deploymentUuid: currentDeploymentUuid,
                   payload: {
+                    deploymentUuid: currentDeploymentUuid,
                     applicationSection: "model",
                     parentUuid: newModelVersion.parentUuid,
                     objects: [
@@ -1351,8 +1356,8 @@ export class DomainController implements DomainControllerInterface {
         log.info(
           "handleActionFromUI running for action type",
           domainAction.actionType,
-          "on deployment",
-          domainAction.deploymentUuid,
+          // "on deployment",
+          // domainAction.deploymentUuid,
           "autocommit=",
           autocommit,
           "domainAction",
@@ -1365,8 +1370,8 @@ export class DomainController implements DomainControllerInterface {
                 log.error(
                   "handleActionFromUI not autocommitting due to error result for action",
                   domainAction.actionType,
-                  "deployment",
-                  domainAction.deploymentUuid,
+                  // "deployment",
+                  // domainAction.deploymentUuid,
                   "domainAction",
                   domainAction,
                   "result",
@@ -1377,8 +1382,8 @@ export class DomainController implements DomainControllerInterface {
                 log.info(
                   "handleActionFromUI autocommitting (if necessary) for action",
                   domainAction.actionType,
-                  "deployment",
-                  domainAction.deploymentUuid,
+                  // "deployment",
+                  // domainAction.deploymentUuid,
                   "domainAction",
                   domainAction,
                   "result instance of Action2Error",
@@ -1420,8 +1425,8 @@ export class DomainController implements DomainControllerInterface {
                 log.info(
                   "handleActionFromUI no autocommit for action",
                   domainAction.actionType,
-                  "deployment",
-                  domainAction.deploymentUuid,
+                  // "deployment",
+                  // domainAction.deploymentUuid,
                   "domainAction",
                   domainAction
                 );
@@ -1637,7 +1642,9 @@ export class DomainController implements DomainControllerInterface {
           return this.handleModelAction(domainAction, currentModel);
         }
         // case "instanceAction": {
-        case "createInstance":
+        case "createInstance":{
+          return this.handleInstanceAction(domainAction.payload.deploymentUuid, domainAction);
+        }
         case "deleteInstance":
         case "deleteInstanceWithCascade":
         case "updateInstance":

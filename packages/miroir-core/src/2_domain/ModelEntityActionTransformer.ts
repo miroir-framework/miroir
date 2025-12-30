@@ -39,10 +39,10 @@ export class ModelEntityActionTransformer{
         return [
           {
             actionType: "createInstance",
-            deploymentUuid: modelAction.deploymentUuid,
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              deploymentUuid: modelAction.deploymentUuid,
               applicationSection: "model",
               parentUuid:entityEntity.uuid,
               objects: [

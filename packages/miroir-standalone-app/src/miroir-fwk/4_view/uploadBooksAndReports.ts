@@ -131,10 +131,10 @@ export async function uploadBooksAndReports(
         instanceAction: {
           // actionType: "instanceAction",
           actionType: "createInstance",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: "model",
             objects: [
               {
@@ -175,9 +175,9 @@ export async function uploadBooksAndReports(
     // actionType: "instanceAction",
     actionType: "createInstance",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       applicationSection: "data",
       objects: libraryApplicationInstances,
     },

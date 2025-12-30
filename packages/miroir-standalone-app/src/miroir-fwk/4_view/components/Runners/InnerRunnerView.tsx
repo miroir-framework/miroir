@@ -11,7 +11,9 @@ import type {
   TransformerForBuildPlusRuntime,
 } from "miroir-core";
 import {
+  adminConfigurationDeploymentAdmin,
   Domain2ElementFailed,
+  entityDeployment,
   MiroirLoggerFactory,
   transformer_extended_apply_wrapper
 } from "miroir-core";
@@ -45,7 +47,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   formikValuePathAsString,
   formLabel,
   displaySubmitButton,
-  useActionButton = true,
+  useActionButton = false,
   validateOnChange = false,
   validateOnBlur = false,
   ...props
@@ -56,16 +58,44 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   const context = useMiroirContextService();
   const formikContext = useFormikContext<any>();
   
+  const deploymentUuidQueryBase:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = {
+    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+    pageParams: {},
+    queryParams: {},
+    contextResults: {},
+    extractorTemplates: {
+      deployments: {
+        label: "deployments of the application",
+        // extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        extractorTemplateType: "extractorTemplateForObjectListByEntity",
+        parentUuid: entityDeployment.uuid,
+        parentName: entityDeployment.name,
+        applicationSection: "data",
+        filter: {
+          attributeName: "adminApplication",
+          value: {
+            transformerType: "mustacheStringTemplate",
+            interpolation: "build",
+            definition: `{{${runnerName}.application}}`,
+          },
+        },
+      },
+    },
+  } as BoxedQueryTemplateWithExtractorCombinerTransformer;
   const deploymentUuidQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
-      formikContext.values[runnerName]?.application !== noValue.uuid && props.deploymentUuidQuery
+      formikContext.values[runnerName]?.application !== noValue.uuid && deploymentUuidQueryBase
         ? ({
-            ...props.deploymentUuidQuery,
+            ...deploymentUuidQueryBase,
             queryParams: {
-              ...(props.deploymentUuidQuery.queryParams ?? {}),
+              ...(deploymentUuidQueryBase.queryParams ?? {}),
               ...formikContext.values, // letting the template access the form state
             },
           } as BoxedQueryTemplateWithExtractorCombinerTransformer)
@@ -78,7 +108,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
             extractors: {},
           },
     [
-      props.deploymentUuidQuery,
+      deploymentUuidQueryBase,
       (formikContext.values as any)[runnerName]?.application,
     ]
   );

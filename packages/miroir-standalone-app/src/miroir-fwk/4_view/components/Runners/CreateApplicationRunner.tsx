@@ -315,10 +315,10 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "createInstance",
             actionLabel: "createApplicationForAdminAction_instances",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               objects: [
                 {
@@ -390,8 +390,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             actionLabel: "CreateDeploymentInstances",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               objects: [
                 {
@@ -490,8 +490,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             actionLabel: "CreateApplicationStoreInstances",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: testDeploymentUuid,
             payload: {
+              deploymentUuid: testDeploymentUuid,
               applicationSection: "data",
               objects: appEntitesAndInstances.map((e) => {
                 return {

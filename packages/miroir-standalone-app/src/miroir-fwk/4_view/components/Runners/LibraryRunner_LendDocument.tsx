@@ -168,7 +168,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
           formikValuePathAsString={runnerDefinition.runnerName}
           formLabel={runnerDefinition.runnerLabel}
           displaySubmitButton="onFirstLine"
-          useActionButton={true}
+          useActionButton={false}
         />
       )}
     </>

@@ -15,7 +15,7 @@ import {
   ThemedMainPanel,
   ThemedText
 } from '../Themes/index';
-import { ActionButton } from './ActionButton';
+import { ActionButtonWithSnackbar } from './ActionButtonWithSnackbar';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -766,7 +766,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 )}
                 {/* commit */}
                 {/* <span>
-                  <ActionButton
+                  <ActionButtonWithSnackbar
                     onAction={async () => {
                       return domainController.handleAction(
                         {
@@ -812,7 +812,7 @@ export const RootComponent = (props: RootComponentProps) => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
               <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
-                {snackbarMessage}
+                {snackbarSeverity} {snackbarMessage} 
               </Alert>
             </Snackbar>
             {/* Action Timeline - Show when enabled */}

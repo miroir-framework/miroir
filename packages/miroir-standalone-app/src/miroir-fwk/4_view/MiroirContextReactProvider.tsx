@@ -326,11 +326,17 @@ export function MiroirContextReactProvider(props: {
     []
   );
 
+  // ##############################################################################################
   const handleAsyncAction = useMemo(
     () => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
       try {
         const result = await action();
-        log.info(`handleAsyncAction for ${actionName}:`, result);
+        log.info(
+          `handleAsyncAction for ${actionName}:`,
+          result,
+          "is error:",
+          result && typeof result === "object" && result.status === "error"
+        );
 
         // Check if the result is an Action2Error (server error)
         if (result && typeof result === "object" && result.status === "error") {
@@ -346,8 +352,10 @@ export function MiroirContextReactProvider(props: {
 
           startTransition(() => {
             if (result.isServerError && result.errorMessage) {
+              log.info("Showing server error snackbar for", actionName);
               showSnackbar(`Server error: ${result.errorMessage}`, "error");
             } else {
+              log.info("Showing generic error snackbar for", actionName);
               showSnackbar(
                 `Error in ${actionName}: ${
                   result.errorMessage || result.errorType || "Unknown error"
@@ -356,6 +364,10 @@ export function MiroirContextReactProvider(props: {
               );
             }
           });
+        // startTransition(() => {
+        //   showSnackbar(result.errorMessage || result.errorType || "Unknown error", "error");
+        // });
+
           return;
         }
 
@@ -440,6 +452,10 @@ export function MiroirContextReactProvider(props: {
     // return 'http://localhost:3080'; // fallback default
   }, [props.miroirContext]);
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
     () => ({

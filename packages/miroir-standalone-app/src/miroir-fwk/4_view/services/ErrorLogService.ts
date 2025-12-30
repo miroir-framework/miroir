@@ -236,7 +236,7 @@ export const logServerError = (error: Error | string, context?: Record<string, a
     severity: 'error',
     context,
     showSnackbar: true,
-    userMessage: 'Server communication error. Please check your connection and try again.'
+    userMessage: 'Server error: request could not be processed.'
   });
 };
 
@@ -255,7 +255,7 @@ export const logNetworkError = (error: Error | string, context?: Record<string, 
     severity: 'warning',
     context,
     showSnackbar: true,
-    userMessage: 'Network error. Please check your internet connection.'
+    userMessage: 'Network error. Please check your connection.'
   });
 };
 

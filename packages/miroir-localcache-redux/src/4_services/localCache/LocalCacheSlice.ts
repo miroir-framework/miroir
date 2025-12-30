@@ -325,7 +325,7 @@ function handleInstanceAction(
         for (let instanceCollection of instanceAction.payload.objects ??
           ([] as EntityInstanceCollection[])) {
           const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
-            instanceAction.deploymentUuid,
+            instanceAction.payload.deploymentUuid,
             instanceAction.payload.applicationSection,
             instanceCollection.parentUuid
           );
@@ -359,7 +359,7 @@ function handleInstanceAction(
 
           const sliceEntityAdapter: EntityAdapter<EntityInstance, string> =
             initializeLocalCacheSliceStateWithEntityAdapter(
-              instanceAction.deploymentUuid,
+              instanceAction.payload.deploymentUuid,
               instanceAction.payload.applicationSection,
               instanceCollection.parentUuid,
               "current",
@@ -390,7 +390,7 @@ function handleInstanceAction(
                 );
               }
               return initializeLocalCacheSliceStateWithEntityAdapter(
-                instanceAction.deploymentUuid,
+                instanceAction.payload.deploymentUuid,
                 instanceAction.payload.applicationSection,
                 i["uuid"],
                 "current",

@@ -22,7 +22,7 @@ import { useDomainControllerService, useMiroirContextService, useSnackbar } from
 import { usePageConfiguration } from '../../services/index.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
-import { ActionButton } from './ActionButton.js';
+import { ActionButtonWithSnackbar } from './ActionButtonWithSnackbar.js';
 import { SidebarWidth } from './SidebarSection.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -420,11 +420,12 @@ export function AppBar(props:AppBarProps) {
             <MenuIcon />
           </IconButton> */}
           <Box sx={{ flexGrow: 0, display: "flex" }}>
-            <ActionButton
+            <ActionButtonWithSnackbar
               onAction={async () => {
                 return domainController.handleActionFromUI(
                   {
                     actionType: "commit",
+                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     deploymentUuid: noValue.uuid,
                   },

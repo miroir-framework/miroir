@@ -354,12 +354,17 @@ export async function restActionHandler(
          * - the RestMswServerStub emulates the server,
          * - the client has direct access to the persistence store (which is emulated, too)
          *  */
+        const localDeploymentUuid = action.actionType === "createInstance"
+              ? action.payload.deploymentUuid
+              : action.deploymentUuid;
         const localPersistenceStoreController =
-          persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+          persistenceStoreControllerManager.getPersistenceStoreController(
+            localDeploymentUuid
+          );
         if (!localPersistenceStoreController) {
           throw new Error(
             "could not find controller for deployment: " +
-              action.deploymentUuid +
+              localDeploymentUuid +
               " action: " +
               JSON.stringify(action, undefined, 2)
           );

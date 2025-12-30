@@ -303,6 +303,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
+    const deploymentUuid =
+      action.actionType == "createInstance" ? action.payload.deploymentUuid : action.deploymentUuid;
     log.info(
       "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called",
       this.params.persistenceStoreAccessMode,
@@ -326,7 +328,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     ) {
       throw new Error(
         "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-          action.deploymentUuid
+          deploymentUuid
       );
     }
 
@@ -377,7 +379,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           throw new Error(
             // "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
             "PersistenceActionReduxSaga could not find controller for deployment: " +
-              action.deploymentUuid
+              deploymentUuid
             // " available controllers: " +
             // this.persistenceStoreControllerManager.getPersistenceStoreControllers()
           );
@@ -419,10 +421,11 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           actionType: actionMap[newActionType],
           parentName: action.payload.parentName ?? "",
           parentUuid: action.payload.parentUuid ?? "",
-          deploymentUuid: action.deploymentUuid,
+          deploymentUuid: action.deploymentUuid, // NOT for createInstance
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
+            deploymentUuid: action.deploymentUuid, // ONLY for createInstance
             applicationSection: action.payload.section,
             objects: [
               {
@@ -464,7 +467,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         if (!localPersistenceStoreController) {
           throw new Error(
             "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.deploymentUuid
+              deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
@@ -477,7 +480,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         if (!localPersistenceStoreController) {
           throw new Error(
             "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.deploymentUuid
+              deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
@@ -891,11 +894,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   "action",
         //   action
         // );
+        const deploymentUuid =
+          action.actionType == "createInstance" ? action.payload.deploymentUuid : action.deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             const localPersistenceStoreController =
               this.params.localPersistenceStoreControllerManager.getPersistenceStoreController(
-                action.deploymentUuid
+                deploymentUuid
               );
 
             return yield* this.innerHandlePersistenceActionForLocalPersistenceStore(
@@ -973,6 +978,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
         const { action, currentModel } = p.payload;
+        const deploymentUuid =
+          action.actionType == "createInstance" ? action.payload.deploymentUuid : action.deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode !== "local") {
             throw new Error(
@@ -984,7 +991,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           }
           const localPersistenceStoreController =
             this.params.localPersistenceStoreControllerManager.getPersistenceStoreController(
-              action.deploymentUuid
+              deploymentUuid
             );
 
           return yield* this.innerHandlePersistenceActionForLocalPersistenceStore(

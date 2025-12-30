@@ -15,7 +15,7 @@ import {
 
 
 import { packageName } from "../../../../constants.js";
-import { ActionButton } from "../../components/Page/ActionButton.js";
+import { ActionButtonWithSnackbar } from "../../components/Page/ActionButtonWithSnackbar.js";
 import { cleanLevel } from "../../constants.js";
 import { useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 
@@ -231,7 +231,7 @@ interface RunTransformerTestSuiteButtonProps {
   onTestComplete?: (testSuiteKey: string, structuredResults: any[]) => void;
   testFilter?: { testList?: TestSuiteListFilter, match?: RegExp } | undefined;
   label?: string;
-  [key: string]: any; // for passing extra props to ActionButton
+  [key: string]: any; // for passing extra props to ActionButtonWithSnackbar
 }
 
 // ################################################################################################
@@ -292,7 +292,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
   };
 
   return (
-    <ActionButton
+    <ActionButtonWithSnackbar
       onAction={onAction}
       successMessage={`${testSuiteKey} tests completed successfully`}
       label={label || `Run ${testSuiteKey} Tests`}
