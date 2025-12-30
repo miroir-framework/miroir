@@ -457,7 +457,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
                 transformerType: "returnValue",
                 label: "initParametersForTest",
                 interpolation: "runtime",
-                value: initParametersForTest
+                value: initParametersForTest,
               },
             },
           },
@@ -466,7 +466,9 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             actionLabel: "refreshLocalCacheForApplication",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: testDeploymentUuid,
+            payload: {
+              deploymentUuid: testDeploymentUuid,
+            },
           },
           {
             actionType: "createEntity",
@@ -482,8 +484,10 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             actionType: "commit",
             actionLabel: "CommitApplicationStoreEntities",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid: testDeploymentUuid,
+            payload: {
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            },
           },
           {
             actionType: "createInstance",

@@ -129,7 +129,7 @@ export function createDeploymentCompositeAction(
   );
   return {
     actionType: "compositeActionSequence",
-    actionLabel: "beforeAll",
+    actionLabel: "createDeploymentCompositeAction",
     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
@@ -236,23 +236,24 @@ export function resetAndinitializeDeploymentCompositeAction(
       // transformerType: "returnValue",
       // interpolation: "runtime",
       // value: {
-      definition: 
-      [
+      definition: [
         {
           actionType: "resetModel",
           actionLabel: "resetApplicationStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
+          payload: {
+            deploymentUuid: deploymentUuid,
+          },
         },
         {
           actionType: "initModel",
           actionLabel: "initStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
           payload: {
-             params: initApplicationParameters,
+            deploymentUuid: deploymentUuid,
+            params: initApplicationParameters,
             //  this is not a template, no transformer interpolation occurs before runtime
             // transformerType: "returnValue",
             // label: "initParametersForTest",
@@ -265,15 +266,17 @@ export function resetAndinitializeDeploymentCompositeAction(
           actionLabel: "refreshLocalCacheForApplication",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
+          payload: {
+            deploymentUuid: deploymentUuid,
+          },
         },
         {
           actionType: "createEntity",
           actionLabel: "CreateApplicationStoreEntities",
-          deploymentUuid: deploymentUuid,
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
+            deploymentUuid: deploymentUuid,
             entities: appEntitesAndInstances,
           },
         },
@@ -282,7 +285,9 @@ export function resetAndinitializeDeploymentCompositeAction(
           actionLabel: "CommitApplicationStoreEntities",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          deploymentUuid: deploymentUuid,
+          payload: {
+            deploymentUuid: deploymentUuid,
+          },
         },
         {
           actionType: "createInstance",
@@ -304,7 +309,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         },
       ],
       // },
-    } as any
+    } as any,
   };
 }
 

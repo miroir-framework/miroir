@@ -233,7 +233,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Model.CRUD",
       beforeAll: createDeploymentCompositeAction(
-        "TEST",
+        "library",
         testApplicationDeploymentUuid,
         adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration
@@ -262,7 +262,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
         ]
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
-      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
+      afterAll: testOnLibrary_deleteLibraryDeployment(
+        miroirConfig,
+        adminConfigurationDeploymentLibrary.uuid
+      ),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",
@@ -280,7 +283,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -288,7 +293,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -370,7 +377,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -378,7 +387,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // actionType: "modelAction",
@@ -386,8 +397,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "addEntityAuthor",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     entities: [
                       {
                         entity: entityAuthor as Entity,
@@ -402,7 +413,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "commitLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // performs query on local cache for emulated server, and on server for remote server
@@ -499,7 +512,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -507,16 +522,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // actionType: "modelAction",
                   actionType: "createEntity",
                   actionLabel: "addEntityAuthor",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     entities: [
                       {
                         entity: entityAuthor as Entity,
@@ -531,7 +548,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache2",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -613,7 +632,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -621,16 +642,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // actionType: "modelAction",
                   actionType: "createEntity",
                   actionLabel: "addEntityAuthor",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     entities: [
                       {
                         entity: entityAuthor as Entity,
@@ -805,7 +828,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -813,7 +838,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // actionType: "modelAction",
@@ -821,8 +848,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "dropEntityPublisher",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     entityUuid: entityPublisher.uuid,
                     entityDefinitionUuid: entityDefinitionPublisher.uuid,
                   },
@@ -833,7 +860,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "commitLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // performs query on local cache for emulated server, and on server for remote server
@@ -935,7 +964,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -943,7 +974,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // actionType: "modelAction",
@@ -951,8 +984,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "dropEntityPublisher",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     entityUuid: entityPublisher.uuid,
                     entityDefinitionUuid: entityDefinitionPublisher.uuid,
                     entityName: "Publisher",
@@ -965,7 +998,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "commitLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // performs query on local cache for emulated server, and on server for remote server
@@ -1067,7 +1102,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -1075,16 +1112,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // actionType: "modelAction",
                   actionType: "alterEntityAttribute",
                   actionLabel: "alterEntityPublisher",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     entityName: entityPublisher.name,
                     entityUuid: entityPublisher.uuid,
                     entityDefinitionUuid: entityDefinitionPublisher.uuid,
@@ -1102,7 +1141,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "commitLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 {
                   // performs query on local cache for emulated server, and on server for remote server

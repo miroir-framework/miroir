@@ -134,7 +134,9 @@ export async function resetAndInitApplicationDeployment(
       actionType: "resetModel",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: selfAdminConfigurationDeployment.uuid,
+      payload: {
+        deploymentUuid: selfAdminConfigurationDeployment.uuid,
+      },
     }, defaultMiroirModelEnvironment);
   }
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
@@ -143,8 +145,8 @@ export async function resetAndInitApplicationDeployment(
         actionType: "initModel",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: selfAdminConfigurationDeployment.uuid,
         payload: {
+          deploymentUuid: selfAdminConfigurationDeployment.uuid,
           params: {
             dataStoreType:
               selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid
@@ -173,7 +175,9 @@ export async function resetAndInitApplicationDeployment(
         actionType: "rollback",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: d.uuid,
+        payload: {
+          deploymentUuid: d.uuid,
+        },
       },
       defaultMiroirModelEnvironment
     );
@@ -482,9 +486,11 @@ export class DomainController implements DomainControllerInterface {
             {}, // context update
             {
               actionType: "rollback",
-              deploymentUuid: adminDeploymentUuid,
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              payload: {
+                deploymentUuid: adminDeploymentUuid,
+              },
             }
           );
 
@@ -942,7 +948,7 @@ export class DomainController implements DomainControllerInterface {
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionType=",
       modelAction["actionType"],
       "deployment",
-      modelAction["deploymentUuid"],
+      modelAction.payload["deploymentUuid"],
       "action",
       modelAction.actionType != "initModel" ? JSON.stringify(modelAction, null, 2) : modelAction
       // modelAction,
@@ -955,7 +961,7 @@ export class DomainController implements DomainControllerInterface {
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore!"
             );
-            await this.loadConfigurationFromPersistenceStore(modelAction.deploymentUuid);
+            await this.loadConfigurationFromPersistenceStore(modelAction.payload.deploymentUuid);
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore DONE!"
             );
@@ -970,7 +976,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "rollback": {
-          await this.loadConfigurationFromPersistenceStore(modelAction.deploymentUuid);
+          await this.loadConfigurationFromPersistenceStore(modelAction.payload.deploymentUuid);
           break;
         }
         case "alterEntityAttribute":
@@ -1050,21 +1056,21 @@ export class DomainController implements DomainControllerInterface {
           const currentDeploymentUuid: Uuid =
             currentTransactions[0].actionType == "transactionalInstanceAction"
                 ? currentTransactions[0].payload.instanceAction.payload.deploymentUuid
-              : currentTransactions[0].deploymentUuid;
+              : currentTransactions[0].payload.deploymentUuid;
 
-          if (currentDeploymentUuid != modelAction.deploymentUuid) {
+          if (currentDeploymentUuid != modelAction.payload.deploymentUuid) {
             log.warn(
               "commit operation deploymentUuid mismatch between current replay action (",
               currentDeploymentUuid,
               ") and modelAction(",
-              modelAction.deploymentUuid,
+              modelAction.payload.deploymentUuid,
               ")",
               "currentTransactions:",
               currentTransactions
             );
           }
           const filteredDeployments = currentTransactions.length > 1 ?
-            currentTransactions.filter((tx) => tx.deploymentUuid != modelAction.deploymentUuid) : [];
+            currentTransactions.filter((tx) => tx.payload.deploymentUuid != modelAction.payload.deploymentUuid) : [];
           if (filteredDeployments.length > 0) {
             log.warn(
               "commit operation deploymentUuid mismatch among current transactions.",
@@ -1241,9 +1247,11 @@ export class DomainController implements DomainControllerInterface {
                 // actionType: "modelAction",
                 actionType: "commit",
                 // deploymentUuid: modelAction.deploymentUuid,
-                deploymentUuid: currentDeploymentUuid,
                 application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  deploymentUuid: currentDeploymentUuid,
+                },
               }
             )
             .then((context) => {
@@ -1293,7 +1301,7 @@ export class DomainController implements DomainControllerInterface {
         "DomainController handleModelAction caught exception when handling",
         modelAction["actionType"],
         "deployment",
-        modelAction.deploymentUuid,
+        modelAction.payload.deploymentUuid,
         "action",
         modelAction,
         "error instanceof Action2Error=",
@@ -1315,7 +1323,7 @@ export class DomainController implements DomainControllerInterface {
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction DONE actionType=",
       modelAction["actionType"],
       "deployment",
-      modelAction.deploymentUuid,
+      modelAction.payload.deploymentUuid,
     );
 
     return Promise.resolve(ACTION_OK);
@@ -1399,14 +1407,16 @@ export class DomainController implements DomainControllerInterface {
                   actionType: "commit",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: domainAction.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
+                  payload: {
+                    deploymentUuid: domainAction.payload.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
+                  }
                 };
                 const result = await this.handleActionInternal(commitAction, currentModelEnvironment);
                 log.info(
                   "handleActionFromUI autocommit done for action",
                   domainAction.actionType,
                   "deployment",
-                  domainAction.deploymentUuid,
+                  domainAction.payload.deploymentUuid,
                   "domainAction",
                   domainAction,
                   "result instance of Action2Error",
@@ -1753,7 +1763,7 @@ export class DomainController implements DomainControllerInterface {
               "DomainController handleAction caught exception when handling",
               domainAction.actionType,
               "deployment",
-              domainAction.deploymentUuid,
+              domainAction.payload.deploymentUuid,
               "action",
               domainAction,
               "exception",

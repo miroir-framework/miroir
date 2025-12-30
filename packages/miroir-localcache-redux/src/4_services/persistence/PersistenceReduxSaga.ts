@@ -25,7 +25,9 @@ import {
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
   StoreOrBundleAction,
+  entityInstanceActions,
   instanceEndpointV1,
+  modelEndpointV1,
   storeActionOrBundleActionStoreRunner,
   type MiroirModelEnvironment
 } from "miroir-core";
@@ -39,9 +41,13 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga")
 ).then((logger: LoggerInterface) => {log = logger});
 
-export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
-  (actionDef:any) => actionDef.actionParameters.actionType.definition
-)
+// export const entityInstanceActions = [
+//   ...instanceEndpointV1.definition.actions.map(
+//   (actionDef:any) => actionDef.actionParameters.actionType.definition
+// ),
+// ...modelEndpointV1.definition.actions.map(
+//   (actionDef:any) => actionDef.actionParameters.actionType.definition
+// )]
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 

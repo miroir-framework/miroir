@@ -571,9 +571,9 @@ function handleModelAction(
     case "dropEntity": {
       const localInstanceActions =
         ModelEntityActionTransformer.modelActionToInstanceAction(
-          action.deploymentUuid,
+          action.payload.deploymentUuid,
           action,
-          currentModel(action.deploymentUuid, state)
+          currentModel(action.payload.deploymentUuid, state)
         );
       log.info(
         "localCacheSliceObject handleModelAction generated instanceActions",
@@ -685,7 +685,7 @@ function handleAction(
     case "createEntity":
     case "dropEntity":
     {
-      return handleModelAction(state, action.deploymentUuid,action);
+      return handleModelAction(state, action.payload.deploymentUuid,action);
       break;
     }
     case "transactionalInstanceAction": {

@@ -370,10 +370,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           return domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
-              deploymentUuid: props.deploymentUuid,
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
+                deploymentUuid: props.deploymentUuid,
                 instanceAction: {
                   actionType: mode == "create" ? "createInstance" : "updateInstance",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",

@@ -679,6 +679,9 @@ export {
   getInnermostTypeCheckError
 } from "./1_core/jzod/mlsTypeCheckError";
 export {
+  entityInstanceActions,
+} from "./1_core/Instance";
+export {
   defaultLibraryAppModel,
   defaultLibraryModelEnvironment
 } from "./1_core/Library";

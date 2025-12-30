@@ -622,9 +622,9 @@ const createEntityCompositeAction: CompositeActionSequence = {
         actionType: "createEntity",
         actionLabel: "createEntity",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-        deploymentUuid: testAdminConfigurationDeploymentUuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
+          deploymentUuid: testAdminConfigurationDeploymentUuid,
           entities: [
             {
               entity: createEntity_newEntity,
@@ -853,9 +853,9 @@ const createReportsCompositeAction: DomainAction = {
   actionType: "transactionalInstanceAction",
   actionLabel: "createReports",
   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-  deploymentUuid: testAdminConfigurationDeploymentUuid,
   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
+    deploymentUuid: testAdminConfigurationDeploymentUuid,
     instanceAction: {
       // actionType: "instanceAction",
       actionType: "createInstance",
@@ -1125,7 +1125,9 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                   actionType: "commit",
                   actionLabel: "commit",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: {
                   deploymentUuid: testAdminConfigurationDeploymentUuid,
+                  }
                   // deploymentUuid: {
                   //   transformerType: "getFromParameters",
                   //   interpolation: "build",
@@ -1210,9 +1212,9 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                   actionType: "transactionalInstanceAction",
                   actionLabel: "updateMenu",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-                  deploymentUuid: testAdminConfigurationDeploymentUuid,
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   payload: {
+                    deploymentUuid: testAdminConfigurationDeploymentUuid,
                     instanceAction: {
                       actionType: "updateInstance",
                       applicationSection: "model",
@@ -1242,7 +1244,9 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                   actionType: "commit",
                   actionLabel: "commit",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: {
                   deploymentUuid: testAdminConfigurationDeploymentUuid,
+                  }
                 },
                 // fetch menuUpdateQueryResult: current menu
                 {

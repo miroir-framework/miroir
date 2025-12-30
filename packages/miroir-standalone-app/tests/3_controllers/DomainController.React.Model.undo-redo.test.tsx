@@ -54,6 +54,8 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { LocalCacheInterface } from "miroir-core";
 import { defaultMiroirModelEnvironment } from "miroir-core";
 import { createDeploymentCompositeAction } from "miroir-core";
+import { adminLibraryApplication } from "miroir-core";
+import { adminMiroirApplication } from "miroir-core";
 
 
 
@@ -130,16 +132,31 @@ beforeAll(
     miroirContext = localmiroirContext;
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
+      "miroir",
       adminConfigurationDeploymentMiroir.uuid,
+      adminMiroirApplication.uuid,
       miroirtDeploymentStorageConfiguration,
     );
-    const createDeploymentResult = await domainController.handleCompositeAction(createMiroirDeploymentCompositeAction, defaultMiroirModelEnvironment);
+    const createDeploymentResult = await domainController.handleCompositeAction(
+      createMiroirDeploymentCompositeAction,
+      defaultMiroirModelEnvironment,
+      {}
+    );
     if (createDeploymentResult.status !== "ok") {
       throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
     }
 
-    const action = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
-    const result = await domainController.handleCompositeAction(action, defaultMiroirMetaModel);
+    const action = createDeploymentCompositeAction(
+      "library",
+      adminConfigurationDeploymentLibrary.uuid, 
+      adminLibraryApplication.uuid, 
+      libraryDeploymentStorageConfiguration
+    );
+    const result = await domainController.handleCompositeAction(
+      action,
+      defaultMiroirModelEnvironment,
+      {}
+    );
 
   }
 )
@@ -215,7 +232,9 @@ describe.sequential(
                 actionType: "rollback",
                 application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+                payload: {
+                  deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+                },
               }, defaultMiroirModelEnvironment);
               await domainController.handleAction(
                 {
@@ -223,7 +242,9 @@ describe.sequential(
                   actionType: "rollback",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 defaultMiroirModelEnvironment
               );
@@ -252,8 +273,8 @@ describe.sequential(
             actionType: "createEntity",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             payload: {
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               entities: [
                 {
                   entity: entityAuthor as Entity,
@@ -267,8 +288,8 @@ describe.sequential(
             actionType: "createEntity",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             payload: {
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               entities: [
                 {
                   entity: entityBook as Entity,
@@ -593,7 +614,9 @@ describe.sequential(
                   // actionType: "modelAction",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  },
                 },
                 defaultMiroirModelEnvironment
               );

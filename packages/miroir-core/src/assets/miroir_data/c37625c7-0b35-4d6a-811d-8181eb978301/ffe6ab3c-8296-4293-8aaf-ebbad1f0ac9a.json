@@ -271,13 +271,14 @@
               {
                 "actionType": "createEntity",
                 "actionLabel": "createEntity",
-                "deploymentUuid": {
-                  "transformerType": "getFromParameters",
-                  "interpolation": "build",
-                  "referenceName": "testDeploymentUuid"
-                },
+                "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
+                  "deploymentUuid": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "testDeploymentUuid"
+                  },
                   "entities": [
                     {
                       "entity": {
@@ -298,6 +299,11 @@
                 "actionType": "transactionalInstanceAction",
                 "actionLabel": "createReports",
                 "payload": {
+                  "deploymentUuid": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "testDeploymentUuid"
+                  },
                   "instanceAction": {
                     "actionType": "createInstance",
                     "application": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
@@ -344,10 +350,12 @@
                 "actionType": "commit",
                 "actionLabel": "commit",
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
-                "deploymentUuid": {
-                  "transformerType": "getFromParameters",
-                  "interpolation": "build",
-                  "referenceName": "testDeploymentUuid"
+                "payload": {
+                  "deploymentUuid": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "testDeploymentUuid"
+                  }
                 }
               },
               {
@@ -612,6 +620,11 @@
                 "actionType": "transactionalInstanceAction",
                 "actionLabel": "updateMenu",
                 "payload": {
+                  "deploymentUuid": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "testDeploymentUuid"
+                  },
                   "instanceAction": {
                     "actionType": "updateInstance",
                     "deploymentUuid": {
@@ -653,10 +666,12 @@
                 "actionType": "commit",
                 "actionLabel": "commit",
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
-                "deploymentUuid": {
-                  "transformerType": "getFromParameters",
-                  "interpolation": "build",
-                  "referenceName": "testDeploymentUuid"
+                "payload": {
+                  "deploymentUuid": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "testDeploymentUuid"
+                  }
                 }
               },
               {

@@ -52,7 +52,6 @@ import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueO
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
-import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
 import { ResolvedJzodSchemaReturnType } from "miroir-core";
 import { measuredJzodTypeCheck } from "../../src/miroir-fwk/4_view/tools/hookPerformanceMeasure";
@@ -60,6 +59,8 @@ import { jzodTypeCheck } from "miroir-core";
 import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";
 import { log } from "console";
+import { emptyDomainElementObject } from "../../src/miroir-fwk/4_view/components/Page/RootComponent";
+import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Concept";
 
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
@@ -605,10 +606,11 @@ export function getWrapperLoadingLocalCache(
     // const resultForLoadingLibraryAppInstances: Action2ReturnType = localCache.handleLocalCacheAction({
   const resultForLoadingMiroirMetaModel: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
-    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     // deploymentUuid: applicationDeploymentAdmin.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       objects: [
         {
           parentName: entityEntity.name,
@@ -661,19 +663,23 @@ export function getWrapperLoadingLocalCache(
     );
   }
 
-  localCache.handleLocalCacheAction( // needed so that "loading" instances become "current"
+  localCache.handleLocalCacheAction(
+    // needed so that "loading" instances become "current"
     {
       actionType: "rollback",
-      // actionType: "commit",
-      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+      },
     }
   );
   const resultForLoadingLibraryApplicationModel: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
-    deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       objects: [
         {
           parentName: entityEntity.name,
@@ -738,20 +744,25 @@ export function getWrapperLoadingLocalCache(
       `Error loading Library Application Model: ${JSON.stringify(resultForLoadingLibraryApplicationModel, null, 2)}`
     );
   }
-  localCache.handleLocalCacheAction( // needed so that "loading" instances become "current"
+  localCache.handleLocalCacheAction(
+    // needed so that "loading" instances become "current"
     {
       actionType: "rollback",
       // actionType: "commit",
-      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+      },
     }
   );
 
   const resultForLoadingLibraryApplicationInstances: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
-    deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       objects: libraryApplicationInstances,
     }
   });
@@ -761,12 +772,15 @@ export function getWrapperLoadingLocalCache(
       `Error loading Library Application Instances: ${JSON.stringify(resultForLoadingLibraryApplicationInstances, null, 2)}`
     );
   }
-  localCache.handleLocalCacheAction( // needed so that "loading" instances become "current"
+  localCache.handleLocalCacheAction(
+    // needed so that "loading" instances become "current"
     {
       actionType: "rollback",
-      // actionType: "commit",
-      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+      },
     }
   );
 

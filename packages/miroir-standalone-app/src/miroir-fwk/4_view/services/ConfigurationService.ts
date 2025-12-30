@@ -82,182 +82,214 @@ export function fetchMiroirAndAppConfigurations(
   );
 
   // CRITICAL: Single promise chain with no intermediate awaits to maintain React 18 batching
-  return domainController.handleAction(
-    {
-      actionType: "rollback",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-    },
-    defaultMiroirModelEnvironment
-  ).then((rollbackResult) => {
-    // Check if the rollback action failed
-    if (rollbackResult && rollbackResult.status === 'error') {
-      throw new Error(`Failed to rollback admin configuration: ${rollbackResult.errorMessage || 'Unknown error'}`);
-    }
-    
-    // Query for deployments
-    const subQueryName = "deployments";
-    const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
-      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-      pageParams: {},
-      queryParams: {},
-      contextResults: {},
-      extractorTemplates: {
-        [subQueryName]: {
-          extractorTemplateType: "extractorTemplateForObjectListByEntity",
-          applicationSection: "data",
-          parentName: "Deployment",
-          parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
-            interpolation: "build",
-            value: entityDeployment.uuid,
-          },
-        },
-      },
-    };
-
-    return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+  return domainController
+    .handleAction(
       {
-        actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        actionType: "rollback",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
-          applicationSection: "data",
-          query: adminDeploymentsQuery,
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         },
       },
       defaultMiroirModelEnvironment
-    );
-  }).then((adminDeployments: Action2ReturnType) => {
-    // Validate query results with structured error handling
-    if (adminDeployments instanceof Action2Error) {
-      throw new Error(`Error fetching deployments: ${adminDeployments.errorMessage || adminDeployments.errorType}`);
-    }
-
-    if (adminDeployments.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(
-        `Failed to fetch deployments: ${adminDeployments.returnedDomainElement.elementType} - ${JSON.stringify(adminDeployments.returnedDomainElement, null, 2)}`
-      );
-    }
-
-    if (typeof adminDeployments.returnedDomainElement != "object") {
-      throw new Error(
-        "Deployments query returned unexpected result type. Expected object but got: " +
-          typeof adminDeployments.returnedDomainElement
-      );
-    }
-
-    if (!adminDeployments.returnedDomainElement["deployments"]) {
-      throw new Error(
-        "Deployments query result missing 'deployments' property. Available properties: " +
-          Object.keys(adminDeployments.returnedDomainElement).join(", ")
-      );
-    }
-
-    const foundDeployments = adminDeployments.returnedDomainElement["deployments"].filter((dep: Deployment) => {
-      return dep.uuid !== adminConfigurationDeploymentParis.uuid;
-    });
-    log.info("found adminDeployments", foundDeployments);
-
-    // Build store opening actions first
-    const openStoreActions: Promise<any>[] = [];
-    const deploymentsToLoad: Deployment[] = foundDeployments;
-
-    // Add all store opening actions
-    for (const deployment of Object.values(deploymentsToLoad)) {
-      const deploymentData = deployment as any;
-      
-      openStoreActions.push(
-        domainController.handleAction({
-          actionType: "storeManagementAction_openStore",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
-          deploymentUuid: deploymentData.uuid,
-          payload: {
-            configuration: {
-              [deploymentData.uuid]: deploymentData.configuration as StoreUnitConfiguration,
-            },
-          },
-        })
-      );
-    }
-
-    // STEP 1: Execute all store opening actions first
-    return Promise.all(openStoreActions).then((openResults) => {
-      // Check for any failures in store opening
-      const failedStores = openResults.filter(result => result && result.status === 'error');
-      if (failedStores.length > 0) {
-        const failureMessages = failedStores.map(result => result.errorMessage || 'Unknown error').join('; ');
-        throw new Error(`Failed to open ${failedStores.length} store(s): ${failureMessages}`);
-      }
-      
-      // STEP 2: Build and execute rollback actions after stores are opened
-      const rollbackActions: Promise<any>[] = [];
-
-      for (const deployment of Object.values(deploymentsToLoad)) {
-        const deploymentData = deployment as any;
-        
-        rollbackActions.push(
-          domainController.handleAction({
-            actionType: "rollback",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
-            deploymentUuid: deploymentData.uuid,
-          }, defaultMiroirModelEnvironment)
+    )
+    .then((rollbackResult) => {
+      // Check if the rollback action failed
+      if (rollbackResult && rollbackResult.status === "error") {
+        throw new Error(
+          `Failed to rollback admin configuration: ${
+            rollbackResult.errorMessage || "Unknown error"
+          }`
         );
       }
 
-      // Execute all rollback actions
-      return Promise.all(rollbackActions);
-    });
-  }).then((rollbackResults) => {
-    // Check for any failures in rollback actions
-    const failedRollbacks = rollbackResults.filter(result => result && result.status === 'error');
-    if (failedRollbacks.length > 0) {
-      const failureMessages = failedRollbacks.map(result => result.errorMessage || 'Unknown error').join('; ');
-      throw new Error(`Failed to rollback ${failedRollbacks.length} deployment(s): ${failureMessages}`);
-    }
-    
-    log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-    );
+      // Query for deployments
+      const subQueryName = "deployments";
+      const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        pageParams: {},
+        queryParams: {},
+        contextResults: {},
+        extractorTemplates: {
+          [subQueryName]: {
+            extractorTemplateType: "extractorTemplateForObjectListByEntity",
+            applicationSection: "data",
+            parentName: "Deployment",
+            parentUuid: {
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: entityDeployment.uuid,
+            },
+          },
+        },
+      };
 
-    // Call success callback if provided
-    if (onSuccess) {
-      onSuccess("Miroir & App configurations fetched successfully");
-    }
-  }).catch((error) => {
-    log.error("Error fetching configurations:", error);
-    
-    // Log the startup error to the global error service
-    const errorEntry = logStartupError(error, {
-      functionName: 'fetchMiroirAndAppConfigurations',
-      miroirConfigPresent: !!miroirConfig,
-      timestamp: new Date().toISOString()
+      return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+        {
+          actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          payload: {
+            applicationSection: "data",
+            query: adminDeploymentsQuery,
+          },
+        },
+        defaultMiroirModelEnvironment
+      );
+    })
+    .then((adminDeployments: Action2ReturnType) => {
+      // Validate query results with structured error handling
+      if (adminDeployments instanceof Action2Error) {
+        throw new Error(
+          `Error fetching deployments: ${
+            adminDeployments.errorMessage || adminDeployments.errorType
+          }`
+        );
+      }
+
+      if (adminDeployments.returnedDomainElement instanceof Domain2ElementFailed) {
+        throw new Error(
+          `Failed to fetch deployments: ${
+            adminDeployments.returnedDomainElement.elementType
+          } - ${JSON.stringify(adminDeployments.returnedDomainElement, null, 2)}`
+        );
+      }
+
+      if (typeof adminDeployments.returnedDomainElement != "object") {
+        throw new Error(
+          "Deployments query returned unexpected result type. Expected object but got: " +
+            typeof adminDeployments.returnedDomainElement
+        );
+      }
+
+      if (!adminDeployments.returnedDomainElement["deployments"]) {
+        throw new Error(
+          "Deployments query result missing 'deployments' property. Available properties: " +
+            Object.keys(adminDeployments.returnedDomainElement).join(", ")
+        );
+      }
+
+      const foundDeployments = adminDeployments.returnedDomainElement["deployments"].filter(
+        (dep: Deployment) => {
+          return dep.uuid !== adminConfigurationDeploymentParis.uuid;
+        }
+      );
+      log.info("found adminDeployments", foundDeployments);
+
+      // Build store opening actions first
+      const openStoreActions: Promise<any>[] = [];
+      const deploymentsToLoad: Deployment[] = foundDeployments;
+
+      // Add all store opening actions
+      for (const deployment of Object.values(deploymentsToLoad)) {
+        const deploymentData = deployment as any;
+
+        openStoreActions.push(
+          domainController.handleAction({
+            actionType: "storeManagementAction_openStore",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
+            deploymentUuid: deploymentData.uuid,
+            payload: {
+              configuration: {
+                [deploymentData.uuid]: deploymentData.configuration as StoreUnitConfiguration,
+              },
+            },
+          })
+        );
+      }
+
+      // STEP 1: Execute all store opening actions first
+      return Promise.all(openStoreActions).then((openResults) => {
+        // Check for any failures in store opening
+        const failedStores = openResults.filter((result) => result && result.status === "error");
+        if (failedStores.length > 0) {
+          const failureMessages = failedStores
+            .map((result) => result.errorMessage || "Unknown error")
+            .join("; ");
+          throw new Error(`Failed to open ${failedStores.length} store(s): ${failureMessages}`);
+        }
+
+        // STEP 2: Build and execute rollback actions after stores are opened
+        const rollbackActions: Promise<any>[] = [];
+
+        for (const deployment of Object.values(deploymentsToLoad)) {
+          const deploymentData = deployment as any;
+
+          rollbackActions.push(
+            domainController.handleAction(
+              {
+                actionType: "rollback",
+                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
+                payload: {
+                  deploymentUuid: deploymentData.uuid,
+                },
+              },
+              defaultMiroirModelEnvironment
+            )
+          );
+        }
+
+        // Execute all rollback actions
+        return Promise.all(rollbackActions);
+      });
+    })
+    .then((rollbackResults) => {
+      // Check for any failures in rollback actions
+      const failedRollbacks = rollbackResults.filter(
+        (result) => result && result.status === "error"
+      );
+      if (failedRollbacks.length > 0) {
+        const failureMessages = failedRollbacks
+          .map((result) => result.errorMessage || "Unknown error")
+          .join("; ");
+        throw new Error(
+          `Failed to rollback ${failedRollbacks.length} deployment(s): ${failureMessages}`
+        );
+      }
+
+      log.info(
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+      );
+
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess("Miroir & App configurations fetched successfully");
+      }
+    })
+    .catch((error) => {
+      log.error("Error fetching configurations:", error);
+
+      // Log the startup error to the global error service
+      const errorEntry = logStartupError(error, {
+        functionName: "fetchMiroirAndAppConfigurations",
+        miroirConfigPresent: !!miroirConfig,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Create a structured error for better error reporting
+      const structuredError = new Error(
+        `Configuration loading failed: ${error.message || error.toString()}`
+      );
+      // Preserve original error details
+      (structuredError as any).originalError = error;
+      (structuredError as any).errorType = "ConfigurationLoadingError";
+      (structuredError as any).isStartupError = true;
+      (structuredError as any).errorId = errorEntry.id;
+
+      // Call error callback if provided
+      if (onError) {
+        onError(structuredError);
+      } else {
+        // Re-throw the structured error if no error handler provided
+        throw structuredError;
+      }
     });
-    
-    // Create a structured error for better error reporting
-    const structuredError = new Error(
-      `Configuration loading failed: ${error.message || error.toString()}`
-    );
-    // Preserve original error details
-    (structuredError as any).originalError = error;
-    (structuredError as any).errorType = 'ConfigurationLoadingError';
-    (structuredError as any).isStartupError = true;
-    (structuredError as any).errorId = errorEntry.id;
-    
-    // Call error callback if provided
-    if (onError) {
-      onError(structuredError);
-    } else {
-      // Re-throw the structured error if no error handler provided
-      throw structuredError;
-    }
-  });
 }/**
  * React hook for accessing the configuration fetching functionality
  * This provides a convenient way to use the service within React components

@@ -34,6 +34,7 @@ import {
   DomainControllerInterface,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
+  entityInstanceActions,
   EntityInstancesUuidIndex,
   getQueryRunnerParamsForReduxDeploymentsState,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
@@ -87,9 +88,9 @@ export interface RootComponentProps {
   // reportName: string;
 }
 
-export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
-  (actionDef:any) => actionDef.actionParameters.actionType.definition
-)
+// export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
+//   (actionDef:any) => actionDef.actionParameters.actionType.definition
+// )
 
 // ################################################################################################
 // ################################################################################################

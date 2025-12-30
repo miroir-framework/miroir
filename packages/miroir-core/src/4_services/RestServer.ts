@@ -40,6 +40,7 @@ import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
 import instanceEndpointV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json" assert { type: "json" };
+import { entityInstanceActions } from "../1_core/Instance";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -52,9 +53,9 @@ function wrapResults(instances: any[]): HttpResponseBodyFormat {
   return { instances };
 }
 
-export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
-  (actionDef:any) => actionDef.actionParameters.actionType.definition
-)
+// export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
+//   (actionDef:any) => actionDef.actionParameters.actionType.definition
+// )
 
 // ################################################################################################
 /**

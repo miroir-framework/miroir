@@ -244,7 +244,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
         libraryEntitiesAndInstancesWithoutBook3
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
-      afterAll: testOnLibrary_deleteLibraryDeployment(miroirConfig, adminConfigurationDeploymentLibrary.uuid),
+      afterAll: testOnLibrary_deleteLibraryDeployment(
+        miroirConfig,
+        adminConfigurationDeploymentLibrary.uuid
+      ),
       testCompositeActions: {
         "Refresh all Instances": {
           testType: "testCompositeAction",
@@ -262,7 +265,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -270,7 +275,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   // actionType: "modelAction",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
+                  payload: {
+                    deploymentUuid: testApplicationDeploymentUuid,
+                  },
                 },
                 {
                   actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -378,7 +385,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -386,7 +395,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
+                  payload: {
+                    deploymentUuid: testApplicationDeploymentUuid,
+                  },
                 },
                 {
                   // actionType: "instanceAction",
@@ -502,7 +513,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   // actionType: "modelAction",
@@ -510,7 +523,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
+                  payload: {
+                    deploymentUuid: testApplicationDeploymentUuid,
+                  },
                 },
                 {
                   // actionType: "instanceAction",
@@ -626,7 +641,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -634,7 +651,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
+                  payload: {
+                    deploymentUuid: testApplicationDeploymentUuid,
+                  },
                 },
                 {
                   // actionType: "instanceAction",
@@ -756,7 +775,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -764,7 +785,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
+                  payload: {
+                    deploymentUuid: testApplicationDeploymentUuid,
+                  },
                 },
                 {
                   // actionType: "instanceAction",
@@ -791,7 +814,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
+                  payload: {
+                    deploymentUuid: testApplicationDeploymentUuid,
+                  },
                 },
                 {
                   actionType: "compositeRunBoxedExtractorOrQueryAction",
@@ -894,7 +919,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshMiroirLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  payload: {
+                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  },
                 },
                 {
                   actionType: "rollback",
@@ -902,7 +929,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   actionLabel: "refreshLibraryLocalCache",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  deploymentUuid: testApplicationDeploymentUuid,
+                  payload: {
+                    deploymentUuid: testApplicationDeploymentUuid,
+                  },
                 },
                 {
                   // actionType: "instanceAction",

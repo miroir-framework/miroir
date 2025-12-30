@@ -370,12 +370,12 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
             actionLabel: "createEntity",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-            } as any,
             payload: {
+              deploymentUuid: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+              } as any,
               entities: [
                 {
                   entity,
@@ -389,11 +389,13 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
             actionLabel: "commit",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: {
-              transformerType: "getFromContext",
-              interpolation: "runtime",
-              referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-            } as any,
+            payload: {
+              deploymentUuid: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
+              } as any,
+            },
           },
           {
             actionType: "createInstance",

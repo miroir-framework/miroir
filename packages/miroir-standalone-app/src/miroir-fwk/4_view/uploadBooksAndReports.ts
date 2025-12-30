@@ -94,10 +94,10 @@ export async function uploadBooksAndReports(
   await domainController.handleAction(
     {
       actionType: "createEntity",
-      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
         entities: [
           { entity: entityAuthor as Entity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
           { entity: entityBook as Entity, entityDefinition: entityDefinitionBook as EntityDefinition },
@@ -114,8 +114,10 @@ export async function uploadBooksAndReports(
     {
       actionType: "commit",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      }
     },
     // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
     currentModel
@@ -126,8 +128,8 @@ export async function uploadBooksAndReports(
       actionType: "transactionalInstanceAction",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       payload: {
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         instanceAction: {
           // actionType: "instanceAction",
           actionType: "createInstance",
@@ -163,8 +165,10 @@ export async function uploadBooksAndReports(
     {
       actionType: "commit",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      }
     },
     // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
     currentModel

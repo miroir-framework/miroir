@@ -322,8 +322,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             actionType: "runBoxedExtractorAction",
             // actionName: "runQuery",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             payload: {
               applicationSection: applicationSection,
               query: {

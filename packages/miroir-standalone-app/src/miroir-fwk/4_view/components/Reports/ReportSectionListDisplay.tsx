@@ -519,8 +519,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               actionType: "transactionalInstanceAction",
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5", // miroir application
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-              deploymentUuid: props.displayedDeploymentDefinition.uuid,
               payload: {
+                deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "createInstance",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
@@ -590,15 +590,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               actionType: "transactionalInstanceAction",
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-              deploymentUuid: props.displayedDeploymentDefinition.uuid,
               payload: {
+                deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   // actionType: "instanceAction",
                   actionType: "updateInstance",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-                  deploymentUuid: props.displayedDeploymentDefinition.uuid,
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
+                    deploymentUuid: props.displayedDeploymentDefinition.uuid,
                     applicationSection: "model",
                     objects: [
                       {
@@ -619,10 +619,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           const updateAction: InstanceAction = {
             // actionType: "instanceAction",
             actionType: "updateInstance",
-            deploymentUuid: props.displayedDeploymentDefinition?.uuid,
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               applicationSection: props.chosenApplicationSection
                 ? props.chosenApplicationSection
                 : "data",
