@@ -15,6 +15,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { RunnerView } from "./RunnerView.js";
+import type { FormMLSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -35,30 +36,33 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
 }) => {
   const runnerName: string = "deleteApplication";
 
-  const formMLSchema: JzodObject = useMemo(
+  const formMLSchema: FormMLSchema = useMemo(
     () => ({
-      type: "object",
-      definition: {
-        deleteApplicationAndDeployment: {
-          type: "object",
-          definition: {
-            application: {
-              type: "uuid",
-              nullable: true,
-              tag: {
-                value: {
-                  defaultLabel: "Application",
-                  editable: true,
-                  selectorParams: {
-                    targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                    targetEntity: entityApplicationForAdmin.uuid,
-                    targetEntityOrderInstancesBy: "name",
+      formMLSchemaType: "mlSchema",
+      mlSchema: {
+        type: "object",
+        definition: {
+          deleteApplicationAndDeployment: {
+            type: "object",
+            definition: {
+              application: {
+                type: "uuid",
+                nullable: true,
+                tag: {
+                  value: {
+                    defaultLabel: "Application",
+                    editable: true,
+                    selectorParams: {
+                      targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                      targetEntity: entityApplicationForAdmin.uuid,
+                      targetEntityOrderInstancesBy: "name",
+                    },
                   },
                 },
               },
             },
-          }
-        }
+          },
+        },
       },
     }),
     []
@@ -125,12 +129,12 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
             actionLabel: "deleteStore",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-            deploymentUuid: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "runtime",
-              definition: "{{deploymentInfo.deployments.0.uuid}}",
-            } as any,
             payload: {
+              deploymentUuid: {
+                transformerType: "mustacheStringTemplate",
+                interpolation: "runtime",
+                definition: "{{deploymentInfo.deployments.0.uuid}}",
+              } as any,
               configuration: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
@@ -144,8 +148,8 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
             actionLabel: "deleteDeployment",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               objects: [
                 {
@@ -171,8 +175,8 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
             actionLabel: "deleteAdminApplication",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               objects: [
                 {

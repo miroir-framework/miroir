@@ -112,15 +112,18 @@ export async function storeActionOrBundleActionStoreRunner(
   switch (action.actionType) {
     case "storeManagementAction_createStore": {
       // log.warn("storeActionOrBundleActionStoreRunner createStore does nothing!")
-      if (!action.deploymentUuid) {
+      if (!action.payload.deploymentUuid) {
         return new Action2Error("FailedToCreateStore", "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action));
       }
 
-      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+      const localAppPersistenceStoreController =
+        persistenceStoreControllerManager.getPersistenceStoreController(
+          action.payload.deploymentUuid
+        );
       if (!localAppPersistenceStoreController) {
         throw new Error(
           "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
-            action.deploymentUuid +
+            action.payload.deploymentUuid +
             " available controllers: " +
             persistenceStoreControllerManager.getPersistenceStoreControllers()
         );
@@ -141,7 +144,7 @@ export async function storeActionOrBundleActionStoreRunner(
       }
       log.info(
         "storeActionOrBundleActionStoreRunner createStore for deployment",
-        action.deploymentUuid,
+        action.payload.deploymentUuid,
         "DONE!",
         persistenceStoreControllerManager.getPersistenceStoreControllers()
       );
@@ -149,33 +152,37 @@ export async function storeActionOrBundleActionStoreRunner(
     }
     case "storeManagementAction_deleteStore": {
       // log.warn("storeActionOrBundleActionStoreRunner deleteStore does nothing!")
-      if (!action.deploymentUuid) {
-        return new Action2Error("FailedToDeleteStore", "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action));
+      if (!action.payload.deploymentUuid) {
+        return new Action2Error(
+          "FailedToDeleteStore",
+          "storeActionOrBundleActionStoreRunner no deploymentUuid in action " +
+            JSON.stringify(action)
+        );
       }
 
-      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+      const localAppPersistenceStoreController =
+        persistenceStoreControllerManager.getPersistenceStoreController(action.payload.deploymentUuid);
       if (!localAppPersistenceStoreController) {
         throw new Error(
           "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
-            action.deploymentUuid +
+            action.payload.deploymentUuid +
             " available controllers: " +
             persistenceStoreControllerManager.getPersistenceStoreControllers()
         );
       }
       log.info(
         "storeActionOrBundleActionStoreRunner deleteStore for deployment",
-        action.deploymentUuid,
+        action.payload.deploymentUuid,
         "configuration",
         JSON.stringify(action.payload.configuration, null, 2)
       );
       const appModelStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.payload.configuration.model);
-      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.deploymentUuid, "model store deleted");
+      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.payload.deploymentUuid, "model store deleted");
       
       const appDataStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.payload.configuration.data);
-      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.deploymentUuid, "data store deleted");
-
+      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.payload.deploymentUuid, "data store deleted");
       if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
         return new Action2Error(
           "FailedToDeleteStore",
@@ -192,25 +199,25 @@ export async function storeActionOrBundleActionStoreRunner(
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addPersistenceStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
       // for (const deployment of Object.entries(action.configuration)) {
-      if (!action.payload.configuration[action.deploymentUuid]) {
+      if (!action.payload.configuration[action.payload.deploymentUuid]) {
         return new Action2Error(
           "FailedToOpenStore",
           "no configuration entry found for deployment uuid " +
-            action.deploymentUuid +
+            action.payload.deploymentUuid +
             " configuration: " +
             JSON.stringify(action.payload.configuration, null, 2)
         );
       }
 
-      await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
+      await persistenceStoreControllerManager.deletePersistenceStoreController(action.payload.deploymentUuid);
       await persistenceStoreControllerManager.addPersistenceStoreController(
-        action.deploymentUuid,
-        action.payload.configuration[action.deploymentUuid]
+        action.payload.deploymentUuid,
+        action.payload.configuration[action.payload.deploymentUuid]
       );
 
-      const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+      const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.payload.deploymentUuid);
       await localPersistenceStoreController?.open();
-      log.info("storeActionOrBundleActionStoreRunner openStore for deployment", action.deploymentUuid, "opened! booting up...");
+      log.info("storeActionOrBundleActionStoreRunner openStore for deployment", action.payload.deploymentUuid, "opened! booting up...");
 
       await localPersistenceStoreController?.bootFromPersistedState(
         defaultMiroirMetaModel.entities,
@@ -218,13 +225,13 @@ export async function storeActionOrBundleActionStoreRunner(
       );
       log.info(
         "storeActionOrBundleActionStoreRunner openStore for deployment",
-        action.deploymentUuid,
+        action.payload.deploymentUuid,
         "booted from persistent state..."
       );
 
       log.info(
         "storeActionOrBundleActionStoreRunner openStore for deployment",
-        action.deploymentUuid,
+        action.payload.deploymentUuid,
         "DONE!",
         persistenceStoreControllerManager.getPersistenceStoreControllers()
       );
@@ -237,8 +244,11 @@ export async function storeActionOrBundleActionStoreRunner(
     case "storeManagementAction_closeStore": {
       log.info("storeActionOrBundleActionStoreRunner closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      await persistenceStoreControllerManager.deletePersistenceStoreController(action.deploymentUuid);
-      log.info("storeActionOrBundleActionStoreRunner closeStore DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
+      await persistenceStoreControllerManager.deletePersistenceStoreController(action.payload.deploymentUuid);
+      log.info(
+        "storeActionOrBundleActionStoreRunner closeStore DONE!",
+        persistenceStoreControllerManager.getPersistenceStoreControllers()
+      );
 
       break;
     }

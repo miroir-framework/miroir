@@ -1702,7 +1702,7 @@ export class DomainController implements DomainControllerInterface {
                 "DomainController handleAction caught exception when handling",
                 domainAction.actionType,
                 "deployment",
-                domainAction.deploymentUuid,
+                domainAction.payload.deploymentUuid,
                 "action",
                 domainAction,
                 "exception",

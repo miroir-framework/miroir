@@ -602,12 +602,11 @@ export async function deleteAndCloseApplicationDeployments(
     ? miroirConfig.client.deploymentStorageConfig[d.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[d.uuid];
     const deletedStore = await domainController.handleAction({
-      // actionType: "storeManagementAction",
       actionType: "storeManagementAction_deleteStore",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: d.uuid,
       payload: {
+        deploymentUuid: d.uuid,
         configuration: storeUnitConfiguration
       }
     });
@@ -625,8 +624,9 @@ export async function deleteAndCloseApplicationDeployments(
         actionType: "storeManagementAction_closeStore",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        deploymentUuid: d.uuid,
-        payload: {}
+        payload: {
+          deploymentUuid: d.uuid,
+        }
         });
       if (deletedStore?.status != "ok") {
         console.error('Error afterAll',JSON.stringify(deletedStore, null, 2));

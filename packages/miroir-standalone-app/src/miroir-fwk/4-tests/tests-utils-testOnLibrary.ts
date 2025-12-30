@@ -104,8 +104,8 @@ export function testOnLibrary_deleteLibraryDeployment(
           actionLabel: "deleteLibraryStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid,
           payload: {
+            deploymentUuid,
             configuration: miroirConfig.client.emulateServer
               ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
               : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],

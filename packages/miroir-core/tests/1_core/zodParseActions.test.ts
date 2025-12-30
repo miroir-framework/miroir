@@ -464,8 +464,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "storeManagementAction_createStore",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
       },
     },
@@ -476,8 +476,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "storeManagementAction_deleteStore",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
       },
       // storeName: sqlDbStoreName,
@@ -489,8 +489,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "storeManagementAction_resetAndInitApplicationDeployment",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         deployments: [
           {
             uuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
@@ -532,8 +532,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "storeManagementAction_openStore",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         configuration: {
           admin: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
         },
@@ -548,9 +548,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "storeManagementAction_closeStore",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
-        //   deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       },
     },
   },

@@ -139,8 +139,8 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_openStore for admin",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
           payload: {
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             configuration: {
               [adminConfigurationDeploymentAdmin.uuid]:
                 adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
@@ -153,8 +153,8 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_openStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: adminDeploymentUuid,
           payload: {
+            deploymentUuid: adminDeploymentUuid,
             configuration: {
               [adminDeploymentUuid]: deploymentConfiguration,
             },
@@ -166,8 +166,8 @@ export function createDeploymentCompositeAction(
           actionLabel: "storeManagementAction_createStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid: adminDeploymentUuid,
           payload: {
+            deploymentUuid: adminDeploymentUuid,
             configuration: deploymentConfiguration,
           },
         },
@@ -335,8 +335,8 @@ export function deleteApplicationAndDeploymentCompositeAction(
           actionLabel: "deleteStore",
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          deploymentUuid,
           payload: {
+            deploymentUuid,
             configuration: miroirConfig.client.emulateServer
               ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]
               : miroirConfig.client.serverConfig.storeSectionConfiguration[deploymentUuid],
