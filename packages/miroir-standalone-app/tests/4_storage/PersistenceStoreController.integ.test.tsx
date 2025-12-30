@@ -58,6 +58,8 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { createDeploymentCompositeAction } from 'miroir-core';
+import { adminLibraryApplication } from 'miroir-core';
+import { defaultMiroirModelEnvironment } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -158,10 +160,16 @@ beforeAll(
       throw new Error("beforeAll failed initialization!");
     }
     const createLibraryDeploymentAction = createDeploymentCompositeAction(
+      "library",
       adminConfigurationDeploymentLibrary.uuid,
+      adminLibraryApplication.uuid,
       libraryDeploymentStorageConfiguration
     );
-    const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirMetaModel);
+    const result = await domainController.handleCompositeAction(
+      createLibraryDeploymentAction,
+      defaultMiroirModelEnvironment,
+      {}
+    );
 
     if (result.status !== "ok") {
       throw new Error("beforeAll failed createLibraryDeploymentAction!");
@@ -369,7 +377,8 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localMiroirPersistenceStoreController.getInstances("model", entityEntity.uuid),
-      (a) => (a as any).returnedDomainElement.instances.map((i: EntityInstance) => i["uuid"]).sort(),
+      (a) =>
+        (a as any).returnedDomainElement.instances.map((i: EntityInstance) => i["uuid"]).sort(),
       undefined, // name to give to result
       // "entityInstanceCollection",
       undefined,
@@ -384,6 +393,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
         "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
         "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+        "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
       ]
     );
   });
@@ -432,7 +442,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author"]),
+      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "storageAccess"]),
       undefined, // name to give to result
       // "entityInstanceCollection",
       undefined,
@@ -500,7 +510,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         "getEntityInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon"]),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon", "display", "storageAccess"]),
         undefined, // name to give to result
         // "entityInstanceCollection",
         undefined,
@@ -517,7 +527,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         "getEntityDefinitionInstancesToCheckResult",
         v,
         async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
-        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon"]),
+        (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "icon", "display", "storageAccess"]),
         undefined, // name to give to result
         // "entityInstanceCollection",
         undefined,
@@ -711,7 +721,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
             ),
           (a) =>
             ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
-              "icon",
+              "icon", "display", "storageAccess",
             ]),
           undefined, // name to give to result
           // "entityInstanceCollection",

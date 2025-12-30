@@ -8,6 +8,7 @@ import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
 import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
+import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
@@ -40,11 +41,12 @@ function testResolve(
     testValueObject,
     [], // currentValuePath
     [], // currentTypePath
-    {
-      miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      currentModel: defaultMiroirMetaModel,
-      miroirMetaModel: defaultMiroirMetaModel,
-    }, // context
+    defaultMiroirModelEnvironment,
+    // {
+    //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+    //   currentModel: defaultMiroirMetaModel,
+    //   miroirMetaModel: defaultMiroirMetaModel,
+    // }, // context
     {} // relativeReferenceJzodContext
   );
 
@@ -315,11 +317,12 @@ interface testFormat {
         testValueObject: "not-a-date",
         expectedResult: {
           status: "error",
-          error: "jzodTypeCheck failed to match value with date schema",
+          error:
+            'jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: "not-a-date"',
           rawJzodSchemaType: "date",
           valuePath: [],
           typePath: [],
-          value: "not-a-date",
+          value: '"not-a-date"',
           rawSchema: {
             type: "date",
           },
@@ -460,11 +463,12 @@ interface testFormat {
         testValueObject: "not-a-date",
         expectedResult: {
           status: "error",
-          error: "jzodTypeCheck failed to match value with date schema",
+          error:
+            'jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: "not-a-date"',
           rawJzodSchemaType: "date",
           valuePath: [],
           typePath: [],
-          value: "not-a-date",
+          value: '"not-a-date"',
           rawSchema: {
             type: "date",
           },
@@ -621,7 +625,7 @@ interface testFormat {
                   },
                 },
                 type: "object",
-              } as any  ,
+              } as any,
               rawJzodSchemaType: "object",
               valuePath: ["unknownAttribute"],
               typePath: [],

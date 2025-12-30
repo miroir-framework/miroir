@@ -248,3846 +248,3846 @@ interface testFormat {
 // ################################################################################################
 // ################################################################################################
 const tests: { [k: string]: testFormat } = {
-  // plain literal!
-  test010: {
-    testSchema: {
-      type: "literal",
-      definition: "myLiteral",
-    },
-    expectedResolvedSchema: {
-      type: "literal",
-      definition: "myLiteral",
-    },
-    testValueObject: "myLiteral",
-  },
-  // simpleType: string
-  test012: {
-    testSchema: {
-      type: "any",
-    },
-    expectedResolvedSchema: {
-      type: "any",
-    },
-    testValueObject: null,
-    expectedKeyMap: { "": { rawSchema: { type: "any" }, resolvedSchema: { type: "any" }, valuePath: [], typePath: [] } },
-  },
-  // simpleType: string
-  test020: {
-    testSchema: {
-      type: "string",
-    },
-    expectedResolvedSchema: {
-      type: "string",
-    },
-    testValueObject: "myString",
-  },
-  // simpleType: boolean TRUE
-  test022: {
-    testSchema: {
-      type: "boolean",
-    },
-    expectedResolvedSchema: {
-      type: "boolean",
-    },
-    testValueObject: true,
-  },
-  // simpleType: boolean TRUE
-  test024: {
-    testSchema: {
-      type: "boolean",
-    },
-    expectedResolvedSchema: {
-      type: "boolean",
-    },
-    testValueObject: false,
-  },
-  // schemaReference (plain, simpleType, non-recursive)
-  test030: {
-    testSchema: {
-      type: "schemaReference",
-      context: {
-        a: {
-          type: "string",
-        },
-      },
-      definition: {
-        relativePath: "a",
-      },
-    },
-    expectedResolvedSchema: {
-      type: "string",
-    },
-    testValueObject: "myString",
-  },
-  // schemaReference: object, recursive, 1-level valueObject
-  test040: {
-    testValueObject: { a: "myString", c: 42 },
-    testSchema: {
-      type: "schemaReference",
-      context: {
-        myObject: {
-          type: "object",
-          definition: {
-            a: {
-              type: "union",
-              // optional: true,
-              definition: [
-                {
-                  type: "string",
-                  optional: true,
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-            b: {
-              type: "string",
-              optional: true,
-            },
-            c: {
-              type: "number",
-              optional: true,
-            },
-          },
-        },
-      },
-      definition: { relativePath: "myObject" },
-    },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        a: {
-          type: "string",
-          optional: true,
-        },
-        c: {
-          type: "number",
-          optional: true,
-        },
-      },
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   a: {
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                   optional: true,
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //             b: {
-    //               type: "string",
-    //               optional: true,
-    //             },
-    //             c: {
-    //               type: "number",
-    //               optional: true,
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: ["myObject"],
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //       optional: true,
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //       optional: true,
-    //     },
-    //     valuePath: ["a"],
-    //     typePath: ["ref:myObject", "a"],
-    //   },
-    //   c: {
-    //     rawSchema: {
-    //       type: "number",
-    //       optional: true,
-    //     },
-    //     resolvedSchema: {
-    //       type: "number",
-    //       optional: true,
-    //     },
-    //     valuePath: ["c"],
-    //     typePath: ["ref:myObject", "c"],
-    //   },
-    //   "": {
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObject: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                   optional: true,
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //             b: {
-    //               type: "string",
-    //               optional: true,
-    //             },
-    //             c: {
-    //               type: "number",
-    //               optional: true,
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //         c: {
-    //           type: "number",
-    //           optional: true,
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //               optional: true,
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //         b: {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //         c: {
-    //           type: "number",
-    //           optional: true,
-    //         },
-    //       },
-    //     },
-    //     valuePath: [],
-    //     typePath: [],
-    //   },
-    // },
-  },
-  // schemaReference: object, recursive, 2-level valueObject
-  test050: {
-    testValueObject: { a: { a: "myString" } },
-    testSchema: {
-      type: "schemaReference",
-      context: {
-        myObject: {
-          type: "object",
-          definition: {
-            a: {
-              type: "union",
-              discriminator: "type",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-          },
-        },
-      },
-      definition: { relativePath: "myObject" },
-    },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        a: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      },
-    },
-    expectedKeyMap: undefined,
-    //  {
-    //   "a.a": {
-    //     typePath: ["a", "a"],
-    //     valuePath: ["a", "a"],
-    //     rawSchema: {
-    //       type: "union",
-    //       discriminator: "type",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               discriminator: "type",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //       discriminator: "type",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   a: {
-    //     typePath: ["a"],
-    //     valuePath: ["a"],
-    //     rawSchema: {
-    //       type: "union",
-    //       discriminator: "type",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           discriminator: "type",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               discriminator: "type",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //       discriminator: "type",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           discriminator: "type",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //     discriminator: "type",
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObject: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               discriminator: "type",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           discriminator: "type",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-  },
-  // schemaReference: object, recursive, 3-level valueObject
-  test060: {
-    testValueObject: { a: { a: { a: "myString" } } },
-    testSchema: {
-      type: "schemaReference",
-      context: {
-        myObject: {
-          type: "object",
-          definition: {
-            a: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-          },
-        },
-      },
-      definition: { relativePath: "myObject" },
-    },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        a: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    expectedKeyMap: undefined,
-    //  {
-    //   "a.a.a": {
-    //     typePath: ["a", "a"],
-    //     valuePath: ["a", "a"],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "a.a": {
-    //     typePath: ["a", "a"],
-    //     valuePath: ["a", "a"],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //   },
-    //   a: {
-    //     typePath: ["a", "a"],
-    //     valuePath: ["a", "a"],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObject: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "object",
-    //               definition: {
-    //                 a: {
-    //                   type: "string",
-    //                 },
-    //               },
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-  },
-  // schemaReference: record of recursive object, with 2-level valueObject
-  test070: {
-    testSchema: {
-      type: "schemaReference",
-      context: {
-        myObject: {
-          type: "object",
-          definition: {
-            a: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-          },
-        },
-        myRecord: {
-          type: "record",
-          definition: {
-            type: "schemaReference",
-            definition: { relativePath: "myObject" },
-          },
-        },
-      },
-      definition: { relativePath: "myRecord" },
-    },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        r1: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        r2: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      },
-    },
-    testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-    expectedKeyMap: undefined,
-    // {
-    //   "r1.a.a": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "r1.a": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //   },
-    //   r1: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    //   "r2.a": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   r2: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObject: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //         myRecord: {
-    //           type: "record",
-    //           definition: {
-    //             type: "schemaReference",
-    //             definition: {
-    //               relativePath: "myObject",
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myRecord",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         r1: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "object",
-    //               definition: {
-    //                 a: {
-    //                   type: "string",
-    //                 },
-    //               },
-    //             },
-    //           },
-    //         },
-    //         r2: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-  },
-  // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
-  test080: {
-    testSchema: {
-      type: "record",
-      definition: {
-        type: "schemaReference",
-        context: {
-          myObject: {
-            type: "object",
-            definition: {
-              a: {
-                type: "union",
-                definition: [
-                  {
-                    type: "string",
-                  },
-                  {
-                    type: "schemaReference",
-                    definition: { relativePath: "myObject" },
-                  },
-                ],
-              },
-            },
-          },
-        },
-        definition: { relativePath: "myObject" },
-      },
-    },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        r1: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        r2: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      },
-    },
-    testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-    expectedKeyMap: undefined,
-    // {
-    //   "r1.a.a": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "r1.a": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //   },
-    //   r1: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObject: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    //   "r2.a": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   r2: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObject: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "record",
-    //       definition: {
-    //         type: "schemaReference",
-    //         context: {
-    //           myObject: {
-    //             type: "object",
-    //             definition: {
-    //               a: {
-    //                 type: "union",
-    //                 definition: [
-    //                   {
-    //                     type: "string",
-    //                   },
-    //                   {
-    //                     type: "schemaReference",
-    //                     definition: {
-    //                       relativePath: "myObject",
-    //                     },
-    //                   },
-    //                 ],
-    //               },
-    //             },
-    //           },
-    //         },
-    //         definition: {
-    //           relativePath: "myObject",
-    //         },
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         r1: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "object",
-    //               definition: {
-    //                 a: {
-    //                   type: "string",
-    //                 },
-    //               },
-    //             },
-    //           },
-    //         },
-    //         r2: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-  },
-  // array of simpleType
-  test090: {
-    testValueObject: ["1", "2", "3"],
-    testSchema: {
-      type: "array",
-      definition: {
-        type: "string",
-      },
-    },
-    expectedResolvedSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "string",
-        },
-        {
-          type: "string",
-        },
-      ],
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   "0": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "1": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "2": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "array",
-    //       definition: {
-    //         type: "string",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "string",
-    //         },
-    //       ],
-    //     },
-    //   },
-    // },
-  },
-  // array of schemaReference / object
-  test100: {
-    testValueObject: [{ a: "myString" }],
-    testSchema: {
-      type: "array",
-      definition: {
-        type: "schemaReference",
-        context: {
-          myObject: {
-            type: "object",
-            definition: {
-              a: {
-                type: "union",
-                definition: [
-                  {
-                    type: "string",
-                  },
-                  {
-                    type: "schemaReference",
-                    definition: { relativePath: "myObject" },
-                  },
-                ],
-              },
-            },
-          },
-        },
-        definition: { relativePath: "myObject" },
-      },
-    },
-    expectedResolvedSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      ],
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   "0": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObject: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "schemaReference",
-    //               definition: {
-    //                 relativePath: "myObject",
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //   },
-    //   "0.a": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "schemaReference",
-    //                   definition: {
-    //                     relativePath: "myObject",
-    //                   },
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "array",
-    //       definition: {
-    //         type: "schemaReference",
-    //         context: {
-    //           myObject: {
-    //             type: "object",
-    //             definition: {
-    //               a: {
-    //                 type: "union",
-    //                 definition: [
-    //                   {
-    //                     type: "string",
-    //                   },
-    //                   {
-    //                     type: "schemaReference",
-    //                     definition: {
-    //                       relativePath: "myObject",
-    //                     },
-    //                   },
-    //                 ],
-    //               },
-    //             },
-    //           },
-    //         },
-    //         definition: {
-    //           relativePath: "myObject",
-    //         },
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   },
-    // },
-  },
-  // array of schemaReference / object
-  test110: {
-    testSchema: {
-      type: "schemaReference",
-      context: {
-        myObjectRoot: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-        myObject: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              relativePath: "myObjectRoot",
-            },
-          },
-          definition: {
-            b: {
-              type: "string",
-              optional: true,
-            },
-          },
-        },
-      },
-      definition: { relativePath: "myObject" },
-    },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        a: {
-          type: "string",
-        },
-        b: {
-          type: "string",
-          optional: true,
-        },
-      },
-    },
-    testValueObject: { a: "myString", b: "anotherString" },
-    expectedKeyMap: undefined,
-    // {
-    //   a: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   b: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //       optional: true,
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //       optional: true,
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "schemaReference",
-    //       context: {
-    //         myObjectRoot: {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //         myObject: {
-    //           type: "object",
-    //           extend: {
-    //             type: "schemaReference",
-    //             definition: {
-    //               relativePath: "myObjectRoot",
-    //             },
-    //           },
-    //           definition: {
-    //             b: {
-    //               type: "string",
-    //               optional: true,
-    //             },
-    //           },
-    //         },
-    //       },
-    //       definition: {
-    //         relativePath: "myObject",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //         b: {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //         b: {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
-  },
-  // simple union Type
-  test120: {
-    testValueObject: 1, // this is the object
-    testSchema: {
-      type: "union",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "number",
-        },
-      ],
-    },
-    expectedResolvedSchema: {
-      type: "number",
-    },
-    expectedKeyMap: {
-      "": {
-        typePath: [],
-        valuePath: [],
-        rawSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-          ],
-        },
-        recursivelyUnfoldedUnionSchema: {
-          status: "ok",
-          result: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-          ],
-          expandedReferences: new Set(),
-        },
-        resolvedSchema: {
-          type: "number",
-        },
-        chosenUnionBranchRawSchema: {
-          type: "number",
-        },
-      },
-    },
-  },
-  // union between simpleType and object, object value
-  test130: {
-    testValueObject: { a: "myString" }, // this is the object
-    testSchema: {
-      type: "union",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      ],
-    },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        a: {
-          type: "string",
-        },
-      },
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   a: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(),
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //   },
-    // },
-  },
-  // union between simpleType and object, simpleType value
-  test140: {
-    testSchema: {
-      type: "union",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "bigint",
-        },
-        {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      ],
-    },
-    testValueObject: 42n, // this is the bigint
-    expectedResolvedSchema: {
-      type: "bigint",
-    },
-    expectedKeyMap: {
-      "": {
-        typePath: [],
-        valuePath: [],
-        rawSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        recursivelyUnfoldedUnionSchema: {
-          status: "ok",
-          result: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-          expandedReferences: new Set(),
-        },
-        resolvedSchema: {
-          type: "bigint",
-        },
-        chosenUnionBranchRawSchema: {
-          type: "bigint",
-        },
-      },
-    },
-  },
-  // union between simpleType and object, object value
-  test150: {
-    testSchema: {
-      type: "union",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "bigint",
-        },
-        {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-      ],
-    },
-    testValueObject: { a: "test" }, // this is the bigint
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        a: {
-          type: "string",
-        },
-      },
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   a: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             a: {
-    //               type: "string",
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(),
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //   },
-    // },
-  },
-  // union between simpleType and shemaReference pointing to a simple object, object value
-  test160: {
-    testSchema: {
-      type: "union",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "bigint",
-        },
-        {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                b: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-      ],
-    },
-    testValueObject: { b: "test" }, // this is the object
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        b: {
-          type: "string",
-          optional: true,
-        },
-      },
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   b: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //       optional: true,
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //       optional: true,
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //         {
-    //           type: "schemaReference",
-    //           context: {
-    //             myObject: {
-    //               type: "object",
-    //               definition: {
-    //                 b: {
-    //                   type: "string",
-    //                   optional: true,
-    //                 },
-    //               },
-    //             },
-    //           },
-    //           definition: {
-    //             relativePath: "myObject",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         b: {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         b: {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             b: {
-    //               type: "string",
-    //               optional: true,
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(["myObject"]),
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         b: {
-    //           type: "string",
-    //           optional: true,
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [],
-    //   },
-    // },
-  },
-  // 2-level simple unions of simple objects, 2-levelobject value
-  test170: {
-    testSchema: {
-      type: "union",
-      discriminator: "objectType",
-      definition: [
-        {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "objectA",
-            },
-            a: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "number",
-                },
-              ],
-            },
-          },
-        },
-        {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "objectB",
-            },
-            b: {
-              type: "union",
-              definition: [
-                {
-                  type: "boolean",
-                },
-                { type: "bigint" },
-              ],
-            },
-          },
-        },
-      ],
-    },
-    testValueObject: { objectType: "objectA", a: "test" },
-    expectedResolvedSchema: {
-      type: "object",
-      definition: {
-        objectType: {
-          type: "literal",
-          definition: "objectA",
-        },
-        a: {
-          type: "string",
-        },
-      },
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   objectType: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "literal",
-    //       definition: "objectA",
-    //     },
-    //     resolvedSchema: {
-    //       type: "literal",
-    //       definition: "objectA",
-    //     },
-    //   },
-    //   a: {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //       ],
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //       ],
-    //       expandedReferences: new Set(),
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "union",
-    //       discriminator: "objectType",
-    //       definition: [
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             objectType: {
-    //               type: "literal",
-    //               definition: "objectA",
-    //             },
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "number",
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             objectType: {
-    //               type: "literal",
-    //               definition: "objectB",
-    //             },
-    //             b: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "boolean",
-    //                 },
-    //                 {
-    //                   type: "bigint",
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         objectType: {
-    //           type: "literal",
-    //           definition: "objectA",
-    //         },
-    //         a: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     jzodObjectFlattenedSchema: {
-    //       type: "object",
-    //       definition: {
-    //         objectType: {
-    //           type: "literal",
-    //           definition: "objectA",
-    //         },
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "number",
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     recursivelyUnfoldedUnionSchema: {
-    //       status: "ok",
-    //       result: [
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             objectType: {
-    //               type: "literal",
-    //               definition: "objectA",
-    //             },
-    //             a: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "string",
-    //                 },
-    //                 {
-    //                   type: "number",
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //         {
-    //           type: "object",
-    //           definition: {
-    //             objectType: {
-    //               type: "literal",
-    //               definition: "objectB",
-    //             },
-    //             b: {
-    //               type: "union",
-    //               definition: [
-    //                 {
-    //                   type: "boolean",
-    //                 },
-    //                 {
-    //                   type: "bigint",
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       expandedReferences: new Set(),
-    //       discriminator: "objectType",
-    //     },
-    //     chosenUnionBranchRawSchema: {
-    //       type: "object",
-    //       definition: {
-    //         objectType: {
-    //           type: "literal",
-    //           definition: "objectA",
-    //         },
-    //         a: {
-    //           type: "union",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "number",
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     },
-    //     discriminatorValues: [["objectA", "objectB"]],
-    //     discriminator: "objectType",
-    //   },
-    // },
-  },
-  // TODO: union between simpleTypes and array with simpleType value
-  // TODO: union between simpleTypes and array with array value
-  // TODO: union between simpleTypes and array and object with array value
-  // TODO: union between simpleTypes and array and object with simpleType value
-  // TODO: union between simpleTypes and array and object with object value
-  // TODO: failing for union between simpleTypes, with object value
-  // TODO: union between simpleType and shemaReference pointing to an extended object, object value
-  // #############################################################################################
-  // #############################################################################################
-  // #############################################################################################
-  // #############################################################################################
-  // #############################################################################################
-  // #############################################################################################
-  // #############################################################################################
-  // #############################################################################################
-  // array of strings
-  test180: {
-    testValueObject: ["1", "2", "3"],
-    testSchema: {
-      type: "array",
-      definition: {
-        type: "string",
-      },
-    },
-    expectedResolvedSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "string",
-        },
-        {
-          type: "string",
-        },
-      ],
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   "0": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "1": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "2": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "array",
-    //       definition: {
-    //         type: "string",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "string",
-    //         },
-    //       ],
-    //     },
-    //   },
-    // },
-  },
-  // array of arrays of strings
-  test190: {
-    testValueObject: [["1", "2"], ["3"]],
-    testSchema: {
-      type: "array",
-      definition: {
-        type: "array",
-        definition: {
-          type: "string",
-        },
-      },
-    },
-    expectedResolvedSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "string",
-            },
-          ],
-        },
-        {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
-            },
-          ],
-        },
-      ],
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   "0": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "array",
-    //       definition: {
-    //         type: "string",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "string",
-    //         },
-    //       ],
-    //     },
-    //   },
-    //   "1": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "array",
-    //       definition: {
-    //         type: "string",
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //       ],
-    //     },
-    //   },
-    //   "0.0": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "0.1": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "1.0": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "array",
-    //       definition: {
-    //         type: "array",
-    //         definition: {
-    //           type: "string",
-    //         },
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "tuple",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "string",
-    //             },
-    //           ],
-    //         },
-    //         {
-    //           type: "tuple",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //   },
-    // },
-  },
-  // tuple of [string, number]
-  test200: {
-    testSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "number",
-        },
-      ],
-    },
-    expectedResolvedSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "string",
-        },
-        {
-          type: "number",
-        },
-      ],
-    },
-    testValueObject: ["myString", 42],
-    expectedKeyMap: undefined,
-    // {
-    //   "0": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //   },
-    //   "1": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "number",
-    //     },
-    //     resolvedSchema: {
-    //       type: "number",
-    //     },
-    //   },
-    //   "": {
-    //     typePath: [],
-    //     valuePath: [],
-    //     rawSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //       ],
-    //     },
-    //   },
-    // },
-  },
-  // array of tuples of [string, number, bigint]
-  test210: {
-    testValueObject: [
-      ["myString", 42, 100n],
-      ["anotherString", 43, 101n],
-    ],
-    testSchema: {
-      type: "array",
-      definition: {
-        type: "tuple",
-        definition: [
-          {
-            type: "string",
-          },
-          {
-            type: "number",
-          },
-          {
-            type: "bigint",
-          },
-        ],
-      },
-    },
-    expectedResolvedSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-            {
-              type: "bigint",
-            },
-          ],
-        },
-        {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-            {
-              type: "bigint",
-            },
-          ],
-        },
-      ],
-    },
-    expectedKeyMap: undefined,
-    // {
-    //   "0": {
-    //     rawSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //       ],
-    //     },
-    //     valuePath: [0],
-    //     typePath: [0],
-    //   },
-    //   "1": {
-    //     rawSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //       ],
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "string",
-    //         },
-    //         {
-    //           type: "number",
-    //         },
-    //         {
-    //           type: "bigint",
-    //         },
-    //       ],
-    //     },
-    //     valuePath: [1],
-    //     typePath: [1],
-    //   },
-    //   "0.0": {
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     valuePath: [0, 0],
-    //     typePath: [0, 0],
-    //   },
-    //   "0.1": {
-    //     rawSchema: {
-    //       type: "number",
-    //     },
-    //     resolvedSchema: {
-    //       type: "number",
-    //     },
-    //     valuePath: [0, 1],
-    //     typePath: [0, 1],
-    //   },
-    //   "0.2": {
-    //     rawSchema: {
-    //       type: "bigint",
-    //     },
-    //     resolvedSchema: {
-    //       type: "bigint",
-    //     },
-    //     valuePath: [0, 2],
-    //     typePath: [0, 2],
-    //   },
-    //   "1.0": {
-    //     rawSchema: {
-    //       type: "string",
-    //     },
-    //     resolvedSchema: {
-    //       type: "string",
-    //     },
-    //     valuePath: [1, 0],
-    //     typePath: [1, 0],
-    //   },
-    //   "1.1": {
-    //     rawSchema: {
-    //       type: "number",
-    //     },
-    //     resolvedSchema: {
-    //       type: "number",
-    //     },
-    //     valuePath: [1, 1],
-    //     typePath: [1, 1],
-    //   },
-    //   "1.2": {
-    //     rawSchema: {
-    //       type: "bigint",
-    //     },
-    //     resolvedSchema: {
-    //       type: "bigint",
-    //     },
-    //     valuePath: [1, 2],
-    //     typePath: [1, 2],
-    //   },
-    //   "": {
-    //     rawSchema: {
-    //       type: "array",
-    //       definition: {
-    //         type: "tuple",
-    //         definition: [
-    //           {
-    //             type: "string",
-    //           },
-    //           {
-    //             type: "number",
-    //           },
-    //           {
-    //             type: "bigint",
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     resolvedSchema: {
-    //       type: "tuple",
-    //       definition: [
-    //         {
-    //           type: "tuple",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "number",
-    //             },
-    //             {
-    //               type: "bigint",
-    //             },
-    //           ],
-    //         },
-    //         {
-    //           type: "tuple",
-    //           definition: [
-    //             {
-    //               type: "string",
-    //             },
-    //             {
-    //               type: "number",
-    //             },
-    //             {
-    //               type: "bigint",
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     valuePath: [],
-    //     typePath: [],
-    //   },
-    // },
-  },
-  // array of discriminated unions
-  test220: {
-    testValueObject: [
-      { objectType: "a", value: "myString" },
-      { objectType: "b", value: 42 },
-    ],
-    testSchema: {
-      type: "array",
-      definition: {
-        type: "union",
-        discriminator: "objectType",
-        definition: [
-          {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "a",
-              },
-              value: {
-                type: "string",
-              },
-            },
-          },
-          {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "b",
-              },
-              value: {
-                type: "number",
-              },
-            },
-          },
-        ],
-      },
-    },
-    expectedResolvedSchema: {
-      type: "tuple",
-      definition: [
-        {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "a",
-            },
-            value: {
-              type: "string",
-            },
-          },
-        },
-        {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "b",
-            },
-            value: {
-              type: "number",
-            },
-          },
-        },
-      ],
-    },
-    expectedKeyMap: {
-      "0": {
-        rawSchema: {
-          type: "union",
-          discriminator: "objectType",
-          definition: [
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
-                },
-              },
-            },
-          ],
-        },
-        resolvedSchema: {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "a",
-            },
-            value: {
-              type: "string",
-            },
-          },
-        },
-        jzodObjectFlattenedSchema: {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "a",
-            },
-            value: {
-              type: "string",
-            },
-          },
-        },
-        valuePath: [0],
-        typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])'],
-        recursivelyUnfoldedUnionSchema: {
-          status: "ok",
-          result: [
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
-                },
-              },
-            },
-          ],
-          expandedReferences: new Set(),
-          discriminator: "objectType",
-        },
-        chosenUnionBranchRawSchema: {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "a",
-            },
-            value: {
-              type: "string",
-            },
-          },
-        },
-        discriminatorValues: [["a", "b"]],
-        discriminator: "objectType",
-      },
-      "1": {
-        rawSchema: {
-          type: "union",
-          discriminator: "objectType",
-          definition: [
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
-                },
-              },
-            },
-          ],
-        },
-        resolvedSchema: {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "b",
-            },
-            value: {
-              type: "number",
-            },
-          },
-        },
-        jzodObjectFlattenedSchema: {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "b",
-            },
-            value: {
-              type: "number",
-            },
-          },
-        },
-        valuePath: [1],
-        typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])'],
-        recursivelyUnfoldedUnionSchema: {
-          status: "ok",
-          result: [
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
-                },
-              },
-            },
-          ],
-          expandedReferences: new Set(),
-          discriminator: "objectType",
-        },
-        chosenUnionBranchRawSchema: {
-          type: "object",
-          definition: {
-            objectType: {
-              type: "literal",
-              definition: "b",
-            },
-            value: {
-              type: "number",
-            },
-          },
-        },
-        discriminatorValues: [["a", "b"]],
-        discriminator: "objectType",
-      },
-      "0.objectType": {
-        rawSchema: {
-          type: "literal",
-          definition: "a",
-        },
-        resolvedSchema: {
-          type: "literal",
-          definition: "a",
-        },
-        valuePath: [0, "objectType"],
-        typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "objectType"],
-      },
-      "0.value": {
-        rawSchema: {
-          type: "string",
-        },
-        resolvedSchema: {
-          type: "string",
-        },
-        valuePath: [0, "value"],
-        typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "value"],
-      },
-      "1.objectType": {
-        rawSchema: {
-          type: "literal",
-          definition: "b",
-        },
-        resolvedSchema: {
-          type: "literal",
-          definition: "b",
-        },
-        valuePath: [1, "objectType"],
-        typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "objectType"],
-      },
-      "1.value": {
-        rawSchema: {
-          type: "number",
-        },
-        resolvedSchema: {
-          type: "number",
-        },
-        valuePath: [1, "value"],
-        typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "value"],
-      },
-      "": {
-        rawSchema: {
-          type: "array",
-          definition: {
-            type: "union",
-            discriminator: "objectType",
-            definition: [
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "a",
-                  },
-                  value: {
-                    type: "string",
-                  },
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "b",
-                  },
-                  value: {
-                    type: "number",
-                  },
-                },
-              },
-            ],
-          },
-        },
-        resolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
-                },
-              },
-            },
-          ],
-        },
-        valuePath: [],
-        typePath: [],
-      },
-    },
-  },
+  // // plain literal!
+  // test010: {
+  //   testSchema: {
+  //     type: "literal",
+  //     definition: "myLiteral",
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "literal",
+  //     definition: "myLiteral",
+  //   },
+  //   testValueObject: "myLiteral",
+  // },
+  // // simpleType: string
+  // test012: {
+  //   testSchema: {
+  //     type: "any",
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "any",
+  //   },
+  //   testValueObject: null,
+  //   expectedKeyMap: { "": { rawSchema: { type: "any" }, resolvedSchema: { type: "any" }, valuePath: [], typePath: [] } },
+  // },
+  // // simpleType: string
+  // test020: {
+  //   testSchema: {
+  //     type: "string",
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "string",
+  //   },
+  //   testValueObject: "myString",
+  // },
+  // // simpleType: boolean TRUE
+  // test022: {
+  //   testSchema: {
+  //     type: "boolean",
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "boolean",
+  //   },
+  //   testValueObject: true,
+  // },
+  // // simpleType: boolean TRUE
+  // test024: {
+  //   testSchema: {
+  //     type: "boolean",
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "boolean",
+  //   },
+  //   testValueObject: false,
+  // },
+  // // schemaReference (plain, simpleType, non-recursive)
+  // test030: {
+  //   testSchema: {
+  //     type: "schemaReference",
+  //     context: {
+  //       a: {
+  //         type: "string",
+  //       },
+  //     },
+  //     definition: {
+  //       relativePath: "a",
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "string",
+  //   },
+  //   testValueObject: "myString",
+  // },
+  // // schemaReference: object, recursive, 1-level valueObject
+  // test040: {
+  //   testValueObject: { a: "myString", c: 42 },
+  //   testSchema: {
+  //     type: "schemaReference",
+  //     context: {
+  //       myObject: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "union",
+  //             // optional: true,
+  //             definition: [
+  //               {
+  //                 type: "string",
+  //                 optional: true,
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: { relativePath: "myObject" },
+  //               },
+  //             ],
+  //           },
+  //           b: {
+  //             type: "string",
+  //             optional: true,
+  //           },
+  //           c: {
+  //             type: "number",
+  //             optional: true,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     definition: { relativePath: "myObject" },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       a: {
+  //         type: "string",
+  //         optional: true,
+  //       },
+  //       c: {
+  //         type: "number",
+  //         optional: true,
+  //       },
+  //     },
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   a: {
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                   optional: true,
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //             b: {
+  //   //               type: "string",
+  //   //               optional: true,
+  //   //             },
+  //   //             c: {
+  //   //               type: "number",
+  //   //               optional: true,
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: ["myObject"],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //       optional: true,
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //       optional: true,
+  //   //     },
+  //   //     valuePath: ["a"],
+  //   //     typePath: ["ref:myObject", "a"],
+  //   //   },
+  //   //   c: {
+  //   //     rawSchema: {
+  //   //       type: "number",
+  //   //       optional: true,
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "number",
+  //   //       optional: true,
+  //   //     },
+  //   //     valuePath: ["c"],
+  //   //     typePath: ["ref:myObject", "c"],
+  //   //   },
+  //   //   "": {
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                   optional: true,
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //             b: {
+  //   //               type: "string",
+  //   //               optional: true,
+  //   //             },
+  //   //             c: {
+  //   //               type: "number",
+  //   //               optional: true,
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //         c: {
+  //   //           type: "number",
+  //   //           optional: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //               optional: true,
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //         b: {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //         c: {
+  //   //           type: "number",
+  //   //           optional: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     valuePath: [],
+  //   //     typePath: [],
+  //   //   },
+  //   // },
+  // },
+  // // schemaReference: object, recursive, 2-level valueObject
+  // test050: {
+  //   testValueObject: { a: { a: "myString" } },
+  //   testSchema: {
+  //     type: "schemaReference",
+  //     context: {
+  //       myObject: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "union",
+  //             discriminator: "type",
+  //             definition: [
+  //               {
+  //                 type: "string",
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: { relativePath: "myObject" },
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     definition: { relativePath: "myObject" },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       a: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   expectedKeyMap: undefined,
+  //   //  {
+  //   //   "a.a": {
+  //   //     typePath: ["a", "a"],
+  //   //     valuePath: ["a", "a"],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       discriminator: "type",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               discriminator: "type",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //       discriminator: "type",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   a: {
+  //   //     typePath: ["a"],
+  //   //     valuePath: ["a"],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       discriminator: "type",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           discriminator: "type",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               discriminator: "type",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //       discriminator: "type",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           discriminator: "type",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //     discriminator: "type",
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               discriminator: "type",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           discriminator: "type",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // schemaReference: object, recursive, 3-level valueObject
+  // test060: {
+  //   testValueObject: { a: { a: { a: "myString" } } },
+  //   testSchema: {
+  //     type: "schemaReference",
+  //     context: {
+  //       myObject: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "union",
+  //             definition: [
+  //               {
+  //                 type: "string",
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: { relativePath: "myObject" },
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     definition: { relativePath: "myObject" },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       a: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "object",
+  //             definition: {
+  //               a: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   expectedKeyMap: undefined,
+  //   //  {
+  //   //   "a.a.a": {
+  //   //     typePath: ["a", "a"],
+  //   //     valuePath: ["a", "a"],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "a.a": {
+  //   //     typePath: ["a", "a"],
+  //   //     valuePath: ["a", "a"],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //   },
+  //   //   a: {
+  //   //     typePath: ["a", "a"],
+  //   //     valuePath: ["a", "a"],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "object",
+  //   //               definition: {
+  //   //                 a: {
+  //   //                   type: "string",
+  //   //                 },
+  //   //               },
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // schemaReference: record of recursive object, with 2-level valueObject
+  // test070: {
+  //   testSchema: {
+  //     type: "schemaReference",
+  //     context: {
+  //       myObject: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "union",
+  //             definition: [
+  //               {
+  //                 type: "string",
+  //               },
+  //               {
+  //                 type: "schemaReference",
+  //                 definition: { relativePath: "myObject" },
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //       myRecord: {
+  //         type: "record",
+  //         definition: {
+  //           type: "schemaReference",
+  //           definition: { relativePath: "myObject" },
+  //         },
+  //       },
+  //     },
+  //     definition: { relativePath: "myRecord" },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       r1: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "object",
+  //             definition: {
+  //               a: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //       r2: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "r1.a.a": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "r1.a": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //   },
+  //   //   r1: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   //   "r2.a": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   r2: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         myRecord: {
+  //   //           type: "record",
+  //   //           definition: {
+  //   //             type: "schemaReference",
+  //   //             definition: {
+  //   //               relativePath: "myObject",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myRecord",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         r1: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "object",
+  //   //               definition: {
+  //   //                 a: {
+  //   //                   type: "string",
+  //   //                 },
+  //   //               },
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         r2: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
+  // test080: {
+  //   testSchema: {
+  //     type: "record",
+  //     definition: {
+  //       type: "schemaReference",
+  //       context: {
+  //         myObject: {
+  //           type: "object",
+  //           definition: {
+  //             a: {
+  //               type: "union",
+  //               definition: [
+  //                 {
+  //                   type: "string",
+  //                 },
+  //                 {
+  //                   type: "schemaReference",
+  //                   definition: { relativePath: "myObject" },
+  //                 },
+  //               ],
+  //             },
+  //           },
+  //         },
+  //       },
+  //       definition: { relativePath: "myObject" },
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       r1: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "object",
+  //             definition: {
+  //               a: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //       r2: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "r1.a.a": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "r1.a": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //   },
+  //   //   r1: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   //   "r2.a": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   r2: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "record",
+  //   //       definition: {
+  //   //         type: "schemaReference",
+  //   //         context: {
+  //   //           myObject: {
+  //   //             type: "object",
+  //   //             definition: {
+  //   //               a: {
+  //   //                 type: "union",
+  //   //                 definition: [
+  //   //                   {
+  //   //                     type: "string",
+  //   //                   },
+  //   //                   {
+  //   //                     type: "schemaReference",
+  //   //                     definition: {
+  //   //                       relativePath: "myObject",
+  //   //                     },
+  //   //                   },
+  //   //                 ],
+  //   //               },
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         definition: {
+  //   //           relativePath: "myObject",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         r1: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "object",
+  //   //               definition: {
+  //   //                 a: {
+  //   //                   type: "string",
+  //   //                 },
+  //   //               },
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         r2: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // array of simpleType
+  // test090: {
+  //   testValueObject: ["1", "2", "3"],
+  //   testSchema: {
+  //     type: "array",
+  //     definition: {
+  //       type: "string",
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "string",
+  //       },
+  //     ],
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "0": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "1": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "2": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "array",
+  //   //       definition: {
+  //   //         type: "string",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // array of schemaReference / object
+  // test100: {
+  //   testValueObject: [{ a: "myString" }],
+  //   testSchema: {
+  //     type: "array",
+  //     definition: {
+  //       type: "schemaReference",
+  //       context: {
+  //         myObject: {
+  //           type: "object",
+  //           definition: {
+  //             a: {
+  //               type: "union",
+  //               definition: [
+  //                 {
+  //                   type: "string",
+  //                 },
+  //                 {
+  //                   type: "schemaReference",
+  //                   definition: { relativePath: "myObject" },
+  //                 },
+  //               ],
+  //             },
+  //           },
+  //         },
+  //       },
+  //       definition: { relativePath: "myObject" },
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "0": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "schemaReference",
+  //   //               definition: {
+  //   //                 relativePath: "myObject",
+  //   //               },
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   //   "0.a": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "schemaReference",
+  //   //                   definition: {
+  //   //                     relativePath: "myObject",
+  //   //                   },
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "array",
+  //   //       definition: {
+  //   //         type: "schemaReference",
+  //   //         context: {
+  //   //           myObject: {
+  //   //             type: "object",
+  //   //             definition: {
+  //   //               a: {
+  //   //                 type: "union",
+  //   //                 definition: [
+  //   //                   {
+  //   //                     type: "string",
+  //   //                   },
+  //   //                   {
+  //   //                     type: "schemaReference",
+  //   //                     definition: {
+  //   //                       relativePath: "myObject",
+  //   //                     },
+  //   //                   },
+  //   //                 ],
+  //   //               },
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         definition: {
+  //   //           relativePath: "myObject",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // array of schemaReference / object
+  // test110: {
+  //   testSchema: {
+  //     type: "schemaReference",
+  //     context: {
+  //       myObjectRoot: {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //       myObject: {
+  //         type: "object",
+  //         extend: {
+  //           type: "schemaReference",
+  //           definition: {
+  //             relativePath: "myObjectRoot",
+  //           },
+  //         },
+  //         definition: {
+  //           b: {
+  //             type: "string",
+  //             optional: true,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     definition: { relativePath: "myObject" },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       a: {
+  //         type: "string",
+  //       },
+  //       b: {
+  //         type: "string",
+  //         optional: true,
+  //       },
+  //     },
+  //   },
+  //   testValueObject: { a: "myString", b: "anotherString" },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   a: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   b: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //       optional: true,
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //       optional: true,
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "schemaReference",
+  //   //       context: {
+  //   //         myObjectRoot: {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         myObject: {
+  //   //           type: "object",
+  //   //           extend: {
+  //   //             type: "schemaReference",
+  //   //             definition: {
+  //   //               relativePath: "myObjectRoot",
+  //   //             },
+  //   //           },
+  //   //           definition: {
+  //   //             b: {
+  //   //               type: "string",
+  //   //               optional: true,
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       },
+  //   //       definition: {
+  //   //         relativePath: "myObject",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //         b: {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //         b: {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // simple union Type
+  // test120: {
+  //   testValueObject: 1, // this is the object
+  //   testSchema: {
+  //     type: "union",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "number",
+  //       },
+  //     ],
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "number",
+  //   },
+  //   expectedKeyMap: {
+  //     "": {
+  //       typePath: [],
+  //       valuePath: [],
+  //       rawSchema: {
+  //         type: "union",
+  //         definition: [
+  //           {
+  //             type: "string",
+  //           },
+  //           {
+  //             type: "number",
+  //           },
+  //         ],
+  //       },
+  //       recursivelyUnfoldedUnionSchema: {
+  //         status: "ok",
+  //         result: [
+  //           {
+  //             type: "string",
+  //           },
+  //           {
+  //             type: "number",
+  //           },
+  //         ],
+  //         expandedReferences: new Set(),
+  //       },
+  //       resolvedSchema: {
+  //         type: "number",
+  //       },
+  //       chosenUnionBranchRawSchema: {
+  //         type: "number",
+  //       },
+  //     },
+  //   },
+  // },
+  // // union between simpleType and object, object value
+  // test130: {
+  //   testValueObject: { a: "myString" }, // this is the object
+  //   testSchema: {
+  //     type: "union",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       a: {
+  //         type: "string",
+  //       },
+  //     },
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   a: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(),
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //   },
+  //   // },
+  // },
+  // // union between simpleType and object, simpleType value
+  // test140: {
+  //   testSchema: {
+  //     type: "union",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "bigint",
+  //       },
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   testValueObject: 42n, // this is the bigint
+  //   expectedResolvedSchema: {
+  //     type: "bigint",
+  //   },
+  //   expectedKeyMap: {
+  //     "": {
+  //       typePath: [],
+  //       valuePath: [],
+  //       rawSchema: {
+  //         type: "union",
+  //         definition: [
+  //           {
+  //             type: "string",
+  //           },
+  //           {
+  //             type: "bigint",
+  //           },
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               a: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //         ],
+  //       },
+  //       recursivelyUnfoldedUnionSchema: {
+  //         status: "ok",
+  //         result: [
+  //           {
+  //             type: "string",
+  //           },
+  //           {
+  //             type: "bigint",
+  //           },
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               a: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //         ],
+  //         expandedReferences: new Set(),
+  //       },
+  //       resolvedSchema: {
+  //         type: "bigint",
+  //       },
+  //       chosenUnionBranchRawSchema: {
+  //         type: "bigint",
+  //       },
+  //     },
+  //   },
+  // },
+  // // union between simpleType and object, object value
+  // test150: {
+  //   testSchema: {
+  //     type: "union",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "bigint",
+  //       },
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           a: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   testValueObject: { a: "test" }, // this is the bigint
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       a: {
+  //         type: "string",
+  //       },
+  //     },
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   a: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             a: {
+  //   //               type: "string",
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(),
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //   },
+  //   // },
+  // },
+  // // union between simpleType and shemaReference pointing to a simple object, object value
+  // test160: {
+  //   testSchema: {
+  //     type: "union",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "bigint",
+  //       },
+  //       {
+  //         type: "schemaReference",
+  //         context: {
+  //           myObject: {
+  //             type: "object",
+  //             definition: {
+  //               b: {
+  //                 type: "string",
+  //                 optional: true,
+  //               },
+  //             },
+  //           },
+  //         },
+  //         definition: { relativePath: "myObject" },
+  //       },
+  //     ],
+  //   },
+  //   testValueObject: { b: "test" }, // this is the object
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       b: {
+  //         type: "string",
+  //         optional: true,
+  //       },
+  //     },
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   b: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //       optional: true,
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //       optional: true,
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //         {
+  //   //           type: "schemaReference",
+  //   //           context: {
+  //   //             myObject: {
+  //   //               type: "object",
+  //   //               definition: {
+  //   //                 b: {
+  //   //                   type: "string",
+  //   //                   optional: true,
+  //   //                 },
+  //   //               },
+  //   //             },
+  //   //           },
+  //   //           definition: {
+  //   //             relativePath: "myObject",
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         b: {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         b: {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             b: {
+  //   //               type: "string",
+  //   //               optional: true,
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(["myObject"]),
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         b: {
+  //   //           type: "string",
+  //   //           optional: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [],
+  //   //   },
+  //   // },
+  // },
+  // // 2-level simple unions of simple objects, 2-levelobject value
+  // test170: {
+  //   testSchema: {
+  //     type: "union",
+  //     discriminator: "objectType",
+  //     definition: [
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "objectA",
+  //           },
+  //           a: {
+  //             type: "union",
+  //             definition: [
+  //               {
+  //                 type: "string",
+  //               },
+  //               {
+  //                 type: "number",
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "objectB",
+  //           },
+  //           b: {
+  //             type: "union",
+  //             definition: [
+  //               {
+  //                 type: "boolean",
+  //               },
+  //               { type: "bigint" },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   testValueObject: { objectType: "objectA", a: "test" },
+  //   expectedResolvedSchema: {
+  //     type: "object",
+  //     definition: {
+  //       objectType: {
+  //         type: "literal",
+  //         definition: "objectA",
+  //       },
+  //       a: {
+  //         type: "string",
+  //       },
+  //     },
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   objectType: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "literal",
+  //   //       definition: "objectA",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "literal",
+  //   //       definition: "objectA",
+  //   //     },
+  //   //   },
+  //   //   a: {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(),
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "union",
+  //   //       discriminator: "objectType",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             objectType: {
+  //   //               type: "literal",
+  //   //               definition: "objectA",
+  //   //             },
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "number",
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             objectType: {
+  //   //               type: "literal",
+  //   //               definition: "objectB",
+  //   //             },
+  //   //             b: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "boolean",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "bigint",
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         objectType: {
+  //   //           type: "literal",
+  //   //           definition: "objectA",
+  //   //         },
+  //   //         a: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     jzodObjectFlattenedSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         objectType: {
+  //   //           type: "literal",
+  //   //           definition: "objectA",
+  //   //         },
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "number",
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     recursivelyUnfoldedUnionSchema: {
+  //   //       status: "ok",
+  //   //       result: [
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             objectType: {
+  //   //               type: "literal",
+  //   //               definition: "objectA",
+  //   //             },
+  //   //             a: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "string",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "number",
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //         {
+  //   //           type: "object",
+  //   //           definition: {
+  //   //             objectType: {
+  //   //               type: "literal",
+  //   //               definition: "objectB",
+  //   //             },
+  //   //             b: {
+  //   //               type: "union",
+  //   //               definition: [
+  //   //                 {
+  //   //                   type: "boolean",
+  //   //                 },
+  //   //                 {
+  //   //                   type: "bigint",
+  //   //                 },
+  //   //               ],
+  //   //             },
+  //   //           },
+  //   //         },
+  //   //       ],
+  //   //       expandedReferences: new Set(),
+  //   //       discriminator: "objectType",
+  //   //     },
+  //   //     chosenUnionBranchRawSchema: {
+  //   //       type: "object",
+  //   //       definition: {
+  //   //         objectType: {
+  //   //           type: "literal",
+  //   //           definition: "objectA",
+  //   //         },
+  //   //         a: {
+  //   //           type: "union",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "number",
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     discriminatorValues: [["objectA", "objectB"]],
+  //   //     discriminator: "objectType",
+  //   //   },
+  //   // },
+  // },
+  // // TODO: union between simpleTypes and array with simpleType value
+  // // TODO: union between simpleTypes and array with array value
+  // // TODO: union between simpleTypes and array and object with array value
+  // // TODO: union between simpleTypes and array and object with simpleType value
+  // // TODO: union between simpleTypes and array and object with object value
+  // // TODO: failing for union between simpleTypes, with object value
+  // // TODO: union between simpleType and shemaReference pointing to an extended object, object value
+  // // #############################################################################################
+  // // #############################################################################################
+  // // #############################################################################################
+  // // #############################################################################################
+  // // #############################################################################################
+  // // #############################################################################################
+  // // #############################################################################################
+  // // #############################################################################################
+  // // array of strings
+  // test180: {
+  //   testValueObject: ["1", "2", "3"],
+  //   testSchema: {
+  //     type: "array",
+  //     definition: {
+  //       type: "string",
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "string",
+  //       },
+  //     ],
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "0": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "1": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "2": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "array",
+  //   //       definition: {
+  //   //         type: "string",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // array of arrays of strings
+  // test190: {
+  //   testValueObject: [["1", "2"], ["3"]],
+  //   testSchema: {
+  //     type: "array",
+  //     definition: {
+  //       type: "array",
+  //       definition: {
+  //         type: "string",
+  //       },
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "tuple",
+  //         definition: [
+  //           {
+  //             type: "string",
+  //           },
+  //           {
+  //             type: "string",
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         type: "tuple",
+  //         definition: [
+  //           {
+  //             type: "string",
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "0": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "array",
+  //   //       definition: {
+  //   //         type: "string",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //   },
+  //   //   "1": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "array",
+  //   //       definition: {
+  //   //         type: "string",
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //   },
+  //   //   "0.0": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "0.1": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "1.0": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "array",
+  //   //       definition: {
+  //   //         type: "array",
+  //   //         definition: {
+  //   //           type: "string",
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "tuple",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //         {
+  //   //           type: "tuple",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // tuple of [string, number]
+  // test200: {
+  //   testSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "number",
+  //       },
+  //     ],
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "string",
+  //       },
+  //       {
+  //         type: "number",
+  //       },
+  //     ],
+  //   },
+  //   testValueObject: ["myString", 42],
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "0": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //   },
+  //   //   "1": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "number",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "number",
+  //   //     },
+  //   //   },
+  //   //   "": {
+  //   //     typePath: [],
+  //   //     valuePath: [],
+  //   //     rawSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //   },
+  //   // },
+  // },
+  // // array of tuples of [string, number, bigint]
+  // test210: {
+  //   testValueObject: [
+  //     ["myString", 42, 100n],
+  //     ["anotherString", 43, 101n],
+  //   ],
+  //   testSchema: {
+  //     type: "array",
+  //     definition: {
+  //       type: "tuple",
+  //       definition: [
+  //         {
+  //           type: "string",
+  //         },
+  //         {
+  //           type: "number",
+  //         },
+  //         {
+  //           type: "bigint",
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "tuple",
+  //         definition: [
+  //           {
+  //             type: "string",
+  //           },
+  //           {
+  //             type: "number",
+  //           },
+  //           {
+  //             type: "bigint",
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         type: "tuple",
+  //         definition: [
+  //           {
+  //             type: "string",
+  //           },
+  //           {
+  //             type: "number",
+  //           },
+  //           {
+  //             type: "bigint",
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  //   expectedKeyMap: undefined,
+  //   // {
+  //   //   "0": {
+  //   //     rawSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     valuePath: [0],
+  //   //     typePath: [0],
+  //   //   },
+  //   //   "1": {
+  //   //     rawSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "string",
+  //   //         },
+  //   //         {
+  //   //           type: "number",
+  //   //         },
+  //   //         {
+  //   //           type: "bigint",
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     valuePath: [1],
+  //   //     typePath: [1],
+  //   //   },
+  //   //   "0.0": {
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     valuePath: [0, 0],
+  //   //     typePath: [0, 0],
+  //   //   },
+  //   //   "0.1": {
+  //   //     rawSchema: {
+  //   //       type: "number",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "number",
+  //   //     },
+  //   //     valuePath: [0, 1],
+  //   //     typePath: [0, 1],
+  //   //   },
+  //   //   "0.2": {
+  //   //     rawSchema: {
+  //   //       type: "bigint",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "bigint",
+  //   //     },
+  //   //     valuePath: [0, 2],
+  //   //     typePath: [0, 2],
+  //   //   },
+  //   //   "1.0": {
+  //   //     rawSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "string",
+  //   //     },
+  //   //     valuePath: [1, 0],
+  //   //     typePath: [1, 0],
+  //   //   },
+  //   //   "1.1": {
+  //   //     rawSchema: {
+  //   //       type: "number",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "number",
+  //   //     },
+  //   //     valuePath: [1, 1],
+  //   //     typePath: [1, 1],
+  //   //   },
+  //   //   "1.2": {
+  //   //     rawSchema: {
+  //   //       type: "bigint",
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "bigint",
+  //   //     },
+  //   //     valuePath: [1, 2],
+  //   //     typePath: [1, 2],
+  //   //   },
+  //   //   "": {
+  //   //     rawSchema: {
+  //   //       type: "array",
+  //   //       definition: {
+  //   //         type: "tuple",
+  //   //         definition: [
+  //   //           {
+  //   //             type: "string",
+  //   //           },
+  //   //           {
+  //   //             type: "number",
+  //   //           },
+  //   //           {
+  //   //             type: "bigint",
+  //   //           },
+  //   //         ],
+  //   //       },
+  //   //     },
+  //   //     resolvedSchema: {
+  //   //       type: "tuple",
+  //   //       definition: [
+  //   //         {
+  //   //           type: "tuple",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "number",
+  //   //             },
+  //   //             {
+  //   //               type: "bigint",
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //         {
+  //   //           type: "tuple",
+  //   //           definition: [
+  //   //             {
+  //   //               type: "string",
+  //   //             },
+  //   //             {
+  //   //               type: "number",
+  //   //             },
+  //   //             {
+  //   //               type: "bigint",
+  //   //             },
+  //   //           ],
+  //   //         },
+  //   //       ],
+  //   //     },
+  //   //     valuePath: [],
+  //   //     typePath: [],
+  //   //   },
+  //   // },
+  // },
+  // // array of discriminated unions
+  // test220: {
+  //   testValueObject: [
+  //     { objectType: "a", value: "myString" },
+  //     { objectType: "b", value: 42 },
+  //   ],
+  //   testSchema: {
+  //     type: "array",
+  //     definition: {
+  //       type: "union",
+  //       discriminator: "objectType",
+  //       definition: [
+  //         {
+  //           type: "object",
+  //           definition: {
+  //             objectType: {
+  //               type: "literal",
+  //               definition: "a",
+  //             },
+  //             value: {
+  //               type: "string",
+  //             },
+  //           },
+  //         },
+  //         {
+  //           type: "object",
+  //           definition: {
+  //             objectType: {
+  //               type: "literal",
+  //               definition: "b",
+  //             },
+  //             value: {
+  //               type: "number",
+  //             },
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   expectedResolvedSchema: {
+  //     type: "tuple",
+  //     definition: [
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "a",
+  //           },
+  //           value: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //       {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "b",
+  //           },
+  //           value: {
+  //             type: "number",
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   expectedKeyMap: {
+  //     "0": {
+  //       rawSchema: {
+  //         type: "union",
+  //         discriminator: "objectType",
+  //         definition: [
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "a",
+  //               },
+  //               value: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "b",
+  //               },
+  //               value: {
+  //                 type: "number",
+  //               },
+  //             },
+  //           },
+  //         ],
+  //       },
+  //       resolvedSchema: {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "a",
+  //           },
+  //           value: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //       jzodObjectFlattenedSchema: {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "a",
+  //           },
+  //           value: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //       valuePath: [0],
+  //       typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])'],
+  //       recursivelyUnfoldedUnionSchema: {
+  //         status: "ok",
+  //         result: [
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "a",
+  //               },
+  //               value: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "b",
+  //               },
+  //               value: {
+  //                 type: "number",
+  //               },
+  //             },
+  //           },
+  //         ],
+  //         expandedReferences: new Set(),
+  //         discriminator: "objectType",
+  //       },
+  //       chosenUnionBranchRawSchema: {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "a",
+  //           },
+  //           value: {
+  //             type: "string",
+  //           },
+  //         },
+  //       },
+  //       discriminatorValues: [["a", "b"]],
+  //       discriminator: "objectType",
+  //     },
+  //     "1": {
+  //       rawSchema: {
+  //         type: "union",
+  //         discriminator: "objectType",
+  //         definition: [
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "a",
+  //               },
+  //               value: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "b",
+  //               },
+  //               value: {
+  //                 type: "number",
+  //               },
+  //             },
+  //           },
+  //         ],
+  //       },
+  //       resolvedSchema: {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "b",
+  //           },
+  //           value: {
+  //             type: "number",
+  //           },
+  //         },
+  //       },
+  //       jzodObjectFlattenedSchema: {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "b",
+  //           },
+  //           value: {
+  //             type: "number",
+  //           },
+  //         },
+  //       },
+  //       valuePath: [1],
+  //       typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])'],
+  //       recursivelyUnfoldedUnionSchema: {
+  //         status: "ok",
+  //         result: [
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "a",
+  //               },
+  //               value: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "b",
+  //               },
+  //               value: {
+  //                 type: "number",
+  //               },
+  //             },
+  //           },
+  //         ],
+  //         expandedReferences: new Set(),
+  //         discriminator: "objectType",
+  //       },
+  //       chosenUnionBranchRawSchema: {
+  //         type: "object",
+  //         definition: {
+  //           objectType: {
+  //             type: "literal",
+  //             definition: "b",
+  //           },
+  //           value: {
+  //             type: "number",
+  //           },
+  //         },
+  //       },
+  //       discriminatorValues: [["a", "b"]],
+  //       discriminator: "objectType",
+  //     },
+  //     "0.objectType": {
+  //       rawSchema: {
+  //         type: "literal",
+  //         definition: "a",
+  //       },
+  //       resolvedSchema: {
+  //         type: "literal",
+  //         definition: "a",
+  //       },
+  //       valuePath: [0, "objectType"],
+  //       typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "objectType"],
+  //     },
+  //     "0.value": {
+  //       rawSchema: {
+  //         type: "string",
+  //       },
+  //       resolvedSchema: {
+  //         type: "string",
+  //       },
+  //       valuePath: [0, "value"],
+  //       typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "value"],
+  //     },
+  //     "1.objectType": {
+  //       rawSchema: {
+  //         type: "literal",
+  //         definition: "b",
+  //       },
+  //       resolvedSchema: {
+  //         type: "literal",
+  //         definition: "b",
+  //       },
+  //       valuePath: [1, "objectType"],
+  //       typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "objectType"],
+  //     },
+  //     "1.value": {
+  //       rawSchema: {
+  //         type: "number",
+  //       },
+  //       resolvedSchema: {
+  //         type: "number",
+  //       },
+  //       valuePath: [1, "value"],
+  //       typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "value"],
+  //     },
+  //     "": {
+  //       rawSchema: {
+  //         type: "array",
+  //         definition: {
+  //           type: "union",
+  //           discriminator: "objectType",
+  //           definition: [
+  //             {
+  //               type: "object",
+  //               definition: {
+  //                 objectType: {
+  //                   type: "literal",
+  //                   definition: "a",
+  //                 },
+  //                 value: {
+  //                   type: "string",
+  //                 },
+  //               },
+  //             },
+  //             {
+  //               type: "object",
+  //               definition: {
+  //                 objectType: {
+  //                   type: "literal",
+  //                   definition: "b",
+  //                 },
+  //                 value: {
+  //                   type: "number",
+  //                 },
+  //               },
+  //             },
+  //           ],
+  //         },
+  //       },
+  //       resolvedSchema: {
+  //         type: "tuple",
+  //         definition: [
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "a",
+  //               },
+  //               value: {
+  //                 type: "string",
+  //               },
+  //             },
+  //           },
+  //           {
+  //             type: "object",
+  //             definition: {
+  //               objectType: {
+  //                 type: "literal",
+  //                 definition: "b",
+  //               },
+  //               value: {
+  //                 type: "number",
+  //               },
+  //             },
+  //           },
+  //         ],
+  //       },
+  //       valuePath: [],
+  //       typePath: [],
+  //     },
+  //   },
+  // },
   // union type for array of references
   test230: {
     testValueObject: [
@@ -4156,326 +4156,362 @@ const tests: { [k: string]: testFormat } = {
       ],
     },
     expectedResolvedSchema: {
-      type: "array",
+      type: "tuple",
       optional: true,
-      definition: {
-        type: "object",
-        definition: {
-          type: {
-            type: "literal",
-            definition: "schemaReference",
-          },
+      definition: [
+        {
+          type: "object",
           definition: {
-            type: "object",
-            definition: {
-              eager: {
-                type: "boolean",
-                optional: true,
+            type: {
+              type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
               },
-              absolutePath: {
-                type: "string",
-                optional: true,
-              },
-              relativePath: {
-                type: "string",
-              },
+              definition: "schemaReference",
             },
-          },
-        },
-        tag: {
-          optional: true,
-          schema: {
-            optional: true,
-            metaSchema: {
+            definition: {
               type: "object",
-              optional: true,
               definition: {
-                optional: {
+                eager: {
                   type: "boolean",
                   optional: true,
                 },
-                metaSchema: {
-                  type: "schemaReference",
+                absolutePath: {
+                  type: "string",
                   optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
                 },
-                valueSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
+                relativePath: {
+                  type: "string",
                 },
               },
             },
-            valueSchema: {
-              type: "object",
+          },
+          tag: {
+            optional: true,
+            schema: {
               optional: true,
-              definition: {
-                id: {
-                  type: "number",
-                  optional: true,
-                },
-                defaultLabel: {
-                  type: "string",
-                  optional: true,
-                },
-                description: {
-                  type: "string",
-                  optional: true,
-                },
-                editorButton: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    icon: {
-                      type: "string",
-                      optional: true,
+              metaSchema: {
+                type: "object",
+                optional: true,
+                definition: {
+                  optional: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  metaSchema: {
+                    type: "schemaReference",
+                    optional: true,
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath: "jzodElement",
                     },
-                    label: {
-                      type: "string",
-                      optional: true,
-                    },
-                    tooltip: {
-                      type: "string",
-                      optional: true,
-                    },
-                    transformer: {
-                      type: "any",
-                      tag: {
-                        value: {
-                          ifThenElseMMLS: {
-                            mmlsReference: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuild",
-                            },
-                          },
-                        },
-                      },
-                      optional: true,
+                  },
+                  valueSchema: {
+                    type: "schemaReference",
+                    optional: true,
+                    definition: {
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath: "jzodElement",
                     },
                   },
                 },
-                initializeTo: {
-                  type: "union",
-                  discriminator: "initializeToType",
-                  optional: true,
-                  definition: [
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "value",
-                        },
-                        value: {
-                          type: "any",
-                          optional: true,
-                        },
+              },
+              valueSchema: {
+                type: "object",
+                optional: true,
+                definition: {
+                  id: {
+                    type: "number",
+                    optional: true,
+                  },
+                  defaultLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  description: {
+                    type: "string",
+                    optional: true,
+                  },
+                  editorButton: {
+                    type: "object",
+                    optional: true,
+                    definition: {
+                      icon: {
+                        type: "string",
+                        optional: true,
                       },
-                    },
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "transformer",
-                        },
-                        transformer: {
-                          type: "any",
-                          tag: {
-                            value: {
-                              ifThenElseMMLS: {
-                                mmlsReference: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "transformerForBuild",
-                                },
+                      label: {
+                        type: "string",
+                        optional: true,
+                      },
+                      tooltip: {
+                        type: "string",
+                        optional: true,
+                      },
+                      transformer: {
+                        type: "any",
+                        tag: {
+                          value: {
+                            ifThenElseMMLS: {
+                              mmlsReference: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "transformerForBuildPlusRuntime",
                               },
                             },
                           },
-                          optional: true,
                         },
+                        optional: true,
                       },
                     },
-                  ],
-                },
-                isBlob: {
-                  type: "boolean",
-                  optional: true,
-                },
-                selectorParams: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    targetApplicationUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetDeploymentUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetEntityApplicationSection: {
-                      type: "enum",
-                      optional: true,
-                      definition: ["model", "data", "metaModel"],
-                    },
-                    targetEntity: {
-                      type: "uuid",
-                    },
-                    targetEntityOrderInstancesBy: {
-                      type: "string",
-                      optional: true,
-                    },
                   },
-                },
-                targetEntity: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityOrderInstancesBy: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityApplicationSection: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["model", "data", "metaModel"],
-                },
-                editable: {
-                  type: "boolean",
-                  optional: true,
-                },
-                canBeTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                isTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                ifThenElseMMLS: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    parentUuid: {
-                      type: "union",
-                      optional: true,
-                      definition: [
-                        {
-                          type: "string",
+                  initializeTo: {
+                    type: "union",
+                    discriminator: "initializeToType",
+                    optional: true,
+                    definition: [
+                      {
+                        type: "object",
+                        optional: true,
+                        definition: {
+                          initializeToType: {
+                            type: "literal",
+                            definition: "value",
+                          },
+                          value: {
+                            type: "any",
+                            optional: true,
+                          },
                         },
-                        {
-                          type: "object",
-                          definition: {
-                            path: {
-                              type: "union",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    defaultValuePath: {
-                                      type: "string",
-                                    },
-                                    typeCheckPath: {
-                                      type: "string",
-                                    },
+                      },
+                      {
+                        type: "object",
+                        optional: true,
+                        definition: {
+                          initializeToType: {
+                            type: "literal",
+                            definition: "transformer",
+                          },
+                          transformer: {
+                            type: "any",
+                            tag: {
+                              value: {
+                                ifThenElseMMLS: {
+                                  mmlsReference: {
+                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    relativePath: "transformerForBuildPlusRuntime",
                                   },
                                 },
-                              ],
+                              },
                             },
+                            optional: true,
                           },
                         },
-                      ],
+                      },
+                    ],
+                  },
+                  isBlob: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  selectorParams: {
+                    type: "object",
+                    optional: true,
+                    definition: {
+                      targetApplicationUuid: {
+                        type: "uuid",
+                        optional: true,
+                      },
+                      targetDeploymentUuid: {
+                        type: "uuid",
+                        optional: true,
+                      },
+                      targetEntityApplicationSection: {
+                        type: "enum",
+                        optional: true,
+                        definition: ["model", "data", "metaModel"],
+                      },
+                      targetEntity: {
+                        type: "uuid",
+                      },
+                      targetEntityOrderInstancesBy: {
+                        type: "string",
+                        optional: true,
+                      },
                     },
-                    mmlsReference: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        absolutePath: {
-                          type: "string",
-                          optional: true,
-                        },
-                        relativePath: {
-                          type: "string",
+                  },
+                  targetEntity: {
+                    type: "string",
+                    optional: true,
+                  },
+                  targetEntityOrderInstancesBy: {
+                    type: "string",
+                    optional: true,
+                  },
+                  targetEntityApplicationSection: {
+                    type: "enum",
+                    optional: true,
+                    definition: ["model", "data", "metaModel"],
+                  },
+                  editable: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  canBeTemplate: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  isTemplate: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  ifThenElseMMLS: {
+                    type: "object",
+                    optional: true,
+                    definition: {
+                      parentUuid: {
+                        type: "union",
+                        optional: true,
+                        definition: [
+                          {
+                            type: "string",
+                          },
+                          {
+                            type: "object",
+                            definition: {
+                              path: {
+                                type: "union",
+                                definition: [
+                                  {
+                                    type: "string",
+                                  },
+                                  {
+                                    type: "object",
+                                    definition: {
+                                      defaultValuePath: {
+                                        type: "string",
+                                      },
+                                      typeCheckPath: {
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                      mmlsReference: {
+                        type: "object",
+                        optional: true,
+                        definition: {
+                          absolutePath: {
+                            type: "string",
+                            optional: true,
+                          },
+                          relativePath: {
+                            type: "string",
+                          },
                         },
                       },
                     },
                   },
-                },
-                display: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    displayedAttributeValueWhenFolded: {
-                      type: "string",
-                      optional: true,
-                    },
-                    hidden: {
-                      definition: [
-                        {
-                          type: "boolean",
-                        },
-                        {
-                          definition: {
-                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            relativePath: "transformerForBuildPlusRuntime",
+                  display: {
+                    type: "object",
+                    optional: true,
+                    definition: {
+                      displayedAttributeValueWhenFolded: {
+                        type: "string",
+                        optional: true,
+                      },
+                      hidden: {
+                        type: "union",
+                        optional: true,
+                        discriminator: "transformerType",
+                        definition: [
+                          {
+                            type: "boolean",
                           },
-                          type: "schemaReference",
+                          {
+                            type: "schemaReference",
+                            tag: {
+                              value: {
+                                description:
+                                  "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
+                                canBeTemplate: false,
+                              },
+                            },
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "transformerForBuildPlusRuntime",
+                            },
+                          },
+                        ],
+                      },
+                      editable: {
+                        type: "boolean",
+                        tag: {
+                          value: {
+                            description:
+                              "Whether the attribute is editable in UIs upon instance creation.",
+                            canBeTemplate: false,
+                          },
                         },
-                      ],
-                      discriminator: "transformerType",
-                      optional: true,
-                      type: "union",
-                    },
-                    objectAttributesNoIndent: {
-                      optional: true,
-                      type: "boolean",
-                    },
-                    objectHideDeleteButton: {
-                      optional: true,
-                      type: "boolean",
-                    },
-                    objectHideOptionalButton: {
-                      optional: true,
-                      type: "boolean",
-                    },
-                    objectOrArrayWithoutFrame: {
-                      optional: true,
-                      type: "boolean",
-                    },
-                    objectUuidAttributeLabelPosition: {
-                      definition: ["left", "stacked", "hidden"],
-                      optional: true,
-                      type: "enum",
-                    },
-                    objectWithoutHeader: {
-                      optional: true,
-                      type: "boolean",
-                    },
-                    unfoldSubLevels: {
-                      type: "number",
-                      optional: true,
-                    },
-                    uuid: {
-                      definition: {
-                        selector: {
-                          definition: ["portalSelector", "muiSelector"],
-                          optional: true,
-                          type: "enum",
+                        optional: true,
+                      },
+                      modifiable: {
+                        type: "boolean",
+                        tag: {
+                          value: {
+                            description:
+                              "Whether the attribute is modifiable in UIs after instance creation.",
+                            canBeTemplate: false,
+                          },
+                        },
+                        optional: true,
+                      },
+                      uuid: {
+                        type: "object",
+                        optional: true,
+                        definition: {
+                          selector: {
+                            type: "enum",
+                            optional: true,
+                            definition: ["portalSelector", "muiSelector"],
+                          },
                         },
                       },
-                      optional: true,
-                      type: "object",
+                      objectUuidAttributeLabelPosition: {
+                        type: "enum",
+                        optional: true,
+                        definition: ["left", "stacked", "hidden"],
+                      },
+                      objectHideDeleteButton: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      objectHideOptionalButton: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      objectWithoutHeader: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      objectAttributesNoIndent: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      objectOrArrayWithoutFrame: {
+                        type: "boolean",
+                        optional: true,
+                      },
+                      unfoldSubLevels: {
+                        type: "number",
+                        optional: true,
+                      },
                     },
                   },
                 },
@@ -4483,7 +4519,7 @@ const tests: { [k: string]: testFormat } = {
             },
           },
         },
-      },
+      ],
     },
     expectedKeyMap: undefined,
   },
@@ -4575,6 +4611,11 @@ const tests: { [k: string]: testFormat } = {
       definition: {
         type: {
           type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
           definition: "literal",
         },
         definition: {
@@ -4650,7 +4691,7 @@ const tests: { [k: string]: testFormat } = {
                         ifThenElseMMLS: {
                           mmlsReference: {
                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            relativePath: "transformerForBuild",
+                            relativePath: "transformerForBuildPlusRuntime",
                           },
                         },
                       },
@@ -4693,7 +4734,7 @@ const tests: { [k: string]: testFormat } = {
                             ifThenElseMMLS: {
                               mmlsReference: {
                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                relativePath: "transformerForBuild",
+                                relativePath: "transformerForBuildPlusRuntime",
                               },
                             },
                           },
@@ -4820,61 +4861,90 @@ const tests: { [k: string]: testFormat } = {
                     optional: true,
                   },
                   hidden: {
+                    type: "union",
+                    optional: true,
+                    discriminator: "transformerType",
                     definition: [
                       {
                         type: "boolean",
                       },
                       {
+                        type: "schemaReference",
+                        tag: {
+                          value: {
+                            description:
+                              "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
+                            canBeTemplate: false,
+                          },
+                        },
                         definition: {
                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                           relativePath: "transformerForBuildPlusRuntime",
                         },
-                        type: "schemaReference",
                       },
                     ],
-                    discriminator: "transformerType",
-                    optional: true,
-                    type: "union",
                   },
-                  objectAttributesNoIndent: {
-                    optional: true,
+                  editable: {
                     type: "boolean",
+                    tag: {
+                      value: {
+                        description:
+                          "Whether the attribute is editable in UIs upon instance creation.",
+                        canBeTemplate: false,
+                      },
+                    },
+                    optional: true,
                   },
-                  objectHideDeleteButton: {
-                    optional: true,
+                  modifiable: {
                     type: "boolean",
+                    tag: {
+                      value: {
+                        description:
+                          "Whether the attribute is modifiable in UIs after instance creation.",
+                        canBeTemplate: false,
+                      },
+                    },
+                    optional: true,
                   },
-                  objectHideOptionalButton: {
+                  uuid: {
+                    type: "object",
                     optional: true,
-                    type: "boolean",
-                  },
-                  objectOrArrayWithoutFrame: {
-                    optional: true,
-                    type: "boolean",
+                    definition: {
+                      selector: {
+                        type: "enum",
+                        optional: true,
+                        definition: ["portalSelector", "muiSelector"],
+                      },
+                    },
                   },
                   objectUuidAttributeLabelPosition: {
-                    definition: ["left", "stacked", "hidden"],
-                    optional: true,
                     type: "enum",
+                    optional: true,
+                    definition: ["left", "stacked", "hidden"],
+                  },
+                  objectHideDeleteButton: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  objectHideOptionalButton: {
+                    type: "boolean",
+                    optional: true,
                   },
                   objectWithoutHeader: {
-                    optional: true,
                     type: "boolean",
+                    optional: true,
+                  },
+                  objectAttributesNoIndent: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  objectOrArrayWithoutFrame: {
+                    type: "boolean",
+                    optional: true,
                   },
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
-                  },
-                  uuid: {
-                    optional: true,
-                    type: "object",
-                    definition: {
-                      selector: {
-                        definition: ["portalSelector", "muiSelector"],
-                        optional: true,
-                        type: "enum",
-                      },
-                    },
                   },
                 },
               },
@@ -4899,6 +4969,11 @@ const tests: { [k: string]: testFormat } = {
       definition: {
         type: {
           type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
           definition: "string",
         },
       },
@@ -4971,7 +5046,7 @@ const tests: { [k: string]: testFormat } = {
                         ifThenElseMMLS: {
                           mmlsReference: {
                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            relativePath: "transformerForBuild",
+                            relativePath: "transformerForBuildPlusRuntime",
                           },
                         },
                       },
@@ -5014,7 +5089,7 @@ const tests: { [k: string]: testFormat } = {
                             ifThenElseMMLS: {
                               mmlsReference: {
                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                relativePath: "transformerForBuild",
+                                relativePath: "transformerForBuildPlusRuntime",
                               },
                             },
                           },
@@ -5141,61 +5216,90 @@ const tests: { [k: string]: testFormat } = {
                     optional: true,
                   },
                   hidden: {
+                    type: "union",
+                    optional: true,
+                    discriminator: "transformerType",
                     definition: [
                       {
                         type: "boolean",
                       },
                       {
+                        type: "schemaReference",
+                        tag: {
+                          value: {
+                            description:
+                              "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
+                            canBeTemplate: false,
+                          },
+                        },
                         definition: {
                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                           relativePath: "transformerForBuildPlusRuntime",
                         },
-                        type: "schemaReference",
                       },
                     ],
-                    discriminator: "transformerType",
-                    optional: true,
-                    type: "union",
                   },
-                  objectAttributesNoIndent: {
-                    optional: true,
+                  editable: {
                     type: "boolean",
+                    tag: {
+                      value: {
+                        description:
+                          "Whether the attribute is editable in UIs upon instance creation.",
+                        canBeTemplate: false,
+                      },
+                    },
+                    optional: true,
                   },
-                  objectHideDeleteButton: {
-                    optional: true,
+                  modifiable: {
                     type: "boolean",
+                    tag: {
+                      value: {
+                        description:
+                          "Whether the attribute is modifiable in UIs after instance creation.",
+                        canBeTemplate: false,
+                      },
+                    },
+                    optional: true,
                   },
-                  objectHideOptionalButton: {
+                  uuid: {
+                    type: "object",
                     optional: true,
-                    type: "boolean",
-                  },
-                  objectOrArrayWithoutFrame: {
-                    optional: true,
-                    type: "boolean",
+                    definition: {
+                      selector: {
+                        type: "enum",
+                        optional: true,
+                        definition: ["portalSelector", "muiSelector"],
+                      },
+                    },
                   },
                   objectUuidAttributeLabelPosition: {
-                    definition: ["left", "stacked", "hidden"],
-                    optional: true,
                     type: "enum",
+                    optional: true,
+                    definition: ["left", "stacked", "hidden"],
+                  },
+                  objectHideDeleteButton: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  objectHideOptionalButton: {
+                    type: "boolean",
+                    optional: true,
                   },
                   objectWithoutHeader: {
-                    optional: true,
                     type: "boolean",
+                    optional: true,
+                  },
+                  objectAttributesNoIndent: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  objectOrArrayWithoutFrame: {
+                    type: "boolean",
+                    optional: true,
                   },
                   unfoldSubLevels: {
                     type: "number",
                     optional: true,
-                  },
-                  uuid: {
-                    optional: true,
-                    type: "object",
-                    definition: {
-                      selector: {
-                        definition: ["portalSelector", "muiSelector"],
-                        optional: true,
-                        type: "enum",
-                      },
-                    },
                   },
                 },
               },
@@ -5222,16 +5326,32 @@ const tests: { [k: string]: testFormat } = {
       definition: {
         type: {
           type: "literal",
+          tag: {
+            value: {
+              canBeTemplate: false,
+            },
+          },
           definition: "object",
         },
         definition: {
           type: "object",
+          tag: {
+            value: {
+              description: "The attributes of the object schema.",
+              editable: true,
+            },
+          },
           definition: {
             a: {
               type: "object",
               definition: {
                 type: {
                   type: "literal",
+                  tag: {
+                    value: {
+                      canBeTemplate: false,
+                    },
+                  },
                   definition: "string",
                 },
               },
@@ -5304,7 +5424,7 @@ const tests: { [k: string]: testFormat } = {
                                 ifThenElseMMLS: {
                                   mmlsReference: {
                                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    relativePath: "transformerForBuild",
+                                    relativePath: "transformerForBuildPlusRuntime",
                                   },
                                 },
                               },
@@ -5347,7 +5467,7 @@ const tests: { [k: string]: testFormat } = {
                                     ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                        relativePath: "transformerForBuild",
+                                        relativePath: "transformerForBuildPlusRuntime",
                                       },
                                     },
                                   },
@@ -5474,57 +5594,86 @@ const tests: { [k: string]: testFormat } = {
                             optional: true,
                           },
                           hidden: {
+                            type: "union",
+                            optional: true,
+                            discriminator: "transformerType",
                             definition: [
                               {
                                 type: "boolean",
                               },
                               {
+                                type: "schemaReference",
+                                tag: {
+                                  value: {
+                                    description:
+                                      "A transformer that resolves to a boolean indicating whether the attribute is hidden.",
+                                    canBeTemplate: false,
+                                  },
+                                },
                                 definition: {
                                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   relativePath: "transformerForBuildPlusRuntime",
                                 },
-                                type: "schemaReference",
                               },
                             ],
-                            discriminator: "transformerType",
-                            optional: true,
-                            type: "union",
                           },
-                          objectAttributesNoIndent: {
-                            optional: true,
+                          editable: {
                             type: "boolean",
-                          },
-                          objectHideDeleteButton: {
-                            optional: true,
-                            type: "boolean",
-                          },
-                          objectHideOptionalButton: {
-                            optional: true,
-                            type: "boolean",
-                          },
-                          objectOrArrayWithoutFrame: {
-                            optional: true,
-                            type: "boolean",
-                          },
-                          objectUuidAttributeLabelPosition: {
-                            definition: ["left", "stacked", "hidden"],
-                            optional: true,
-                            type: "enum",
-                          },
-                          objectWithoutHeader: {
-                            optional: true,
-                            type: "boolean",
-                          },
-                          uuid: {
-                            optional: true,
-                            type: "object",
-                            definition: {
-                              selector: {
-                                definition: ["portalSelector", "muiSelector"],
-                                optional: true,
-                                type: "enum",
+                            tag: {
+                              value: {
+                                description:
+                                  "Whether the attribute is editable in UIs upon instance creation.",
+                                canBeTemplate: false,
                               },
                             },
+                            optional: true,
+                          },
+                          modifiable: {
+                            type: "boolean",
+                            tag: {
+                              value: {
+                                description:
+                                  "Whether the attribute is modifiable in UIs after instance creation.",
+                                canBeTemplate: false,
+                              },
+                            },
+                            optional: true,
+                          },
+                          uuid: {
+                            type: "object",
+                            optional: true,
+                            definition: {
+                              selector: {
+                                type: "enum",
+                                optional: true,
+                                definition: ["portalSelector", "muiSelector"],
+                              },
+                            },
+                          },
+                          objectUuidAttributeLabelPosition: {
+                            type: "enum",
+                            optional: true,
+                            definition: ["left", "stacked", "hidden"],
+                          },
+                          objectHideDeleteButton: {
+                            type: "boolean",
+                            optional: true,
+                          },
+                          objectHideOptionalButton: {
+                            type: "boolean",
+                            optional: true,
+                          },
+                          objectWithoutHeader: {
+                            type: "boolean",
+                            optional: true,
+                          },
+                          objectAttributesNoIndent: {
+                            type: "boolean",
+                            optional: true,
+                          },
+                          objectOrArrayWithoutFrame: {
+                            type: "boolean",
+                            optional: true,
                           },
                           unfoldSubLevels: {
                             type: "number",

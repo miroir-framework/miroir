@@ -65,13 +65,10 @@ import { LocalCacheInterface, miroirCoreStartup } from 'miroir-core';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import { cleanLevel, packageName } from '../3_controllers/constants.js';
-import { ApplicationEntitiesAndInstances } from '../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js';
 import {
-  createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   deploymentConfigurations,
-  resetAndinitializeDeploymentCompositeAction,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
@@ -81,6 +78,10 @@ import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 import { storageAccess } from 'miroir-core';
 import { defaultMiroirModelEnvironment } from 'miroir-core';
 import { defaultLibraryModelEnvironment } from 'miroir-core';
+import type { ApplicationEntitiesAndInstances } from 'miroir-core';
+import { adminLibraryApplication } from 'miroir-core';
+import { createDeploymentCompositeAction } from 'miroir-core';
+import { resetAndinitializeDeploymentCompositeAction } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -215,8 +216,16 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    const createLibraryDeploymentAction = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
-    const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirModelEnvironment, {});
+    const createLibraryDeploymentAction = createDeploymentCompositeAction(
+      "library",
+      adminConfigurationDeploymentLibrary.uuid,
+      adminLibraryApplication.uuid,
+      libraryDeploymentStorageConfiguration);
+    const result = await domainController.handleCompositeAction(
+      createLibraryDeploymentAction,
+      defaultMiroirModelEnvironment,
+      {}
+    );
 
     if (result.status !== "ok") {
       throw new Error("beforeAll failed createLibraryDeploymentAction!");
@@ -311,7 +320,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult:Action2ReturnType = await localMiroirPersistenceStoreController.handleBoxedExtractorAction(
           {
             actionType: "runBoxedExtractorAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -364,7 +374,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult: Action2ReturnType =
           await localMiroirPersistenceStoreController.handleBoxedQueryAction({
             actionType: "runBoxedQueryAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -463,6 +474,17 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         //   conceptLevel: "Model",
         //   description: "A configuration of storage-related aspects of a Model.",
         // },
+        "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd": {
+          conceptLevel: "Model",
+          description:
+            "A Runner, view component responsible for executing Actions defined in an Endpoint",
+          name: "Runner",
+          parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          parentName: "Entity",
+          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          uuid: "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+        },
         "a659d350-dd97-4da9-91de-524fa01745dc": {
           uuid: "a659d350-dd97-4da9-91de-524fa01745dc",
           parentName: "Entity",
@@ -526,7 +548,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult: Action2ReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -575,7 +598,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleBoxedQueryAction({
             actionType: "runBoxedQueryAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -616,6 +640,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           uuid: "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
           parentName: "Menu",
           parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+          // parentDefinitionVersionUuid: null,
           name: "LibraryMenu",
           defaultLabel: "Library Menu",
           description: "This is the default menu allowing to explore the Library SelfApplication.",
@@ -623,76 +648,105 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             menuType: "complexMenu",
             definition: [
               {
-                title: "Library",
-                label: "library",
                 items: [
                   {
+                    icon: "category",
                     label: "Library Entities",
                     section: "model",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-                    icon: "category",
+                    menuItemScope: "model",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
+                    icon: "category",
                     label: "Library Entity Definitions",
                     section: "model",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-                    icon: "category",
+                    menuItemScope: "model",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
                     icon: "saved_search",
                     label: "Library Queries",
-                    reportUuid: "32e52150-ac95-4d96-91b7-f231b85fe76e",
                     section: "model",
+                    reportUuid: "32e52150-ac95-4d96-91b7-f231b85fe76e",
+                    menuItemScope: "model",
                     selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
+                    icon: "newspaper",
                     label: "Library Reports",
                     section: "model",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-                    icon: "list",
+                    menuItemScope: "model",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
+                    icon: "list",
+                    label: "Library Menus",
+                    section: "model",
+                    reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                    menuItemScope: "model",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  },
+                  {
+                    icon: "list",
+                    label: "Library Endpoints",
+                    section: "model",
+                    reportUuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+                    menuItemScope: "model",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  },
+                  {
+                    icon: "auto_stories",
                     label: "Library Books",
                     section: "data",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
-                    icon: "auto_stories",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
+                    icon: "star",
                     label: "Library Authors",
                     section: "data",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
-                    icon: "star",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
+                    icon: "account_balance",
                     label: "Library Publishers",
                     section: "data",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
-                    icon: "account_balance",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
+                    icon: "flag",
                     label: "Library countries",
                     section: "data",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
-                    icon: "flag",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                   {
+                    icon: "person",
                     label: "Library Users",
                     section: "data",
-                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                     reportUuid: "3df9413d-5050-4357-910c-f764aacae7e6",
-                    icon: "person",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  },
+                  {
+                    icon: "history",
+                    label: "Library Lending History",
+                    section: "data",
+                    reportUuid: "cee26a1e-be58-497c-9d15-fa6832787907",
+                    selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                   },
                 ],
+                label: "library",
+                title: "Library",
               },
             ],
           },
+          // createdAt: "2025-12-30T17:23:52.026Z",
+          // updatedAt: "2025-12-30T17:23:52.026Z",
         },
       })
     );
@@ -707,8 +761,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult = await localMiroirPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             applicationSection: applicationSection,
@@ -760,8 +815,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             applicationSection: applicationSection,
@@ -821,8 +877,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             applicationSection: applicationSection,
@@ -879,7 +936,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -940,7 +998,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -999,7 +1058,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -1168,7 +1228,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -1254,7 +1315,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
+          // actionName: "runQuery",
+          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -1319,7 +1381,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult:Action2ReturnType = await localAppPersistenceStoreController.handleBoxedExtractorAction(
           {
             actionType: "runBoxedExtractorAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -1368,88 +1431,90 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   });
 
 
-  // ################################################################################################
-  it("build custom object with actionRuntimeTransformer using createObjectFromPairs", async () => {
-    await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
-      {},
-      async () => {
-        const applicationSection: ApplicationSection = "data";
-        const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
-          actionType: "runBoxedQueryAction",
-          actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            applicationSection: applicationSection,
-            query: {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              runAsSql,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              extractors: {
-                book: {
-                  extractorOrCombinerType: "extractorForObjectByDirectReference",
-                  applicationSection: applicationSection,
-                  parentName: "Book",
-                  parentUuid: entityBook.uuid,
-                  instanceUuid: book2.uuid,
-                },
-              },
-              runtimeTransformers: {
-                newBook: {
-                  transformerType: "createObjectFromPairs",
-                  interpolation: "runtime",
-                  applyTo: {
-                    transformerType: "getFromContext",
-                    interpolation: "runtime",
-                    referenceName: "book",
-                  },
-                  referenceToOuterObject: "book",
-                  definition: [
-                    {
-                      attributeKey: {
-                        interpolation: "runtime",
-            transformerType: "returnValue",
-            mlSchema: { type: "string" },
-                        value: "uuid",
-                      },
-                      attributeValue: {
-                        interpolation: "runtime",
-                        transformerType: "generateUuid",
-                      },
-                    },
-                    {
-                      attributeKey: {
-                        interpolation: "runtime",
-            transformerType: "returnValue",
-            mlSchema: { type: "string" },
-                        value: "name",
-                      },
-                      attributeValue: {
-                        interpolation: "runtime",
-                        transformerType: "mustacheStringTemplate",
-                        definition: "{{book.name}}",
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          }
-        });
-        console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;
-      },
-      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.newBook, ["uuid"]),
-      undefined, // name to give to result
-      undefined,
-        {
-          name: book2.name,
-        },
-    );
-  });
+  // // ################################################################################################
+  // TODO: fix template action types
+  // it("build custom object with actionRuntimeTransformer using createObjectFromPairs", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
+  //     {},
+  //     async () => {
+  //       const applicationSection: ApplicationSection = "data";
+  //       const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
+  //         actionType: "runBoxedQueryAction",
+  //         // actionName: "runQuery",
+  //         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //         payload: {
+  //           applicationSection: applicationSection,
+  //           query: {
+  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //             runAsSql,
+  //             pageParams: {},
+  //             queryParams: {},
+  //             contextResults: {},
+  //             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //             extractors: {
+  //               book: {
+  //                 extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //                 applicationSection: applicationSection,
+  //                 parentName: "Book",
+  //                 parentUuid: entityBook.uuid,
+  //                 instanceUuid: book2.uuid,
+  //               },
+  //             },
+  //             runtimeTransformers: {
+  //               newBook: {
+  //                 transformerType: "createObjectFromPairs",
+  //                 interpolation: "runtime",
+  //                 applyTo: {
+  //                   transformerType: "getFromContext",
+  //                   interpolation: "runtime",
+  //                   referenceName: "book",
+  //                 },
+  //                 referenceToOuterObject: "book",
+  //                 definition: [
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //           transformerType: "returnValue",
+  //           mlSchema: { type: "string" },
+  //                       value: "uuid",
+  //                     },
+  //                     attributeValue: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "generateUuid",
+  //                     },
+  //                   },
+  //                   {
+  //                     attributeKey: {
+  //                       interpolation: "runtime",
+  //           transformerType: "returnValue",
+  //           mlSchema: { type: "string" },
+  //                       value: "name",
+  //                     },
+  //                     attributeValue: {
+  //                       interpolation: "runtime",
+  //                       transformerType: "mustacheStringTemplate",
+  //                       definition: "{{book.name}}",
+  //                     },
+  //                   },
+  //                 ],
+  //               },
+  //             },
+  //           },
+  //         }
+  //       });
+  //       console.log(expect.getState().currentTestName, "queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;
+  //     },
+  //     (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.newBook, ["uuid"]),
+  //     undefined, // name to give to result
+  //     undefined,
+  //       {
+  //         name: book2.name,
+  //       },
+  //   );
+  // });
   
 });

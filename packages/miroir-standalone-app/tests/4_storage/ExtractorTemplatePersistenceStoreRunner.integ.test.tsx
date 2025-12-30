@@ -61,8 +61,6 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
   addEntitiesAndInstances,
-  // chainVitestSteps,
-  createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deploymentConfigurations,
   // loadTestConfigFiles,
@@ -76,6 +74,8 @@ import { defaultMiroirModelEnvironment } from 'miroir-core';
 import { unNullify } from 'miroir-core';
 import { removeUndefinedProperties } from 'miroir-core';
 import { ignorePostgresExtraAttributes } from 'miroir-core';
+import { createDeploymentCompositeAction } from 'miroir-core';
+import { adminLibraryApplication } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -174,7 +174,12 @@ beforeAll(
       throw new Error("beforeAll failed initialization!");
     }
 
-    const createLibraryDeploymentAction = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
+    const createLibraryDeploymentAction = createDeploymentCompositeAction(
+      "library",
+      adminConfigurationDeploymentLibrary.uuid,
+      adminLibraryApplication.uuid,
+      libraryDeploymentStorageConfiguration
+    );
     const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirModelEnvironment, {});
 
     if (result.status !== "ok") {
@@ -293,7 +298,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(
             {
               actionType: "runBoxedExtractorTemplateAction",
-              actionName: "runQuery",
+              // actionName: "runQuery",
+              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -365,7 +371,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -417,7 +424,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -482,7 +490,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -550,7 +559,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -609,7 +619,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -800,7 +811,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         const queryResult =
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
-            actionName: "runQuery",
+            // actionName: "runQuery",
+            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
