@@ -37,6 +37,7 @@ import {
   EntityInstancesUuidIndex,
   getQueryRunnerParamsForReduxDeploymentsState,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
+  instanceEndpointV1,
   LoggerInterface,
   MetaModel,
   miroirFundamentalJzodSchema,
@@ -86,6 +87,9 @@ export interface RootComponentProps {
   // reportName: string;
 }
 
+export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
+  (actionDef:any) => actionDef.actionParameters.actionType.definition
+)
 
 // ################################################################################################
 // ################################################################################################
@@ -105,6 +109,8 @@ export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
 
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
+
+  log.info("entityInstanceActions", entityInstanceActions);
 
   // Use snackbar from context
   const {

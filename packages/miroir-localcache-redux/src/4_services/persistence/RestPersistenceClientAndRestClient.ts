@@ -351,7 +351,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "RestPersistenceAction_read":
       case "RestPersistenceAction_update":
       case "RestPersistenceAction_delete": {
-        if (typeof action.deploymentUuid !== "string") {
+        if (typeof action.payload.deploymentUuid !== "string") {
           throw new Error(
             "handleNetworkPersistenceAction could not find deploymentUuid"
           );
@@ -378,7 +378,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           action,
           this.rootApiUrl +
             "/CRUD/" +
-            action.deploymentUuid +
+            action.payload.deploymentUuid +
             "/" +
             action.payload.section.toString() +
             "/entity"
@@ -386,7 +386,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         const completeArgs = {
           ...callParams.args,
           // actionName: action.actionName,
-          deploymentUuid: action.deploymentUuid,
+          deploymentUuid: action.payload.deploymentUuid,
           section: action.payload.section,
           parentUuid: action.payload.parentUuid,
         };

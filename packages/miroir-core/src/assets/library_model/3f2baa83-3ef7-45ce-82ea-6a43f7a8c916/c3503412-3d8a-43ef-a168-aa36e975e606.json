@@ -25,10 +25,7 @@
       "publisher": {
         "extractorTemplateType": "combinerForObjectByRelation",
         "parentName": "Publisher",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
-        },
+        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
         "objectReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
@@ -89,20 +86,20 @@
         {
           "type": "objectListReportSection",
           "definition": {
-            "label": "Publisher's (${publisher.name}) Books",
+            "label": "Author's (${author.name}) Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "booksOfPublisher",
+            "fetchedDataReference": "booksOfAuthor",
             "sortByAttribute": "name"
           }
         },
         {
           "type": "objectListReportSection",
           "definition": {
-            "label": "Author's (${author.name}) Books",
+            "label": "Publisher's (${publisher.name}) Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "booksOfAuthor",
+            "fetchedDataReference": "booksOfPublisher",
             "sortByAttribute": "name"
           }
         }

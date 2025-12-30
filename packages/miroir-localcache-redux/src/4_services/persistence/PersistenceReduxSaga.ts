@@ -25,6 +25,7 @@ import {
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
   StoreOrBundleAction,
+  instanceEndpointV1,
   storeActionOrBundleActionStoreRunner,
   type MiroirModelEnvironment
 } from "miroir-core";
@@ -38,6 +39,9 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga")
 ).then((logger: LoggerInterface) => {log = logger});
 
+export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
+  (actionDef:any) => actionDef.actionParameters.actionType.definition
+)
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -304,7 +308,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     const deploymentUuid =
-      action.actionType == "createInstance" ? action.payload.deploymentUuid : action.deploymentUuid;
+      entityInstanceActions.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
     log.info(
       "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called",
       this.params.persistenceStoreAccessMode,
@@ -404,7 +408,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         if (!localPersistenceStoreController) {
           throw new Error(
             "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.deploymentUuid
+              action.payload.deploymentUuid
           );
         }
         const actionMap: {
@@ -421,11 +425,11 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           actionType: actionMap[newActionType],
           parentName: action.payload.parentName ?? "",
           parentUuid: action.payload.parentUuid ?? "",
-          deploymentUuid: action.deploymentUuid, // NOT for createInstance
+          // deploymentUuid: action.deploymentUuid, // NOT for createInstance
           application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
-            deploymentUuid: action.deploymentUuid, // ONLY for createInstance
+            deploymentUuid: action.payload.deploymentUuid, // ONLY for createInstance
             applicationSection: action.payload.section,
             objects: [
               {
@@ -894,8 +898,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   "action",
         //   action
         // );
-        const deploymentUuid =
-          action.actionType == "createInstance" ? action.payload.deploymentUuid : action.deploymentUuid;
+        const deploymentUuid = entityInstanceActions.includes(action.actionType)
+          ? (action as any).payload.deploymentUuid
+          : (action as any).deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             const localPersistenceStoreController =
@@ -979,7 +984,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       > {
         const { action, currentModel } = p.payload;
         const deploymentUuid =
-          action.actionType == "createInstance" ? action.payload.deploymentUuid : action.deploymentUuid;
+          entityInstanceActions.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode !== "local") {
             throw new Error(

@@ -323,8 +323,8 @@ export class DomainController implements DomainControllerInterface {
             actionType: "RestPersistenceAction_read",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-            deploymentUuid: adminDeploymentUuid,
             payload: {
+              deploymentUuid: adminDeploymentUuid,
               section: "model",
               parentName: entityEntity.name,
               parentUuid: entityEntity.uuid,
@@ -433,8 +433,8 @@ export class DomainController implements DomainControllerInterface {
                   actionType: "RestPersistenceAction_read",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                  deploymentUuid: adminDeploymentUuid,
                   payload: {
+                    deploymentUuid: adminDeploymentUuid,
                     section: e.section,
                     parentName: e.entity.name,
                     parentUuid: e.entity.uuid,
@@ -466,10 +466,10 @@ export class DomainController implements DomainControllerInterface {
               {}, // context update
               {
                 actionType: "loadNewInstancesInLocalCache",
-                deploymentUuid: adminDeploymentUuid,
                 application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
+                  deploymentUuid: adminDeploymentUuid,
                   objects: allInstances,
                 },
               }
@@ -1049,9 +1049,7 @@ export class DomainController implements DomainControllerInterface {
           }
           const currentDeploymentUuid: Uuid =
             currentTransactions[0].actionType == "transactionalInstanceAction"
-              ? currentTransactions[0].payload.instanceAction.actionType == "createInstance"
                 ? currentTransactions[0].payload.instanceAction.payload.deploymentUuid
-                : currentTransactions[0].payload.instanceAction.deploymentUuid
               : currentTransactions[0].deploymentUuid;
 
           if (currentDeploymentUuid != modelAction.deploymentUuid) {
@@ -1106,8 +1104,8 @@ export class DomainController implements DomainControllerInterface {
             actionType: "RestPersistenceAction_create",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-            deploymentUuid: currentDeploymentUuid,
             payload: {
+              deploymentUuid: currentDeploymentUuid,
               section: sectionOfapplicationEntities,
               parentName: entitySelfApplicationVersion.name ?? "Self Application",
               parentUuid: entitySelfApplicationVersion.uuid,
@@ -1176,10 +1174,7 @@ export class DomainController implements DomainControllerInterface {
                     actionType: newActionType,
                     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                    deploymentUuid:
-                      replayAction.payload.instanceAction.actionType == "createInstance"
-                        ? replayAction.payload.instanceAction.payload.deploymentUuid
-                        : replayAction.payload.instanceAction.deploymentUuid, // TODO: bug, replayAction does not have deploymentUuid, although it should
+                    deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
                     payload: {
                       section:
                         replayAction.payload.instanceAction.payload.applicationSection ?? "data",
@@ -1263,7 +1258,6 @@ export class DomainController implements DomainControllerInterface {
                   actionType: "createInstance",
                   application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  // deploymentUuid: modelAction.deploymentUuid,
                   payload: {
                     deploymentUuid: currentDeploymentUuid,
                     applicationSection: "model",
@@ -1642,16 +1636,14 @@ export class DomainController implements DomainControllerInterface {
           return this.handleModelAction(domainAction, currentModel);
         }
         // case "instanceAction": {
-        case "createInstance":{
-          return this.handleInstanceAction(domainAction.payload.deploymentUuid, domainAction);
-        }
+        case "createInstance":
         case "deleteInstance":
         case "deleteInstanceWithCascade":
         case "updateInstance":
         case "loadNewInstancesInLocalCache":
         case "getInstance":
         case "getInstances": {
-          return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
+          return this.handleInstanceAction(domainAction.payload.deploymentUuid, domainAction);
         }
         // case "storeManagementAction": {
         case "storeManagementAction_createStore":

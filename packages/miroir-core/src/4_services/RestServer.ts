@@ -39,6 +39,8 @@ import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombine
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
+import instanceEndpointV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json" assert { type: "json" };
+
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer")
@@ -49,6 +51,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 function wrapResults(instances: any[]): HttpResponseBodyFormat {
   return { instances };
 }
+
+export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
+  (actionDef:any) => actionDef.actionParameters.actionType.definition
+)
 
 // ################################################################################################
 /**
@@ -354,9 +360,9 @@ export async function restActionHandler(
          * - the RestMswServerStub emulates the server,
          * - the client has direct access to the persistence store (which is emulated, too)
          *  */
-        const localDeploymentUuid = action.actionType === "createInstance"
-              ? action.payload.deploymentUuid
-              : action.deploymentUuid;
+        const localDeploymentUuid = entityInstanceActions.includes(action.actionType) 
+              ? (action as any).payload.deploymentUuid
+              : (action as any).deploymentUuid;
         const localPersistenceStoreController =
           persistenceStoreControllerManager.getPersistenceStoreController(
             localDeploymentUuid

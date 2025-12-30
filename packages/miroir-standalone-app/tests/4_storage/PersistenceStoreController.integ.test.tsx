@@ -50,13 +50,14 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import {
   adminApplicationDeploymentConfigurations,
-  createDeploymentCompositeAction,
+  // createDeploymentCompositeAction,
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { loadTestConfigFiles } from '../utils/fileTools.js';
+import { createDeploymentCompositeAction } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -156,7 +157,10 @@ beforeAll(
     } else {
       throw new Error("beforeAll failed initialization!");
     }
-    const createLibraryDeploymentAction = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
+    const createLibraryDeploymentAction = createDeploymentCompositeAction(
+      adminConfigurationDeploymentLibrary.uuid,
+      libraryDeploymentStorageConfiguration
+    );
     const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirMetaModel);
 
     if (result.status !== "ok") {
@@ -447,6 +451,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     const modelActionRenameEntity:ModelActionRenameEntity =  {
       // actionType: "modelAction",
       actionType: "renameEntity",
+      application:"79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
@@ -538,8 +543,9 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     const modelActionDropEntity:ModelActionDropEntity =  {
       // actionType: "modelAction",
       actionType: "dropEntity",
-      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+      application:"79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       payload: {
         entityUuid: entityAuthor.uuid, 
         // entityName: entityAuthor.name,
@@ -633,6 +639,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       // actionType: "modelAction",
       actionType: "alterEntityAttribute",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+      application:"79a8fa03-cb64-45c8-9f85-7f8336bf92a5", 
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         entityUuid: entityAuthor.uuid, 

@@ -275,8 +275,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "updateInstance",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
           {
@@ -295,8 +295,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "deleteInstance",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
           {
@@ -315,8 +315,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "deleteInstanceWithCascade",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
           {
@@ -335,8 +335,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "getInstances",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         parentUuid: entityMenu.uuid,
       },
@@ -348,8 +348,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "getInstance",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         parentUuid: entityMenu.uuid,
         applicationSection: "data",
         uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
@@ -364,8 +364,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "loadNewInstancesInLocalCache",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         objects: [
           {
             parentName: entityMenu.name,
@@ -437,8 +437,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "LocalPersistenceAction_create",
       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         section: "data",
         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
         parentName: entityMenu.name,
@@ -711,8 +711,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             actionType: "updateInstance",
             application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             payload: {
+              deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               applicationSection: "data",
               objects: [
                 {
