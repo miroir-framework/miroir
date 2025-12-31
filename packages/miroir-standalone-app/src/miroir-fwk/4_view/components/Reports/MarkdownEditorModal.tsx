@@ -154,13 +154,13 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
     await domainController.handleActionFromUI(
       {
         actionType: "transactionalInstanceAction",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         payload: {
           deploymentUuid: props.deploymentUuid,
           instanceAction: {
             actionType: "updateInstance",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               deploymentUuid: props.deploymentUuid,

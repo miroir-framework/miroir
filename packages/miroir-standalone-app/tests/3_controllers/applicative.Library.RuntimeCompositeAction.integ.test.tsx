@@ -393,7 +393,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
   actionType: "compositeActionSequence",
   // actionLabel: "createEntityCompositeActionTemplate",
   actionLabel: "createEntityCompositeAction",
-  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     templates: {
@@ -621,7 +621,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
         // actionType: "modelAction",
         actionType: "createEntity",
         actionLabel: "createEntity",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -852,14 +852,14 @@ const newEntityDetailsReport = {
 const createReportsCompositeAction: DomainAction = {
   actionType: "transactionalInstanceAction",
   actionLabel: "createReports",
-  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     deploymentUuid: testAdminConfigurationDeploymentUuid,
     instanceAction: {
       // actionType: "instanceAction",
       actionType: "createInstance",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -952,7 +952,7 @@ const createReportsCompositeActionPrepActions: any[] = [
     nameGivenToResult: "newApplicationReportList",
     query: {
       actionType: "runBoxedExtractorOrQueryAction",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -1113,7 +1113,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
             actionType: "compositeActionSequence",
             actionLabel: "createEntityAndReportFromSpreadsheet",
             // templates: createEntityCompositeAction.templates,
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               definition: [
@@ -1146,7 +1146,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                     // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
                     // actionType: "runBoxedQueryTemplateAction",
                     actionType: "runBoxedQueryAction",
-                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     applicationSection: "model",
                     deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -1211,14 +1211,14 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                 {
                   actionType: "transactionalInstanceAction",
                   actionLabel: "updateMenu",
-                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   payload: {
                     deploymentUuid: testAdminConfigurationDeploymentUuid,
                     instanceAction: {
                       actionType: "updateInstance",
                       applicationSection: "model",
-                      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       deploymentUuid: testAdminConfigurationDeploymentUuid,
                       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                       objects: [

@@ -321,7 +321,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           {
             actionType: "runBoxedExtractorAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             payload: {
@@ -375,7 +375,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           await localMiroirPersistenceStoreController.handleBoxedQueryAction({
             actionType: "runBoxedQueryAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -549,7 +549,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult: Action2ReturnType = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -599,7 +599,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           await localAppPersistenceStoreController.handleBoxedQueryAction({
             actionType: "runBoxedQueryAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -763,7 +763,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             applicationSection: applicationSection,
@@ -817,7 +817,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             applicationSection: applicationSection,
@@ -879,7 +879,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             applicationSection: applicationSection,
@@ -937,7 +937,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -999,7 +999,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -1059,7 +1059,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -1229,7 +1229,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -1316,7 +1316,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
@@ -1382,7 +1382,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           {
             actionType: "runBoxedExtractorAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -1442,7 +1442,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   //       const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
   //         actionType: "runBoxedQueryAction",
   //         // actionName: "runQuery",
-  //         application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  //         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   //         payload: {

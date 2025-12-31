@@ -132,7 +132,7 @@ export async function resetAndInitApplicationDeployment(
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
     await domainController.handleAction({
       actionType: "resetModel",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         deploymentUuid: selfAdminConfigurationDeployment.uuid,
@@ -143,7 +143,7 @@ export async function resetAndInitApplicationDeployment(
     await domainController.handleAction(
       {
         actionType: "initModel",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           deploymentUuid: selfAdminConfigurationDeployment.uuid,
@@ -173,7 +173,7 @@ export async function resetAndInitApplicationDeployment(
     await domainController.handleAction(
       {
         actionType: "rollback",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           deploymentUuid: d.uuid,
@@ -325,7 +325,7 @@ export class DomainController implements DomainControllerInterface {
           // deploymentUuid,
           {
             actionType: "RestPersistenceAction_read",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             payload: {
               deploymentUuid: adminDeploymentUuid,
@@ -435,7 +435,7 @@ export class DomainController implements DomainControllerInterface {
                 }, // context update
                 {
                   actionType: "RestPersistenceAction_read",
-                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                   payload: {
                     deploymentUuid: adminDeploymentUuid,
@@ -470,7 +470,7 @@ export class DomainController implements DomainControllerInterface {
               {}, // context update
               {
                 actionType: "loadNewInstancesInLocalCache",
-                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
                   deploymentUuid: adminDeploymentUuid,
@@ -486,7 +486,7 @@ export class DomainController implements DomainControllerInterface {
             {}, // context update
             {
               actionType: "rollback",
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 deploymentUuid: adminDeploymentUuid,
@@ -1108,7 +1108,7 @@ export class DomainController implements DomainControllerInterface {
           );
           const newModelVersionAction: RestPersistenceAction = {
             actionType: "RestPersistenceAction_create",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             payload: {
               deploymentUuid: currentDeploymentUuid,
@@ -1178,7 +1178,7 @@ export class DomainController implements DomainControllerInterface {
                   {}, // context update
                   {
                     actionType: newActionType,
-                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                     deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
                     payload: {
@@ -1247,7 +1247,7 @@ export class DomainController implements DomainControllerInterface {
                 // actionType: "modelAction",
                 actionType: "commit",
                 // deploymentUuid: modelAction.deploymentUuid,
-                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
                   deploymentUuid: currentDeploymentUuid,
@@ -1264,7 +1264,7 @@ export class DomainController implements DomainControllerInterface {
                 {}, // context update
                 {
                   actionType: "createInstance",
-                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     deploymentUuid: currentDeploymentUuid,
@@ -1405,7 +1405,7 @@ export class DomainController implements DomainControllerInterface {
                 // automatically commit after each model action from the UI if autocommit is enabled
                 const commitAction: ModelAction = {
                   actionType: "commit",
-                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     deploymentUuid: domainAction.payload.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
@@ -2493,7 +2493,7 @@ export class DomainController implements DomainControllerInterface {
     const resolvedAction: BuildPlusRuntimeCompositeAction = {
       actionType: "compositeActionSequence",
       actionLabel: buildPlusRuntimeCompositeAction.actionLabel,
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         definition: resolvedActionDefinition as any,
@@ -3212,7 +3212,7 @@ export class DomainController implements DomainControllerInterface {
       case "testCompositeAction": {
         const localCompositeAction: CompositeActionSequence = {
           ...testAction.compositeActionSequence,
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             definition: [
@@ -3230,7 +3230,7 @@ export class DomainController implements DomainControllerInterface {
       case "testBuildPlusRuntimeCompositeAction": {
         const localCompositeAction: BuildPlusRuntimeCompositeAction = {
           ...testAction.compositeActionSequence,
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
             definition: [
@@ -3417,7 +3417,7 @@ export class DomainController implements DomainControllerInterface {
           case 'testBuildPlusRuntimeCompositeAction': {
             const localTestCompositeAction: BuildPlusRuntimeCompositeAction = {
               ...testCompositeAction[1].compositeActionSequence,
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 definition: [
@@ -3476,7 +3476,7 @@ export class DomainController implements DomainControllerInterface {
           case "testCompositeAction": {
             const localTestCompositeAction: CompositeActionSequence = {
               ...testCompositeAction[1].compositeActionSequence,
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 definition: [

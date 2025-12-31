@@ -433,7 +433,7 @@ const newEntityDetailsReport = {
 const createEntityCompositeActionTemplate: CompositeActionTemplate = {
   actionType: "compositeActionSequence",
   actionLabel: "createEntityCompositeActionTemplate",
-  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   payload: {
     templates: {
@@ -661,7 +661,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
         // actionType: "modelAction",
         actionType: "createEntity",
         actionLabel: "createEntity",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           deploymentUuid: {
@@ -847,7 +847,7 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
   {
     actionType: "transactionalInstanceAction",
     actionLabel: "createReports",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       deploymentUuid: {
@@ -859,7 +859,7 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
         actionType: "instanceAction",
         actionName: "createInstance",
         applicationSection: "model",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         payload: {
           deploymentUuid: {
@@ -1213,7 +1213,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
           compositeActionTemplate: {
             actionType: "compositeActionSequence",
             actionLabel: "createEntityAndReportFromSpreadsheet",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               templates: (createEntityCompositeActionTemplate.payload as any).templates, // TODO: fix typing

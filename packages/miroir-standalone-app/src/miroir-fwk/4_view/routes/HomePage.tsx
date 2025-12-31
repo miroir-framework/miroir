@@ -278,7 +278,7 @@ export const HomePage = (props: RootComponentProps) => {
           onClick={async () => {
             await domainController.handleActionFromUI({
               actionType: "undo",
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               payload: {
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
@@ -295,7 +295,7 @@ export const HomePage = (props: RootComponentProps) => {
           onClick={async () => {
             await domainController.handleActionFromUI({
               actionType: "redo",
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               payload: {
@@ -350,7 +350,7 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 // actionType: "modelAction",
                 actionType: "rollback",
-                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
                   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
@@ -385,7 +385,7 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 // actionType: "modelAction",
                 actionType: "resetData",
-                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -400,7 +400,7 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 // actionType: "modelAction",
                 actionType: "rollback",
-                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,

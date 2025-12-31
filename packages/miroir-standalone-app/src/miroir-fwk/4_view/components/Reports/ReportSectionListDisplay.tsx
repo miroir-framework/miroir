@@ -517,13 +517,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5", // miroir application
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15", // miroir application
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "createInstance",
-                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     deploymentUuid: props.displayedDeploymentDefinition.uuid,
@@ -551,7 +551,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           const createAction: InstanceAction = {
             // actionType: "instanceAction",
             actionType: "createInstance",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               deploymentUuid: props.displayedDeploymentDefinition?.uuid,
@@ -588,14 +588,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           result = await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   // actionType: "instanceAction",
                   actionType: "updateInstance",
-                  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     deploymentUuid: props.displayedDeploymentDefinition.uuid,
@@ -619,7 +619,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           const updateAction: InstanceAction = {
             // actionType: "instanceAction",
             actionType: "updateInstance",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               deploymentUuid: props.displayedDeploymentDefinition?.uuid,

@@ -753,7 +753,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       queryResult = await sqlDbDataStore.handleBoxedQueryAction({
         actionType: "runBoxedQueryAction",
         deploymentUuid: "",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
         payload: {
           applicationSection: "data",

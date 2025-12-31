@@ -30,7 +30,7 @@ import entityApplicationForAdmin from "../assets/admin_model/16dbfe28-e1d7-4f20-
 import entityDeployment from "../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json";
 
 import adminAdminApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json";
-import adminMiroirApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/79a8fa03-cb64-45c8-9f85-7f8336bf92a5.json";
+import adminMiroirApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import adminLibraryApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json";
 
 import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
@@ -74,14 +74,14 @@ export function createApplicationCompositeAction(
   const result: CompositeActionSequence = {
     actionType: "compositeActionSequence",
     actionLabel: "beforeAll",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       definition: [
         {
           actionType: "createInstance",
           actionLabel: "createApplicationForAdminAction",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             deploymentUuid: deploymentUuid,
@@ -130,14 +130,14 @@ export function createDeploymentCompositeAction(
   return {
     actionType: "compositeActionSequence",
     actionLabel: "createDeploymentCompositeAction",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       definition: [
         {
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore for admin",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
@@ -151,7 +151,7 @@ export function createDeploymentCompositeAction(
           // actionType: "storeManagementAction",
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             deploymentUuid: adminDeploymentUuid,
@@ -164,7 +164,7 @@ export function createDeploymentCompositeAction(
           // actionType: "storeManagementAction",
           actionType: "storeManagementAction_createStore",
           actionLabel: "storeManagementAction_createStore",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             deploymentUuid: adminDeploymentUuid,
@@ -174,7 +174,7 @@ export function createDeploymentCompositeAction(
         {
           actionType: "createInstance",
           actionLabel: "CreateDeploymentInstances",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
@@ -230,7 +230,7 @@ export function resetAndinitializeDeploymentCompositeAction(
   return {
     actionType: "compositeActionSequence",
     actionLabel: "resetAndinitializeDeploymentCompositeAction",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       // transformerType: "returnValue",
@@ -240,7 +240,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "resetModel",
           actionLabel: "resetApplicationStore",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             deploymentUuid: deploymentUuid,
@@ -249,7 +249,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "initModel",
           actionLabel: "initStore",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             deploymentUuid: deploymentUuid,
@@ -264,7 +264,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "rollback",
           actionLabel: "refreshLocalCacheForApplication",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             deploymentUuid: deploymentUuid,
@@ -273,7 +273,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "createEntity",
           actionLabel: "CreateApplicationStoreEntities",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             deploymentUuid: deploymentUuid,
@@ -283,7 +283,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "commit",
           actionLabel: "CommitApplicationStoreEntities",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             deploymentUuid: deploymentUuid,
@@ -292,7 +292,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         {
           actionType: "createInstance",
           actionLabel: "CreateApplicationStoreInstances",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             deploymentUuid: deploymentUuid,
@@ -326,14 +326,14 @@ export function dropApplicationAndDeploymentCompositeAction(
   return {
     actionType: "compositeActionSequence",
     actionLabel: "dropApplicationAndDeployment",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       definition: [
         {
           actionType: "storeManagementAction_deleteStore",
           actionLabel: "deleteStore",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             deploymentUuid,

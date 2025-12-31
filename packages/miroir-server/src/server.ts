@@ -217,7 +217,7 @@ const domainController = await setupMiroirDomainController(
 for (const c of Object.entries(configurations)) {
   const openStoreAction: StoreOrBundleAction = {
     actionType: "storeManagementAction_openStore",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
       deploymentUuid: c[0],
@@ -242,7 +242,7 @@ for (const c of Object.entries(configurations)) {
 // const deployments = await domainController.handleAction(fetchDeploymentsAction);
 const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
   actionType: "runBoxedExtractorOrQueryAction",
-  application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
   payload: {
@@ -283,7 +283,7 @@ for (const c of deploymentsToOpen) {
   const openStoreAction: StoreOrBundleAction = {
     // actionType: "storeManagementAction",
     actionType: "storeManagementAction_openStore",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
       deploymentUuid: c[0],

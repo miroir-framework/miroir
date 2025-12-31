@@ -299,7 +299,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
             {
               actionType: "runBoxedExtractorTemplateAction",
               // actionName: "runQuery",
-              application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -372,7 +372,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -425,7 +425,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -491,7 +491,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -560,7 +560,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -620,7 +620,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
@@ -812,7 +812,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
             actionType: "runBoxedQueryTemplateAction",
             // actionName: "runQuery",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {

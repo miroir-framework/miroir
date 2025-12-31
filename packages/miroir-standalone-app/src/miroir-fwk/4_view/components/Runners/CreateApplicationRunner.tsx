@@ -149,7 +149,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
   //   const combinedCompositeAction: CompositeActionSequence = {
   //     actionType: "compositeActionSequence",
   //     actionLabel: "createApplicationAndDeployment",
-  //     application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+  //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   //     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
   //     payload: {
   //       definition: [
@@ -308,14 +308,14 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     const localCreateApplicationCompositeActionTemplate = {
       actionType: "compositeActionSequence",
       actionLabel: "createApplicationForAdminAction",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         definition: [
           {
             actionType: "createInstance",
             actionLabel: "createApplicationForAdminAction_instances",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
@@ -359,14 +359,14 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     const localCreateDeploymentCompositeActionTemplate = {
       actionType: "compositeActionSequence",
       actionLabel: "createDeployment",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         definition: [
           {
             actionType: "storeManagementAction_openStore",
             actionLabel: "storeManagementAction_openStore",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
               deploymentUuid: testDeploymentUuid,
@@ -378,7 +378,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "storeManagementAction_createStore",
             actionLabel: "storeManagementAction_createStore",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
               deploymentUuid: testDeploymentUuid,
@@ -388,7 +388,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "createInstance",
             actionLabel: "CreateDeploymentInstances",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
@@ -434,21 +434,21 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     const localResetAndinitializeDeploymentCompositeActionTemplate = {
       actionType: "compositeActionSequence",
       actionLabel: "resetAndInitializeDeployment",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         definition: [
           {
             actionType: "resetModel",
             actionLabel: "resetApplicationStore",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid: testDeploymentUuid,
           },
           {
             actionType: "initModel",
             actionLabel: "initStore",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               deploymentUuid: testDeploymentUuid,
@@ -464,7 +464,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "rollback",
             actionLabel: "refreshLocalCacheForApplication",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               deploymentUuid: testDeploymentUuid,
@@ -473,7 +473,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "createEntity",
             actionLabel: "CreateApplicationStoreEntities",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               deploymentUuid: testDeploymentUuid,
@@ -483,7 +483,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "commit",
             actionLabel: "CommitApplicationStoreEntities",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             payload: {
               deploymentUuid: testDeploymentUuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -492,7 +492,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
           {
             actionType: "createInstance",
             actionLabel: "CreateApplicationStoreInstances",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               deploymentUuid: testDeploymentUuid,
@@ -515,7 +515,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
     const combinedCompositeActionTemplate: CompositeActionTemplate = {
       actionType: "compositeActionSequence",
       actionLabel: "createApplicationAndDeployment",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         definition: [

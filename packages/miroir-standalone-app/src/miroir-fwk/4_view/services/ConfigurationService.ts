@@ -86,7 +86,7 @@ export function fetchMiroirAndAppConfigurations(
     .handleAction(
       {
         actionType: "rollback",
-        application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
@@ -131,7 +131,7 @@ export function fetchMiroirAndAppConfigurations(
         {
           actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             applicationSection: "data",
@@ -191,7 +191,7 @@ export function fetchMiroirAndAppConfigurations(
         openStoreActions.push(
           domainController.handleAction({
             actionType: "storeManagementAction_openStore",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
             payload: {
               deploymentUuid: deploymentData.uuid,
@@ -224,7 +224,7 @@ export function fetchMiroirAndAppConfigurations(
             domainController.handleAction(
               {
                 actionType: "rollback",
-                application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
                 payload: {
                   deploymentUuid: deploymentData.uuid,

@@ -1225,7 +1225,7 @@ export {
 };
 
 const adminAdminApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
-const adminMiroirApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/79a8fa03-cb64-45c8-9f85-7f8336bf92a5.json"); //assert { type: "json" };
+const adminMiroirApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json"); //assert { type: "json" };
 const adminLibraryApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json"); //assert { type: "json" };
 const adminSelfApplication = require("./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
 

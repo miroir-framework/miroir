@@ -48,7 +48,7 @@ export function getCreateEntityActionTemplate(
   return {
     actionType: "compositeActionSequence",
     actionLabel,
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       definition: [
@@ -59,7 +59,7 @@ export function getCreateEntityActionTemplate(
           nameGivenToResult: "deploymentInfo",
           query: {
             actionType: "runBoxedExtractorOrQueryAction",
-            application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {
@@ -94,7 +94,7 @@ export function getCreateEntityActionTemplate(
         {
           actionType: "createEntity",
           actionLabel,
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             deploymentUuid: {
@@ -119,7 +119,7 @@ export function getCreateEntityActionTemplate(
         {
           actionType: "commit",
           actionLabel: "commit",
-          application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             deploymentUuid: {

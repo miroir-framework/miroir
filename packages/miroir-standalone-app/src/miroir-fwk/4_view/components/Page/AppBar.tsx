@@ -425,7 +425,7 @@ export function AppBar(props:AppBarProps) {
                 return domainController.handleActionFromUI(
                   {
                     actionType: "commit",
-                    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       deploymentUuid: noValue.uuid,

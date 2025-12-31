@@ -606,7 +606,7 @@ export function getWrapperLoadingLocalCache(
     // const resultForLoadingLibraryAppInstances: Action2ReturnType = localCache.handleLocalCacheAction({
   const resultForLoadingMiroirMetaModel: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     // deploymentUuid: applicationDeploymentAdmin.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
@@ -667,7 +667,7 @@ export function getWrapperLoadingLocalCache(
     // needed so that "loading" instances become "current"
     {
       actionType: "rollback",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
@@ -676,7 +676,7 @@ export function getWrapperLoadingLocalCache(
   );
   const resultForLoadingLibraryApplicationModel: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       deploymentUuid: selfApplicationDeploymentLibrary.uuid,
@@ -749,7 +749,7 @@ export function getWrapperLoadingLocalCache(
     {
       actionType: "rollback",
       // actionType: "commit",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         deploymentUuid: selfApplicationDeploymentLibrary.uuid,
@@ -759,7 +759,7 @@ export function getWrapperLoadingLocalCache(
 
   const resultForLoadingLibraryApplicationInstances: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
-    application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       deploymentUuid: selfApplicationDeploymentLibrary.uuid,
@@ -776,7 +776,7 @@ export function getWrapperLoadingLocalCache(
     // needed so that "loading" instances become "current"
     {
       actionType: "rollback",
-      application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         deploymentUuid: selfApplicationDeploymentLibrary.uuid,
