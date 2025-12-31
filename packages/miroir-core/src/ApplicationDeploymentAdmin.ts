@@ -9,7 +9,7 @@ export const applicationDeploymentAdmin: SelfApplicationDeploymentConfiguration 
   // "type":"singleNode",
   "name":"AmdinApplicationPostgresDeployment",
   "defaultLabel":"AdminApplicationPostgresDeployment",
-  "selfApplication":"f3e04bb2-005f-484b-aaf2-072232f60f2c",
+  "selfApplication":"55af124e-8c05-4bae-a3ef-0933d41daa92",
   "description": "The default Postgres Deployment for SelfApplication Admin",
   // "applicationModelLevel": "model",
   // "admin": {
