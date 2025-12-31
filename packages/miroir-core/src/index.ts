@@ -641,7 +641,7 @@ export {
   defaultDeploymentUuids,
   defaultAdminApplicationDeploymentMapNOTGOOD as defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultSelfApplicationDeploymentMap,
-  deleteApplicationAndDeploymentCompositeAction,
+  dropApplicationAndDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
@@ -679,7 +679,7 @@ export {
   getInnermostTypeCheckError
 } from "./1_core/jzod/mlsTypeCheckError";
 export {
-  entityInstanceActions,
+  actionsWithDeploymentInPayload,
 } from "./1_core/Instance";
 export {
   defaultLibraryAppModel,

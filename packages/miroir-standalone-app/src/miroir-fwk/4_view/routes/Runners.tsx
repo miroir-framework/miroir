@@ -13,7 +13,7 @@ import {
 import { packageName } from "../../../constants.js";
 import { CreateApplicationRunner } from '../components/Runners/CreateApplicationRunner.js';
 import { CreateEntityRunner } from '../components/Runners/CreateEntityRunner.js';
-import { DeleteApplicationRunner } from '../components/Runners/DeleteApplicationRunner.js';
+import { DropApplicationRunner } from '../components/Runners/DropApplicationRunner.js';
 import { DeleteEntityRunner } from '../components/Runners/DeleteEntityRunner.js';
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
@@ -66,7 +66,7 @@ const runnerConfigs = [
   // },
   // {
   //   title: "Delete Application & Deployment",
-  //   component: DeleteApplicationRunner,
+  //   component: DropApplicationRunner,
   // },
   // {
   //   title: "Create Entity",

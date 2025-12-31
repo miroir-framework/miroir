@@ -19,22 +19,22 @@ import type { FormMLSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DeleteApplicationRunner"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DropApplicationRunner"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
 
 // ################################################################################################
-export interface DeleteApplicationToolProps {
+export interface DropApplicationToolProps {
   deploymentUuid: string;
 }
 
 // ################################################################################################
-export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
+export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
   deploymentUuid,
 }) => {
-  const runnerName: string = "deleteApplication";
+  const runnerName: string = "dropApplication";
 
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
@@ -42,7 +42,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
       mlSchema: {
         type: "object",
         definition: {
-          deleteApplicationAndDeployment: {
+          dropApplicationAndDeployment: {
             type: "object",
             definition: {
               application: {
@@ -70,16 +70,16 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
 
   const initialFormValue = useMemo(() => {
     return {
-      deleteApplicationAndDeployment: {
+      dropApplicationAndDeployment: {
         application: noValue.uuid,
       },
     };
   }, []);
 
-  const deleteApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
+  const dropApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
     return {
       actionType: "compositeActionSequence",
-      actionLabel: "deleteApplicationAndDeployment",
+      actionLabel: "dropApplicationAndDeployment",
       application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -114,7 +114,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
                         value: {
                           transformerType: "mustacheStringTemplate",
                           interpolation: "build",
-                          definition: "{{deleteApplicationAndDeployment.application}}",
+                          definition: "{{dropApplicationAndDeployment.application}}",
                         },
                       },
                     },
@@ -188,7 +188,7 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
                       uuid: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: "{{deleteApplicationAndDeployment.application}}",
+                        definition: "{{dropApplicationAndDeployment.application}}",
                       } as any,
                     },
                   ],
@@ -209,10 +209,10 @@ export const DeleteApplicationRunner: React.FC<DeleteApplicationToolProps> = ({
       initialFormValue={initialFormValue}
       action={{
         actionType: "compositeActionTemplate",
-        compositeActionTemplate: deleteApplicationActionTemplate,
+        compositeActionTemplate: dropApplicationActionTemplate,
       }}
       labelElement={<h2>Delete Application & Deployment</h2>}
-      formikValuePathAsString="deleteApplicationAndDeployment"
+      formikValuePathAsString="dropApplicationAndDeployment"
       formLabel="Delete Application & Deployment"
       displaySubmitButton="onFirstLine"
       useActionButton={true}

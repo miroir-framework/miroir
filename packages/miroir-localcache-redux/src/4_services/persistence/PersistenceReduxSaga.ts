@@ -25,7 +25,7 @@ import {
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
   StoreOrBundleAction,
-  entityInstanceActions,
+  actionsWithDeploymentInPayload,
   instanceEndpointV1,
   modelEndpointV1,
   storeActionOrBundleActionStoreRunner,
@@ -41,7 +41,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga")
 ).then((logger: LoggerInterface) => {log = logger});
 
-// export const entityInstanceActions = [
+// export const actionsWithDeploymentInPayload = [
 //   ...instanceEndpointV1.definition.actions.map(
 //   (actionDef:any) => actionDef.actionParameters.actionType.definition
 // ),
@@ -314,7 +314,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     const deploymentUuid =
-      entityInstanceActions.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
+      actionsWithDeploymentInPayload.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
     log.info(
       "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called",
       this.params.persistenceStoreAccessMode,
@@ -904,7 +904,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   "action",
         //   action
         // );
-        const deploymentUuid = entityInstanceActions.includes(action.actionType)
+        const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
           ? (action as any).payload.deploymentUuid
           : (action as any).deploymentUuid;
         try {
@@ -990,7 +990,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       > {
         const { action, currentModel } = p.payload;
         const deploymentUuid =
-          entityInstanceActions.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
+          actionsWithDeploymentInPayload.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode !== "local") {
             throw new Error(

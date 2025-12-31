@@ -169,20 +169,20 @@ miroirPostgresStoreSectionStartup();
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
-const serverModelEnvironments: Record<string, MiroirModelEnvironment> = {
-  [adminConfigurationDeploymentMiroir.uuid]: {
-    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-    miroirMetaModel: defaultMiroirMetaModel,
-    currentModel: defaultMiroirMetaModel,
-    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-  },
-  [adminConfigurationDeploymentLibrary.uuid]: {
-    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-    miroirMetaModel: defaultMiroirMetaModel,
-    currentModel: defaultLibraryAppModel,
-    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-  }
-};
+// const serverModelEnvironments: Record<string, MiroirModelEnvironment> = {
+//   [adminConfigurationDeploymentMiroir.uuid]: {
+//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+//     miroirMetaModel: defaultMiroirMetaModel,
+//     currentModel: defaultMiroirMetaModel,
+//     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+//   },
+//   [adminConfigurationDeploymentLibrary.uuid]: {
+//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+//     miroirMetaModel: defaultMiroirMetaModel,
+//     currentModel: defaultLibraryAppModel,
+//     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+//   }
+// };
 await MiroirLoggerFactory.startRegisteredLoggers(
   miroirActivityTracker,
   miroirEventService,

@@ -3,7 +3,7 @@ import modelEndpointV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869
 import storeManagementEndpointV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json" assert { type: "json" };
 
 
-export const entityInstanceActions = [
+export const actionsWithDeploymentInPayload = [
   ...instanceEndpointV1.definition.actions.map(
   (actionDef:any) => actionDef.actionParameters.actionType.definition
 ),

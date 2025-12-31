@@ -34,7 +34,7 @@ import {
   DomainControllerInterface,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
-  entityInstanceActions,
+  actionsWithDeploymentInPayload,
   EntityInstancesUuidIndex,
   getQueryRunnerParamsForReduxDeploymentsState,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
@@ -88,7 +88,7 @@ export interface RootComponentProps {
   // reportName: string;
 }
 
-// export const entityInstanceActions = instanceEndpointV1.definition.actions.map(
+// export const actionsWithDeploymentInPayload = instanceEndpointV1.definition.actions.map(
 //   (actionDef:any) => actionDef.actionParameters.actionType.definition
 // )
 
@@ -111,7 +111,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
 
-  log.info("entityInstanceActions", entityInstanceActions);
+  log.info("actionsWithDeploymentInPayload", actionsWithDeploymentInPayload);
 
   // Use snackbar from context
   const {
