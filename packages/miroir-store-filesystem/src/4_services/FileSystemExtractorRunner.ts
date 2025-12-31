@@ -108,7 +108,14 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       ));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", runBoxedQueryAction, "result", JSON.stringify(result, null, 2));
+      log.info(
+        this.logHeader,
+        "handleBoxedQueryAction",
+        "runBoxedQueryAction",
+        runBoxedQueryAction,
+        "result",
+        JSON.stringify(result, null, 2)
+      );
       return result;
     }
   }

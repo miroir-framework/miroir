@@ -402,8 +402,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "redo",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -561,9 +561,9 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       actionType: "runBoxedExtractorAction",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         query: {
           queryType: "boxedExtractorOrCombinerReturningObject",
@@ -588,8 +588,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "runBoxedQueryAction",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         query: {
           queryType: "boxedQueryWithExtractorCombinerTransformer",

@@ -297,8 +297,8 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "redo",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               payload: {
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               }
             }, defaultMiroirModelEnvironment);
           }}

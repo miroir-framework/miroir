@@ -323,8 +323,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             // actionName: "runQuery",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
             payload: {
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedExtractorOrCombinerReturningObject",
@@ -376,9 +376,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             actionType: "runBoxedQueryAction",
             // actionName: "runQuery",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -550,9 +550,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -600,9 +600,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             actionType: "runBoxedQueryAction",
             // actionName: "runQuery",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -761,11 +761,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult = await localMiroirPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          // actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -816,10 +815,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -877,11 +876,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          // actionName: "runQuery",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -936,11 +934,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          // actionName: "runQuery",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -998,11 +995,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          // actionName: "runQuery",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -1060,9 +1056,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           actionType: "runBoxedQueryAction",
           // actionName: "runQuery",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -1228,11 +1224,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          // actionName: "runQuery",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -1315,11 +1310,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult = await localAppPersistenceStoreController.handleBoxedQueryAction({
           actionType: "runBoxedQueryAction",
-          // actionName: "runQuery",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -1381,11 +1375,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult:Action2ReturnType = await localAppPersistenceStoreController.handleBoxedExtractorAction(
           {
             actionType: "runBoxedExtractorAction",
-            // actionName: "runQuery",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
+              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedExtractorOrCombinerReturningObject",

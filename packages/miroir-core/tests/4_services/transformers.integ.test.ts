@@ -173,14 +173,16 @@ const beforeAll = async () => {
       actionLabel: "resetTestStore",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: paramAdminConfigurationDeploymentUuid,
+      payload: {
+        deploymentUuid: paramAdminConfigurationDeploymentUuid,
+      },
     });
     await persistenceStoreController.handleAction({
       actionType: "initModel",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid: paramAdminConfigurationDeploymentUuid,
       payload: {
+        deploymentUuid: paramAdminConfigurationDeploymentUuid,
         params: {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
@@ -195,10 +197,10 @@ const beforeAll = async () => {
     await persistenceStoreController.handleAction({
       actionType: "createEntity",
       actionLabel: "CreateLibraryStoreEntities",
-      deploymentUuid: paramAdminConfigurationDeploymentUuid,
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        deploymentUuid: paramAdminConfigurationDeploymentUuid,
         entities: libraryEntitesAndInstances,
       }
     });

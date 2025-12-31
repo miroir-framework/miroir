@@ -433,12 +433,12 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     actionLabel: "createEntity",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    deploymentUuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "testDeploymentUuid",
-                    },
                     payload: {
+                      deploymentUuid: {
+                        transformerType: "getFromParameters",
+                        interpolation: "build",
+                        referenceName: "testDeploymentUuid",
+                      },
                       entities: [
                         {
                           entity: {
@@ -523,12 +523,12 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                       // actionName: "runQuery",
                       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                      deploymentUuid: {
-                        transformerType: "getFromParameters",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
                       payload: {
+                        deploymentUuid: {
+                          transformerType: "getFromParameters",
+                          interpolation: "build",
+                          referenceName: "testDeploymentUuid",
+                        },
                         applicationSection: "model",
                         query: {
                           queryType: "boxedQueryWithExtractorCombinerTransformer",

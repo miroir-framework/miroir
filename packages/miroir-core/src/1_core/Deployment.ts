@@ -66,7 +66,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export function createApplicationCompositeAction(
   deploymentUuid: Uuid,
-  newAdminAppApplicationUuid: Uuid,
+  // newAdminAppApplicationUuid: Uuid,
   newSelfApplicationUuid: Uuid,
   newApplicationName: string,
   deploymentConfiguration: StoreUnitConfiguration
@@ -85,6 +85,7 @@ export function createApplicationCompositeAction(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             deploymentUuid: deploymentUuid,
+            application: newSelfApplicationUuid,
             applicationSection: "data",
             objects: [
               {
@@ -93,7 +94,7 @@ export function createApplicationCompositeAction(
                 applicationSection: "data",
                 instances: [
                   {
-                    uuid: newAdminAppApplicationUuid,
+                    uuid: newSelfApplicationUuid,
                     parentName: entityApplicationForAdmin.name,
                     parentUuid: entityApplicationForAdmin.uuid,
                     name: newApplicationName,
@@ -177,6 +178,7 @@ export function createDeploymentCompositeAction(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
+            application: selfApplicationUuid,
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             applicationSection: "data",
             objects: [

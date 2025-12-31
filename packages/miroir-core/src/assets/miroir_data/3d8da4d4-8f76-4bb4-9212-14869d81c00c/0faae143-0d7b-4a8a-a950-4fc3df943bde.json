@@ -25,15 +25,15 @@
             "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,
@@ -105,15 +105,15 @@
             "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,
@@ -191,15 +191,15 @@
             "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,
@@ -257,15 +257,15 @@
             "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,
@@ -324,15 +324,15 @@
             "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,
@@ -396,15 +396,15 @@
             "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
           },
           "endpoint": { "type": "literal", "definition": "9e404b3c-368c-40cb-be8b-e3c28550c25e" },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,

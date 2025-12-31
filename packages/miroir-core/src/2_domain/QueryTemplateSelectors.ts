@@ -81,10 +81,10 @@ export async function handleQueryTemplateAction(
     origin,
     {
       actionType: "runBoxedQueryAction",
-      deploymentUuid: queryTemplateAction.deploymentUuid,
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
+        deploymentUuid: queryTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
       }
@@ -114,10 +114,10 @@ export async function handleBoxedExtractorTemplateAction(
 
   const extractorAction: RunBoxedExtractorAction = {
     actionType: "runBoxedExtractorAction",
-    deploymentUuid: boxedExtractorTemplateAction.deploymentUuid,
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
     payload: {
+      deploymentUuid: boxedExtractorTemplateAction.payload.deploymentUuid,
       applicationSection: boxedExtractorTemplateAction.payload.applicationSection,
       query: resolvedQuery as any,
     }
@@ -174,10 +174,10 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       origin,
       {
         actionType: "runBoxedQueryAction",
-        deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
         payload: {
+          deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
           applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
           query: resolvedQuery as any,
         }
@@ -201,10 +201,10 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     );
     const extractorAction: RunBoxedExtractorAction = {
       actionType: "runBoxedExtractorAction",
-      deploymentUuid: queryTemplateOrExtractorTemplateAction.deploymentUuid,
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
       payload: {
+        deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
       }

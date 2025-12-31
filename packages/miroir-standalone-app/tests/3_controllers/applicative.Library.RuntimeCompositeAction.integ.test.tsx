@@ -1143,68 +1143,68 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                   actionLabel: "getMenu",
                   nameGivenToResult: "menuUpdateQueryResult",
                   queryTemplate: {
-                    // actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-                    // actionType: "runBoxedQueryTemplateAction",
                     actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    applicationSection: "model",
-                    deploymentUuid: testAdminConfigurationDeploymentUuid,
-                    query: {
-                      // queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    payload: {
+                      applicationSection: "model",
                       deploymentUuid: testAdminConfigurationDeploymentUuid,
-                      // runAsSql: true,
-                      pageParams: {},
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        menuList: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: "model",
-                          parentName: entityMenu.name,
-                          parentUuid: entityMenu.uuid,
+                      query: {
+                        // queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        deploymentUuid: testAdminConfigurationDeploymentUuid,
+                        // runAsSql: true,
+                        pageParams: {},
+                        queryParams: {},
+                        contextResults: {},
+                        extractors: {
+                          menuList: {
+                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            applicationSection: "model",
+                            parentName: entityMenu.name,
+                            parentUuid: entityMenu.uuid,
+                          },
+                        },
+                        runtimeTransformers: {
+                          menu: {
+                            transformerType: "pickFromList",
+                            interpolation: "runtime",
+                            applyTo: {
+                              transformerType: "getFromContext",
+                              interpolation: "runtime",
+                              referenceName: "menuList",
+                            },
+                            index: 0,
+                          },
+                          menuItem: {
+                            transformerType: "createObject",
+                            interpolation: "runtime",
+                            definition: {
+                              reportUuid: createEntity_newEntityListReportUuid,
+                              label: "List of " + newEntityName,
+                              section: "data",
+                              selfApplication: adminConfigurationDeploymentParis.uuid,
+                              icon: "local_drink",
+                            },
+                          },
+                          updatedMenu: {
+                            transformerType: "transformer_menu_addItem",
+                            interpolation: "runtime",
+                            menuItemReference: {
+                              transformerType: "getFromContext",
+                              interpolation: "runtime",
+                              referenceName: "menuItem",
+                            },
+                            menuReference: {
+                              transformerType: "getFromContext",
+                              interpolation: "runtime",
+                              referenceName: "menu",
+                            },
+                            menuSectionItemInsertionIndex: -1,
+                          },
                         },
                       },
-                      runtimeTransformers: {
-                        menu: {
-                          transformerType: "pickFromList",
-                          interpolation: "runtime",
-                          applyTo: {
-                            transformerType: "getFromContext",
-                            interpolation: "runtime",
-                            referenceName: "menuList",
-                          },
-                          index: 0,
-                        },
-                        menuItem: {
-                          transformerType: "createObject",
-                          interpolation: "runtime",
-                          definition: {
-                            reportUuid: createEntity_newEntityListReportUuid,
-                            label: "List of " + newEntityName,
-                            section: "data",
-                            selfApplication: adminConfigurationDeploymentParis.uuid,
-                            icon: "local_drink",
-                          },
-                        },
-                        updatedMenu: {
-                          transformerType: "transformer_menu_addItem",
-                          interpolation: "runtime",
-                          menuItemReference: {
-                            transformerType: "getFromContext",
-                            interpolation: "runtime",
-                            referenceName: "menuItem",
-                          },
-                          menuReference: {
-                            transformerType: "getFromContext",
-                            interpolation: "runtime",
-                            referenceName: "menu",
-                          },
-                          menuSectionItemInsertionIndex: -1,
-                        },
-                      },
-                    },
+                    }
                   },
                 },
                 // update current menu
@@ -1257,24 +1257,26 @@ const testSuites: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedQueryAction",
                     actionName: "runQuery",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    applicationSection: "model",
-                    deploymentUuid: testAdminConfigurationDeploymentUuid,
-                    query: {
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
+                    payload: {
+                      applicationSection: "model",
                       deploymentUuid: testAdminConfigurationDeploymentUuid,
-                      // runAsSql: true,
-                      pageParams: {},
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        menuList: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: "model",
-                          parentName: "Menu",
-                          parentUuid: entityMenu.uuid,
+                      query: {
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        deploymentUuid: testAdminConfigurationDeploymentUuid,
+                        // runAsSql: true,
+                        pageParams: {},
+                        queryParams: {},
+                        contextResults: {},
+                        extractors: {
+                          menuList: {
+                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                            applicationSection: "model",
+                            parentName: "Menu",
+                            parentUuid: entityMenu.uuid,
+                          },
                         },
                       },
-                    },
+                    }
                   },
                 },
               ],
