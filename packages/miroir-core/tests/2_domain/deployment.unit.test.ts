@@ -13,7 +13,7 @@ import adminConfigurationDeploymentMiroir from "../../src/assets/admin_data/7959
 import entityApplicationForAdmin from "../../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json";
 // import entityDeployment from "../../src/assets/admin_model/16dbfe28-e1d7-4fa8-b3fa-f2c007fdbe24/7959d814-400c-4e80-988f-a00fe582ab98.json";
 import entityDefinitionDeployment from "../../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json";
-import adminApplicationLibrary from "../../src/assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json";
+import adminApplicationLibrary from "../../src/assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 import selfApplicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 import selfApplicationStoreBasedConfigurationLibrary from "../../src/assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
 import selfApplicationVersionLibraryInitialVersion from "../../src/assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
@@ -21,7 +21,7 @@ import selfApplicationModelBranchLibraryMasterBranch from "../../src/assets/libr
 
 import selfApplicationDeploymentLibrary from "../../src/assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
-import { defaultMiroirMetaModel } from "../1_core/alterObject.unit.test";
+import { defaultMiroirMetaModel } from "../test_assets/defaultMiroirMetaModel";
 import { AdminApplicationDeploymentConfiguration } from "../../src/0_interfaces/1_core/StorageConfiguration";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
