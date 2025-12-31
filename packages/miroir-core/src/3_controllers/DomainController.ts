@@ -135,6 +135,7 @@ export async function resetAndInitApplicationDeployment(
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: adminSelfApplication.uuid,
         deploymentUuid: selfAdminConfigurationDeployment.uuid,
       },
     }, defaultMiroirModelEnvironment);
@@ -146,6 +147,7 @@ export async function resetAndInitApplicationDeployment(
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
+          application: adminSelfApplication.uuid,
           deploymentUuid: selfAdminConfigurationDeployment.uuid,
           params: {
             dataStoreType:
@@ -176,6 +178,7 @@ export async function resetAndInitApplicationDeployment(
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
+          application: d.selfApplication,
           deploymentUuid: d.uuid,
         },
       },
@@ -308,6 +311,7 @@ export class DomainController implements DomainControllerInterface {
    * @returns undefined when loading is finished
    */
   public async loadConfigurationFromPersistenceStore(
+    application: Uuid,
     adminDeploymentUuid: string
   ): Promise<Action2VoidReturnType> {
     log.info(
@@ -328,6 +332,7 @@ export class DomainController implements DomainControllerInterface {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             payload: {
+              application,
               deploymentUuid: adminDeploymentUuid,
               section: "model",
               parentName: entityEntity.name,
@@ -438,6 +443,7 @@ export class DomainController implements DomainControllerInterface {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                   payload: {
+                    application,
                     deploymentUuid: adminDeploymentUuid,
                     section: e.section,
                     parentName: e.entity.name,
@@ -473,6 +479,7 @@ export class DomainController implements DomainControllerInterface {
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
+                  application,
                   deploymentUuid: adminDeploymentUuid,
                   objects: allInstances,
                 },
@@ -489,6 +496,7 @@ export class DomainController implements DomainControllerInterface {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
+                application,
                 deploymentUuid: adminDeploymentUuid,
               },
             }
@@ -961,7 +969,7 @@ export class DomainController implements DomainControllerInterface {
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore!"
             );
-            await this.loadConfigurationFromPersistenceStore(modelAction.payload.deploymentUuid);
+            await this.loadConfigurationFromPersistenceStore(modelAction.payload.application,modelAction.payload.deploymentUuid);
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore DONE!"
             );
@@ -976,7 +984,10 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "rollback": {
-          await this.loadConfigurationFromPersistenceStore(modelAction.payload.deploymentUuid);
+          await this.loadConfigurationFromPersistenceStore(
+            modelAction.payload.application,
+            modelAction.payload.deploymentUuid
+          );
           break;
         }
         case "alterEntityAttribute":
@@ -1053,6 +1064,7 @@ export class DomainController implements DomainControllerInterface {
             );
             return Promise.resolve(ACTION_OK);
           }
+          const currentApplication = currentTransactions[0].payload.application;
           const currentDeploymentUuid: Uuid =
             currentTransactions[0].actionType == "transactionalInstanceAction"
                 ? currentTransactions[0].payload.instanceAction.payload.deploymentUuid
@@ -1111,6 +1123,7 @@ export class DomainController implements DomainControllerInterface {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             payload: {
+              application: currentApplication,
               deploymentUuid: currentDeploymentUuid,
               section: sectionOfapplicationEntities,
               parentName: entitySelfApplicationVersion.name ?? "Self Application",
@@ -1250,6 +1263,7 @@ export class DomainController implements DomainControllerInterface {
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
+                  application: currentApplication,
                   deploymentUuid: currentDeploymentUuid,
                 },
               }
@@ -1267,6 +1281,7 @@ export class DomainController implements DomainControllerInterface {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
+                    application: currentApplication,
                     deploymentUuid: currentDeploymentUuid,
                     applicationSection: "model",
                     parentUuid: newModelVersion.parentUuid,
@@ -1408,6 +1423,7 @@ export class DomainController implements DomainControllerInterface {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: domainAction.payload.application,
                     deploymentUuid: domainAction.payload.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
                   }
                 };
@@ -2496,6 +2512,7 @@ export class DomainController implements DomainControllerInterface {
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "IGNORED",
         definition: resolvedActionDefinition as any,
         templates: resolvedCompositeActionTemplates,
       }
@@ -3215,6 +3232,7 @@ export class DomainController implements DomainControllerInterface {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
+            application: "IGNORED",
             definition: [
               ...testAction.compositeActionSequence.payload.definition,
               ...testAction.testCompositeActionAssertions,
@@ -3233,6 +3251,7 @@ export class DomainController implements DomainControllerInterface {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           payload: {
+            application: "IGNORED",
             definition: [
               ...testAction.compositeActionSequence.payload.definition,
               ...testAction.testCompositeActionAssertions,
@@ -3420,6 +3439,7 @@ export class DomainController implements DomainControllerInterface {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
+                application: "IGNORED",
                 definition: [
                   ...testCompositeAction[1].compositeActionSequence.payload.definition,
                   ...testCompositeAction[1].testCompositeActionAssertions,
@@ -3479,6 +3499,7 @@ export class DomainController implements DomainControllerInterface {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
+                application: "IGNORED",
                 definition: [
                   ...testCompositeAction[1].compositeActionSequence.payload.definition,
                   ...testCompositeAction[1].testCompositeActionAssertions,

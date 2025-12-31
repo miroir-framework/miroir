@@ -30,7 +30,8 @@ import {
   reportEntityList,
   resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
-  selfApplicationLibrary
+  selfApplicationLibrary,
+  selfApplicationMiroir
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -281,6 +282,7 @@ export const HomePage = (props: RootComponentProps) => {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               payload: {
+                application: selfApplicationMiroir.uuid,
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               }
             }, defaultMiroirModelEnvironment);
@@ -353,6 +355,7 @@ export const HomePage = (props: RootComponentProps) => {
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
+                  application: selfApplicationMiroir.uuid,
                   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                 },
               },
@@ -388,6 +391,7 @@ export const HomePage = (props: RootComponentProps) => {
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
+                  application: selfApplicationLibrary.uuid,
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
               },
@@ -403,6 +407,7 @@ export const HomePage = (props: RootComponentProps) => {
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
+                  application: selfApplicationLibrary.uuid,
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
               },

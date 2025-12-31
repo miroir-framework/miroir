@@ -34,7 +34,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -119,7 +118,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -204,7 +202,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -289,7 +286,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -374,7 +370,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -459,7 +454,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -544,7 +538,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -629,7 +622,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,

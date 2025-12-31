@@ -77,12 +77,13 @@ export function createApplicationCompositeAction(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
+      application: adminSelfApplication.uuid,  //
       definition: [
         {
           actionType: "createInstance",
           actionLabel: "createApplicationForAdminAction",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           payload: {
             deploymentUuid: deploymentUuid,
             application: newSelfApplicationUuid,
@@ -117,14 +118,14 @@ export function createApplicationCompositeAction(
 // ################################################################################################
 export function createDeploymentCompositeAction(
   applicationName: string,
-  adminDeploymentUuid: Uuid,
+  newDeploymentUuid: Uuid,
   selfApplicationUuid: Uuid,
   deploymentConfiguration: StoreUnitConfiguration
 ): CompositeActionSequence {
   log.info(
     "createDeploymentCompositeAction deploymentConfiguration",
-    "adminDeploymentUuid:",
-    adminDeploymentUuid,
+    "newDeploymentUuid:",
+    newDeploymentUuid,
     "deploymentConfiguration:",
     deploymentConfiguration
   );
@@ -134,6 +135,7 @@ export function createDeploymentCompositeAction(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
+      application: selfApplicationUuid, // to be ignored?
       definition: [
         {
           actionType: "storeManagementAction_openStore",
@@ -141,6 +143,7 @@ export function createDeploymentCompositeAction(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
+            application: adminSelfApplication.uuid,
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             configuration: {
               [adminConfigurationDeploymentAdmin.uuid]:
@@ -149,15 +152,15 @@ export function createDeploymentCompositeAction(
           },
         },
         {
-          // actionType: "storeManagementAction",
           actionType: "storeManagementAction_openStore",
           actionLabel: "storeManagementAction_openStore",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
-            deploymentUuid: adminDeploymentUuid,
+            application: selfApplicationUuid,
+            deploymentUuid: newDeploymentUuid,
             configuration: {
-              [adminDeploymentUuid]: deploymentConfiguration,
+              [newDeploymentUuid]: deploymentConfiguration,
             },
           },
         },
@@ -168,7 +171,8 @@ export function createDeploymentCompositeAction(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
-            deploymentUuid: adminDeploymentUuid,
+            application: selfApplicationUuid,
+            deploymentUuid: newDeploymentUuid,
             configuration: deploymentConfiguration,
           },
         },
@@ -188,7 +192,7 @@ export function createDeploymentCompositeAction(
                 applicationSection: "data",
                 instances: [
                   {
-                    uuid: adminDeploymentUuid,
+                    uuid: newDeploymentUuid,
                     parentName: "Deployment",
                     parentUuid: entityDeployment.uuid,
                     name: `Deployment of application ${applicationName}`,
@@ -318,6 +322,7 @@ export function resetAndinitializeDeploymentCompositeAction(
 // ################################################################################################
 export function dropApplicationAndDeploymentCompositeAction(
   miroirConfig: MiroirConfigClient,
+  applicationUuid: Uuid,
   deploymentUuid: Uuid
 ): CompositeActionSequence {
   console.log(
@@ -331,6 +336,7 @@ export function dropApplicationAndDeploymentCompositeAction(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
+      application: applicationUuid, // to be ignored?
       definition: [
         {
           actionType: "storeManagementAction_deleteStore",
@@ -338,6 +344,7 @@ export function dropApplicationAndDeploymentCompositeAction(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
+            application: applicationUuid,
             deploymentUuid,
             configuration: miroirConfig.client.emulateServer
               ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]

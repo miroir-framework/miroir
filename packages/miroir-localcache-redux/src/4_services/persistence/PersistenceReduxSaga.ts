@@ -435,6 +435,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
+            application: action.payload.application,
             deploymentUuid: action.payload.deploymentUuid, // ONLY for createInstance
             applicationSection: action.payload.section,
             objects: [
@@ -518,6 +519,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   application: action.application,
                   endpoint: action.endpoint,
                   payload: {
+                    application: action.payload.application,
                     deploymentUuid: action.payload.deploymentUuid,
                     applicationSection: action.payload.applicationSection,
                     query: localQuery,
@@ -538,6 +540,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   application: action.application,
                   endpoint: action.endpoint,
                   payload: {
+                    application: action.payload.application,
                     deploymentUuid: action.payload.deploymentUuid,
                     applicationSection: action.payload.applicationSection,
                     query: localQuery,

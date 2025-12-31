@@ -82,6 +82,7 @@ import type { ApplicationEntitiesAndInstances } from 'miroir-core';
 import { adminLibraryApplication } from 'miroir-core';
 import { createDeploymentCompositeAction } from 'miroir-core';
 import { resetAndinitializeDeploymentCompositeAction } from 'miroir-core';
+import { selfApplicationMiroir } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -324,6 +325,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
+              application: selfApplicationMiroir.uuid,
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               applicationSection: applicationSection,
               query: {
@@ -378,6 +380,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
+              application: selfApplicationLibrary.uuid,
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {
@@ -552,6 +555,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -598,10 +602,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
         const queryResult: Action2ReturnType =
           await localAppPersistenceStoreController.handleBoxedQueryAction({
             actionType: "runBoxedQueryAction",
-            // actionName: "runQuery",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
+              application: selfApplicationLibrary.uuid,
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {
@@ -764,6 +768,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -818,6 +823,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -879,6 +885,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -937,6 +944,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -998,6 +1006,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -1058,6 +1067,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -1227,6 +1237,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -1313,6 +1324,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: selfApplicationLibrary.uuid,
             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
             applicationSection: applicationSection,
             query: {
@@ -1378,6 +1390,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
+              application: selfApplicationLibrary.uuid,
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {

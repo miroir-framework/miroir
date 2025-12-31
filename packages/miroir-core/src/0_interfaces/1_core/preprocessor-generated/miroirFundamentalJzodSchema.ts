@@ -15433,7 +15433,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -15492,7 +15491,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -15550,9 +15548,7 @@ export const miroirFundamentalJzodSchema = {
                 }
               },
               "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                "optional": true,
+                "type": "uuid",
                 "tag": {
                   "value": {
                     "id": 1,
@@ -15651,7 +15647,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -15717,7 +15712,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -15783,7 +15777,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -15906,7 +15899,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -16008,7 +16000,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
@@ -16093,7 +16084,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -16189,9 +16179,7 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "application": {
-                    "type": "literal",
-                    "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "optional": true,
+                    "type": "uuid",
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16297,7 +16285,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16363,7 +16350,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16429,7 +16415,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16495,7 +16480,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16561,7 +16545,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16627,7 +16610,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16750,7 +16732,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16843,7 +16824,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -16945,7 +16925,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "canBeTemplate": false,
@@ -17020,7 +16999,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -17088,7 +17066,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -17185,7 +17162,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -17372,7 +17348,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -17480,7 +17455,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -17615,7 +17589,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -17802,7 +17775,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -17910,7 +17882,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18018,7 +17989,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18147,7 +18117,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18244,7 +18213,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18350,7 +18318,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18437,7 +18404,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18556,6 +18522,22 @@ export const miroirFundamentalJzodSchema = {
           "payload": {
             "type": "object",
             "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "editable": false
+                  }
+                }
+              },
               "deploymentUuid": {
                 "type": "uuid",
                 "tag": {
@@ -18657,7 +18639,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18721,7 +18702,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18785,7 +18765,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18852,7 +18831,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -18919,7 +18897,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19063,7 +19040,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19182,7 +19158,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19302,7 +19277,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19422,7 +19396,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19542,7 +19515,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19662,7 +19634,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19782,7 +19753,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -19902,7 +19872,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20028,7 +19997,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20147,7 +20115,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20267,7 +20234,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20393,7 +20359,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20513,7 +20478,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20633,7 +20597,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20753,7 +20716,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -20876,7 +20838,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -20964,7 +20925,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21063,7 +21023,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21134,7 +21093,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21209,7 +21167,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21294,7 +21251,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21527,6 +21483,22 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "editable": false
                   }
                 }
@@ -21971,6 +21943,22 @@ export const miroirFundamentalJzodSchema = {
               "payload": {
                 "type": "object",
                 "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
                   "deploymentUuid": {
                     "type": "uuid",
                     "tag": {
@@ -22025,6 +22013,22 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "editable": false
                       }
                     }
@@ -43874,6 +43878,22 @@ export const miroirFundamentalJzodSchema = {
               "payload": {
                 "type": "object",
                 "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
                   "deploymentUuid": {
                     "type": "uuid",
                     "tag": {
@@ -43928,6 +43948,22 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "editable": false
                       }
                     }
@@ -44216,9 +44252,7 @@ export const miroirFundamentalJzodSchema = {
                     ]
                   },
                   "application": {
-                    "type": "literal",
-                    "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "optional": true,
+                    "type": "uuid",
                     "tag": {
                       "value": {
                         "id": 1,
@@ -44350,7 +44384,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -44442,7 +44475,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -44534,7 +44566,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -44626,7 +44657,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -44718,7 +44748,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -44810,7 +44839,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -44959,7 +44987,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -45078,7 +45105,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -45254,7 +45280,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "canBeTemplate": false,
@@ -45441,7 +45466,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -45766,7 +45790,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -45914,7 +45937,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -46062,7 +46084,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -46256,7 +46277,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -46393,7 +46413,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -46538,7 +46557,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -46679,7 +46697,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -47004,7 +47021,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -47152,7 +47168,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -47282,6 +47297,22 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "editable": false
                   }
                 }
@@ -47543,7 +47574,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -47653,7 +47683,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -47753,7 +47782,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -52436,6 +52464,22 @@ export const miroirFundamentalJzodSchema = {
               "payload": {
                 "type": "object",
                 "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
                   "deploymentUuid": {
                     "type": "uuid",
                     "tag": {
@@ -52490,6 +52534,22 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "editable": false
                       }
                     }
@@ -52778,9 +52838,7 @@ export const miroirFundamentalJzodSchema = {
                     ]
                   },
                   "application": {
-                    "type": "literal",
-                    "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "optional": true,
+                    "type": "uuid",
                     "tag": {
                       "value": {
                         "id": 1,
@@ -52912,7 +52970,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53004,7 +53061,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53096,7 +53152,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53188,7 +53243,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53280,7 +53334,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53372,7 +53425,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53521,7 +53573,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53640,7 +53691,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -53816,7 +53866,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "canBeTemplate": false,
@@ -54003,7 +54052,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -54328,7 +54376,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -54476,7 +54523,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -54624,7 +54670,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -54818,7 +54863,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -54955,7 +54999,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -55100,7 +55143,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -55241,7 +55283,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -55566,7 +55607,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -55714,7 +55754,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -55844,6 +55883,22 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application",
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "editable": false
                   }
                 }
@@ -56105,7 +56160,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -56215,7 +56269,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -56315,7 +56368,6 @@ export const miroirFundamentalJzodSchema = {
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -59096,6 +59148,22 @@ export const miroirFundamentalJzodSchema = {
               "payload": {
                 "type": "object",
                 "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
                   "deploymentUuid": {
                     "type": "uuid",
                     "tag": {
@@ -59150,6 +59218,22 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "editable": false
                       }
                     }
@@ -59411,6 +59495,22 @@ export const miroirFundamentalJzodSchema = {
               "payload": {
                 "type": "object",
                 "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
                   "deploymentUuid": {
                     "type": "uuid",
                     "tag": {
@@ -59465,6 +59565,22 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "editable": false
                       }
                     }

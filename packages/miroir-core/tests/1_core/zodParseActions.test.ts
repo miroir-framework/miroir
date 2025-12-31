@@ -118,6 +118,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       },
     },
@@ -129,7 +130,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
-       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -140,6 +142,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         params: {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
@@ -170,7 +173,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -181,6 +185,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
@@ -192,6 +197,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
         entityName: "newEntity",
@@ -216,6 +222,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
         entityName: "newEntity",
@@ -231,6 +238,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entities: [
           {
@@ -248,6 +256,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
         entityUuid: "00000000-0000-0000-0000-000000000002",
@@ -263,6 +272,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         parentUuid: entityMenu.uuid,
@@ -284,6 +294,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
@@ -304,6 +315,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
@@ -324,6 +336,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
@@ -344,6 +357,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         parentUuid: entityMenu.uuid,
@@ -357,6 +371,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         parentUuid: entityMenu.uuid,
         applicationSection: "data",
@@ -373,6 +388,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         objects: [
           {
@@ -392,6 +408,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
@@ -403,6 +420,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
@@ -415,12 +433,14 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         instanceAction: {
           actionType: "createInstance",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             applicationSection: "data",
             parentUuid: entityMenu.uuid,
@@ -465,6 +485,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
       },
@@ -477,6 +498,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
       },
@@ -490,6 +512,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         deployments: [
           {
@@ -533,6 +556,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         configuration: {
           admin: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
@@ -549,6 +573,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       },
     },
@@ -563,6 +588,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         query: {
@@ -589,6 +615,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         query: {
@@ -695,12 +722,14 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "IGNORED",
         definition: [
           {
             actionType: "createInstance",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               applicationSection: "data",
               parentUuid: entityMenu.uuid,
@@ -719,6 +748,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               applicationSection: "data",
               objects: [

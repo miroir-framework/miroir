@@ -84,6 +84,7 @@ export async function handleQueryTemplateAction(
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
+        application: queryTemplateAction.payload.application,
         deploymentUuid: queryTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
@@ -117,6 +118,7 @@ export async function handleBoxedExtractorTemplateAction(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
     payload: {
+      application: boxedExtractorTemplateAction.payload.application,
       deploymentUuid: boxedExtractorTemplateAction.payload.deploymentUuid,
       applicationSection: boxedExtractorTemplateAction.payload.applicationSection,
       query: resolvedQuery as any,
@@ -177,6 +179,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
         payload: {
+          application: queryTemplateOrExtractorTemplateAction.payload.application,
           deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
           applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
           query: resolvedQuery as any,
@@ -204,6 +207,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
       payload: {
+        application: queryTemplateOrExtractorTemplateAction.payload.application,
         deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,

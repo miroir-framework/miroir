@@ -43,9 +43,7 @@
                 }
               },
               "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                "optional": true,
+                "type": "uuid",
                 "tag": {
                   "value": {
                     "id": 1,
@@ -140,7 +138,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -195,7 +192,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -250,7 +246,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -305,7 +300,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -360,7 +354,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -415,7 +408,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -527,7 +519,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -609,7 +600,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -692,7 +682,6 @@
               },
               "application": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "canBeTemplate": false,

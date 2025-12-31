@@ -174,6 +174,7 @@ const beforeAll = async () => {
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: paramSelfApplicationUuid,
         deploymentUuid: paramAdminConfigurationDeploymentUuid,
       },
     });
@@ -182,6 +183,7 @@ const beforeAll = async () => {
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: paramSelfApplicationUuid,
         deploymentUuid: paramAdminConfigurationDeploymentUuid,
         params: {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
@@ -200,6 +202,7 @@ const beforeAll = async () => {
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: paramSelfApplicationUuid,
         deploymentUuid: paramAdminConfigurationDeploymentUuid,
         entities: libraryEntitesAndInstances,
       }
@@ -210,6 +213,7 @@ const beforeAll = async () => {
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
+        application: paramSelfApplicationUuid,
         deploymentUuid: paramAdminConfigurationDeploymentUuid,
         applicationSection: "data",
         // parentUuid: libraryEntitesAndInstances[].entity.uuid,

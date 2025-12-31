@@ -56,6 +56,8 @@ import { defaultMiroirModelEnvironment } from "miroir-core";
 import { createDeploymentCompositeAction } from "miroir-core";
 import { adminLibraryApplication } from "miroir-core";
 import { adminMiroirApplication } from "miroir-core";
+import { selfApplicationLibrary } from "miroir-core";
+import { selfApplicationMiroir } from "miroir-core";
 
 
 
@@ -233,6 +235,7 @@ describe.sequential(
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
+                  application: selfApplicationMiroir.uuid,
                   deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
                 },
               }, defaultMiroirModelEnvironment);
@@ -243,6 +246,7 @@ describe.sequential(
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationLibrary.uuid,
                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   },
                 },
@@ -274,6 +278,7 @@ describe.sequential(
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
+              application: selfApplicationLibrary.uuid,
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               entities: [
                 {
@@ -289,6 +294,7 @@ describe.sequential(
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
+              application: selfApplicationLibrary.uuid,
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               entities: [
                 {
@@ -347,6 +353,7 @@ describe.sequential(
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 payload: {
+                  application: selfApplicationLibrary.uuid,
                   deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 }
               }, defaultMiroirModelEnvironment);
@@ -429,6 +436,7 @@ describe.sequential(
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
+                    application: selfApplicationLibrary.uuid,
                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   }
                 },
@@ -439,6 +447,7 @@ describe.sequential(
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                 payload: {
+                  application: selfApplicationLibrary.uuid,
                   deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
                 }
               }, defaultMiroirModelEnvironment);
@@ -480,6 +489,7 @@ describe.sequential(
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
+                    application: selfApplicationLibrary.uuid,
                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   }
                 },
@@ -498,6 +508,7 @@ describe.sequential(
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
+                    application: selfApplicationLibrary.uuid,
                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   }
                 },
@@ -509,6 +520,7 @@ describe.sequential(
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
+                    application: selfApplicationLibrary.uuid,
                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   }
                 },
@@ -520,6 +532,7 @@ describe.sequential(
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
+                    application: selfApplicationLibrary.uuid,
                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   }
                 },
@@ -615,6 +628,7 @@ describe.sequential(
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationLibrary.uuid,
                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   },
                 },
