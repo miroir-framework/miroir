@@ -25,20 +25,20 @@
             "definition": "79a8fa03-cb64-45c8-9f85-7f8336bf92a5"
           },
           "endpoint": { "type": "literal", "definition": "c6b849a3-d91f-4281-8c3a-595c17771b6e" },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "canBeTemplate": true,
-                "defaultLabel": "Uuid",
-                "editable": false
-              }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "canBeTemplate": true,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,

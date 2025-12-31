@@ -27,19 +27,19 @@
             "type": "literal",
             "definition": "a9139e2d-a714-4c9c-bdee-c104488e2eaa"
           },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false
-              }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,
@@ -98,19 +98,19 @@
             "type": "literal",
             "definition": "a9139e2d-a714-4c9c-bdee-c104488e2eaa"
           },
-          "deploymentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false
-              }
-            }
-          },
           "payload": {
             "type": "object",
             "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
               "application": {
                 "type": "uuid",
                 "optional": true,

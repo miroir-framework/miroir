@@ -1746,7 +1746,7 @@ export class DomainController implements DomainControllerInterface {
           }
           // TODO: create callSyncActionHandler
           return this.handleDomainUndoRedoAction(
-            domainAction.deploymentUuid,
+            domainAction.payload.deploymentUuid,
             domainAction,
             currentModel
           );

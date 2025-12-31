@@ -280,8 +280,8 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "undo",
               application: "79a8fa03-cb64-45c8-9f85-7f8336bf92a5",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               payload: {
+                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               }
             }, defaultMiroirModelEnvironment);
           }}
