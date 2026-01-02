@@ -1,3 +1,4 @@
+import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
 import { HttpMethod } from "../1_core/Http";
 import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
@@ -6,7 +7,10 @@ import {
   EntityInstanceCollection,
   LocalCacheAction,
   PersistenceAction,
-  StoreOrBundleAction
+  StoreOrBundleAction,
+  type DomainAction,
+  type InstanceAction,
+  type ModelAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
@@ -24,6 +28,10 @@ export interface HttpRequestBodyFormat {
   query?: BoxedQueryTemplateWithExtractorCombinerTransformer | BoxedQueryWithExtractorCombinerTransformer;
   // queryTemplate?: BoxedQueryTemplateWithExtractorCombinerTransformer;
   other?: any;
+  // actionBody?: {
+  action?: PersistenceAction | DomainAction;
+  applicationDeploymentMap?: ApplicationDeploymentMap,
+  // }
 };
 
 // ################################################################################################
@@ -89,6 +97,7 @@ export interface RemoteStoreActionReturnType {
 export interface RestPersistenceClientAndRestClientInterface {
   handleNetworkPersistenceAction(
     action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<RestClientCallReturnType>;
 }
 
@@ -99,15 +108,31 @@ export default {};
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 export declare interface PersistenceStoreLocalOrRemoteInterface {
-  handlePersistenceAction(action: PersistenceAction): Promise<Action2ReturnType>;
-  handleStoreOrBundleActionForLocalStore(action: StoreOrBundleAction): Promise<Action2ReturnType>;
-  handlePersistenceActionForLocalCache(action: PersistenceAction): Promise<Action2ReturnType>;
+  handlePersistenceAction(
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<Action2ReturnType>;
+  handleStoreOrBundleActionForLocalStore(
+    action: StoreOrBundleAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<Action2ReturnType>;
+  handlePersistenceActionForLocalCache(
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<Action2ReturnType>;
   handlePersistenceActionForLocalPersistenceStore(
     action: PersistenceAction,
-    currentModel?: MiroirModelEnvironment, // TODO: make non-optional
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment // TODO: make non-optional
   ): Promise<Action2ReturnType>;
-  handlePersistenceActionForRemoteStore(action: PersistenceAction): Promise<Action2ReturnType>;
-  handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType;
+  handlePersistenceActionForRemoteStore(
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<Action2ReturnType>;
+  handleLocalCacheAction(
+    action: LocalCacheAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Action2ReturnType;
 }
 
 export interface StoreInterface extends LocalCacheInterface, PersistenceStoreLocalOrRemoteInterface {};

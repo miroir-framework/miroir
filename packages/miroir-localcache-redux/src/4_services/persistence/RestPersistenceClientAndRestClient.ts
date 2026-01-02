@@ -8,7 +8,8 @@ import {
   RestClientCallReturnType,
   RestClientInterface,
   RestPersistenceAction,
-  RestPersistenceClientAndRestClientInterface
+  RestPersistenceClientAndRestClientInterface,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -102,7 +103,8 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   // ##################################################################################
   getRestCallParams(
     persistenceAction: PersistenceAction,
-    rootApiUrl: string
+    rootApiUrl: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): {
     operation: (
       rawUrl: string,
@@ -201,7 +203,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     if (this.actionTypeArgsMap[persistenceAction.actionType]) {
       if (this.actionTypeArgsMap[persistenceAction.actionType]["*"]) {
         if (this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.action) {
-          args = persistenceAction;
+          args = {action: persistenceAction, applicationDeploymentMap};
         } else {
           args = {
             [this.actionTypeArgsMap[persistenceAction.actionType]["*"]?.result ?? "ERROR"]:( 
@@ -268,10 +270,16 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
 
   // ##################################################################################
   async handleNetworkPersistenceAction(
-    action: PersistenceAction
+    persistenceAction: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<RestClientCallReturnType> {
-    log.info("handleNetworkPersistenceAction called for action", action);
-    switch (action.actionType) {
+    log.info(
+      "handleNetworkPersistenceAction called for persistenceAction",
+      persistenceAction,
+      "applicationDeploymentMap",
+      applicationDeploymentMap
+    );
+    switch (persistenceAction.actionType) {
       // case "instanceAction":
       case "createInstance":
       case "deleteInstance":
@@ -300,18 +308,17 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "storeManagementAction_openStore":
       case "storeManagementAction_closeStore": {
         const callParams = this.getRestCallParams(
-          action,
-          // this.rootApiUrl + "/action/" + ((action as any).actionName ?? action.actionType)
-          this.rootApiUrl + "/action/" + action.actionType
+          persistenceAction,
+          this.rootApiUrl + "/action/" + persistenceAction.actionType,
+          applicationDeploymentMap,
         );
-        log.info("handleNetworkPersistenceAction called for action", action, "callParams", callParams);
+        log.info("handleNetworkPersistenceAction called for action", persistenceAction, "callParams", callParams);
         const result = await callParams.operation(
-          // "/action/:actionName",
           "/action/:actionType",
           callParams.url,
           callParams.args
         );
-        log.info("handleNetworkPersistenceAction", action, "result", result);
+        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return Promise.resolve(result);
         break;
       }
@@ -326,24 +333,24 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "runBoxedExtractorAction":
       case "runBoxedExtractorOrQueryAction":
       case "runBoxedQueryAction": {
-        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/query");
-        log.info("handleNetworkPersistenceAction", action, "callParams", callParams);
+        const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/query", applicationDeploymentMap);
+        log.info("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
         const result = await callParams.operation("/query", callParams.url, callParams.args);
-        log.info("handleNetworkPersistenceAction", action, "result", result);
+        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return result;
         break;
       }
       case "runBoxedExtractorTemplateAction":
       case "runBoxedQueryTemplateAction":
       case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/queryTemplate");
-        log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
+        const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/queryTemplate", applicationDeploymentMap);
+        log.debug("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
         const result = await callParams.operation(
           "/queryTemplate",
           callParams.url,
           callParams.args
         );
-        log.info("handleNetworkPersistenceAction", action, "result", result);
+        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return result;
         break;
       }
@@ -351,50 +358,51 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "RestPersistenceAction_read":
       case "RestPersistenceAction_update":
       case "RestPersistenceAction_delete": {
-        if (typeof action.payload.deploymentUuid !== "string") {
+        if (typeof persistenceAction.payload.deploymentUuid !== "string") {
           throw new Error(
             "handleNetworkPersistenceAction could not find deploymentUuid"
           );
         }
-        if (typeof action.payload.parentUuid !== "string") {
+        if (typeof persistenceAction.payload.parentUuid !== "string") {
           return Promise.resolve({
             ...new Action2Error(
               "FailedToHandlePersistenceAction",
-              "handleNetworkPersistenceAction could not find payload.parentUuid for action " + action.actionType,
+              "handleNetworkPersistenceAction could not find payload.parentUuid for action " + persistenceAction.actionType,
               ["handleNetworkPersistenceAction"],
               undefined,
-              { domainAction: action }
+              { domainAction: persistenceAction }
             )
           });
         }
-        if (typeof action.payload.section !== "string") {
+        if (typeof persistenceAction.payload.section !== "string") {
           throw new Error(
             "handleNetworkPersistenceAction could not find section"
           );
         }
-        const effectiveAction = action.actionType.split('_')[1];
+        const effectiveAction = persistenceAction.actionType.split('_')[1];
         log.info("handleNetworkPersistenceAction effectiveAction", effectiveAction);
         const callParams = this.getRestCallParams(
-          action,
+          persistenceAction,
           this.rootApiUrl +
             "/CRUD/" +
-            action.payload.deploymentUuid +
+            persistenceAction.payload.deploymentUuid +
             "/" +
-            action.payload.section.toString() +
-            "/entity"
+            persistenceAction.payload.section.toString() +
+            "/entity",
+          applicationDeploymentMap
         );
         const completeArgs = {
           ...callParams.args,
           // actionName: action.actionName,
-          deploymentUuid: action.payload.deploymentUuid,
-          section: action.payload.section,
-          parentUuid: action.payload.parentUuid,
+          deploymentUuid: persistenceAction.payload.deploymentUuid,
+          section: persistenceAction.payload.section,
+          parentUuid: persistenceAction.payload.parentUuid,
         };
         log.info(
           "handleNetworkPersistenceAction action",
-          action,
+          persistenceAction,
           "section",
-          action.payload.section,
+          persistenceAction.payload.section,
           "callParams",
           callParams,
           "completeArgs",
@@ -413,7 +421,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       default:
         throw new Error(
           "handleNetworkPersistenceAction could not handle action " +
-            JSON.stringify(action, undefined, 2)
+            JSON.stringify(persistenceAction, undefined, 2)
         );
         break;
     }

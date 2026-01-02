@@ -16,81 +16,13 @@ const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d81
 import { defaultMiroirMetaModel } from "../1_core/Model";
 import { ACTION_OK } from "../1_core/constants";
 import { Action2Error, Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { act } from "react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner")
 ).then((logger: LoggerInterface) => {log = logger; console.log("ActionRunner logger started!!!", (log === console as any), MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner"))});
-
-// // ################################################################################################
-// /**
-//  * runs a model action: "modelActionUpdateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
-//  * @param deploymentUuid
-//  * @param actionType
-//  * @param miroirDataPersistenceStoreController
-//  * @param appDataPersistenceStoreController
-//  * @param body
-//  * @returns
-//  */
-// export async function modelActionStoreRunnerNotUsed(
-//   miroirDataPersistenceStoreController: PersistenceStoreControllerInterface,
-//   appDataPersistenceStoreController: PersistenceStoreControllerInterface,
-//   deploymentUuid: string,
-//   actionType: string,
-//   body: any
-// ): Promise<Action2ReturnType> {
-//   log.info(
-//     "###################################### modelActionStoreRunnerNotUsed started deploymentUuid",
-//     deploymentUuid,
-//     "actionType",
-//     actionType
-//   );
-//   log.debug("modelActionStoreRunnerNotUsed getEntityUuids()", miroirDataPersistenceStoreController.getEntityUuids());
-//   const persistenceStoreController: PersistenceStoreControllerInterface =
-//     deploymentUuid == adminConfigurationDeploymentMiroir.uuid ? miroirDataPersistenceStoreController : appDataPersistenceStoreController;
-//   const modelAction: ModelAction = body;
-//   // log.info('modelActionStoreRunnerNotUsed action', JSON.stringify(update,undefined,2));
-//   log.info("modelActionStoreRunnerNotUsed action", modelAction);
-//   // switch (modelAction.actionName) {
-//   switch (modelAction.actionType) {
-//     case "alterEntityAttribute":
-//     case "createEntity":
-//     case "renameEntity": 
-//     case "resetData":
-//     case "dropEntity": {
-//       await persistenceStoreController.handleAction(modelAction)
-//       break;
-//     }
-//     case "resetModel": {
-//       log.debug("modelActionStoreRunnerNotUsed resetModel update");
-//       await miroirDataPersistenceStoreController.handleAction(modelAction)
-//       await appDataPersistenceStoreController.handleAction(modelAction)
-//       log.trace("modelActionStoreRunnerNotUsed resetModel after dropped entities:", miroirDataPersistenceStoreController.getEntityUuids());
-//       break;
-//     }
-//     case "initModel": {
-//       const modelActionInitModel = body as ModelActionInitModel;
-//       const params: ModelActionInitModelParams = modelActionInitModel.payload.params;
-//       log.debug("modelActionStoreRunnerNotUsed initModel params", params);
-
-//       if (params.dataStoreType == "miroir") {
-//         await miroirDataPersistenceStoreController.handleAction(modelActionInitModel)
-//       } else {
-//         await appDataPersistenceStoreController.handleAction(modelActionInitModel)
-//       }
-//       break;
-//     }
-//     case "commit":
-//     case "rollback": {
-//       throw new Error("modelActionStoreRunnerNotUsed could not handle action" + JSON.stringify(modelAction));
-//     }
-//     default:
-//       log.warn("modelActionStoreRunnerNotUsed could not handle actionName", actionType);
-//       break;
-//   }
-//   log.debug("modelActionStoreRunnerNotUsed returning empty response.");
-//   return Promise.resolve(ACTION_OK);
-// }
 
 // ################################################################################################
 /**
@@ -102,9 +34,17 @@ MiroirLoggerFactory.registerLoggerToStart(
 export async function storeActionOrBundleActionStoreRunner(
   actionType: string,
   action: StoreOrBundleAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
 ): Promise<Action2ReturnType> {
-  log.info("###################################### storeActionOrBundleActionStoreRunner started ", "actionType", actionType);
+  log.info(
+    "###################################### storeActionOrBundleActionStoreRunner started ",
+    "actionType",
+    actionType,
+    "with deployment map",
+    applicationDeploymentMap
+  );
+  const deploymentUuid = applicationDeploymentMap[action.payload.application];
   // log.debug('storeActionOrBundleActionStoreRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const update: StoreManagementAction = action;
 
@@ -199,25 +139,25 @@ export async function storeActionOrBundleActionStoreRunner(
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addPersistenceStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
       // for (const deployment of Object.entries(action.configuration)) {
-      if (!action.payload.configuration[action.payload.deploymentUuid]) {
+      if (!action.payload.configuration[deploymentUuid]) {
         return new Action2Error(
           "FailedToOpenStore",
           "no configuration entry found for deployment uuid " +
-            action.payload.deploymentUuid +
+            deploymentUuid +
             " configuration: " +
             JSON.stringify(action.payload.configuration, null, 2)
         );
       }
 
-      await persistenceStoreControllerManager.deletePersistenceStoreController(action.payload.deploymentUuid);
+      await persistenceStoreControllerManager.deletePersistenceStoreController(deploymentUuid);
       await persistenceStoreControllerManager.addPersistenceStoreController(
-        action.payload.deploymentUuid,
-        action.payload.configuration[action.payload.deploymentUuid]
+        deploymentUuid,
+        action.payload.configuration[deploymentUuid]
       );
 
-      const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.payload.deploymentUuid);
+      const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(deploymentUuid);
       await localPersistenceStoreController?.open();
-      log.info("storeActionOrBundleActionStoreRunner openStore for deployment", action.payload.deploymentUuid, "opened! booting up...");
+      log.info("storeActionOrBundleActionStoreRunner openStore for deployment", deploymentUuid, "opened! booting up...");
 
       await localPersistenceStoreController?.bootFromPersistedState(
         defaultMiroirMetaModel.entities,
@@ -244,7 +184,7 @@ export async function storeActionOrBundleActionStoreRunner(
     case "storeManagementAction_closeStore": {
       log.info("storeActionOrBundleActionStoreRunner closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      await persistenceStoreControllerManager.deletePersistenceStoreController(action.payload.deploymentUuid);
+      await persistenceStoreControllerManager.deletePersistenceStoreController(deploymentUuid);
       log.info(
         "storeActionOrBundleActionStoreRunner closeStore DONE!",
         persistenceStoreControllerManager.getPersistenceStoreControllers()

@@ -71,6 +71,8 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 import { defaultMiroirModelEnvironment } from "miroir-core";
 import { adminMiroirApplication } from "miroir-core";
+import { defaultSelfApplicationDeploymentMap } from "miroir-core";
+import { selfApplicationMiroir } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 
@@ -118,6 +120,7 @@ const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfi
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
+const testApplicationUuid = selfApplicationLibrary.uuid;
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 
 const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
@@ -183,6 +186,7 @@ beforeAll(async () => {
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
+    defaultSelfApplicationDeploymentMap,
     defaultMiroirModelEnvironment,
     {}
   );
@@ -196,7 +200,7 @@ beforeAll(async () => {
 
 // TODO: move it in TestCompositeAction.beforeEach
 beforeEach(async () => {
-  await resetAndInitApplicationDeployment(domainController, [
+  await resetAndInitApplicationDeployment(domainController, defaultSelfApplicationDeploymentMap, [
     selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
   ]);
   document.body.innerHTML = "";
@@ -222,6 +226,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
     testActionType: "testCompositeActionSuite",
     deploymentUuid: testApplicationDeploymentUuid,
     testActionLabel: "DomainController.integ.Data.CRUD",
+    application: testApplicationUuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       // testType: "testCompositeAction",
@@ -233,6 +238,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
+        selfApplicationLibrary.uuid,
         adminConfigurationDeploymentLibrary.uuid,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
@@ -258,6 +264,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED",
               definition: [
                 {
                   // actionType: "modelAction",
@@ -266,6 +273,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -276,6 +284,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: testApplicationUuid,
                     deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
@@ -287,11 +296,14 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
+                      application: testApplicationUuid,
+                      deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                         deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
@@ -369,683 +381,708 @@ const testActions: Record<string, TestCompositeActionParams> = {
             },
           ],
         },
-        "Add Book instance": {
-          testType: "testCompositeAction",
-          testLabel: "Add Book instance",
-          compositeActionSequence: {
-            actionType: "compositeActionSequence",
-            actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-            payload: {
-              definition: [
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  },
-                },
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                  },
-                },
-                {
-                  // actionType: "instanceAction",
-                  actionType: "createInstance",
-                  actionLabel: "addBook3",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    applicationSection: "data",
-                    parentUuid: entityBook.uuid,
-                    objects: [
-                      {
-                        parentName: book3.parentName,
-                        parentUuid: book3.parentUuid,
-                        applicationSection: "data",
-                        instances: [book3 as EntityInstance],
-                      },
-                    ],
-                  },
-                },
-                {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
-                  actionLabel: "calculateNewEntityDefinionAndReports",
-                  nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    payload: {
-                      applicationSection: "data", // TODO: give only selfApplication section in individual queries?
-                      query: {
-                        queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: testApplicationDeploymentUuid,
-                        pageParams: {
-                          currentDeploymentUuid: testApplicationDeploymentUuid,
-                        },
-                        queryParams: {},
-                        contextResults: {},
-                        extractors: {
-                          books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                            applicationSection: "data",
-                            parentName: "Book",
-                            parentUuid: entityBook.uuid,
-                            orderBy: {
-                              attributeName: "uuid",
-                              direction: "ASC",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          testCompositeActionAssertions: [
-            // TODO: test length of entityBookList.books!
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
-              nameGivenToResult: "checkNumberOfBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
-                definition: {
-                  resultAccessPath: ["0"],
-                  resultTransformer: {
-                    transformerType: "aggregate",
-                    interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referencePath: ["entityBookList", "books"],
-                    },
-                  },
-                  expectedValue: { aggregate: 6 },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
-              nameGivenToResult: "checkEntityBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityBooks",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books"],
-                  ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [book3, book4, book6, book5, book1, book2],
-                },
-              },
-            },
-          ],
-        },
-        "Add Book instance then rollback": {
-          testType: "testCompositeAction",
-          testLabel: "Add Book instance then rollback",
-          compositeActionSequence: {
-            actionType: "compositeActionSequence",
-            actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-            payload: {
-              definition: [
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  },
-                },
-                {
-                  // actionType: "modelAction",
-                  actionType: "rollback",
-                  actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                  },
-                },
-                {
-                  // actionType: "instanceAction",
-                  actionType: "createInstance",
-                  actionLabel: "addBook3",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    applicationSection: "data",
-                    parentUuid: entityBook.uuid,
-                    objects: [
-                      {
-                        parentName: book3.parentName,
-                        parentUuid: book3.parentUuid,
-                        applicationSection: "data",
-                        instances: [book3 as EntityInstance],
-                      },
-                    ],
-                  },
-                },
-                {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
-                  actionLabel: "calculateNewEntityDefinionAndReports",
-                  nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    payload: {
-                      applicationSection: "data", // TODO: give only selfApplication section in individual queries?
-                      query: {
-                        queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: testApplicationDeploymentUuid,
-                        pageParams: {
-                          currentDeploymentUuid: testApplicationDeploymentUuid,
-                        },
-                        queryParams: {},
-                        contextResults: {},
-                        extractors: {
-                          books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                            applicationSection: "data",
-                            parentName: "Book",
-                            parentUuid: entityBook.uuid,
-                            orderBy: {
-                              attributeName: "uuid",
-                              direction: "ASC",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          testCompositeActionAssertions: [
-            // TODO: test length of entityBookList.books!
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
-              nameGivenToResult: "checkNumberOfBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
-                definition: {
-                  resultAccessPath: ["0"],
-                  resultTransformer: {
-                    transformerType: "aggregate",
-                    interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referencePath: ["entityBookList", "books"],
-                    },
-                  },
-                  expectedValue: { aggregate: 6 },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
-              nameGivenToResult: "checkEntityBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityBooks",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books"],
-                  ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [book3, book4, book6, book5, book1, book2],
-                },
-              },
-            },
-          ],
-        },
-        "Remove Book instance": {
-          testType: "testCompositeAction",
-          testLabel: "Remove Book instance",
-          compositeActionSequence: {
-            actionType: "compositeActionSequence",
-            actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-            payload: {
-              definition: [
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  },
-                },
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                  },
-                },
-                {
-                  // actionType: "instanceAction",
-                  actionType: "deleteInstance",
-                  actionLabel: "deleteBook2",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  payload: {
-                    applicationSection: "data",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    objects: [
-                      {
-                        parentName: book2.parentName,
-                        parentUuid: book2.parentUuid,
-                        applicationSection: "data",
-                        instances: [book2 as EntityInstance],
-                      },
-                    ],
-                  },
-                },
-                {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
-                  actionLabel: "calculateNewEntityDefinionAndReports",
-                  nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    payload: {
-                      applicationSection: "data", // TODO: give only selfApplication section in individual queries?
-                      query: {
-                        queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: testApplicationDeploymentUuid,
-                        pageParams: {
-                          currentDeploymentUuid: testApplicationDeploymentUuid,
-                        },
-                        queryParams: {},
-                        contextResults: {},
-                        extractors: {
-                          books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                            applicationSection: "data",
-                            parentName: "Book",
-                            parentUuid: entityBook.uuid,
-                            orderBy: {
-                              attributeName: "uuid",
-                              direction: "ASC",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          testCompositeActionAssertions: [
-            // TODO: test length of entityBookList.books!
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
-              nameGivenToResult: "checkNumberOfBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
-                definition: {
-                  resultAccessPath: ["0"],
-                  resultTransformer: {
-                    transformerType: "aggregate",
-                    interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referencePath: ["entityBookList", "books"],
-                    },
-                  },
-                  expectedValue: { aggregate: 4 },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
-              nameGivenToResult: "checkEntityBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityBooks",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books"],
-                  ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [
-                    // book3,
-                    book4,
-                    book6,
-                    book5,
-                    book1,
-                    // book2,
-                  ],
-                },
-              },
-            },
-          ],
-        },
-        "Remove Book instance then rollback": {
-          testType: "testCompositeAction",
-          testLabel: "Remove Book instance then rollback",
-          compositeActionSequence: {
-            actionType: "compositeActionSequence",
-            actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-            payload: {
-              definition: [
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  },
-                },
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                  },
-                },
-                {
-                  // actionType: "instanceAction",
-                  actionType: "deleteInstance",
-                  actionLabel: "addBook3",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    applicationSection: "data",
-                    objects: [
-                      {
-                        parentName: book2.parentName,
-                        parentUuid: book2.parentUuid,
-                        applicationSection: "data",
-                        instances: [book2 as EntityInstance],
-                      },
-                    ],
-                  },
-                },
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                  },
-                },
-                {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
-                  actionLabel: "calculateNewEntityDefinionAndReports",
-                  nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    payload: {
-                      applicationSection: "data", // TODO: give only selfApplication section in individual queries?
-                      query: {
-                        queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: testApplicationDeploymentUuid,
-                        pageParams: {
-                          currentDeploymentUuid: testApplicationDeploymentUuid,
-                        },
-                        queryParams: {},
-                        contextResults: {},
-                        extractors: {
-                          books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                            applicationSection: "data",
-                            parentName: "Book",
-                            parentUuid: entityBook.uuid,
-                            orderBy: {
-                              attributeName: "uuid",
-                              direction: "ASC",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          testCompositeActionAssertions: [
-            // TODO: test length of entityBookList.books!
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
-              nameGivenToResult: "checkNumberOfBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
-                definition: {
-                  resultAccessPath: ["0"],
-                  resultTransformer: {
-                    transformerType: "aggregate",
-                    interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referencePath: ["entityBookList", "books"],
-                    },
-                  },
-                  expectedValue: { aggregate: 4 },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
-              nameGivenToResult: "checkEntityBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityBooks",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books"],
-                  ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [
-                    // book3,
-                    book4,
-                    book6,
-                    book5,
-                    book1,
-                    // book2,
-                  ],
-                },
-              },
-            },
-          ],
-        },
-        "Update Book instance": {
-          testType: "testCompositeAction",
-          testLabel: "Update Book instance",
-          compositeActionSequence: {
-            actionType: "compositeActionSequence",
-            actionLabel: "AddBookInstanceThenRollback",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-            payload: {
-              definition: [
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshMiroirLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  },
-                },
-                {
-                  actionType: "rollback",
-                  // actionType: "modelAction",
-                  actionLabel: "refreshLibraryLocalCache",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                  },
-                },
-                {
-                  // actionType: "instanceAction",
-                  actionType: "updateInstance",
-                  actionLabel: "updateBook2",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  payload: {
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    applicationSection: "data",
-                    objects: [
-                      {
-                        parentName: book4.parentName,
-                        parentUuid: book4.parentUuid,
-                        applicationSection: "data",
-                        instances: [
-                          Object.assign({}, book4, {
-                            name: "Tthe Bride Wore Blackk",
-                            author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-                          }) as EntityInstance,
-                        ],
-                      },
-                    ],
-                  },
-                },
-                {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
-                  actionLabel: "calculateNewEntityDefinionAndReports",
-                  nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
-                    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: testApplicationDeploymentUuid,
-                    payload: {
-                      applicationSection: "data", // TODO: give only selfApplication section in individual queries?
-                      query: {
-                        queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: testApplicationDeploymentUuid,
-                        pageParams: {
-                          currentDeploymentUuid: testApplicationDeploymentUuid,
-                        },
-                        queryParams: {},
-                        contextResults: {},
-                        extractors: {
-                          books: {
-                            extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                            applicationSection: "data",
-                            parentName: "Book",
-                            parentUuid: entityBook.uuid,
-                            orderBy: {
-                              attributeName: "uuid",
-                              direction: "ASC",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          testCompositeActionAssertions: [
-            // TODO: test length of entityBookList.books!
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkNumberOfBooks",
-              nameGivenToResult: "checkNumberOfBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkNumberOfBooks",
-                definition: {
-                  resultAccessPath: ["0"],
-                  resultTransformer: {
-                    transformerType: "aggregate",
-                    interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referencePath: ["entityBookList", "books"],
-                    },
-                  },
-                  expectedValue: { aggregate: 5 },
-                  // expectedValue: { aggregate: 6 },
-                },
-              },
-            },
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkEntityBooks",
-              nameGivenToResult: "checkEntityBooks",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkEntityBooks",
-                definition: {
-                  resultAccessPath: ["entityBookList", "books"],
-                  ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [
-                    // book3,
-                    Object.assign({}, book4, {
-                      name: "Tthe Bride Wore Blackk",
-                      author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
-                    }) as EntityInstance,
-                    book6,
-                    book5,
-                    book1,
-                    book2,
-                  ],
-                },
-              },
-            },
-          ],
-        },
+        // "Add Book instance": {
+        //   testType: "testCompositeAction",
+        //   testLabel: "Add Book instance",
+        //   compositeActionSequence: {
+        //     actionType: "compositeActionSequence",
+        //     actionLabel: "AddBookInstanceThenRollback",
+        //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        //     payload: {
+        //       application: "NOT_USED",
+        //       definition: [
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshMiroirLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: selfApplicationMiroir.uuid,
+        //             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        //           },
+        //         },
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshLibraryLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //           },
+        //         },
+        //         {
+        //           // actionType: "instanceAction",
+        //           actionType: "createInstance",
+        //           actionLabel: "addBook3",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //             applicationSection: "data",
+        //             parentUuid: entityBook.uuid,
+        //             objects: [
+        //               {
+        //                 parentName: book3.parentName,
+        //                 parentUuid: book3.parentUuid,
+        //                 applicationSection: "data",
+        //                 instances: [book3 as EntityInstance],
+        //               },
+        //             ],
+        //           },
+        //         },
+        //         {
+        //           actionType: "compositeRunBoxedExtractorOrQueryAction",
+        //           actionLabel: "calculateNewEntityDefinionAndReports",
+        //           nameGivenToResult: "entityBookList",
+        //           query: {
+        //             actionType: "runBoxedExtractorOrQueryAction",
+        //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        //             payload: {
+        //               application: testApplicationUuid,
+        //               deploymentUuid: testApplicationDeploymentUuid,
+        //               applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+        //               query: {
+        //                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+        //                 deploymentUuid: testApplicationDeploymentUuid,
+        //                 pageParams: {
+        //                   currentDeploymentUuid: testApplicationDeploymentUuid,
+        //                 },
+        //                 queryParams: {},
+        //                 contextResults: {},
+        //                 extractors: {
+        //                   books: {
+        //                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        //                     applicationSection: "data",
+        //                     parentName: "Book",
+        //                     parentUuid: entityBook.uuid,
+        //                     orderBy: {
+        //                       attributeName: "uuid",
+        //                       direction: "ASC",
+        //                     },
+        //                   },
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        //   testCompositeActionAssertions: [
+        //     // TODO: test length of entityBookList.books!
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkNumberOfBooks",
+        //       nameGivenToResult: "checkNumberOfBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkNumberOfBooks",
+        //         definition: {
+        //           resultAccessPath: ["0"],
+        //           resultTransformer: {
+        //             transformerType: "aggregate",
+        //             interpolation: "runtime",
+        //             applyTo: {
+        //               transformerType: "getFromContext",
+        //               interpolation: "runtime",
+        //               referencePath: ["entityBookList", "books"],
+        //             },
+        //           },
+        //           expectedValue: { aggregate: 6 },
+        //         },
+        //       },
+        //     },
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkEntityBooks",
+        //       nameGivenToResult: "checkEntityBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkEntityBooks",
+        //         definition: {
+        //           resultAccessPath: ["entityBookList", "books"],
+        //           ignoreAttributes: ["conceptLevel"],
+        //           expectedValue: [book3, book4, book6, book5, book1, book2],
+        //         },
+        //       },
+        //     },
+        //   ],
+        // },
+        // "Add Book instance then rollback": {
+        //   testType: "testCompositeAction",
+        //   testLabel: "Add Book instance then rollback",
+        //   compositeActionSequence: {
+        //     actionType: "compositeActionSequence",
+        //     actionLabel: "AddBookInstanceThenRollback",
+        //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        //     payload: {
+        //       application: "NOT_USED",
+        //       definition: [
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshMiroirLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: selfApplicationMiroir.uuid,
+        //             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        //           },
+        //         },
+        //         {
+        //           // actionType: "modelAction",
+        //           actionType: "rollback",
+        //           actionLabel: "refreshLibraryLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //           },
+        //         },
+        //         {
+        //           // actionType: "instanceAction",
+        //           actionType: "createInstance",
+        //           actionLabel: "addBook3",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //             applicationSection: "data",
+        //             parentUuid: entityBook.uuid,
+        //             objects: [
+        //               {
+        //                 parentName: book3.parentName,
+        //                 parentUuid: book3.parentUuid,
+        //                 applicationSection: "data",
+        //                 instances: [book3 as EntityInstance],
+        //               },
+        //             ],
+        //           },
+        //         },
+        //         {
+        //           actionType: "compositeRunBoxedExtractorOrQueryAction",
+        //           actionLabel: "calculateNewEntityDefinionAndReports",
+        //           nameGivenToResult: "entityBookList",
+        //           query: {
+        //             actionType: "runBoxedExtractorOrQueryAction",
+        //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        //             // deploymentUuid: testApplicationDeploymentUuid,
+        //             payload: {
+        //               application: testApplicationUuid,
+        //               deploymentUuid: testApplicationDeploymentUuid,
+        //               applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+        //               query: {
+        //                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+        //                 deploymentUuid: testApplicationDeploymentUuid,
+        //                 pageParams: {
+        //                   currentDeploymentUuid: testApplicationDeploymentUuid,
+        //                 },
+        //                 queryParams: {},
+        //                 contextResults: {},
+        //                 extractors: {
+        //                   books: {
+        //                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        //                     applicationSection: "data",
+        //                     parentName: "Book",
+        //                     parentUuid: entityBook.uuid,
+        //                     orderBy: {
+        //                       attributeName: "uuid",
+        //                       direction: "ASC",
+        //                     },
+        //                   },
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        //   testCompositeActionAssertions: [
+        //     // TODO: test length of entityBookList.books!
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkNumberOfBooks",
+        //       nameGivenToResult: "checkNumberOfBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkNumberOfBooks",
+        //         definition: {
+        //           resultAccessPath: ["0"],
+        //           resultTransformer: {
+        //             transformerType: "aggregate",
+        //             interpolation: "runtime",
+        //             applyTo: {
+        //               transformerType: "getFromContext",
+        //               interpolation: "runtime",
+        //               referencePath: ["entityBookList", "books"],
+        //             },
+        //           },
+        //           expectedValue: { aggregate: 6 },
+        //         },
+        //       },
+        //     },
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkEntityBooks",
+        //       nameGivenToResult: "checkEntityBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkEntityBooks",
+        //         definition: {
+        //           resultAccessPath: ["entityBookList", "books"],
+        //           ignoreAttributes: ["conceptLevel"],
+        //           expectedValue: [book3, book4, book6, book5, book1, book2],
+        //         },
+        //       },
+        //     },
+        //   ],
+        // },
+        // "Remove Book instance": {
+        //   testType: "testCompositeAction",
+        //   testLabel: "Remove Book instance",
+        //   compositeActionSequence: {
+        //     actionType: "compositeActionSequence",
+        //     actionLabel: "AddBookInstanceThenRollback",
+        //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        //     payload: {
+        //       application: "NOT_USED",
+        //       definition: [
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshMiroirLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: selfApplicationMiroir.uuid,
+        //             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        //           },
+        //         },
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshLibraryLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //           },
+        //         },
+        //         {
+        //           // actionType: "instanceAction",
+        //           actionType: "deleteInstance",
+        //           actionLabel: "deleteBook2",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //             applicationSection: "data",
+        //             objects: [
+        //               {
+        //                 parentName: book2.parentName,
+        //                 parentUuid: book2.parentUuid,
+        //                 applicationSection: "data",
+        //                 instances: [book2 as EntityInstance],
+        //               },
+        //             ],
+        //           },
+        //         },
+        //         {
+        //           actionType: "compositeRunBoxedExtractorOrQueryAction",
+        //           actionLabel: "calculateNewEntityDefinionAndReports",
+        //           nameGivenToResult: "entityBookList",
+        //           query: {
+        //             actionType: "runBoxedExtractorOrQueryAction",
+        //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        //             payload: {
+        //               application: testApplicationUuid,
+        //               deploymentUuid: testApplicationDeploymentUuid,
+        //               applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+        //               query: {
+        //                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+        //                 deploymentUuid: testApplicationDeploymentUuid,
+        //                 pageParams: {
+        //                   currentDeploymentUuid: testApplicationDeploymentUuid,
+        //                 },
+        //                 queryParams: {},
+        //                 contextResults: {},
+        //                 extractors: {
+        //                   books: {
+        //                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        //                     applicationSection: "data",
+        //                     parentName: "Book",
+        //                     parentUuid: entityBook.uuid,
+        //                     orderBy: {
+        //                       attributeName: "uuid",
+        //                       direction: "ASC",
+        //                     },
+        //                   },
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        //   testCompositeActionAssertions: [
+        //     // TODO: test length of entityBookList.books!
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkNumberOfBooks",
+        //       nameGivenToResult: "checkNumberOfBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkNumberOfBooks",
+        //         definition: {
+        //           resultAccessPath: ["0"],
+        //           resultTransformer: {
+        //             transformerType: "aggregate",
+        //             interpolation: "runtime",
+        //             applyTo: {
+        //               transformerType: "getFromContext",
+        //               interpolation: "runtime",
+        //               referencePath: ["entityBookList", "books"],
+        //             },
+        //           },
+        //           expectedValue: { aggregate: 4 },
+        //         },
+        //       },
+        //     },
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkEntityBooks",
+        //       nameGivenToResult: "checkEntityBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkEntityBooks",
+        //         definition: {
+        //           resultAccessPath: ["entityBookList", "books"],
+        //           ignoreAttributes: ["conceptLevel"],
+        //           expectedValue: [
+        //             // book3,
+        //             book4,
+        //             book6,
+        //             book5,
+        //             book1,
+        //             // book2,
+        //           ],
+        //         },
+        //       },
+        //     },
+        //   ],
+        // },
+        // "Remove Book instance then rollback": {
+        //   testType: "testCompositeAction",
+        //   testLabel: "Remove Book instance then rollback",
+        //   compositeActionSequence: {
+        //     actionType: "compositeActionSequence",
+        //     actionLabel: "AddBookInstanceThenRollback",
+        //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        //     payload: {
+        //       application: "NOT_USED",
+        //       definition: [
+        //         {
+        //           actionType: "rollback",
+        //           actionLabel: "refreshMiroirLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: selfApplicationMiroir.uuid,
+        //             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        //           },
+        //         },
+        //         {
+        //           actionType: "rollback",
+        //           actionLabel: "refreshLibraryLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //           },
+        //         },
+        //         {
+        //           // actionType: "instanceAction",
+        //           actionType: "deleteInstance",
+        //           actionLabel: "addBook3",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //             applicationSection: "data",
+        //             objects: [
+        //               {
+        //                 parentName: book2.parentName,
+        //                 parentUuid: book2.parentUuid,
+        //                 applicationSection: "data",
+        //                 instances: [book2 as EntityInstance],
+        //               },
+        //             ],
+        //           },
+        //         },
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshLibraryLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //           },
+        //         },
+        //         {
+        //           actionType: "compositeRunBoxedExtractorOrQueryAction",
+        //           actionLabel: "calculateNewEntityDefinionAndReports",
+        //           nameGivenToResult: "entityBookList",
+        //           query: {
+        //             actionType: "runBoxedExtractorOrQueryAction",
+        //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        //             payload: {
+        //               application: testApplicationUuid,
+        //               deploymentUuid: testApplicationDeploymentUuid,
+        //               applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+        //               query: {
+        //                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+        //                 deploymentUuid: testApplicationDeploymentUuid,
+        //                 pageParams: {
+        //                   currentDeploymentUuid: testApplicationDeploymentUuid,
+        //                 },
+        //                 queryParams: {},
+        //                 contextResults: {},
+        //                 extractors: {
+        //                   books: {
+        //                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        //                     applicationSection: "data",
+        //                     parentName: "Book",
+        //                     parentUuid: entityBook.uuid,
+        //                     orderBy: {
+        //                       attributeName: "uuid",
+        //                       direction: "ASC",
+        //                     },
+        //                   },
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        //   testCompositeActionAssertions: [
+        //     // TODO: test length of entityBookList.books!
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkNumberOfBooks",
+        //       nameGivenToResult: "checkNumberOfBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkNumberOfBooks",
+        //         definition: {
+        //           resultAccessPath: ["0"],
+        //           resultTransformer: {
+        //             transformerType: "aggregate",
+        //             interpolation: "runtime",
+        //             applyTo: {
+        //               transformerType: "getFromContext",
+        //               interpolation: "runtime",
+        //               referencePath: ["entityBookList", "books"],
+        //             },
+        //           },
+        //           expectedValue: { aggregate: 4 },
+        //         },
+        //       },
+        //     },
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkEntityBooks",
+        //       nameGivenToResult: "checkEntityBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkEntityBooks",
+        //         definition: {
+        //           resultAccessPath: ["entityBookList", "books"],
+        //           ignoreAttributes: ["conceptLevel"],
+        //           expectedValue: [
+        //             // book3,
+        //             book4,
+        //             book6,
+        //             book5,
+        //             book1,
+        //             // book2,
+        //           ],
+        //         },
+        //       },
+        //     },
+        //   ],
+        // },
+        // "Update Book instance": {
+        //   testType: "testCompositeAction",
+        //   testLabel: "Update Book instance",
+        //   compositeActionSequence: {
+        //     actionType: "compositeActionSequence",
+        //     actionLabel: "AddBookInstanceThenRollback",
+        //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        //     payload: {
+        //       application: "NOT_USED",
+        //       definition: [
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshMiroirLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: selfApplicationMiroir.uuid,
+        //             deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        //           },
+        //         },
+        //         {
+        //           actionType: "rollback",
+        //           // actionType: "modelAction",
+        //           actionLabel: "refreshLibraryLocalCache",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //           },
+        //         },
+        //         {
+        //           // actionType: "instanceAction",
+        //           actionType: "updateInstance",
+        //           actionLabel: "updateBook2",
+        //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        //           payload: {
+        //             application: testApplicationUuid,
+        //             deploymentUuid: testApplicationDeploymentUuid,
+        //             applicationSection: "data",
+        //             objects: [
+        //               {
+        //                 parentName: book4.parentName,
+        //                 parentUuid: book4.parentUuid,
+        //                 applicationSection: "data",
+        //                 instances: [
+        //                   Object.assign({}, book4, {
+        //                     name: "Tthe Bride Wore Blackk",
+        //                     author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+        //                   }) as EntityInstance,
+        //                 ],
+        //               },
+        //             ],
+        //           },
+        //         },
+        //         {
+        //           actionType: "compositeRunBoxedExtractorOrQueryAction",
+        //           actionLabel: "calculateNewEntityDefinionAndReports",
+        //           nameGivenToResult: "entityBookList",
+        //           query: {
+        //             actionType: "runBoxedExtractorOrQueryAction",
+        //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        //             payload: {
+        //               application: testApplicationUuid,
+        //               deploymentUuid: testApplicationDeploymentUuid,
+        //               applicationSection: "data", // TODO: give only selfApplication section in individual queries?
+        //               query: {
+        //                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+        //                 deploymentUuid: testApplicationDeploymentUuid,
+        //                 pageParams: {
+        //                   currentDeploymentUuid: testApplicationDeploymentUuid,
+        //                 },
+        //                 queryParams: {},
+        //                 contextResults: {},
+        //                 extractors: {
+        //                   books: {
+        //                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+        //                     applicationSection: "data",
+        //                     parentName: "Book",
+        //                     parentUuid: entityBook.uuid,
+        //                     orderBy: {
+        //                       attributeName: "uuid",
+        //                       direction: "ASC",
+        //                     },
+        //                   },
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     },
+        //   },
+        //   testCompositeActionAssertions: [
+        //     // TODO: test length of entityBookList.books!
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkNumberOfBooks",
+        //       nameGivenToResult: "checkNumberOfBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkNumberOfBooks",
+        //         definition: {
+        //           resultAccessPath: ["0"],
+        //           resultTransformer: {
+        //             transformerType: "aggregate",
+        //             interpolation: "runtime",
+        //             applyTo: {
+        //               transformerType: "getFromContext",
+        //               interpolation: "runtime",
+        //               referencePath: ["entityBookList", "books"],
+        //             },
+        //           },
+        //           expectedValue: { aggregate: 5 },
+        //           // expectedValue: { aggregate: 6 },
+        //         },
+        //       },
+        //     },
+        //     {
+        //       actionType: "compositeRunTestAssertion",
+        //       actionLabel: "checkEntityBooks",
+        //       nameGivenToResult: "checkEntityBooks",
+        //       testAssertion: {
+        //         testType: "testAssertion",
+        //         testLabel: "checkEntityBooks",
+        //         definition: {
+        //           resultAccessPath: ["entityBookList", "books"],
+        //           ignoreAttributes: ["conceptLevel"],
+        //           expectedValue: [
+        //             // book3,
+        //             Object.assign({}, book4, {
+        //               name: "Tthe Bride Wore Blackk",
+        //               author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+        //             }) as EntityInstance,
+        //             book6,
+        //             book5,
+        //             book1,
+        //             book2,
+        //           ],
+        //         },
+        //       },
+        //     },
+        //   ],
+        // },
       },
     },
   },
@@ -1058,7 +1095,13 @@ describe.sequential(
     it.each(Object.entries(testActions))(
       "test %s",
       async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
-        const testSuiteResults = await runTestOrTestSuite(domainController, testAction, miroirActivityTracker, {});
+        const testSuiteResults = await runTestOrTestSuite(
+          domainController,
+          testAction,
+          defaultSelfApplicationDeploymentMap,
+          miroirActivityTracker,
+          {}
+        );
         if (!testSuiteResults || testSuiteResults.status !== "ok") {
           expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
         }

@@ -43,6 +43,7 @@ import {
 } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 // import { transformer_InnerReference_resolve} from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -55,6 +56,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export async function handleQueryTemplateAction(
   origin: string,
   queryTemplateAction: RunBoxedQueryTemplateAction, 
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
   modelEnvironment: MiroirModelEnvironment
 ): Promise<Action2ReturnType> {
@@ -90,6 +92,7 @@ export async function handleQueryTemplateAction(
         query: resolvedQuery as any,
       }
     },
+    applicationDeploymentMap,
     selectorMap,
     modelEnvironment
   );
@@ -99,6 +102,7 @@ export async function handleQueryTemplateAction(
 export async function handleBoxedExtractorTemplateAction(
   origin: string,
   boxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
   modelEnvironment: MiroirModelEnvironment
 ): Promise<Action2ReturnType> {
@@ -140,6 +144,7 @@ export async function handleBoxedExtractorTemplateAction(
   return handleBoxedExtractorAction(
     origin,
     extractorAction,
+    applicationDeploymentMap,
     selectorMap,
     modelEnvironment
   );
@@ -148,7 +153,8 @@ export async function handleBoxedExtractorTemplateAction(
 // ################################################################################################
 export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   origin: string,
-  queryTemplateOrExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction, 
+  queryTemplateOrExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
   modelEnvironment: MiroirModelEnvironment
 ): Promise<Action2ReturnType> {
@@ -185,6 +191,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
           query: resolvedQuery as any,
         }
       },
+      applicationDeploymentMap,
       selectorMap,
       modelEnvironment
     );
@@ -222,6 +229,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     return handleBoxedExtractorAction(
       origin,
       extractorAction,
+      applicationDeploymentMap,
       selectorMap,
       modelEnvironment
     );
@@ -253,6 +261,7 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
     {
       // extractorRunnerMap: {} as any,
       extractorRunnerMap: selectorParams.extractorRunnerMap,
+      applicationDeploymentMap: selectorParams.applicationDeploymentMap,
       extractor: resolvedExtractor,
     },
     modelEnvironment
@@ -286,6 +295,7 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
     {
       extractorRunnerMap: selectorParams.extractorRunnerMap,
       extractor: resolvedExtractor,
+      applicationDeploymentMap: selectorParams.applicationDeploymentMap
     },
     modelEnvironment
   )

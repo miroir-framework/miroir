@@ -32,7 +32,8 @@ import {
   defaultMiroirMetaModel,
   type JzodSchema,
   defaultMetaModelEnvironment,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
@@ -51,6 +52,7 @@ import {
 } from "./localCache/UndoRedoReducer.js";
 import PersistenceReduxSaga from './persistence/PersistenceReduxSaga.js';
 import { currentModel, currentModelEnvironment } from './localCache/Model.js';
+import { aP } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -113,30 +115,23 @@ export class LocalCache implements LocalCacheInterface {
   private staticReducers: ReduxReducerWithUndoRedoInterface;
 
   // ###############################################################################
-  constructor(
-    persistenceStore: PersistenceReduxSaga,
-  ) {
+  constructor(persistenceStore: PersistenceReduxSaga) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
-    const ignoredActionsList = [
-      "handlePersistenceAction",
-      ...localCacheSliceGeneratedActionNames,
-    ];
+    const ignoredActionsList = ["handlePersistenceAction", ...localCacheSliceGeneratedActionNames];
 
     log.info("LocalCache constructor ignoredActionsList=", ignoredActionsList);
     this.innerReduxStore = configureStore({
       reducer: this.staticReducers as any, // TODO: determine real type! now it says state parameter can be ReduxStoreWithUndoRedo | undefined. How could it be undefined?
       middleware: (getDefaultMiddleware) => {
-        return getDefaultMiddleware(
-          {
-            serializableCheck: {
-              ignoredActions: ignoredActionsList, // Ignore these action types
-              ignoredActionPaths: ["meta.promiseActions", "pastModelPatches.0.action.asyncDispatch"], // Ignore these field paths in all actions
-            },
-          }
-        )
-        .concat(promiseMiddleware)
-        .concat(persistenceStore.getSagaMiddleware())
+        return getDefaultMiddleware({
+          serializableCheck: {
+            ignoredActions: ignoredActionsList, // Ignore these action types
+            ignoredActionPaths: ["meta.promiseActions", "pastModelPatches.0.action.asyncDispatch"], // Ignore these field paths in all actions
+          },
+        })
+          .concat(promiseMiddleware)
+          .concat(persistenceStore.getSagaMiddleware());
       },
     });
   } //end constructor
@@ -152,7 +147,7 @@ export class LocalCache implements LocalCacheInterface {
   }
 
   // ###############################################################################
-  getDomainState():DomainState {
+  getDomainState(): DomainState {
     return localCacheStateToDomainState(this.innerReduxStore.getState().presentModelSnapshot);
   }
 
@@ -166,28 +161,22 @@ export class LocalCache implements LocalCacheInterface {
   // ###############################################################################
   // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
   public currentModel(deploymentUuid: string): MetaModel {
-    log.info(
-      "called currentModel(",
-      deploymentUuid,")"
-    );
-    log.trace(
-      "called currentModel(",
-      deploymentUuid,
-      ") from state:",
-      this.innerReduxStore.getState().presentModelSnapshot
-    );
+    log.info("called currentModel(", deploymentUuid, ")");
+    // log.trace(
+    //   "called currentModel(",
+    //   deploymentUuid,
+    //   ") from state:",
+    //   this.innerReduxStore.getState().presentModelSnapshot
+    // );
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
-    return currentModel(deploymentUuid,reduxState);
+    return currentModel(deploymentUuid, reduxState);
   }
 
   // ###############################################################################
   // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
   public currentModelEnvironment(deploymentUuid: string): MiroirModelEnvironment {
-    log.info(
-      "called currentModelEnvironment(",
-      deploymentUuid,")"
-    );
+    log.info("called currentModelEnvironment(", deploymentUuid, ")");
     log.trace(
       "called currentModelEnvironment(",
       deploymentUuid,
@@ -196,19 +185,23 @@ export class LocalCache implements LocalCacheInterface {
     );
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
-    return currentModelEnvironment(deploymentUuid,reduxState);
+    return currentModelEnvironment(deploymentUuid, reduxState);
   }
 
   // ###############################################################################
-  handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType {
+  handleLocalCacheAction(
+    action: LocalCacheAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Action2ReturnType {
     log.info("LocalCache handleAction", action);
     // log.info("LocalCache handleAction", JSON.stringify(action, undefined, 2));
 
-    const result:Action2ReturnType = exceptionToActionReturnType(() =>
+    const result: Action2ReturnType = exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleAction](
-          action
-        )
+        LocalCacheSlice.actionCreators.handleAction({
+          applicationDeploymentMap,
+          action,
+        })
       )
     );
     log.info("LocalCache handleAction result=", result);
@@ -216,36 +209,48 @@ export class LocalCache implements LocalCacheInterface {
   }
 
   // ###############################################################################
-  runBoxedExtractorOrQueryAction(action:RunBoxedExtractorOrQueryAction):Action2ReturnType {
+  runBoxedExtractorOrQueryAction(
+    action: RunBoxedExtractorOrQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Action2ReturnType {
     // const domainState: DomainState = domainController.getDomainState();
     const domainState: DomainState = this.getDomainState();
 
-     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
-     log.info("LocalCache action=", JSON.stringify(action, undefined, 2))
-     // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
-     let queryResult: Domain2QueryReturnType<DomainElementSuccess> = undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
-     switch (action.payload.query.queryType) {
-       case "boxedExtractorOrCombinerReturningObject":
-       case "boxedExtractorOrCombinerReturningObjectList": {
-         queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-           domainState,
-           getExtractorRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState),
-           defaultMetaModelEnvironment,
-         );
-         break;
-       }
-       case "boxedQueryWithExtractorCombinerTransformer": {
-         queryResult = extractorRunnerMapOnDomainState.runQuery(
-           domainState,
-           getQueryRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState),
-           defaultMetaModelEnvironment,
-         );
-         break;
-       }
-       default:
-         break;
-     }
-     if (queryResult instanceof Domain2ElementFailed) {
+    const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
+    log.info("LocalCache action=", JSON.stringify(action, undefined, 2));
+    // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
+    let queryResult: Domain2QueryReturnType<DomainElementSuccess> =
+      undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
+    switch (action.payload.query.queryType) {
+      case "boxedExtractorOrCombinerReturningObject":
+      case "boxedExtractorOrCombinerReturningObjectList": {
+        queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
+          domainState,
+          getExtractorRunnerParamsForDomainState(
+            action.payload.query,
+            applicationDeploymentMap,
+            extractorRunnerMapOnDomainState
+          ),
+          defaultMetaModelEnvironment
+        );
+        break;
+      }
+      case "boxedQueryWithExtractorCombinerTransformer": {
+        queryResult = extractorRunnerMapOnDomainState.runQuery(
+          domainState,
+          getQueryRunnerParamsForDomainState(
+            action.payload.query,
+            applicationDeploymentMap,
+            extractorRunnerMapOnDomainState
+          ),
+          defaultMetaModelEnvironment
+        );
+        break;
+      }
+      default:
+        break;
+    }
+    if (queryResult instanceof Domain2ElementFailed) {
       // return {
       //   status: "error",
       //   errorType: "FailedToRunBoxedExtractorOrQueryAction", // TODO: correct errorType
@@ -258,19 +263,20 @@ export class LocalCache implements LocalCacheInterface {
         queryResult.errorStack,
         queryResult
       );
-     } else {
-       const result:Action2ReturnType = {
-         status: "ok",
-         returnedDomainElement: queryResult
-       }
-       log.info("RestServer queryActionHandler used local cache result=", JSON.stringify(result, undefined,2))
-    
-       return result;
-     }
-    //  return continuationFunction(response)(result);
-     
-  }
+    } else {
+      const result: Action2ReturnType = {
+        status: "ok",
+        returnedDomainElement: queryResult,
+      };
+      // log.info(
+      //   "RestServer queryActionHandler used local cache result=",
+      //   JSON.stringify(result, undefined, 2)
+      // );
 
+      return result;
+    }
+    //  return continuationFunction(response)(result);
+  }
 
   // ###############################################################################
   // used only by PersistenceReduxSaga.handlePersistenceAction

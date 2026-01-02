@@ -92,7 +92,7 @@ import {
   TransformerFailure,
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
-import { defaultSelfApplicationDeploymentMap } from '../1_core/Deployment.js';
+import { defaultSelfApplicationDeploymentMap, type ApplicationDeploymentMap } from '../1_core/Deployment.js';
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
   ignorePostgresExtraAttributesOnList,
@@ -125,6 +125,7 @@ export interface DeploymentConfiguration {
 // ################################################################################################
 export async function resetAndInitApplicationDeployment(
   domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selfAdminConfigurationDeployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
 ) {
   // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
@@ -138,7 +139,7 @@ export async function resetAndInitApplicationDeployment(
         application: adminSelfApplication.uuid,
         deploymentUuid: selfAdminConfigurationDeployment.uuid,
       },
-    }, defaultMiroirModelEnvironment);
+    }, applicationDeploymentMap, defaultMiroirModelEnvironment);
   }
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
     await domainController.handleAction(
@@ -164,6 +165,7 @@ export async function resetAndInitApplicationDeployment(
           },
         },
       },
+      applicationDeploymentMap,
       defaultMiroirModelEnvironment
     );
   }
@@ -182,6 +184,7 @@ export async function resetAndInitApplicationDeployment(
           deploymentUuid: d.uuid,
         },
       },
+      applicationDeploymentMap,
       defaultMiroirModelEnvironment
     );
   }
@@ -256,6 +259,7 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain transactional action into a set of local cache actions and remote store actions
   async handleDomainUndoRedoAction(
     deploymentUuid: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     undoRedoAction: UndoRedoAction,
     currentModelEnvironment: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
@@ -273,7 +277,8 @@ export class DomainController implements DomainControllerInterface {
         case "redo": {
           this.callUtil.callLocalCacheAction(
             {}, // context
-            {}, // context update
+            {}, // continuation
+            applicationDeploymentMap,
             undoRedoAction
           );
 
@@ -312,7 +317,8 @@ export class DomainController implements DomainControllerInterface {
    */
   public async loadConfigurationFromPersistenceStore(
     application: Uuid,
-    adminDeploymentUuid: string
+    adminDeploymentUuid: string,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2VoidReturnType> {
     log.info(
       "DomainController loadConfigurationFromPersistenceStore called for admin deployment",
@@ -325,8 +331,8 @@ export class DomainController implements DomainControllerInterface {
           {
             addResultToContextAsName: "dataEntitiesFromModelSection",
             expectedDomainElementType: "entityInstanceCollection",
-          }, // context update
-          // deploymentUuid,
+          }, // continuation
+          applicationDeploymentMap,
           {
             actionType: "RestPersistenceAction_read",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -437,7 +443,8 @@ export class DomainController implements DomainControllerInterface {
                 {
                   addResultToContextAsName: "entityInstanceCollection",
                   expectedDomainElementType: "entityInstanceCollection",
-                }, // context update
+                }, // continuation
+                applicationDeploymentMap,
                 {
                   actionType: "RestPersistenceAction_read",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -473,7 +480,8 @@ export class DomainController implements DomainControllerInterface {
           if (allInstances.length > 0) {
             await this.callUtil.callLocalCacheAction(
               context, // context
-              {}, // context update
+              {}, // continuation
+              applicationDeploymentMap,
               {
                 actionType: "loadNewInstancesInLocalCache",
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -490,7 +498,8 @@ export class DomainController implements DomainControllerInterface {
           // removes current transaction
           await this.callUtil.callLocalCacheAction(
             context, // context
-            {}, // context update
+            {}, // continuation
+            applicationDeploymentMap,
             {
               actionType: "rollback",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -535,6 +544,7 @@ export class DomainController implements DomainControllerInterface {
   // used in tests
   async handleBoxedExtractorOrQueryAction(
     runBoxedExtractorOrQueryAction: RunBoxedQueryAction | RunBoxedExtractorOrQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
@@ -545,7 +555,6 @@ export class DomainController implements DomainControllerInterface {
       log.info(
         "handleBoxedExtractorOrQueryAction",
         // "deploymentUuid",
-        // runBoxedExtractorOrQueryAction.deploymentUuid,
         "persistenceStoreAccessMode=",
         this.persistenceStoreAccessMode,
         "actionType=",
@@ -569,7 +578,8 @@ export class DomainController implements DomainControllerInterface {
 
         const result: Action2ReturnType =
           await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalPersistenceStore(
-            runBoxedExtractorOrQueryAction
+            runBoxedExtractorOrQueryAction,
+            applicationDeploymentMap,
           );
         // const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
         //   runBoxedExtractorOrQueryAction
@@ -606,7 +616,8 @@ export class DomainController implements DomainControllerInterface {
           case "localCacheOrFail": {
             const result =
               await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
-                runBoxedExtractorOrQueryAction
+                runBoxedExtractorOrQueryAction,
+                applicationDeploymentMap,
               );
             log.info(
               "handleBoxedExtractorOrQueryAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
@@ -617,7 +628,8 @@ export class DomainController implements DomainControllerInterface {
           case "storage": {
             const result =
               await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
-                runBoxedExtractorOrQueryAction
+                runBoxedExtractorOrQueryAction,
+                applicationDeploymentMap,
               );
             // const result = await this.callUtil.callPersistenceAction(
             //   // what if it is a REAL persistence store?? exception?
@@ -678,13 +690,12 @@ export class DomainController implements DomainControllerInterface {
   // used in scripts.ts
   // used in tests
   async handleQueryTemplateActionForServerONLY(
-    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction
+    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleQueryTemplateActionForServerONLY",
-      // "deploymentUuid",
-      // runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
       "actionType",
       (runBoxedQueryTemplateAction as any).actionType,
       "actionType",
@@ -700,7 +711,8 @@ export class DomainController implements DomainControllerInterface {
 
       const result: Action2ReturnType =
         await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-          runBoxedQueryTemplateAction
+          runBoxedQueryTemplateAction,
+          applicationDeploymentMap,
         );
       log.info(
         "DomainController handleQueryTemplateActionForServerONLY callPersistenceAction Result=",
@@ -725,6 +737,7 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
+        applicationDeploymentMap,
         runBoxedQueryTemplateAction
       );
       log.info("handleQueryTemplateActionForServerONLY callPersistenceAction Result=", result);
@@ -744,7 +757,8 @@ export class DomainController implements DomainControllerInterface {
   // used in scripts.ts
   // used in tests
   async handleBoxedExtractorTemplateActionForServerONLY(
-    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction
+    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
@@ -767,7 +781,8 @@ export class DomainController implements DomainControllerInterface {
 
       const result: Action2ReturnType =
         await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-          runBoxedExtractorTemplateAction
+          runBoxedExtractorTemplateAction,
+          applicationDeploymentMap,
         );
       log.info(
         "DomainController handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
@@ -792,6 +807,7 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
+        applicationDeploymentMap,
         runBoxedExtractorTemplateAction
       );
       log.info(
@@ -815,7 +831,8 @@ export class DomainController implements DomainControllerInterface {
   // used in scripts.ts
   // used in tests
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
@@ -841,7 +858,8 @@ export class DomainController implements DomainControllerInterface {
 
       const result: Action2ReturnType =
         await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-          runBoxedQueryTemplateOrBoxedExtractorTemplateAction
+          runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+          applicationDeploymentMap,
         );
       log.info(
         "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
@@ -866,6 +884,7 @@ export class DomainController implements DomainControllerInterface {
           addResultToContextAsName: "dataEntitiesFromModelSection",
           expectedDomainElementType: "entityInstanceCollection",
         }, // continuation
+        applicationDeploymentMap,
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction
       );
       log.info(
@@ -886,12 +905,18 @@ export class DomainController implements DomainControllerInterface {
   // ACTION TEMPLATES
   // ##############################################################################################
   async handleInstanceAction(
-    deploymentUuid: Uuid,
-    instanceAction: InstanceAction
+    // deploymentUuid: Uuid,
+    instanceAction: InstanceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2VoidReturnType> {
+    const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
+
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleInstanceAction deployment",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleInstanceAction application",
+      instanceAction.payload.application,
+      "deployment",
       deploymentUuid,
+      "start",
       "instanceAction",
       instanceAction
     );
@@ -900,8 +925,9 @@ export class DomainController implements DomainControllerInterface {
     // The same action is performed on the local cache and on the remote store for Data Instances.
     const handleActionResult = await this.callUtil.callPersistenceAction(
       {}, // context
-      {}, // context update
-      instanceAction
+      {}, // continuation
+      applicationDeploymentMap,
+      instanceAction,
     );
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
@@ -929,7 +955,8 @@ export class DomainController implements DomainControllerInterface {
     );
     const result = await this.callUtil.callLocalCacheAction(
       {}, // context
-      {}, // context update
+      {}, // continuation
+      applicationDeploymentMap,
       instanceAction
     );
 
@@ -950,8 +977,10 @@ export class DomainController implements DomainControllerInterface {
   async handleModelAction(
     // deploymentUuid: Uuid,
     modelAction: ModelAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
+    const deploymentUuid = applicationDeploymentMap[modelAction.payload.application];
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionType=",
       modelAction["actionType"],
@@ -969,7 +998,11 @@ export class DomainController implements DomainControllerInterface {
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore!"
             );
-            await this.loadConfigurationFromPersistenceStore(modelAction.payload.application,modelAction.payload.deploymentUuid);
+            await this.loadConfigurationFromPersistenceStore(
+              modelAction.payload.application,
+              deploymentUuid,
+              applicationDeploymentMap
+            );
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore DONE!"
             );
@@ -977,7 +1010,8 @@ export class DomainController implements DomainControllerInterface {
             // if the domain controller is deployed on the client, we send the "remoteLocalCacheRollback" action to the server
             await this.callUtil.callPersistenceAction(
               {}, // context
-              {}, // context update
+              {}, // continuation
+              applicationDeploymentMap,
               modelAction
             );
           }
@@ -986,7 +1020,8 @@ export class DomainController implements DomainControllerInterface {
         case "rollback": {
           await this.loadConfigurationFromPersistenceStore(
             modelAction.payload.application,
-            modelAction.payload.deploymentUuid
+            deploymentUuid,
+            applicationDeploymentMap
           );
           break;
         }
@@ -999,7 +1034,8 @@ export class DomainController implements DomainControllerInterface {
             log.warn("handleModelAction running for non-transactional action!");
             const result = await this.callUtil.callPersistenceAction(
               {}, // context
-              {}, // context update
+              {}, // continuation
+              applicationDeploymentMap,
               modelAction
             );
             if (result instanceof Action2Error) {
@@ -1015,7 +1051,8 @@ export class DomainController implements DomainControllerInterface {
 
           const result = await this.callUtil.callLocalCacheAction(
             {}, // context
-            {}, // context update
+            {}, // continuation
+            applicationDeploymentMap,
             modelAction
           );
           if (result instanceof Action2Error) {
@@ -1033,7 +1070,8 @@ export class DomainController implements DomainControllerInterface {
         case "initModel": {
           await this.callUtil.callPersistenceAction(
             {}, // context
-            {}, // context update
+            {}, // continuation
+            applicationDeploymentMap,
             modelAction
           );
           break;
@@ -1065,27 +1103,27 @@ export class DomainController implements DomainControllerInterface {
             return Promise.resolve(ACTION_OK);
           }
           const currentApplication = currentTransactions[0].payload.application;
-          const currentDeploymentUuid: Uuid =
-            currentTransactions[0].actionType == "transactionalInstanceAction"
-                ? currentTransactions[0].payload.instanceAction.payload.deploymentUuid
-              : currentTransactions[0].payload.deploymentUuid;
+          const currentDeploymentUuid: Uuid = deploymentUuid;
 
-          if (currentDeploymentUuid != modelAction.payload.deploymentUuid) {
+          if (currentDeploymentUuid != deploymentUuid) {
             log.warn(
               "commit operation deploymentUuid mismatch between current replay action (",
               currentDeploymentUuid,
               ") and modelAction(",
-              modelAction.payload.deploymentUuid,
+              deploymentUuid,
               ")",
               "currentTransactions:",
               currentTransactions
             );
           }
           const filteredDeployments = currentTransactions.length > 1 ?
-            currentTransactions.filter((tx) => tx.payload.deploymentUuid != modelAction.payload.deploymentUuid) : [];
+            // currentTransactions.filter((tx) => tx.payload.deploymentUuid != modelAction.payload.deploymentUuid) : [];
+            currentTransactions.filter((tx) => tx.payload.application != modelAction.payload.application) : [];
           if (filteredDeployments.length > 0) {
             log.warn(
               "commit operation deploymentUuid mismatch among current transactions.",
+              "application:",
+              currentApplication,
               "Committing for deploymentUuid:",
               currentDeploymentUuid,
               "Ignoring transactions for other deployments:",
@@ -1094,7 +1132,6 @@ export class DomainController implements DomainControllerInterface {
           }
           
           const sectionOfapplicationEntities: ApplicationSection =
-            // modelAction.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
             currentDeploymentUuid == adminConfigurationDeploymentMiroir.uuid
               ? "data"
               : "model";
@@ -1139,8 +1176,8 @@ export class DomainController implements DomainControllerInterface {
           // in the case of the Miroir app, this should be done in the 'data' section
           const newModelVersionActionResult = await this.callUtil.callPersistenceAction(
             {}, // context
-            {}, // context update
-            // deploymentUuid,
+            {}, // continuation
+            applicationDeploymentMap,
             newModelVersionAction
           );
           log.info(
@@ -1188,13 +1225,15 @@ export class DomainController implements DomainControllerInterface {
                 );
                 const replayActionResult = await this.callUtil.callPersistenceAction(
                   {}, // context
-                  {}, // context update
+                  {}, // continuation
+                  applicationDeploymentMap,
                   {
                     actionType: newActionType,
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                    deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
                     payload: {
+                      // deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
+                      application: replayAction.payload.instanceAction.payload.application,
                       section:
                         replayAction.payload.instanceAction.payload.applicationSection ?? "data",
                       parentName: replayAction.payload.instanceAction.payload.objects[0].parentName,
@@ -1220,7 +1259,8 @@ export class DomainController implements DomainControllerInterface {
               case 'renameEntity': {
                 const replayActionResult = await this.callUtil.callPersistenceAction(
                   {}, // context
-                  {}, // context update
+                  {}, // continuation
+                  applicationDeploymentMap,
                   {
                     ...replayAction,
                     payload: {
@@ -1255,11 +1295,10 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil
             .callLocalCacheAction(
               {}, // context
-              {}, // context update
+              {}, // continuation
+              applicationDeploymentMap,
               {
-                // actionType: "modelAction",
                 actionType: "commit",
-                // deploymentUuid: modelAction.deploymentUuid,
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
@@ -1275,7 +1314,8 @@ export class DomainController implements DomainControllerInterface {
               );
               return this.callUtil.callLocalCacheAction(
                 {}, // context
-                {}, // context update
+                {}, // continuation
+                applicationDeploymentMap,
                 {
                   actionType: "createInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -1315,8 +1355,10 @@ export class DomainController implements DomainControllerInterface {
       log.warn(
         "DomainController handleModelAction caught exception when handling",
         modelAction["actionType"],
+        "application",
+        modelAction.payload.application,
         "deployment",
-        modelAction.payload.deploymentUuid,
+        applicationDeploymentMap[modelAction.payload.application],
         "action",
         modelAction,
         "error instanceof Action2Error=",
@@ -1337,8 +1379,10 @@ export class DomainController implements DomainControllerInterface {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction DONE actionType=",
       modelAction["actionType"],
+      "application",
+      modelAction.payload.application,
       "deployment",
-      modelAction.payload.deploymentUuid,
+      applicationDeploymentMap[modelAction.payload.application],
     );
 
     return Promise.resolve(ACTION_OK);
@@ -1364,6 +1408,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleActionFromUI(
     domainAction: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
     return this.miroirContext.miroirActivityTracker.trackAction(
@@ -1374,21 +1419,22 @@ export class DomainController implements DomainControllerInterface {
           "handleActionFromUI running for action type",
           domainAction.actionType,
           // "on deployment",
-          // domainAction.deploymentUuid,
           "autocommit=",
           autocommit,
           "domainAction",
           domainAction
         );
         if (autocommit) {
-          return this.handleActionInternal(domainAction, currentModelEnvironment).then(
+          return this.handleActionInternal(domainAction, applicationDeploymentMap, currentModelEnvironment).then(
             async (result: Action2ReturnType) => {
               if (result instanceof Action2Error) {
                 log.error(
                   "handleActionFromUI not autocommitting due to error result for action",
                   domainAction.actionType,
-                  // "deployment",
-                  // domainAction.deploymentUuid,
+                  "application",
+                  domainAction.payload.application,
+                  "deployment",
+                  applicationDeploymentMap[domainAction.payload.application],
                   "domainAction",
                   domainAction,
                   "result",
@@ -1399,8 +1445,6 @@ export class DomainController implements DomainControllerInterface {
                 log.info(
                   "handleActionFromUI autocommitting (if necessary) for action",
                   domainAction.actionType,
-                  // "deployment",
-                  // domainAction.deploymentUuid,
                   "domainAction",
                   domainAction,
                   "result instance of Action2Error",
@@ -1424,15 +1468,21 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: domainAction.payload.application,
-                    deploymentUuid: domainAction.payload.deploymentUuid as any, // deploymentUuid is not used in commit action but set for consistency
+                    deploymentUuid: applicationDeploymentMap[domainAction.payload.application] as any, // deploymentUuid is not used in commit action but set for consistency
                   }
                 };
-                const result = await this.handleActionInternal(commitAction, currentModelEnvironment);
+                const result = await this.handleActionInternal(
+                  commitAction,
+                  applicationDeploymentMap,
+                  currentModelEnvironment
+                );
                 log.info(
                   "handleActionFromUI autocommit done for action",
                   domainAction.actionType,
+                  "application",
+                  domainAction.payload.application,
                   "deployment",
-                  domainAction.payload.deploymentUuid,
+                  applicationDeploymentMap[domainAction.payload.application],
                   "domainAction",
                   domainAction,
                   "result instance of Action2Error",
@@ -1445,8 +1495,6 @@ export class DomainController implements DomainControllerInterface {
                 log.info(
                   "handleActionFromUI no autocommit for action",
                   domainAction.actionType,
-                  // "deployment",
-                  // domainAction.deploymentUuid,
                   "domainAction",
                   domainAction
                 );
@@ -1455,7 +1503,7 @@ export class DomainController implements DomainControllerInterface {
             }
           );
         }
-        return this.handleActionInternal(domainAction, currentModelEnvironment);
+        return this.handleActionInternal(domainAction, applicationDeploymentMap, currentModelEnvironment);
         // return Promise.resolve();
       }).bind(this)
     );
@@ -1481,6 +1529,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleAction(
     domainAction: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
     log.info(
@@ -1492,9 +1541,9 @@ export class DomainController implements DomainControllerInterface {
       (domainAction as any).actionLabel,
       (async () => {
         if ((domainAction as any)?.endpoint == libraryEndpointUuid) {
-          return this.handleApplicationAction(domainAction, currentModelEnvironment);
+          return this.handleApplicationAction(domainAction, applicationDeploymentMap, currentModelEnvironment);
         } else {
-          return this.handleActionInternal(domainAction, currentModelEnvironment);
+          return this.handleActionInternal(domainAction, applicationDeploymentMap, currentModelEnvironment);
         }
         // return Promise.resolve();
       }).bind(this)
@@ -1505,6 +1554,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   private async handleApplicationAction(
     domainAction: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
   ): Promise<Action2VoidReturnType> {
     log.info(
@@ -1578,6 +1628,7 @@ export class DomainController implements DomainControllerInterface {
 
     const result = this.handleCompositeActionTemplate(
       currentActionDefinition.actionImplementation.definition as CompositeActionTemplate,
+      applicationDeploymentMap,
       currentModelEnvironment,
       {...domainAction,
         // deploymentUuid: defaultSelfApplicationDeploymentMap[(domainAction as any).application],
@@ -1594,8 +1645,10 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   private async handleActionInternal(
     domainAction: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
+    const deploymentUuid = applicationDeploymentMap[domainAction.payload.application];
     // let entityDomainAction:DomainAction | undefined = undefined;
     // log.info(
     //   "handleAction",
@@ -1619,10 +1672,6 @@ export class DomainController implements DomainControllerInterface {
     } else {
       log.debug("DomainController handleAction domainAction", domainAction);
     }
-    // if (!domainAction.deploymentUuid) {
-    //   throw new Error("waaaaa");
-
-    // }
     try {
       LoggerGlobalContext.setAction(domainAction.actionType);
       // Also set in MiroirActivityTracker for MiroirEventService
@@ -1658,8 +1707,7 @@ export class DomainController implements DomainControllerInterface {
               { domainAction }
             ));
           }
-          // return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
-          return this.handleModelAction(domainAction, currentModel);
+          return this.handleModelAction(domainAction, applicationDeploymentMap, currentModel);
         }
         // case "instanceAction": {
         case "createInstance":
@@ -1669,7 +1717,7 @@ export class DomainController implements DomainControllerInterface {
         case "loadNewInstancesInLocalCache":
         case "getInstance":
         case "getInstances": {
-          return this.handleInstanceAction(domainAction.payload.deploymentUuid, domainAction);
+          return this.handleInstanceAction(domainAction, applicationDeploymentMap);
         }
         // case "storeManagementAction": {
         case "storeManagementAction_createStore":
@@ -1682,6 +1730,7 @@ export class DomainController implements DomainControllerInterface {
           ) {
             await resetAndInitApplicationDeployment(
               this,
+              applicationDeploymentMap,
               domainAction.payload.deployments as any as SelfApplicationDeploymentConfiguration[]
             ); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
           } else {
@@ -1689,14 +1738,16 @@ export class DomainController implements DomainControllerInterface {
               switch (this.persistenceStoreAccessMode) {
                 case "local": {
                   await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
-                    domainAction
+                    domainAction,
+                    applicationDeploymentMap
                   );
                   break;
                 }
                 case "remote": {
                   await this.callUtil.callPersistenceAction(
                     {}, // context
-                    {}, // context update
+                    {}, // continuation
+                    applicationDeploymentMap,
                     domainAction
                   );
                   break;
@@ -1717,8 +1768,10 @@ export class DomainController implements DomainControllerInterface {
               log.warn(
                 "DomainController handleAction caught exception when handling",
                 domainAction.actionType,
+                "application",
+                domainAction.payload.application,
                 "deployment",
-                domainAction.payload.deploymentUuid,
+                applicationDeploymentMap[domainAction.payload.application],
                 "action",
                 domainAction,
                 "exception",
@@ -1734,8 +1787,8 @@ export class DomainController implements DomainControllerInterface {
           try {
             await this.callUtil.callPersistenceAction(
               {}, // context
-              {}, // context update
-              // deploymentUuid,
+              {}, // continuation
+              applicationDeploymentMap,
               domainAction
             );
           } catch (error) {
@@ -1743,7 +1796,7 @@ export class DomainController implements DomainControllerInterface {
               "DomainController handleAction caught exception when handling",
               domainAction.actionType,
               "deployment",
-              domainAction.deploymentUuid,
+              deploymentUuid,
               "action",
               domainAction,
               "exception",
@@ -1762,7 +1815,8 @@ export class DomainController implements DomainControllerInterface {
           }
           // TODO: create callSyncActionHandler
           return this.handleDomainUndoRedoAction(
-            domainAction.payload.deploymentUuid,
+            deploymentUuid,
+            applicationDeploymentMap,
             domainAction,
             currentModel
           );
@@ -1771,15 +1825,18 @@ export class DomainController implements DomainControllerInterface {
           try {
             await this.callUtil.callLocalCacheAction(
               {}, // context
-              {}, // context update
+              {}, // continuation
+              applicationDeploymentMap,
               domainAction
             );
           } catch (error) {
             log.warn(
               "DomainController handleAction caught exception when handling",
               domainAction.actionType,
+              "application",
+              domainAction.payload.application,
               "deployment",
-              domainAction.payload.deploymentUuid,
+              applicationDeploymentMap[domainAction.payload.application],
               "action",
               domainAction,
               "exception",
@@ -1816,6 +1873,7 @@ export class DomainController implements DomainControllerInterface {
   // TODO: used in tests only?!
   async handleCompositeAction(
     compositeActionSequence: CompositeActionSequence,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -1823,9 +1881,12 @@ export class DomainController implements DomainControllerInterface {
       "compositeActionSequence",
       compositeActionSequence.actionLabel,
       (async () =>
-        this.handleCompositeActionInternal(compositeActionSequence, modelEnvironment, actionParamValues, )).bind(
-        this
-      )
+        this.handleCompositeActionInternal(
+          compositeActionSequence,
+          modelEnvironment,
+          applicationDeploymentMap,
+          actionParamValues
+        )).bind(this)
     );
   }
 
@@ -1833,6 +1894,7 @@ export class DomainController implements DomainControllerInterface {
   private async handleCompositeActionInternal(
     compositeActionSequence: CompositeActionSequence,
     modelEnvironment: MiroirModelEnvironment,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     actionParamValues: Record<string, any>,
     // currentModel: MiroirModelEnvironment // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
@@ -1842,7 +1904,8 @@ export class DomainController implements DomainControllerInterface {
 
     log.info(
       "handleCompositeAction compositeActionSequence",
-      JSON.stringify(compositeActionSequence, null, 2),
+      compositeActionSequence,
+      // JSON.stringify(compositeActionSequence, null, 2),
       "localActionParams keys",
       Object.keys(localActionParams)
     );
@@ -1875,6 +1938,7 @@ export class DomainController implements DomainControllerInterface {
             );
             actionResult = await this.handleCompositeAction(
               currentAction,
+              applicationDeploymentMap,
               modelEnvironment,
               actionParamValues,
             );
@@ -1935,7 +1999,11 @@ export class DomainController implements DomainControllerInterface {
             //   "handleCompositeAction resolvedAction action to handle",
             //   JSON.stringify(resolvedAction, null, 2)
             // );
-            actionResult = await this.handleAction(currentAction, modelEnvironment);
+            actionResult = await this.handleAction(
+              currentAction,
+              applicationDeploymentMap,
+              modelEnvironment
+            );
             if (actionResult instanceof Action2Error) {
               log.error(
                 "handleCompositeAction Error on action",
@@ -1955,8 +2023,7 @@ export class DomainController implements DomainControllerInterface {
           case "compositeRunBoxedQueryAction": {
             actionResult = await this.handleCompositeRunBoxedQueryAction(
               currentAction,
-              // actionResult,
-              // modelEnvironment,
+              applicationDeploymentMap,
               localContext,
             );
 
@@ -1973,8 +2040,8 @@ export class DomainController implements DomainControllerInterface {
           case "compositeRunBoxedExtractorOrQueryAction": {
             actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
               currentAction,
+              applicationDeploymentMap,
               actionParamValues,
-              // actionResult,
               localContext
             );
             break;
@@ -2027,12 +2094,12 @@ export class DomainController implements DomainControllerInterface {
           );
         }
       } catch (error) {
-        log.error(
-          "handleCompositeAction caught error",
-          error,
-          "for action",
-          JSON.stringify(currentAction, null, 2)
-        );
+        // log.error(
+        //   "handleCompositeAction caught error",
+        //   error,
+        //   "for action",
+        //   JSON.stringify(currentAction, null, 2)
+        // );
         return new Action2Error(
           "FailedTestAction",
           "handleCompositeAction error: " + JSON.stringify(error, null, 2),
@@ -2050,6 +2117,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleRuntimeCompositeActionDO_NOT_USE(
     buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -2116,6 +2184,7 @@ export class DomainController implements DomainControllerInterface {
             );
             actionResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
               currentAction,
+              applicationDeploymentMap,
               // currentAction as BuildPlusRuntimeCompositeAction,
               modelEnvironment,
               actionParamValues,
@@ -2194,7 +2263,7 @@ export class DomainController implements DomainControllerInterface {
                 [currentAction.actionLabel ?? currentAction.actionType]
               );
             }
-            actionResult = await this.handleAction(resolvedAction, modelEnvironment);
+            actionResult = await this.handleAction(resolvedAction, applicationDeploymentMap, modelEnvironment);
             // actionResult = await this.handleAction(currentAction, currentModel);
             if (actionResult instanceof Action2Error) {
               log.error(
@@ -2240,11 +2309,8 @@ export class DomainController implements DomainControllerInterface {
               localContext // contextResults
             );
             actionResult = await this.handleCompositeRunBoxedQueryAction(
-              // currentAction as any,
               resolvedActionWithProtectedRuntimeTranformers,
-              // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
-              // actionResult,
-              // modelEnvironment,
+              applicationDeploymentMap,
               localContext
             );
             if (actionResult instanceof Action2Error) {
@@ -2281,11 +2347,9 @@ export class DomainController implements DomainControllerInterface {
               localContext // contextResults
             );
             actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
-              // currentAction as any,
               resolvedActionWithProtectedRuntimeTranformers,
-              // resolvedActionWithProtectedRuntimeTranformers, //currentAction,
+              applicationDeploymentMap,
               actionParamValues,
-              // actionResult,
               localContext
             );
             if (actionResult instanceof Action2Error) {
@@ -2378,6 +2442,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleBuildPlusRuntimeCompositeAction(
     buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -2520,6 +2585,7 @@ export class DomainController implements DomainControllerInterface {
 
     return this.handleRuntimeCompositeActionDO_NOT_USE(
       resolvedAction, //buildPlusRuntimeCompositeAction,
+      applicationDeploymentMap,
       modelEnvironment,
       actionParamValues,
     );
@@ -2681,6 +2747,7 @@ export class DomainController implements DomainControllerInterface {
       nameGivenToResult: string;
       query: RunBoxedExtractorOrQueryAction;
     },
+    applicationDeploymentMap: ApplicationDeploymentMap,
     actionParamValues: Record<string, any>,
     // actionResult: Action2ReturnType | undefined,
     localContext: Record<string, any>
@@ -2692,8 +2759,11 @@ export class DomainController implements DomainControllerInterface {
       actionParamValues
     );
 
-    const actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.query); // TODO: pass the current model
-    if (actionResult.status == "error"/* actionResult instanceof Action2Error */) {
+    const actionResult = await this.handleBoxedExtractorOrQueryAction(
+      currentAction.query,
+      applicationDeploymentMap
+    ); // TODO: pass the current model
+    if (actionResult.status == "error" /* actionResult instanceof Action2Error */) {
       log.error(
         "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
         currentAction.nameGivenToResult,
@@ -2743,8 +2813,7 @@ export class DomainController implements DomainControllerInterface {
       nameGivenToResult: string;
       queryTemplate: RunBoxedQueryAction;
     },
-    // actionResult: Action2ReturnType | undefined,
-    // modelEnvironment: MiroirModelEnvironment,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     localContext: Record<string, any>
   ) {
     if (currentAction.queryTemplate == undefined) {
@@ -2752,7 +2821,7 @@ export class DomainController implements DomainControllerInterface {
     }
 
     // actionResult = await this.handleQueryTemplateActionForServerONLY(
-    const actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.queryTemplate); // TODO: pass the current model
+    const actionResult = await this.handleBoxedExtractorOrQueryAction(currentAction.queryTemplate, applicationDeploymentMap); // TODO: pass the current model
     if (actionResult instanceof Action2Error) {
       log.error(
         "Error (Action2Error) on handleCompositeRunBoxedQueryAction with nameGivenToResult",
@@ -2886,6 +2955,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleCompositeActionTemplate(
     compositeActionSequence: CompositeActionTemplate,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -2976,12 +3046,9 @@ export class DomainController implements DomainControllerInterface {
       switch (currentAction.actionType) {
         case "compositeRunBoxedQueryAction": {
           const actionResult = await this.handleCompositeRunBoxedQueryAction(
-            // currentAction,
             resolvedActionTemplate,
+            applicationDeploymentMap,
             localContext,
-            // modelEnvironment,
-            // actionParamValues,
-            // actionResult,
           );
           log.info(
             "handleCompositeActionTemplate",
@@ -3021,14 +3088,10 @@ export class DomainController implements DomainControllerInterface {
 
           // TODO: resolve runtime transformers here. Use the "main" case, since it's the same implementation?
           const actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
-            // currentAction,
             resolvedActionTemplate,
+            applicationDeploymentMap,
             actionParamValues,
-            // actionResult,
             localContext,
-            // modelEnvironment,
-            // actionParamValues,
-            // actionResult,
           );
           log.info(
             "handleCompositeActionTemplate",
@@ -3112,7 +3175,7 @@ export class DomainController implements DomainControllerInterface {
           //   "handleCompositeActionTemplate compositeInstanceAction action to resolve",
           //   JSON.stringify(currentAction.domainAction, null, 2)
           // );
-          const actionResult = await this.handleAction(resolvedActionTemplate, modelEnvironment);
+          const actionResult = await this.handleAction(resolvedActionTemplate, applicationDeploymentMap, modelEnvironment);
           if (actionResult instanceof Action2Error) {
             log.error(
               "handleCompositeActionTemplate compositeInstanceAction error on action",
@@ -3186,8 +3249,8 @@ export class DomainController implements DomainControllerInterface {
    * @returns
    */
   async handleTestCompositeAction(
-    // testAction: TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction,
     testAction: TestCompositeAction | TestBuildPlusRuntimeCompositeAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -3215,6 +3278,7 @@ export class DomainController implements DomainControllerInterface {
       );
       const beforeAllResult = await this.handleCompositeAction(
         testAction.beforeTestSetupAction,
+        applicationDeploymentMap,
         modelEnvironment,
         localActionParams,
       );
@@ -3241,6 +3305,7 @@ export class DomainController implements DomainControllerInterface {
         };
         const result = await this.handleCompositeAction(
           localCompositeAction,
+          applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
@@ -3260,6 +3325,7 @@ export class DomainController implements DomainControllerInterface {
         };
         const result = await this.handleRuntimeCompositeActionDO_NOT_USE(
           localCompositeAction,
+          applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
@@ -3274,6 +3340,7 @@ export class DomainController implements DomainControllerInterface {
       );
       const beforeAllResult = await this.handleCompositeAction(
         testAction.afterTestCleanupAction,
+        applicationDeploymentMap,
         modelEnvironment,
         localActionParams,
       );
@@ -3291,8 +3358,8 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleTestCompositeActionSuite(
-    // testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
     testAction: TestCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -3322,6 +3389,7 @@ export class DomainController implements DomainControllerInterface {
         // );
         const beforeAllResult = await this.handleCompositeAction(
           testAction.beforeAll,
+          applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
@@ -3362,6 +3430,7 @@ export class DomainController implements DomainControllerInterface {
           this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel + ".beforeEach");
           const beforeEachResult = await this.handleCompositeAction(
             testAction.beforeEach,
+            applicationDeploymentMap,
             modelEnvironment,
             localActionParams,
           );
@@ -3401,6 +3470,7 @@ export class DomainController implements DomainControllerInterface {
           );
           const beforeTestResult = await this.handleCompositeAction(
             testCompositeAction[1].beforeTestSetupAction,
+            applicationDeploymentMap,
             modelEnvironment,
             localActionParams,
           );
@@ -3453,6 +3523,7 @@ export class DomainController implements DomainControllerInterface {
               this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
               async() => await this.handleBuildPlusRuntimeCompositeAction(
                 localTestCompositeAction,
+                applicationDeploymentMap,
                 modelEnvironment,
                 localActionParams,
               )
@@ -3513,6 +3584,7 @@ export class DomainController implements DomainControllerInterface {
               this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
               async() => await this.handleCompositeAction(
                 localTestCompositeAction,
+                applicationDeploymentMap,
                 modelEnvironment,
                 localActionParams,
               )
@@ -3558,6 +3630,7 @@ export class DomainController implements DomainControllerInterface {
           );
           const afterTestResult = await this.handleCompositeAction(
             testCompositeAction[1].afterTestCleanupAction,
+            applicationDeploymentMap,
             modelEnvironment,
             localActionParams,
           );
@@ -3600,6 +3673,7 @@ export class DomainController implements DomainControllerInterface {
           );
           const beforeAllResult = await this.handleCompositeAction(
             testAction.afterEach,
+            applicationDeploymentMap,
             modelEnvironment,
             localActionParams,
           );
@@ -3637,6 +3711,7 @@ export class DomainController implements DomainControllerInterface {
         );
         const afterAllResult = await this.handleCompositeAction(
           testAction.afterAll,
+          applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
@@ -3672,6 +3747,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleTestCompositeActionTemplateSuite(
     testAction: TestCompositeActionTemplateSuite,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
@@ -3696,7 +3772,7 @@ export class DomainController implements DomainControllerInterface {
       (e: [string, TestCompositeAction]) =>
         (e[1].compositeActionSequence.payload.definition as any).queryFailure != undefined
     );
-
+    
     if (resolveErrors.length > 0) {
       log.error("handleTestCompositeActionTemplateSuite errors", resolveErrors);
       return new Action2Error(
@@ -3720,6 +3796,7 @@ export class DomainController implements DomainControllerInterface {
 
     return this.handleTestCompositeActionSuite(
       resolvedAction.resolvedTestCompositeActionDefinition,
+      applicationDeploymentMap,
       modelEnvironment,
       localActionParams,
     );

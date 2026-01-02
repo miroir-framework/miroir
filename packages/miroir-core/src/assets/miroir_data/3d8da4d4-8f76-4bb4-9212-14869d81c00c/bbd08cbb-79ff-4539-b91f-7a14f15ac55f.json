@@ -33,6 +33,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
@@ -44,7 +45,6 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -96,6 +96,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
@@ -107,7 +108,6 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -159,6 +159,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
@@ -170,7 +171,6 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -225,6 +225,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
@@ -236,7 +237,6 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -291,6 +291,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
@@ -302,7 +303,6 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {

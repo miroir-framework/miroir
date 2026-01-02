@@ -23,6 +23,7 @@ import {
   ReduxStateWithUndoRedo,
   localCacheSliceInputActionNamesObject,
   localCacheSliceName,
+  type ReducerActionBox,
 } from "./localCacheReduxSliceInterface.js";
 enablePatches(); // to gather undo/redo operation history
 
@@ -37,10 +38,19 @@ MiroirLoggerFactory.registerLoggerToStart(
 function callNextReducer(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<TransactionalInstanceAction | ModelAction | InstanceAction | RestPersistenceAction>
+  action: PayloadAction<
+    ReducerActionBox<
+      TransactionalInstanceAction | ModelAction | InstanceAction | RestPersistenceAction
+    >
+  >
 ): ReduxStateWithUndoRedo {
-  const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
-    state;
+  const {
+    currentTransaction,
+    previousModelSnapshot,
+    pastModelPatches,
+    presentModelSnapshot,
+    futureModelPatches,
+  } = state;
   // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
 
   const newPresentModelSnapshot: LocalCacheSliceState = produce(
@@ -73,7 +83,7 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer: any): ReduxStateW
 function callUndoRedoReducer(
   reducer: InnerReducerInterface,
   presentModelSnapshot: LocalCacheSliceState,
-  action: PayloadAction<ModelAction | TransactionalInstanceAction>
+  actionBox: PayloadAction<ReducerActionBox<ModelAction | TransactionalInstanceAction>>
 ): { newSnapshot: LocalCacheSliceState; changes: Patch[]; inverseChanges: Patch[] } {
   // log.info('callUndoRedoReducer called with action', action, 'state', state);
   // log.info("callUndoRedoReducer called with action", JSON.stringify(action, undefined, 2));
@@ -83,7 +93,7 @@ function callUndoRedoReducer(
   let inverseChanges: Patch[] = [];
   const newPresentModelSnapshot: LocalCacheSliceState = produce(
     presentModelSnapshot,
-    (draftState: LocalCacheSliceState) => reducer(draftState, action),
+    (draftState: LocalCacheSliceState) => reducer(draftState, actionBox),
     (patches, inversePatches) => {
       // side effect, for scope extrusion :-/
       changes.push(...patches);
@@ -91,7 +101,7 @@ function callUndoRedoReducer(
     }
   );
 
-  switch (action.payload.actionType) {
+  switch (actionBox.payload.action.actionType) {
     // case "modelAction": {
     case "initModel":
     case "commit":
@@ -129,7 +139,7 @@ function callUndoRedoReducer(
 const callNextReducerWithUndoRedo = (
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<ModelActionReplayableAction | TransactionalInstanceAction>
+  action: PayloadAction<ReducerActionBox<ModelActionReplayableAction | TransactionalInstanceAction>>
 ): ReduxStateWithUndoRedo => {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -142,7 +152,7 @@ const callNextReducerWithUndoRedo = (
   } else {
     // presentModelSnapshot !== newSnapshot
     const newPatch: ReduxStateChanges = {
-      action: action.payload,
+      action: action.payload.action,
       changes,
       inverseChanges,
     };
@@ -164,7 +174,7 @@ const callNextReducerWithUndoRedo = (
 const callNextReducerWithUndoRedoForModelAction = (
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<ModelActionReplayableAction | TransactionalInstanceAction>
+  action: PayloadAction<ReducerActionBox<ModelActionReplayableAction | TransactionalInstanceAction>>
 ): ReduxStateWithUndoRedo => {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -191,7 +201,7 @@ const callNextReducerWithUndoRedoForModelAction = (
   } else {
     // presentModelSnapshot !== newSnapshot
     const newPatch: ReduxStateChanges = {
-      action: action.payload,
+      action: action.payload.action,
       changes,
       inverseChanges,
     };
@@ -214,10 +224,10 @@ const callNextReducerWithUndoRedoForModelAction = (
 function handleModelAction(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<ModelAction>
+  actionBox: PayloadAction<ReducerActionBox<ModelAction>>
 ): ReduxStateWithUndoRedo {
   // log.info("reduceWithUndoRedo handleModelAction treating action", JSON.stringify(action.payload, null, 2));
-  log.info("reduceWithUndoRedo handleModelAction treating action", action.payload);
+  log.info("reduceWithUndoRedo handleModelAction treating action", actionBox.payload);
   const {
     currentTransaction,
     previousModelSnapshot,
@@ -226,12 +236,12 @@ function handleModelAction(
     futureModelPatches,
     queriesResultsCache,
   } = state;
-  switch (action.payload.actionType) {
+  switch (actionBox.payload.action.actionType) {
     case "rollback": {
       const next = callNextReducer(
         innerReducer,
         state,
-        action
+        actionBox
       );
       return {
         currentTransaction,
@@ -258,7 +268,7 @@ function handleModelAction(
     case "initModel":
     case "resetModel":
     case "resetData": {
-      return callNextReducer(innerReducer, state, action as any);
+      return callNextReducer(innerReducer, state, actionBox as any);
       // log.debug("reduceWithUndoRedo handleModelAction nothing to do for action", JSON.stringify(action.payload, null, 2))
       break;
     }
@@ -266,10 +276,12 @@ function handleModelAction(
     case "renameEntity":
     case "createEntity":
     case "dropEntity": {
-      if (action.payload.payload.transactional == false) {
-        return callNextReducer(innerReducer, state, action as any);        
+      if (actionBox.payload.action.payload.transactional == false) {
+        return callNextReducer(innerReducer, state, actionBox as any);        
       } else {
-        const localAction: PayloadAction<ModelActionReplayableAction> = action as PayloadAction<ModelActionReplayableAction>;
+        const localAction: PayloadAction<ReducerActionBox<ModelActionReplayableAction>> = actionBox as PayloadAction<
+          ReducerActionBox<ModelActionReplayableAction>
+        >;
         return callNextReducerWithUndoRedoForModelAction(
           innerReducer,
           state,
@@ -279,8 +291,11 @@ function handleModelAction(
     }
     default: {
       // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-      log.warn('UndoRedoReducer handleAction default case for DomainTransactionalInstanceAction action.payload.actionName', JSON.stringify(action.payload, undefined, 2));
-      return callNextReducer(innerReducer, state, action as any);        
+      log.warn(
+        "UndoRedoReducer handleAction default case for DomainTransactionalInstanceAction action.payload.actionName",
+        JSON.stringify(actionBox.payload, undefined, 2)
+      );
+      return callNextReducer(innerReducer, state, actionBox as any);        
       break;
     }
   }
@@ -289,7 +304,7 @@ function handleModelAction(
 function handleInstanceAction(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<InstanceAction>
+  actionBox: PayloadAction<ReducerActionBox<InstanceAction>>
 ): ReduxStateWithUndoRedo {
   // log.info("reduceWithUndoRedo handleInstanceAction treating action", JSON.stringify(action.payload, null, 2));
   // log.info("reduceWithUndoRedo handleInstanceAction", action.payload);
@@ -302,9 +317,9 @@ function handleInstanceAction(
     queriesResultsCache,
   } = state;
   // switch (action.payload.actionName) {
-  switch (action.payload.actionType) {
+  switch (actionBox.payload.action.actionType) {
     case "loadNewInstancesInLocalCache": {
-      const next = callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
+      const next = callNextReducer(innerReducer, state, actionBox as PayloadAction<ReducerActionBox<InstanceAction>>);
       return {
         currentTransaction,
         previousModelSnapshot, //TODO: effectively set previousModelSnapshot
@@ -316,7 +331,7 @@ function handleInstanceAction(
       break;
     }
     default: {
-      return callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
+      return callNextReducer(innerReducer, state, actionBox as PayloadAction<ReducerActionBox<InstanceAction>>);
       break;
     }
   }
@@ -325,7 +340,7 @@ function handleInstanceAction(
 function handleUndoRedoAction(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<UndoRedoAction>
+  actionBox: PayloadAction<ReducerActionBox<UndoRedoAction>>
 ): ReduxStateWithUndoRedo {
   // log.info("reduceWithUndoRedo handleUndoRedoAction treating action", JSON.stringify(action.payload, null, 2));
   // log.info("reduceWithUndoRedo handleUndoRedoAction", action.payload);
@@ -337,7 +352,7 @@ function handleUndoRedoAction(
     futureModelPatches,
     queriesResultsCache,
   } = state;
-  switch (action.payload.actionType) {
+  switch (actionBox.payload.action.actionType) {
     case "undo": {
       if (pastModelPatches.length > 0) {
         const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
@@ -405,7 +420,7 @@ function handleUndoRedoAction(
     default: {
       throw new Error(
         "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction DomainUndoRedoAction cannot handle action" +
-          action.payload
+          actionBox.payload
       );
     }
   }
@@ -416,16 +431,16 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
   // return reduceWithUndoRedo.bind(undefined,innerReducer)
   return (
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
-    action: PayloadAction<
-      InnerReducerAction
+    payloadAction: PayloadAction<
+      ReducerActionBox<InnerReducerAction>
     >
   ): ReduxStateWithUndoRedo => {
-    // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
+    // log.info("reduceWithUndoRedo received action " + payloadAction.type + " " + JSON.stringify(payloadAction, undefined, 2));
 
-    switch (action.type) {
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleAction: {
+    switch (payloadAction.type) {
+      case localCacheSliceName + "/handleAction": {
         // log.info("reduceWithUndoRedo handleAction treating action", action.payload)
-        switch (action.payload.actionType) {
+        switch (payloadAction.payload.action.actionType) {
           // case "modelAction": {
           case "initModel":
           case "commit":
@@ -437,7 +452,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
           case "renameEntity":
           case "createEntity":
           case "dropEntity": {
-            return handleModelAction(innerReducer, state, action as PayloadAction<ModelAction>)
+            return handleModelAction(innerReducer, state, payloadAction as PayloadAction<ReducerActionBox<ModelAction>>)
             break;
           }
           // case "instanceAction": {
@@ -448,20 +463,20 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
           case "loadNewInstancesInLocalCache":
           case "getInstance":
           case "getInstances": {
-            return handleInstanceAction(innerReducer, state, action as PayloadAction<InstanceAction>)
+            return handleInstanceAction(innerReducer, state, payloadAction as PayloadAction<ReducerActionBox<InstanceAction>>)
             break;
           }
           case "transactionalInstanceAction": {
             return callNextReducerWithUndoRedo(
               innerReducer,
               state,
-              action as PayloadAction<TransactionalInstanceAction>
+              payloadAction as PayloadAction<ReducerActionBox<TransactionalInstanceAction>>
             );
             break;
           }
           case "undo":
           case "redo":{
-            return handleUndoRedoAction(innerReducer, state, action as PayloadAction<UndoRedoAction>)
+            return handleUndoRedoAction(innerReducer, state, payloadAction as PayloadAction<ReducerActionBox<UndoRedoAction>>)
             break;
           }
           case "RestPersistenceAction_create": 
@@ -471,7 +486,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
           default: {
             throw new Error(
               "reduceWithUndoRedo handleAction accepts only actionType=modelAction, found " +
-                action.payload
+                payloadAction.payload
             );
             break;
           }
@@ -480,7 +495,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
       }
       default: {
         // log.warn('reduceWithUndoRedo default handling action',JSON.stringify(action, undefined, 2))
-        return callNextReducer(innerReducer, state, action as any); //useful? this is an unknown action!
+        return callNextReducer(innerReducer, state, payloadAction as any); //useful? this is an unknown action!
       }
     }
   };

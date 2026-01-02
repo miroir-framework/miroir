@@ -78,7 +78,7 @@ export const AdminApplicationDeploymentConfigurationSchema = EntityInstanceWithN
   defaultLabel: z.string(),
   description: z.string(),
   // metaModel: ModelStorageLocation,
-  selfApplication:z.string().uuid().optional(),
+  selfApplication:z.string().uuid(),
   applicationVersion:z.string().uuid().optional(),
   applicationModelLevel: ApplicationModelLevelSchema,
   configuration: storeUnitConfiguration

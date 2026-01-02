@@ -48,6 +48,7 @@ import {
 import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors";
 import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -85,11 +86,13 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   // ################################################################################################
   async handleBoxedQueryAction(
     runBoxedQueryAction: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     return handleBoxedQueryAction(
       "ExtractorRunnerInMemory",
       runBoxedQueryAction,
+      applicationDeploymentMap,
       this.selectorMap,
       modelEnvironment
     );
@@ -97,11 +100,13 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   // ################################################################################################
   async handleBoxedExtractorAction(
     runBoxedExtractorAction: RunBoxedExtractorAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     return handleBoxedExtractorAction(
       "ExtractorRunnerInMemory",
       runBoxedExtractorAction,
+      applicationDeploymentMap,
       this.selectorMap,
       modelEnvironment
     );
@@ -361,7 +366,8 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstance>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select;
-    const deploymentUuid = selectorParams.extractor.deploymentUuid;
+    // const deploymentUuid = selectorParams.extractor.deploymentUuid;
+    const deploymentUuid = selectorParams.applicationDeploymentMap[selectorParams.extractor.application];
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
       ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);

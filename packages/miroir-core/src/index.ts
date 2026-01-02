@@ -634,12 +634,13 @@ export {
 } from "./0_interfaces/4-views/ViewParams";
 export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_core/constants.js";
 export {
+  ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
   defaultDeployments,
   defaultDeploymentUuids,
-  defaultAdminApplicationDeploymentMapNOTGOOD as defaultAdminApplicationDeploymentMapNOTGOOD,
+  defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultSelfApplicationDeploymentMap,
   dropApplicationAndDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,

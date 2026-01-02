@@ -11,7 +11,8 @@ import {
   ReduxDeploymentsState,
   RestPersistenceAction,
   TransactionalInstanceAction,
-  UndoRedoAction
+  UndoRedoAction,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 
 
@@ -37,12 +38,12 @@ export const localCacheSliceName: string = "localCache";
 export const localCacheSliceInputActionNamesObject = {
   handleAction: "handleAction",
 };
-export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;
-export type LocalCacheSliceInputActionNamesKey = keyof LocalCacheSliceInputActionNamesObjectTuple;
-export const localCacheSliceInputActionNames = Object.values(localCacheSliceInputActionNamesObject);
-export const localCacheSliceInputFullActionNames = Object.values(localCacheSliceInputActionNamesObject).map(
-  (n) => localCacheSliceName + "/" + n
-); // TODO: use map type?
+// export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;
+// export type LocalCacheSliceInputActionNamesKey = keyof LocalCacheSliceInputActionNamesObjectTuple;
+// export const localCacheSliceInputActionNames = Object.values(localCacheSliceInputActionNamesObject);
+// export const localCacheSliceInputFullActionNames = Object.values(localCacheSliceInputActionNamesObject).map(
+//   (n) => localCacheSliceName + "/" + n
+// ); // TODO: use map type?
 
 //#########################################################################################
 //# ReduxStateWithUndoRedo
@@ -96,15 +97,27 @@ export type InnerReducerAction =
   | LocalCacheAction
 ;
 
+export type ReducerActionBox<T> = {
+  // action: InnerReducerAction;
+  action: T;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+};
+
+export type LocalCacheActionBox = ReducerActionBox<LocalCacheAction>;
+// export type LocalCacheActionBox = {
+//   applicationDeploymentMap: ApplicationDeploymentMap,
+//   action: LocalCacheAction,
+// }
+
 export type InnerReducerInterface = (
   state: LocalCacheSliceState,
-  action: PayloadAction<InnerReducerAction>
+  action: PayloadAction<ReducerActionBox<InnerReducerAction>>
 ) => LocalCacheSliceState;
 
 // TODO: make action type explicit!
 export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<InnerReducerAction>
+  action: PayloadAction<ReducerActionBox<InnerReducerAction>>
 ) => ReduxStateWithUndoRedo;
 
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>; // TODO: precise the type of Actions!

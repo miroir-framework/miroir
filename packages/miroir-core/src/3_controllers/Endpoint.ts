@@ -54,21 +54,21 @@ export class Endpoint implements EndpointInterfaceNOTUSED {
 
   handleActionNOTUSED(action: InstanceAction): void {
     log.info("Endpoint.handleAction called", JSON.stringify(action, null, 2))
-    // return this.localCache.handleEndpointAction(action);
-    switch (action.actionType) {
-      case "createInstance": {
-        // this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
-        // log.info("Endpoint.handleAction called", action)
-        this.localCache.handleLocalCacheAction(action);
-        break
-      }
-      case "getInstance": {
-        // TODO
-        break;
-      }
-      default:
-        break;
-    }
+    // // return this.localCache.handleEndpointAction(action);
+    // switch (action.actionType) {
+    //   case "createInstance": {
+    //     // this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
+    //     // log.info("Endpoint.handleAction called", action)
+    //     this.localCache.handleLocalCacheAction(action);
+    //     break
+    //   }
+    //   case "getInstance": {
+    //     // TODO
+    //     break;
+    //   }
+    //   default:
+    //     break;
+    // }
   }
 
   async handleAsyncActionNOTUSED(action: InstanceAction): Promise<void> {

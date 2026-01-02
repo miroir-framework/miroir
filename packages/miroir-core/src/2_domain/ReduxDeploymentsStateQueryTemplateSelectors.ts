@@ -38,6 +38,7 @@ import {
   extractzodSchemaForSingleSelectQueryTemplate,
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -84,16 +85,19 @@ export function getReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTe
 // ################################################################################################
 export type GetExtractorTemplateRunnerParamsForReduxDeploymentsState = <QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ) => SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState>;
 // ) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, ReduxDeploymentsState>;
 
 export function getExtractorTemplateRunnerParamsForReduxDeploymentsState<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ): SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState> {
   return {
     extractorOrCombinerTemplate: query,
+    applicationDeploymentMap,
     extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorTemplateMap(),
   };
 }
@@ -101,15 +105,18 @@ export function getExtractorTemplateRunnerParamsForReduxDeploymentsState<QueryTy
 // ################################################################################################
 export type GetQueryTemplateRunnerParamsForReduxDeploymentsState = (
   query: BoxedQueryTemplateWithExtractorCombinerTransformer,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ) => SyncQueryTemplateRunnerParams<ReduxDeploymentsState>;
 
 export function getQueryTemplateRunnerParamsForReduxDeploymentsState(
   query: BoxedQueryTemplateWithExtractorCombinerTransformer,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ): SyncQueryTemplateRunnerParams<ReduxDeploymentsState> {
   return {
     extractorOrCombinerTemplate: query,
+    applicationDeploymentMap,
     extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorTemplateMap(),
   };
 }

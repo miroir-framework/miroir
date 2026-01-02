@@ -32,7 +32,8 @@ import {
   SyncQueryRunnerParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -436,7 +437,8 @@ const empty = {}
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState = (
   deploymentEntityState: ReduxDeploymentsState,
-  params: MiroirQueryTemplate
+  params: MiroirQueryTemplate,
+  // applicationDeploymentMap: ApplicationDeploymentMap
 ): EntityInstancesUuidIndex => {
   if (params.queryType != "localCacheEntityInstancesExtractor") {
     log.error(
@@ -447,9 +449,16 @@ export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeployments
     );
     return empty;
   }
+  const applicationDeploymentMap = params.definition.applicationDeploymentMap;
+  const deploymentUuid = applicationDeploymentMap[params.definition.application];
+  if (!params.definition.entityUuid) {
+    throw new Error(
+      "selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState no entityUuid in params " + JSON.stringify(params)
+    );
+  }
   const localEntityIndex = getReduxDeploymentsStateIndex(
-    params.definition.deploymentUuid,
-    params.definition.applicationSection,
+    deploymentUuid,
+    params.definition.applicationSection??"data",
     params.definition.entityUuid
   );
   const result =

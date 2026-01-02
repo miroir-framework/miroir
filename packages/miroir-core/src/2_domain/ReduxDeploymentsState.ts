@@ -3,9 +3,12 @@ import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generate
 
 //#########################################################################################
 export function getReduxDeploymentsStateIndex(
-  deploymentUuid: Uuid | undefined,
-  applicationSection: ApplicationSection | undefined,
-  entityUuid: Uuid | undefined
+  deploymentUuid: Uuid,
+  applicationSection: ApplicationSection,
+  entityUuid: Uuid,
+  // deploymentUuid: Uuid | undefined,
+  // applicationSection: ApplicationSection | undefined,
+  // entityUuid: Uuid | undefined
 ): string {
   return "" + deploymentUuid + "_" + applicationSection + "_" + entityUuid;
 }

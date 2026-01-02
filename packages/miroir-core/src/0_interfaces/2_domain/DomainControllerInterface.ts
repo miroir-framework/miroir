@@ -21,6 +21,7 @@ import { LocalCacheInterface } from "../4-services/LocalCacheInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
 import { Action2ReturnType, Action2VoidReturnType } from "./DomainElement";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
+import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
 
 
 // #############################################################################################
@@ -85,62 +86,79 @@ export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   handleBoxedExtractorOrQueryAction(
     action: RunBoxedExtractorOrQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleQueryTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleBoxedExtractorTemplateActionForServerONLY(
     action: RunBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   // handleCompositeActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<Action2VoidReturnType>;
   handleCompositeActionTemplate(
     action: CompositeActionTemplate,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
-    actionParamValues: any,
+    actionParamValues: any
   ): Promise<Action2VoidReturnType>;
   handleCompositeAction(
     action: CompositeActionSequence,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
-    actionParamValues: Record<string, any>,
+    actionParamValues: Record<string, any>
   ): Promise<Action2VoidReturnType>;
   // ##############################################################################################
   handleTestCompositeAction(
     testAction: TestCompositeAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
-    actionParamValues: Record<string, any>,
+    actionParamValues: Record<string, any>
   ): Promise<Action2VoidReturnType>;
   handleTestCompositeActionSuite(
     testAction: TestCompositeActionSuite,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
-    actionParamValues: Record<string, any>,
-  // ): Promise<Action2VoidReturnType>;
+    actionParamValues: Record<string, any>
+    // ): Promise<Action2VoidReturnType>;
   ): Promise<Action2ReturnType>;
   handleTestCompositeActionTemplateSuite(
     testAction: TestCompositeActionTemplateSuite,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
-    actionParamValues: Record<string, any>,
+    actionParamValues: Record<string, any>
   ): Promise<Action2VoidReturnType>;
 
   /**
    * handleActionFromUI is similar to handleAction, but it is intended to be called from the UI layer.
    * It enables autocommit mode for the actions handled, meaning that each action is committed immediately after being processed.
-   * @param action 
-   * @param currentModel 
+   * @param action
+   * @param currentModel
    */
-  handleActionFromUI(action: DomainAction, currentModel?: MiroirModelEnvironment): Promise<Action2VoidReturnType>;
+  handleActionFromUI(
+    action: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2VoidReturnType>;
   /**
-   * 
-   * @param action 
-   * @param currentModel 
+   *
+   * @param action
+   * @param currentModel
    */
-  handleAction(action: DomainAction, currentModel?: MiroirModelEnvironment): Promise<Action2VoidReturnType>;
+  handleAction(
+    action: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2VoidReturnType>;
   /**
    * data access must accomodate different styles of access
    * => compile-time dependency on types in miroir-core? Or use "any"?
@@ -188,7 +206,7 @@ export interface DomainControllerInterface {
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[];
   currentLocalCacheInfo(): LocalCacheInfo;
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface;
-  getDomainState():DomainState;
+  getDomainState(): DomainState;
   getPersistenceStoreAccessMode(): "local" | "remote";
-  getLocalCache():LocalCacheInterface; // TODO: this is a temporary solution to allow the use of the local cache in the webapp.
+  getLocalCache(): LocalCacheInterface; // TODO: this is a temporary solution to allow the use of the local cache in the webapp.
 }

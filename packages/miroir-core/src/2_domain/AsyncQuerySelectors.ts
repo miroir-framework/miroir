@@ -33,6 +33,7 @@ import {
 import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { applyTransformer } from "./TransformersForRuntime";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -146,7 +147,9 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   extractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap,
-  deploymentUuid: Uuid,
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  deploymentUuid: Uuid | undefined,
   extractors: Record<
     string,
     | BoxedExtractorOrCombinerReturningObjectList
@@ -175,9 +178,12 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       const result = await extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         {
           extractorRunnerMap,
+          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObjectList",
-            deploymentUuid: deploymentUuid,
+            application,
+            applicationDeploymentMap,
+            deploymentUuid,
             contextResults: newFetchedData,
             pageParams: pageParams,
             queryParams,
@@ -236,9 +242,12 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       const result = await extractorRunnerMap.extractEntityInstance(
         {
           extractorRunnerMap,
+          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObject",
-            deploymentUuid: deploymentUuid,
+            application,
+            applicationDeploymentMap,
+            deploymentUuid,
             contextResults: newFetchedData,
             pageParams,
             queryParams,
@@ -272,6 +281,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           modelEnvironment,
           queryParams ?? {},
           extractorRunnerMap,
+          application,
+          applicationDeploymentMap,
           deploymentUuid,
           extractors,
           extractor
@@ -291,6 +302,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           modelEnvironment,
           queryParams ?? {},
           extractorRunnerMap,
+          application,
+          applicationDeploymentMap,
           deploymentUuid,
           extractors,
           e
@@ -310,6 +323,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               modelEnvironment,
               queryParams,
               extractorRunnerMap,
+              application,
+              applicationDeploymentMap,
               deploymentUuid,
               extractors,
               {
@@ -323,6 +338,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               modelEnvironment,
               queryParams,
               extractorRunnerMap,
+              application,
+              applicationDeploymentMap,
               deploymentUuid,
               extractors,
               extractorOrCombiner.rootExtractorOrReference
@@ -362,6 +379,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               modelEnvironment,
               innerQueryParams,
               extractorRunnerMap,
+              application,
+              applicationDeploymentMap,
               deploymentUuid,
               extractors,
               resolvedQuery as ExtractorOrCombiner
@@ -428,10 +447,11 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
   const result = asyncInnerSelectElementFromQuery(
     selectorParams.extractor.contextResults,
     selectorParams.extractor.pageParams,
-    // {...modelEnvironment, ...selectorParams.extractor.queryParams},
     modelEnvironment,
     selectorParams.extractor.queryParams,
     localSelectorMap as any,
+    selectorParams.extractor.application,
+    selectorParams.applicationDeploymentMap,
     selectorParams.extractor.deploymentUuid,
     {},
     selectorParams.extractor.select
@@ -490,6 +510,8 @@ export const asyncRunQuery = async (
         ...selectorParams.extractor.queryParams,
       },
       localSelectorMap as any,
+      selectorParams.extractor.application,
+      selectorParams.applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       selectorParams.extractor.extractors ?? {} as any,
       extractor
@@ -518,6 +540,8 @@ export const asyncRunQuery = async (
         ...selectorParams.extractor.queryParams,
       },
       localSelectorMap as any,
+      selectorParams.extractor.application,
+      selectorParams.applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       selectorParams.extractor.extractors ?? ({} as any),
       combiner

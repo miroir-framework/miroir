@@ -7,6 +7,7 @@ import { Action2Error, Action2ReturnType } from "../../0_interfaces/2_domain/Dom
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface";
+import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
@@ -36,10 +37,11 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType;
       expectedValue?: any;
     },
+    applicationDeploymentMap: ApplicationDeploymentMap,
     action: LocalCacheAction
   ): Promise<Record<string, any>> {
     // asynchronous although it is not necessary, only to keep the same signature as callPersistenceAction
-    const result: Action2ReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action);
+    const result: Action2ReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action, applicationDeploymentMap);
     
     // log.info("callLocalCacheAction received result", result);
     if (result && result["status"] == "error") {
@@ -74,6 +76,7 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType;
       expectedValue?: any;
     },
+    applicationDeploymentMap: ApplicationDeploymentMap,
     action: PersistenceAction
   ): Promise<Record<string, any> | Action2Error> {
     // if (action.actionType !== "initModel") {
@@ -88,9 +91,9 @@ export class CallUtils {
     // //     action.actionType,
     // //   );
     // // }
-    const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
+    const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action, applicationDeploymentMap);
     // log.info("CallUtils callPersistenceAction received result", JSON.stringify(result, null, 2));
-    log.info("CallUtils callPersistenceAction received result", result, null, 2);
+    // log.info("CallUtils callPersistenceAction received result", result, null, 2);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.

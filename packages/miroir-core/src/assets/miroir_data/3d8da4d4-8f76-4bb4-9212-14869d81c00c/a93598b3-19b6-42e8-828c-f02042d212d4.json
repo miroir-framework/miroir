@@ -30,13 +30,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "optional": true,
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -58,19 +58,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",
@@ -114,13 +114,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -142,19 +142,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",
@@ -198,13 +198,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "optional": true,
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -226,19 +226,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",
@@ -282,13 +282,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "optional": true,
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -310,19 +310,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",
@@ -366,13 +366,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "optional": true,
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -394,19 +394,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",
@@ -450,13 +450,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "optional": true,
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -478,19 +478,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",
@@ -534,13 +534,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "optional": true,
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -562,19 +562,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",
@@ -618,13 +618,13 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "optional": true,
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "application": {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -646,19 +646,19 @@
               "parentName": {
                 "type": "string",
                 "optional": true,
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Name", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Name", "editable": false } }
               },
               "parentUuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Parent Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Parent Uuid", "editable": false } }
               },
               "uuid": {
                 "type": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
               },
               "objects": {
                 "type": "array",

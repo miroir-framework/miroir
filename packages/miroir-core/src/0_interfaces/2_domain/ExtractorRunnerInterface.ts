@@ -1,3 +1,4 @@
+import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
 import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
@@ -36,6 +37,7 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 export interface ExtractorTemplatePersistenceStoreRunner {
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
   ): Promise<Action2ReturnType>;
 }
@@ -44,10 +46,12 @@ export interface ExtractorTemplatePersistenceStoreRunner {
 export interface ExtractorOrQueryPersistenceStoreRunner {
   handleBoxedExtractorAction(
     query: RunBoxedExtractorAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleBoxedQueryAction(
     query: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
 }
@@ -62,6 +66,7 @@ export interface SyncBoxedExtractorTemplateRunnerParams<
 > {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>;
   extractorOrCombinerTemplate: ExtractorTemplate;
+  applicationDeploymentMap: ApplicationDeploymentMap; 
 }
 
 export type SyncBoxedExtractorTemplateRunner<
@@ -80,6 +85,7 @@ export interface AsyncBoxedExtractorTemplateRunnerParams<
 > {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap;
   extractorOrCombinerTemplate: ExtractorTemplateDomainModelType;
+  applicationDeploymentMap: ApplicationDeploymentMap;
 }
 
 
@@ -103,14 +109,17 @@ export type BoxedExtractorTemplateRunner<
 export interface ExtractorTemplatePersistenceStoreRunner {
   handleQueryTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleBoxedExtractorTemplateActionForServerONLY(
     query: RunBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
 }
@@ -121,12 +130,14 @@ export interface ExtractorTemplatePersistenceStoreRunner {
 // BOXED EXTRACTORS #####################################################################################
 export interface SyncBoxedExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>
-  extractor: ExtractorType
+  extractor: ExtractorType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 export interface AsyncBoxedExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList> {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractor: ExtractorType
+  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 export type SyncBoxedExtractorRunner<QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType, ResultType> = (
@@ -159,7 +170,8 @@ export type SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<S
 // QUERY ##########################################################################################
 export interface SyncQueryRunnerParams<StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>
-  extractor: BoxedQueryWithExtractorCombinerTransformer
+  extractor: BoxedQueryWithExtractorCombinerTransformer,
+  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 // ################################################################################################
@@ -173,6 +185,7 @@ export type SyncQueryRunner<StateType, ResultType> = (
 export interface AsyncQueryRunnerParams {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractor: BoxedQueryWithExtractorCombinerTransformer,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   // modelEnvironment: MiroirModelEnvironment,
 }
 
@@ -189,6 +202,7 @@ export type AsyncQueryRunner<ResultType> = (
 export interface SyncQueryTemplateRunnerParams<StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>;
   extractorOrCombinerTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer;
+  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 // ################################################################################################
@@ -202,6 +216,7 @@ export type SyncQueryTemplateRunner<StateType, ResultType> = (
 export interface AsyncQueryTemplateRunnerParams {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractorOrCombinerTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer
+  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 // ################################################################################################

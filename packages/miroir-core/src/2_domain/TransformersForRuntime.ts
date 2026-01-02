@@ -144,7 +144,7 @@ import {
   transformer_getActiveDeployment,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
-import { defaultAdminApplicationDeploymentMapNOTGOOD } from "../1_core/Deployment";
+import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -190,6 +190,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
   forceOptional: boolean = false,
+  application: Uuid | undefined = undefined,
+  applicationDeploymentMap: ApplicationDeploymentMap | undefined = undefined,
   deploymentUuid: Uuid | undefined = undefined,
   miroirEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any> = {},
@@ -344,6 +346,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
             result,
             currentValuePath.concat([a[0]]),
             forceOptional,
+            application,
+            applicationDeploymentMap,
             deploymentUuid,
             miroirEnvironment,
             transformerParams,
@@ -447,9 +451,21 @@ export function getDefaultValueForJzodSchemaWithResolution(
             "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no deploymentUuid provided"
           );
         }
+        if (!application) {
+          throw new Error(
+            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no application provided"
+          );
+        }
+        if (!applicationDeploymentMap) {
+          throw new Error(
+            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no applicationDeploymentMap provided"
+          );
+        }
         const foreignKeyObjects: EntityInstance[] = getEntityInstancesUuidIndexNonHook(
           reduxDeploymentsState,
           miroirEnvironment,
+          application,
+          applicationDeploymentMap,
           deploymentUuid,
           effectiveSchema.tag.value.selectorParams.targetEntity,
           effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
@@ -518,6 +534,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
         currentDefaultValue,
         currentValuePath,
         forceOptional,
+        application,
+        applicationDeploymentMap,
         deploymentUuid,
         miroirEnvironment,
         transformerParams,
@@ -544,6 +562,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
           currentDefaultValue,
           currentValuePath,
           forceOptional,
+          application,
+          applicationDeploymentMap,
           deploymentUuid,
           miroirEnvironment,
           transformerParams,
@@ -593,6 +613,8 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
   forceOptional: boolean = false,
+  application: Uuid | undefined,
+  applicationDeploymentMap: ApplicationDeploymentMap | undefined,
   deploymentUuid: Uuid | undefined,
   miroirEnvironment: T,
   transformerParams: Record<string, any> = {},
@@ -628,6 +650,8 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
       currentDefaultValue,
       currentValuePath,
       forceOptional,
+      application,
+      applicationDeploymentMap,
       undefined, // deploymentUuid
       miroirEnvironment,
       {},
@@ -645,6 +669,8 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     currentDefaultValue,
     currentValuePath,
     forceOptional,
+    application,
+    applicationDeploymentMap,
     deploymentUuid,
     miroirEnvironment,
     {},
@@ -665,6 +691,8 @@ export function defaultValueForMLSchemaTransformer(
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined, // somewhat redundant with modelEnvironment
+  application?: Uuid,
+  applicationDeploymentMap?: ApplicationDeploymentMap,
   deploymentUuid?: Uuid,
 ): any {
   const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -675,6 +703,8 @@ export function defaultValueForMLSchemaTransformer(
     undefined, // currentDefaultValue
     [], // currentValuePath
     false, // forceOptional
+    application,
+    applicationDeploymentMap,
     deploymentUuid, // deploymentUuid
     modelEnvironment, // miroirEnvironment
     {}, // transformerParams (empty for this use case)

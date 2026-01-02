@@ -51,6 +51,7 @@ import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { applyTransformer, transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -656,6 +657,7 @@ export const applyExtractorTransformerInMemory = (
 export async function handleBoxedExtractorAction(
   origin: string,
   runBoxedExtractorAction: RunBoxedExtractorAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
   modelEnvironment: MiroirModelEnvironment
 ): Promise<Action2ReturnType> {
@@ -672,6 +674,7 @@ export async function handleBoxedExtractorAction(
     {
       extractorRunnerMap: selectorMap,
       extractor,
+      applicationDeploymentMap,
     },
     modelEnvironment,
   );
@@ -693,6 +696,7 @@ export async function handleBoxedExtractorAction(
 export async function handleBoxedQueryAction(
   origin: string,
   runBoxedQueryAction: RunBoxedQueryAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Action2ReturnType> {
@@ -708,6 +712,7 @@ export async function handleBoxedQueryAction(
     {
       extractor: runBoxedQueryAction.payload.query,
       extractorRunnerMap: selectorMap,
+      applicationDeploymentMap,
     },
     modelEnvironment,
   );
@@ -740,7 +745,9 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   extractorRunnerMap: SyncBoxedExtractorOrQueryRunnerMap<StateType>,
-  deploymentUuid: Uuid,
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  deploymentUuid: Uuid | undefined,
   extractorOrCombiner: ExtractorOrCombiner
   // ): Domain2QueryReturnType<DomainElementSuccess> {
 ): Domain2QueryReturnType<any> {
@@ -758,8 +765,11 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
         state,
         {
           extractorRunnerMap,
+          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObjectList",
+            application,
+            applicationDeploymentMap,
             deploymentUuid: deploymentUuid,
             contextResults: context,
             pageParams: pageParams,
@@ -782,9 +792,12 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
         state,
         {
           extractorRunnerMap,
+          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObject",
-            deploymentUuid: deploymentUuid,
+            application,
+            applicationDeploymentMap,
+            deploymentUuid,
             contextResults: context,
             pageParams,
             queryParams,
@@ -816,6 +829,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
                   modelEnvironment,
                   queryParams ?? {},
                   extractorRunnerMap,
+                  application,
+                  applicationDeploymentMap,
                   deploymentUuid,
                   e[1]
                 ), // TODO: check for error!
@@ -835,6 +850,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             modelEnvironment,
             queryParams ?? {},
             extractorRunnerMap,
+            application,
+            applicationDeploymentMap,
             deploymentUuid,
             e
           ) // TODO: check for error!
@@ -852,6 +869,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               modelEnvironment,
               queryParams,
               extractorRunnerMap,
+              application,
+              applicationDeploymentMap,
               deploymentUuid,
               {
                 extractorOrCombinerType: "extractorOrCombinerContextReference",
@@ -865,6 +884,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               modelEnvironment,
               queryParams,
               extractorRunnerMap,
+              application,
+              applicationDeploymentMap,
               deploymentUuid,
               extractorOrCombiner.rootExtractorOrReference
             );
@@ -917,6 +938,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               modelEnvironment,
               innerQueryParams,
               extractorRunnerMap,
+              application,
+              applicationDeploymentMap,
               deploymentUuid,
               resolvedQuery as ExtractorOrCombiner
             ); // TODO: check for error!
@@ -1000,10 +1023,11 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
     state,
     selectorParams.extractor.contextResults,
     selectorParams.extractor.pageParams,
-    // {...modelEnvironment, ...selectorParams.extractor.queryParams},
     modelEnvironment,
     selectorParams.extractor.queryParams,
     localSelectorMap as any,
+    selectorParams.extractor.application,
+    selectorParams.applicationDeploymentMap,
     selectorParams.extractor.deploymentUuid,
     selectorParams.extractor.select
   );
@@ -1057,6 +1081,8 @@ export const runQuery = <StateType>(
         ...selectorParams.extractor.queryParams,
       },
       localSelectorMap as any,
+      selectorParams.extractor.application,
+      selectorParams.applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       extractor[1]
     );
@@ -1109,6 +1135,8 @@ export const runQuery = <StateType>(
         ...selectorParams.extractor.queryParams,
       },
       localSelectorMap as any,
+      selectorParams.extractor.application,
+      selectorParams.applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       combiner[1]
     );

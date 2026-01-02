@@ -29,6 +29,7 @@ import {
   instanceEndpointV1,
   modelEndpointV1,
   storeActionOrBundleActionStoreRunner,
+  type ApplicationDeploymentMap,
   type MiroirModelEnvironment
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
@@ -141,13 +142,19 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   // ###############################################################################
   // ###############################################################################
-  handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType {
+  handleLocalCacheAction(
+    action: LocalCacheAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Action2ReturnType {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handleLocalCacheAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handleLocalCacheAction!"
       );
     }
-    const result: Action2ReturnType = this.localCache.handleLocalCacheAction(action);
+    const result: Action2ReturnType = this.localCache.handleLocalCacheAction(
+      action,
+      applicationDeploymentMap
+    );
     // log.info("PersistenceReduxSaga handleLocalCacheAction", action, "returned", result)
     return result;
     // return Promise.resolve(result);
@@ -155,7 +162,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
 
   // ###############################################################################
   async handlePersistenceActionForLocalCache(
-    action: PersistenceAction
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
@@ -186,7 +194,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "LocalPersistenceAction_create":
       case "LocalPersistenceAction_read":
       case "LocalPersistenceAction_update":
-      case "LocalPersistenceAction_delete": 
+      case "LocalPersistenceAction_delete":
       case "RestPersistenceAction_create":
       case "RestPersistenceAction_read":
       case "RestPersistenceAction_update":
@@ -205,7 +213,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         );
       }
       case "runBoxedExtractorOrQueryAction": {
-        const result: Action2ReturnType = this.localCache.runBoxedExtractorOrQueryAction(action);
+        const result: Action2ReturnType = this.localCache.runBoxedExtractorOrQueryAction(
+          action,
+          applicationDeploymentMap
+        );
         // log.info("PersistenceReduxSaga handleLocalCacheAction", action, "returned", result)
         return result;
         break;
@@ -226,22 +237,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
-  async handlePersistenceAction(action: PersistenceAction): Promise<Action2ReturnType> {
-    if (!this.localCache) {
-      throw new Error(
-        "PersistenceReduxSaga handlePersitentAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
-      );
-    }
-    const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
-      this.persistenceActionReduxSaga.handlePersistenceAction.creator({ action })
-    );
-    log.info("handlePersistenceAction", action, "returned", result);
-    return Promise.resolve(result);
-  }
-
-  // ###############################################################################
-  async handleStoreOrBundleActionForLocalStore(
-    action: StoreOrBundleAction
+  async handlePersistenceAction(
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
@@ -249,7 +247,27 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
-      this.persistenceActionReduxSaga.handleStoreOrBundleActionForLocalStore.creator({ action })
+      this.persistenceActionReduxSaga.handlePersistenceAction.creator({ action, applicationDeploymentMap })
+    );
+    log.info("handlePersistenceAction", action, "returned", result);
+    return Promise.resolve(result);
+  }
+
+  // ###############################################################################
+  async handleStoreOrBundleActionForLocalStore(
+    action: StoreOrBundleAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<Action2ReturnType> {
+    if (!this.localCache) {
+      throw new Error(
+        "PersistenceReduxSaga handlePersitentAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
+      );
+    }
+    const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
+      this.persistenceActionReduxSaga.handleStoreOrBundleActionForLocalStore.creator({
+        action,
+        applicationDeploymentMap,
+      })
     );
     // log.info("LocalCache handleStoreOrBundleActionForLocalStore", action, "returned", result)
     return Promise.resolve(result);
@@ -259,7 +277,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   // ###############################################################################
   async handlePersistenceActionForRemoteStore(
-    action: PersistenceAction
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
@@ -267,7 +287,11 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
-      this.persistenceActionReduxSaga.handlePersistenceActionForRemoteStore.creator({ action })
+      this.persistenceActionReduxSaga.handlePersistenceActionForRemoteStore.creator({
+        action,
+        applicationDeploymentMap,
+        currentModel,
+      })
     );
     // log.info("LocalCache handlePersistenceActionForRemoteStore", action, "returned", result)
     return Promise.resolve(result);
@@ -276,6 +300,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   async handlePersistenceActionForLocalPersistenceStore(
     action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     if (!this.localCache) {
@@ -286,6 +311,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
       this.persistenceActionReduxSaga.handlePersistenceActionForLocalPersistenceStore.creator({
         action,
+        applicationDeploymentMap,
         currentModel,
       })
     );
@@ -303,6 +329,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   public *innerHandlePersistenceActionForLocalPersistenceStore(
     action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment | undefined,
     localPersistenceStoreController: PersistenceStoreControllerInterface | undefined
   ): Generator<
@@ -313,13 +340,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
-    const deploymentUuid =
-      actionsWithDeploymentInPayload.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
+    const deploymentUuid = applicationDeploymentMap[action.payload.application];
+    // actionsWithDeploymentInPayload.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
     log.info(
       "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called",
       this.params.persistenceStoreAccessMode,
       "action",
-      action
+      action,
+      "applicationDeploymentMap",
+      applicationDeploymentMap
     );
     if (this.params.persistenceStoreAccessMode != "local") {
       throw new Error(
@@ -387,23 +416,21 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "dropEntity": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            // "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
-            "PersistenceActionReduxSaga could not find controller for deployment: " +
-              deploymentUuid
+            "PersistenceActionReduxSaga could not find controller for deployment: " + deploymentUuid
             // " available controllers: " +
             // this.persistenceStoreControllerManager.getPersistenceStoreControllers()
           );
         }
         const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleAction(action)
-      );
-      log.info(
-        "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore done for action",
-        action,
-        "result=",
-        localStoreResult
-        // JSON.stringify(action, undefined, 2)
-      );
+          localPersistenceStoreController.handleAction(action, applicationDeploymentMap)
+        );
+        log.info(
+          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore done for action",
+          action,
+          "result=",
+          localStoreResult
+          // JSON.stringify(action, undefined, 2)
+        );
         return localStoreResult;
         break;
       }
@@ -425,7 +452,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           update: "updateInstance",
           delete: "deleteInstance",
         };
-        const newActionType = actionMap[action.actionType.split('_')[1]];
+        const newActionType = actionMap[action.actionType.split("_")[1]];
         const localStoreAction: PersistenceStoreControllerAction = {
           // actionType: "instanceAction",
           actionType: actionMap[newActionType],
@@ -464,7 +491,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   JSON.stringify(localStoreAction, undefined, 2)
         // );
         const localStoreResult: Action2ReturnType = yield* call(() =>
-          localPersistenceStoreController.handleAction(localStoreAction)
+          localPersistenceStoreController.handleAction(localStoreAction, applicationDeploymentMap)
         );
         log.info(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore LocalPersistenceAction result",
@@ -481,9 +508,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               deploymentUuid
           );
         }
-        const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleBoxedExtractorAction(action, currentModel)
-        );
+        const localStoreResult =
+          yield *
+          call(() =>
+            localPersistenceStoreController.handleBoxedExtractorAction(
+              action,
+              applicationDeploymentMap,
+              currentModel
+            )
+          );
         return localStoreResult;
         break;
       }
@@ -494,9 +527,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               deploymentUuid
           );
         }
-        const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleBoxedQueryAction(action, currentModel)
-        );
+        const localStoreResult =
+          yield *
+          call(() =>
+            localPersistenceStoreController.handleBoxedQueryAction(
+              action,
+              applicationDeploymentMap,
+              currentModel
+            )
+          );
         return localStoreResult;
         break;
       }
@@ -525,6 +564,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     query: localQuery,
                   },
                 },
+                applicationDeploymentMap,
                 currentModel
               )
             );
@@ -546,6 +586,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                     query: localQuery,
                   },
                 },
+                applicationDeploymentMap,
                 currentModel
               )
             );
@@ -570,7 +611,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           );
         }
         const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleQueryTemplateActionForServerONLY(action)
+          localPersistenceStoreController.handleQueryTemplateActionForServerONLY(action, applicationDeploymentMap)
         );
         return localStoreResult;
         break;
@@ -583,7 +624,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           );
         }
         const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(action)
+          localPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(action, applicationDeploymentMap)
         );
         return localStoreResult;
         break;
@@ -597,7 +638,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         }
         const localStoreResult = yield* call(() =>
           localPersistenceStoreController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-            action
+            action,
+            applicationDeploymentMap
           )
         );
         return localStoreResult;
@@ -620,6 +662,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   public *innerHandleLocalStoreOrBundleAction(
     action: StoreOrBundleAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface // used only in storeManagementAction and bundleAction cases
     // ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
   ): Generator<
@@ -640,6 +683,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         // action.actionName,
         action.actionType,
         action,
+        applicationDeploymentMap,
         localPersistenceStoreControllerManager
       )
     );
@@ -650,6 +694,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   public *innerHandlePersistenceActionForLocalCache(
     action: StoreOrBundleAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface // used only in storeManagementAction and bundleAction cases
   ): Generator<
     Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
@@ -669,6 +714,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         // action.actionName,
         action.actionType,
         action,
+        applicationDeploymentMap,
         localPersistenceStoreControllerManager
       )
     );
@@ -679,6 +725,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   public *innerHandlePersistenceActionForRemoteStore(
     action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface
   ): Generator<
     Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
@@ -703,7 +750,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         );
       }
       const clientResult: RestClientCallReturnType = yield* call(() =>
-        remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action)
+        remotePersistenceStoreRestClient.handleNetworkPersistenceAction(
+          action,
+          applicationDeploymentMap
+        )
       );
       log.debug(
         "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
@@ -819,22 +869,27 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     } catch (error) {
       log.info(
         "innerHandlePersistenceActionForRemoteStore exception",
-        (error as any).message,
+        error,
         "for action",
         action,
         "full error:",
-        error,
+        JSON.stringify(error, undefined, 2)
       );
       return {
         ...new Action2Error(
           "FailedToHandlePersistenceAction",
           "could not handle action " + ((action as any).actionLabel ?? action.actionType),
           [(error as any).message ?? "Unknown error"]
-        )
+        ),
       };
     }
   }
 
+  //#########################################################################################
+  //#########################################################################################
+  //#########################################################################################
+  //#########################################################################################
+  //#########################################################################################
   //#########################################################################################
   public persistenceActionReduxSaga: {
     handlePersistenceAction: {
@@ -877,6 +932,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       >;
       generator: (a: any) => PersistenceSagaGenReturnType;
     };
+
+    // ###############################################################################
     handlePersistenceActionForLocalPersistenceStore: {
       name: "handlePersistenceActionForLocalPersistenceStore";
       creator: SagaPromiseActionCreator<
@@ -891,16 +948,24 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     handlePersistenceAction: {
       name: "handlePersistenceAction",
       creator: promiseActionFactory<Action2ReturnType>().create<
-        { action: PersistenceAction; currentModel?: MiroirModelEnvironment },
+        {
+          action: PersistenceAction;
+          applicationDeploymentMap: ApplicationDeploymentMap;
+          currentModel?: MiroirModelEnvironment;
+        },
         "handlePersistenceAction"
       >("handlePersistenceAction"),
       generator: function* (
         this: PersistenceReduxSaga,
-        p: PayloadAction<{ action: PersistenceAction; currentModel?: MiroirModelEnvironment }>
+        p: PayloadAction<{
+          action: PersistenceAction;
+          applicationDeploymentMap: ApplicationDeploymentMap;
+          currentModel?: MiroirModelEnvironment;
+        }>
       ): Generator<
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
-        const { action, currentModel } = p.payload;
+        const { action, applicationDeploymentMap, currentModel } = p.payload;
         // log.info(
         //   "PersistenceReduxSaga handlePersistenceAction called with persistenceStoreAccessMode =",
         //   this.params.persistenceStoreAccessMode,
@@ -919,6 +984,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
 
             return yield* this.innerHandlePersistenceActionForLocalPersistenceStore(
               action,
+              applicationDeploymentMap,
               currentModel,
               localPersistenceStoreController
             );
@@ -926,6 +992,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           if (this.params.persistenceStoreAccessMode == "remote") {
             return yield* this.innerHandlePersistenceActionForRemoteStore(
               action,
+              applicationDeploymentMap,
               this.params.remotePersistenceStoreRestClient
             );
           }
@@ -982,18 +1049,28 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     handlePersistenceActionForLocalPersistenceStore: {
       name: "handlePersistenceActionForLocalPersistenceStore",
       creator: promiseActionFactory<Action2ReturnType>().create<
-        { action: PersistenceAction },
+        {
+          action: PersistenceAction;
+          applicationDeploymentMap: ApplicationDeploymentMap;
+          currentModel?: MiroirModelEnvironment;
+        },
         "handlePersistenceActionForLocalPersistenceStore"
       >("handlePersistenceActionForLocalPersistenceStore"),
       generator: function* (
         this: PersistenceReduxSaga,
-        p: PayloadAction<{ action: PersistenceAction; currentModel?: MiroirModelEnvironment }>
+        p: PayloadAction<{
+          action: PersistenceAction;
+          applicationDeploymentMap: ApplicationDeploymentMap;
+          currentModel?: MiroirModelEnvironment;
+        }>
       ): Generator<
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
-        const { action, currentModel } = p.payload;
-        const deploymentUuid =
-          actionsWithDeploymentInPayload.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
+        const { action, applicationDeploymentMap, currentModel } = p.payload;
+        const deploymentUuid = applicationDeploymentMap[action.payload.application];
+        // const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
+        //   ? (action as any).payload.deploymentUuid
+        //   : (action as any).deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode !== "local") {
             throw new Error(
@@ -1010,6 +1087,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
 
           return yield* this.innerHandlePersistenceActionForLocalPersistenceStore(
             action,
+            applicationDeploymentMap,
             currentModel,
             localPersistenceStoreController
           );
@@ -1034,16 +1112,24 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     handlePersistenceActionForRemoteStore: {
       name: "handlePersistenceActionForRemoteStore",
       creator: promiseActionFactory<Action2ReturnType>().create<
-        { action: PersistenceAction },
+        {
+          action: PersistenceAction;
+          applicationDeploymentMap: ApplicationDeploymentMap;
+          currentModel?: MiroirModelEnvironment;
+        },
         "handlePersistenceActionForRemoteStore"
       >("handlePersistenceActionForRemoteStore"),
       generator: function* (
         this: PersistenceReduxSaga,
-        p: PayloadAction<{ action: PersistenceAction }>
+        p: PayloadAction<{
+          action: PersistenceAction;
+          applicationDeploymentMap: ApplicationDeploymentMap;
+          currentModel?: MiroirModelEnvironment;
+        }>
       ): Generator<
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
-        const { action } = p.payload;
+        const { action, applicationDeploymentMap, currentModel } = p.payload;
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             throw new Error(
@@ -1053,6 +1139,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           }
           return yield* this.innerHandlePersistenceActionForRemoteStore(
             action,
+            applicationDeploymentMap,
             this.params.remotePersistenceStoreRestClient
           );
         } catch (e: any) {
@@ -1076,19 +1163,23 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     handleStoreOrBundleActionForLocalStore: {
       name: "handleStoreOrBundleActionForLocalStore",
       creator: promiseActionFactory<Action2ReturnType>().create<
-        { action: StoreOrBundleAction },
+        { action: StoreOrBundleAction; applicationDeploymentMap: ApplicationDeploymentMap },
         "handleStoreOrBundleActionForLocalStore"
       >("handleStoreOrBundleActionForLocalStore"),
       generator: function* (
         this: PersistenceReduxSaga,
-        p: PayloadAction<{ action: StoreOrBundleAction }>
+        p: PayloadAction<{
+          action: StoreOrBundleAction;
+          applicationDeploymentMap: ApplicationDeploymentMap;
+        }>
       ): Generator<
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
-        const { action } = p.payload;
+        const { action, applicationDeploymentMap } = p.payload;
         try {
           return yield* this.innerHandleLocalStoreOrBundleAction(
             action,
+            applicationDeploymentMap,
             this.params.localPersistenceStoreControllerManager
           );
         } catch (e: any) {

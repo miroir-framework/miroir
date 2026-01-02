@@ -46,6 +46,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { getApplicationSection } from "../1_core/Model";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -98,6 +99,8 @@ export function executeReduxDeploymentsStateQuery<T>(
 export function getEntityInstancesUuidIndexNonHook(
   deploymentEntityState: ReduxDeploymentsState,
   modelEnvironment: MiroirModelEnvironment,
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: Uuid,
   targetEntity: Uuid,
   orderBy?: string,
@@ -121,6 +124,8 @@ export function getEntityInstancesUuidIndexNonHook(
   const queryParams = getQueryRunnerParamsForReduxDeploymentsState(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
+      applicationDeploymentMap,
+      application,
       deploymentUuid: currentDeploymentUuid,
       pageParams: {},
       queryParams: {},
@@ -137,6 +142,7 @@ export function getEntityInstancesUuidIndexNonHook(
         },
       },
     },
+    applicationDeploymentMap,
     selectorMap
   );
   
@@ -159,6 +165,8 @@ export function getEntityInstancesUuidIndexNonHook(
 export function getMultipleEntityInstancesUuidIndexNonHook(
   deploymentEntityState: ReduxDeploymentsState,
   modelEnvironment: MiroirModelEnvironment,
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string,
   targetEntities: { entityUuid: string; orderBy?: string }[]
 ): Record<string, EntityInstancesUuidIndex> {
@@ -190,12 +198,15 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
   const queryParams = getQueryRunnerParamsForReduxDeploymentsState(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
+      applicationDeploymentMap,
+      application,
       deploymentUuid: currentDeploymentUuid,
       pageParams: {},
       queryParams: {},
       contextResults: {},
       extractors,
     },
+    applicationDeploymentMap,
     selectorMap
   );
   

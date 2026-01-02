@@ -1,3 +1,4 @@
+import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
 import { Uuid } from "../1_core/EntityDefinition";
 
 import {
@@ -88,21 +89,28 @@ export interface PersistenceStoreInstanceSectionAbstractInterface
   getInstances(parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure>;
   handleBoxedExtractorTemplateActionForServerONLY(
     query: RunBoxedExtractorTemplateAction,
-    currentModel?: MiroirModelEnvironment,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateAction,
-    currentModel?: MiroirModelEnvironment,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    currentModel?: MiroirModelEnvironment,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleBoxedQueryAction(query: RunBoxedQueryAction,
-    currentModel?: MiroirModelEnvironment,
+  handleBoxedQueryAction(
+    query: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction,
-    currentModel?: MiroirModelEnvironment,
+  handleBoxedExtractorAction(
+    query: RunBoxedExtractorAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
   upsertInstance(parentUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType>;
   deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<Action2VoidReturnType>;
@@ -207,18 +215,55 @@ export interface PersistenceStoreControllerInterface
 
   // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunBoxedQueryTemplateOrBoxedExtractorTemplateAction includes applicationSection
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction, currentModel?: MiroirModelEnvironment
+    query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
-  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction, currentModel?: MiroirModelEnvironment): Promise<Action2ReturnType>;
-  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction, currentModel?: MiroirModelEnvironment): Promise<Action2ReturnType>;
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction, currentModel?: MiroirModelEnvironment): Promise<Action2ReturnType>;
-  handleBoxedQueryAction(query: RunBoxedQueryAction, currentModel?: MiroirModelEnvironment): Promise<Action2ReturnType>;
+  handleQueryTemplateActionForServerONLY(
+    query: RunBoxedQueryTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
+  handleBoxedExtractorTemplateActionForServerONLY(
+    query: RunBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
+  handleBoxedExtractorAction(
+    query: RunBoxedExtractorAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
+  handleBoxedQueryAction(
+    query: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
 
-  getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<Action2EntityInstanceReturnType>;
-  getInstances(section: ApplicationSection, parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure>;
-  upsertInstance(section: ApplicationSection, instance: EntityInstance): Promise<Action2VoidReturnType>;
-  deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<Action2VoidReturnType>;
-  deleteInstances(section: ApplicationSection, instance: EntityInstance[]): Promise<Action2VoidReturnType>;
+  getInstance(
+    section: ApplicationSection,
+    parentUuid: string,
+    uuid: Uuid
+  ): Promise<Action2EntityInstanceReturnType>;
+  getInstances(
+    section: ApplicationSection,
+    parentUuid: string
+  ): Promise<Action2EntityInstanceCollectionOrFailure>;
+  upsertInstance(
+    section: ApplicationSection,
+    instance: EntityInstance
+  ): Promise<Action2VoidReturnType>;
+  deleteInstance(
+    section: ApplicationSection,
+    instance: EntityInstance
+  ): Promise<Action2VoidReturnType>;
+  deleteInstances(
+    section: ApplicationSection,
+    instance: EntityInstance[]
+  ): Promise<Action2VoidReturnType>;
 
-  handleAction(storeManagementAction: PersistenceStoreControllerAction): Promise<any>;
+  handleAction(
+    storeManagementAction: PersistenceStoreControllerAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<any>;
 }

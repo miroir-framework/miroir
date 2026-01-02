@@ -1,14 +1,12 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
 import {
   ApplicationSection,
-  DomainElementSuccess,
   EntityInstance,
-  InstanceAction,
-  ModelAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   StoreOrBundleAction,
-  type JzodSchema
+  type DomainAction,
+  type PersistenceAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
@@ -23,23 +21,21 @@ import {
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { packageName } from "../constants";
 
+import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { generateRestServiceResponse } from "./RestTools";
-import { cleanLevel } from "./constants";
 
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
-import { defaultMiroirMetaModel, defaultMiroirModelEnvironment } from "../1_core/Model";
+import { defaultMiroirModelEnvironment } from "../1_core/Model";
 import {
   getExtractorTemplateRunnerParamsForDomainState,
   getQueryTemplateRunnerParamsForDomainState,
   getSelectorMapForTemplate
 } from "../2_domain/DomainStateQueryTemplateSelector";
 import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors";
-import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
-import instanceEndpointV1 from "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json" assert { type: "json" };
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { actionsWithDeploymentInPayload } from "../1_core/Instance";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -266,30 +262,35 @@ export async function restActionHandler(
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
-  params: any,
+  urlParams: any,
 ):Promise<void> {
   log.info("restActionHandler called with method", method);
   log.info("restActionHandler called with effectiveUrl", effectiveUrl);
-  // log.info("restActionHandler called with params", JSON.stringify(params,undefined,2));
-  log.info("restActionHandler called with params", params);
+  log.info("restActionHandler called with params", urlParams);
 
-  if (body && (body as any).actionType !== "initModel") {
+  const action: PersistenceAction | DomainAction = body?.action?body.action:body as any;
+  const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
+
+  if (action.actionType !== "initModel") {
     // log.info("restActionHandler called with", "body", JSON.stringify(body, undefined, 2));
-    log.info("restActionHandler called with", "body", body);
+    log.info(
+      "restActionHandler called with",
+      "action",
+      action,
+      "applicationDeploymentMap",
+      applicationDeploymentMap
+    );
   }
-  // else {
-  //   log.info("restActionHandler called");
-  // }
-  const actionType: string =
-    typeof params["actionType"] == "string" ? params["actionType"] : params["actionType"][0];
+  
+  // const actionType: string =
+  //   typeof urlParams["actionType"] == "string" ? urlParams["actionType"] : urlParams["actionType"][0];
 
   // log.debug("restActionRunner params", params, "body", body);
   // const currentModel: MiroirModelEnvironment = serverModelEnvironments[action.deploymentUuid]
-
-  const action: StoreOrBundleAction | InstanceAction | ModelAction = body as
-    | StoreOrBundleAction
-    | InstanceAction
-    | ModelAction;
+  // const action: StoreOrBundleAction | InstanceAction | ModelAction = body as
+  //   | StoreOrBundleAction
+  //   | InstanceAction
+  //   | ModelAction;
   switch (action.actionType) {
     // case "storeManagementAction":
     case "storeManagementAction_createStore":
@@ -300,8 +301,9 @@ export async function restActionHandler(
     //
     case "bundleAction": {
       const result = await storeActionOrBundleActionStoreRunner(
-        actionType,
-        body as StoreOrBundleAction,
+        action.actionType,
+        action as StoreOrBundleAction,
+        applicationDeploymentMap,
         persistenceStoreControllerManager
       );
       return continuationFunction(response)(result);
@@ -343,10 +345,14 @@ export async function restActionHandler(
             "dropEntity",
           ].includes(action.actionType)
         ) {
-          const result = await domainController.handleAction(action, defaultMiroirModelEnvironment); // TODO: get the right model for the app / deployment
+          const result = await domainController.handleAction(
+            action,
+            applicationDeploymentMap,
+            defaultMiroirModelEnvironment
+          ); // TODO: get the right model for the app / deployment
           return continuationFunction(response)(result);
         } else {
-          const result = await domainController.handleAction(action);
+          const result = await domainController.handleAction(action, applicationDeploymentMap);
           log.info(
             "restActionHandler handled action",
             action.actionType,
@@ -376,7 +382,7 @@ export async function restActionHandler(
               JSON.stringify(action, undefined, 2)
           );
         }
-        const result = await localPersistenceStoreController.handleAction(action);
+        const result = await localPersistenceStoreController.handleAction(action, applicationDeploymentMap);
         return continuationFunction(response)(result);
       }
       break;
@@ -419,7 +425,8 @@ export async function queryActionHandler(
    */
   // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   const runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction =
-    body as RunBoxedExtractorOrQueryAction;
+    body.action? body.action as RunBoxedExtractorOrQueryAction: body as RunBoxedExtractorOrQueryAction;
+  const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
   log.info(
     "RestServer queryActionHandler",
     domainController.getPersistenceStoreAccessMode(),
@@ -432,6 +439,7 @@ export async function queryActionHandler(
   // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
   const result = await domainController.handleBoxedExtractorOrQueryAction(
     runBoxedExtractorOrQueryAction,
+    applicationDeploymentMap,
     defaultMiroirModelEnvironment, // TODO: pass the current model
   );
   // log.info(
@@ -460,7 +468,10 @@ export async function queryTemplateActionHandler(
   // log.info("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
   // log.info("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
 
-
+  const action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction = body?.action
+    ? (body.action as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction)
+    : (body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction);
+  const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
   /**
    * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
    *
@@ -474,13 +485,16 @@ export async function queryTemplateActionHandler(
    *
    */
   const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction =
-    body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
+    action as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
+  // const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction =
+  //   body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction;
 
   // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction, 
+      applicationDeploymentMap,
       defaultMiroirModelEnvironment, // TODO: get the right model for the app / deployment
     );
     log.info(
@@ -509,7 +523,8 @@ export async function queryTemplateActionHandler(
           domainState,
           getExtractorTemplateRunnerParamsForDomainState(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
-            extractorRunnerMapOnDomainState
+            applicationDeploymentMap,
+            extractorRunnerMapOnDomainState,
           ),
           defaultMiroirModelEnvironment
         );
@@ -520,6 +535,7 @@ export async function queryTemplateActionHandler(
           domainState,
           getQueryTemplateRunnerParamsForDomainState(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
+            applicationDeploymentMap,
             extractorRunnerMapOnDomainState
           ),
           defaultMiroirModelEnvironment

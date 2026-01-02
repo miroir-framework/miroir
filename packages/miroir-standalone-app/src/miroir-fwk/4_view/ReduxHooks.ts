@@ -37,6 +37,7 @@ import {
   defaultMetaModelEnvironment,
   miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
+  type ApplicationDeploymentMap,
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -347,6 +348,8 @@ function entityInstancesUuidIndexToEntityInstanceArraySelector(state: EntityInst
 
 //#########################################################################################
 export function useLocalCacheInstancesForJzodAttribute(
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: string | undefined,
   applicationSection: ApplicationSection | undefined,
   jzodSchema: JzodPlainAttribute | undefined
@@ -356,6 +359,8 @@ export function useLocalCacheInstancesForJzodAttribute(
     selectInstanceArrayForDeploymentSectionEntity(state, {
       queryType: "localCacheEntityInstancesExtractor",
       definition: {
+        application,
+        applicationDeploymentMap,
         deploymentUuid,
         applicationSection,
         entityUuid,

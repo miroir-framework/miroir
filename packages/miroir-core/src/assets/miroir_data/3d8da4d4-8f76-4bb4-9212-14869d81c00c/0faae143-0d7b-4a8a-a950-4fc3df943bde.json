@@ -30,6 +30,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
                 }
@@ -109,6 +110,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
                 }
@@ -194,6 +196,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
                 }
@@ -259,6 +262,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
                 }
@@ -325,6 +329,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
                 }
@@ -396,6 +401,7 @@
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": { "id": 1, "canBeTemplate": true, "defaultLabel": "Uuid", "editable": false }
                 }

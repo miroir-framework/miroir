@@ -30,7 +30,9 @@ import {
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
-  getReduxDeploymentsStateIndex
+  getReduxDeploymentsStateIndex,
+  type ApplicationDeploymentMap,
+  type EntityInstanceWithName
 } from "miroir-core";
 
 import { packageName } from "../../constants.js";
@@ -38,9 +40,10 @@ import { cleanLevel } from "../constants.js";
 import {
   LocalCacheSliceState,
   LocalCacheSliceStateZone,
-  localCacheSliceInputActionNames,
+  // localCacheSliceInputActionNames,
   localCacheSliceInputActionNamesObject,
-  localCacheSliceName
+  localCacheSliceName,
+  type LocalCacheActionBox
 } from "./localCacheReduxSliceInterface.js";
 import { currentModel } from "./Model.js";
 
@@ -50,14 +53,13 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
 export function getPersistenceActionReduxEventNames(promiseActionNames: string[]): string[] {
   return promiseActionNames.reduce((acc: string[], curr) => acc.concat([curr, "saga-" + curr, curr + "/rejected"]), []);
 }
 
-export const localCacheSliceGeneratedActionNames = getPersistenceActionReduxEventNames(localCacheSliceInputActionNames);
+export const localCacheSliceGeneratedActionNames = getPersistenceActionReduxEventNames(["handleAction"]);
 
 
 
@@ -194,7 +196,7 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   // TODO: refactor so as to avoid side effects!
   const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
   // log.info(
-  //   "getInitializedSectionEntityAdapter called",
+  //   "initializeLocalCacheSliceStateWithEntityAdapter called",
   //   "deploymentUuid",
   //   deploymentUuid,
   //   "section",
@@ -208,7 +210,7 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
     (state as any)[zone][entityInstancesLocationIndex] = entityAdapter.getInitialState();
     log.warn(
-      "getInitializedSectionEntityAdapter state[",
+      "initializeLocalCacheSliceStateWithEntityAdapter state[",
       zone,
       "][",
       entityInstancesLocationIndex,
@@ -266,6 +268,10 @@ function loadNewEntityInstancesInLocalCache(
   //   section,
   //   "instanceCollection",
   //   instanceCollection,
+  //   "instanceCollectionEntityIndex",
+  //   instanceCollectionEntityIndex,
+  //   // "current state for this entity instances:",
+  //   // JSON.stringify((state as any).current[instanceCollectionEntityIndex])
   //   // "entity",
   //   // entity ? (entity as any)["name"] : "entity not found for deployment"
   // );
@@ -307,16 +313,17 @@ function loadNewEntityInstancesInLocalCache(
 // 
 function handleInstanceAction(
   state: LocalCacheSliceState,
-  instanceAction: InstanceAction
+  instanceAction: InstanceAction,
+  applicationDeploymentMap: ApplicationDeploymentMap
 ): Action2ReturnType {
+  const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
   // log.info(
-  //   "localCacheSliceObject handleInstanceAction deploymentUuid",
-  //   instanceAction.deploymentUuid,
-  //   "actionName",
-  //   instanceAction.actionName,
+  //   "localCacheSliceObject handleInstanceAction",
   //   "called",
-  //   // JSON.stringify(action, null, 2)
-  //   instanceAction
+  //   JSON.stringify(instanceAction, null, 2),
+  //   "applicationDeploymentMap",
+  //   JSON.stringify(applicationDeploymentMap, null, 2),
+  //   "deploymentUuid", deploymentUuid
   // );
   try {
     // switch (instanceAction.actionName) {
@@ -325,18 +332,25 @@ function handleInstanceAction(
         for (let instanceCollection of instanceAction.payload.objects ??
           ([] as EntityInstanceCollection[])) {
           const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
-            instanceAction.payload.deploymentUuid,
-            instanceAction.payload.applicationSection,
+            deploymentUuid,
+            instanceAction.payload.applicationSection??"data",
             instanceCollection.parentUuid
           );
-          log.info(
-            "create for entity",
-            instanceCollection.parentName,
-            instanceCollection.parentUuid,
-            "instances",
-            JSON.stringify(instanceCollection.instances, null, 2)
-            // JSON.stringify(state)
-          );
+          // log.info(
+          //   "handleInstanceAction createInstance for",
+          //   "deployment", deploymentUuid,
+          //   "section",
+          //   instanceAction.payload.applicationSection,
+          //   "entity",
+          //   instanceCollection.parentName,
+          //   "entityUuid",
+          //   instanceCollection.parentUuid,
+          //   "instanceCollectionEntityIndex",
+          //   instanceCollectionEntityIndex,
+          //   "instances",
+          //   JSON.stringify(instanceCollection, null, 2)
+          //   // JSON.stringify(state)
+          // );
 
           if (!instanceAction.payload.applicationSection) {
             throw new Error(
@@ -359,14 +373,20 @@ function handleInstanceAction(
 
           const sliceEntityAdapter: EntityAdapter<EntityInstance, string> =
             initializeLocalCacheSliceStateWithEntityAdapter(
-              instanceAction.payload.deploymentUuid,
+              deploymentUuid,
               instanceAction.payload.applicationSection,
               instanceCollection.parentUuid,
               "current",
               state
             );
 
-          // log.info('localCacheSliceObject handleInstanceAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state before insert',JSON.stringify(state));
+          // log.info(
+          //   "localCacheSliceObject handleInstanceAction",
+          //   instanceCollection.parentName,
+          //   instanceCollection.parentUuid,
+          //   "state before insert",
+          //   JSON.stringify(state)
+          // );
 
           const result = sliceEntityAdapter.addMany(
             state.current[instanceCollectionEntityIndex],
@@ -380,7 +400,10 @@ function handleInstanceAction(
 
           if (instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {
             // TODO: does it work? How?
-            // log.info('localCacheSliceObject handleInstanceAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
+            // log.info(
+            //   "localCacheSliceObject handleInstanceAction creating entityAdapter for Entities",
+            //   instanceCollection.instances.map((i: any) => i["name"])
+            // );
 
             instanceCollection.instances.forEach((i: EntityInstance) => {
               if (!instanceAction.payload.applicationSection) {
@@ -390,7 +413,7 @@ function handleInstanceAction(
                 );
               }
               return initializeLocalCacheSliceStateWithEntityAdapter(
-                instanceAction.payload.deploymentUuid,
+                deploymentUuid,
                 instanceAction.payload.applicationSection,
                 i["uuid"],
                 "current",
@@ -398,10 +421,10 @@ function handleInstanceAction(
               );
             });
           }
-          log.info(
-            "create done",
-            JSON.stringify(state.current[instanceCollectionEntityIndex], null, 2)
-          );
+          // log.info(
+          //   "create done",
+          //   JSON.stringify(state.current[instanceCollectionEntityIndex], null, 2)
+          // );
         }
         break;
       }
@@ -414,7 +437,7 @@ function handleInstanceAction(
             );
 
             const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
-              instanceAction.payload.deploymentUuid,
+              deploymentUuid,
               instanceAction.payload.applicationSection,
               instanceCollection.parentUuid
             );
@@ -425,7 +448,7 @@ function handleInstanceAction(
             // );
 
             const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
-              instanceAction.payload.deploymentUuid,
+              deploymentUuid,
               instanceAction.payload.applicationSection,
               instanceCollection.parentUuid,
               "current",
@@ -464,12 +487,12 @@ function handleInstanceAction(
       case "updateInstance": {
         for (let instanceCollection of instanceAction.payload.objects) {
           const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
-            instanceAction.payload.deploymentUuid,
+            deploymentUuid,
             instanceAction.payload.applicationSection,
             instanceCollection.parentUuid
           );
           const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
-            instanceAction.payload.deploymentUuid,
+            deploymentUuid,
             instanceAction.payload.applicationSection,
             instanceCollection.parentUuid,
             "current",
@@ -489,7 +512,7 @@ function handleInstanceAction(
         // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
         for (const instanceCollection of instanceAction.payload.objects) {
           loadNewEntityInstancesInLocalCache(
-            instanceAction.payload.deploymentUuid,
+            deploymentUuid,
             instanceCollection.applicationSection,
             state,
             instanceCollection
@@ -525,12 +548,16 @@ function handleInstanceAction(
 //#########################################################################################
 function handleModelAction(
   state: LocalCacheSliceState,
-  deploymentUuid: Uuid,
-  action: ModelAction
+  // deploymentUuid: Uuid,
+  action: ModelAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
 ): Action2ReturnType {
+  const deploymentUuid = applicationDeploymentMap[action.payload.application];
   log.info(
     "localCacheSliceObject handleModelAction called",
     action.actionType,
+    "application",
+    action.payload.application,
     "deploymentUuid",
     deploymentUuid,
     "action",
@@ -571,9 +598,9 @@ function handleModelAction(
     case "dropEntity": {
       const localInstanceActions =
         ModelEntityActionTransformer.modelActionToInstanceAction(
-          action.payload.deploymentUuid,
+          deploymentUuid,
           action,
-          currentModel(action.payload.deploymentUuid, state)
+          currentModel(deploymentUuid, state)
         );
       log.info(
         "localCacheSliceObject handleModelAction generated instanceActions",
@@ -595,7 +622,7 @@ function handleModelAction(
       //   handleInstanceAction(state, localInstanceAction);
       // }
       const handleInstanceActionsResult = localInstanceActions.map((ia) =>
-        handleInstanceAction(state, ia)
+        handleInstanceAction(state, ia, applicationDeploymentMap)
       );
       const errors = handleInstanceActionsResult.filter((r) => r instanceof Action2Error);
       if (errors.length > 0) {
@@ -651,23 +678,24 @@ function handleModelAction(
 //#########################################################################################
 function handleAction(
   state: LocalCacheSliceState,
-  action: LocalCacheAction
+  action: LocalCacheAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
 ): Action2ReturnType {
   // log.info(
   //   "localCacheSliceObject handleAction called",
   //   action.actionType,
-  //   "deploymentUuid",
-  //   action.actionType !== "transactionalInstanceAction" ?action.deploymentUuid:action.instanceAction.deploymentUuid,
   //   "action",
-  //   // JSON.stringify(action, undefined, 2)
-  //   action
+  //   JSON.stringify(action, undefined, 2),
+  //   "applicationDeploymentMap",
+  //   JSON.stringify(applicationDeploymentMap, undefined, 2),
+  //   // action
   // );
   switch (action.actionType) {
     case "undo": 
     case "redo": {
       // log.debug(
       //   "localCacheSliceObject handleUndoRedoAction deploymentUuid",
-      //   action.deploymentUuid,
+      //   deploymentUuid,
       //   "action has no effect",
       //   JSON.stringify(action, undefined, 2)
       // );
@@ -685,11 +713,11 @@ function handleAction(
     case "createEntity":
     case "dropEntity":
     {
-      return handleModelAction(state, action.payload.deploymentUuid,action);
+      return handleModelAction(state, action, applicationDeploymentMap);
       break;
     }
     case "transactionalInstanceAction": {
-      return handleInstanceAction(state, action.payload.instanceAction);
+      return handleInstanceAction(state, action.payload.instanceAction, applicationDeploymentMap);
       break;
     }
     // case "instanceAction": {
@@ -700,7 +728,7 @@ function handleAction(
     case "loadNewInstancesInLocalCache":
     case "getInstance":
     case "getInstances": {
-      return handleInstanceAction(state, action);
+      return handleInstanceAction(state, action, applicationDeploymentMap);
       break;
     }
     default: {
@@ -726,11 +754,15 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: { loading: {}, current: {}, status: { initialLoadDone: false } } as LocalCacheSliceState,
   reducers: {
-    [localCacheSliceInputActionNamesObject.handleAction](
+    handleAction(
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheAction>
+      box: PayloadAction<LocalCacheActionBox>,
     ): void {
-      actionReturnTypeToException(handleAction(state, action.payload));
+      log.info(
+        "localCacheSliceObject.handleAction called with action",
+        JSON.stringify(box.payload.action, undefined, 2)
+      );
+      actionReturnTypeToException(handleAction(state, box.payload.action, box.payload.applicationDeploymentMap));
     },
   },
 });

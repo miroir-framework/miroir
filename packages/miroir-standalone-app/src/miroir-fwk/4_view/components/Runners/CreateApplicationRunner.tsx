@@ -518,6 +518,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "NOT_USED_IN_TEMPLATE",
         definition: [
           ...(localCreateApplicationCompositeActionTemplate.payload.definition as any),
           ...localCreateDeploymentCompositeActionTemplate.payload.definition,

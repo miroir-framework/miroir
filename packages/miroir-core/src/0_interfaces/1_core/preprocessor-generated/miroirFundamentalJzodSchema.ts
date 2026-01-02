@@ -9576,6 +9576,9 @@ export const miroirFundamentalJzodSchema = {
               "testActionLabel": {
                 "type": "string"
               },
+              "application": {
+                "type": "uuid"
+              },
               "deploymentUuid": {
                 "type": "uuid"
               },
@@ -9597,6 +9600,9 @@ export const miroirFundamentalJzodSchema = {
               "testActionLabel": {
                 "type": "string"
               },
+              "application": {
+                "type": "uuid"
+              },
               "deploymentUuid": {
                 "type": "uuid"
               },
@@ -9617,6 +9623,9 @@ export const miroirFundamentalJzodSchema = {
               },
               "testActionLabel": {
                 "type": "string"
+              },
+              "application": {
+                "type": "uuid"
               },
               "deploymentUuid": {
                 "type": "uuid"
@@ -9645,6 +9654,9 @@ export const miroirFundamentalJzodSchema = {
               "testActionLabel": {
                 "type": "string"
               },
+              "application": {
+                "type": "uuid"
+              },
               "deploymentUuid": {
                 "type": "uuid"
               },
@@ -9672,6 +9684,9 @@ export const miroirFundamentalJzodSchema = {
               "testActionLabel": {
                 "type": "string"
               },
+              "application": {
+                "type": "uuid"
+              },
               "deploymentUuid": {
                 "type": "uuid"
               },
@@ -9692,6 +9707,9 @@ export const miroirFundamentalJzodSchema = {
               },
               "testActionLabel": {
                 "type": "string"
+              },
+              "application": {
+                "type": "uuid"
               },
               "deploymentUuid": {
                 "type": "uuid"
@@ -14361,6 +14379,22 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "type": "object",
             "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                }
+              },
+              "applicationDeploymentMap": {
+                "type": "record",
+                "definition": {
+                  "type": "uuid"
+                }
+              },
               "deploymentUuid": {
                 "type": "uuid",
                 "optional": true,
@@ -14409,13 +14443,29 @@ export const miroirFundamentalJzodSchema = {
       "shippingBox": {
         "type": "object",
         "definition": {
-          "deploymentUuid": {
+          "application": {
             "type": "uuid",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
-                "defaultLabel": "Uuid",
+                "defaultLabel": "Application",
+                "editable": false
+              }
+            }
+          },
+          "applicationDeploymentMap": {
+            "type": "record",
+            "definition": {
+              "type": "uuid"
+            }
+          },
+          "deploymentUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "canBeTemplate": true,
+                "defaultLabel": "Deployment Uuid",
                 "editable": false
               }
             }
@@ -15422,9 +15472,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -15435,7 +15485,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -15480,9 +15529,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -15493,7 +15542,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -15538,9 +15586,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -15551,7 +15599,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -15636,9 +15683,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -15649,7 +15696,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -15701,9 +15747,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -15714,7 +15760,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -15766,9 +15811,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -15779,7 +15824,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -15888,9 +15932,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -15901,7 +15945,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -15989,9 +16032,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -16073,9 +16116,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
                     "editable": false
@@ -16086,7 +16129,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -16169,9 +16211,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16182,7 +16224,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16274,9 +16315,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16287,7 +16328,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16339,9 +16379,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16352,7 +16392,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16404,9 +16443,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16417,7 +16456,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16469,9 +16507,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16482,7 +16520,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16534,9 +16571,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16547,7 +16584,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16599,9 +16635,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16612,7 +16648,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16721,9 +16756,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16734,7 +16769,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16813,9 +16847,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16826,7 +16860,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -16914,9 +16947,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false
@@ -16989,9 +17022,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Uuid",
                     "editable": false
                   }
@@ -17001,7 +17034,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -17056,9 +17088,9 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Uuid",
                     "editable": false
                   }
@@ -17068,7 +17100,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -17138,9 +17169,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -17164,7 +17195,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -17324,9 +17354,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -17350,7 +17380,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -17431,9 +17460,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -17457,7 +17486,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -17565,9 +17593,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -17591,7 +17619,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -17751,9 +17778,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -17777,7 +17804,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -17858,9 +17884,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -17884,7 +17910,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -17965,9 +17990,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -17991,7 +18016,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18093,9 +18117,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -18119,7 +18143,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18189,9 +18212,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -18215,7 +18238,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18294,9 +18316,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -18320,7 +18342,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18395,6 +18416,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Uuid",
@@ -18406,7 +18428,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18458,6 +18479,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Uuid",
@@ -18467,10 +18489,8 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "application": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18526,7 +18546,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -18540,6 +18559,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
@@ -18630,6 +18650,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -18641,7 +18662,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18693,6 +18713,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -18704,7 +18725,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18756,6 +18776,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -18767,7 +18788,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18822,6 +18842,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -18833,7 +18854,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -18888,6 +18908,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -18899,7 +18920,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19030,9 +19050,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19042,7 +19062,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19066,7 +19085,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19082,7 +19100,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19098,7 +19115,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19149,6 +19165,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Uuid",
@@ -19160,7 +19177,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19184,7 +19200,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19200,7 +19215,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19216,7 +19230,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19267,9 +19280,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19279,7 +19292,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19303,7 +19315,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19319,7 +19330,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19335,7 +19345,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19386,9 +19395,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19398,7 +19407,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19422,7 +19430,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19438,7 +19445,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19454,7 +19460,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19505,9 +19510,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19517,7 +19522,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19541,7 +19545,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19557,7 +19560,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19573,7 +19575,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19624,9 +19625,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19636,7 +19637,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19660,7 +19660,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19676,7 +19675,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19692,7 +19690,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19743,9 +19740,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19755,7 +19752,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19779,7 +19775,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19795,7 +19790,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19811,7 +19805,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19862,9 +19855,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19874,7 +19867,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -19898,7 +19890,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -19914,7 +19905,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -19930,7 +19920,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19987,9 +19976,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -19999,7 +19988,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -20023,7 +20011,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -20039,7 +20026,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -20055,7 +20041,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20106,6 +20091,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Uuid",
@@ -20117,7 +20103,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -20141,7 +20126,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -20157,7 +20141,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -20173,7 +20156,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20224,9 +20206,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20236,7 +20218,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -20260,7 +20241,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -20276,7 +20256,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -20292,7 +20271,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20349,9 +20327,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20361,7 +20339,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -20385,7 +20362,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -20401,7 +20377,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -20417,7 +20392,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20468,9 +20442,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20480,7 +20454,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -20504,7 +20477,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -20520,7 +20492,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -20536,7 +20507,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20587,9 +20557,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20599,7 +20569,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -20623,7 +20592,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -20639,7 +20607,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -20655,7 +20622,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20706,9 +20672,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20718,7 +20684,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -20742,7 +20707,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Name",
                         "editable": false
                       }
@@ -20758,7 +20722,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
@@ -20774,7 +20737,6 @@ export const miroirFundamentalJzodSchema = {
                     ],
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Uuid",
                         "editable": false
                       }
@@ -20827,6 +20789,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -20914,6 +20877,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21012,6 +20976,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21082,6 +21047,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21156,6 +21122,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21240,6 +21207,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -21491,7 +21459,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -21947,7 +21914,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -21961,6 +21927,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -22021,7 +21988,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -22274,13 +22240,26 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
-              "deploymentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Deployment",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -22301,13 +22280,26 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
-              "deploymentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Deployment",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "editable": false
+                      }
+                    }
                   }
                 }
               }
@@ -43244,13 +43236,12 @@ export const miroirFundamentalJzodSchema = {
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox_extend": {
         "type": "object",
         "definition": {
-          "deploymentUuid": {
+          "application": {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
-                "defaultLabel": "Uuid",
+                "defaultLabel": "Application",
                 "editable": false,
                 "isTemplate": true
               }
@@ -43264,9 +43255,50 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
-                    "defaultLabel": "Uuid",
+                    "defaultLabel": "Application",
+                    "editable": false
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "applicationDeploymentMap": {
+            "type": "record",
+            "definition": {
+              "type": "uuid"
+            }
+          },
+          "deploymentUuid": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "canBeTemplate": true,
+                "defaultLabel": "Deployment Uuid",
+                "editable": false,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Deployment Uuid",
                     "editable": false
                   }
                 }
@@ -43882,7 +43914,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -43896,6 +43927,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -43956,7 +43988,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44217,9 +44248,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44233,9 +44264,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44255,7 +44286,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44348,9 +44378,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44364,9 +44394,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44386,7 +44416,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44439,9 +44468,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44455,9 +44484,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44477,7 +44506,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44530,9 +44558,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44546,9 +44574,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44568,7 +44596,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44621,9 +44648,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44637,9 +44664,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44659,7 +44686,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44712,9 +44738,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44728,9 +44754,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44750,7 +44776,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44803,9 +44828,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44819,9 +44844,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44841,7 +44866,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -44951,9 +44975,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -44967,9 +44991,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -44989,7 +45013,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -45069,9 +45092,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -45085,9 +45108,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -45107,7 +45130,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -45244,9 +45266,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -45260,9 +45282,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -45404,9 +45426,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -45433,9 +45455,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -45468,7 +45490,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -45728,9 +45749,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -45757,9 +45778,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -45792,7 +45813,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -45875,9 +45895,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -45904,9 +45924,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -45939,7 +45959,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -46022,9 +46041,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -46051,9 +46070,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -46086,7 +46105,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -46215,9 +46233,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -46244,9 +46262,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -46279,7 +46297,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -46351,9 +46368,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -46380,9 +46397,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -46415,7 +46432,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -46495,9 +46511,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -46524,9 +46540,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -46559,7 +46575,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -46635,9 +46650,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -46664,9 +46679,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -46699,7 +46714,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -46959,9 +46973,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -46988,9 +47002,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -47023,7 +47037,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -47106,9 +47119,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -47135,9 +47148,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -47170,7 +47183,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -47305,7 +47317,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -47538,6 +47549,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "union",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -47554,6 +47566,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -47647,6 +47660,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "union",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -47663,6 +47677,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -47746,6 +47761,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "union",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -47762,6 +47778,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -48470,13 +48487,12 @@ export const miroirFundamentalJzodSchema = {
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox": {
         "type": "object",
         "definition": {
-          "deploymentUuid": {
+          "application": {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
-                "defaultLabel": "Uuid",
+                "defaultLabel": "Application",
                 "editable": false,
                 "isTemplate": true
               }
@@ -48490,9 +48506,50 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
-                    "defaultLabel": "Uuid",
+                    "defaultLabel": "Application",
+                    "editable": false
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "applicationDeploymentMap": {
+            "type": "record",
+            "definition": {
+              "type": "uuid"
+            }
+          },
+          "deploymentUuid": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "canBeTemplate": true,
+                "defaultLabel": "Deployment Uuid",
+                "editable": false,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Deployment Uuid",
                     "editable": false
                   }
                 }
@@ -51830,13 +51887,12 @@ export const miroirFundamentalJzodSchema = {
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox_extend": {
         "type": "object",
         "definition": {
-          "deploymentUuid": {
+          "application": {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
-                "defaultLabel": "Uuid",
+                "defaultLabel": "Application",
                 "editable": false,
                 "isTemplate": true
               }
@@ -51850,9 +51906,50 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
-                    "defaultLabel": "Uuid",
+                    "defaultLabel": "Application",
+                    "editable": false
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "applicationDeploymentMap": {
+            "type": "record",
+            "definition": {
+              "type": "uuid"
+            }
+          },
+          "deploymentUuid": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "canBeTemplate": true,
+                "defaultLabel": "Deployment Uuid",
+                "editable": false,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Deployment Uuid",
                     "editable": false
                   }
                 }
@@ -52468,7 +52565,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -52482,6 +52578,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -52542,7 +52639,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -52803,9 +52899,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -52819,9 +52915,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -52841,7 +52937,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -52934,9 +53029,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -52950,9 +53045,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -52972,7 +53067,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53025,9 +53119,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53041,9 +53135,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53063,7 +53157,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53116,9 +53209,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53132,9 +53225,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53154,7 +53247,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53207,9 +53299,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53223,9 +53315,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53245,7 +53337,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53298,9 +53389,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53314,9 +53405,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53336,7 +53427,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53389,9 +53479,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53405,9 +53495,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53427,7 +53517,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53537,9 +53626,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53553,9 +53642,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53575,7 +53664,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53655,9 +53743,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53671,9 +53759,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53693,7 +53781,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -53830,9 +53917,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "Deployment",
                         "editable": false,
@@ -53846,9 +53933,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "Deployment",
                             "editable": false
@@ -53990,9 +54077,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -54019,9 +54106,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -54054,7 +54141,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -54314,9 +54400,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -54343,9 +54429,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -54378,7 +54464,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -54461,9 +54546,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -54490,9 +54575,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -54525,7 +54610,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -54608,9 +54692,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -54637,9 +54721,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -54672,7 +54756,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -54801,9 +54884,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -54830,9 +54913,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -54865,7 +54948,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -54937,9 +55019,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -54966,9 +55048,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -55001,7 +55083,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -55081,9 +55162,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -55110,9 +55191,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -55145,7 +55226,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -55221,9 +55301,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -55250,9 +55330,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -55285,7 +55365,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -55545,9 +55624,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -55574,9 +55653,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -55609,7 +55688,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -55692,9 +55770,9 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "deploymentUuid": {
                     "type": "union",
+                    "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
@@ -55721,9 +55799,9 @@ export const miroirFundamentalJzodSchema = {
                     "definition": [
                       {
                         "type": "uuid",
+                        "optional": true,
                         "tag": {
                           "value": {
-                            "id": 1,
                             "canBeTemplate": true,
                             "defaultLabel": "deployment Uuid",
                             "editable": false,
@@ -55756,7 +55834,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -55891,7 +55968,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "selectorParams": {
@@ -56124,6 +56200,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "union",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -56140,6 +56217,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -56233,6 +56311,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "union",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -56249,6 +56328,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -56332,6 +56412,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "deploymentUuid": {
                 "type": "union",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 1,
@@ -56348,6 +56429,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 1,
@@ -57056,13 +57138,12 @@ export const miroirFundamentalJzodSchema = {
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox": {
         "type": "object",
         "definition": {
-          "deploymentUuid": {
+          "application": {
             "type": "union",
             "tag": {
               "value": {
-                "id": 1,
                 "canBeTemplate": true,
-                "defaultLabel": "Uuid",
+                "defaultLabel": "Application",
                 "editable": false,
                 "isTemplate": true
               }
@@ -57076,9 +57157,50 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "canBeTemplate": true,
-                    "defaultLabel": "Uuid",
+                    "defaultLabel": "Application",
+                    "editable": false
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "applicationDeploymentMap": {
+            "type": "record",
+            "definition": {
+              "type": "uuid"
+            }
+          },
+          "deploymentUuid": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "canBeTemplate": true,
+                "defaultLabel": "Deployment Uuid",
+                "editable": false,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Deployment Uuid",
                     "editable": false
                   }
                 }
@@ -59152,7 +59274,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -59166,6 +59287,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -59226,7 +59348,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -59499,7 +59620,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {
@@ -59513,6 +59633,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "defaultLabel": "Module Deployment Uuid",
@@ -59573,7 +59694,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "selectorParams": {

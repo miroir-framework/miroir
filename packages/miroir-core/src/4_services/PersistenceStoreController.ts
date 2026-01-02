@@ -45,6 +45,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement";
 import { ACTION_OK } from "../1_core/constants";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 const entityEntity = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
 const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 
@@ -112,6 +113,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async handleBoxedExtractorAction(
     action: RunBoxedExtractorAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
@@ -125,7 +127,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       | PersistenceStoreDataSectionInterface
       | PersistenceStoreModelSectionInterface =
       action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: Action2ReturnType = await currentStore.handleBoxedExtractorAction(action, currentModelEnvironment);
+    const result: Action2ReturnType = await currentStore.handleBoxedExtractorAction(
+      action,
+      applicationDeploymentMap,
+      currentModelEnvironment
+    );
 
     log.info(
       this.logHeader,
@@ -141,6 +147,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async handleBoxedQueryAction(
     action: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
@@ -154,7 +161,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       | PersistenceStoreDataSectionInterface
       | PersistenceStoreModelSectionInterface =
       action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(action, currentModel);
+    const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(
+      action,
+      applicationDeploymentMap,
+      currentModel
+    );
 
     log.info(
       this.logHeader,
@@ -169,6 +180,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async handleBoxedExtractorTemplateActionForServerONLY(
     action: RunBoxedExtractorTemplateAction,
+    appliationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
@@ -184,7 +196,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
 
     const result: Action2ReturnType =
-      await currentStore.handleBoxedExtractorTemplateActionForServerONLY(action, currentModel);
+      await currentStore.handleBoxedExtractorTemplateActionForServerONLY(
+        action,
+        appliationDeploymentMap,
+        currentModel
+      );
 
     log.info(
       this.logHeader,
@@ -200,6 +216,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async handleQueryTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateAction,
+    appliationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
@@ -216,6 +233,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     const result: Action2ReturnType = await currentStore.handleQueryTemplateActionForServerONLY(
       action,
+      appliationDeploymentMap,
       currentModel
     );
 
@@ -233,6 +251,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
@@ -253,7 +272,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
 
     const result: Action2ReturnType =
-      await currentStore.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action, currentModel);
+      await currentStore.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+        action,
+        applicationDeploymentMap,
+        currentModel
+      );
 
     log.info(
       this.logHeader,

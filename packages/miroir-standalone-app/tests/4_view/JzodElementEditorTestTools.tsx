@@ -42,7 +42,9 @@ import {
   reportBookList,
   reportCountryList,
   reportPublisherList,
-  selfApplicationDeploymentLibrary
+  selfApplication,
+  selfApplicationDeploymentLibrary,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
 
@@ -61,6 +63,9 @@ import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/comp
 import { log } from "console";
 import { emptyDomainElementObject } from "../../src/miroir-fwk/4_view/components/Page/RootComponent";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Concept";
+import { selfApplicationDeploymentMiroir } from "miroir-core";
+import { selfApplicationLibrary } from "miroir-core";
+import { selfApplicationMiroir } from "miroir-core";
 
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
@@ -551,7 +556,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         labelElement={labelElement}
                         currentDeploymentUuid={context.deploymentUuid}
                         currentApplicationSection={"data"}
-                        resolvedElementJzodSchema={resolvedJzodSchema.resolvedSchema}
+                        resolvedElementJzodSchemaDEFUNCT={resolvedJzodSchema.resolvedSchema}
                         typeCheckKeyMap={resolvedJzodSchema.keyMap}
                         // localRootLessListKeyMap={localRootLessListKeyMap}
                         foreignKeyObjects={emptyObject}
@@ -578,6 +583,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
   // ################################################################################################
 export function getWrapperLoadingLocalCache(
   isPerformanceTest: boolean = false,
+  applicationDeploymentMap: ApplicationDeploymentMap
 ): React.FC<any> {
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -610,6 +616,7 @@ export function getWrapperLoadingLocalCache(
     // deploymentUuid: applicationDeploymentAdmin.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      application: selfApplicationDeploymentMiroir.uuid,
       deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       objects: [
         {
@@ -656,7 +663,7 @@ export function getWrapperLoadingLocalCache(
         // },
       ],
     }
-  });
+  }, applicationDeploymentMap);
   if (resultForLoadingMiroirMetaModel.status !== "ok") {
     throw new Error(
       `Error loading Miroir Meta Model: ${JSON.stringify(resultForLoadingMiroirMetaModel, null, 2)}`
@@ -670,15 +677,18 @@ export function getWrapperLoadingLocalCache(
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: selfApplicationMiroir.uuid,
         deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       },
-    }
+    },
+    applicationDeploymentMap,
   );
   const resultForLoadingLibraryApplicationModel: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      application: selfApplicationDeploymentLibrary.uuid,
       deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       objects: [
         {
@@ -738,7 +748,7 @@ export function getWrapperLoadingLocalCache(
         ...libraryApplicationInstances
       ],
     }
-  });
+  }, applicationDeploymentMap);
   if (resultForLoadingLibraryApplicationModel.status !== "ok") {
     throw new Error(
       `Error loading Library Application Model: ${JSON.stringify(resultForLoadingLibraryApplicationModel, null, 2)}`
@@ -752,9 +762,10 @@ export function getWrapperLoadingLocalCache(
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: selfApplicationLibrary.uuid,
         deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       },
-    }
+    }, applicationDeploymentMap
   );
 
   const resultForLoadingLibraryApplicationInstances: Action2ReturnType = localCache.handleLocalCacheAction({
@@ -762,10 +773,11 @@ export function getWrapperLoadingLocalCache(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      application: selfApplicationLibrary.uuid,
       deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       objects: libraryApplicationInstances,
     }
-  });
+  }, applicationDeploymentMap);
 
   if (resultForLoadingLibraryApplicationInstances.status !== "ok") {
     throw new Error(
@@ -779,9 +791,10 @@ export function getWrapperLoadingLocalCache(
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: selfApplicationLibrary.uuid,
         deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       },
-    }
+    }, applicationDeploymentMap
   );
 
   console.log(
@@ -975,8 +988,9 @@ export function getJzodEditorTestSuites<
     jzodElementEditor: React.FC<JzodEditorProps>
   ) => ReactComponentTestSuites<JzodEditorProps>,
   performanceTests: boolean = false,
+  applicationDeploymentMap: ApplicationDeploymentMap,
 ): ReactComponentTestSuites<JzodEditorProps> {
-  const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(performanceTests);
+  const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(performanceTests, applicationDeploymentMap);
 
 
   const JzodElementEditorForTest: React.FC<JzodEditorProps> = reactComponentUnderTest;
@@ -1002,7 +1016,8 @@ export function prepareAndRunTestSuites(
   string,
   ReactComponentTestSuitePrep<any>
   //  & { modes?: ModesType }
->
+>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
 ) {
   Object.entries(jzodElementEditorTests).forEach(([editorName, testSuite]) => {
       // const suites: ReactComponentTestSuites<LocalEditorPropsRoot> = getJzodEditorTestSuites(
@@ -1010,7 +1025,8 @@ export function prepareAndRunTestSuites(
         pageLabel,
         testSuite.editor, //getJzodElementEditorForTest(pageLabel)
         testSuite.getJzodEditorTests,
-        testSuite.performanceTests
+        testSuite.performanceTests,
+        applicationDeploymentMap,
       );
       let modes: TestMode[] = ['jzodElementEditor'];
       // if (testSuite.modes === undefined) {

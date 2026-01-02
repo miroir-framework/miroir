@@ -14,6 +14,7 @@ import {
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
 } from "./JzodElementEditorTestTools";
+import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -170,7 +171,7 @@ const jzodElementEditorTests: Record<
 
 // Integration-style smoke test using the shared test wrapper
 describe('ReportViewWithEditor integration', () => {
-  prepareAndRunTestSuites("reportView.integ", jzodElementEditorTests);
+  prepareAndRunTestSuites("reportView.integ", jzodElementEditorTests, defaultSelfApplicationDeploymentMap);
   
   // Task 4.12: Additional editing tests will be added here
   // These tests verify that section-level properties (extractors, combiners, 

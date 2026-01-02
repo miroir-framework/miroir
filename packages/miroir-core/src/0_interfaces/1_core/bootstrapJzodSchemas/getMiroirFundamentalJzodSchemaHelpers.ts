@@ -31,6 +31,7 @@ export const testCompositeActionParams: JzodElement = {
       definition: {
         testActionType: { type: "literal", definition: "testCompositeActionSuite"},
         testActionLabel: { type: "string" },
+        application: { type: "uuid" },
         deploymentUuid: { type: "uuid" },
         testCompositeAction: {
           type: "schemaReference",
@@ -45,6 +46,7 @@ export const testCompositeActionParams: JzodElement = {
       definition: {
         testActionType: { type: "literal", definition: "testCompositeAction" },
         testActionLabel: { type: "string" },
+        application: { type: "uuid" },
         deploymentUuid: { type: "uuid" },
         testCompositeAction: {
           type: "schemaReference",
@@ -87,6 +89,7 @@ export const testCompositeActionParams: JzodElement = {
       definition: {
         testActionType:{type:"literal",definition:"testBuildPlusRuntimeCompositeActionSuite"},
         testActionLabel:{type:"string"},
+        application: { type: "uuid" },
         deploymentUuid:{type:"uuid"},
         testParams:{type:"record",definition:{ type: "any"}},
         testCompositeAction:{
@@ -102,6 +105,7 @@ export const testCompositeActionParams: JzodElement = {
       definition:{
         testActionType:{type:"literal",definition:"testBuildPlusRuntimeCompositeAction"},
         testActionLabel:{type:"string"},
+        application: { type: "uuid" },
         deploymentUuid:{type:"uuid"},
         testParams:{type:"record",definition:{ type: "any"}},
         testCompositeAction:{
@@ -117,6 +121,7 @@ export const testCompositeActionParams: JzodElement = {
       definition: {
         testActionType: { type: "literal", definition: "testCompositeActionTemplateSuite"},
         testActionLabel: { type: "string" },
+        application: { type: "uuid" },
         deploymentUuid: { type: "uuid" },
         testCompositeActionSuite: {
           type: "schemaReference",
@@ -131,6 +136,7 @@ export const testCompositeActionParams: JzodElement = {
       definition: {
         testActionType: { type: "literal", definition: "testCompositeActionTemplate" },
         testActionLabel: { type: "string" },
+        application: { type: "uuid" },
         deploymentUuid: { type: "uuid" },
         testCompositeAction: {
           type: "schemaReference",

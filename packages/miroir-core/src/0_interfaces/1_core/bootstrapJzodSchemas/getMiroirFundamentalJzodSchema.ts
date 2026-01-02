@@ -1752,6 +1752,16 @@ export function getMiroirFundamentalJzodSchema(
             definition: {
               type: "object",
               definition: {
+                application: {
+                  type: "uuid",
+                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                },
+                applicationDeploymentMap: {
+                  type: "record",
+                  definition: {
+                    type: "uuid",
+                  }
+                },
                 deploymentUuid: {
                   type: "uuid",
                   optional: true,
@@ -1782,14 +1792,31 @@ export function getMiroirFundamentalJzodSchema(
         shippingBox: {
           type: "object",
           definition: {
-            deploymentUuid: {
+            application: {
               // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
               type: "uuid",
               tag: {
                 value: {
-                  id: 1,
                   canBeTemplate: true,
-                  defaultLabel: "Uuid",
+                  defaultLabel: "Application",
+                  editable: false,
+                },
+              },
+            },
+            applicationDeploymentMap: {
+              type: "record",
+              definition: {
+                type: "uuid",
+              }
+            },
+            deploymentUuid: {
+              // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
+              type: "uuid",
+              optional: true,
+              tag: {
+                value: {
+                  canBeTemplate: true,
+                  defaultLabel: "Deployment Uuid",
                   editable: false,
                 },
               },
@@ -3168,10 +3195,19 @@ export function getMiroirFundamentalJzodSchema(
                   type: "string",
                   optional: true,
                 },
-                deploymentUuid: {
-                  type: "uuid",
-                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
-                },
+                payload: {
+                  type: "object",
+                  definition: {
+                    deploymentUuid: {
+                      type: "uuid",
+                      tag: { value: { defaultLabel: "Deployment", editable: false } },
+                    },
+                    application: {
+                      type: "uuid",
+                      tag: { value: { defaultLabel: "Application", editable: false } },
+                    },
+                  }
+                }
               },
             },
             {
@@ -3189,10 +3225,19 @@ export function getMiroirFundamentalJzodSchema(
                   type: "string",
                   optional: true,
                 },
-                deploymentUuid: {
-                  type: "uuid",
-                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
-                },
+                payload: {
+                  type: "object",
+                  definition: {
+                    deploymentUuid: {
+                      type: "uuid",
+                      tag: { value: { defaultLabel: "Deployment", editable: false } },
+                    },
+                    application: {
+                      type: "uuid",
+                      tag: { value: { defaultLabel: "Application", editable: false } },
+                    },
+                  }
+                }
               },
             },
           ],

@@ -45,6 +45,7 @@ import {
   waitAfterUserInteraction,
 } from "./JzodElementEditorTestTools";
 import { debug } from "console";
+import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
@@ -2426,5 +2427,5 @@ const jzodElementEditorTests: Record<
 
 // ##############################################################################################
 describe("JzodElementEditor", () => {
-  prepareAndRunTestSuites(pageLabel, jzodElementEditorTests);
+  prepareAndRunTestSuites(pageLabel, jzodElementEditorTests, defaultSelfApplicationDeploymentMap);
 });

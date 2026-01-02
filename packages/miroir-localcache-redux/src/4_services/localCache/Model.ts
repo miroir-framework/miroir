@@ -31,6 +31,7 @@ import {
   type MiroirModelEnvironment,
   miroirFundamentalJzodSchema,
   defaultMiroirMetaModel,
+  entityEndpointVersion,
 } from "miroir-core";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -50,6 +51,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
       const modelSection = deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model";
       const applicationVersions = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entitySelfApplicationVersion.uuid)];
       const configuration = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityStoreBasedConfiguration.uuid)];
+      const endpoints = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityEndpointVersion.uuid)];
       const entities = state.current[getReduxDeploymentsStateIndex(deploymentUuid, metaModelSection, entityEntity.uuid)];
       const entityDefinitions = state.current[getReduxDeploymentsStateIndex(deploymentUuid, metaModelSection, entityEntityDefinition.uuid)];
       const jzodSchemas = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityJzodSchema.uuid)];
@@ -64,6 +66,9 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
         configuration: (configuration && configuration.entities
           ? Object.values(configuration.entities)
           : []) as StoreBasedConfiguration[],
+        endpoints: (endpoints && endpoints.entities
+          ? Object.values(endpoints.entities)
+          : []) as MetaModel["endpoints"],
         entities: (entities && entities.entities? Object.values(entities.entities):[]) as MetaEntity[],
         entityDefinitions: (entityDefinitions && entityDefinitions.entities? Object.values(entityDefinitions.entities):[]) as EntityDefinition[],
         jzodSchemas: (jzodSchemas && jzodSchemas.entities? Object.values(jzodSchemas.entities): []) as JzodSchema[],
@@ -84,5 +89,9 @@ export function currentModelEnvironment(deploymentUuid: string, state:LocalCache
     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
     miroirMetaModel: defaultMiroirMetaModel,
     currentModel: model,
+    endpointsByUuid: model.endpoints.reduce((acc, endpoint) => {
+      acc[endpoint.uuid] = endpoint;
+      return acc;
+    }, {} as {[uuid:string]:any}),
   }
 }
