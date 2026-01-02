@@ -87,6 +87,7 @@ import { adminMiroirApplication } from 'miroir-core';
 import { createDeploymentCompositeAction } from 'miroir-core';
 import { resetAndinitializeDeploymentCompositeAction } from 'miroir-core';
 import { adminConfigurationDeploymentParis } from 'miroir-core';
+import { selfApplicationLibrary } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -141,6 +142,7 @@ MiroirLoggerFactory.startRegisteredLoggers(
 myConsoleLog("started registered loggers DONE");
 
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const testApplicationUuid = selfApplicationLibrary.uuid;
 
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
@@ -1073,12 +1075,13 @@ const testSuites: Record<string, TestCompositeActionParams> = {
       beforeAll: createDeploymentCompositeAction(
         "TEST",
         testApplicationDeploymentUuid,
-        adminConfigurationDeploymentLibrary.uuid,
+        testApplicationUuid,
         testDeploymentStorageConfiguration
         // testAdminConfigurationDeploymentUuid,
         // testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
+        testSelfApplicationUuid,
         testAdminConfigurationDeploymentUuid,
         initParametersForTest,
         []

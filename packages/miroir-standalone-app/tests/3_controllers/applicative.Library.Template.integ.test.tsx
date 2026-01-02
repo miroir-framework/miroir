@@ -1180,6 +1180,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
+        testSelfApplicationUuid,
         testAdminConfigurationDeploymentUuid,
         initParametersForTest,
         // libraryEntitesAndInstances

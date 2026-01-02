@@ -74,6 +74,8 @@ import { createDeploymentCompositeAction } from "miroir-core";
 import { resetAndinitializeDeploymentCompositeAction } from "miroir-core";
 import type { ApplicationEntitiesAndInstances } from "miroir-core";
 import { adminMiroirApplication } from "miroir-core";
+import { defaultSelfApplicationDeploymentMap } from "miroir-core";
+import { selfApplicationMiroir } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -126,6 +128,7 @@ const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfi
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
+const testApplicationUuid = selfApplicationLibrary.uuid;
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 
 const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
@@ -190,6 +193,7 @@ beforeAll(async () => {
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
+    defaultSelfApplicationDeploymentMap,
     defaultMiroirModelEnvironment,
     {},
   );
@@ -207,14 +211,14 @@ beforeAll(async () => {
 
 // executed only once like beforeAll, since there is only 1 test suite
 beforeEach(async () => {
-  await resetAndInitApplicationDeployment(domainController, [
+  await resetAndInitApplicationDeployment(domainController, defaultSelfApplicationDeploymentMap, [
     selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
   ]);
   document.body.innerHTML = "";
 });
 
 afterAll(async () => {
-  await deleteAndCloseApplicationDeployments(miroirConfig, domainController, adminApplicationDeploymentConfigurations);
+  await deleteAndCloseApplicationDeployments(miroirConfig, domainController, defaultSelfApplicationDeploymentMap, adminApplicationDeploymentConfigurations);
   // displayTestSuiteResults(expect,Object.keys(testActions)[0]);
   displayTestSuiteResultsDetails(
     Object.keys(testActions)[0],
@@ -228,17 +232,21 @@ const testActions: Record<string, TestCompositeActionParams> = {
   "DomainController.integ.Model.CRUD": {
     testActionType: "testCompositeActionSuite",
     testActionLabel: "DomainController.integ.Model.CRUD",
-    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+    application: testApplicationUuid,
+    deploymentUuid: testApplicationDeploymentUuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
       testLabel: "DomainController.integ.Model.CRUD",
       beforeAll: createDeploymentCompositeAction(
         "library",
         testApplicationDeploymentUuid,
-        adminConfigurationDeploymentLibrary.uuid,
+        testApplicationUuid,
+        // testApplicationDeploymentUuid,
+        // adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
+        selfApplicationLibrary.uuid,
         adminConfigurationDeploymentLibrary.uuid,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
@@ -276,6 +284,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED_HERE",
               definition: [
                 {
                   actionType: "rollback",
@@ -284,6 +293,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -294,7 +304,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -305,14 +316,17 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                      deploymentUuid: testApplicationDeploymentUuid,
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -370,6 +384,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED_HERE",
               definition: [
                 {
                   // actionType: "modelAction",
@@ -378,6 +393,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -388,7 +404,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -398,7 +415,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     entities: [
                       {
                         entity: entityAuthor as Entity,
@@ -414,7 +432,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -426,14 +445,17 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
+                      deploymentUuid: testApplicationDeploymentUuid,
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -505,6 +527,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED_HERE",
               definition: [
                 {
                   actionType: "rollback",
@@ -513,6 +536,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -523,7 +547,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -533,7 +558,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     entities: [
                       {
                         entity: entityAuthor as Entity,
@@ -549,7 +575,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -560,14 +587,17 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      application: testApplicationUuid,
+                      deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -625,6 +655,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED_HERE",
               definition: [
                 {
                   actionType: "rollback",
@@ -633,6 +664,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -643,7 +675,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -653,7 +686,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
+                    application: testApplicationUuid,
                     entities: [
                       {
                         entity: entityAuthor as Entity,
@@ -670,15 +704,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      application: testApplicationUuid,
+                      deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       queryExecutionStrategy: "localCacheOrFail",
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -706,15 +743,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      application: testApplicationUuid,
                       queryExecutionStrategy: "storage",
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -822,6 +862,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED_HERE",
               definition: [
                 {
                   actionType: "rollback",
@@ -829,6 +870,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -839,7 +881,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -849,7 +892,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     entityUuid: entityPublisher.uuid,
                     entityDefinitionUuid: entityDefinitionPublisher.uuid,
                   },
@@ -861,7 +905,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -873,15 +918,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       queryExecutionStrategy: "storage",
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -957,6 +1005,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED_HERE",
               definition: [
                 {
                   actionType: "rollback",
@@ -965,6 +1014,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -975,7 +1025,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -985,7 +1036,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                     entityUuid: entityPublisher.uuid,
                     entityDefinitionUuid: entityDefinitionPublisher.uuid,
                     entityName: "Publisher",
@@ -999,7 +1051,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -1011,15 +1064,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      deploymentUuid: testApplicationDeploymentUuid,
+                      application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       queryExecutionStrategy: "storage",
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -1096,6 +1152,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
+              application: "NOT_USED_HERE",
               definition: [
                 {
                   actionType: "rollback",
@@ -1103,6 +1160,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
+                    application: selfApplicationMiroir.uuid,
                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
@@ -1113,7 +1171,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -1123,7 +1182,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
+                    application: testApplicationUuid,
                     entityName: entityPublisher.name,
                     entityUuid: entityPublisher.uuid,
                     entityDefinitionUuid: entityDefinitionPublisher.uuid,
@@ -1142,7 +1202,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                    application: testApplicationUuid,
+                    deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -1154,15 +1215,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       queryExecutionStrategy: "storage",
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -1191,15 +1255,18 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     actionType: "runBoxedExtractorOrQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                     payload: {
+                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       queryExecutionStrategy: "storage",
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        application: testApplicationUuid,
+                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                        deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
-                          currentDeploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                          currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
                         queryParams: {},
                         contextResults: {},
@@ -1340,6 +1407,7 @@ describe.sequential(
         const testSuiteResults = await runTestOrTestSuite(
           domainController,
           testAction,
+          defaultSelfApplicationDeploymentMap,
           miroirActivityTracker,
           {}
         );

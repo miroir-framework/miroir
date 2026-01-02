@@ -143,7 +143,7 @@ export function createDeploymentCompositeAction(
       definition: [
         {
           actionType: "storeManagementAction_openStore",
-          actionLabel: "storeManagementAction_openStore for admin",
+          actionLabel: "storeManagementAction_openStore for " + applicationName,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
@@ -157,7 +157,7 @@ export function createDeploymentCompositeAction(
         },
         {
           actionType: "storeManagementAction_openStore",
-          actionLabel: "storeManagementAction_openStore",
+          actionLabel: "storeManagementAction_openStore for " + applicationName,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
@@ -171,7 +171,7 @@ export function createDeploymentCompositeAction(
         {
           // actionType: "storeManagementAction",
           actionType: "storeManagementAction_createStore",
-          actionLabel: "storeManagementAction_createStore",
+          actionLabel: "storeManagementAction_createStore for " + applicationName,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
@@ -182,7 +182,7 @@ export function createDeploymentCompositeAction(
         },
         {
           actionType: "createInstance",
-          actionLabel: "CreateDeploymentInstances",
+          actionLabel: "CreateDeploymentInstances for " + applicationName,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {

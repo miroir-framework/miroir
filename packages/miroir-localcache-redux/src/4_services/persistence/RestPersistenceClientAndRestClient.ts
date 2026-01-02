@@ -358,6 +358,11 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "RestPersistenceAction_read":
       case "RestPersistenceAction_update":
       case "RestPersistenceAction_delete": {
+        if (typeof persistenceAction.payload.application !== "string") {
+          throw new Error(
+            "handleNetworkPersistenceAction could not find application"
+          );
+        }
         if (typeof persistenceAction.payload.deploymentUuid !== "string") {
           throw new Error(
             "handleNetworkPersistenceAction could not find deploymentUuid"
@@ -394,9 +399,11 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         const completeArgs = {
           ...callParams.args,
           // actionName: action.actionName,
+          application: persistenceAction.payload.application,
           deploymentUuid: persistenceAction.payload.deploymentUuid,
           section: persistenceAction.payload.section,
           parentUuid: persistenceAction.payload.parentUuid,
+          applicationDeploymentMap,
         };
         log.info(
           "handleNetworkPersistenceAction action",

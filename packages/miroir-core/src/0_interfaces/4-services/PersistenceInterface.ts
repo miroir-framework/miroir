@@ -30,7 +30,11 @@ export interface HttpRequestBodyFormat {
   other?: any;
   // actionBody?: {
   action?: PersistenceAction | DomainAction;
-  applicationDeploymentMap?: ApplicationDeploymentMap,
+  section?: string;
+  parentUuid?: string;
+  deploymentUuid?: string;
+  application: string;
+  applicationDeploymentMap: ApplicationDeploymentMap,
   // }
 };
 

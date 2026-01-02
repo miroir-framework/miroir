@@ -204,8 +204,8 @@ export async function restMethodsPostPutDeleteHandler(
   const foundParams = params;
   log.info("restMethodsPostPutDeleteHandler", method, effectiveUrl, "foundParams", foundParams, "body", body);
   // log.info("restMethodsPostPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
-  const deploymentUuid: string =
-    typeof foundParams["deploymentUuid"] == "string" ? foundParams["deploymentUuid"] : foundParams["deploymentUuid"][0];
+  const deploymentUuid: string = body.applicationDeploymentMap[body.application]
+    // typeof foundParams["deploymentUuid"] == "string" ? foundParams["deploymentUuid"] : foundParams["deploymentUuid"][0];
 
   const section: ApplicationSection = (
     typeof foundParams["section"] == "string" ? foundParams["section"] : foundParams["section"][0]
@@ -215,7 +215,14 @@ export async function restMethodsPostPutDeleteHandler(
     deploymentUuid
   );
   if (!localPersistenceStoreController) {
-    throw new Error("restMethodsPostPutDeleteHandler could not find controller for deployment: " + deploymentUuid);
+    throw new Error(
+      "restMethodsPostPutDeleteHandler could not find controller for deployment: " +
+        deploymentUuid +
+        " existing controllers: " +
+        persistenceStoreControllerManager.getPersistenceStoreControllers().join(
+          ", "
+        )
+    );
   } 
 
   const targetDataStore = localPersistenceStoreController
@@ -425,7 +432,7 @@ export async function queryActionHandler(
    */
   // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   const runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction =
-    body.action? body.action as RunBoxedExtractorOrQueryAction: body as RunBoxedExtractorOrQueryAction;
+    body.action? body.action as RunBoxedExtractorOrQueryAction: body as any as RunBoxedExtractorOrQueryAction;
   const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
   log.info(
     "RestServer queryActionHandler",
@@ -470,7 +477,7 @@ export async function queryTemplateActionHandler(
 
   const action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction = body?.action
     ? (body.action as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction)
-    : (body as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction);
+    : (body as any as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction);
   const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
   /**
    * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?

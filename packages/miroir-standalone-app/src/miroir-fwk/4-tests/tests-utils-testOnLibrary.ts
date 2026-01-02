@@ -65,6 +65,7 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
 
 export function testOnLibrary_resetLibraryDeployment(
   // miroirConfig: MiroirConfigClient,
+  application: Uuid = selfApplicationDeploymentLibrary.uuid,
   deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
 ): CompositeActionSequence {
   return {
@@ -73,6 +74,7 @@ export function testOnLibrary_resetLibraryDeployment(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
+      application: "NOT_USED_HERE",
       definition: [
         {
           actionType: "resetModel",
@@ -80,6 +82,7 @@ export function testOnLibrary_resetLibraryDeployment(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
+            application,
             deploymentUuid,
           },
         },
@@ -89,6 +92,7 @@ export function testOnLibrary_resetLibraryDeployment(
 }
 export function testOnLibrary_deleteLibraryDeployment(
   miroirConfig: MiroirConfigClient,
+  application: Uuid = selfApplicationDeploymentLibrary.uuid,
   deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
 ): CompositeActionSequence {
   console.log("testOnLibrary_deleteLibraryDeployment", deploymentUuid,  JSON.stringify(miroirConfig, null, 2));
@@ -98,6 +102,7 @@ export function testOnLibrary_deleteLibraryDeployment(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
+      application: "NOT_USED_HERE",
       definition: [
         {
           actionType: "storeManagementAction_deleteStore",
@@ -105,6 +110,7 @@ export function testOnLibrary_deleteLibraryDeployment(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
+            application,
             deploymentUuid,
             configuration: miroirConfig.client.emulateServer
               ? miroirConfig.client.deploymentStorageConfig[deploymentUuid]

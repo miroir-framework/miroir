@@ -42,7 +42,8 @@ export async function storeActionOrBundleActionStoreRunner(
     "actionType",
     actionType,
     "with deployment map",
-    applicationDeploymentMap
+    applicationDeploymentMap,
+    "and action", action
   );
   const deploymentUuid = applicationDeploymentMap[action.payload.application];
   // log.debug('storeActionOrBundleActionStoreRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
