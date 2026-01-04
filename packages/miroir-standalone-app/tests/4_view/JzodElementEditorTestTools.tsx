@@ -413,7 +413,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
 
     const currentModel: MetaModel = useCurrentModel(selfApplicationDeploymentLibrary.uuid);
 
-    const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+    const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
     // console.log("currentMiroirModel", currentMiroirModel);
 
     const effectiveRawJzodSchema: JzodElement | undefined = useMemo(() => {

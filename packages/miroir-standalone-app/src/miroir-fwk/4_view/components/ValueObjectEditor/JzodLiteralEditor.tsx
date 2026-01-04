@@ -4,6 +4,7 @@ import React, { FC, useCallback, useMemo } from "react";
 
 import {
   adminConfigurationDeploymentMiroir,
+  defaultSelfApplicationDeploymentMap,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodEnum,
@@ -14,16 +15,19 @@ import {
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resolvePathOnObject,
+  selfApplicationMiroir,
+  type ApplicationDeploymentMap,
   type JzodObject,
   type JzodSchema,
   type KeyMapEntry,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  type Uuid
 } from "miroir-core";
 
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel } from "../../ReduxHooks";
+import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -47,6 +51,8 @@ const handleDiscriminatorChange = (
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
   reportSectionPathAsString: string,
+  currentApplication: Uuid,
+  appliationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string | undefined,
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
@@ -250,6 +256,8 @@ const handleDiscriminatorChange = (
         [],
         // undefined,
         true,
+        currentApplication,
+        appliationDeploymentMap,
         currentDeploymentUuid,
         modelEnvironment
       ),
@@ -312,6 +320,8 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     rootLessListKey,
     rootLessListKeyArray,
     reportSectionPathAsString,
+    currentApplication,
+    applicationDeploymentMap: appliationDeploymentMap,
     currentDeploymentUuid,
     typeCheckKeyMap,
     readOnly,
@@ -322,18 +332,22 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   JzodLiteralEditorRenderCount++;
   let error: JSX.Element | undefined = undefined;
   const context = useMiroirContextService();
-  const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentModel: MetaModel = useCurrentModel(currentApplication, appliationDeploymentMap);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-      currentModel,
-      miroirMetaModel: miroirMetaModel,
-    };
-  }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    appliationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema:
+  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //     currentModel,
+  //     miroirMetaModel: miroirMetaModel,
+  //   };
+  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   const formik = useFormikContext<Record<string, any>>();
 
@@ -470,6 +484,8 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         rootLessListKey,
         rootLessListKeyArray,
         reportSectionPathAsString,
+        currentApplication,
+        appliationDeploymentMap,
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
         formik,

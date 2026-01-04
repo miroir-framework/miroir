@@ -3,6 +3,8 @@ import {
   type LoggerInterface,
   MiroirLoggerFactory,
   adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
 } from "miroir-core";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
@@ -40,6 +42,7 @@ export const ApplicationSelector: FC<{
     ),
     []
   );
+  const application = adminSelfApplication.uuid;
   const deploymentUuid = adminConfigurationDeploymentAdmin.uuid;
   const formikValuePathAsString = "applicationSelector";
   const formLabel = "Select Application to delete";
@@ -188,6 +191,8 @@ export const ApplicationSelector: FC<{
       <TypedValueObjectEditorWithFormik
         mode="update"
         labelElement={labelElement}
+        application={application}
+        applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
         deploymentUuid={deploymentUuid}
         applicationSection="model"
         initialValueObject={initialFormValue}

@@ -65,7 +65,8 @@ export {
   conceptLevel,
   // 
   Deployment,
-  deployment, DeploymentStorageConfig,
+  deployment,
+  DeploymentStorageConfig,
   deploymentStorageConfig,
   // CompositeInstanceActionTemplate,
   // compositeInstanceActionTemplate,

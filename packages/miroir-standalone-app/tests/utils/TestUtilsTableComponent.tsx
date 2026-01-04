@@ -25,10 +25,12 @@ import { useSelector } from "react-redux";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
+import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 export interface MiroirReportComponentProps {
   entityName?: string;
   entityUuid: string;
   DisplayLoadingInfo:JSX.Element;
+  application: Uuid;
   deploymentUuid: Uuid;
   instancesApplicationSection?: ApplicationSection;
 };
@@ -59,7 +61,8 @@ export const TestUtilsTableComponent = (
   //   localSelectModelForDeployment(state, currentModelSelectorParams)
   // ) as MetaModel
 
-  const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
+  const currentModel: MetaModel = useCurrentModel(props.application, defaultSelfApplicationDeploymentMap)
+  // const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
 
   const entitiesOfDataSection:Entity [] = currentModel.entities;
   const entityDefinitionsOfDataSection:EntityDefinition[] = currentModel.entityDefinitions;

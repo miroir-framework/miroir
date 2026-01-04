@@ -9,7 +9,8 @@ import {
   JzodUnion_RecursivelyUnfold_ReturnType,
   JzodUnion_RecursivelyUnfold_ReturnTypeOK,
   KeyMapEntry,
-  Uuid
+  Uuid,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { JzodArray } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -29,6 +30,8 @@ export interface JzodEditorPropsRoot {
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
+  currentApplication: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap;
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;

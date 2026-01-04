@@ -224,13 +224,13 @@ export class DomainController implements DomainControllerInterface {
     return this.persistenceStoreLocalOrRemote;
   }
   // ##############################################################################################
-  currentModel(uuid: string): MetaModel {
-    return this.localCache.currentModel(uuid);
+  currentModel(application: Uuid, applicationDeploymentMap: ApplicationDeploymentMap, deploymentUuid: Uuid): MetaModel {
+    return this.localCache.currentModel(application, applicationDeploymentMap, deploymentUuid);
   }
 
   // ##############################################################################################
-  currentModelEnvironment(uuid: string): MiroirModelEnvironment {
-    return this.localCache.currentModelEnvironment(uuid);
+  currentModelEnvironment(application: Uuid, applicationDeploymentMap: ApplicationDeploymentMap, deploymentUuid: Uuid): MiroirModelEnvironment {
+    return this.localCache.currentModelEnvironment(application, applicationDeploymentMap, deploymentUuid);
   }
 
   // ##############################################################################################
@@ -839,6 +839,8 @@ export class DomainController implements DomainControllerInterface {
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
       // "deploymentUuid",
       // runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
+      "persistenceStoreAccessMode=",
+      this.persistenceStoreAccessMode,
       "actionType",
       (runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any).actionType,
       "actionType",

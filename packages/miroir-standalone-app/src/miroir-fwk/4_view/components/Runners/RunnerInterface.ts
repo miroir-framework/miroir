@@ -1,5 +1,5 @@
 import type { FormikHelpers } from "formik";
-import type { CompositeActionSequence, CompositeActionTemplate, TransformerForBuildPlusRuntime, JzodObject, BoxedQueryTemplateWithExtractorCombinerTransformer, BoxedQueryWithExtractorCombinerTransformer, MiroirModelEnvironment, Uuid } from "miroir-core";
+import type { CompositeActionSequence, CompositeActionTemplate, TransformerForBuildPlusRuntime, JzodObject, BoxedQueryTemplateWithExtractorCombinerTransformer, BoxedQueryWithExtractorCombinerTransformer, MiroirModelEnvironment, Uuid, ApplicationDeploymentMap } from "miroir-core";
 import type { ReactElement } from "react";
 
 // ################################################################################################
@@ -41,6 +41,8 @@ export type FormMLSchema =
 // ################################################################################################
 export interface RunnerProps<T extends Record<string, any>> {
   runnerName: string;
+  application: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   // formMLSchema: JzodObject;
   formMLSchema: FormMLSchema;

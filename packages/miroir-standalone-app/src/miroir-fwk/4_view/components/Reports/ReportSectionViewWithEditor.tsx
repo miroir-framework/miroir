@@ -17,6 +17,7 @@ import {
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
   Uuid,
+  type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type InstanceAction,
   type JzodObject
@@ -44,6 +45,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export interface ReportSectionViewPropsBase {
   applicationSection: ApplicationSection,
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: Uuid,
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   // 
@@ -351,6 +354,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                   props.reportDataDEFUNCT.reportData,
                   "report label"
                 )}
+                application={props.application}
                 deploymentUuid={props.deploymentUuid}
                 chosenApplicationSection={props.applicationSection as ApplicationSection}
                 paramsAsdomainElements={props.paramsAsdomainElements}
@@ -374,6 +378,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {reportSectionDefinitionFromFormik?.type == "objectInstanceReportSection" && (
           <>
             <ReportSectionEntityInstance
+              application={props.application}
+              applicationDeploymentMap={props.applicationDeploymentMap}
               applicationSection={props.applicationSection as ApplicationSection}
               deploymentUuid={props.deploymentUuid}
               // 

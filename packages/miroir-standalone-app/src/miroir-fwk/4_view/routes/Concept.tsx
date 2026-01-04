@@ -163,7 +163,7 @@ export const ConceptPage: React.FC<any> = (
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
-  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
   const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
 

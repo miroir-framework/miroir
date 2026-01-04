@@ -15,7 +15,7 @@
           {
             "label": "Library Entities",
             "section": "model",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
             "icon": "category",
             "menuItemScope": "model"
@@ -23,7 +23,7 @@
           {
             "label": "Library Entity Definitions",
             "section": "model",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
             "icon": "category",
             "menuItemScope": "model"
@@ -31,7 +31,7 @@
           {
             "label": "Library Queries",
             "section": "model",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
             "icon": "saved_search",
             "menuItemScope": "model"
@@ -39,7 +39,7 @@
           {
             "label": "Library Reports",
             "section": "model",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
             "icon": "newspaper",
             "menuItemScope": "model"
@@ -47,7 +47,7 @@
           {
             "label": "Library Menus",
             "section": "model",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
             "icon": "list",
             "menuItemScope": "model"
@@ -55,7 +55,7 @@
           {
             "label": "Library Endpoints",
             "section": "model",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
             "icon": "list",
             "menuItemScope": "model"
@@ -63,42 +63,42 @@
           {
             "label": "Library Books",
             "section": "data",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
             "icon": "auto_stories"
           },
           {
             "label": "Library Authors",
             "section": "data",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
             "icon": "star"
           },
           {
             "label": "Library Publishers",
             "section": "data",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "a77aa662-006d-46cd-9176-01f02a1a12dc",
             "icon": "account_balance"
           },
           {
             "label": "Library countries",
             "section": "data",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
             "icon": "flag"
           },
           {
             "label": "Library Users",
             "section": "data",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "3df9413d-5050-4357-910c-f764aacae7e6",
             "icon": "person"
           },
           {
             "label": "Library Lending History",
             "section": "data",
-            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
             "icon": "history"
           }

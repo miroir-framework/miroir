@@ -348,7 +348,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       "action",
       action,
       "applicationDeploymentMap",
-      applicationDeploymentMap
+      applicationDeploymentMap,
+      "deploymentUuid", deploymentUuid
     );
     if (this.params.persistenceStoreAccessMode != "local") {
       throw new Error(
@@ -417,7 +418,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         if (!localPersistenceStoreController) {
           throw new Error(
             "PersistenceActionReduxSaga could not find controller for deployment: " + deploymentUuid
-            // " available controllers: " +
+            // + " available controllers: " +
             // this.persistenceStoreControllerManager.getPersistenceStoreControllers()
           );
         }
@@ -972,9 +973,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   "action",
         //   action
         // );
-        const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
-          ? (action as any).payload.deploymentUuid
-          : (action as any).deploymentUuid;
+        const deploymentUuid = applicationDeploymentMap[action.payload.application];
+        // const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
+        //   ? (action as any).payload.deploymentUuid
+        //   : (action as any).deploymentUuid;
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             const localPersistenceStoreController =
@@ -982,6 +984,14 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 deploymentUuid
               );
 
+            if (!localPersistenceStoreController) {
+              throw new Error(
+                "PersistenceActionReduxSaga handlePersistenceAction could not find controller for deployment: " +
+                  deploymentUuid +
+                  " available controllers: " +
+                  this.params.localPersistenceStoreControllerManager.getPersistenceStoreControllers()
+              );
+            }
             return yield* this.innerHandlePersistenceActionForLocalPersistenceStore(
               action,
               applicationDeploymentMap,

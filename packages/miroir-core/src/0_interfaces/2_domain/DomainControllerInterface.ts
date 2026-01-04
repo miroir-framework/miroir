@@ -22,6 +22,7 @@ import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/Persistenc
 import { Action2ReturnType, Action2VoidReturnType } from "./DomainElement";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
+import type { Uuid } from "../1_core/EntityDefinition";
 
 
 // #############################################################################################
@@ -201,8 +202,16 @@ export interface DomainControllerInterface {
    *
    */
   // TODO: currentTransaction should not depend on localCache types?! Use DomainActions instead?
-  currentModel(uuid: string): MetaModel;
-  currentModelEnvironment(uuid: string): MiroirModelEnvironment;
+  currentModel(
+    application: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    deploymentUuid: Uuid
+  ): MetaModel;
+  currentModelEnvironment(
+    application: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    deploymentUuid: Uuid
+  ): MiroirModelEnvironment;
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[];
   currentLocalCacheInfo(): LocalCacheInfo;
   getRemoteStore(): PersistenceStoreLocalOrRemoteInterface;

@@ -209,14 +209,14 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   // const sliceEntityAdapter = getLocalCacheSliceEntityAdapter();
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
     (state as any)[zone][entityInstancesLocationIndex] = entityAdapter.getInitialState();
-    log.warn(
-      "initializeLocalCacheSliceStateWithEntityAdapter state[",
-      zone,
-      "][",
-      entityInstancesLocationIndex,
-      "] is undefined! setting value",
-      JSON.stringify((state as any)[zone][entityInstancesLocationIndex])
-    );
+    // log.warn(
+    //   "initializeLocalCacheSliceStateWithEntityAdapter state[",
+    //   zone,
+    //   "][",
+    //   entityInstancesLocationIndex,
+    //   "] is undefined! setting value",
+    //   JSON.stringify((state as any)[zone][entityInstancesLocationIndex])
+    // );
   }
   // }
   // log.debug(
@@ -596,12 +596,11 @@ function handleModelAction(
     case "renameEntity":
     case "createEntity":
     case "dropEntity": {
-      const localInstanceActions =
-        ModelEntityActionTransformer.modelActionToInstanceAction(
-          deploymentUuid,
-          action,
-          currentModel(deploymentUuid, state)
-        );
+      const localInstanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
+        deploymentUuid,
+        action,
+        currentModel(action.application, applicationDeploymentMap, deploymentUuid, state)
+      );
       log.info(
         "localCacheSliceObject handleModelAction generated instanceActions",
         "localInstanceActions instanceof TransformerFailure=",

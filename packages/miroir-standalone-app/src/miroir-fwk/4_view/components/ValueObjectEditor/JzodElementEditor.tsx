@@ -354,6 +354,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.rootLessListKeyArray,
     props.reportSectionPathAsString,
     props.typeCheckKeyMap,
+    props.currentApplication,
+    props.applicationDeploymentMap,
     props.currentDeploymentUuid,
     count,
     "JzodElementEditor"
@@ -661,6 +663,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
               reportSectionPathAsString={props.reportSectionPathAsString}
+              currentApplication={props.currentApplication}
+              applicationDeploymentMap={props.applicationDeploymentMap}
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
               resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
@@ -694,6 +698,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               reportSectionPathAsString={props.reportSectionPathAsString}
               resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
+              currentApplication={props.currentApplication}
+              applicationDeploymentMap={props.applicationDeploymentMap}
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
               foreignKeyObjects={foreignKeyObjects}
@@ -723,6 +729,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
               itemsOrder={itemsOrder}
+              currentApplication={props.currentApplication}
+              applicationDeploymentMap={props.applicationDeploymentMap}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               foreignKeyObjects={props.foreignKeyObjects}
@@ -1040,6 +1048,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 listKey={props.listKey}
                 rootLessListKey={props.rootLessListKey}
                 rootLessListKeyArray={props.rootLessListKeyArray}
+                currentApplication={props.currentApplication}
+                applicationDeploymentMap={props.applicationDeploymentMap}
                 currentApplicationSection={props.currentApplicationSection}
                 currentDeploymentUuid={props.currentDeploymentUuid}
                 reportSectionPathAsString={props.reportSectionPathAsString}
@@ -1077,6 +1087,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 foreignKeyObjects={props.foreignKeyObjects}
+                currentApplication={props.currentApplication}
+                applicationDeploymentMap={props.applicationDeploymentMap}
                 currentApplicationSection={props.currentApplicationSection}
                 currentDeploymentUuid={props.currentDeploymentUuid}
                 enumValues={enumValues}
@@ -1106,6 +1118,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKeyArray={props.rootLessListKeyArray}
               reportSectionPathAsString={props.reportSectionPathAsString}
               foreignKeyObjects={props.foreignKeyObjects}
+              currentApplication={props.currentApplication}
+              applicationDeploymentMap={props.applicationDeploymentMap}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}

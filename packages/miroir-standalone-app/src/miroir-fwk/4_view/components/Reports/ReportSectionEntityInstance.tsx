@@ -13,11 +13,14 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
   adminConfigurationDeploymentMiroir,
+  defaultSelfApplicationDeploymentMap,
   entityQueryVersion,
   entityTransformerTest,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
+  selfApplicationDeploymentMiroir,
+  type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type JzodObject,
   type ReportSection,
@@ -106,6 +109,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface ReportSectionEntityInstanceProps {
   applicationSection: ApplicationSection,
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: Uuid,
   defaultLabel?: string,
   // 
@@ -299,13 +304,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // }), [instance]);
 
   const currentDeploymentModel: MetaModel = useCurrentModel(
-    //  props.deploymentUuid
-    // context.applicationSection == "data"
     props.applicationSection == "data"
-      // ? context.deploymentUuid
-      ? props.deploymentUuid
-      : adminConfigurationDeploymentMiroir.uuid // the report to edit any element from the 'model' section must be in the meta-model
+      ? props.application
+      : selfApplicationDeploymentMiroir.uuid, // the report to edit any element from the 'model' section must be in the meta-model
+      defaultSelfApplicationDeploymentMap
   );
+
+  // const currentDeploymentModel: MetaModel = useCurrentModel(
+  //   props.applicationSection == "data"
+  //     ? props.deploymentUuid
+  //     : adminConfigurationDeploymentMiroir.uuid // the report to edit any element from the 'model' section must be in the meta-model
+  // );
 
   const currentDeploymentReportsEntitiesDefinitionsMapping =
     // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
@@ -546,6 +555,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       return isQueryEntity && currentQuery?.definition && !isResultsCollapsed
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            application: props.application,
+            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
             deploymentUuid: props.deploymentUuid,
             pageParams: {
               deploymentUuid: props.deploymentUuid,
@@ -560,6 +571,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           }
         : {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            application: props.application,
+            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
             deploymentUuid: props.deploymentUuid,
             pageParams: {},
             queryParams: {},
@@ -582,6 +595,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       // return getQueryRunnerParamsForReduxDeploymentsState(
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
         queryForTestRun,
+        defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       );
     },
@@ -731,6 +745,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           // displayEditor ? (
           <TypedValueObjectEditor
             labelElement={labelElement}
+            application={props.application}
+            applicationDeploymentMap={props.applicationDeploymentMap}
             deploymentUuid={props.deploymentUuid}
             applicationSection={props.applicationSection}
             formValueMLSchema={props.formValueMLSchema}

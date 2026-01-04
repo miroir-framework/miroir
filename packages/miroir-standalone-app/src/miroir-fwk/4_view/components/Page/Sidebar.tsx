@@ -8,11 +8,15 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
+  adminSelfApplication,
+  defaultSelfApplicationDeploymentMap,
   LoggerInterface,
   menuDefaultAdmin,
   menuDefaultLibrary,
   menuDefaultMiroir,
-  MiroirLoggerFactory
+  MiroirLoggerFactory,
+  selfApplicationLibrary,
+  selfApplicationMiroir
 } from "miroir-core";
 import { applicationParis, defaultMenuParisUuid, packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
@@ -97,10 +101,12 @@ export const Sidebar: FC<{
     [
       {
         deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        applicationUuid: selfApplicationMiroir.uuid,
         menuUuid: menuDefaultMiroir.uuid
       },
       {
         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        applicationUuid: adminSelfApplication.uuid,
         menuUuid: menuDefaultAdmin.uuid
       },
     ]
@@ -110,6 +116,8 @@ export const Sidebar: FC<{
         {index > 0 && <ThemedDivider />}
         <SidebarSection
           key={section.menuUuid}
+          applicationUuid={section.applicationUuid}
+          applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
           deploymentUuid={section.deploymentUuid}
           menuUuid={section.menuUuid}
           open={props.open}
@@ -142,6 +150,8 @@ export const Sidebar: FC<{
         {index > 0 && <ThemedDivider />}
         <SidebarSection
           key={section.menuUuid}
+          applicationUuid={section.applicationUuid}
+          applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
           deploymentUuid={section.deploymentUuid}
           menuUuid={section.menuUuid}
           open={props.open}

@@ -1754,7 +1754,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 application: {
                   type: "uuid",
-                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  tag: { value: { defaultLabel: "Uuid", editable: false } },
                 },
                 applicationDeploymentMap: {
                   type: "record",
@@ -1765,7 +1765,7 @@ export function getMiroirFundamentalJzodSchema(
                 deploymentUuid: {
                   type: "uuid",
                   optional: true,
-                  tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  tag: { value: { defaultLabel: "Uuid", editable: false } },
                 },
                 applicationSection: {
                   type: "schemaReference",

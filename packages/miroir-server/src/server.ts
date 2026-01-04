@@ -41,7 +41,9 @@ import {
   entityDeployment,
   defaultMetaModelEnvironment,
   Action2Error,
-  type Deployment} from "miroir-core";
+  type Deployment,
+  defaultSelfApplicationDeploymentMap,
+  adminSelfApplication} from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
@@ -73,9 +75,9 @@ const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterfac
 //   specificLoggerOptions,
 // );
 
-const configurations: Record<string, StoreUnitConfiguration> = {
-  [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
-  [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+const configurations: Record<string, Deployment> = {
+  [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin as Deployment,
+  [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir as Deployment,
   // [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.configuration as StoreUnitConfiguration,
   // [adminConfigurationDeploymentParis.uuid]: adminConfigurationDeploymentParis.configuration as StoreUnitConfiguration,
   // // [adminConfigurationDeploymentTest1.uuid]: adminConfigurationDeploymentTest1.configuration as StoreUnitConfiguration,
@@ -220,13 +222,18 @@ for (const c of Object.entries(configurations)) {
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
+      application: c[1].adminApplication,
       deploymentUuid: c[0],
       configuration: {
-        [c[0]]: c[1] as StoreUnitConfiguration,
+        [c[0]]: c[1].configuration as StoreUnitConfiguration,
       },
     },
   };
-  await domainController.handleAction(openStoreAction)
+  await domainController.handleAction(
+    openStoreAction,
+    defaultSelfApplicationDeploymentMap,
+    defaultMetaModelEnvironment
+  );
 }
 
 // const fetchDeploymentsAction: InstanceAction = {
@@ -244,11 +251,14 @@ const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQue
   actionType: "runBoxedExtractorOrQueryAction",
   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
   payload: {
+    application: adminSelfApplication.uuid,
+    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
     applicationSection: "data",
     queryExecutionStrategy: "storage",
     query: {
+      application: adminSelfApplication.uuid,
+      applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
       deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       pageParams: {},
@@ -263,7 +273,7 @@ const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQue
       }
     },
   }
-}, defaultMetaModelEnvironment);
+}, defaultSelfApplicationDeploymentMap, defaultMetaModelEnvironment);
 
 if (deploymentsQueryResults instanceof Action2Error) {
   throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
@@ -273,26 +283,30 @@ const deployments: Deployment[] = deploymentsQueryResults.returnedDomainElement.
 
 myLogger.info(`Deployments fetched: ${JSON.stringify(deployments, circularReplacer(), 2)}`);
 
-const deploymentsToOpen: [string, StoreUnitConfiguration][] = deployments
+const deploymentsToOpen: [string, Deployment][] = deployments
   .filter((d) => !configurations[d.uuid.toString()])
-  .map((d) => [d.uuid.toString(), d.configuration as StoreUnitConfiguration]);
+  .map((d) => [d.uuid.toString(), d]);
 
 myLogger.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
 
 for (const c of deploymentsToOpen) {
   const openStoreAction: StoreOrBundleAction = {
-    // actionType: "storeManagementAction",
     actionType: "storeManagementAction_openStore",
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
+      application: c[1].adminApplication,
       deploymentUuid: c[0],
       configuration: {
-        [c[0]]: c[1] as StoreUnitConfiguration,
+        [c[0]]: c[1].configuration as StoreUnitConfiguration,
       },
     },
   };
-  await domainController.handleAction(openStoreAction)
+  await domainController.handleAction(
+    openStoreAction,
+    defaultSelfApplicationDeploymentMap,
+    defaultMetaModelEnvironment
+  );
 }
 
 // ##############################################################################################

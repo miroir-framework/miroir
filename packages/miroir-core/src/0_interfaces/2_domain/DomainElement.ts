@@ -8,6 +8,7 @@ import {
   QueryFailed,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { Step } from "../../2_domain/Transformers";
+import type { Uuid } from "../1_core/EntityDefinition";
 
 export type TransformerFailureType =
   | "FailedTransformer_mustache"
@@ -39,7 +40,8 @@ export interface ITransformerFailure {
   queryReference?: string | undefined;
   queryParameters?: string | undefined;
   queryContext?: string | undefined;
-  deploymentUuid?: string | undefined;
+  application?: Uuid | undefined;
+  deploymentUuid?: Uuid | undefined;
   errorStack?: string[] | undefined;
   innerError?: ITransformerFailure | Error | undefined;
   applicationSection?: ApplicationSection | undefined;
@@ -61,7 +63,8 @@ export class TransformerFailure implements ITransformerFailure {
   public queryReference?: string | undefined;
   public queryParameters?: string | undefined;
   public queryContext?: string | undefined;
-  public deploymentUuid?: string | undefined;
+  public application?: Uuid | undefined;
+  public deploymentUuid?: Uuid | undefined;
   public errorStack?: string[] | undefined;
   // public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
   public innerError?: ITransformerFailure | Error | undefined;
@@ -80,6 +83,7 @@ export class TransformerFailure implements ITransformerFailure {
     this.queryReference = elementValue.queryReference;
     this.queryParameters = elementValue.queryParameters;
     this.queryContext = elementValue.queryContext;
+    this.application = elementValue.application;
     this.deploymentUuid = elementValue.deploymentUuid;
     this.errorStack = elementValue.errorStack;
     this.innerError = elementValue.innerError;
@@ -118,6 +122,7 @@ export interface IDomain2ElementFailed {
   queryReference?: string | undefined;
   queryParameters?: string | undefined;
   queryContext?: string | undefined;
+  application?: string | undefined;
   deploymentUuid?: string | undefined;
   errorStack?: string[] | undefined;
   innerError?: QueryFailed | Domain2ElementFailed | Error | undefined;
@@ -138,6 +143,7 @@ export class Domain2ElementFailed implements IDomain2ElementFailed {
   public queryReference?: string | undefined;
   public queryParameters?: string | undefined;
   public queryContext?: string | undefined;
+  public application?: string | undefined;
   public deploymentUuid?: string | undefined;
   public errorStack?: string[] | undefined;
   // public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
@@ -155,6 +161,7 @@ export class Domain2ElementFailed implements IDomain2ElementFailed {
     this.queryReference = elementValue.queryReference;
     this.queryParameters = elementValue.queryParameters;
     this.queryContext = elementValue.queryContext;
+    this.application = elementValue.application;
     this.deploymentUuid = elementValue.deploymentUuid;
     this.errorStack = elementValue.errorStack;
     this.innerError = elementValue.innerError;

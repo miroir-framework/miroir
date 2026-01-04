@@ -396,7 +396,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const reportContext = useReportPageContext();
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
       miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),

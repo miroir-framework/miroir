@@ -10,11 +10,13 @@ import {
   adminLibraryApplication,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
   defaultTransformers,
   entityApplicationForAdmin,
   getEntityInstancesUuidIndexNonHook,
   miroirFundamentalJzodSchema,
+  selfApplicationMiroir,
   type Entity,
   type EntityDefinition,
   type JzodElement,
@@ -32,7 +34,7 @@ import { useSelector } from 'react-redux';
 import { applicationParis, packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
-import { useCurrentModel } from '../../ReduxHooks';
+import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
@@ -87,7 +89,7 @@ export function EntityInstanceSelectorPanel(props:{
   const formikContext = useFormikContext<TransformerEditorFormikValueType>();
   const context = useMiroirContextService();
   const persistedState = context.toolsPageState.transformerEditor;
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
   const entityInstanceSelectorPanelSchema: JzodElement = {
     type: "object",
@@ -144,14 +146,17 @@ export function EntityInstanceSelectorPanel(props:{
   //   persistedState?.selectedApplicationUuid || adminLibraryApplication.uuid
   // );
 
-  const inputSelector_applicationUuid: Uuid = formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application || adminLibraryApplication.uuid;
+  const inputSelector_applicationUuid: Uuid =
+    formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application ||
+    adminLibraryApplication.uuid;
 
   const inputSelector_deploymentUuidFromApplicationUuid: Uuid = 
     !inputSelector_applicationUuid || inputSelector_applicationUuid == noValue.uuid
       ? deploymentUuid
       : defaultAdminApplicationDeploymentMapNOTGOOD[inputSelector_applicationUuid];
 
-  const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
+  const currentModel = useCurrentModel(inputSelector_applicationUuid, defaultSelfApplicationDeploymentMap);
+  // const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
 
   // Entities are always defined in the 'model' section, sorted by name
   const currentReportDeploymentSectionEntities: Entity[] = useMemo(() => {
@@ -202,15 +207,19 @@ export function EntityInstanceSelectorPanel(props:{
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ??
-        (miroirFundamentalJzodSchema as JzodSchema),
-      miroirMetaModel: miroirMetaModel,
-      currentModel: currentModel,
-    };
-  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    inputSelector_applicationUuid,
+    defaultSelfApplicationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema:
+  //       context.miroirFundamentalJzodSchema ??
+  //       (miroirFundamentalJzodSchema as JzodSchema),
+  //     miroirMetaModel: miroirMetaModel,
+  //     currentModel: currentModel,
+  //   };
+  // }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     useCallback(
@@ -230,6 +239,8 @@ export function EntityInstanceSelectorPanel(props:{
       return getEntityInstancesUuidIndexNonHook(
         deploymentEntityState,
         currentMiroirModelEnvironment,
+        inputSelector_applicationUuid,
+        defaultSelfApplicationDeploymentMap,
         inputSelector_deploymentUuidFromApplicationUuid,
         selectedEntityUuid,
         "name" // Order by name if available
@@ -451,6 +462,8 @@ export function EntityInstanceSelectorPanel(props:{
                 labelElement={<span>select Application</span>}
                 formValueMLSchema={entityInstanceSelectorPanelSchema}
                 formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
+                application={inputSelector_applicationUuid}
+                applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}
                 formLabel={"Application Selector jzod"}
@@ -593,6 +606,8 @@ export function EntityInstanceSelectorPanel(props:{
                     } as any
                   } // TODO: ILL-TYPED!!
                   formikValuePathAsString="entityInstances"
+                  application={inputSelector_applicationUuid}
+                  applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                   deploymentUuid={deploymentUuid}
                   applicationSection={"data"}
                   formLabel={"All Entity Instances Viewer"}
@@ -629,6 +644,8 @@ export function EntityInstanceSelectorPanel(props:{
               }}
               formikValuePathAsString="selectedEntityInstance"
               deploymentUuid={deploymentUuid}
+              application={inputSelector_applicationUuid}
+              applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
               applicationSection={"data"}
               formLabel={"Entity Instance Viewer"}
               onSubmit={async () => {}} // No-op for readonly

@@ -2,11 +2,14 @@ import { useMemo } from 'react';
 import { Params } from 'react-router-dom';
 
 import {
+  adminAdminApplication,
   adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   entityDeployment,
@@ -22,6 +25,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid,
+  type ApplicationDeploymentMap,
   type Report,
   type Runner
 } from "miroir-core";
@@ -47,6 +51,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface ReportViewProps {
   applicationSection: ApplicationSection,
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: Uuid,
   instanceUuid?: Uuid, // TODO: remove, this is specific to entity instance views
   pageParams: Params<ReportUrlParamKeys>,
@@ -115,6 +121,8 @@ export function useQueryTemplateResults(
         ? ((resolvedTemplateQuery ?? query) as BoxedQueryWithExtractorCombinerTransformer)
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: "",
+            applicationDeploymentMap: {},
             deploymentUuid: "",
             pageParams: props.pageParams,
             queryParams: {},
@@ -130,6 +138,7 @@ export function useQueryTemplateResults(
       () =>
         getQueryRunnerParamsForReduxDeploymentsState(
           reportDataQuery,
+          defaultSelfApplicationDeploymentMap,
           deploymentEntityStateSelectorMap
         ),
       [deploymentEntityStateSelectorMap, reportDataQuery]
@@ -160,6 +169,8 @@ export function useDeploymentUuidFromApplicationUuid2(applicationUuid:Uuid | und
     applicationUuid && applicationUuid !== noValue.uuid
       ? ({
           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+          application: adminSelfApplication.uuid,
+          applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
           pageParams: {},
           queryParams: {},
@@ -181,6 +192,8 @@ export function useDeploymentUuidFromApplicationUuid2(applicationUuid:Uuid | und
         } as BoxedQueryTemplateWithExtractorCombinerTransformer)
       : {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
+          application: "",
+          applicationDeploymentMap: {},
           deploymentUuid: "",
           pageParams: {},
           queryParams: {},
@@ -220,13 +233,14 @@ export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | unde
         ? ({
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            application: adminSelfApplication.uuid,
+            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
             pageParams: {},
             queryParams: {},
             contextResults: {},
             extractorTemplates: {
               deployments: {
                 label: "deployments of the application",
-                // extractorOrCombinerType: "extractorByEntityReturningObjectList",
                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
                 parentUuid: entityDeployment.uuid,
                 parentName: entityDeployment.name,
@@ -241,6 +255,8 @@ export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | unde
         : 
           {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: "",
+            applicationDeploymentMap: {},
             deploymentUuid: "",
             pageParams: {},
             queryParams: {},
@@ -277,6 +293,7 @@ export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | unde
 
 // ################################################################################################
 export function useTransformer(
+  application: Uuid,
   deploymentUuid: Uuid,
   transformerUuid: Uuid | undefined
 ): Domain2ElementFailed | TransformerDefinition | undefined {
@@ -294,6 +311,8 @@ export function useTransformer(
       deploymentUuid && deploymentUuid !== noValue.uuid
         ? ({
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            application,
+            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
             deploymentUuid: deploymentUuid,
             pageParams: {},
             queryParams: {},
@@ -319,6 +338,8 @@ export function useTransformer(
           } as BoxedQueryTemplateWithExtractorCombinerTransformer)
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: "",
+            applicationDeploymentMap: {},
             deploymentUuid: "",
             pageParams: {},
             queryParams: {},
@@ -347,6 +368,7 @@ export function useTransformer(
 
 // ################################################################################################
 export function useRunner(
+  application: Uuid,
   deploymentUuid: Uuid,
   runnerUuid: Uuid | undefined
 ): Domain2QueryReturnType<Runner | undefined>  {
@@ -363,6 +385,8 @@ export function useRunner(
       deploymentUuid && deploymentUuid !== noValue.uuid
         ? ({
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            application,
+            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
             deploymentUuid: deploymentUuid,
             pageParams: {},
             queryParams: {},
@@ -383,6 +407,8 @@ export function useRunner(
           } as BoxedQueryTemplateWithExtractorCombinerTransformer)
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: "",
+            applicationDeploymentMap: {},
             deploymentUuid: "",
             pageParams: {},
             queryParams: {},

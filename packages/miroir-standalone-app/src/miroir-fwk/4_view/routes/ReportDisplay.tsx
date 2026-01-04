@@ -6,6 +6,7 @@ import { Params } from "react-router-dom";
 import {
   ApplicationSection,
   defaultReport,
+  defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   LoggerInterface,
   MetaModel,
@@ -60,7 +61,10 @@ export const ReportDisplay: React.FC<{
   const context = useMiroirContextService();
   const theme = useMiroirTheme();
 
-  const currentModel: MetaModel = useCurrentModel(pageParams.deploymentUuid);
+  // Use application from pageParams if available, otherwise fall back to context
+  const application = pageParams.application ?? context.application;
+
+  const currentModel: MetaModel = useCurrentModel(application, defaultSelfApplicationDeploymentMap);
 
 
   // const availableReports: Report[] = useMemo(() => {
@@ -116,6 +120,8 @@ export const ReportDisplay: React.FC<{
       currentStoredQueries.length > 0
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            application: application,
+            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
             deploymentUuid: pageParams.deploymentUuid,
             pageParams: pageParams,
             queryParams: {},
@@ -125,7 +131,7 @@ export const ReportDisplay: React.FC<{
             runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
           }
         : undefined,
-    [currentStoredQueries, pageParams]
+    [application, currentStoredQueries, pageParams]
   );
 
   const currentStoredQueryResults: Domain2QueryReturnType<
@@ -208,6 +214,8 @@ export const ReportDisplay: React.FC<{
             >
               <ReportViewWithEditor
                 applicationSection={pageParams.applicationSection as ApplicationSection}
+                application={application}
+                applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                 deploymentUuid={pageParams.deploymentUuid}
                 instanceUuid={pageParams.instanceUuid}
                 pageParams={pageParams}

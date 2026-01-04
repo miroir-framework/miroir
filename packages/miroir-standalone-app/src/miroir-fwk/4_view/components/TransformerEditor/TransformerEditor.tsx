@@ -10,12 +10,14 @@ import {
   adminConfigurationDeploymentMiroir,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
   entityApplicationForAdmin,
   entityDefinitionTransformerDefinition,
   getInnermostTransformerError,
   miroirFundamentalJzodSchema,
   safeStringify,
+  selfApplicationMiroir,
   transformer_extended_apply_wrapper,
   type JzodElement,
   type JzodObject,
@@ -36,7 +38,7 @@ import {
 import { packageName } from '../../../../constants';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
-import { useCurrentModel } from '../../ReduxHooks';
+import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
 import {
   useDeploymentUuidFromApplicationUuid,
   useTransformer
@@ -82,26 +84,38 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // const formikPath_inputDeploymentUuid: string = "transformerEditor_input.defaultInput";
   // const formikPath_entityInstances: string = "transformerEditor_input.defaultInput";
 
-  const { deploymentUuid: initialDeploymentUuid, entityUuid: initialEntityUuid } = props;
+  const {
+    deploymentUuid: initialDeploymentUuid,
+    entityUuid: initialEntityUuid,
+    application,
+    applicationDeploymentMap,
+  } = props;
+  // const application: Uuid = initialApplication;
   const deploymentUuid: Uuid = initialDeploymentUuid;
-  const currentModel: MetaModel = useCurrentModel(deploymentUuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap);
+  // const currentModel: MetaModel = useCurrentModel(deploymentUuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
+  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   const context = useMiroirContextService();
   const reportContext = useReportPageContext();
   const miroirContextService = useMiroirContextService();
 
  
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
-      miroirMetaModel: miroirMetaModel,
-      currentModel: currentModel,
-    };
-  }, [
-    miroirMetaModel,
-    currentModel,
-    context.miroirFundamentalJzodSchema,
-  ]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    application,
+    applicationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+  //     miroirMetaModel: miroirMetaModel,
+  //     currentModel: currentModel,
+  //   };
+  // }, [
+  //   miroirMetaModel,
+  //   currentModel,
+  //   context.miroirFundamentalJzodSchema,
+  // ]);
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -323,8 +337,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               | TransformerDefinition
               | Domain2ElementFailed
               | undefined = useTransformer(
-              transformerSelector_deploymentUuidFromApplicationUuid,
-              (formikContext.values.transformerEditor_transformer_selector as any).transformerUuid
+                (formikContext.values.transformerEditor_transformer_selector as any).application,
+                transformerSelector_deploymentUuidFromApplicationUuid,
+                (formikContext.values.transformerEditor_transformer_selector as any).transformerUuid
             );
 
             if (
@@ -853,6 +868,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     labelElement={<>Transformer Definition</>}
                     formValueMLSchema={formMLSchema}
                     formikValuePathAsString="transformerEditor_transformer_selector"
+                    application={(formikContext.values.transformerEditor_transformer_selector as any).application}
+                    applicationDeploymentMap={applicationDeploymentMap}
                     deploymentUuid={deploymentUuid}
                     applicationSection={"model"}
                     formLabel={"Transformer Definition Selector"}
@@ -886,6 +903,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       formValueMLSchema={formMLSchema}
                       formikValuePathAsString={formikPath_TransformerEditorInputModeSelector}
                       // zoomInPath="selector"
+                      application={(formikContext.values.transformerEditor_transformer_selector as any).application}
+                      applicationDeploymentMap={applicationDeploymentMap}
                       deploymentUuid={deploymentUuid}
                       applicationSection={"model"}
                       formLabel={"Transformer Input Selector"}
@@ -907,6 +926,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     // selectedEntityInstance={selectedEntityInstance}
                     showAllInstances={showAllInstances}
                     // entityInstances={entityInstances}
+                    inputApplication={application}
                     inputDeploymentUuid={deploymentUuid}
                     inputSelectorMode={formikContext.values[formikPath_TransformerEditorInputModeSelector].mode}
                   />

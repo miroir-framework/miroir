@@ -9,8 +9,10 @@ import {
   Action2ReturnType,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentParis,
+  adminSelfApplication,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   DomainControllerInterface,
   entityDeployment,
@@ -18,6 +20,8 @@ import {
   MiroirConfigClient,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
   StoreUnitConfiguration
 } from "miroir-core";
 import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
@@ -89,9 +93,11 @@ export function fetchMiroirAndAppConfigurations(
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
+          application: adminSelfApplication.uuid,
           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         },
       },
+      defaultSelfApplicationDeploymentMap,
       defaultMiroirModelEnvironment
     )
     .then((rollbackResult) => {
@@ -108,6 +114,8 @@ export function fetchMiroirAndAppConfigurations(
       const subQueryName = "deployments";
       const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        application: adminSelfApplication.uuid,
+        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         pageParams: {},
         queryParams: {},
@@ -130,14 +138,17 @@ export function fetchMiroirAndAppConfigurations(
       return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
         {
           actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: adminSelfApplication.uuid,
+            // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             applicationSection: "data",
             query: adminDeploymentsQuery,
           },
         },
+        defaultSelfApplicationDeploymentMap,
         defaultMiroirModelEnvironment
       );
     })
@@ -178,28 +189,42 @@ export function fetchMiroirAndAppConfigurations(
           return dep.uuid !== adminConfigurationDeploymentParis.uuid;
         }
       );
-      log.info("found adminDeployments", foundDeployments);
+      log.info(
+        "fetchMiroirAndAppConfigurations found adminDeployments",
+        foundDeployments,
+        "defaultSelfApplicationDeploymentMap",
+        defaultSelfApplicationDeploymentMap
+      );
 
       // Build store opening actions first
       const openStoreActions: Promise<any>[] = [];
-      const deploymentsToLoad: Deployment[] = foundDeployments;
+      const deploymentsToLoad: Deployment[] = foundDeployments.filter((deployment: Deployment) => {
+        return deployment.adminApplication !== adminSelfApplication.uuid; // no need to load admin app deployment, it was already loaded in the firs step
+      });
+
+      log.info("fetchMiroirAndAppConfigurations deploymentsToLoad", deploymentsToLoad);
 
       // Add all store opening actions
       for (const deployment of Object.values(deploymentsToLoad)) {
-        const deploymentData = deployment as any;
-
+        // const deploymentData = deployment as any;
+        log.info("fetchMiroirAndAppConfigurations preparing to open store for deployment", deployment);
         openStoreActions.push(
-          domainController.handleAction({
-            actionType: "storeManagementAction_openStore",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
-            payload: {
-              deploymentUuid: deploymentData.uuid,
-              configuration: {
-                [deploymentData.uuid]: deploymentData.configuration as StoreUnitConfiguration,
+          domainController.handleAction(
+            {
+              actionType: "storeManagementAction_openStore",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
+              payload: {
+                application: deployment.adminApplication,
+                deploymentUuid: deployment.uuid,
+                configuration: {
+                  [deployment.uuid]: deployment.configuration as StoreUnitConfiguration,
+                },
               },
             },
-          })
+            defaultSelfApplicationDeploymentMap,
+            defaultMiroirModelEnvironment
+          )
         );
       }
 
@@ -218,7 +243,7 @@ export function fetchMiroirAndAppConfigurations(
         const rollbackActions: Promise<any>[] = [];
 
         for (const deployment of Object.values(deploymentsToLoad)) {
-          const deploymentData = deployment as any;
+          // const deploymentData = deployment as any;
 
           rollbackActions.push(
             domainController.handleAction(
@@ -227,9 +252,11 @@ export function fetchMiroirAndAppConfigurations(
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
                 payload: {
-                  deploymentUuid: deploymentData.uuid,
+                  application: deployment.adminApplication,
+                  deploymentUuid: deployment.uuid,
                 },
               },
+              defaultSelfApplicationDeploymentMap,
               defaultMiroirModelEnvironment
             )
           );

@@ -13,6 +13,7 @@ export const cleanLevel = "5";
 // ################################################################################################
 // export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
 export type ReportUrlParamKeys =
+  | "application"
   | "deploymentUuid"
   | "applicationSection"
   | "reportUuid"

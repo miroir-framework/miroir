@@ -42,7 +42,9 @@ import {
   type JzodSchema,
   resolvePathOnObject,
   type ReportSection,
-  type TransformerForBuildPlusRuntime
+  type TransformerForBuildPlusRuntime,
+  defaultSelfApplicationDeploymentMap,
+  selfApplicationMiroir
 } from "miroir-core";
 
 import { AddBox } from "../Themes/MaterialSymbolWrappers";
@@ -55,7 +57,7 @@ import {
   useMiroirContextService,
   useSnackbar,
 } from "../../MiroirContextReactProvider.js";
-import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { useCurrentModel, useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from "../../constants.js";
 import { getMDataGridColumnDefinitionsFromEntityDefinition } from "../../getColumnDefinitionsFromEntityAttributes.js";
 import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../../utils/foreignKeyAttributeAnalyzer.js";
@@ -99,6 +101,7 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
 export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDisplayCorePropsSchema.extend({
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: applicationSection,
+  application: z.string().uuid(),
   deploymentUuid: z.string().uuid()
 });
 
@@ -305,21 +308,29 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   // const [dialogOuterFormObject, setdialogOuterFormObject] = useState({});
 
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
+  const miroirMetaModel: MetaModel = useCurrentModel(
+    selfApplicationMiroir.uuid,
+    defaultSelfApplicationDeploymentMap
+  );
+  // const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
+  const currentModel: MetaModel = useCurrentModel(props.application, defaultSelfApplicationDeploymentMap);
   const context = useMiroirContextService();
   
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
-      miroirMetaModel: miroirMetaModel,
-      currentModel: currentModel,
-    };
-  }, [
-    miroirMetaModel,
-    currentModel,
-    context.miroirFundamentalJzodSchema,
-  ]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    props.application,
+    defaultSelfApplicationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+  //     miroirMetaModel: miroirMetaModel,
+  //     currentModel: currentModel,
+  //   };
+  // }, [
+  //   miroirMetaModel,
+  //   currentModel,
+  //   context.miroirFundamentalJzodSchema,
+  // ]);
   // Get snackbar functionality from context
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   
@@ -480,13 +491,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       return getQueryRunnerParamsForReduxDeploymentsState(
         {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
+          application: props.application,
+          applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
           deploymentUuid: props.deploymentUuid,
           pageParams: props.paramsAsdomainElements,
           queryParams: {},
           contextResults: {},
           extractors,
           runtimeTransformers
-        },
+        }, defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       )
     },
@@ -520,12 +533,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15", // miroir application
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
+                application: props.displayedDeploymentDefinition.selfApplication,
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "createInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
+                    application: props.application,
+                    // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                     deploymentUuid: props.displayedDeploymentDefinition.uuid,
                     applicationSection: currentApplicationSection,
                     parentUuid: data.parentUuid,
@@ -544,6 +560,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 },
               },
             },
+            defaultSelfApplicationDeploymentMap,
             // props.tableComponentReportType == "EntityInstance"?currentModel:undefined
             currentMiroirModelEnvironment // TODO: use model environment for current deployment
           );
@@ -554,6 +571,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: props.displayedDeploymentDefinition.selfApplication,
               deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               applicationSection: currentApplicationSection,
               parentUuid: data.parentUuid,
@@ -567,7 +585,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               ],
             },
           };
-          await domainController.handleActionFromUI(createAction);
+          await domainController.handleActionFromUI(createAction, defaultSelfApplicationDeploymentMap);
         }
       } else {
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
@@ -591,13 +609,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
+                application: props.displayedDeploymentDefinition.selfApplication,
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
-                  // actionType: "instanceAction",
                   actionType: "updateInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
+                    application: props.displayedDeploymentDefinition.selfApplication,
                     deploymentUuid: props.displayedDeploymentDefinition.uuid,
                     applicationSection: "model",
                     objects: [
@@ -612,6 +631,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 },
               },
             },
+            defaultSelfApplicationDeploymentMap,
             // props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
             currentMiroirModelEnvironment // TODO: use model environment for current deployment
           );
@@ -622,6 +642,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: props.displayedDeploymentDefinition.selfApplication,
               deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               applicationSection: props.chosenApplicationSection
                 ? props.chosenApplicationSection
@@ -638,7 +659,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               ],
             },
           };
-          result = await domainController.handleActionFromUI(updateAction);
+          result = await domainController.handleActionFromUI(updateAction, defaultSelfApplicationDeploymentMap);
         }
         return result;
       } else {
@@ -738,6 +759,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               undefined, // No need to pass currentDefaultValue here
               [], // currentPath on value is root
               false, // forceOptional
+              props.application,
+              defaultSelfApplicationDeploymentMap,
               props.deploymentUuid,
               currentMiroirModelEnvironment,
               {}, // transformerParams

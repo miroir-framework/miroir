@@ -12,6 +12,7 @@ import type {
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
+  defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   entityDeployment,
   MiroirLoggerFactory,
@@ -39,6 +40,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export const InnerRunnerView = <T extends Record<string, any>>({
   runnerName,
+  application,
+  applicationDeploymentMap,
   deploymentUuid,
   formMLSchema,
   initialFormValue,
@@ -54,7 +57,11 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   // enableReinitialize = true,
 }: RunnerProps<T>) => {
   // const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    application,
+    applicationDeploymentMap
+  );
   const context = useMiroirContextService();
   const formikContext = useFormikContext<any>();
   
@@ -63,6 +70,8 @@ export const InnerRunnerView = <T extends Record<string, any>>({
     | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = {
     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+    application,
+    applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
     deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
     pageParams: {},
     queryParams: {},
@@ -101,6 +110,8 @@ export const InnerRunnerView = <T extends Record<string, any>>({
           } as BoxedQueryTemplateWithExtractorCombinerTransformer)
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application,
+            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
             deploymentUuid: "",
             pageParams: {},
             queryParams: {},
@@ -185,6 +196,8 @@ export const InnerRunnerView = <T extends Record<string, any>>({
       />
       <TypedValueObjectEditor
         labelElement={labelElement}
+        application={application}
+        applicationDeploymentMap={applicationDeploymentMap}
         deploymentUuid={deploymentUuid}
         applicationSection="model"
         formValueMLSchema={targetSchema}

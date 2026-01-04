@@ -15,63 +15,63 @@
           {
             "label": "Miroir Entities",
             "section": "model",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
             "icon": "category"
           },
           {
             "label": "Miroir Entity Definitions",
             "section": "model",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
             "icon": "category"
           },
           {
             "label": "Miroir Reports",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
             "icon": "newspaper"
           },
           {
             "label": "Miroir Menus",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
             "icon": "list"
           },
           {
             "label": "Miroir Endpoints",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
             "icon": "list"
           },
           {
             "label": "Miroir Runners",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
             "icon": "directions_run"
           },
           {
             "label": "Miroir Queries",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
             "icon": "saved_search"
           },
           {
             "label": "Miroir Transformers",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "d62a1730-8b05-42f5-9725-b0115b234627",
             "icon": "list"
           },
           {
             "label": "Miroir Transformer Tests",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "963f9cfb-1f26-4e9a-8031-7627151630ae",
             "icon": {
               "iconType": "mui",
@@ -81,21 +81,21 @@
           {
             "label": "Miroir Tests",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "683ba925-835e-4f9d-845b-7fae500316ad",
             "icon": "list"
           },
           {
             "label": "Miroir Blobs",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "be61481c-644a-4f09-8c4f-581044e98956",
             "icon": "list"
           },
           {
             "label": "Miroir Documentation",
             "section": "data",
-            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "9cdc1af9-13d6-4477-8482-8af43e3c161e",
             "icon": "list"
           }

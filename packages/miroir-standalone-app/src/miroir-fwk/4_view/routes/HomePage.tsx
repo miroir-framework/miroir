@@ -5,21 +5,19 @@ import {
   Select,
   SelectChangeEvent
 } from "@mui/material";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Params } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
   ApplicationSection,
   // adminConfigurationDeploymentTest1,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  getReportsAndEntitiesDefinitionsForDeploymentUuid,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -50,8 +48,7 @@ import { usePageConfiguration } from "../services/index.js";
 import {
   deployments,
   packageName,
-  ReportUrlParamKeys,
-  selfApplicationParis,
+  ReportUrlParamKeys
 } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 
@@ -107,6 +104,7 @@ export const HomePage = (props: RootComponentProps) => {
   // log.info("RootComponent deployments",deployments);
 
   // context utility functions
+  const displayedApplication = context.application;
   const displayedDeploymentUuid = context.deploymentUuid;
   const setDisplayedDeploymentUuid = context.setDeploymentUuid;
 
@@ -115,11 +113,15 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  // const adminAppModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
+  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
-  const currentAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
-  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+  const currentAppModel: MetaModel = useCurrentModel(
+    displayedApplication,
+    defaultSelfApplicationDeploymentMap
+  );
+  // const currentAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
+  // const libraryAppModel: MetaModel = useCurrentModel(selfApplicationLibrary.uuid, defaultSelfApplicationDeploymentMap);
 
   // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
   // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
@@ -210,13 +212,14 @@ export const HomePage = (props: RootComponentProps) => {
   const pageParams:Params<ReportUrlParamKeys> = useMemo(
     () => (
       {
+        application: displayedApplication,
         deploymentUuid:displayedDeploymentUuid,
         applicationSection:displayedApplicationSection,
         reportUuid:currentMiroirReport?.uuid,
         instanceUuid: "undefined"
       } as Params<ReportUrlParamKeys>
     ),
-    [currentMiroirReport, displayedApplicationSection, displayedDeploymentUuid]
+    [currentMiroirReport, displayedApplication, displayedApplicationSection, displayedDeploymentUuid]
   )
 
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
@@ -285,7 +288,7 @@ export const HomePage = (props: RootComponentProps) => {
                 application: selfApplicationMiroir.uuid,
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               }
-            }, defaultMiroirModelEnvironment);
+            }, defaultSelfApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}
         >
           undo
@@ -300,9 +303,10 @@ export const HomePage = (props: RootComponentProps) => {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               payload: {
+                application: selfApplicationMiroir.uuid,
                 deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               }
-            }, defaultMiroirModelEnvironment);
+            }, defaultSelfApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}
         >
           Redo
@@ -359,7 +363,10 @@ export const HomePage = (props: RootComponentProps) => {
                   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                 },
               },
-              defaultMiroirModelEnvironment
+              defaultSelfApplicationDeploymentMap, defaultMiroirModelEnvironment
+            );
+            log.info(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ROLLBACK FOR MIROIR DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
           }}
         >
@@ -395,6 +402,7 @@ export const HomePage = (props: RootComponentProps) => {
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
               },
+              defaultSelfApplicationDeploymentMap,
               defaultMiroirModelEnvironment
             );
             log.info(
@@ -411,6 +419,7 @@ export const HomePage = (props: RootComponentProps) => {
                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 },
               },
+              defaultSelfApplicationDeploymentMap,
               defaultMiroirModelEnvironment
             );
           }}

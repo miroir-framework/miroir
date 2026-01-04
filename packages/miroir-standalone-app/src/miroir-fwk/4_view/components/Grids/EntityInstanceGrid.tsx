@@ -29,7 +29,9 @@ import {
   ViewParams,
   adminConfigurationDeploymentMiroir,
   defaultAdminViewParams,
-  defaultViewParamsFromAdminStorageFetchQueryParams
+  defaultViewParamsFromAdminStorageFetchQueryParams,
+  selfApplicationMiroir,
+  defaultSelfApplicationDeploymentMap
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
@@ -94,6 +96,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   const navigate = useNavigate();
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
+  const contextApplicationUuid = context.application;
   const gridApiRef = useRef<GridApi | null>(null);
 
   // Container width tracking for adaptive column sizing
@@ -287,8 +290,8 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   // log.info("EntityInstanceGrid refreshing with dialogFormObject",dialogFormObject);
 
 
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const currentModel: MetaModel = useCurrentModel(contextDeploymentUuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+  const currentModel: MetaModel = useCurrentModel(contextApplicationUuid, defaultSelfApplicationDeploymentMap);
   // log.info("EntityInstanceGrid currentModel", currentModel);
 
   // ##############################################################################################
@@ -704,7 +707,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
             : context.applicationSection;
 
           navigate(
-            `/report/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${rowData.rawValue.uuid}`
+            `/report/${contextApplicationUuid}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${rowData.rawValue.uuid}`
           );
         } else {
           // Cache schema definition lookup
@@ -730,7 +733,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
               context.applicationSection;
 
             navigate(
-              `/report/${contextDeploymentUuid}/${targetApplicationSection}/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${(rowData.rawValue as any)[fieldName]}`
+              `/report/${contextApplicationUuid}/${contextDeploymentUuid}/${targetApplicationSection}/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${(rowData.rawValue as any)[fieldName]}`
             );
           } else {
             log.info(
@@ -780,7 +783,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
             : context.applicationSection;
 
           navigate(
-            `/report/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue.uuid}`
+            `/report/${contextApplicationUuid}/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue.uuid}`
           );
         } else {
           // Cache schema definition lookup
@@ -802,7 +805,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
               context.applicationSection;
 
             navigate(
-              `/report/${contextDeploymentUuid}/${targetApplicationSection}/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[fieldName]}`
+              `/report/${contextApplicationUuid}/${contextDeploymentUuid}/${targetApplicationSection}/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[fieldName]}`
             );
           } else {
             log.info(

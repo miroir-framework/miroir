@@ -134,12 +134,12 @@ const router = createBrowserRouter([
         // errorElement: <ErrorPage />,
       },
       {
-        path: "report/:deploymentUuid/:applicationSection/:reportUuid",
+        path: "report/:application/:deploymentUuid/:applicationSection/:reportUuid",
         element: <ReportPage />,
         // errorElement: <ErrorPage />,
       },
       {
-        path: "report/:deploymentUuid/:applicationSection/:reportUuid/:instanceUuid",
+        path: "report/:application/:deploymentUuid/:applicationSection/:reportUuid/:instanceUuid",
         element: <ReportPage />,
         // errorElement: <ErrorPage />,
       },

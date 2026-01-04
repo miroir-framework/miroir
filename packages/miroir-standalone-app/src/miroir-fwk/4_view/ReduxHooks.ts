@@ -37,6 +37,7 @@ import {
   defaultMetaModelEnvironment,
   miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
+  selfApplicationMiroir,
   type ApplicationDeploymentMap,
 } from "miroir-core";
 import {
@@ -256,17 +257,24 @@ export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends Que
 }
 
 // ################################################################################################
-export function useCurrentModel(deploymentUuid: Uuid | undefined): MetaModel {
+export function useCurrentModel(
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  // deploymentUuid: Uuid | undefined
+): MetaModel {
+  // log.info("useCurrentModel", application, applicationDeploymentMap);
   const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
   const selectorParams: LocalCacheExtractor = useMemo(
     () =>
       ({
         queryType: "localCacheEntityInstancesExtractor",
         definition: {
-          deploymentUuid,
+          application,
+          applicationDeploymentMap,
+          deploymentUuid: applicationDeploymentMap[application ?? ""],
         },
-      } as LocalCacheExtractor),
-    [deploymentUuid]
+      }),
+    [application, applicationDeploymentMap]
   );
 
   return useSelector((state: ReduxStateWithUndoRedo) =>
@@ -300,12 +308,19 @@ export function useCurrentModelEnvironmentNOT_IMPLEMENTED(deploymentUuid: string
  * @param deploymentUuid - The deployment UUID to get the model environment for
  * @returns MiroirModelEnvironment containing the fundamental schema, meta model, and current model
  */
-export function useCurrentModelEnvironment(deploymentUuid: Uuid | undefined): MiroirModelEnvironment {
+export function useCurrentModelEnvironment(
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): MiroirModelEnvironment {
   const context = useMiroirContextService();
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const currentModel: MetaModel = useCurrentModel(deploymentUuid);
-  const endpointsByUuid: Record<Uuid, any> = useEndpointsOfDeployments(
-    defaultDeploymentUuids
+  const deploymentUuid = applicationDeploymentMap[application]
+  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
+  // const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap, deploymentUuid);
+  const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap);
+  const endpointsByUuid: Record<Uuid, any> = useEndpointsOfApplications(
+    defaultDeploymentUuids,
+    applicationDeploymentMap
   ).reduce((acc, endpoint) => {
     acc[endpoint.uuid] = endpoint;
     return acc;
@@ -324,11 +339,19 @@ export function useCurrentModelEnvironment(deploymentUuid: Uuid | undefined): Mi
 }
 
 // ################################################################################################
-export function useEndpointsOfDeployments(deploymentUuids: Uuid[]) {
-  const models = deploymentUuids.map((deploymentUuid) => useCurrentModel(deploymentUuid));
+export function useEndpointsOfApplications(applicationUuids: Uuid[], applicationDeploymentMap: ApplicationDeploymentMap) {
+  const models = applicationUuids.map((applicationUuid) =>
+    useCurrentModel(applicationUuid, applicationDeploymentMap)
+  );
   const endpoints = models.flatMap((model) => model.endpoints ?? []); // TODO: deal with applications having many deployments
   return endpoints;
 }
+
+// export function useEndpointsOfDeployments(deploymentUuids: Uuid[]) {
+//   const models = deploymentUuids.map((deploymentUuid) => useCurrentModel(deploymentUuid));
+//   const endpoints = models.flatMap((model) => model.endpoints ?? []); // TODO: deal with applications having many deployments
+//   return endpoints;
+// }
 
 // ################################################################################################
 export function useEntityInstanceUuidIndexFromLocalCache(

@@ -28,14 +28,17 @@ import {
   defaultMiroirModelEnvironment,
   transformer_extended_apply_wrapper,
   type TransformerReturnType,
-  TransformerFailure
+  TransformerFailure,
+  type ApplicationDeploymentMap,
+  selfApplicationMiroir,
+  defaultSelfApplicationDeploymentMap
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { MiroirReactContext, useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
+import { useCurrentModel, useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
 import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -104,6 +107,8 @@ export function useJzodElementEditorHooks(
   rootLessListKeyArray: (string | number)[],
   reportSectionPathAsString: string,
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined,
+  currentApplication: Uuid,
+  appliationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: Uuid | undefined,
   // {
   //   currentDeploymentUuid,
@@ -117,8 +122,10 @@ export function useJzodElementEditorHooks(
   // general use
   count++;
   const context = useMiroirContextService();
-  const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentModel: MetaModel = useCurrentModel(currentApplication, appliationDeploymentMap);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+  // const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
+  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   let dbgInt = 0;
   // log.info("useJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
   
@@ -156,17 +163,21 @@ export function useJzodElementEditorHooks(
     }
   }, [formik.values, currentReportSectionFormikValues, rootLessListKeyArray]);
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
-      miroirMetaModel: miroirMetaModel,
-      currentModel: currentModel,
-    };
-  }, [
-    miroirMetaModel,
-    currentModel,
-    context.miroirFundamentalJzodSchema,
-  ]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    appliationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+  //     miroirMetaModel: miroirMetaModel,
+  //     currentModel: currentModel,
+  //   };
+  // }, [
+  //   miroirMetaModel,
+  //   currentModel,
+  //   context.miroirFundamentalJzodSchema,
+  // ]);
 
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
     typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
@@ -280,6 +291,8 @@ export function useJzodElementEditorHooks(
         return getQueryRunnerParamsForReduxDeploymentsState(
           {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: currentApplication,
+            applicationDeploymentMap: appliationDeploymentMap,
             deploymentUuid,
             pageParams: {},
             queryParams: {},
@@ -300,11 +313,13 @@ export function useJzodElementEditorHooks(
               },
             },
           },
+          appliationDeploymentMap,
           deploymentEntityStateSelectorMap
         );
       } else {
         return getQueryRunnerParamsForReduxDeploymentsState(
           dummyDomainManyQueryWithDeploymentUuid,
+          appliationDeploymentMap,
           deploymentEntityStateSelectorMap
         );
       }

@@ -7,6 +7,7 @@ import {
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
   defaultMetaModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
@@ -24,11 +25,13 @@ import {
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   ResolvedJzodSchemaReturnType,
+  selfApplicationMiroir,
   setValueAtPath,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
   Uuid,
+  type ApplicationDeploymentMap,
   type JzodObject,
   type JzodSchema,
   type MiroirModelEnvironment
@@ -48,6 +51,7 @@ import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import {
   useCurrentModel,
+  useCurrentModelEnvironment,
   useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
@@ -79,6 +83,8 @@ export interface TypedValueObjectEditorProps {
   formValueMLSchema: JzodObject;
   formikValuePathAsString: string; 
   // 
+  application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   domainElement?: Record<string,any>,
@@ -127,6 +133,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   formValueMLSchema,
   formikValuePathAsString,
   // 
+  application,
+  applicationDeploymentMap,
   deploymentUuid,
   applicationSection,
   // depth control
@@ -222,10 +230,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   }
 
   // ##############################################################################################
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  );
-  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentApplication: Uuid = applicationSection == "data" ? application : selfApplicationMiroir.uuid;
+  const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
+  // const currentModel: MetaModel = useCurrentModel(currentApplication, defaultSelfApplicationDeploymentMap);
 
   // Get the deployment entity state from Redux store for ifThenElse schema resolution
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -236,17 +243,21 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMetaModelEnvironment)
   );
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-      return {
-        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
-        miroirMetaModel: currentMiroirModel,
-        currentModel: currentModel,
-      };
-    }, [
-      currentMiroirModel,
-      currentModel,
-      context.miroirFundamentalJzodSchema,
-    ]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    applicationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //     return {
+  //       miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+  //       miroirMetaModel: currentMiroirModel,
+  //       currentModel: currentModel,
+  //     };
+  //   }, [
+  //     currentMiroirModel,
+  //     currentModel,
+  //     context.miroirFundamentalJzodSchema,
+  //   ]);
   
 
   // log.info(
@@ -394,7 +405,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: deploymentUuid,
+              application,
+              applicationDeploymentMap,
+              deploymentUuid,
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -412,6 +425,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               },
             }
           : dummyDomainManyQueryWithDeploymentUuid,
+        defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       ),
     [deploymentEntityStateSelectorMap, deploymentUuid, jzodTypeCheckResult]
@@ -536,6 +550,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               rootLessListKeyArray={[]}
               labelElement={labelElement}
               indentLevel={0}
+              currentApplication={application}
+              applicationDeploymentMap={applicationDeploymentMap}
               currentDeploymentUuid={deploymentUuid}
               currentApplicationSection={applicationSection}
               resolvedElementJzodSchemaDEFUNCT={
@@ -594,6 +610,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               rootLessListKeyArray={[]}
               labelElement={labelElement}
               indentLevel={0}
+              currentApplication={application}
+              applicationDeploymentMap={applicationDeploymentMap}
               currentDeploymentUuid={deploymentUuid}
               currentApplicationSection={applicationSection}
               resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}

@@ -97,6 +97,7 @@ export const ReportPage = () => {
             {context.showPerformanceDisplay && (
               <>
                 <ThemedBox>
+                  application={pageParams.application},
                   deploymentUuid={pageParams.deploymentUuid}, applicationSection=
                   {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}, instanceUuid=
                   {pageParams.instanceUuid}

@@ -21,6 +21,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   transformer_extended_apply_wrapper,
   Uuid,
+  type ApplicationDeploymentMap,
   type TransformerReturnType
 } from "miroir-core";
 
@@ -158,6 +159,8 @@ const ProgressiveAttribute: FC<{
   miroirMetaModel: any;
   measuredUnfoldJzodSchemaOnce: any;
   // Add direct props from JzodObjectEditorProps that are used
+  currentApplication: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -198,6 +201,8 @@ const ProgressiveAttribute: FC<{
   readOnly,
   existingObject,
   // Direct props
+  currentApplication,
+  applicationDeploymentMap,
   currentDeploymentUuid,
   currentApplicationSection,
   foreignKeyObjects,
@@ -314,9 +319,11 @@ const ProgressiveAttribute: FC<{
             rootLessListKeyArray={[...rootLessListKeyArray, attribute[0]]}
             reportSectionPathAsString={reportSectionPathAsString}
             indentLevel={usedIndentLevel + 1}
+            currentApplication={currentApplication}
+            applicationDeploymentMap={applicationDeploymentMap}
+            currentApplicationSection={currentApplicationSection}
             currentDeploymentUuid={currentDeploymentUuid}
             typeCheckKeyMap={typeCheckKeyMap}
-            currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchemaDEFUNCT={currentAttributeDefinition}
             foreignKeyObjects={foreignKeyObjects}
             insideAny={insideAny}
@@ -374,6 +381,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     rootLessListKeyArray,
     reportSectionPathAsString,
     typeCheckKeyMap,
+    currentApplication,
+    applicationDeploymentMap,
     currentDeploymentUuid,
     currentApplicationSection,
     indentLevel,
@@ -429,6 +438,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     rootLessListKeyArray,
     reportSectionPathAsString,
     typeCheckKeyMap,
+    currentApplication,
+    applicationDeploymentMap,
     currentDeploymentUuid,
     count,
     "JzodElementEditor"
@@ -713,6 +724,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
           [], // currentPath on value is root
           true, // force optional attributes to receive a default value
+          currentApplication,
+          applicationDeploymentMap,
           currentDeploymentUuid,
           {
             miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
@@ -980,6 +993,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 reportSectionPathAsString={reportSectionPathAsString}
                 attribute={attribute}
                 attributeNumber={attributeNumber}
+                currentApplication={currentApplication}
+                applicationDeploymentMap={applicationDeploymentMap}
                 currentDeploymentUuid={currentDeploymentUuid}
                 currentApplicationSection={currentApplicationSection}
                 foreignKeyObjects={foreignKeyObjects || {}}

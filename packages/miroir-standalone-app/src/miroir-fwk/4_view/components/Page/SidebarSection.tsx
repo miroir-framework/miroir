@@ -16,6 +16,8 @@ import {
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
+  adminSelfApplication,
+  defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
@@ -28,6 +30,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid,
+  type ApplicationDeploymentMap,
   type MiroirMenuItem
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
@@ -56,7 +59,7 @@ const sideBarDefaultItems: MiroirMenuItem[] = [
   {
     label: "A Menu will be displayed here!",
     section: "model",
-    selfApplication: adminConfigurationDeploymentMiroir.uuid,
+    selfApplication: "noApplicationSpecified",
     reportUuid: "",
     "icon": "south",
   },
@@ -64,7 +67,10 @@ const sideBarDefaultItems: MiroirMenuItem[] = [
 
 let count = 0;
 // ################################################################################################
-export interface SidebarSectionProps {deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
+export interface SidebarSectionProps {
+  applicationUuid: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
 export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProps) => {
   count++;
   const theme = useTheme();
@@ -74,7 +80,8 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
   const currentModel: MetaModel = useCurrentModel(
-    adminConfigurationDeploymentAdmin.uuid
+    props.applicationUuid,
+    defaultSelfApplicationDeploymentMap
   );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
@@ -88,6 +95,8 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
         currentModel?.entities?.length > 0? 
         {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: props.applicationUuid,
+              applicationDeploymentMap: props.applicationDeploymentMap,
               deploymentUuid: props.deploymentUuid,
               pageParams: {},
               queryParams: {},
@@ -104,6 +113,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
             }
           : dummyDomainManyQueryWithDeploymentUuid
           ,
+          defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       ),
     [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]
@@ -188,13 +198,14 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                       <ThemedListItemButton
                         sx={{ padding: 0 }}
                         component={Link}
-                        to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}
+                        to={`/report/${i.selfApplication}/${props.applicationDeploymentMap[i.selfApplication]}/${i.section}/${i.reportUuid}/xxxxxx`}
                       >
                         <ThemedListMiroirIcon>
                           {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                           <ThemedIcon icon={i.icon} />
                         </ThemedListMiroirIcon>
                         <ThemedListItemText primary={i.label} />
+                        {/* <ThemedListItemText primary={`application: ${i.selfApplication}`} /> */}
                       </ThemedListItemButton>
                     </ThemedListItem>
                   ))}
@@ -214,13 +225,14 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                       <ThemedListItem key={curr.label + index} disablePadding>
                         <ThemedListItemButton
                           component={Link}
-                          to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}
+                          to={`/report/${curr.selfApplication}/${props.applicationDeploymentMap[curr.selfApplication]}/${curr.section}/${curr.reportUuid}/xxxxxx`}
                         >
                           <ThemedListMiroirIcon>
                             {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                             <ThemedIcon icon={curr.icon} />
                           </ThemedListMiroirIcon>
                           <ThemedListItemText primary={curr.label} />
+                        {/* <ThemedListItemText primary={`application: ${curr.selfApplication}`} /> */}
                         </ThemedListItemButton>
                       </ThemedListItem>
                     ))

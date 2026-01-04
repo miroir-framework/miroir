@@ -7,6 +7,7 @@ import {
   Action2Error,
   adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   entityDefinitionEntityDefinition,
   getApplicationSection,
@@ -60,7 +61,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const outlineContext = useDocumentOutlineContext();
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   
-  const currentModel: MetaModel = useCurrentModel(props.deploymentUuid);
+  const currentModel: MetaModel = useCurrentModel(props.application, defaultSelfApplicationDeploymentMap);
+  // const currentModel: MetaModel = useCurrentModel(props.deploymentUuid);
   const currentDeploymentReportsEntitiesDefinitionsMapping =
     // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
@@ -84,6 +86,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         ? props.reportDefinition.definition.extractorTemplates
           ? {
               queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              application: props.pageParams.application??"NO_APPLICATION",
+              applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: props.pageParams,
               queryParams: {},
@@ -95,6 +99,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           : props.reportDefinition.definition.extractors
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: props.pageParams.application??"NO_APPLICATION",
+              applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: props.pageParams,
               queryParams: {},
@@ -105,6 +111,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             }
           : {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: "",
+              applicationDeploymentMap: {},
               deploymentUuid: "",
               pageParams: props.pageParams,
               queryParams: {},
@@ -246,6 +254,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         reportDataQueryBase
           ? {
             queryType: "queryByTemplateGetParamJzodSchema",
+              application: props.pageParams.application??"NO_APPLICATION",
+              applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
                 applicationSection: props.pageParams.applicationSection,
@@ -260,6 +270,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           : // dummy query
             {
               queryType: "queryByTemplateGetParamJzodSchema",
+              application: "",
+              applicationDeploymentMap: {},
               deploymentUuid: "DUMMY",
               pageParams: {
                 applicationSection: "data",
@@ -270,6 +282,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               contextResults: {},
               fetchParams: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+                application: "",
+                applicationDeploymentMap: {},
                 deploymentUuid: "DUMMY",
                 pageParams: props.pageParams,
                 queryParams: {},
@@ -373,6 +387,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
+                application: props.pageParams.application ?? "NO_APPLICATION",
                 deploymentUuid: props.deploymentUuid,
                 instanceAction: {
                   actionType: mode == "create" ? "createInstance" : "updateInstance",
@@ -380,6 +395,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   // deploymentUuid: props.deploymentUuid, // NOT FOR createInstance
                   payload: {
+                    application: props.pageParams.application ?? "NO_APPLICATION",
                     deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
                     applicationSection,
                     parentUuid: currentInstance.parentUuid,
@@ -395,6 +411,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 },
               },
             },
+            defaultSelfApplicationDeploymentMap,
             currentModelEnvironment // TODO: use correct model environment
           );
         } else { // only data is modified, no transaction is needed
@@ -405,6 +422,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               // applicationSection: "data",
+              application: props.pageParams.application ?? "NO_APPLICATION",
               deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
               applicationSection: applicationSection,
               objects: [
@@ -419,7 +437,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             },
           };
           log.info("onEditValueObjectFormSubmit dispatching updateAction", updateAction);
-          return domainController.handleActionFromUI(updateAction);
+          return domainController.handleActionFromUI(updateAction, defaultSelfApplicationDeploymentMap, currentModelEnvironment);
         }
       } else {
         throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
@@ -489,6 +507,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                         data={reportNamePath}
                       /> */}
                       <InlineReportEditor
+                        application={props.application}
+                        applicationDeploymentMap={props.applicationDeploymentMap}
                         deploymentUuid={props.deploymentUuid}
                         applicationSection={props.applicationSection}
                         reportEntityDefinitionDEFUNCT={entityDefinitionReport}
@@ -501,6 +521,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   )}
                   <ReportSectionViewWithEditor
                     applicationSection={props.applicationSection}
+                    application={props.application}
+                    applicationDeploymentMap={props.applicationDeploymentMap}
                     deploymentUuid={props.deploymentUuid}
                     editMode={editMode}
                     paramsAsdomainElements={props.pageParams}

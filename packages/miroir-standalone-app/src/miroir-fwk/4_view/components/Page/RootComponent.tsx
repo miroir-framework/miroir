@@ -47,7 +47,11 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   ViewParamsData,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
+  adminSelfApplication,
+  selfApplicationMiroir,
+  selfApplicationLibrary
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -160,7 +164,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // );
 
   // Memoize current model to prevent unnecessary re-renders
-  const currentModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  const currentModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
 
   if (miroirConfig && miroirConfig.miroirConfigType != "client") {
     throw new Error(
@@ -168,16 +172,10 @@ export const RootComponent = (props: RootComponentProps) => {
     );
   }
 
-  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const adminAppModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
+  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+  const libraryAppModel: MetaModel = useCurrentModel(selfApplicationLibrary.uuid, defaultSelfApplicationDeploymentMap);
 
-  const currentAppModel: MetaModel = useCurrentModel(context.deploymentUuid);
-  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
-  const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(adminConfigurationDeploymentLibrary.uuid);
-
-  // const test1AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest1.uuid);
-  // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
-  // const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
@@ -513,7 +511,7 @@ export const RootComponent = (props: RootComponentProps) => {
     () =>
       currentModel?.entities?.length > 0
         ? defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
-        : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid),
+        : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid, defaultSelfApplicationDeploymentMap),
     [currentModel?.entities?.length, deploymentEntityStateSelectorMap]
   );
 

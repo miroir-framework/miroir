@@ -24,6 +24,7 @@ import { JzodElementEditor } from "./JzodElementEditor";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { ThemedOnScreenHelper } from "../Themes";
+import { useCurrentModelEnvironment } from "../../ReduxHooks";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -66,19 +67,25 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     props.rootLessListKeyArray,
     reportSectionPathAsString,
     props.typeCheckKeyMap,
+    props.currentApplication,
+    props.applicationDeploymentMap,
     props.currentDeploymentUuid,
     JzodAnyEditorRenderCount,
     "JzodAnyEditor"
   );
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-      currentModel: currentModel,
-      miroirMetaModel: miroirMetaModel,
-    };
-  }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    props.currentApplication,
+    props.applicationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema:
+  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //     currentModel: currentModel,
+  //     miroirMetaModel: miroirMetaModel,
+  //   };
+  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   // const currentValue = resolvePathOnObject(formik.values[reportSectionPathAsString], rootLessListKeyArray);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -109,6 +116,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               undefined, // currentDefaultValue is not known yet, this is what this call will determine
               [], // currentPath on value is root
               true, // force optional attributes to receive a default value
+              props.currentApplication,
+              props.applicationDeploymentMap,
               currentDeploymentUuid,
               currentMiroirModelEnvironment,
               {}, // transformerParams
@@ -130,6 +139,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           rootLessListKey={rootLessListKey}
           rootLessListKeyArray={rootLessListKeyArray}
           reportSectionPathAsString={reportSectionPathAsString}
+          currentApplication={props.currentApplication}
+          applicationDeploymentMap={props.applicationDeploymentMap}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}

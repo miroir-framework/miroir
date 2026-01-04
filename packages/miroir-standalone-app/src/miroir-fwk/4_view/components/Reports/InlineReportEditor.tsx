@@ -12,6 +12,7 @@ import {
   MiroirLoggerFactory,
   Report,
   Uuid,
+  type ApplicationDeploymentMap,
   type JzodObject
 } from "miroir-core";
 
@@ -31,6 +32,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface InlineReportEditorProps {
   // reportDefinitionDEFUNCT: Report;
   reportEntityDefinitionDEFUNCT: EntityDefinition;
+  application: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   applicationSection: ApplicationSection;
   formValueMLSchema: JzodObject;
@@ -45,6 +48,8 @@ export interface InlineReportEditorProps {
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
   reportEntityDefinitionDEFUNCT,
   formValueMLSchema,
+  application,
+  applicationDeploymentMap,
   deploymentUuid,
   applicationSection,
   formikAlreadyAvailable,
@@ -102,6 +107,9 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 }}
               /> */}
               <ReportSectionEntityInstance
+                mode='create'
+                application={application}
+                applicationDeploymentMap={applicationDeploymentMap}
                 deploymentUuid={deploymentUuid}
                 applicationSection={getApplicationSection(deploymentUuid, formikReportDefinition?.parentUuid)}
                 entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema

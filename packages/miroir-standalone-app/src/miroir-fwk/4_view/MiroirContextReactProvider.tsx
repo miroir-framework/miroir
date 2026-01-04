@@ -106,6 +106,8 @@ export interface MiroirReactContext {
   serverBaseUrl: string; // Base URL for the REST API server (e.g., http://localhost:3080)
   // ###################################################################################################
   // page parameters
+  application: string;
+  setApplication: React.Dispatch<React.SetStateAction<string>>;
   deploymentUuid: string;
   setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
   reportUuid: Uuid | undefined;
@@ -188,9 +190,11 @@ export function MiroirContextReactProvider(props: {
   miroirContext: MiroirContextInterface;
   // miroirContext: MiroirContext;
   domainController: DomainControllerInterface;
+  testingApplication?: Uuid; // for tests only! Yuck!
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
   children: ReactNode;
 }) {
+  const [application, setApplication] = useState(props.testingApplication ?? "");
   const [deploymentUuid, setDeploymentUuid] = useState(props.testingDeploymentUuid ?? "");
   const [reportUuid, setReportUuid] = useState("");
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
@@ -462,8 +466,9 @@ export function MiroirContextReactProvider(props: {
       miroirContext: props.miroirContext,
       domainController: props.domainController,
       serverBaseUrl,
+      application: application,
+      setApplication: setApplication,
       deploymentUuid,
-      // setDeploymentUuid:(...args)=>{log.info('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
       setDeploymentUuid,
       reportUuid,
       setReportUuid,

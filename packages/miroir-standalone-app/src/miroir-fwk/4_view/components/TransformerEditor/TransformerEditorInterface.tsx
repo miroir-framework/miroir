@@ -30,6 +30,8 @@ export type TransformerEditorFormikValueType = {
 }
 
 export interface TransformerEditorProps {
+  application: Uuid;
+  applicationDeploymentMap: Record<Uuid, Uuid>;
   deploymentUuid: Uuid;
   entityUuid: Uuid;
 }

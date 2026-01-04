@@ -5,6 +5,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
+  defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
   safeStringify,
   type JzodElement,
@@ -41,6 +42,7 @@ export const TransformationResultPanel: React.FC<{
   showAllInstances: boolean;
   // entityInstances: EntityInstance[];
   inputSelectorMode: "instance" | "here" | "none";
+  inputApplication: Uuid;
   inputDeploymentUuid: Uuid;
 }> =
   // React.memo<{
@@ -61,7 +63,8 @@ export const TransformationResultPanel: React.FC<{
     showAllInstances,
     inputSelectorMode,
     // entityInstances,
-    inputDeploymentUuid: inputDeploymentUuid,
+    inputApplication,
+    inputDeploymentUuid,
   }) => {
     log.info("Rendering TransformationResultPanel with result:", transformationResult);
     const formikContext = useFormikContext<TransformerEditorFormikValueType>();
@@ -98,6 +101,8 @@ export const TransformationResultPanel: React.FC<{
               } // TODO: ILL-TYPED!!
             }
             formikValuePathAsString="transformationResult"
+            application={inputApplication}
+            applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
             deploymentUuid={inputDeploymentUuid}
             applicationSection={"data"}
             formLabel={"Transformation Result Viewer"}

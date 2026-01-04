@@ -1,9 +1,7 @@
-import { Formik } from "formik";
 import { useSelector } from "react-redux";
 
 // import { ReactCodeMirror } from "@uiw/react-codemirror";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { ValueObjectGrid } from "../components/Grids/ValueObjectGrid";
+import { useCallback, useState } from "react";
 import { PageContainer } from "../components/Page/PageContainer";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
@@ -16,7 +14,6 @@ import {
   JzodElement,
   JzodObject,
   LoggerInterface,
-  MetaModel,
   MiroirConfigClient,
   MiroirLoggerFactory,
   StoreUnitConfiguration,
@@ -24,8 +21,8 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
-  defaultLibraryModelEnvironment,
   defaultMetaModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
   entityBook,
@@ -34,9 +31,9 @@ import {
   entitySelfApplication,
   entityTransformerTest,
   expect,
-  jzodTypeCheck,
   selfApplicationDeploymentLibrary,
-  testSuitesResults,
+  selfApplicationLibrary,
+  selfApplicationMiroir,
   transformerTest_resolveConditionalSchema,
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
@@ -53,21 +50,17 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRed
 // } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { applicationParis, packageName } from "../../../constants.js";
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
-import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
 import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
 import {
   useDomainControllerService,
-  useMiroirContextInnerFormOutput,
   useMiroirContextService,
   useMiroirContextformHelperState
 } from "../MiroirContextReactProvider.js";
-import { useCurrentModel } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
 
-import { RunTransformerTestSuiteButton } from "../components/Buttons/RunTransformerTestSuiteButton";
-import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
+import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -123,10 +116,6 @@ export const TransformerBuilderPage: React.FC<any> = (
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
-  // const currentModel: MetaModel = useCurrentModel(
-  //   context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  // );
-  // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
   const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
@@ -136,36 +125,6 @@ export const TransformerBuilderPage: React.FC<any> = (
   const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
 
 
-  // const resolvedTestResultsJzodSchema: JzodElement | undefined = useMemo(() => {
-  //   if (
-  //     testResults &&
-  //     context.miroirFundamentalJzodSchema != undefined &&
-  //     (testSuitesResults != undefined && testSuitesResults.context != undefined)
-  //   ) {
-  //     const configuration = jzodTypeCheck(
-  //       (context.miroirFundamentalJzodSchema.definition as any).context.testsResults,
-  //       testResults?.testsSuiteResults?.["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
-  //       [], // currentValuePath
-  //       [], // currentTypePath
-  //       {
-  //         miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-  //         currentModel,
-  //         miroirMetaModel: currentMiroirModel,
-  //       },
-  //       emptyObject
-  //     );
-
-  //     return configuration.status == "ok" ? configuration.resolvedSchema : defaultObject;
-  //   }
-  // }, [context.miroirFundamentalJzodSchema, testResults]);
-
-  // log.info(
-  //   "called jzodTypeCheck: resolvedTestResultsJzodSchema",
-  //   resolvedTestResultsJzodSchema,
-  //   context.miroirFundamentalJzodSchema,
-  //   // "rawSchema",
-  //   // rawSchema
-  // );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -192,6 +151,8 @@ export const TransformerBuilderPage: React.FC<any> = (
           {
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObject",
+              application: selfApplicationMiroir.uuid,
+              applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               contextResults: {},
               pageParams: {},
@@ -205,7 +166,8 @@ export const TransformerBuilderPage: React.FC<any> = (
             },
           },
           defaultMetaModelEnvironment
-        ) as Domain2QueryReturnType<TransformerTestSuite>)
+        ))
+        // ) as Domain2QueryReturnType<TransformerTestSuite>)
       : undefined;
   // log.info(
   //   "Tools.tsx transformerTestSuite_resolveConditionalSchema",
@@ -337,6 +299,7 @@ export const TransformerBuilderPage: React.FC<any> = (
             // localCache,
             domainController,
             testSuite,
+            defaultSelfApplicationDeploymentMap,
             context.miroirContext.miroirActivityTracker,
             (testSuite as any)["testParams"]
           );
@@ -436,6 +399,8 @@ export const TransformerBuilderPage: React.FC<any> = (
         {/* Transformer Editor */}
         <div style={{ margin: "20px 0" }}>
           <TransformerEditor
+            application={selfApplicationLibrary.uuid}
+            applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
             deploymentUuid={selfApplicationDeploymentLibrary.uuid}
             entityUuid={entityBook.uuid}
           />

@@ -14,6 +14,7 @@ import {
   adminConfigurationDeploymentMiroir,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   entityApplicationForAdmin,
   entityEndpointVersion,
@@ -21,15 +22,14 @@ import {
   JzodObject,
   LoggerInterface,
   MetaModel,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   resolvePathOnObject,
+  selfApplicationLibrary,
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   transformer_extended_apply_wrapper,
   type Action,
-  type JzodSchema,
   type MiroirModelEnvironment,
   type TransformerForBuildPlusRuntime
 } from 'miroir-core';
@@ -37,11 +37,11 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } f
 import { FC, useEffect, useMemo, useState } from 'react';
 import { packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
-import { useCurrentModel } from '../ReduxHooks.js';
+import { useCurrentModel, useCurrentModelEnvironment } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 // import { useReportPageContext } from './Reports/ReportPageContext.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
-import { ThemedOnScreenDebug, ThemedOnScreenHelper } from './Themes/BasicComponents.js';
+import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
 import { ThemedPaper } from './Themes/index.js';
 import { noValue } from './ValueObjectEditor/JzodElementEditorInterface.js';
 
@@ -101,6 +101,10 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     },
   });
 
+  const [innerSelectedApplicationUuid, setInnerSelectedApplicationUuid] = useState<string>(
+    // adminConfigurationDeploymentLibrary.uuid
+    selfApplicationLibrary.uuid
+  );
   const [innerSelectedDeploymentUuid, setInnerSelectedDeploymentUuid] = useState<string>(
     adminConfigurationDeploymentLibrary.uuid
   );
@@ -109,20 +113,24 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   // const reportContext = useReportPageContext();
   const context = useMiroirContextService();
   const { showSnackbar } = useSnackbar();
-  const currentModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
-    // context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  // const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  // context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  // const currentModel: MetaModel = useCurrentModel(innerSelectedApplicationUuid, defaultSelfApplicationDeploymentMap);
+  // const adminAppModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
+  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
   // const deploymentMetaModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-      currentModel,
-      miroirMetaModel: miroirMetaModel,
-    };
-  }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    innerSelectedApplicationUuid,
+    defaultSelfApplicationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema:
+  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //     currentModel,
+  //     miroirMetaModel: miroirMetaModel,
+  //   };
+  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -150,6 +158,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       // Call the domain controller with the action
       const result = await domainController.handleAction(
         currentAction as any, // Cast to any since we're dynamically constructing the action
+        defaultSelfApplicationDeploymentMap,
         currentMiroirModelEnvironment
       );
 
@@ -207,17 +216,34 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           formikContext: FormikProps<typeof actionFormInitialValues>
         ) => {
 
-          const selectedDeploymentUuid =
-            defaultAdminApplicationDeploymentMapNOTGOOD[
-              resolvePathOnObject(formikContext.values, [
+          // const selectedDeploymentUuid =
+          //   defaultAdminApplicationDeploymentMapNOTGOOD[
+          //     resolvePathOnObject(formikContext.values, [
+          //       formikPath_EndpointActionCaller,
+          //       "applicationUuid",
+          //     ])
+          //   ]
+          // ;
+          const selectedApplicationUuid = resolvePathOnObject(formikContext.values, [
                 formikPath_EndpointActionCaller,
                 "applicationUuid",
-              ])
-            ]
-          ;
-          const currentInnerModel: MetaModel = useCurrentModel(
-            selectedDeploymentUuid != noValue.uuid? selectedDeploymentUuid : adminConfigurationDeploymentMiroir.uuid
+              ]);
+          const selectedDeploymentUuid = defaultSelfApplicationDeploymentMap[selectedApplicationUuid];
+          log.info(
+            "EndpointActionCaller: selectedDeploymentUuid",
+            selectedDeploymentUuid,
+            "selectedApplicationUuid",
+            selectedApplicationUuid
           );
+          const currentInnerModel: MetaModel = useCurrentModel(
+            selectedApplicationUuid != noValue.uuid
+              ? selectedApplicationUuid
+              : adminConfigurationDeploymentMiroir.uuid,
+            defaultSelfApplicationDeploymentMap
+          );
+          // const currentInnerModel: MetaModel = useCurrentModel(
+          //   selectedDeploymentUuid != noValue.uuid? selectedDeploymentUuid : adminConfigurationDeploymentMiroir.uuid
+          // );
 
           const selectedEndpointUuid =
             formikContext.values[formikPath_EndpointActionCaller].endpointUuid;
@@ -234,8 +260,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           log.info("EndpointActionCaller: currentEndpoint", currentEndpoint);
           // Get available actions for selected endpoint
           const availableActionsAndActionTypes: {
-            actions:Action[],
-            actionTypes:Action["actionParameters"][]
+            actions: Action[];
+            actionTypes: Action["actionParameters"][];
           } = useMemo(() => {
             return currentEndpoint
               ? transformer_extended_apply_wrapper(
@@ -253,7 +279,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                   "value" // resolveBuildTransformersTo
                 )
               : { actions: [], actionTypes: [] };
-          }, [selectedDeploymentUuid, currentEndpoint]);
+          }, [
+            currentEndpoint,
+            runnerDefinition.transformer,
+            context.miroirContext.miroirActivityTracker,
+          ]);
           log.info("EndpointActionCaller: availableActionsAndActionTypes", availableActionsAndActionTypes);
 
           const selectedActionName = formikContext.values[formikPath_EndpointActionCaller].action;
@@ -389,13 +419,13 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 },
               },
             },
-          }), [selectedDeploymentUuid, availableActionsAndActionTypes, currentActionParametersMMLSchema]);
+          }), [availableActionsAndActionTypes, currentActionParametersMMLSchema]);
 
           useEffect(() => {
             const initialFormState: Record<string, any> =
               !currentAction?.actionParameters ||
               !context.miroirFundamentalJzodSchema ||
-              !selectedDeploymentUuid
+              !selectedApplicationUuid
                 ? {}
                 : getDefaultValueForJzodSchemaWithResolutionNonHook(
                     "build",
@@ -405,6 +435,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     undefined, // No need to pass currentDefaultValue here
                     [], // currentPath on value is root
                     false, // forceOptional
+                    selectedApplicationUuid,
+                    defaultSelfApplicationDeploymentMap,
                     selectedDeploymentUuid,
                     currentMiroirModelEnvironment,
                     {}, // transformerParams
@@ -517,6 +549,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     formValueMLSchema={endpointActionCallerFormikSchema}
                     formikValuePathAsString={formikPath_EndpointActionCaller}
                     deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
+                    application={innerSelectedApplicationUuid}
+                    applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                     applicationSection={"data"}
                     formLabel={"Submit Action"}
                     mode="create" // Readonly viewer mode, not relevant here

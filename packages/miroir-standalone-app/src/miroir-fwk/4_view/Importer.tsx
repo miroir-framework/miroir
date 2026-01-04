@@ -1779,7 +1779,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // const currentModel: MetaModel = useCurrentModel(
   //   context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   // );
-  // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  // const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
   // const resolvedJzodSchema:JzodElement = useMemo(
   //   () => {

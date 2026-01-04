@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { defaultMiroirModelEnvironment, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
+import { defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
@@ -428,9 +428,11 @@ export function AppBar(props:AppBarProps) {
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
+                      application: noValue.uuid,
                       deploymentUuid: noValue.uuid,
                     },
                   },
+                  defaultSelfApplicationDeploymentMap,
                   defaultMiroirModelEnvironment
                 );
               }}

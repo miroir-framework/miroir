@@ -1,4 +1,5 @@
 import {
+  defaultSelfApplicationDeploymentMap,
   getInnermostTransformerError,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -52,6 +53,7 @@ const DisplayTransformerEvent: React.FC<{
   depth: number;
 }> = React.memo(({ event, depth }) => {
   const context = useMiroirContextService();
+  const application = context.application;
   const deploymentUuid = context.deploymentUuid;
   
   const [isExpanded, setIsExpanded] = useState(false);
@@ -216,6 +218,7 @@ const DisplayTransformerEvent: React.FC<{
                 {JSON.stringify(Object.keys(activity.transformerParams), null, 2)}
               </ThemedCodeBlock> */}
               <TypedValueObjectEditorWithFormik
+                mode='create'
                 labelElement={<div>target:</div>}
                 initialValueObject={{ displayedParameters }}
                 formValueMLSchema={{
@@ -223,6 +226,8 @@ const DisplayTransformerEvent: React.FC<{
                   definition: { displayedParameters: parametersSchema },
                 }} // TODO: ILL-TYPED!!
                 formikValuePathAsString="displayedParameters"
+                application={application}
+                applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}
                 formLabel={"Transformation Result Viewer"}

@@ -160,7 +160,10 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
-  public currentModel(deploymentUuid: string): MetaModel {
+  public currentModel(
+    application: string,
+    appliationDeploymentMap: ApplicationDeploymentMap,
+    deploymentUuid: string): MetaModel {
     log.info("called currentModel(", deploymentUuid, ")");
     // log.trace(
     //   "called currentModel(",
@@ -170,12 +173,15 @@ export class LocalCache implements LocalCacheInterface {
     // );
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
-    return currentModel(deploymentUuid, reduxState);
+    return currentModel(application, appliationDeploymentMap, deploymentUuid, reduxState);
   }
 
   // ###############################################################################
   // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
-  public currentModelEnvironment(deploymentUuid: string): MiroirModelEnvironment {
+  public currentModelEnvironment(
+    application: string,
+    appliationDeploymentMap: ApplicationDeploymentMap,
+    deploymentUuid: string): MiroirModelEnvironment {
     log.info("called currentModelEnvironment(", deploymentUuid, ")");
     log.trace(
       "called currentModelEnvironment(",
@@ -185,7 +191,12 @@ export class LocalCache implements LocalCacheInterface {
     );
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
-    return currentModelEnvironment(deploymentUuid, reduxState);
+    return currentModelEnvironment(
+      application,
+      appliationDeploymentMap,
+      deploymentUuid,
+      reduxState
+    );
   }
 
   // ###############################################################################

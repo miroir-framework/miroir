@@ -13,12 +13,16 @@ import {
   MiroirModelEnvironment,
   jzodUnionResolvedTypeForObject,
   KeyMapEntry,
-  type JzodObject
+  type JzodObject,
+  type Uuid,
+  type ApplicationDeploymentMap,
+  selfApplicationMiroir,
+  defaultSelfApplicationDeploymentMap
 } from "miroir-core";
 import React, { FC, useMemo, useCallback } from "react";
 import { useFormikContext } from "formik";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel } from "../../ReduxHooks";
+import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { 
@@ -44,6 +48,8 @@ const handleDiscriminatorChange = (
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
   formikRootLessListKey: string,
+  currentApplication: Uuid,
+  appliationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string | undefined,
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
@@ -181,6 +187,8 @@ const handleDiscriminatorChange = (
         undefined, // currentDefaultValue
         [], // currentValuePath
         true, // forceOptional
+        currentApplication,
+        appliationDeploymentMap,
         currentDeploymentUuid,
         modelEnvironment,
       ),
@@ -219,6 +227,11 @@ const handleDiscriminatorChange = (
 };
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // JzodEnumEditor Component
 // ################################################################################################
 export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
@@ -231,6 +244,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   reportSectionPathAsString,
   forceTestingMode,
   typeCheckKeyMap,
+  currentApplication,
+  applicationDeploymentMap: appliationDeploymentMap,
   currentDeploymentUuid,
   readOnly,
   onChangeVector,
@@ -239,8 +254,9 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
 
   const formik = useFormikContext<Record<string, any>>();
   const context = useMiroirContextService();
-  const currentModel = useCurrentModel(currentDeploymentUuid);
-  const miroirMetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentModel = useCurrentModel(currentApplication, appliationDeploymentMap);
+  // const currentModel = useCurrentModel(currentDeploymentUuid);
+  const miroirMetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
 
   const parentKey = rootLessListKey.includes(".")
@@ -290,14 +306,18 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   // }
 
   // Create the model environment needed for discriminator change handling
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema:
-        currentMiroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-      currentModel,
-      miroirMetaModel: miroirMetaModel,
-    };
-  }, [currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    appliationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema:
+  //       currentMiroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //     currentModel,
+  //     miroirMetaModel: miroirMetaModel,
+  //   };
+  // }, [currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   // Handler for discriminator select change (using common function)
   const handleSelectEnumChange = useCallback(
@@ -312,6 +332,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         rootLessListKey,
         rootLessListKeyArray,
         formikRootLessListKey,
+        currentApplication,
+        appliationDeploymentMap,
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
         formik,
@@ -385,6 +407,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           rootLessListKey,
           rootLessListKeyArray,
           formikRootLessListKey,
+          currentApplication,
+          appliationDeploymentMap,
           currentDeploymentUuid,
           currentMiroirModelEnvironment,
           formik,
