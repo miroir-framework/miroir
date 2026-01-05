@@ -451,7 +451,8 @@ export const selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeployments
     return empty;
   }
   const applicationDeploymentMap = params.definition.applicationDeploymentMap;
-  const deploymentUuid = applicationDeploymentMap[params.definition.application];
+  const deploymentUuid =
+    params.definition.deploymentUuid ?? applicationDeploymentMap[params.definition.application];
   if (!params.definition.entityUuid) {
     throw new Error(
       "selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState no entityUuid in params " + JSON.stringify(params)

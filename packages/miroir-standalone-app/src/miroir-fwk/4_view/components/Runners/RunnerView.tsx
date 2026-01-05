@@ -112,7 +112,7 @@ export function StoredRunnerView(props: {
         }}
         // formLabel={runnerLabel}
         formLabel={runnerDefinitionFromLocalCache.defaultLabel}
-        labelElement={<h2>{runnerDefinitionFromLocalCache.defaultLabel}</h2>}
+        // labelElement={<h2>{runnerDefinitionFromLocalCache.defaultLabel}</h2>}
         // labelElement={<h2>{runnerLabel}</h2>}
         formikValuePathAsString={runnerName}
         displaySubmitButton="onFirstLine"
@@ -134,7 +134,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     initialFormValue,
     action,
     // miroirModelEnvironment,
-    labelElement,
+    // labelElement,
     formikValuePathAsString,
     formLabel,
     displaySubmitButton,

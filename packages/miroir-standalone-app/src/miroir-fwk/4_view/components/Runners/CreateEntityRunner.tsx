@@ -12,6 +12,8 @@ import type {
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
@@ -25,6 +27,7 @@ import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import { RunnerView } from "./RunnerView.js";
+import type { FormMLSchema } from "./RunnerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -51,6 +54,7 @@ export function getCreateEntityActionTemplate(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
+      application: "NOT_USED_IN_COMPOSITE_ACTION_TEMPLATE",
       definition: [
         // Step 1: Query to get the deployment UUID from the selected application
         {
@@ -61,11 +65,14 @@ export function getCreateEntityActionTemplate(
             actionType: "runBoxedExtractorOrQueryAction",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             payload: {
+              application: adminSelfApplication.uuid,
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+                application: adminSelfApplication.uuid,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                 deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 pageParams: {},
                 queryParams: {},
@@ -97,6 +104,11 @@ export function getCreateEntityActionTemplate(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
+            application: {
+              transformerType: "mustacheStringTemplate",
+              // interpolation: "runtime",
+              definition: "{{createEntity.application}}",
+            } as any,
             deploymentUuid: {
               transformerType: "mustacheStringTemplate",
               interpolation: "runtime",
@@ -122,6 +134,11 @@ export function getCreateEntityActionTemplate(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
+            application: {
+              transformerType: "mustacheStringTemplate",
+              // interpolation: "runtime",
+              definition: "{{createEntity.application}}",
+            } as any,
             deploymentUuid: {
               transformerType: "mustacheStringTemplate",
               interpolation: "runtime",
@@ -146,33 +163,37 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
   // const localDeploymentUuid = deploymentUuid;
   // const localDeploymentUuid = "1b3f973b-a000-4a85-9d42-2639ecd0c473"; // WRONG, it's the application's uuid
   // const localDeploymentUuid = "c0569263-bf2e-428a-af4b-37b7d3953f4b";
-  const formMLSchema: JzodObject = useMemo(
+  const formMLSchema: FormMLSchema = useMemo(
     () => ({
-      type: "object",
-      definition: {
-        createEntity: {
-          type: "object",
-          definition: {
-            application: {
-              type: "uuid",
-              nullable: true,
-              tag: {
-                value: {
-                  defaultLabel: "Application",
-                  editable: true,
-                  selectorParams: {
-                    targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                    targetEntity: entityApplicationForAdmin.uuid,
-                    targetEntityOrderInstancesBy: "name",
+      formMLSchemaType: "mlSchema",
+      mlSchema: {
+        type: "object",
+        definition: {
+          createEntity: {
+            type: "object",
+            definition: {
+              application: {
+                type: "uuid",
+                nullable: true,
+                tag: {
+                  value: {
+                    defaultLabel: "Application",
+                    editable: true,
+                    selectorParams: {
+                      targetApplicationUuid: adminSelfApplication.uuid,
+                      // targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                      targetEntity: entityApplicationForAdmin.uuid,
+                      targetEntityOrderInstancesBy: "name",
+                    },
                   },
                 },
               },
+              entity: entityDefinitionEntity.jzodSchema,
+              entityDefinition: entityDefinitionEntityDefinition.jzodSchema,
             },
-            entity: entityDefinitionEntity.jzodSchema,
-            entityDefinition: entityDefinitionEntityDefinition.jzodSchema,
           },
         },
-      },
+      } as JzodObject,
     }),
     []
   );
@@ -257,11 +278,15 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
     };
   }, []);
 
-  const createEntityActionTemplate = useMemo(() => getCreateEntityActionTemplate(runnerName, "Create Entity"), []);
+  const createEntityActionTemplate = useMemo(
+    () => getCreateEntityActionTemplate(runnerName, "Create Entity"),
+    []
+  );
 
   return (
     <RunnerView
       runnerName={runnerName}
+      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
       deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
@@ -269,7 +294,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
         actionType: "compositeActionTemplate",
         compositeActionTemplate: createEntityActionTemplate,
       }}
-      labelElement={<h2>Entity Creator</h2>}
+      // labelElement={<h2>Entity Creator</h2>}
       formikValuePathAsString="createEntity"
       formLabel="Create Entity"
       displaySubmitButton="onFirstLine"

@@ -316,7 +316,9 @@ function handleInstanceAction(
   instanceAction: InstanceAction,
   applicationDeploymentMap: ApplicationDeploymentMap
 ): Action2ReturnType {
-  const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
+  const deploymentUuid =
+    instanceAction.payload.deploymentUuid ??
+    applicationDeploymentMap[instanceAction.payload.application];
   // log.info(
   //   "localCacheSliceObject handleInstanceAction",
   //   "called",
@@ -552,7 +554,8 @@ function handleModelAction(
   action: ModelAction,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Action2ReturnType {
-  const deploymentUuid = action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
+  const deploymentUuid =
+    action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
   log.info(
     "localCacheSliceObject handleModelAction called",
     action.actionType,

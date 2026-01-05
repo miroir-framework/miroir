@@ -70,10 +70,10 @@ const runnerConfigs = [
     title: "Drop Application & Deployment",
     component: DropApplicationRunner,
   },
-  // {
-  //   title: "Create Entity",
-  //   component: CreateEntityRunner,
-  // },
+  {
+    title: "Create Entity",
+    component: CreateEntityRunner,
+  },
   // {
   //   title: "Drop Entity",
   //   component: DeleteEntityRunner,

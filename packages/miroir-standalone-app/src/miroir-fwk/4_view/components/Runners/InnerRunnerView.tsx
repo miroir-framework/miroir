@@ -47,7 +47,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   formMLSchema,
   initialFormValue,
   action,
-  labelElement,
+  // labelElement,
   formikValuePathAsString,
   formLabel,
   displaySubmitButton,
@@ -193,7 +193,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
         useCodeBlock={true}
       />
       <TypedValueObjectEditor
-        labelElement={labelElement}
+        labelElement={<h2>{formLabel}</h2>}
         application={currentApplication}
         applicationDeploymentMap={applicationDeploymentMap}
         deploymentUuid={deploymentUuid}

@@ -185,7 +185,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
             actionType: "compositeActionTemplate",
             compositeActionTemplate: action,
           }}
-          labelElement={<h2>{runnerDefinition.runnerLabel}</h2>}
+          // labelElement={<h2>{runnerDefinition.runnerLabel}</h2>}
           formikValuePathAsString={runnerDefinition.runnerName}
           formLabel={runnerDefinition.runnerLabel}
           displaySubmitButton="onFirstLine"

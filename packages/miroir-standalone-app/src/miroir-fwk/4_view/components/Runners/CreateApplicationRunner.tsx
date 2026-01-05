@@ -557,7 +557,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
         actionType: "compositeActionTemplate",
         compositeActionTemplate: createApplicationActionTemplate,
       }}
-      labelElement={<h2>Application Creator</h2>}
+      // labelElement={<h2>Application Creator</h2>}
       formikValuePathAsString="createApplicationAndDeployment"
       formLabel="Create Application & Deployment"
       displaySubmitButton="onFirstLine"

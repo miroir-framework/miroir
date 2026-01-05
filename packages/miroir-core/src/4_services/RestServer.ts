@@ -218,7 +218,8 @@ export async function restMethodsPostPutDeleteHandler(
   const foundParams = params;
   log.info("restMethodsPostPutDeleteHandler", method, effectiveUrl, "foundParams", foundParams, "body", body);
   // log.info("restMethodsPostPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
-  const deploymentUuid: string = body.applicationDeploymentMap[body.application]
+  const deploymentUuid: string =
+    body.deploymentUuid ?? body.applicationDeploymentMap[body.application];
     // typeof foundParams["deploymentUuid"] == "string" ? foundParams["deploymentUuid"] : foundParams["deploymentUuid"][0];
 
   const section: ApplicationSection = (

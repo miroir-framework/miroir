@@ -49,7 +49,7 @@ export interface RunnerProps<T extends Record<string, any>> {
   initialFormValue: T | InitialFormValue<T>;
   action: RunnerAction<T>;
   // miroirModelEnvironment?: MiroirModelEnvironment;
-  labelElement?: ReactElement;
+  // labelElement?: ReactElement;
   formikValuePathAsString: string;
   formLabel: string;
   displaySubmitButton?: "onTop" | "onFirstLine";

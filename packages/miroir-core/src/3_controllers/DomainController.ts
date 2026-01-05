@@ -975,7 +975,9 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
-    const deploymentUuid = applicationDeploymentMap[modelAction.payload.application];
+    const deploymentUuid =
+      modelAction.payload.deploymentUuid ??
+      applicationDeploymentMap[modelAction.payload.application];
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionType=",
       modelAction["actionType"],
@@ -1353,7 +1355,7 @@ export class DomainController implements DomainControllerInterface {
         "application",
         modelAction.payload.application,
         "deployment",
-        applicationDeploymentMap[modelAction.payload.application],
+        deploymentUuid,
         "action",
         modelAction,
         "error instanceof Action2Error=",
@@ -1377,7 +1379,7 @@ export class DomainController implements DomainControllerInterface {
       "application",
       modelAction.payload.application,
       "deployment",
-      applicationDeploymentMap[modelAction.payload.application],
+      deploymentUuid,
     );
 
     return Promise.resolve(ACTION_OK);
@@ -1422,6 +1424,9 @@ export class DomainController implements DomainControllerInterface {
         if (autocommit) {
           return this.handleActionInternal(domainAction, applicationDeploymentMap, currentModelEnvironment).then(
             async (result: Action2ReturnType) => {
+              const deploymentUuid =
+                domainAction.payload.deploymentUuid ??
+                applicationDeploymentMap[domainAction.payload.application];
               if (result instanceof Action2Error) {
                 log.error(
                   "handleActionFromUI not autocommitting due to error result for action",
@@ -1429,7 +1434,7 @@ export class DomainController implements DomainControllerInterface {
                   "application",
                   domainAction.payload.application,
                   "deployment",
-                  applicationDeploymentMap[domainAction.payload.application],
+                  deploymentUuid,
                   "domainAction",
                   domainAction,
                   "result",
@@ -1463,7 +1468,7 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: domainAction.payload.application,
-                    deploymentUuid: applicationDeploymentMap[domainAction.payload.application] as any, // deploymentUuid is not used in commit action but set for consistency
+                    deploymentUuid: deploymentUuid, // deploymentUuid is not used in commit action but set for consistency
                   }
                 };
                 const result = await this.handleActionInternal(
@@ -1477,7 +1482,7 @@ export class DomainController implements DomainControllerInterface {
                   "application",
                   domainAction.payload.application,
                   "deployment",
-                  applicationDeploymentMap[domainAction.payload.application],
+                  deploymentUuid,
                   "domainAction",
                   domainAction,
                   "result instance of Action2Error",

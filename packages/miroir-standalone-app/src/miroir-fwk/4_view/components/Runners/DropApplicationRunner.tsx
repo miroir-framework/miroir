@@ -225,9 +225,10 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
         actionType: "compositeActionTemplate",
         compositeActionTemplate: dropApplicationActionTemplate,
       }}
-      labelElement={<h2>Delete Application & Deployment</h2>}
+      // labelElement={<h2>Delete Application & Deployment</h2>}
+      // labelElement={<>Drop Application & Deployment</>}
       formikValuePathAsString="dropApplicationAndDeployment"
-      formLabel="Delete Application & Deployment"
+      formLabel="Drop Application & Deployment"
       displaySubmitButton="onFirstLine"
       useActionButton={false}
     />
