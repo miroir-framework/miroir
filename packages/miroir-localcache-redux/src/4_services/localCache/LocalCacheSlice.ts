@@ -552,7 +552,7 @@ function handleModelAction(
   action: ModelAction,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Action2ReturnType {
-  const deploymentUuid = applicationDeploymentMap[action.payload.application];
+  const deploymentUuid = action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
   log.info(
     "localCacheSliceObject handleModelAction called",
     action.actionType,

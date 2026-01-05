@@ -226,7 +226,7 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
       formikValuePathAsString="dropApplicationAndDeployment"
       formLabel="Delete Application & Deployment"
       displaySubmitButton="onFirstLine"
-      useActionButton={true}
+      useActionButton={false}
     />
   );
 };

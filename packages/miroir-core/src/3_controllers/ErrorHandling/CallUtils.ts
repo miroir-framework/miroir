@@ -91,21 +91,27 @@ export class CallUtils {
     // //     action.actionType,
     // //   );
     // // }
-    const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action, applicationDeploymentMap);
+    const result: Action2ReturnType =
+      await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
+        action,
+        applicationDeploymentMap
+      );
     // log.info("CallUtils callPersistenceAction received result", JSON.stringify(result, null, 2));
-    // log.info("CallUtils callPersistenceAction received result", result, null, 2);
+    log.info("CallUtils callPersistenceAction received result", result, null, 2);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
       const error: MError = { errorMessage: JSON.stringify(result) };
       // this.errorLogService.pushError(error);
       // throw error;
-      return Promise.resolve(new Action2Error(
-        "FailedToHandlePersistenceAction",
-        "could not handle action " + ((action as any).actionLabel ?? action.actionType),
-        [],
-        result
-      ));
+      return Promise.resolve(
+        new Action2Error(
+          "FailedToHandlePersistenceAction",
+          "could not handle action " + ((action as any).actionLabel ?? action.actionType),
+          [],
+          result
+        )
+      );
     } else {
       // log.info("CallUtils callPersistenceAction ok", result);
       // log.info("CallUtils callPersistenceAction continuation", continuation);

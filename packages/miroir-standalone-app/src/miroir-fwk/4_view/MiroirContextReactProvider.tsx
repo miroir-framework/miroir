@@ -336,7 +336,7 @@ export function MiroirContextReactProvider(props: {
       try {
         const result = await action();
         log.info(
-          `handleAsyncAction for ${actionName}:`,
+          `handleAsyncAction done for ${actionName}:`,
           result,
           "is error:",
           result && typeof result === "object" && result.status === "error"

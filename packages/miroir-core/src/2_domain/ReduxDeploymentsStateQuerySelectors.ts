@@ -304,13 +304,15 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
 
   const entityUuid = selectorParams.extractor.select.parentUuid;
 
-  // log.info(
-  //   "selectEntityInstanceUuidIndexFromReduxDeploymentsState params",
-  //   selectorParams,
-  //   deploymentUuid,
-  //   applicationSection,
-  //   entityUuid
-  // );
+  log.info(
+    "selectEntityInstanceUuidIndexFromReduxDeploymentsState called with params",
+    "application:", selectorParams.extractor.application,
+    "applicationDeploymentMap:", selectorParams.applicationDeploymentMap,
+    "deploymentUuid:", deploymentUuid,
+    "applicationSection:", applicationSection,
+    "entityUuid:", entityUuid,
+    selectorParams,
+  );
 
   // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState deploymentEntityState", deploymentEntityState);
   // log.info(

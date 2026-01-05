@@ -104,7 +104,21 @@ export async function restMethodGetHandler
     deploymentUuid
   );
   if (!localPersistenceStoreController) {
-    throw new Error("restMethodGetHandler could not find controller for deployment:" + deploymentUuid);
+    // throw new Error("restMethodGetHandler could not find controller for deployment:" + deploymentUuid);
+    // continuationFunction(responseHandler)({error: "Could not find controller for deployment: " + deploymentUuid, statusCode: 500});
+    return Promise.resolve(
+      new Action2Error(
+        "FailedToHandleAction",
+        "restMethodGetHandler could not find controller for deployment: " + deploymentUuid,
+        [],
+        undefined, // innerError
+        {
+          existingControllers: persistenceStoreControllerManager
+            .getPersistenceStoreControllers()
+            .join(", "),
+        }
+      )
+    )
   }
   
   const targetPersistenceStoreController = localPersistenceStoreController
@@ -363,7 +377,8 @@ export async function restActionHandler(
           log.info(
             "restActionHandler handled action",
             action.actionType,
-            // "result",
+            "result",
+            result,
             // JSON.stringify(result, undefined, 2)
           );
           return continuationFunction(response)(result);

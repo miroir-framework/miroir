@@ -15,9 +15,11 @@ import type {
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
   defaultMiroirMetaModel,
+  defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   entityDeployment,
   getBasicApplicationConfiguration,
@@ -64,9 +66,9 @@ export interface CreateApplicationToolProps {
 // ################################################################################################
 export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ deploymentUuid }) => {
   const runnerName: string = "createApplicationAndDeployment";
-  const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentMiroirModelEnvironment: MiroirModelEnvironment =
-    useCurrentModelEnvironment(deploymentUuid);
+  // const domainController: DomainControllerInterface = useDomainControllerService();
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment =
+  //   useCurrentModelEnvironment(deploymentUuid);
 
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
@@ -305,12 +307,13 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
       } as any,
     };
 
-    const localCreateApplicationCompositeActionTemplate = {
+    const localCreateApplicationCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
       actionLabel: "createApplicationForAdminAction",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "NOT_USED_HERE",
         definition: [
           {
             actionType: "createInstance",
@@ -318,6 +321,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: adminSelfApplication.uuid,
               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               objects: [
@@ -356,12 +360,13 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
       },
     };
 
-    const localCreateDeploymentCompositeActionTemplate = {
+    const localCreateDeploymentCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
       actionLabel: "createDeployment",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "NOT_USED_HERE",
         definition: [
           {
             actionType: "storeManagementAction_openStore",
@@ -369,6 +374,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
+              application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               configuration: {
                 [testDeploymentUuid]: testDeploymentStorageConfiguration as any,
@@ -381,6 +387,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
+              application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               configuration: testDeploymentStorageConfiguration as any,
             },
@@ -391,6 +398,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: adminSelfApplication.uuid,
+              // application: testSelfApplicationUuid,
               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               objects: [
@@ -443,7 +452,9 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             actionLabel: "resetApplicationStore",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            deploymentUuid: testDeploymentUuid,
+            payload: {
+              deploymentUuid: testDeploymentUuid,
+            }
           },
           {
             actionType: "initModel",
@@ -451,6 +462,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
+              application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               // params: initParametersForTest
               params: {
@@ -467,6 +479,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
+              application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
             },
           },
@@ -476,6 +489,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
+              application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               entities: appEntitesAndInstances,
             },
@@ -485,6 +499,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             actionLabel: "CommitApplicationStoreEntities",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             payload: {
+              application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             },
@@ -495,6 +510,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               applicationSection: "data",
               objects: appEntitesAndInstances.map((e) => {
@@ -533,6 +549,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
   return (
     <RunnerView
       runnerName={runnerName} 
+      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
       deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
@@ -544,7 +561,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
       formikValuePathAsString="createApplicationAndDeployment"
       formLabel="Create Application & Deployment"
       displaySubmitButton="onFirstLine"
-      useActionButton={true}
+      useActionButton={false}
     />
   );
 };

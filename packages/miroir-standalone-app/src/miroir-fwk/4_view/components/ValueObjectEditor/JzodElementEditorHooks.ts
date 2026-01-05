@@ -108,7 +108,7 @@ export function useJzodElementEditorHooks(
   reportSectionPathAsString: string,
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined,
   currentApplication: Uuid,
-  appliationDeploymentMap: ApplicationDeploymentMap,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: Uuid | undefined,
   // {
   //   currentDeploymentUuid,
@@ -122,7 +122,7 @@ export function useJzodElementEditorHooks(
   // general use
   count++;
   const context = useMiroirContextService();
-  const currentModel: MetaModel = useCurrentModel(currentApplication, appliationDeploymentMap);
+  const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   // const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
@@ -165,7 +165,7 @@ export function useJzodElementEditorHooks(
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     currentApplication,
-    appliationDeploymentMap
+    applicationDeploymentMap
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
@@ -223,25 +223,26 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid
       ) {
 
-        let deploymentUuid: TransformerReturnType<any> =
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !==
+        let targetApplication: TransformerReturnType<any> =
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid &&
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid !==
             noValue.uuid
-            ? currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
-            : currentDeploymentUuid;
+            ? currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid
+            : currentApplication;
+
         if (
           typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
-            ?.targetDeploymentUuid == "object"
+            ?.targetApplicationUuid == "object"
         ) {
-          deploymentUuid = transformer_extended_apply_wrapper(
+          targetApplication = transformer_extended_apply_wrapper(
             context.miroirContext.miroirActivityTracker, // activityTracker
             "runtime", // step
             [], // transformerPath
             (
               currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
-                ?.targetDeploymentUuid as any
+                ?.targetApplicationUuid as any
             )?.label ?? "evaluation of hidden property", // label
-            currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid, // transformer
+            currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid, // transformer
             defaultMiroirModelEnvironment, // TODO: use the real environment
             formik.values, // queryParams
             formik.values, // contextResults - pass the instance to transform
@@ -250,21 +251,64 @@ export function useJzodElementEditorHooks(
           log.info(
             "useJzodElementEditorHooks",
             "rootLessListKey:", rootLessListKey,
-            "resolved deploymentUuid:",
-            deploymentUuid,
+            "resolved applicationUuid:",
+            targetApplication,
             "for",
             (
               currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
-                ?.targetDeploymentUuid as any
-            )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
+                ?.targetApplicationUuid as any
+            )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid
           );
-          if (deploymentUuid instanceof TransformerFailure) {
+          if (targetApplication instanceof TransformerFailure) {
             throw new Error(
-              "JzodElementEditorHooks: deploymentUuid resolved from transformer is not a string: " +
-                deploymentUuid
+              "JzodElementEditorHooks: applicationUuid resolved from transformer is not a string: " +
+                targetApplication
             );
           }
         }
+        let deploymentUuid: TransformerReturnType<any> = applicationDeploymentMap[targetApplication];
+          // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
+          // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !==
+          //   noValue.uuid
+          //   ? currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
+          //   : currentDeploymentUuid;
+
+        // if (
+        //   typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+        //     ?.targetDeploymentUuid == "object"
+        // ) {
+        //   deploymentUuid = transformer_extended_apply_wrapper(
+        //     context.miroirContext.miroirActivityTracker, // activityTracker
+        //     "runtime", // step
+        //     [], // transformerPath
+        //     (
+        //       currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+        //         ?.targetDeploymentUuid as any
+        //     )?.label ?? "evaluation of hidden property", // label
+        //     currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid, // transformer
+        //     defaultMiroirModelEnvironment, // TODO: use the real environment
+        //     formik.values, // queryParams
+        //     formik.values, // contextResults - pass the instance to transform
+        //     "value" // resolveBuildTransformersTo
+        //   );
+        //   log.info(
+        //     "useJzodElementEditorHooks",
+        //     "rootLessListKey:", rootLessListKey,
+        //     "resolved deploymentUuid:",
+        //     deploymentUuid,
+        //     "for",
+        //     (
+        //       currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+        //         ?.targetDeploymentUuid as any
+        //     )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
+        //   );
+        //   if (deploymentUuid instanceof TransformerFailure) {
+        //     throw new Error(
+        //       "JzodElementEditorHooks: deploymentUuid resolved from transformer is not a string: " +
+        //         deploymentUuid
+        //     );
+        //   }
+        // }
         // if (hiddenTransformerResult === true) {
         //   log.info("JzodElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);
         //   return null;
@@ -281,45 +325,62 @@ export function useJzodElementEditorHooks(
         //   "foreignKeyObjectsFetchQueryParams",
         //   "rawSchema",
         //   currentTypecheckKeyMap.rawSchema,
+        //   "targetApplicationUuid",
+        //   currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid,
+        //   "applicationUuid",
+        //   targetApplication,
+        //   "currentApplication",
+        //   currentApplication,
+        //   targetApplication !== noValue.uuid,
         //   "deploymentUuid",
         //   currentDeploymentUuid,
         //   "targetEntityUuid",
         //   currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
         //   "applicationSection",
-        //   applicationSection
+        //   applicationSection,
+        //   "applicationDeploymentMap",
+        //   applicationDeploymentMap
         // );
-        return getQueryRunnerParamsForReduxDeploymentsState(
-          {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            application: currentApplication,
-            applicationDeploymentMap: appliationDeploymentMap,
-            deploymentUuid,
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            extractors: {
-              [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
-                extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                label: "jzodElementEditorHooks foreign key objects",
-                applicationSection,
-                parentName: "",
-                parentUuid:
-                  currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
-                orderBy: {
-                  attributeName:
-                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
-                      ?.targetEntityOrderInstancesBy ?? "name",
+        if (targetApplication !== noValue.uuid) {
+          return getQueryRunnerParamsForReduxDeploymentsState(
+            {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: targetApplication,
+              applicationDeploymentMap: applicationDeploymentMap,
+              deploymentUuid,
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  label: "jzodElementEditorHooks foreign key objects",
+                  applicationSection,
+                  parentName: "",
+                  parentUuid:
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
+                  orderBy: {
+                    attributeName:
+                      currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+                        ?.targetEntityOrderInstancesBy ?? "name",
+                  },
                 },
               },
             },
-          },
-          appliationDeploymentMap,
-          deploymentEntityStateSelectorMap
-        );
+            applicationDeploymentMap,
+            deploymentEntityStateSelectorMap
+          );
+        } else {
+          return getQueryRunnerParamsForReduxDeploymentsState(
+            dummyDomainManyQueryWithDeploymentUuid,
+            applicationDeploymentMap,
+            deploymentEntityStateSelectorMap
+          );
+        }
       } else {
         return getQueryRunnerParamsForReduxDeploymentsState(
           dummyDomainManyQueryWithDeploymentUuid,
-          appliationDeploymentMap,
+          applicationDeploymentMap,
           deploymentEntityStateSelectorMap
         );
       }
@@ -327,6 +388,13 @@ export function useJzodElementEditorHooks(
     [deploymentEntityStateSelectorMap, currentDeploymentUuid, currentTypecheckKeyMap?.rawSchema]
   );
 
+  log.info(
+    "useJzodElementEditorHooks",
+    "rootLessListKey",
+    rootLessListKey,
+    "foreignKeyObjectsFetchQueryParams",
+    foreignKeyObjectsFetchQueryParams,
+  );
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
     useReduxDeploymentsStateQuerySelectorForCleanedResult(
       deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<

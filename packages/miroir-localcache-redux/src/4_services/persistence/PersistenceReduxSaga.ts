@@ -340,7 +340,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
-    const deploymentUuid = applicationDeploymentMap[action.payload.application];
+    const deploymentUuid = action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
     // actionsWithDeploymentInPayload.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
     log.info(
       "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called",
@@ -756,14 +756,23 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           applicationDeploymentMap
         )
       );
-      log.debug(
-        "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
-        clientResult
-      );
-      // redux can not return class instances, which are not serializable, redux accomodates only plain objects.
-      // clientResult instanceof Action2Error === false
-      if (clientResult.status === "error" || clientResult instanceof Action2Error) {
+      if (clientResult instanceof Action2Error) {
         return clientResult;
+      }
+      log.info(
+        "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
+        clientResult,
+        clientResult instanceof Action2Error
+      );
+      if (clientResult && [400, 401, 403, 404, 409, 422, 500, 502, 503].includes(clientResult.status as number)) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          "remote persistence store returned error status " + clientResult.status,
+        );
+      }
+      // clientResult instanceof Action2Error === false
+      if (clientResult.data.status === "error" || clientResult.data instanceof Action2Error) {
+        return clientResult.data;
       }
       switch (action.actionType) {
         case "RestPersistenceAction_create":
@@ -973,7 +982,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   "action",
         //   action
         // );
-        const deploymentUuid = applicationDeploymentMap[action.payload.application];
+        const deploymentUuid = action.payload.deploymentUuid??applicationDeploymentMap[action.payload.application];
         // const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
         //   ? (action as any).payload.deploymentUuid
         //   : (action as any).deploymentUuid;
@@ -1077,7 +1086,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
         const { action, applicationDeploymentMap, currentModel } = p.payload;
-        const deploymentUuid = applicationDeploymentMap[action.payload.application];
+        const deploymentUuid = action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
         // const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
         //   ? (action as any).payload.deploymentUuid
         //   : (action as any).deploymentUuid;

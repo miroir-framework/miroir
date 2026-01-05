@@ -15,6 +15,7 @@ import type {
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
+  defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   entityDeployment,
   MiroirLoggerFactory
@@ -577,7 +578,8 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       <RunnerView
         runnerName={runnerName}
         deploymentUuid={deploymentUuid}
-        deploymentUuidQuery={deploymentUuidQuery}
+        applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+        // deploymentUuidQuery={deploymentUuidQuery}
         formMLSchema={formMLSchema}
         initialFormValue={initialFormValue}
         action={{
@@ -592,7 +594,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         formikValuePathAsString={runnerName}
         formLabel={runnerLabel}
         displaySubmitButton="onFirstLine"
-        useActionButton={true}
+        useActionButton={false}
       />
     </>
   );

@@ -49,9 +49,23 @@ export class RestClient implements RestClientInterface {
       const response = await this.customFetch(endpoint, config);
 
       const responseText: string = await response.text();
-      log.info("RestClient response length", responseText.length);
+      log.info("RestClient response length", responseText.length, response.ok, response.status);
       data = responseText.length > 0 ? JSON.parse(responseText) : undefined;
       // log.info("RestClient parsed response", data);
+      // For non-OK responses, if we have structured error data, use it
+      if (data && typeof data === 'object' && data.error) {
+        const error = new Error(data.message || response.statusText);
+        (error as any).errorData = data;
+        (error as any).statusCode = response.status;
+        throw error;
+      }
+      // if we have structured error data, use it
+      if (data && typeof data === 'object' && data.error) {
+        const error = new Error(data.message || response.statusText);
+        (error as any).errorData = data;
+        (error as any).statusCode = response.status;
+        throw error;
+      }
       if (response.ok) {
         return {
           status: response.status,
@@ -59,13 +73,6 @@ export class RestClient implements RestClientInterface {
           headers: response.headers,
           url: response.url,
         };
-      }
-      // For non-OK responses, if we have structured error data, use it
-      if (data && typeof data === 'object' && data.error) {
-        const error = new Error(data.message || response.statusText);
-        (error as any).errorData = data;
-        (error as any).statusCode = response.status;
-        throw error;
       }
       throw new Error(response.statusText);
     } catch (err: any) {

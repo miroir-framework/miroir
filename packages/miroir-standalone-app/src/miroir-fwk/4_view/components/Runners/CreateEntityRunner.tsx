@@ -273,7 +273,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
       formikValuePathAsString="createEntity"
       formLabel="Create Entity"
       displaySubmitButton="onFirstLine"
-      useActionButton={true}
+      useActionButton={false}
     />
   );
 };

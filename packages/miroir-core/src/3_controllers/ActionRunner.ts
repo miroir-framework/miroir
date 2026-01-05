@@ -45,7 +45,7 @@ export async function storeActionOrBundleActionStoreRunner(
     applicationDeploymentMap,
     "and action", action
   );
-  const deploymentUuid = applicationDeploymentMap[action.payload.application];
+  const deploymentUuid = action.payload.deploymentUuid??applicationDeploymentMap[action.payload.application];
   // log.debug('storeActionOrBundleActionStoreRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const update: StoreManagementAction = action;
 
@@ -62,7 +62,14 @@ export async function storeActionOrBundleActionStoreRunner(
           action.payload.deploymentUuid
         );
       if (!localAppPersistenceStoreController) {
-        throw new Error(
+        // throw new Error(
+        //   "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
+        //     action.payload.deploymentUuid +
+        //     " available controllers: " +
+        //     persistenceStoreControllerManager.getPersistenceStoreControllers()
+        // );
+        return new Action2Error(
+          "FailedToCreateStore",
           "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
             action.payload.deploymentUuid +
             " available controllers: " +
@@ -104,7 +111,14 @@ export async function storeActionOrBundleActionStoreRunner(
       const localAppPersistenceStoreController =
         persistenceStoreControllerManager.getPersistenceStoreController(action.payload.deploymentUuid);
       if (!localAppPersistenceStoreController) {
-        throw new Error(
+        // throw new Error(
+        //   "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
+        //     action.payload.deploymentUuid +
+        //     " available controllers: " +
+        //     persistenceStoreControllerManager.getPersistenceStoreControllers()
+        // );
+        return new Action2Error(
+          "FailedToDeleteStore",
           "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
             action.payload.deploymentUuid +
             " available controllers: " +
@@ -141,6 +155,12 @@ export async function storeActionOrBundleActionStoreRunner(
       // TODO: addPersistenceStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
       // for (const deployment of Object.entries(action.configuration)) {
       if (!action.payload.configuration[deploymentUuid]) {
+        log.error(
+          "storeActionOrBundleActionStoreRunner openStore no configuration entry found for deployment uuid ",
+          deploymentUuid,
+          "configuration: ",
+          JSON.stringify(action.payload.configuration, null, 2)
+        );
         return new Action2Error(
           "FailedToOpenStore",
           "no configuration entry found for deployment uuid " +

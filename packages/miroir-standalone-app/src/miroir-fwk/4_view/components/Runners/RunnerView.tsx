@@ -75,7 +75,7 @@ export function StoredRunnerView(props: {
   const initialFormValue = useMemo(() => {
     return {
       [runnerName]: {
-        // application: noValue.uuid,
+        application: noValue.uuid,
         // application: props.applicationUuid,
         entity: noValue.uuid,
       },
@@ -145,7 +145,6 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
   } = props;
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentModelEnvironment: MiroirModelEnvironment =
-    // useCurrentModelEnvironment(deploymentUuid, applicationDeploymentMap);
     useCurrentModelEnvironment(application??selfApplicationMiroir.uuid, applicationDeploymentMap); // TODO: WRONG!!
   const context = useMiroirContextService();
   const { handleAsyncAction } = useSnackbar();

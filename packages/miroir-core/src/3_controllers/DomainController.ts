@@ -631,15 +631,6 @@ export class DomainController implements DomainControllerInterface {
                 runBoxedExtractorOrQueryAction,
                 applicationDeploymentMap,
               );
-            // const result = await this.callUtil.callPersistenceAction(
-            //   // what if it is a REAL persistence store?? exception?
-            //   {}, // context
-            //   {
-            //     addResultToContextAsName: "dataEntitiesFromModelSection",
-            //     expectedDomainElementType: "entityInstanceCollection",
-            //   }, // continuation
-            //   runBoxedExtractorOrQueryAction
-            // );
             log.info(
               "handleBoxedExtractorOrQueryAction runBoxedExtractorOrQueryAction callPersistenceAction Result=",
               result
@@ -936,6 +927,8 @@ export class DomainController implements DomainControllerInterface {
       deploymentUuid,
       "handleInstanceAction done calling handleRemoteStoreRestCRUDAction",
       instanceAction,
+      "result is error",
+      handleActionResult instanceof Action2Error,
       "handleActionResult",
       handleActionResult
     );
@@ -1656,7 +1649,9 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2VoidReturnType> {
-    const deploymentUuid = applicationDeploymentMap[domainAction.payload.application];
+    const deploymentUuid =
+      domainAction.payload.deploymentUuid ??
+      applicationDeploymentMap[domainAction.payload.application];
     // let entityDomainAction:DomainAction | undefined = undefined;
     // log.info(
     //   "handleAction",
@@ -1745,19 +1740,29 @@ export class DomainController implements DomainControllerInterface {
             try {
               switch (this.persistenceStoreAccessMode) {
                 case "local": {
-                  await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
+                  const result = await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
                     domainAction,
                     applicationDeploymentMap
                   );
+                  if (result instanceof Action2Error) {
+                    return result as any;
+                  } else {
+                    return Promise.resolve(ACTION_OK);
+                  }
                   break;
                 }
                 case "remote": {
-                  await this.callUtil.callPersistenceAction(
+                  const result = await this.callUtil.callPersistenceAction(
                     {}, // context
                     {}, // continuation
                     applicationDeploymentMap,
                     domainAction
                   );
+                  if (result instanceof Action2Error) {
+                    return result as any;
+                  } else {
+                    return Promise.resolve(ACTION_OK);
+                  }
                   break;
                 }
                 default: {
@@ -3184,9 +3189,17 @@ export class DomainController implements DomainControllerInterface {
           //   JSON.stringify(currentAction.domainAction, null, 2)
           // );
           const actionResult = await this.handleAction(resolvedActionTemplate, applicationDeploymentMap, modelEnvironment);
+          log.info(
+            "handleCompositeActionTemplate",
+            actionLabel,
+            "received actionResult from compositeInstanceAction",
+            currentAction,
+            "actionResult",
+            JSON.stringify(actionResult, null, 2)
+          );
           if (actionResult instanceof Action2Error) {
             log.error(
-              "handleCompositeActionTemplate compositeInstanceAction error on action",
+              "handleCompositeActionTemplate compositeInstanceAction error on running action",
               JSON.stringify(currentAction, null, 2) +
                 "actionResult" +
                 JSON.stringify(actionResult, null, 2)

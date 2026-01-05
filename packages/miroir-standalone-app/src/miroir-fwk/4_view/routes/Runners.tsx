@@ -58,14 +58,14 @@ const runnerConfigs = [
   //   title: "Endpoint Action Caller",
   //   component: EndpointActionCaller,
   // },
-  {
-    title: "Lend Document",
-    component: LibraryRunner_LendDocument,
-  },
   // {
-  //   title: "Create Application & Deployment",
-  //   component: CreateApplicationRunner,
+  //   title: "Lend Document",
+  //   component: LibraryRunner_LendDocument,
   // },
+  {
+    title: "Create Application & Deployment",
+    component: CreateApplicationRunner,
+  },
   // {
   //   title: "Delete Application & Deployment",
   //   component: DropApplicationRunner,

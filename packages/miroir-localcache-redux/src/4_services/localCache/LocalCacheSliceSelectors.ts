@@ -277,7 +277,8 @@ export function applyReduxDeploymentsStateQuerySelectorForCleanedResult<QueryTyp
     params: SyncQueryRunnerParams<ReduxDeploymentsState>,
     modelEnvironment: MiroirModelEnvironment
   ): Domain2QueryReturnType<DomainElementSuccess> => {
-    const partial: Domain2QueryReturnType<DomainElementSuccess> = deploymentEntityStateQuerySelector(deploymentEntityState, params, modelEnvironment);
+    const partial: Domain2QueryReturnType<DomainElementSuccess> =
+      deploymentEntityStateQuerySelector(deploymentEntityState, params, modelEnvironment);
     const result: any = partial;
     return result;
   };
