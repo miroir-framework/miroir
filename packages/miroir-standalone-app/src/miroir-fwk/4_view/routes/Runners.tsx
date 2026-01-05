@@ -66,18 +66,18 @@ const runnerConfigs = [
     title: "Create Application & Deployment",
     component: CreateApplicationRunner,
   },
-  // {
-  //   title: "Delete Application & Deployment",
-  //   component: DropApplicationRunner,
-  // },
+  {
+    title: "Drop Application & Deployment",
+    component: DropApplicationRunner,
+  },
   // {
   //   title: "Create Entity",
   //   component: CreateEntityRunner,
   // },
-  {
-    title: "Drop Entity",
-    component: DeleteEntityRunner,
-  },
+  // {
+  //   title: "Drop Entity",
+  //   component: DeleteEntityRunner,
+  // },
   // {
   //   title: "Import Entity From Spreadsheet",
   //   component: ImportEntityFromSpreadsheetRunner,
