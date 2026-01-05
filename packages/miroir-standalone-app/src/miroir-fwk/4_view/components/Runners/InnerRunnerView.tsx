@@ -9,6 +9,7 @@ import type {
   LoggerInterface,
   MiroirModelEnvironment,
   TransformerForBuildPlusRuntime,
+  Uuid,
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
@@ -58,80 +59,81 @@ export const InnerRunnerView = <T extends Record<string, any>>({
 }: RunnerProps<T>) => {
   // const domainController: DomainControllerInterface = useDomainControllerService();
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
-    application,
-    applicationDeploymentMap
-  );
   const context = useMiroirContextService();
   const formikContext = useFormikContext<any>();
-  
-  const deploymentUuidQueryBase:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined = {
-    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    application,
-    applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-    pageParams: {},
-    queryParams: {},
-    contextResults: {},
-    extractorTemplates: {
-      deployments: {
-        label: "deployments of the application",
-        // extractorOrCombinerType: "extractorByEntityReturningObjectList",
-        extractorTemplateType: "extractorTemplateForObjectListByEntity",
-        parentUuid: entityDeployment.uuid,
-        parentName: entityDeployment.name,
-        applicationSection: "data",
-        filter: {
-          attributeName: "adminApplication",
-          value: {
-            transformerType: "mustacheStringTemplate",
-            interpolation: "build",
-            definition: `{{${runnerName}.application}}`,
-          },
-        },
-      },
-    },
-  } as BoxedQueryTemplateWithExtractorCombinerTransformer;
-  const deploymentUuidQuery:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined = useMemo(
-    () =>
-      formikContext.values[runnerName]?.application !== noValue.uuid && deploymentUuidQueryBase
-        ? ({
-            ...deploymentUuidQueryBase,
-            queryParams: {
-              ...(deploymentUuidQueryBase.queryParams ?? {}),
-              ...formikContext.values, // letting the template access the form state
-            },
-          } as BoxedQueryTemplateWithExtractorCombinerTransformer)
-        : {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            application,
-            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-            deploymentUuid: "",
-            pageParams: {},
-            queryParams: {},
-            contextResults: {},
-            extractors: {},
-          },
-    [
-      deploymentUuidQueryBase,
-      (formikContext.values as any)[runnerName]?.application,
-    ]
+  const currentApplication: Uuid = application??formikContext.values[runnerName]?.application;
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    applicationDeploymentMap
   );
+  
+  const deploymentUuidFromApplicationUuid: Uuid = applicationDeploymentMap[currentApplication] || "";
+  // const deploymentUuidQueryBase:
+  //   | BoxedQueryWithExtractorCombinerTransformer
+  //   | BoxedQueryTemplateWithExtractorCombinerTransformer
+  //   | undefined = {
+  //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+  //   application,
+  //   applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+  //   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  //   pageParams: {},
+  //   queryParams: {},
+  //   contextResults: {},
+  //   extractorTemplates: {
+  //     deployments: {
+  //       label: "deployments of the application",
+  //       extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //       parentUuid: entityDeployment.uuid,
+  //       parentName: entityDeployment.name,
+  //       applicationSection: "data",
+  //       filter: {
+  //         attributeName: "adminApplication",
+  //         value: {
+  //           transformerType: "mustacheStringTemplate",
+  //           interpolation: "build",
+  //           definition: `{{${runnerName}.application}}`,
+  //         },
+  //       },
+  //     },
+  //   },
+  // } as BoxedQueryTemplateWithExtractorCombinerTransformer;
+  // const deploymentUuidQuery:
+  //   | BoxedQueryWithExtractorCombinerTransformer
+  //   | BoxedQueryTemplateWithExtractorCombinerTransformer
+  //   | undefined = useMemo(
+  //   () =>
+  //     formikContext.values[runnerName]?.application !== noValue.uuid && deploymentUuidQueryBase
+  //       ? ({
+  //           ...deploymentUuidQueryBase,
+  //           queryParams: {
+  //             ...(deploymentUuidQueryBase.queryParams ?? {}),
+  //             ...formikContext.values, // letting the template access the form state
+  //           },
+  //         } as BoxedQueryTemplateWithExtractorCombinerTransformer)
+  //       : {
+  //           queryType: "boxedQueryWithExtractorCombinerTransformer",
+  //           application,
+  //           applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+  //           deploymentUuid: "",
+  //           pageParams: {},
+  //           queryParams: {},
+  //           contextResults: {},
+  //           extractors: {},
+  //         },
+  //   [
+  //     deploymentUuidQueryBase,
+  //     (formikContext.values as any)[runnerName]?.application,
+  //   ]
+  // );
 
-  const deploymentUuidQueryResults: Domain2QueryReturnType<
-    Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults({} as any, deploymentUuidQuery);
+  // const deploymentUuidQueryResults: Domain2QueryReturnType<
+  //   Domain2QueryReturnType<Record<string, any>>
+  // > = useQueryTemplateResults({} as any, deploymentUuidQuery);
 
-  if (deploymentUuidQueryResults instanceof Domain2ElementFailed) { // should never happen
-    throw new Error("DeleteEntityRunner: failed to get report data: " + JSON.stringify(deploymentUuidQueryResults, null, 2));
-  }
-  const {reportData: deploymentUuidFromApplicationUuid, resolvedQuery} = deploymentUuidQueryResults;
+  // if (deploymentUuidQueryResults instanceof Domain2ElementFailed) { // should never happen
+  //   throw new Error("DeleteEntityRunner: failed to get report data: " + JSON.stringify(deploymentUuidQueryResults, null, 2));
+  // }
+  // const {reportData: deploymentUuidFromApplicationUuid, resolvedQuery} = deploymentUuidQueryResults;
 
   const targetSchema: JzodObject = useMemo(() => {
     if (typeof formMLSchema === "object" && "formMLSchemaType" in formMLSchema) {
@@ -176,16 +178,12 @@ export const InnerRunnerView = <T extends Record<string, any>>({
         copyButton={true}
         useCodeBlock={true}
       />
-      {/* <ThemedOnScreenDebug
-        label={`Runner ${runnerName} application`}
-        data={(formikContext.values as any)[runnerName]?.application}
-      /> */}
       <ThemedOnScreenDebug
-        label={`Runner ${runnerName} deploymentUuidQuery`}
-        data={deploymentUuidQuery}
+        label={`Runner ${runnerName} application ${application}`}
+        data={application}
         initiallyUnfolded={false}
-        copyButton={true}
-        useCodeBlock={true}
+        // copyButton={true}
+        // useCodeBlock={true}
       />
       <ThemedOnScreenDebug
         label={`Runner ${runnerName} deploymentUuidFromApplicationUuid`}
@@ -196,7 +194,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
       />
       <TypedValueObjectEditor
         labelElement={labelElement}
-        application={application}
+        application={currentApplication}
         applicationDeploymentMap={applicationDeploymentMap}
         deploymentUuid={deploymentUuid}
         applicationSection="model"

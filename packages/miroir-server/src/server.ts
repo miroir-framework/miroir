@@ -1,16 +1,18 @@
-import express, { Request } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import express, { Request } from 'express';
 // import {bodyParser} from 'body-parser';
-import { readFileSync, existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
+import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 import path from 'path';
 import { fileURLToPath } from 'url';
-import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 
 // import { fetch } from 'cross-fetch';
 
 import {
+  Action2Error,
   ConfigurationService,
+  type Deployment,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
@@ -24,31 +26,21 @@ import {
   StoreOrBundleAction,
   StoreUnitConfiguration,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
+  adminSelfApplication,
   circularReplacer,
-  // adminConfigurationDeploymentTest1,
-  adminConfigurationDeploymentParis,
   defaultLevels,
-  defaultLibraryAppModel,
-  defaultMiroirMetaModel,
-  miroirCoreStartup,
-  miroirFundamentalJzodSchema,
-  restServerDefaultHandlers,
-  type JzodSchema,
-  type MiroirModelEnvironment,
-  type InstanceAction,
-  entityDeployment,
   defaultMetaModelEnvironment,
-  Action2Error,
-  type Deployment,
   defaultSelfApplicationDeploymentMap,
-  adminSelfApplication} from "miroir-core";
+  entityDeployment,
+  miroirCoreStartup,
+  restServerDefaultHandlers
+} from "miroir-core";
 
+import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
-import { setupMiroirDomainController } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"

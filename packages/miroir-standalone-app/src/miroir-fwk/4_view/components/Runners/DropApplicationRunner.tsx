@@ -7,6 +7,8 @@ import type {
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   entityDeployment,
   MiroirLoggerFactory,
@@ -83,6 +85,7 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "NOT_USED_IN_COMPOSITE_TEMPLATE",
         definition: [
           // Step 1: Query to get the deployment UUID from the selected application
           {
@@ -93,11 +96,14 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
               actionType: "runBoxedExtractorOrQueryAction",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               payload: {
+                application: adminSelfApplication.uuid,
+                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 applicationSection: "data",
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  application: adminSelfApplication.uuid,
+                  applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                   pageParams: {},
                   queryParams: {},
@@ -130,6 +136,10 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
             payload: {
+              application: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{dropApplicationAndDeployment.application}}",
+              } as any,
               deploymentUuid: {
                 transformerType: "mustacheStringTemplate",
                 interpolation: "runtime",
@@ -204,6 +214,7 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
   return (
     <RunnerView
       runnerName={runnerName}
+      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
       deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}

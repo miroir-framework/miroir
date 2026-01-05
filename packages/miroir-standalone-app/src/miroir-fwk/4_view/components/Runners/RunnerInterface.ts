@@ -41,7 +41,7 @@ export type FormMLSchema =
 // ################################################################################################
 export interface RunnerProps<T extends Record<string, any>> {
   runnerName: string;
-  application: Uuid;
+  application?: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   // formMLSchema: JzodObject;

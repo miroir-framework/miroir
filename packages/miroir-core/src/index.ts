@@ -639,6 +639,8 @@ export {
   ApplicationEntitiesAndInstances,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
+  defaultApplications,
+  defaultApplicationUuids,
   defaultDeployments,
   defaultDeploymentUuids,
   defaultAdminApplicationDeploymentMapNOTGOOD,

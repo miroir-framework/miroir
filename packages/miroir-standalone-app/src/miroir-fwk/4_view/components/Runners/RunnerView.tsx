@@ -1,8 +1,10 @@
 import { Formik, FormikHelpers } from "formik";
 
 import type {
+  ApplicationDeploymentMap,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
+  Domain2QueryReturnType,
   DomainControllerInterface,
   EndpointDefinition,
   LoggerInterface,
@@ -18,8 +20,12 @@ import {
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentParis,
   defaultAdminApplicationDeploymentMapNOTGOOD,
+  defaultSelfApplicationDeploymentMap,
+  Domain2ElementFailed,
   entityDeployment,
   MiroirLoggerFactory,
+  selfApplicationLibrary,
+  selfApplicationMiroir,
   transformer_extended_apply_wrapper
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
@@ -31,6 +37,7 @@ import type { FormMLSchema, RunnerProps } from "./RunnerInterface.js";
 import { useMemo } from "react";
 import { useRunner } from "../Reports/ReportHooks.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -42,25 +49,40 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export function StoredRunnerView(props: {
   applicationUuid: Uuid,
-  storedRunner: Runner,
+  applicationDeploymentMap?: ApplicationDeploymentMap,
+  runnerUuid: Uuid,
+  // storedRunner: Runner,
 }) {
-  const runnerName: string = props.storedRunner.name;
-  const runnerLabel: string = props.storedRunner.defaultLabel;
+  // const runnerName: string = props.storedRunner.name;
+  // const runnerLabel: string = props.storedRunner.defaultLabel;
 
   // const runnerDefinitionFromLocalCache: any = useRunner(adminConfigurationDeploymentMiroir.uuid, "44313751-b0e5-4132-bb12-a544806e759b");
+  const runnerDeploymentUuid: Uuid = props.applicationDeploymentMap
+    ? props.applicationDeploymentMap[props.applicationUuid]
+    : defaultSelfApplicationDeploymentMap[props.applicationUuid];
+
+  const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
+    props.applicationUuid,
+    runnerDeploymentUuid,
+    props.runnerUuid
+  );
+  const runnerLabel: string = `Stored Runner ${props.runnerUuid} for Application ${props.applicationUuid}`;
+  const runnerName: string =
+    runnerDefinitionFromLocalCache instanceof Domain2ElementFailed
+      ? ""
+      : runnerDefinitionFromLocalCache?.name ?? "";
 
   const initialFormValue = useMemo(() => {
     return {
       [runnerName]: {
-        application: noValue.uuid,
+        // application: noValue.uuid,
+        // application: props.applicationUuid,
         entity: noValue.uuid,
       },
     };
   }, [runnerName]);
 
-  // const deploymentUuid = defaultAdminApplicationDeploymentMapNOTGOOD[props.applicationUuid];
-  // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
-  const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+  // const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 
   // // look up the action implementation in the currentModelEnvironment
   // const currentEndpointDefinition: EndpointDefinition | undefined =
@@ -69,29 +91,46 @@ export function StoredRunnerView(props: {
   //   );
 
 
-  return (<RunnerView
-    runnerName={runnerName}
-    deploymentUuid={deploymentUuid}
-    // deploymentUuidQuery={deploymentUuidQuery}
-    formMLSchema={props.storedRunner.formMLSchema as FormMLSchema}
-    initialFormValue={initialFormValue}
-    action={{
-      actionType: "compositeActionTemplate",
-      compositeActionTemplate: props.storedRunner.actionTemplate,
-    }}
-    labelElement={<h2>{runnerLabel}</h2>}
-    formikValuePathAsString={runnerName}
-    formLabel={runnerLabel}
-    displaySubmitButton="onFirstLine"
-    useActionButton={false}
-  />);
+  return runnerDefinitionFromLocalCache instanceof Domain2ElementFailed ? (
+    <div>Error loading runner definition...</div>
+  ) : runnerDefinitionFromLocalCache ? (
+    <>
+      <ThemedOnScreenDebug
+        label={`StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`}
+        data={runnerDefinitionFromLocalCache}
+        initiallyUnfolded={false}
+      />
+      <RunnerView
+        runnerName={runnerName}
+        applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+        deploymentUuid={runnerDeploymentUuid}
+        formMLSchema={runnerDefinitionFromLocalCache.formMLSchema as FormMLSchema}
+        initialFormValue={initialFormValue}
+        action={{
+          actionType: "compositeActionTemplate",
+          compositeActionTemplate: runnerDefinitionFromLocalCache.actionTemplate,
+        }}
+        // formLabel={runnerLabel}
+        formLabel={runnerDefinitionFromLocalCache.defaultLabel}
+        labelElement={<h2>{runnerDefinitionFromLocalCache.defaultLabel}</h2>}
+        // labelElement={<h2>{runnerLabel}</h2>}
+        formikValuePathAsString={runnerName}
+        displaySubmitButton="onFirstLine"
+        useActionButton={false}
+      />
+    </>
+  ) : (
+    <div>Loading runner definition...</div>
+  );
 }
 // ################################################################################################
 export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>) => {
   const {
     runnerName,
+    application,
     formMLSchema,
     deploymentUuid,
+    applicationDeploymentMap,
     initialFormValue,
     action,
     // miroirModelEnvironment,
@@ -105,8 +144,9 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     // enableReinitialize = true,
   } = props;
   const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentMiroirModelEnvironment: MiroirModelEnvironment =
-    useCurrentModelEnvironment(deploymentUuid);
+  const currentModelEnvironment: MiroirModelEnvironment =
+    // useCurrentModelEnvironment(deploymentUuid, applicationDeploymentMap);
+    useCurrentModelEnvironment(application??selfApplicationMiroir.uuid, applicationDeploymentMap); // TODO: WRONG!!
   const context = useMiroirContextService();
   const { handleAsyncAction } = useSnackbar();
 
@@ -120,7 +160,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
             [], // transformerPath
             "initialFormValueAsTransformer", // transformerLabel
             (initialFormValue as any).transformer as any as TransformerForBuildPlusRuntime, // TODO: correct type
-            currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
+            currentModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
             {}, // transformerParams
             {}, // contextResults
             "value"
@@ -142,7 +182,8 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         // return async () => {
           const result = await domainController.handleCompositeAction(
             action.compositeActionSequence,
-            currentMiroirModelEnvironment,
+            props.applicationDeploymentMap,
+            currentModelEnvironment,
             values as Record<string, any>
           );
           formikHelpers.setSubmitting(false);
@@ -157,7 +198,8 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         // return async () => {
           const result = await domainController.handleCompositeActionTemplate(
             action.compositeActionTemplate,
-            currentMiroirModelEnvironment,
+            props.applicationDeploymentMap,
+            currentModelEnvironment,
             values as Record<string, any>
           );
           log.info(
@@ -189,6 +231,13 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     <>
       {/* <ThemedOnScreenHelper label={`${formLabel} OuterRunner targetSchema`} data={targetSchema} /> */}
       {/* <ThemedOnScreenHelper label={`OuterRunner ${runnerName} initialValues`} data={initialValues} /> */}
+      <ThemedOnScreenDebug
+        label={`RunnerView ${runnerName} currentModelEnvironment`}
+        data={currentModelEnvironment}
+        copyButton={true}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      />
       <Formik
         enableReinitialize={true}
         initialValues={initialValues}

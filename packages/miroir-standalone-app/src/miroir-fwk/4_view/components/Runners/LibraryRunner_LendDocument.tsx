@@ -12,7 +12,8 @@ import {
   selfApplicationLibrary,
   type SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
-  type Action
+  type Action,
+  type JzodObject
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
@@ -33,6 +34,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export interface LibraryRunner_LendDocumentProps {
+  // application: string;
   deploymentUuid: string;
 }
 
@@ -48,7 +50,10 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
 }) => {
 
   const deploymentUuid: Uuid = defaultSelfApplicationDeploymentMap[runnerDefinition.application];
-  const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+  const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    runnerDefinition.application,
+    defaultSelfApplicationDeploymentMap
+  );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
         getMemoizedReduxDeploymentsStateSelectorMap();
@@ -70,6 +75,12 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
     (ac) => ac.actionParameters.actionType.definition == runnerDefinition.domainActionType
   );
 
+  // const extraAplicationAttribute: JzodObject | undefined = Object.keys(currentActionDefinition?.actionParameters??{}).includes("application")? undefined : {
+  //   type: "object",
+  //   definition: {
+  //     application: { type: "uuid" },
+  //   },
+  // };
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
       formMLSchemaType: "mlSchema",
@@ -78,7 +89,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
         definition: {
           [runnerDefinition.runnerName]: { type: "object", definition: currentActionDefinition?.actionParameters??{} },
         },
-      },
+      } as JzodObject,
     }),
     [currentActionDefinition]
   );
@@ -92,6 +103,8 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       undefined, // No need to pass currentDefaultValue here
       [], // currentPath on value is root
       false, // forceOptional
+      runnerDefinition.application,
+      defaultSelfApplicationDeploymentMap,
       deploymentUuid,
       libraryAppModelEnvironment,
       {}, // transformerParams
@@ -108,6 +121,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: runnerDefinition.application,
         definition: [
           {
             transformerType: "getFromParameters",
@@ -121,6 +135,11 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
   
   return (
     <>
+      <ThemedOnScreenDebug
+        label={`DeleteEntityRunner for ${runnerDefinition.runnerName} deploymentUuid`}
+        data={deploymentUuid}
+        // initiallyUnfolded={false}
+      />
       <ThemedOnScreenDebug
         label={`DeleteEntityRunner for ${runnerDefinition.runnerName} currentActionDefinition`}
         data={currentActionDefinition}
@@ -157,6 +176,8 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
       ) : (
         <RunnerView
           runnerName={runnerDefinition.runnerName}
+          application={runnerDefinition.application}
+          applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
           deploymentUuid={deploymentUuid}
           formMLSchema={formMLSchema}
           initialFormValue={initialFormValue}

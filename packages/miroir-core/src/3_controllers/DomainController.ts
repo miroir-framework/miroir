@@ -1593,11 +1593,17 @@ export class DomainController implements DomainControllerInterface {
       currentEndpointDefinition
     );
     if (!currentEndpointDefinition) {
-      return Promise.resolve(new Action2Error(
-        "InvalidAction",
-        "DomainController handleApplicationAction unknown endpoint in action: " + (domainAction as any).endpoint,
-        []
-      ));
+      return Promise.resolve(
+        new Action2Error(
+          "InvalidAction",
+          "DomainController handleApplicationAction could not find action endpoint: " +
+            (domainAction as any).endpoint +
+            " in current model environment endpoints: " +
+            Object.keys(currentModelEnvironment?.endpointsByUuid || {}).join(", ") + " currentModelEnvironment deploymentUuid: " +
+            (currentModelEnvironment as any).deploymentUuid,
+          []
+        )
+      );
     }
     const currentActionDefinition = currentEndpointDefinition.definition.actions.find(
       (ac) => ac.actionParameters.actionType.definition == (domainAction as any).actionType

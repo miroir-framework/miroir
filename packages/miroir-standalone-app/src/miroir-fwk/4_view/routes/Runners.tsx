@@ -7,6 +7,8 @@ import {
   adminConfigurationDeploymentParis,
   MiroirLoggerFactory,
   resolvePathOnObject,
+  selfApplicationDeploymentLibrary,
+  selfApplicationLibrary,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
   type LoggerInterface
 } from "miroir-core";
@@ -108,6 +110,7 @@ export const RunnersPage: React.FC<any> = (
   });
   
   // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
+  const applicationUuid = selfApplicationLibrary.uuid;
   const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 
   return (

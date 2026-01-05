@@ -33,6 +33,7 @@ import {
   SyncQueryTemplateRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
+  defaultApplicationUuids,
   defaultDeploymentUuids,
   defaultMetaModelEnvironment,
   miroirFundamentalJzodSchema,
@@ -319,7 +320,7 @@ export function useCurrentModelEnvironment(
   // const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap, deploymentUuid);
   const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap);
   const endpointsByUuid: Record<Uuid, any> = useEndpointsOfApplications(
-    defaultDeploymentUuids,
+    defaultApplicationUuids,// defaultDeploymentUuids,
     applicationDeploymentMap
   ).reduce((acc, endpoint) => {
     acc[endpoint.uuid] = endpoint;
@@ -339,7 +340,10 @@ export function useCurrentModelEnvironment(
 }
 
 // ################################################################################################
-export function useEndpointsOfApplications(applicationUuids: Uuid[], applicationDeploymentMap: ApplicationDeploymentMap) {
+export function useEndpointsOfApplications(
+  applicationUuids: Uuid[],
+  applicationDeploymentMap: ApplicationDeploymentMap
+) {
   const models = applicationUuids.map((applicationUuid) =>
     useCurrentModel(applicationUuid, applicationDeploymentMap)
   );

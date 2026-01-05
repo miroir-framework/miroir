@@ -16,6 +16,7 @@ import {
   deployment,
   reportViewParamsDetails,
   defaultAdminViewParams,
+  adminSelfApplication,
 } from "miroir-core";
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
@@ -220,6 +221,7 @@ export const SettingsPage: React.FC<any> = (props: any) => {
           <ReportDisplay
             pageParams={
               {
+                application: adminSelfApplication.uuid,
                 deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 applicationSection: "data",
                 reportUuid: reportViewParamsDetails.uuid,
