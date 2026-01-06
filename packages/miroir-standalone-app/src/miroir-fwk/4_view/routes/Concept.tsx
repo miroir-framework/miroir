@@ -10,38 +10,27 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
-  SelfApplicationDeploymentConfiguration,
-  CompositeActionTemplate,
   DomainAction,
-  DomainControllerInterface,
   JzodElement,
   JzodObject,
   LoggerInterface,
   MetaEntity,
-  MetaModel,
-  MiroirConfigClient,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
+  SelfApplicationDeploymentConfiguration,
+  defaultSelfApplicationDeploymentMap,
   entityEntity,
-  entityEntityDefinition,
-  entityMenu,
-  entityReport,
-  getApplicationSection,
   jzodTypeCheck,
-  adminConfigurationDeploymentParis
+  selfApplicationMiroir,
+  type MiroirModelEnvironment
 } from "miroir-core";
 
 import { deployments, packageName } from "../../../constants.js";
 import {
-  useDomainControllerService,
-  useErrorLogService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
-  useMiroirContextformHelperState,
+  useMiroirContextformHelperState
 } from "../MiroirContextReactProvider.js";
-import { useCurrentModel } from "../ReduxHooks.js";
-import { JzodElementEditor } from "../components/ValueObjectEditor/JzodElementEditor.js";
+import { useCurrentModelEnvironment } from "../ReduxHooks.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
@@ -157,13 +146,12 @@ export const ConceptPage: React.FC<any> = (
     actionName: "concept page configuration fetch"
   });
 
-  const errorLog = useErrorLogService();
+  // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
-  const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    selfApplicationMiroir.uuid,
+    defaultSelfApplicationDeploymentMap
   );
-  const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
   const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
 
@@ -303,11 +291,12 @@ export const ConceptPage: React.FC<any> = (
           formState,
           [], // currentValuePath
           [], // currentTypePath
-          {
-            miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel: currentMiroirModel,
-          },
+          currentMiroirModelEnvironment,
+          // {
+          //   miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+          //   currentModel,
+          //   miroirMetaModel: currentMiroirModel,
+          // },
           emptyObject
         );
 

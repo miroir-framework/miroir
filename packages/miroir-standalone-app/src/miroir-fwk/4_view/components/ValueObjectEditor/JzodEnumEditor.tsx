@@ -1,35 +1,29 @@
+import { useFormikContext } from "formik";
 import {
-  adminConfigurationDeploymentMiroir,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodEnum,
   JzodLiteral,
-  LoggerInterface,
-  MetaModel,
-  MiroirLoggerFactory,
-  resolvePathOnObject,
-  miroirFundamentalJzodSchema,
-  JzodSchema,
-  MiroirModelEnvironment,
   jzodUnionResolvedTypeForObject,
   KeyMapEntry,
-  type JzodObject,
-  type Uuid,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  MiroirModelEnvironment,
+  resolvePathOnObject,
   type ApplicationDeploymentMap,
-  selfApplicationMiroir,
-  defaultSelfApplicationDeploymentMap
+  type JzodObject,
+  type Uuid
 } from "miroir-core";
-import React, { FC, useMemo, useCallback } from "react";
-import { useFormikContext } from "formik";
-import { useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks";
+import React, { FC, useCallback, useMemo } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { 
-  ThemedSelectWithPortal,
+import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import { useCurrentModelEnvironment } from "../../ReduxHooks";
+import {
+  ThemedDisplayValue,
   ThemedLabeledEditor,
-  ThemedDisplayValue
-} from "../Themes/index"
+  ThemedSelectWithPortal
+} from "../Themes/index";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 
 // Common function to handle discriminator changes
@@ -254,10 +248,6 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
 
   const formik = useFormikContext<Record<string, any>>();
   const context = useMiroirContextService();
-  const currentModel = useCurrentModel(currentApplication, appliationDeploymentMap);
-  // const currentModel = useCurrentModel(currentDeploymentUuid);
-  const miroirMetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
-  const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
 
   const parentKey = rootLessListKey.includes(".")
     ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))

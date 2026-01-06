@@ -20,7 +20,6 @@
                   "editable": true,
                   "selectorParams": {
                     "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-                    "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                     "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                     "targetEntityOrderInstancesBy": "name"
                   }
@@ -35,7 +34,7 @@
                   "defaultLabel": "Entity",
                   "editable": true,
                   "selectorParams": {
-                    "targetDeploymentUuid": {
+                    "targetApplicationUuid": {
                       "transformerType": "!=",
                       "interpolation": "build",
                       "left": {
@@ -44,10 +43,7 @@
                         "safe": true,
                         "referencePath": [
                           "dropEntity",
-                          "deploymentUuidQuery",
-                          "deployments",
-                          "0",
-                          "uuid"
+                          "application"
                         ]
                       },
                       "right": {
@@ -61,10 +57,7 @@
                         "safe": true,
                         "referencePath": [
                           "dropEntity",
-                          "deploymentUuidQuery",
-                          "deployments",
-                          "0",
-                          "uuid"
+                          "application"
                         ]
                       },
                       "else": {

@@ -307,7 +307,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     props.applicationSection == "data"
       ? props.application
       : selfApplicationDeploymentMiroir.uuid, // the report to edit any element from the 'model' section must be in the meta-model
-      defaultSelfApplicationDeploymentMap
+      props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
 
   // const currentDeploymentModel: MetaModel = useCurrentModel(
@@ -556,7 +556,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+            applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
             deploymentUuid: props.deploymentUuid,
             pageParams: {
               deploymentUuid: props.deploymentUuid,
@@ -572,7 +572,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         : {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+            applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
             deploymentUuid: props.deploymentUuid,
             pageParams: {},
             queryParams: {},
@@ -595,7 +595,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       // return getQueryRunnerParamsForReduxDeploymentsState(
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
         queryForTestRun,
-        defaultSelfApplicationDeploymentMap,
+        props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       );
     },

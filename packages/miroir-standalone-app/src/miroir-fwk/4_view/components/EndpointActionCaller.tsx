@@ -113,24 +113,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   // const reportContext = useReportPageContext();
   const context = useMiroirContextService();
   const { showSnackbar } = useSnackbar();
-  // context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  // const currentModel: MetaModel = useCurrentModel(innerSelectedApplicationUuid, defaultSelfApplicationDeploymentMap);
-  // const adminAppModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
-  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
-  // const deploymentMetaModel: MetaModel = useCurrentModel(innerSelectedDeploymentUuid);
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     innerSelectedApplicationUuid,
     defaultSelfApplicationDeploymentMap
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema:
-  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-  //     currentModel,
-  //     miroirMetaModel: miroirMetaModel,
-  //   };
-  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();

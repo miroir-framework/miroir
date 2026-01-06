@@ -330,7 +330,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             // ##################################################################################
             const transformerSelector_deploymentUuidFromApplicationUuid: Uuid =
               useDeploymentUuidFromApplicationUuid(
-                (formikContext.values.transformerEditor_transformer_selector as any).application
+                (formikContext.values.transformerEditor_transformer_selector as any).application,
+                applicationDeploymentMap
               );
             // ##################################################################################
             const transformerSelector_currentFetchedTransformerDefinition:
@@ -338,6 +339,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               | Domain2ElementFailed
               | undefined = useTransformer(
                 (formikContext.values.transformerEditor_transformer_selector as any).application,
+                applicationDeploymentMap,
                 transformerSelector_deploymentUuidFromApplicationUuid,
                 (formikContext.values.transformerEditor_transformer_selector as any).transformerUuid
             );

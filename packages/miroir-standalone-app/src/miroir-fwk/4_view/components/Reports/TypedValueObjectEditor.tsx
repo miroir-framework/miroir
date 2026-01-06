@@ -232,7 +232,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // ##############################################################################################
   const currentApplication: Uuid = applicationSection == "data" ? application : selfApplicationMiroir.uuid;
   const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
-  // const currentModel: MetaModel = useCurrentModel(currentApplication, defaultSelfApplicationDeploymentMap);
 
   // Get the deployment entity state from Redux store for ifThenElse schema resolution
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -425,7 +424,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               },
             }
           : dummyDomainManyQueryWithDeploymentUuid,
-        defaultSelfApplicationDeploymentMap,
+        applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       ),
     [deploymentEntityStateSelectorMap, deploymentUuid, jzodTypeCheckResult]

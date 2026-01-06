@@ -64,7 +64,8 @@ export const ReportDisplay: React.FC<{
   // Use application from pageParams if available, otherwise fall back to context
   const application = pageParams.application ?? context.application;
 
-  const currentModel: MetaModel = useCurrentModel(application, defaultSelfApplicationDeploymentMap);
+  const currentApplicationDeploymentMap = defaultSelfApplicationDeploymentMap;
+  const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
   // const availableReports: Report[] = useMemo(() => {
@@ -121,7 +122,7 @@ export const ReportDisplay: React.FC<{
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: application,
-            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+            applicationDeploymentMap: currentApplicationDeploymentMap,
             deploymentUuid: pageParams.deploymentUuid,
             pageParams: pageParams,
             queryParams: {},
@@ -215,7 +216,7 @@ export const ReportDisplay: React.FC<{
               <ReportViewWithEditor
                 applicationSection={pageParams.applicationSection as ApplicationSection}
                 application={application}
-                applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+                applicationDeploymentMap={currentApplicationDeploymentMap}
                 deploymentUuid={pageParams.deploymentUuid}
                 instanceUuid={pageParams.instanceUuid}
                 pageParams={pageParams}

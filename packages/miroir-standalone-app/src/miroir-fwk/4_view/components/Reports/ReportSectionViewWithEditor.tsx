@@ -355,6 +355,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                   "report label"
                 )}
                 application={props.application}
+                applicationDeploymentMap={props.applicationDeploymentMap}
                 deploymentUuid={props.deploymentUuid}
                 chosenApplicationSection={props.applicationSection as ApplicationSection}
                 paramsAsdomainElements={props.paramsAsdomainElements}

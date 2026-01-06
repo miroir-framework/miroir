@@ -103,6 +103,7 @@ export const TransformerBuilderPage: React.FC<any> = (
   props: any // TODO: give a type to props!!!
 ) => {
   count++;
+  const currentApplicationDeploymentMap = defaultSelfApplicationDeploymentMap;
   // const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
@@ -152,7 +153,7 @@ export const TransformerBuilderPage: React.FC<any> = (
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObject",
               application: selfApplicationMiroir.uuid,
-              applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              applicationDeploymentMap: currentApplicationDeploymentMap,
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               contextResults: {},
               pageParams: {},
@@ -299,7 +300,7 @@ export const TransformerBuilderPage: React.FC<any> = (
             // localCache,
             domainController,
             testSuite,
-            defaultSelfApplicationDeploymentMap,
+            currentApplicationDeploymentMap,
             context.miroirContext.miroirActivityTracker,
             (testSuite as any)["testParams"]
           );
@@ -400,7 +401,7 @@ export const TransformerBuilderPage: React.FC<any> = (
         <div style={{ margin: "20px 0" }}>
           <TransformerEditor
             application={selfApplicationLibrary.uuid}
-            applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+            applicationDeploymentMap={currentApplicationDeploymentMap}
             deploymentUuid={selfApplicationDeploymentLibrary.uuid}
             entityUuid={entityBook.uuid}
           />

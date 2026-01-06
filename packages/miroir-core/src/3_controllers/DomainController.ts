@@ -1637,8 +1637,7 @@ export class DomainController implements DomainControllerInterface {
       applicationDeploymentMap,
       currentModelEnvironment,
       {...domainAction,
-        // deploymentUuid: defaultSelfApplicationDeploymentMap[(domainAction as any).application],
-        deploymentUuid: defaultSelfApplicationDeploymentMap[currentEndpointDefinition.application],
+        deploymentUuid: applicationDeploymentMap[currentEndpointDefinition.application],
       }
     );
     return result;

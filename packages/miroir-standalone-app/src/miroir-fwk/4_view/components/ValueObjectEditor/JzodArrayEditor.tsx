@@ -1,6 +1,7 @@
 ﻿import { FormikContextType, useFormikContext } from "formik";
 import {
   adminConfigurationDeploymentMiroir,
+  defaultSelfApplicationDeploymentMap,
   EntityDefinition,
   entityEntityDefinition,
   foldableElementTypes,
@@ -16,11 +17,13 @@ import {
   ReduxDeploymentsState,
   resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
+  selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodReference,
   type JzodSchema,
   type KeyMapEntry,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  type Uuid
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -31,7 +34,7 @@ import { cleanLevel } from "../../constants";
 import {
   useMiroirContextService
 } from "../../MiroirContextReactProvider";
-import { useCurrentModel } from "../../ReduxHooks";
+import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
@@ -141,6 +144,8 @@ interface ProgressiveArrayItemProps {
   resolvedElementJzodSchemaDEFUNCT: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   usedIndentLevel: number;
+  currentApplication: Uuid;
+  applicationDeploymentMap: Record<string, string>;
   currentDeploymentUuid: string | undefined;
   currentApplicationSection: string | undefined;
   foreignKeyObjects: any;
@@ -186,6 +191,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   existingObject,
   displayError,
   onChangeVector,
+  ...props
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   const [isRendered, setIsRendered] = useState(isTestMode);
@@ -288,6 +294,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 listKey={listKey + "." + index}
                 indentLevel={usedIndentLevel + 1}
                 labelElement={<></>}
+                currentApplication={props.currentApplication}
+                applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
                 currentDeploymentUuid={currentDeploymentUuid}
                 currentApplicationSection={currentApplicationSection as any}
                 rootLessListKey={
@@ -348,6 +356,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     existingObject,
     displayError,
     onChangeVector,
+    ...props
   }
 ) => {
   jzodArrayEditorRenderCount++;
@@ -394,16 +403,26 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   //   JSON.stringify(rawJzodSchema, null, 2),
   // );
 
-  const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
+  const currentModel: MetaModel = useCurrentModel(
+    currentDeploymentUuid ?? selfApplicationMiroir.uuid,
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+  );
   const reportContext = useReportPageContext();
-  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-    return {
-      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
-      currentModel: currentModel,
-      miroirMetaModel: miroirMetaModel,
-    };
-  }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+  const miroirMetaModel: MetaModel = useCurrentModel(
+    selfApplicationMiroir.uuid,
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+  );
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentDeploymentUuid ?? selfApplicationMiroir.uuid,
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+  );
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+  //   return {
+  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //     currentModel: currentModel,
+  //     miroirMetaModel: miroirMetaModel,
+  //   };
+  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
   // ??
   const usedIndentLevel: number = indentLevel ?? 0;
 
@@ -420,11 +439,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), {
-        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema??(miroirFundamentalJzodSchema as JzodSchema),
-        currentModel: currentModel,
-        miroirMetaModel: miroirMetaModel,
-      })
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        () => ({}),
+        currentMiroirModelEnvironment
+        // {
+        //   miroirFundamentalJzodSchema:
+        //     context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+        //   currentModel: currentModel,
+        //   miroirMetaModel: miroirMetaModel,
+        // }
+      )
   );
 
   const foldableItemsCount = useMemo(() => {
@@ -511,6 +536,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         const entityDefinitions  =  getEntityInstancesUuidIndexNonHook(
           deploymentEntityState,
           currentMiroirModelEnvironment,
+          props.currentApplication,
+          props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
           currentDeploymentUuid,
           entityEntityDefinition.uuid,
           "name",
@@ -564,6 +591,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         undefined, // currentDefaultValue is not known yet, this is what this call will determine
         [], // currentPath on value is root
         false,
+        props.currentApplication,
+        props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
         {}, // transformerParams
@@ -694,6 +723,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
                   typeCheckKeyMap={typeCheckKeyMap}
                   usedIndentLevel={usedIndentLevel}
+                  currentApplication={props.currentApplication}
+                  applicationDeploymentMap={props.applicationDeploymentMap}
                   currentDeploymentUuid={currentDeploymentUuid}
                   currentApplicationSection={currentApplicationSection}
                   foreignKeyObjects={foreignKeyObjects}

@@ -74,10 +74,10 @@ const runnerConfigs = [
     title: "Create Entity",
     component: CreateEntityRunner,
   },
-  // {
-  //   title: "Drop Entity",
-  //   component: DeleteEntityRunner,
-  // },
+  {
+    title: "Drop Entity",
+    component: DeleteEntityRunner,
+  },
   // {
   //   title: "Import Entity From Spreadsheet",
   //   component: ImportEntityFromSpreadsheetRunner,

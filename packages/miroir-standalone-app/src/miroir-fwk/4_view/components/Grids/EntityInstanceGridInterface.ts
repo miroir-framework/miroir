@@ -1,4 +1,4 @@
-import { set, z } from "zod";
+import { z } from "zod";
 
 import {
   // SelfApplicationDeploymentConfigurationSchema,
@@ -8,7 +8,6 @@ import {
   entityInstance,
   entityInstancesUuidIndex,
   jzodElement,
-  jzodSchema,
   metaModel,
   selfApplicationDeploymentConfiguration
 } from "miroir-core";
@@ -25,9 +24,11 @@ export const tableComponentCorePropsSchema = z.object({
   styles: z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),
+  applicationDeploymentMap: z.record(z.string(), z.string().uuid()),
   currentModel: metaModel,
   defaultFormValuesObject: z.any(),
   sortByAttribute: z.string().optional(),
+  application: z.string().uuid(),
   deploymentUuid: z.string().uuid(),
   paramsAsdomainElements: domainElementObject,
   foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),

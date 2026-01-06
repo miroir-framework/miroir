@@ -138,7 +138,7 @@ export function useQueryTemplateResults(
       () =>
         getQueryRunnerParamsForReduxDeploymentsState(
           reportDataQuery,
-          defaultSelfApplicationDeploymentMap,
+          queryOrQueryTemplate?.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
           deploymentEntityStateSelectorMap
         ),
       [deploymentEntityStateSelectorMap, reportDataQuery]
@@ -161,7 +161,10 @@ export function useQueryTemplateResults(
 
 
 // ################################################################################################
-export function useDeploymentUuidFromApplicationUuid2(applicationUuid:Uuid | undefined): Uuid {
+export function useDeploymentUuidFromApplicationUuid2(
+  applicationUuid: Uuid | undefined,
+  applicationDeploymentMap: ApplicationDeploymentMap
+): Uuid {
   const deploymentUuidQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
@@ -170,7 +173,7 @@ export function useDeploymentUuidFromApplicationUuid2(applicationUuid:Uuid | und
       ? ({
           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
           application: adminSelfApplication.uuid,
-          applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+          applicationDeploymentMap,
           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
           pageParams: {},
           queryParams: {},
@@ -213,17 +216,21 @@ export function useDeploymentUuidFromApplicationUuid2(applicationUuid:Uuid | und
     );
   }
   const { reportData: deploymentUuidQueryResultsData, resolvedQuery } = deploymentUuidQueryResults;
-              
-  const deploymentUuidFromApplicationUuid: Uuid = deploymentUuidQueryResultsData?.deployments &&
-      deploymentUuidQueryResultsData?.deployments.length == 1
+
+  const deploymentUuidFromApplicationUuid: Uuid =
+    deploymentUuidQueryResultsData?.deployments &&
+    deploymentUuidQueryResultsData?.deployments.length == 1
       ? deploymentUuidQueryResultsData?.deployments[0].uuid
       : "NOT_FOUND";
-  
+
   return deploymentUuidFromApplicationUuid;
 }
 
 // ################################################################################################
-export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | undefined): Uuid {
+export function useDeploymentUuidFromApplicationUuid(
+  applicationUuid: Uuid | undefined,
+  applicationDeploymentMap: ApplicationDeploymentMap
+): Uuid {
   const deploymentUuidQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
@@ -234,7 +241,7 @@ export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | unde
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             application: adminSelfApplication.uuid,
-            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+            applicationDeploymentMap,
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -247,13 +254,12 @@ export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | unde
                 applicationSection: "data",
                 filter: {
                   attributeName: "adminApplication",
-                  value: applicationUuid
+                  value: applicationUuid,
                 },
               },
             },
           } as BoxedQueryTemplateWithExtractorCombinerTransformer)
-        : 
-          {
+        : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: "",
             applicationDeploymentMap: {},
@@ -263,9 +269,7 @@ export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | unde
             contextResults: {},
             extractors: {},
           },
-    [
-      applicationUuid
-    ]
+    [applicationUuid]
   );
 
   const deploymentUuidQueryResults: Domain2QueryReturnType<
@@ -280,20 +284,21 @@ export function useDeploymentUuidFromApplicationUuid(applicationUuid:Uuid | unde
     );
   }
   const { reportData: deploymentUuidQueryResultsData, resolvedQuery } = deploymentUuidQueryResults;
-              
+
   const deploymentUuidFromApplicationUuid: Uuid = useMemo(() => {
     return deploymentUuidQueryResultsData?.deployments &&
       deploymentUuidQueryResultsData?.deployments.length == 1
       ? deploymentUuidQueryResultsData?.deployments[0].uuid
       : "NOT_FOUND";
   }, [deploymentUuidQueryResultsData]);
-  
+
   return deploymentUuidFromApplicationUuid;
 }
 
 // ################################################################################################
 export function useTransformer(
   application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: Uuid,
   transformerUuid: Uuid | undefined
 ): Domain2ElementFailed | TransformerDefinition | undefined {
@@ -312,7 +317,7 @@ export function useTransformer(
         ? ({
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application,
-            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+            applicationDeploymentMap,
             deploymentUuid: deploymentUuid,
             pageParams: {},
             queryParams: {},
@@ -369,6 +374,7 @@ export function useTransformer(
 // ################################################################################################
 export function useRunner(
   application: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: Uuid,
   runnerUuid: Uuid | undefined
 ): Domain2QueryReturnType<Runner | undefined>  {
@@ -386,7 +392,7 @@ export function useRunner(
         ? ({
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application,
-            applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+            applicationDeploymentMap,
             deploymentUuid: deploymentUuid,
             pageParams: {},
             queryParams: {},

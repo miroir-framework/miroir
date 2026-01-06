@@ -3,22 +3,16 @@ import React, { FC, useCallback, useMemo } from "react";
 
 
 import {
-  adminConfigurationDeploymentMiroir,
-  defaultSelfApplicationDeploymentMap,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodEnum,
   JzodLiteral,
   jzodUnionResolvedTypeForObject,
   LoggerInterface,
-  MetaModel,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resolvePathOnObject,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type JzodObject,
-  type JzodSchema,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type Uuid
@@ -26,8 +20,7 @@ import {
 
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks";
+import { useCurrentModelEnvironment } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -331,10 +324,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
 ) => {
   JzodLiteralEditorRenderCount++;
   let error: JSX.Element | undefined = undefined;
-  const context = useMiroirContextService();
-  const currentModel: MetaModel = useCurrentModel(currentApplication, appliationDeploymentMap);
-  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
-  const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     currentApplication,

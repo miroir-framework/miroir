@@ -95,6 +95,7 @@ export const Sidebar: FC<{
       ...context.toolsPageState,
       applicationSelector: applicationUuid,
     });
+    context.setApplication(applicationUuid);
   }, [context]);
 
   const miroirSidebarSections = useMemo(() => (

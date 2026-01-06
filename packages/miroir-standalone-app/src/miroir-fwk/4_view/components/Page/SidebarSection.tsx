@@ -14,10 +14,6 @@ import {
 
 
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
-  adminSelfApplication,
-  defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
@@ -34,11 +30,11 @@ import {
   type MiroirMenuItem
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
-import { packageName } from '../../../../constants.js';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorBoundary } from 'react-error-boundary';
-import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
+import { packageName } from '../../../../constants.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
+import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -81,7 +77,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const context = useMiroirContext();
   const currentModel: MetaModel = useCurrentModel(
     props.applicationUuid,
-    defaultSelfApplicationDeploymentMap
+    props.applicationDeploymentMap
   );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
@@ -113,7 +109,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
             }
           : dummyDomainManyQueryWithDeploymentUuid
           ,
-          defaultSelfApplicationDeploymentMap,
+          props.applicationDeploymentMap,
         deploymentEntityStateSelectorMap
       ),
     [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]

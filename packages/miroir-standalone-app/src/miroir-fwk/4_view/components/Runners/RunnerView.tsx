@@ -2,42 +2,32 @@ import { Formik, FormikHelpers } from "formik";
 
 import type {
   ApplicationDeploymentMap,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
   Domain2QueryReturnType,
   DomainControllerInterface,
-  EndpointDefinition,
   LoggerInterface,
   MiroirModelEnvironment,
   Runner,
   TransformerForBuildPlusRuntime,
-  Uuid,
+  Uuid
 } from "miroir-core";
 import {
   Action2Error,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
-  defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
-  entityDeployment,
   MiroirLoggerFactory,
-  selfApplicationLibrary,
   selfApplicationMiroir,
   transformer_extended_apply_wrapper
 } from "miroir-core";
+import { useMemo } from "react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { useRunner } from "../Reports/ReportHooks.js";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
+import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { FormMLSchema, RunnerProps } from "./RunnerInterface.js";
-import { useMemo } from "react";
-import { useRunner } from "../Reports/ReportHooks.js";
-import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -63,6 +53,7 @@ export function StoredRunnerView(props: {
 
   const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
     props.applicationUuid,
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     runnerDeploymentUuid,
     props.runnerUuid
   );
@@ -102,7 +93,7 @@ export function StoredRunnerView(props: {
       />
       <RunnerView
         runnerName={runnerName}
-        applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+        applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
         deploymentUuid={runnerDeploymentUuid}
         formMLSchema={runnerDefinitionFromLocalCache.formMLSchema as FormMLSchema}
         initialFormValue={initialFormValue}

@@ -21,6 +21,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface EntityInstanceLinkProps {
   label?: string;
   visual?: "button" | "href";
+  application: Uuid,
   deploymentUuid?: Uuid,
   applicationSection: ApplicationSection,
   reportUuid: Uuid,
@@ -40,7 +41,7 @@ export const ReportInstanceLink = (props: EntityInstanceLinkProps) => {
       return (
         <button
           onClick={() => {
-            navigate(`/report/${props.deploymentUuid}/${props.applicationSection}/${props?.reportUuid}/${props.instanceUuid}`);
+            navigate(`/report/${props.application}/${props.deploymentUuid}/${props.applicationSection}/${props?.reportUuid}/${props.instanceUuid}`);
           }}
         >
           {/* {instance?.name} */}
@@ -50,7 +51,7 @@ export const ReportInstanceLink = (props: EntityInstanceLinkProps) => {
     } else {
       return (
         <Link
-          to={`/report/${props.deploymentUuid}/${props.applicationSection}/${props?.reportUuid}/${props.instanceUuid}`}
+          to={`/report/${props.application}/${props.deploymentUuid}/${props.applicationSection}/${props?.reportUuid}/${props.instanceUuid}`}
         >
           {props.label ? props.label : instance?.name ? instance?.name : "no label for link!"}
         </Link>

@@ -110,12 +110,6 @@ export function useJzodElementEditorHooks(
   currentApplication: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: Uuid | undefined,
-  // {
-  //   currentDeploymentUuid,
-  //   typeCheckKeyMap,
-  //   rootLessListKey,
-  //   rootLessListKeyArray,
-  // }: P,
   count: number, // used for debugging
   caller: string,
 ): JzodElementEditorHooks {
@@ -123,9 +117,10 @@ export function useJzodElementEditorHooks(
   count++;
   const context = useMiroirContextService();
   const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
-  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
-  // const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
-  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+  const miroirMetaModel: MetaModel = useCurrentModel(
+    selfApplicationMiroir.uuid,
+    applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+  );
   let dbgInt = 0;
   // log.info("useJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
   

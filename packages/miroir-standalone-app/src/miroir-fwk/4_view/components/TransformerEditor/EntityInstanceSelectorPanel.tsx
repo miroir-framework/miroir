@@ -89,7 +89,6 @@ export function EntityInstanceSelectorPanel(props:{
   const formikContext = useFormikContext<TransformerEditorFormikValueType>();
   const context = useMiroirContextService();
   const persistedState = context.toolsPageState.transformerEditor;
-  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
   const entityInstanceSelectorPanelSchema: JzodElement = {
     type: "object",
