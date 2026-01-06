@@ -69,11 +69,17 @@ export class SqlDbStoreSection
       "bootFromPersistedState called!",
       entities.map((e) => e.name + ":" + e.uuid)
     );
+    // const wrongDefinitions = entityDefinitions.filter((ed=>!ed.entityUuid));
+    // log.info(
+    //   this.logHeader,
+    //   "bootFromPersistedState wrongDefinitions",
+    //   JSON.stringify(wrongDefinitions, null, 2)
+    // );
     this.sqlSchemaTableAccess = entities
       // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
       .reduce((prev, curr: MetaEntity) => {
         const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
-        log.debug(
+        log.info(
           this.logHeader,
           "bootFromPersistedState start sqlSchemaTableAccess init initializing entity",
           curr.name,

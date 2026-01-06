@@ -807,9 +807,20 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     entityUuid: string
   ): Promise<Action2EntityInstanceCollectionOrFailure> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "getInstances", "section", section, "entity", entityUuid);
-
+    
     const currentStore = section == "data" ? this.dataStoreSection : this.modelStoreSection;
+    log.info(
+      this.logHeader,
+      "getInstances",
+      "section",
+      section,
+      "entity",
+      entityUuid,
+      "storeName",
+      "'" + currentStore.getStoreName() + "'",
+      // "known entities",
+      // section == "data" ? this.getEntityUuids() : this.getModelEntities()
+    );
     const instances: Action2EntityInstanceCollectionOrFailure = await currentStore.getInstances(
       entityUuid
     );

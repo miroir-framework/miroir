@@ -1,5 +1,6 @@
 
 import type {
+  ApplicationDeploymentMap,
   LoggerInterface
 } from "miroir-core";
 import {
@@ -10,6 +11,7 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";
+import { useApplicationDeploymentMap } from "../../MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -30,6 +32,8 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
   deploymentUuid,
 }) => {
   
+  const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useApplicationDeploymentMap();
+  
   // const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
   //   selfApplicationMiroir.uuid,
   //   adminConfigurationDeploymentMiroir.uuid,
@@ -42,7 +46,7 @@ export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
   return (
     <StoredRunnerView
       applicationUuid={selfApplicationMiroir.uuid}
-      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+      applicationDeploymentMap={applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
       runnerUuid="44313751-b0e5-4132-bb12-a544806e759b"
       // storedRunner={runnerDefinitionFromLocalCache}
     />

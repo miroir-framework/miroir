@@ -68,7 +68,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorAction', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query,defaultMetaModelEnvironment);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(
+        query,
+        query.payload.query.applicationDeploymentMap,
+        defaultMetaModelEnvironment
+      );
 
       log.info(this.logHeader,'handleBoxedExtractorAction DONE','query',query, "result", result);
       return result;
@@ -78,7 +82,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedQueryAction', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query, defaultMetaModelEnvironment);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(
+        query,
+        query.payload.query.applicationDeploymentMap,
+        defaultMetaModelEnvironment
+      );
 
       log.info(this.logHeader,'handleBoxedQueryAction DONE','query',query, "result", result);
       return result;
@@ -88,7 +96,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query, defaultMetaModelEnvironment);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(
+        query,
+        query.payload.query.applicationDeploymentMap,
+        defaultMetaModelEnvironment
+      );
 
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
       return result;
@@ -98,7 +110,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query, defaultMetaModelEnvironment);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(
+        query,
+        query.payload.query.applicationDeploymentMap,
+        defaultMetaModelEnvironment
+      );
 
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
@@ -108,7 +124,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query, defaultMetaModelEnvironment);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+        query,
+        query.payload.query.applicationDeploymentMap,
+        defaultMetaModelEnvironment
+      );
 
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;

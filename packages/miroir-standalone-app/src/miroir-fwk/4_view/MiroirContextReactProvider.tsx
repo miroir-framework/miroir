@@ -33,6 +33,7 @@ import {
   type MiroirEvent,
   type KeyMapEntry,
   type TransformerForBuildPlusRuntime,
+  type ApplicationDeploymentMap,
 } from "miroir-core";
 import { ReduxStateChanges, selectCurrentTransaction } from "miroir-localcache-redux";
 
@@ -108,6 +109,8 @@ export interface MiroirReactContext {
   // page parameters
   application: string;
   setApplication: React.Dispatch<React.SetStateAction<string>>;
+  applicationDeploymentMap: ApplicationDeploymentMap | undefined;
+  setApplicationDeploymentMap: React.Dispatch<React.SetStateAction<ApplicationDeploymentMap | undefined>>;
   deploymentUuid: string;
   setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
   reportUuid: Uuid | undefined;
@@ -195,6 +198,7 @@ export function MiroirContextReactProvider(props: {
   children: ReactNode;
 }) {
   const [application, setApplication] = useState(props.testingApplication ?? "");
+  const [applicationDeploymentMap, setApplicationDeploymentMap] = useState<ApplicationDeploymentMap | undefined>(undefined);
   const [deploymentUuid, setDeploymentUuid] = useState(props.testingDeploymentUuid ?? "");
   const [reportUuid, setReportUuid] = useState("");
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
@@ -466,8 +470,10 @@ export function MiroirContextReactProvider(props: {
       miroirContext: props.miroirContext,
       domainController: props.domainController,
       serverBaseUrl,
-      application: application,
-      setApplication: setApplication,
+      application,
+      setApplication,
+      applicationDeploymentMap,
+      setApplicationDeploymentMap,
       deploymentUuid,
       setDeploymentUuid,
       reportUuid,
@@ -539,9 +545,13 @@ export function MiroirContextReactProvider(props: {
     }),
     [
       serverBaseUrl,
+      application,
+      setApplication,
+      applicationDeploymentMap,
+      setApplicationDeploymentMap,
       deploymentUuid,
-      reportUuid,
       applicationSection,
+      reportUuid,
       deploymentUuidToReportsEntitiesDefinitionsMapping,
       miroirFundamentalJzodSchema,
       innerFormOutput,
@@ -641,6 +651,15 @@ export function useMiroirContext() {
     throw new Error("useMiroirContext must be used within a MiroirContextReactProvider");
   }
   return context.miroirContext;
+}
+
+// #############################################################################################
+export function useApplicationDeploymentMap() {
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error("useApplicationDeploymentMap must be used within a MiroirContextReactProvider");
+  }
+  return context.applicationDeploymentMap;
 }
 
 // #############################################################################################

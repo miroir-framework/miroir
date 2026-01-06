@@ -19,6 +19,7 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  type ApplicationDeploymentMap,
   type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
@@ -272,6 +273,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // #############################################################################################
     async handleBoxedQueryAction(
       query: RunBoxedQueryAction,
+      appliationDeploymentMap: ApplicationDeploymentMap,
       currentModelEnvironment: MiroirModelEnvironment
     ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedQueryAction called for query", query);

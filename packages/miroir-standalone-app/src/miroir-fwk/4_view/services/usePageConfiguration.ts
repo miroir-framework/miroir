@@ -7,7 +7,7 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
-import { MiroirConfigClient } from 'miroir-core';
+import { MiroirConfigClient, type Action2VoidReturnType } from 'miroir-core';
 import {
   useDomainControllerService,
   useMiroirContextService,
@@ -87,9 +87,9 @@ export function usePageConfiguration(
    * This provides automatic error handling and snackbar notifications
    */
   const fetchConfigurations = useCallback(async (): Promise<void> => {
-    return handleAsyncAction(
+    handleAsyncAction(
       async () => {
-        await fetchMiroirAndAppConfigurations({
+        return fetchMiroirAndAppConfigurations({
           domainController,
           miroirConfig,
         });

@@ -19,7 +19,6 @@ import {
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ThemedBox } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { usePageConfiguration } from "../services/index.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
@@ -37,7 +36,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const ReportPage = () => {
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const context = useMiroirContextService();
-  const theme = useMiroirTheme();
+  // const theme = useMiroirTheme();
 
   // Auto-fetch configurations when the page loads
   const { fetchConfigurations } = usePageConfiguration({

@@ -10,48 +10,47 @@ import {
 import { Outlet, useNavigate } from 'react-router-dom';
 import { EventTimelineContainer } from '../EventTimelineContainer';
 import {
-  ThemedButton,
   ThemedGrid,
   ThemedMainPanel,
   ThemedText
 } from '../Themes/index';
-import { ActionButtonWithSnackbar } from './ActionButtonWithSnackbar';
 
 import { v4 as uuidv4 } from 'uuid';
 
 
 import {
+  actionsWithDeploymentInPayload,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
+  adminSelfApplication,
   AppTheme,
   defaultAdminViewParams,
-  defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
+  Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainControllerInterface,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
-  actionsWithDeploymentInPayload,
+  entityDeployment,
   EntityInstancesUuidIndex,
+  getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
-  instanceEndpointV1,
   LoggerInterface,
   MetaModel,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
+  selfApplicationLibrary,
+  selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   ViewParamsData,
-  type MiroirModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
-  adminSelfApplication,
-  selfApplicationMiroir,
-  selfApplicationLibrary
+  type ApplicationDeploymentMap,
+  type Deployment,
+  type SyncQueryRunnerParams
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -66,17 +65,16 @@ import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
 import { packageName } from '../../../../constants.js';
-import { useCurrentModel, useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelector, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
+import { ReportPageContextProvider } from '../Reports/ReportPageContext';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEditorOutlineContext';
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { ReportPageContextProvider } from '../Reports/ReportPageContext';
-import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
-import { start } from 'repl';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -176,7 +174,81 @@ export const RootComponent = (props: RootComponentProps) => {
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   const libraryAppModel: MetaModel = useCurrentModel(selfApplicationLibrary.uuid, defaultSelfApplicationDeploymentMap);
 
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateSelectorMap(),
+    []
+  )
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  const fetchAdminDeploymentsQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
+    () =>
+      getQueryRunnerParamsForReduxDeploymentsState(
+        adminAppModel? 
+        {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: adminSelfApplication.uuid,
+              applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                deployments: {
+                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  parentName: "Deployment",
+                  applicationSection: getApplicationSection(adminConfigurationDeploymentAdmin.uuid, entityDeployment.uuid),
+                  parentUuid: entityDeployment.uuid,
+                },
+              },
+            }
+          : dummyDomainManyQueryWithDeploymentUuid
+          ,
+          defaultSelfApplicationDeploymentMap,
+        deploymentEntityStateSelectorMap
+      ),
+    [deploymentEntityStateSelectorMap, adminAppModel]
+  );
+
+  // log.info("SidebarSection fetchAdminDeploymentsQueryParams",fetchAdminDeploymentsQueryParams)
+  const adminDeploymentsQueryResult: 
+    Domain2QueryReturnType<{deployments:Deployment[]}> = useReduxDeploymentsStateQuerySelector(
+    deploymentEntityStateSelectorMap.runQuery,
+    fetchAdminDeploymentsQueryParams
+  );
+
+  
+  const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useMemo(
+    () =>
+      adminDeploymentsQueryResult &&
+      !(adminDeploymentsQueryResult instanceof Domain2ElementFailed) &&
+      Array.isArray(adminDeploymentsQueryResult.deployments)
+        ? Object.fromEntries(
+            adminDeploymentsQueryResult.deployments.map((deployment: Deployment) => {
+              return [deployment.adminApplication, deployment.uuid];
+            })
+          )
+        : undefined,
+    [adminDeploymentsQueryResult]
+  );
+
+  useEffect(() => {
+    if (applicationDeploymentMap) {
+      context.setApplicationDeploymentMap(applicationDeploymentMap);
+    }
+  }, [applicationDeploymentMap]);
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
       {
@@ -385,46 +457,6 @@ export const RootComponent = (props: RootComponentProps) => {
       }
     }
 
-    // // Strategy 6: Fuzzy search through all IDs
-    // if (!targetElement) {
-    //   console.log("Trying fuzzy search...");
-    //   const allElementsWithIds = document.querySelectorAll("[id]");
-    //   const ids = Array.from(allElementsWithIds)
-    //     .map((el) => ({
-    //       element: el as HTMLElement,
-    //       id: el.id,
-    //     }))
-    //     .filter((item) => item.id);
-
-    //   // Look for elements that contain most of the path parts
-    //   const pathWords = path.join(" ").toLowerCase().split(/\s+/);
-    //   let bestMatch: { element: HTMLElement; score: number } | null = null;
-
-    //   for (const { element, id } of ids) {
-    //     const idWords = id.toLowerCase().replace(/[._-]/g, " ").split(/\s+/);
-    //     let score = 0;
-
-    //     for (const pathWord of pathWords) {
-    //       if (pathWord.length > 2) {
-    //         // Only consider meaningful words
-    //         for (const idWord of idWords) {
-    //           if (idWord.includes(pathWord) || pathWord.includes(idWord)) {
-    //             score++;
-    //           }
-    //         }
-    //       }
-
-    //       if (score > 0 && (!bestMatch || score > bestMatch.score)) {
-    //         bestMatch = { element, score };
-    //       }
-    //     }
-
-    //     if (bestMatch && bestMatch.score >= 2)
-    //       // Require at least 2 word matches
-    //       targetElement = bestMatch.element;
-    //   }
-    // }
-
     if (targetElement) {
       // Clear any existing highlight and timeout
       if (highlightTimeoutRef.current) {
@@ -503,9 +535,6 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // ##############################################################################################
   // Document outline context value
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-    useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
-
   // Stabilize query params to prevent unnecessary selector re-runs
   const stableQueryParams = useMemo(
     () =>
@@ -761,6 +790,18 @@ export const RootComponent = (props: RootComponentProps) => {
                 outlineWidth={outlineWidth}
               >
                 <ThemedText>uuid: {uuidv4()}</ThemedText>
+                <ThemedOnScreenDebug
+                  label="RootComponent adminDeploymentsQueryResult"
+                  data={adminDeploymentsQueryResult}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent applicationDeploymentMap"
+                  data={applicationDeploymentMap}
+                  // initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
                 {transactions && transactions.length > 0 && (
                   <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
                 )}

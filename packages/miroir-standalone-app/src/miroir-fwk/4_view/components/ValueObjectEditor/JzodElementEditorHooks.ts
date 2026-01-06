@@ -262,80 +262,10 @@ export function useJzodElementEditorHooks(
           }
         }
         let deploymentUuid: TransformerReturnType<any> = applicationDeploymentMap[targetApplication];
-          // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
-          // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !==
-          //   noValue.uuid
-          //   ? currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
-          //   : currentDeploymentUuid;
-
-        // if (
-        //   typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
-        //     ?.targetDeploymentUuid == "object"
-        // ) {
-        //   deploymentUuid = transformer_extended_apply_wrapper(
-        //     context.miroirContext.miroirActivityTracker, // activityTracker
-        //     "runtime", // step
-        //     [], // transformerPath
-        //     (
-        //       currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
-        //         ?.targetDeploymentUuid as any
-        //     )?.label ?? "evaluation of hidden property", // label
-        //     currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid, // transformer
-        //     defaultMiroirModelEnvironment, // TODO: use the real environment
-        //     formik.values, // queryParams
-        //     formik.values, // contextResults - pass the instance to transform
-        //     "value" // resolveBuildTransformersTo
-        //   );
-        //   log.info(
-        //     "useJzodElementEditorHooks",
-        //     "rootLessListKey:", rootLessListKey,
-        //     "resolved deploymentUuid:",
-        //     deploymentUuid,
-        //     "for",
-        //     (
-        //       currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
-        //         ?.targetDeploymentUuid as any
-        //     )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid
-        //   );
-        //   if (deploymentUuid instanceof TransformerFailure) {
-        //     throw new Error(
-        //       "JzodElementEditorHooks: deploymentUuid resolved from transformer is not a string: " +
-        //         deploymentUuid
-        //     );
-        //   }
-        // }
-        // if (hiddenTransformerResult === true) {
-        //   log.info("JzodElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);
-        //   return null;
-        // }
-        // const deploymentUuid = currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid;
         const applicationSection = getApplicationSection(
           deploymentUuid,
           currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
         );
-        // log.info(
-        //   "useJzodElementEditorHooks",
-        //   "rootLessListKey",
-        //   rootLessListKey,
-        //   "foreignKeyObjectsFetchQueryParams",
-        //   "rawSchema",
-        //   currentTypecheckKeyMap.rawSchema,
-        //   "targetApplicationUuid",
-        //   currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid,
-        //   "applicationUuid",
-        //   targetApplication,
-        //   "currentApplication",
-        //   currentApplication,
-        //   targetApplication !== noValue.uuid,
-        //   "deploymentUuid",
-        //   currentDeploymentUuid,
-        //   "targetEntityUuid",
-        //   currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
-        //   "applicationSection",
-        //   applicationSection,
-        //   "applicationDeploymentMap",
-        //   applicationDeploymentMap
-        // );
         if (targetApplication !== noValue.uuid) {
           return getQueryRunnerParamsForReduxDeploymentsState(
             {

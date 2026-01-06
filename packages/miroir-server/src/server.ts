@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 
 import {
   Action2Error,
+  type ApplicationDeploymentMap,
   ConfigurationService,
   type Deployment,
   LoggerFactoryInterface,
@@ -281,6 +282,17 @@ const deploymentsToOpen: [string, Deployment][] = deployments
 
 myLogger.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
 
+const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce(
+  (acc, curr) => {
+    // acc[curr[1].adminApplication??("NO ADMIN APPLICATION for " + curr[0])] = curr[0];
+    return {...acc, [curr.adminApplication??("NO ADMIN APPLICATION for " + curr.name)] : curr.uuid};
+  },
+  {}
+);
+
+myLogger.info(`ApplicationDeploymentMap for new deployments: ${JSON.stringify(applicationDeploymentMap, circularReplacer(), 2)}`);
+
+// open all newly found stores
 for (const c of deploymentsToOpen) {
   const openStoreAction: StoreOrBundleAction = {
     actionType: "storeManagementAction_openStore",
@@ -296,7 +308,7 @@ for (const c of deploymentsToOpen) {
   };
   await domainController.handleAction(
     openStoreAction,
-    defaultSelfApplicationDeploymentMap,
+    applicationDeploymentMap,
     defaultMetaModelEnvironment
   );
 }

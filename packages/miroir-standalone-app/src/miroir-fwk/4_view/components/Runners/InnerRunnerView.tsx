@@ -179,8 +179,8 @@ export const InnerRunnerView = <T extends Record<string, any>>({
         useCodeBlock={true}
       />
       <ThemedOnScreenDebug
-        label={`Runner ${runnerName} application ${application}`}
-        data={application}
+        label={`Runner ${runnerName} currentApplication ${currentApplication}`}
+        data={currentApplication}
         initiallyUnfolded={false}
         // copyButton={true}
         // useCodeBlock={true}

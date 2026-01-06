@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import type {
+  ApplicationDeploymentMap,
   CompositeActionTemplate,
   JzodObject,
   LoggerInterface
@@ -18,6 +19,7 @@ import { cleanLevel } from "../../constants.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { RunnerView } from "./RunnerView.js";
 import type { FormMLSchema } from "./RunnerInterface.js";
+import { useApplicationDeploymentMap } from "../../MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -37,7 +39,7 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
   deploymentUuid,
 }) => {
   const runnerName: string = "dropApplication";
-
+  const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useApplicationDeploymentMap();
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
       formMLSchemaType: "mlSchema",
@@ -217,7 +219,7 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
   return (
     <RunnerView
       runnerName={runnerName}
-      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+      applicationDeploymentMap={applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
       deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}

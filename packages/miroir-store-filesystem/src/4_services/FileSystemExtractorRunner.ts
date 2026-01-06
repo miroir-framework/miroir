@@ -77,6 +77,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       {
         extractor: runBoxedExtractorAction.payload.query,
         extractorRunnerMap: this.selectorMap,
+        applicationDeploymentMap: runBoxedExtractorAction.payload.query.applicationDeploymentMap,
       }, defaultMiroirModelEnvironment
     );
     if (queryResult instanceof Domain2ElementFailed) {
@@ -99,6 +100,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       {
         extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.selectorMap,
+        applicationDeploymentMap: runBoxedQueryAction.payload.query.applicationDeploymentMap,
       }, defaultMiroirModelEnvironment
     );
     if (queryResult instanceof Domain2ElementFailed) {

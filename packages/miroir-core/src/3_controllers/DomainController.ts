@@ -131,15 +131,19 @@ export async function resetAndInitApplicationDeployment(
   // const deployments = [adminConfigurationDeploymentLibrary, adminConfigurationDeploymentMiroir];
 
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
-    await domainController.handleAction({
-      actionType: "resetModel",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      payload: {
-        application: adminSelfApplication.uuid,
-        deploymentUuid: selfAdminConfigurationDeployment.uuid,
+    await domainController.handleAction(
+      {
+        actionType: "resetModel",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        payload: {
+          application: adminSelfApplication.uuid,
+          deploymentUuid: selfAdminConfigurationDeployment.uuid,
+        },
       },
-    }, applicationDeploymentMap, defaultMiroirModelEnvironment);
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment
+    );
   }
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
     await domainController.handleAction(
@@ -321,11 +325,16 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2VoidReturnType> {
     log.info(
-      "DomainController loadConfigurationFromPersistenceStore called for admin deployment",
-      adminDeploymentUuid
+      "DomainController loadConfigurationFromPersistenceStore called for",
+      "application",
+      application,
+      "deployment",
+      adminDeploymentUuid,
+      "applicationDeploymentMap",
+      applicationDeploymentMap
     );
     try {
-      await this.callUtil
+      const result = await this.callUtil
         .callPersistenceAction(
           {}, // context
           {
@@ -349,13 +358,20 @@ export class DomainController implements DomainControllerInterface {
         .then(async (context) => {
           if (context instanceof Action2Error) {
             throw new Error(
-              "DomainController loadConfigurationFromPersistenceStore could not fetch entity instance list " +
+              "DomainController loadConfigurationFromPersistenceStore application" + 
+              application +
+              "deployment" +
+              adminDeploymentUuid +
+              "could not fetch entity instance list " +
                 JSON.stringify(context, undefined, 2)
             );
           }
 
           log.info(
-            "DomainController loadConfigurationFromPersistenceStore fetched list of Entities for deployment",
+            "DomainController loadConfigurationFromPersistenceStore fetched list of Entities for",
+            "application",
+            application,
+            "deployment",
             adminDeploymentUuid,
             "found data entities from Model Section dataEntitiesFromModelSection",
             context.dataEntitiesFromModelSection
@@ -366,7 +382,11 @@ export class DomainController implements DomainControllerInterface {
             context.dataEntitiesFromModelSection instanceof Action2Error
           ) {
             throw new Error(
-              "DomainController loadConfigurationFromPersistenceStore could not fetch entity instance list " +
+              "DomainController loadConfigurationFromPersistenceStore application" +
+              application +
+              "deployment" +
+              adminDeploymentUuid +
+              " could not fetch entity instance list " +
                 JSON.stringify(context.dataEntitiesFromModelSection, undefined, 2)
             );
           }
@@ -377,7 +397,11 @@ export class DomainController implements DomainControllerInterface {
               Domain2ElementFailed
           ) {
             throw new Error(
-              "DomainController loadConfigurationFromPersistenceStore could not fetch entity instance list " +
+              "DomainController loadConfigurationFromPersistenceStore application" +
+              application +
+              "deployment" +
+              adminDeploymentUuid +
+              " could not fetch entity instance list " +
                 JSON.stringify(context.dataEntitiesFromModelSection, undefined, 2)
             );
           }
@@ -400,7 +424,10 @@ export class DomainController implements DomainControllerInterface {
               : context.dataEntitiesFromModelSection.returnedDomainElement?.instances ?? []; // hack, hack, hack
 
           log.info(
-            "DomainController loadConfigurationFromPersistenceStore for deployment",
+            "DomainController loadConfigurationFromPersistenceStore for",
+            "application",
+            application,
+            "deployment",
             adminDeploymentUuid,
             "found data entities to fetch",
             dataEntitiesToFetch.map((e) => e.name),
@@ -419,7 +446,9 @@ export class DomainController implements DomainControllerInterface {
             })),
           ];
           log.debug(
-            "DomainController loadConfigurationFromPersistenceStore for deployment",
+            "DomainController loadConfigurationFromPersistenceStore for",
+            "application", application,
+            "deployment",
             adminDeploymentUuid,
             "found entities to fetch",
             toFetchEntities.map((e) => ({
@@ -434,7 +463,11 @@ export class DomainController implements DomainControllerInterface {
           // .slice(1)
           .map((e) => {
             log.info(
-              "DomainController loadConfigurationFromPersistenceStore fetching instances from server for entity",
+              "DomainController loadConfigurationFromPersistenceStore",
+              "application", application,
+              "deployment",
+              adminDeploymentUuid,
+              "fetching instances from server for entity",
               JSON.stringify(e, undefined, 2)
             );
             return this.callUtil
@@ -458,24 +491,73 @@ export class DomainController implements DomainControllerInterface {
                   },
                 }
               )
-              .then((context: Record<string, any>) => {
+              .then((context: Record<string, any> | Action2Error) => {
                 log.info(
-                  "DomainController loadConfigurationFromPersistenceStore found instances for section",
+                  "DomainController loadConfigurationFromPersistenceStore fetched instances for section",
                   e.section,
                   "entity",
-                  e.entity.name
+                  e.entity.name,
+                  context instanceof Action2Error,
+                  context instanceof Action2Error ? "failed" : "succeeded",
+                  "input", context
                 );
-                return context["entityInstanceCollection"].returnedDomainElement;
+                if (context instanceof Action2Error) {
+                  return context;
+                } else {
+                  return context["entityInstanceCollection"].returnedDomainElement;
+                }
               })
               .catch((reason) => {
-                log.error("Failed to fetch entity instances for", e.entity.name, reason);
-                throw reason;
+                log.error(
+                  "DomainController loadConfigurationFromPersistenceStore failed to fetch entity instances for entity ",
+                  e.entity.name,
+                  "application",
+                  application,
+                  "deployment",
+                  adminDeploymentUuid,
+                  reason
+                );
+                return new Action2Error(
+                  "FailedToHandleAction",
+                  "DomainController loadConfigurationFromPersistenceStore application" +
+                  application + 
+                  "deployment" +
+                  adminDeploymentUuid +
+                  " failed to fetch entity instances for " +
+                  e.entity.name +
+                  " reason: " +
+                  reason
+                );
+                // throw reason;
               });
           });
 
           // Wait for all fetch operations to complete
           const allInstances = await Promise.all(fetchPromises);
 
+          const errors = allInstances.filter(
+            (result) => result instanceof Action2Error
+          );
+          log.info(
+            "DomainController loadConfigurationFromPersistenceStore fetched all instances for",
+            "application", application,
+            "deployment",
+            adminDeploymentUuid,
+            "allInstances",
+            allInstances,
+            "errors", errors
+          );
+          if (errors.length > 0) {
+            return Promise.resolve(new Action2Error(
+              "FailedToLoadNewInstancesInLocalCache",
+              "DomainController loadConfigurationFromPersistenceStore application" +
+              application +
+              "deployment" +
+              adminDeploymentUuid +
+              " failed to load new instances in local cache: " +
+              errors.map((e) => JSON.stringify(e, undefined, 2)).join(", ")
+            ));
+          }
           // Batch all local cache updates in a single operation to leverage React 18's automatic batching
           if (allInstances.length > 0) {
             await this.callUtil.callLocalCacheAction(
@@ -518,6 +600,8 @@ export class DomainController implements DomainControllerInterface {
 
           log.debug(
             "DomainController loadConfigurationFromPersistenceStore",
+            "application", application,
+            "deployment",
             adminDeploymentUuid,
             "all instances stored!",
             toFetchEntities.map((e) => ({ section: e.section, uuid: e.entity.uuid }))
@@ -525,6 +609,18 @@ export class DomainController implements DomainControllerInterface {
           );
           return context;
         });
+      if (result instanceof Action2Error) {
+        return result;
+      } else {
+        log.info(
+          "DomainController loadConfigurationFromPersistenceStore completed successfully for",
+          "application", application,
+          "deployment",
+          adminDeploymentUuid, result
+        );
+        return Promise.resolve(ACTION_OK);
+      }
+      
     } catch (error) {
       log.warn("DomainController loadConfigurationFromPersistenceStore caught error:", error);
       // throw error;
@@ -995,14 +1091,15 @@ export class DomainController implements DomainControllerInterface {
             log.info(
               "handleModelAction reloading current configuration from local PersistenceStore!"
             );
-            await this.loadConfigurationFromPersistenceStore(
+            const result = await this.loadConfigurationFromPersistenceStore(
               modelAction.payload.application,
               deploymentUuid,
               applicationDeploymentMap
             );
             log.info(
-              "handleModelAction reloading current configuration from local PersistenceStore DONE!"
+              "handleModelAction reloading current configuration from local PersistenceStore DONE!", result
             );
+            return Promise.resolve(result);
           } else {
             // if the domain controller is deployed on the client, we send the "remoteLocalCacheRollback" action to the server
             await this.callUtil.callPersistenceAction(
@@ -1015,11 +1112,12 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "rollback": {
-          await this.loadConfigurationFromPersistenceStore(
+          const result = await this.loadConfigurationFromPersistenceStore(
             modelAction.payload.application,
             deploymentUuid,
             applicationDeploymentMap
           );
+          return Promise.resolve(result);
           break;
         }
         case "alterEntityAttribute":

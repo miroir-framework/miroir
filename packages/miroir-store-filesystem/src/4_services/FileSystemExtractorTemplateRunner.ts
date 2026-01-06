@@ -71,6 +71,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleQueryTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedQueryTemplateAction,
+      runBoxedQueryTemplateAction.payload.query.applicationDeploymentMap,
       this.selectorMap,
       defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
     );
@@ -89,6 +90,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleBoxedExtractorTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedExtractorTemplateAction,
+      runBoxedExtractorTemplateAction.payload.query.applicationDeploymentMap,
       this.selectorMap,
       defaultMiroirModelEnvironment // TODO: use actual current deployment environment
     );
@@ -107,6 +109,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleBoxedExtractorTemplateOrQueryTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+      runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query.applicationDeploymentMap,
       this.selectorMap,
       defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
     );

@@ -135,8 +135,10 @@ export async function restMethodGetHandler
       ["section", "parentUuid"],
       [],
       async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
-        const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(targetPersistenceStoreController); // TODO: is this bind useful? why not call targetPersistenceStoreController.getInstances(...) directly?
-        const results: Action2ReturnType = await getInstancesFunction(section, parentUuid)
+        const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(
+          targetPersistenceStoreController
+        ); // TODO: is this bind useful? why not call targetPersistenceStoreController.getInstances(...) directly?
+        const results: Action2ReturnType = await getInstancesFunction(section, parentUuid);
         if (results instanceof Action2Error) {
           throw new Error(
             "restMethodGetHandler could not get instances for parentUuid: " +
@@ -153,9 +155,12 @@ export async function restMethodGetHandler
               results
           );
         }
-        
+
         // TODO: assumption that the returnedDomainElement is an EntityInstanceCollection is wrong!
-        if (typeof results.returnedDomainElement !== "object" || Array.isArray(results.returnedDomainElement)) {
+        if (
+          typeof results.returnedDomainElement !== "object" ||
+          Array.isArray(results.returnedDomainElement)
+        ) {
           throw new Error(
             "restMethodGetHandler wrong returnType for instances of parentUuid: " +
               parentUuid +
