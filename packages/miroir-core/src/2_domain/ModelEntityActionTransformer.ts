@@ -109,11 +109,27 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
+        // log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
+  
+        log.info(
+          "modelActionToInstanceAction available Entities",
+          JSON.stringify(
+            currentModel.entities.map((e) => e.name),
+            null,
+            2
+          ),
+          "currentEntityDefinition available EntityDefinitions",
+          JSON.stringify(
+            currentModel.entityDefinitions.map((e) => e.name),
+            null,
+            2
+          )
+        );
         log.info("modelActionToInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
+  
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.payload.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.payload.targetValue});
         if (currentEntity && currentEntityDefinition) {

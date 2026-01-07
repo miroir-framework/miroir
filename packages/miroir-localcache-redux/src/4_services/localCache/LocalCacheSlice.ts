@@ -602,7 +602,7 @@ function handleModelAction(
       const localInstanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
         deploymentUuid,
         action,
-        currentModel(action.application, applicationDeploymentMap, deploymentUuid, state)
+        currentModel(action.payload.application, applicationDeploymentMap, deploymentUuid, state)
       );
       log.info(
         "localCacheSliceObject handleModelAction generated instanceActions",

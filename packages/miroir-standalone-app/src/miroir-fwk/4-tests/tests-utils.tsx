@@ -45,6 +45,7 @@ import {
   defaultMiroirModelEnvironment,
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
+  selfApplicationLibrary,
   type ApplicationDeploymentMap,
   type MiroirActivityTrackerInterface
 } from "miroir-core";
@@ -278,7 +279,11 @@ export async function addEntitiesAndInstancesForRealServer(
       await domainController.handleAction(
         createAction,
         applicationDeploymentMap,
-        localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
+        localCache.currentModelEnvironment(
+          selfApplicationLibrary.uuid,
+          applicationDeploymentMap,
+          adminConfigurationDeploymentLibrary.uuid
+        )
       );
       await domainController.handleAction(
         {
@@ -291,14 +296,22 @@ export async function addEntitiesAndInstancesForRealServer(
           },
         },
         applicationDeploymentMap,
-        localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
+        localCache.currentModelEnvironment(
+          selfApplicationLibrary.uuid,
+          applicationDeploymentMap,
+          adminConfigurationDeploymentLibrary.uuid
+        )
       );
     });
   } else {
     await domainController.handleAction(
       createAction,
       applicationDeploymentMap,
-      localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
+      localCache.currentModelEnvironment(
+        selfApplicationLibrary.uuid,
+        applicationDeploymentMap,
+        adminConfigurationDeploymentLibrary.uuid
+      )
     );
     await domainController.handleAction(
       {
@@ -311,7 +324,11 @@ export async function addEntitiesAndInstancesForRealServer(
         },
       },
       applicationDeploymentMap,
-      localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
+      localCache.currentModelEnvironment(
+        selfApplicationLibrary.uuid,
+        applicationDeploymentMap,
+        adminConfigurationDeploymentLibrary.uuid
+      )
     );
   }
 
@@ -340,14 +357,22 @@ export async function addEntitiesAndInstancesForRealServer(
       await domainController.handleAction(
         createInstancesAction,
         applicationDeploymentMap,
-        localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
+        localCache.currentModelEnvironment(
+          selfApplicationLibrary.uuid,
+          applicationDeploymentMap,
+          adminConfigurationDeploymentLibrary.uuid
+        )
       );
     });
   } else {
     await domainController.handleAction(
       createInstancesAction,
       applicationDeploymentMap,
-      localCache.currentModelEnvironment(adminConfigurationDeploymentLibrary.uuid)
+      localCache.currentModelEnvironment(
+        selfApplicationLibrary.uuid,
+        applicationDeploymentMap,
+        adminConfigurationDeploymentLibrary.uuid
+      )
     );
   }
 }
@@ -613,7 +638,11 @@ export async function resetApplicationDeployments(
       },
       applicationDeploymentMap,
       localCache
-        ? localCache.currentModelEnvironment(d.adminConfigurationDeployment.uuid)
+        ? localCache.currentModelEnvironment(
+            d.selfApplicationDeployment.selfApplication,
+            applicationDeploymentMap,
+            d.adminConfigurationDeployment.uuid
+          )
         : defaultMiroirModelEnvironment
     );
   }
@@ -708,13 +737,18 @@ export async function runTestOrTestSuite(
           fullTestName,
           fullTestName,
           undefined, // parentTrackId
-          async() => await domainController.handleTestCompositeActionSuite(
-            testAction.testCompositeAction as any, // TODO: remove cast
-            applicationDeploymentMap,
-            domainController.currentModelEnvironment(testAction.deploymentUuid),
-            newParams,
-          )
-        ) 
+          async () =>
+            await domainController.handleTestCompositeActionSuite(
+              testAction.testCompositeAction as any, // TODO: remove cast
+              applicationDeploymentMap,
+              domainController.currentModelEnvironment(
+                testAction.application,
+                applicationDeploymentMap,
+                testAction.deploymentUuid
+              ),
+              newParams
+            )
+        ); 
         // const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
         //   testAction.testCompositeAction as any, // TODO: remove cast
         //   newParams,
@@ -747,7 +781,11 @@ export async function runTestOrTestSuite(
             await domainController.handleTestCompositeAction(
               testAction.testCompositeAction as any, // TODO: remove cast
               applicationDeploymentMap,
-              domainController.currentModelEnvironment(testAction.deploymentUuid),
+              domainController.currentModelEnvironment(
+                testAction.application,
+                applicationDeploymentMap,
+                testAction.deploymentUuid
+              ),
               {},
             )
         );
@@ -774,7 +812,11 @@ export async function runTestOrTestSuite(
           async() => await domainController.handleTestCompositeActionTemplateSuite(
             testAction.testCompositeActionSuite,
             applicationDeploymentMap,
-            domainController.currentModelEnvironment(testAction.deploymentUuid),
+            domainController.currentModelEnvironment(
+              testAction.application,
+              applicationDeploymentMap,
+              testAction.deploymentUuid
+            ),
             testActionParamValues??{},
           )
         )

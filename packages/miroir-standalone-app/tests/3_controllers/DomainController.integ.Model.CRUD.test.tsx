@@ -218,11 +218,9 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await deleteAndCloseApplicationDeployments(miroirConfig, domainController, defaultSelfApplicationDeploymentMap, adminApplicationDeploymentConfigurations);
-  // displayTestSuiteResults(expect,Object.keys(testActions)[0]);
+  // await deleteAndCloseApplicationDeployments(miroirConfig, domainController, defaultSelfApplicationDeploymentMap, adminApplicationDeploymentConfigurations);
   displayTestSuiteResultsDetails(
     Object.keys(testActions)[0],
-    // [{ testSuite: Object.keys(testActions)[0] }],
     [],
     miroirActivityTracker
   );
@@ -1009,7 +1007,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
               definition: [
                 {
                   actionType: "rollback",
-                  // actionType: "modelAction",
                   actionLabel: "refreshMiroirLocalCache",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -1020,7 +1017,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "rollback",
-                  // actionType: "modelAction",
                   actionLabel: "refreshLibraryLocalCache",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -1030,9 +1026,8 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  // actionType: "modelAction",
                   actionType: "renameEntity",
-                  actionLabel: "dropEntityPublisher",
+                  actionLabel: "renameEntityPublisher",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
@@ -1046,7 +1041,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "commit",
-                  // actionType: "modelAction",
                   actionLabel: "commitLibraryLocalCache",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
