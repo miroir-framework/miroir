@@ -28,7 +28,7 @@ import {
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
-  SyncQueryRunnerParams
+  SyncQueryRunnerExtractorAndParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -62,7 +62,7 @@ const emptyDomainObject: Record<string, any> = { };
 export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorCombinerTransformer = {
   queryType: "boxedQueryWithExtractorCombinerTransformer",
   application: "",
-  applicationDeploymentMap: {},
+  // applicationDeploymentMap: {},
   deploymentUuid: "",
   pageParams: {},
   queryParams: {},
@@ -73,7 +73,7 @@ export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorComb
 export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateWithExtractorCombinerTransformer = {
   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   application: "",
-  applicationDeploymentMap: {},
+  // applicationDeploymentMap: {},
   deploymentUuid: "",
   pageParams: {},
   queryParams: {},
@@ -84,7 +84,7 @@ export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateW
 export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplateGetParamJzodSchema = {
   queryType: "queryByTemplateGetParamJzodSchema",
   application: "",
-  applicationDeploymentMap: {},
+  // applicationDeploymentMap: {},
   deploymentUuid: "",
   pageParams: {
     applicationSection: "data" ,
@@ -96,7 +96,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
   fetchParams: {
     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
     application: "",
-    applicationDeploymentMap: {},
+    // applicationDeploymentMap: {},
     deploymentUuid: "",
     pageParams: {},
     queryParams: {},
@@ -113,6 +113,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
   Domain2QueryReturnType<EntityInstancesUuidIndex>
 > = (
   domainState: DomainState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -185,11 +186,13 @@ export const selectEntityInstanceListFromDomainState: SyncBoxedExtractorRunner<
   Domain2QueryReturnType<EntityInstance[]>
 > = (
   domainState: DomainState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance[]> => {
   const result = selectEntityInstanceUuidIndexFromDomainState(
     domainState,
+    applicationDeploymentMap,
     selectorParams,
     modelEnvironment
   );
@@ -303,12 +306,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
   Domain2QueryReturnType<EntityInstance>
 > = (
   domainState: DomainState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance> => {
   const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
-  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
-  const deploymentUuid = selectorParams.applicationDeploymentMap[selectorParams.extractor.application];
+  const deploymentUuid = selectorParams.extractor.deploymentUuid??applicationDeploymentMap[selectorParams.extractor.application];
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
     ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
@@ -658,7 +661,6 @@ export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryRunnerMapForJ
 // export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
 export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList>(
   query: ExtractorType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
 ) => SyncBoxedExtractorRunnerParams<ExtractorType, DomainState>;
 
@@ -666,33 +668,28 @@ export const getExtractorRunnerParamsForDomainState: GetExtractorRunnerParamsFor
   ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList
 >(
   query: ExtractorType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>,
 ): SyncBoxedExtractorRunnerParams<ExtractorType, DomainState> => {
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDomainStateExtractorRunnerMap(),
-    applicationDeploymentMap
   };
 };
 // ################################################################################################
 // export type GetExtractorRunnerParamsForDomainState = <ExtractorType extends MiroirQuery>(
 export type GetQueryRunnerParamsForDomainState = <ExtractorType extends BoxedQueryWithExtractorCombinerTransformer>(
   query: ExtractorType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
-) => SyncQueryRunnerParams<DomainState>;
+) => SyncQueryRunnerExtractorAndParams<DomainState>;
 
 export const getQueryRunnerParamsForDomainState: GetQueryRunnerParamsForDomainState = <
   ExtractorType extends BoxedQueryWithExtractorCombinerTransformer
 >(
   query: ExtractorType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
-): SyncQueryRunnerParams<DomainState> => {
+): SyncQueryRunnerExtractorAndParams<DomainState> => {
   return {
     extractor: query,
     extractorRunnerMap: extractorRunnerMap ?? getDomainStateExtractorRunnerMap(),
-    applicationDeploymentMap,
   };
 };

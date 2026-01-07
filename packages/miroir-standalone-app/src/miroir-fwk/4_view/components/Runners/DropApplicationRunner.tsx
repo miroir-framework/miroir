@@ -106,7 +106,6 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: adminSelfApplication.uuid,
-                  applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                   pageParams: {},
                   queryParams: {},

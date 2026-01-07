@@ -1,5 +1,6 @@
 import {
   ApplicationSection,
+  defaultSelfApplicationDeploymentMap,
   EntityInstancesUuidIndex,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -22,6 +23,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface EntityInstanceLinkProps {
   label?: string;
   visual?: "button" | "href";
+  application: Uuid,
   deploymentUuid?: Uuid,
   applicationSection: ApplicationSection,
   entityUuid: Uuid,
@@ -41,11 +43,13 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
     {
       queryType: "localCacheEntityInstancesExtractor",
       definition: {
+        application: props.application,
         deploymentUuid: props.deploymentUuid,
         applicationSection: props.applicationSection as ApplicationSection,
         entityUuid: props.entityUuid,
       }
-    }
+    },
+    defaultSelfApplicationDeploymentMap
   );
 
   const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;

@@ -130,7 +130,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   const reportDataQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults(props, reportDataQueryBase);
+  > = useQueryTemplateResults(props, props.applicationDeploymentMap, reportDataQueryBase);
 
   if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
     throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));

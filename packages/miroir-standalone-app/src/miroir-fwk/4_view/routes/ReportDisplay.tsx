@@ -64,7 +64,7 @@ export const ReportDisplay: React.FC<{
   // Use application from pageParams if available, otherwise fall back to context
   const application = pageParams.application ?? context.application;
 
-  const currentApplicationDeploymentMap = defaultSelfApplicationDeploymentMap;
+  const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
   const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
@@ -145,6 +145,7 @@ export const ReportDisplay: React.FC<{
       pageParams: pageParams,
       reportDefinition: currentMiroirReport,
     },
+    currentApplicationDeploymentMap,
     currentStoredQuery
   );
 

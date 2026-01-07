@@ -69,12 +69,13 @@ const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
   selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
   const result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> = (
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap
   )
-    .extractEntityInstanceUuidIndex(selectorParams, modelEnvironment)
+    .extractEntityInstanceUuidIndex(selectorParams, applicationDeploymentMap, modelEnvironment)
     .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex>) => {
       log.info(
         "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
@@ -100,12 +101,13 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
   selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
   const result: Promise<Domain2QueryReturnType<EntityInstance[]>> = (
     selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap
   )
-    .extractEntityInstanceList(selectorParams, modelEnvironment)
+    .extractEntityInstanceList(selectorParams, applicationDeploymentMap, modelEnvironment)
     .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]>) => {
       log.info(
         "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
@@ -178,11 +180,10 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       const result = await extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         {
           extractorRunnerMap,
-          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObjectList",
             application,
-            applicationDeploymentMap,
+            // applicationDeploymentMap,
             deploymentUuid,
             contextResults: newFetchedData,
             pageParams: pageParams,
@@ -195,6 +196,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
                 },
           },
         },
+        applicationDeploymentMap,
         // queryParams, //
         modelEnvironment
       );
@@ -215,38 +217,13 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
         JSON.stringify(extractorOrCombiner, null, 2)
       );
       log.info("asyncInnerSelectElementFromQuery", JSON.stringify(extractorOrCombiner, null, 2));
-      // const result = await extractorRunnerMap.runQuery(
-      //   // extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
-      //   // extractor: BoxedQueryWithExtractorCombinerTransformer,
-      //   {
-      //     extractorRunnerMap,
-      //     extractor: {
-      //       // queryType: "boxedExtractorOrCombinerReturningObject",
-      //       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      //       deploymentUuid: deploymentUuid,
-      //       contextResults: newFetchedData,
-      //       pageParams,
-      //       queryParams,
-      //       extractors: {
-      //         select: extractorOrCombiner.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
-      //           ? extractorOrCombiner
-      //           : {
-      //               ...extractorOrCombiner,
-      //               applicationSection: pageParams?.applicationSection as ApplicationSection,
-      //             },
-      //       },
-      //     },
-      //   },
-      //   modelEnvironment
-      // );
       const result = await extractorRunnerMap.extractEntityInstance(
         {
           extractorRunnerMap,
-          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObject",
             application,
-            applicationDeploymentMap,
+            // applicationDeploymentMap,
             deploymentUuid,
             contextResults: newFetchedData,
             pageParams,
@@ -259,7 +236,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
                 },
           },
         },
-        modelEnvironment,
+        applicationDeploymentMap,
+        modelEnvironment
       ); 
       log.info(
         "############ asyncInnerSelectElementFromQuery",
@@ -439,6 +417,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
   selectorParams: AsyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList
   >,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<DomainElementSuccess>> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
@@ -451,7 +430,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
     selectorParams.extractor.queryParams,
     localSelectorMap as any,
     selectorParams.extractor.application,
-    selectorParams.applicationDeploymentMap,
+    applicationDeploymentMap,
     selectorParams.extractor.deploymentUuid,
     {},
     selectorParams.extractor.select
@@ -485,6 +464,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
 
 export const asyncRunQuery = async (
   selectorParams: AsyncQueryRunnerParams,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<any>> => {
 
@@ -511,7 +491,7 @@ export const asyncRunQuery = async (
       },
       localSelectorMap as any,
       selectorParams.extractor.application,
-      selectorParams.applicationDeploymentMap,
+      applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       selectorParams.extractor.extractors ?? {} as any,
       extractor
@@ -541,7 +521,7 @@ export const asyncRunQuery = async (
       },
       localSelectorMap as any,
       selectorParams.extractor.application,
-      selectorParams.applicationDeploymentMap,
+      applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       selectorParams.extractor.extractors ?? ({} as any),
       combiner

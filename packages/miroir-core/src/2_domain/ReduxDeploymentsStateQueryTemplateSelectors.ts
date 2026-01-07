@@ -92,12 +92,10 @@ export type GetExtractorTemplateRunnerParamsForReduxDeploymentsState = <QueryTyp
 
 export function getExtractorTemplateRunnerParamsForReduxDeploymentsState<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ): SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState> {
   return {
     extractorOrCombinerTemplate: query,
-    applicationDeploymentMap,
     extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorTemplateMap(),
   };
 }
@@ -111,12 +109,10 @@ export type GetQueryTemplateRunnerParamsForReduxDeploymentsState = (
 
 export function getQueryTemplateRunnerParamsForReduxDeploymentsState(
   query: BoxedQueryTemplateWithExtractorCombinerTransformer,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ): SyncQueryTemplateRunnerParams<ReduxDeploymentsState> {
   return {
     extractorOrCombinerTemplate: query,
-    applicationDeploymentMap,
     extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorTemplateMap(),
   };
 }

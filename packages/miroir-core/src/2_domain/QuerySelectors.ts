@@ -41,7 +41,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
-  SyncQueryRunnerParams
+  SyncQueryRunnerExtractorAndParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -581,6 +581,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<
   BoxedExtractorOrCombinerReturningObjectList, 
     StateType
@@ -589,7 +590,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex> = (
     selectorParams?.extractorRunnerMap ?? emptySelectorMap
-  ).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams, modelEnvironment);
+  ).extractEntityInstanceUuidIndex(deploymentEntityState, applicationDeploymentMap, selectorParams, modelEnvironment);
 
   // log.info(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory found selectedInstances", selectedInstancesUuidIndex
@@ -611,12 +612,18 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance[]> => {
   const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]> = (
     selectorParams?.extractorRunnerMap ?? emptySelectorMap
-  ).extractEntityInstanceList(deploymentEntityState, selectorParams, modelEnvironment);
+  ).extractEntityInstanceList(
+    deploymentEntityState,
+    applicationDeploymentMap,
+    selectorParams,
+    modelEnvironment
+  );
 
   // log.trace(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
@@ -674,8 +681,8 @@ export async function handleBoxedExtractorAction(
     {
       extractorRunnerMap: selectorMap,
       extractor,
-      applicationDeploymentMap,
     },
+    applicationDeploymentMap,
     modelEnvironment,
   );
   if (queryResult instanceof Domain2ElementFailed) {
@@ -712,8 +719,8 @@ export async function handleBoxedQueryAction(
     {
       extractor: runBoxedQueryAction.payload.query,
       extractorRunnerMap: selectorMap,
-      applicationDeploymentMap,
     },
+    applicationDeploymentMap,
     modelEnvironment,
   );
   if (queryResult instanceof Domain2ElementFailed) {
@@ -763,13 +770,12 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
     case "combinerByManyToManyRelationReturningObjectList": {
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         state,
+        applicationDeploymentMap,
         {
           extractorRunnerMap,
-          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObjectList",
             application,
-            applicationDeploymentMap,
             deploymentUuid: deploymentUuid,
             contextResults: context,
             pageParams: pageParams,
@@ -790,13 +796,13 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
     case "extractorForObjectByDirectReference": {
       return extractorRunnerMap.extractEntityInstance(
         state,
+        applicationDeploymentMap,
         {
           extractorRunnerMap,
-          applicationDeploymentMap,
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObject",
             application,
-            applicationDeploymentMap,
+            // applicationDeploymentMap,
             deploymentUuid,
             contextResults: context,
             pageParams,
@@ -1010,6 +1016,7 @@ export type ExtractWithExtractorType<StateType> = SyncBoxedExtractorRunner<
 >;
 export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList,
     StateType
@@ -1027,7 +1034,7 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
     selectorParams.extractor.queryParams,
     localSelectorMap as any,
     selectorParams.extractor.application,
-    selectorParams.applicationDeploymentMap,
+    applicationDeploymentMap,
     selectorParams.extractor.deploymentUuid,
     selectorParams.extractor.select
   );
@@ -1055,7 +1062,8 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
  */
 export const runQuery = <StateType>(
   state: StateType,
-  selectorParams: SyncQueryRunnerParams<StateType>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  selectorParams: SyncQueryRunnerExtractorAndParams<StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<Record<string,any>> => { 
 
@@ -1082,7 +1090,7 @@ export const runQuery = <StateType>(
       },
       localSelectorMap as any,
       selectorParams.extractor.application,
-      selectorParams.applicationDeploymentMap,
+      applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       extractor[1]
     );
@@ -1136,7 +1144,7 @@ export const runQuery = <StateType>(
       },
       localSelectorMap as any,
       selectorParams.extractor.application,
-      selectorParams.applicationDeploymentMap,
+      applicationDeploymentMap,
       selectorParams.extractor.deploymentUuid,
       combiner[1]
     );

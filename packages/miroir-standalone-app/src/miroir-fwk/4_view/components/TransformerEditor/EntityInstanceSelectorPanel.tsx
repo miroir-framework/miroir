@@ -17,6 +17,7 @@ import {
   getEntityInstancesUuidIndexNonHook,
   miroirFundamentalJzodSchema,
   selfApplicationMiroir,
+  type ApplicationDeploymentMap,
   type Entity,
   type EntityDefinition,
   type JzodElement,
@@ -76,6 +77,7 @@ function createGenericObjectSchema(): JzodElement {
 // ################################################################################################
 // ################################################################################################
 export function EntityInstanceSelectorPanel(props:{
+  applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   initialEntityUuid: Uuid;
   showAllInstances: boolean;
@@ -225,6 +227,7 @@ export function EntityInstanceSelectorPanel(props:{
       (state: ReduxStateWithUndoRedo) =>
         deploymentEntityStateSelectorMap.extractState(
           state.presentModelSnapshot.current,
+          props.applicationDeploymentMap,
           () => ({}),
           currentMiroirModelEnvironment
         ),

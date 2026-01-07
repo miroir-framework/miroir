@@ -50,7 +50,7 @@ import {
   ViewParamsData,
   type ApplicationDeploymentMap,
   type Deployment,
-  type SyncQueryRunnerParams
+  type SyncQueryRunnerExtractorAndParams
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -188,14 +188,14 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const fetchAdminDeploymentsQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
+  const fetchAdminDeploymentsQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> = useMemo(
     () =>
       getQueryRunnerParamsForReduxDeploymentsState(
         adminAppModel? 
         {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: adminSelfApplication.uuid,
-              applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               pageParams: {},
               queryParams: {},
@@ -209,19 +209,17 @@ export const RootComponent = (props: RootComponentProps) => {
                 },
               },
             }
-          : dummyDomainManyQueryWithDeploymentUuid
-          ,
-          defaultSelfApplicationDeploymentMap,
-        deploymentEntityStateSelectorMap
+          : dummyDomainManyQueryWithDeploymentUuid,
       ),
-    [deploymentEntityStateSelectorMap, adminAppModel]
+    [adminAppModel]
   );
 
   // log.info("SidebarSection fetchAdminDeploymentsQueryParams",fetchAdminDeploymentsQueryParams)
   const adminDeploymentsQueryResult: 
     Domain2QueryReturnType<{deployments:Deployment[]}> = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
-    fetchAdminDeploymentsQueryParams
+    fetchAdminDeploymentsQueryParams,
+    defaultSelfApplicationDeploymentMap
   );
 
   
@@ -540,8 +538,8 @@ export const RootComponent = (props: RootComponentProps) => {
     () =>
       currentModel?.entities?.length > 0
         ? defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
-        : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid, defaultSelfApplicationDeploymentMap),
-    [currentModel?.entities?.length, deploymentEntityStateSelectorMap]
+        : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid),
+    [currentModel?.entities?.length]
   );
 
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
@@ -552,7 +550,8 @@ export const RootComponent = (props: RootComponentProps) => {
       ReduxDeploymentsState,
       Domain2QueryReturnType<DomainElementSuccess>
     >,
-    stableQueryParams
+    stableQueryParams,
+    applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
   );
 
   // Optimize ViewParams state management to reduce re-renders

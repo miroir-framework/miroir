@@ -23,7 +23,7 @@ import {
   ReduxDeploymentsState,
   resolveQueryTemplateWithExtractorCombinerTransformer,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
   Uuid,
   type ApplicationDeploymentMap,
   type Report,
@@ -65,8 +65,8 @@ export interface ReportViewProps {
 
 // ###############################################################################################################
 export function useQueryTemplateResults(
-  // props: ReportViewProps,
   props: Record<string, any>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   queryOrQueryTemplate?:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
@@ -122,7 +122,6 @@ export function useQueryTemplateResults(
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: "",
-            applicationDeploymentMap: {},
             deploymentUuid: "",
             pageParams: props.pageParams,
             queryParams: {},
@@ -133,12 +132,11 @@ export function useQueryTemplateResults(
   );
 
   // log.info("useQueryTemplateResults reportDataQuery", reportDataQuery);
-  const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
+  const deploymentEntityStateFetchQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
     useMemo(
       () =>
         getQueryRunnerParamsForReduxDeploymentsState(
           reportDataQuery,
-          queryOrQueryTemplate?.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
           deploymentEntityStateSelectorMap
         ),
       [deploymentEntityStateSelectorMap, reportDataQuery]
@@ -153,7 +151,8 @@ export function useQueryTemplateResults(
   const reportData: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> =
     useReduxDeploymentsStateQuerySelector(
       deploymentEntityStateSelectorMap.runQuery,
-      deploymentEntityStateFetchQueryParams
+      deploymentEntityStateFetchQueryParams,
+      applicationDeploymentMap
     );
   // log.info("useQueryTemplateResults reportData", reportData);
   return {reportData, resolvedQuery: reportDataQuery};
@@ -196,7 +195,6 @@ export function useDeploymentUuidFromApplicationUuid2(
       : {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: "",
-          applicationDeploymentMap: {},
           deploymentUuid: "",
           pageParams: {},
           queryParams: {},
@@ -206,7 +204,7 @@ export function useDeploymentUuidFromApplicationUuid2(
 
   const deploymentUuidQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults({} as any, deploymentUuidQuery);
+  > = useQueryTemplateResults({} as any, applicationDeploymentMap, deploymentUuidQuery);
 
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
@@ -241,7 +239,6 @@ export function useDeploymentUuidFromApplicationUuid(
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             application: adminSelfApplication.uuid,
-            applicationDeploymentMap,
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -262,7 +259,6 @@ export function useDeploymentUuidFromApplicationUuid(
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: "",
-            applicationDeploymentMap: {},
             deploymentUuid: "",
             pageParams: {},
             queryParams: {},
@@ -274,7 +270,7 @@ export function useDeploymentUuidFromApplicationUuid(
 
   const deploymentUuidQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults({} as any, deploymentUuidQuery);
+  > = useQueryTemplateResults({} as any, applicationDeploymentMap,deploymentUuidQuery);
 
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
@@ -356,7 +352,7 @@ export function useTransformer(
 
   const transformerQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults({} as any, transformerQuery);
+  > = useQueryTemplateResults({} as any, applicationDeploymentMap, transformerQuery);
 
   if (transformerQueryResults instanceof Domain2ElementFailed) {
     return transformerQueryResults;
@@ -426,7 +422,7 @@ export function useRunner(
 
   const runnerQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useQueryTemplateResults({} as any, runnerQuery);
+  > = useQueryTemplateResults({} as any, applicationDeploymentMap, runnerQuery);
 
   if (runnerQueryResults instanceof Domain2ElementFailed) {
     return runnerQueryResults;

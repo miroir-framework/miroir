@@ -72,7 +72,6 @@ export function getCreateEntityActionTemplate(
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: adminSelfApplication.uuid,
-                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                 deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 pageParams: {},
                 queryParams: {},

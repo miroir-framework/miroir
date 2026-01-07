@@ -35,6 +35,7 @@ import {
   selfApplicationLibrary,
   selfApplicationMiroir,
   transformerTest_resolveConditionalSchema,
+  type BoxedExtractorOrCombinerReturningObject,
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap,
@@ -153,7 +154,7 @@ export const TransformerBuilderPage: React.FC<any> = (
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObject",
               application: selfApplicationMiroir.uuid,
-              applicationDeploymentMap: currentApplicationDeploymentMap,
+              // applicationDeploymentMap: currentApplicationDeploymentMap,
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               contextResults: {},
               pageParams: {},
@@ -165,7 +166,7 @@ export const TransformerBuilderPage: React.FC<any> = (
                 instanceUuid: transformerTest_resolveConditionalSchema.uuid,
               },
             },
-          },
+          } as BoxedExtractorOrCombinerReturningObject,
           defaultMetaModelEnvironment
         ))
         // ) as Domain2QueryReturnType<TransformerTestSuite>)

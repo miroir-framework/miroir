@@ -566,6 +566,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
+        applicationDeploymentMap,
         () => ({}),
         currentMiroirFundamentalJzodSchema?{
           miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,

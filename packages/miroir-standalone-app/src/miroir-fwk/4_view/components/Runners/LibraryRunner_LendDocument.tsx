@@ -61,6 +61,7 @@ export const LibraryRunner_LendDocument: React.FC<LibraryRunner_LendDocumentProp
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
+        defaultSelfApplicationDeploymentMap,
         () => ({}),
         libraryAppModelEnvironment,
       )

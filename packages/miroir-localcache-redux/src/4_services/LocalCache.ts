@@ -237,9 +237,9 @@ export class LocalCache implements LocalCacheInterface {
       case "boxedExtractorOrCombinerReturningObjectList": {
         queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
           domainState,
+          applicationDeploymentMap,
           getExtractorRunnerParamsForDomainState(
             action.payload.query,
-            applicationDeploymentMap,
             extractorRunnerMapOnDomainState
           ),
           defaultMetaModelEnvironment
@@ -249,9 +249,9 @@ export class LocalCache implements LocalCacheInterface {
       case "boxedQueryWithExtractorCombinerTransformer": {
         queryResult = extractorRunnerMapOnDomainState.runQuery(
           domainState,
+          applicationDeploymentMap,
           getQueryRunnerParamsForDomainState(
             action.payload.query,
-            applicationDeploymentMap,
             extractorRunnerMapOnDomainState
           ),
           defaultMetaModelEnvironment

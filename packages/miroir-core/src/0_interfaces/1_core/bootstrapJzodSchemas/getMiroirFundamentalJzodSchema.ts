@@ -1756,12 +1756,12 @@ export function getMiroirFundamentalJzodSchema(
                   type: "uuid",
                   tag: { value: { defaultLabel: "Uuid", editable: false } },
                 },
-                applicationDeploymentMap: {
-                  type: "record",
-                  definition: {
-                    type: "uuid",
-                  }
-                },
+                // applicationDeploymentMap: {
+                //   type: "record",
+                //   definition: {
+                //     type: "uuid",
+                //   }
+                // },
                 deploymentUuid: {
                   type: "uuid",
                   optional: true,
@@ -1803,12 +1803,12 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
-            applicationDeploymentMap: {
-              type: "record",
-              definition: {
-                type: "uuid",
-              }
-            },
+            // applicationDeploymentMap: {
+            //   type: "record",
+            //   definition: {
+            //     type: "uuid",
+            //   }
+            // },
             deploymentUuid: {
               // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
               type: "uuid",

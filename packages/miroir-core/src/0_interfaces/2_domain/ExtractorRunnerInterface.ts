@@ -66,7 +66,7 @@ export interface SyncBoxedExtractorTemplateRunnerParams<
 > {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>;
   extractorOrCombinerTemplate: ExtractorTemplate;
-  applicationDeploymentMap: ApplicationDeploymentMap; 
+  // applicationDeploymentMap: ApplicationDeploymentMap; 
 }
 
 export type SyncBoxedExtractorTemplateRunner<
@@ -75,6 +75,7 @@ export type SyncBoxedExtractorTemplateRunner<
   ResultType
 > = (
   state: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorAndParams: SyncBoxedExtractorTemplateRunnerParams<QueryType, StateType>,
   modelEnvironment: MiroirModelEnvironment
 ) => ResultType;
@@ -85,7 +86,6 @@ export interface AsyncBoxedExtractorTemplateRunnerParams<
 > {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap;
   extractorOrCombinerTemplate: ExtractorTemplateDomainModelType;
-  applicationDeploymentMap: ApplicationDeploymentMap;
 }
 
 
@@ -131,23 +131,24 @@ export interface ExtractorTemplatePersistenceStoreRunner {
 export interface SyncBoxedExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>
   extractor: ExtractorType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
+  // applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 export interface AsyncBoxedExtractorRunnerParams<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList> {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractor: ExtractorType
-  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 export type SyncBoxedExtractorRunner<QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType, ResultType> = (
   domainState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorAndParams: SyncBoxedExtractorRunnerParams<QueryType, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ) => ResultType;
 
 export type AsyncBoxedExtractorRunner<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, ResultType> = (
   extractorAndParams: AsyncBoxedExtractorRunnerParams<ExtractorType>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ) => Promise<ResultType>;
 
@@ -168,16 +169,16 @@ export type SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<S
 // ################################################################################################
 // ################################################################################################
 // QUERY ##########################################################################################
-export interface SyncQueryRunnerParams<StateType> {
+export interface SyncQueryRunnerExtractorAndParams<StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>
   extractor: BoxedQueryWithExtractorCombinerTransformer,
-  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 // ################################################################################################
 export type SyncQueryRunner<StateType, ResultType> = (
   state: StateType,
-  extractorAndParams: SyncQueryRunnerParams<StateType>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  extractorAndParams: SyncQueryRunnerExtractorAndParams<StateType>,
   modelEnvironment: MiroirModelEnvironment
 ) => ResultType;
 
@@ -185,13 +186,12 @@ export type SyncQueryRunner<StateType, ResultType> = (
 export interface AsyncQueryRunnerParams {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractor: BoxedQueryWithExtractorCombinerTransformer,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  // modelEnvironment: MiroirModelEnvironment,
 }
 
 // ################################################################################################
 export type AsyncQueryRunner<ResultType> = (
   extractorAndParams: AsyncQueryRunnerParams,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ) => Promise<ResultType>;
 
@@ -202,12 +202,12 @@ export type AsyncQueryRunner<ResultType> = (
 export interface SyncQueryTemplateRunnerParams<StateType> {
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<StateType>;
   extractorOrCombinerTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer;
-  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 // ################################################################################################
 export type SyncQueryTemplateRunner<StateType, ResultType> = (
   state: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorAndParams: SyncQueryTemplateRunnerParams<StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ) => ResultType;
@@ -216,7 +216,6 @@ export type SyncQueryTemplateRunner<StateType, ResultType> = (
 export interface AsyncQueryTemplateRunnerParams {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
   extractorOrCombinerTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer
-  applicationDeploymentMap: ApplicationDeploymentMap,
 }
 
 // ################################################################################################
@@ -285,7 +284,12 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
 export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
   extractorType: "sync";
   // extractState: (state: StateType, params: any) => StateType;
-  extractState: (state: StateType, params: any, modelEnvironment: MiroirModelEnvironment) => StateType;
+  extractState: (
+    state: StateType,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: any,
+    modelEnvironment: MiroirModelEnvironment
+  ) => StateType;
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<StateType>;
   runQuery: SyncQueryRunner<StateType, Domain2QueryReturnType<any>>;
   extractEntityInstance: SyncBoxedExtractorRunner<

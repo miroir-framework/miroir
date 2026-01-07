@@ -441,6 +441,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
+        props.applicationDeploymentMap,
         () => ({}),
         currentMiroirModelEnvironment
         // {

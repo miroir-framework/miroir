@@ -240,6 +240,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
 // ################################################################################################
 export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRunner */= <StateType>(
   state: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorTemplateRunnerParams<
     BoxedExtractorTemplateReturningObjectOrObjectList,
     StateType
@@ -258,10 +259,9 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
 
   return extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
     state,
+    applicationDeploymentMap,
     {
-      // extractorRunnerMap: {} as any,
       extractorRunnerMap: selectorParams.extractorRunnerMap,
-      applicationDeploymentMap: selectorParams.applicationDeploymentMap,
       extractor: resolvedExtractor,
     },
     modelEnvironment
@@ -278,6 +278,7 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
  */
 export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   state: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncQueryTemplateRunnerParams<StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<Record<string,any>> => { 
@@ -292,10 +293,10 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
 
   return runQuery(
     state,
+    applicationDeploymentMap,
     {
       extractorRunnerMap: selectorParams.extractorRunnerMap,
       extractor: resolvedExtractor,
-      applicationDeploymentMap: selectorParams.applicationDeploymentMap
     },
     modelEnvironment
   )

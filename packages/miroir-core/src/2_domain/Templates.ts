@@ -365,7 +365,6 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     pageParams: queryTemplate.pageParams,
     queryParams: queryTemplate.queryParams,
     contextResults: queryTemplate.contextResults,
-    applicationDeploymentMap: queryTemplate.applicationDeploymentMap,
     application: queryTemplate.application,
     deploymentUuid: queryTemplate.deploymentUuid,
     extractors: queries as ExtractorOrCombinerRecord,
@@ -426,7 +425,7 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
     pageParams: boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
     queryParams: boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
     contextResults: boxedExtractorTemplateReturningObjectOrObjectList.contextResults,
-    applicationDeploymentMap: boxedExtractorTemplateReturningObjectOrObjectList.applicationDeploymentMap,
+    // applicationDeploymentMap: boxedExtractorTemplateReturningObjectOrObjectList.applicationDeploymentMap,
     application: boxedExtractorTemplateReturningObjectOrObjectList.application,
     deploymentUuid: boxedExtractorTemplateReturningObjectOrObjectList.deploymentUuid,
     queryType:

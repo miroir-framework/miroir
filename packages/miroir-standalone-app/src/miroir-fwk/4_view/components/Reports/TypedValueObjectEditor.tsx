@@ -29,7 +29,7 @@ import {
   setValueAtPath,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
   Uuid,
   type ApplicationDeploymentMap,
   type JzodObject,
@@ -394,7 +394,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     }
   }
 
-  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
+  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> = useMemo(
     () =>
       getQueryRunnerParamsForReduxDeploymentsState(
         deploymentUuid &&

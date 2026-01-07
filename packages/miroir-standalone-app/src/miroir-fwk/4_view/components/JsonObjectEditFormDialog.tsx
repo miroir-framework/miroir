@@ -24,6 +24,7 @@ import {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   jzodTypeCheck,
   selfApplicationDeploymentMiroir,
+  type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
   type EntityDefinition,
   type Report
@@ -66,6 +67,8 @@ export interface JsonObjectFormEditorCoreDialogProps {
   entityDefinition: EntityDefinition,
   entityDefinitionJzodSchema: JzodObject,
   defaultFormValuesObject: any,
+  currentApplication: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection,
   currentAppModel: MetaModel,
@@ -215,6 +218,8 @@ interface JsonElementEditorDialogProps {
   count: number;
   formState: any; // TODO: is it still used?
   defaultFormValuesObject: any,
+  currentApplication: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
   entityDefinition: EntityDefinition;
@@ -481,6 +486,8 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
           {currentApplicationSection && currentDeploymentUuid && (
             <ReportSectionViewWithEditor
               applicationSection={currentApplicationSection}
+              application={props.currentApplication}
+              applicationDeploymentMap={props.applicationDeploymentMap}
               deploymentUuid={currentDeploymentUuid}
               editMode={true}
               paramsAsdomainElements={{}}
@@ -744,6 +751,8 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           onCreateFormObject={onCreateFormObject}
           onEditFormObject={onEditFormObject}
           // onSubmit={onSubmit}
+          currentApplication={props.currentApplication}
+          applicationDeploymentMap={props.applicationDeploymentMap}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           entityDefinition={props.entityDefinition}

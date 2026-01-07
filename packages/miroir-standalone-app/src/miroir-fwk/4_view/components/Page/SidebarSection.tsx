@@ -24,7 +24,7 @@ import {
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
   Uuid,
   type ApplicationDeploymentMap,
   type MiroirMenuItem
@@ -85,14 +85,13 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> = useMemo(
     () =>
       getQueryRunnerParamsForReduxDeploymentsState(
         currentModel?.entities?.length > 0? 
         {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: props.applicationUuid,
-              applicationDeploymentMap: props.applicationDeploymentMap,
               deploymentUuid: props.deploymentUuid,
               pageParams: {},
               queryParams: {},
@@ -108,9 +107,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               },
             }
           : dummyDomainManyQueryWithDeploymentUuid
-          ,
-          props.applicationDeploymentMap,
-        deploymentEntityStateSelectorMap
+          , deploymentEntityStateSelectorMap
       ),
     [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]
   );
@@ -120,7 +117,8 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     Domain2QueryReturnType<Record<string, any>>
   > = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
-    fetchDeploymentMenusQueryParams
+    fetchDeploymentMenusQueryParams,
+    props.applicationDeploymentMap,
   );
 
   // log.info("SidebarSection deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)

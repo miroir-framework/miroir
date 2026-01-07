@@ -1,7 +1,7 @@
 import { adminConfigurationDeploymentAdmin, adminSelfApplication, defaultSelfApplicationDeploymentMap } from "..";
 import {
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunnerParams
+  SyncQueryRunnerExtractorAndParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { getQueryRunnerParamsForReduxDeploymentsState } from "../2_domain/ReduxDeploymentsStateQuerySelectors";
@@ -11,7 +11,7 @@ import entityViewParams from "../../src/assets/admin_model/16dbfe28-e1d7-4f20-9b
 
 export const defaultViewParamsFromAdminStorageFetchQueryParams: (
   deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
-) => SyncQueryRunnerParams<ReduxDeploymentsState> =
+) => SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
   // useMemo(
   //   () =>
   (deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>) =>
@@ -19,7 +19,6 @@ export const defaultViewParamsFromAdminStorageFetchQueryParams: (
       // currentModel?
       {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
         application: adminSelfApplication.uuid,
         deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         pageParams: {},
@@ -36,8 +35,7 @@ export const defaultViewParamsFromAdminStorageFetchQueryParams: (
           },
         },
       },
-      defaultSelfApplicationDeploymentMap,
-      // : dummyDomainManyQueryWithDeploymentUuid,
+      // defaultSelfApplicationDeploymentMap,
       deploymentEntityStateSelectorMap
     );
     // [deploymentEntityStateSelectorMap]

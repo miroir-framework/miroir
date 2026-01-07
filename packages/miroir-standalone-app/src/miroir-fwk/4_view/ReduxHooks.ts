@@ -28,7 +28,7 @@ import {
   RecordOfJzodElement,
   ReduxDeploymentsState,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
   Uuid,
@@ -80,14 +80,14 @@ export function useReduxDeploymentsStateQueryTemplateSelector<
 >(
   deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<ReduxDeploymentsState, ResultType>,
   selectorParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState>,
-  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, ReduxDeploymentsState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
     return applyReduxDeploymentsStateQueryTemplateSelector(deploymentEntityStateQuerySelector);
   }, [deploymentEntityStateQuerySelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
+    innerSelector(state, applicationDeploymentMap, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -97,14 +97,15 @@ export function useReduxDeploymentsStateQuerySelector<
   ResultType extends Domain2QueryReturnType<DomainElementSuccess>
 >(
   deploymentEntityStateQuerySelector: SyncQueryRunner<ReduxDeploymentsState, ResultType>,
-  selectorParams: SyncQueryRunnerParams<ReduxDeploymentsState>,
+  selectorParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
     return applyReduxDeploymentsStateQuerySelector(deploymentEntityStateQuerySelector);
   }, [deploymentEntityStateQuerySelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
+    innerSelector(state, applicationDeploymentMap, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -116,6 +117,7 @@ export function useReduxDeploymentsStateQueryTemplateSelectorForCleanedResult(
     Domain2QueryReturnType<DomainElementSuccess>
   >,
   selectorParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   customQueryInterpreter?: {
     [k: string]: (query: MiroirQueryTemplate) => Domain2QueryReturnType<DomainElementSuccess>;
   }
@@ -126,7 +128,7 @@ export function useReduxDeploymentsStateQueryTemplateSelectorForCleanedResult(
     );
   }, [deploymentEntityStateQueryTemplateSelector]);
   const result: any = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
+    innerSelector(state, applicationDeploymentMap, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -137,7 +139,8 @@ export function useReduxDeploymentsStateQuerySelectorForCleanedResult(
     ReduxDeploymentsState,
     Domain2QueryReturnType<DomainElementSuccess>
   >,
-  selectorParams: SyncQueryRunnerParams<ReduxDeploymentsState>,
+  selectorParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   customQueryInterpreter?: {
     [k: string]: (query: MiroirQuery) => Domain2QueryReturnType<DomainElementSuccess>;
   }
@@ -148,7 +151,7 @@ export function useReduxDeploymentsStateQuerySelectorForCleanedResult(
     );
   }, [deploymentEntityStateQuerySelector]);
   const result: any = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
+    innerSelector(state, applicationDeploymentMap, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -162,13 +165,14 @@ export function useReduxDeploymentsStateQuerySelectorForCleanedResult(
 export function useDomainStateQueryTemplateSelector<ResultType>(
   domainStateSelector: SyncQueryTemplateRunner<DomainState, ResultType>,
   selectorParams: SyncQueryTemplateRunnerParams<DomainState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
     return applyDomainStateQueryTemplateSelector(domainStateSelector);
   }, [domainStateSelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
+    innerSelector(state, applicationDeploymentMap, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -181,13 +185,14 @@ export function useDomainStateQueryTemplateSelectorForCleanedResult<ResultType>(
     Domain2QueryReturnType<DomainElementSuccess>
   >,
   selectorParams: SyncQueryTemplateRunnerParams<DomainState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
     return applyDomainStateQuerySelectorForCleanedResult(domainStateSelector);
   }, [domainStateSelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
+    innerSelector(state, applicationDeploymentMap, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -287,14 +292,17 @@ export function useCurrentModel(
   );
 
   return useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, selectorParams)
+    localSelectModelForDeployment(state, applicationDeploymentMap, selectorParams)
   );
 }
 
 
 // ################################################################################################
 // TODO
-export function useCurrentModelEnvironmentNOT_IMPLEMENTED(deploymentUuid: string | undefined): any {
+export function useCurrentModelEnvironmentNOT_IMPLEMENTED(
+  deploymentUuid: string | undefined,
+  applicationDeploymentMap: ApplicationDeploymentMap
+): any {
   const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
   const selectorParams: LocalCacheExtractor = useMemo(
     () =>
@@ -307,7 +315,7 @@ export function useCurrentModelEnvironmentNOT_IMPLEMENTED(deploymentUuid: string
     [deploymentUuid]
   );
   return useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, selectorParams)
+    localSelectModelForDeployment(state, applicationDeploymentMap, selectorParams)
   );
 }
 
@@ -365,12 +373,13 @@ export function useEndpointsOfApplications(
 
 // ################################################################################################
 export function useEntityInstanceUuidIndexFromLocalCache(
-  params: LocalCacheExtractor
+  params: LocalCacheExtractor,
+  applicationDeploymentMap: ApplicationDeploymentMap
 ): EntityInstancesUuidIndex | undefined {
   const selectorParams: LocalCacheExtractor = useMemo(() => ({ ...params }), [params]);
 
   return useSelector((state: ReduxStateWithUndoRedo) =>
-    selectEntityInstanceUuidIndexFromLocalCache(state, selectorParams)
+    selectEntityInstanceUuidIndexFromLocalCache(state, applicationDeploymentMap,selectorParams)
   );
 }
 
@@ -389,11 +398,10 @@ export function useLocalCacheInstancesForJzodAttribute(
 ): EntityInstance[] {
   const entityUuid = selectEntityUuidFromJzodAttribute(jzodSchema);
   const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>
-    selectInstanceArrayForDeploymentSectionEntity(state, {
+    selectInstanceArrayForDeploymentSectionEntity(state, applicationDeploymentMap,{
       queryType: "localCacheEntityInstancesExtractor",
       definition: {
         application,
-        applicationDeploymentMap,
         deploymentUuid,
         applicationSection,
         entityUuid,

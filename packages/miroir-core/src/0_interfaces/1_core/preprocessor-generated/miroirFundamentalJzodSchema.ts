@@ -14383,16 +14383,9 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Uuid",
                     "editable": false
                   }
-                }
-              },
-              "applicationDeploymentMap": {
-                "type": "record",
-                "definition": {
-                  "type": "uuid"
                 }
               },
               "deploymentUuid": {
@@ -14400,7 +14393,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Uuid",
                     "editable": false
                   }
@@ -14451,12 +14443,6 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Application",
                 "editable": false
               }
-            }
-          },
-          "applicationDeploymentMap": {
-            "type": "record",
-            "definition": {
-              "type": "uuid"
             }
           },
           "deploymentUuid": {
@@ -43270,12 +43256,6 @@ export const miroirFundamentalJzodSchema = {
               }
             ]
           },
-          "applicationDeploymentMap": {
-            "type": "record",
-            "definition": {
-              "type": "uuid"
-            }
-          },
           "deploymentUuid": {
             "type": "union",
             "optional": true,
@@ -48521,12 +48501,6 @@ export const miroirFundamentalJzodSchema = {
               }
             ]
           },
-          "applicationDeploymentMap": {
-            "type": "record",
-            "definition": {
-              "type": "uuid"
-            }
-          },
           "deploymentUuid": {
             "type": "union",
             "optional": true,
@@ -51920,12 +51894,6 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
-          },
-          "applicationDeploymentMap": {
-            "type": "record",
-            "definition": {
-              "type": "uuid"
-            }
           },
           "deploymentUuid": {
             "type": "union",
@@ -57171,12 +57139,6 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
-          },
-          "applicationDeploymentMap": {
-            "type": "record",
-            "definition": {
-              "type": "uuid"
-            }
           },
           "deploymentUuid": {
             "type": "union",

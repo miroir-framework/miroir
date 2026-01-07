@@ -95,6 +95,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
+        props.applicationDeploymentMap,
         () => ({}),
         currentMiroirModelEnvironment
       )

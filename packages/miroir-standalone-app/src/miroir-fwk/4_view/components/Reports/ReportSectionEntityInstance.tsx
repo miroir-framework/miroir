@@ -556,7 +556,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
             deploymentUuid: props.deploymentUuid,
             pageParams: {
               deploymentUuid: props.deploymentUuid,
@@ -572,7 +571,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         : {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
             deploymentUuid: props.deploymentUuid,
             pageParams: {},
             queryParams: {},
@@ -595,7 +593,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       // return getQueryRunnerParamsForReduxDeploymentsState(
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
         queryForTestRun,
-        props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       );
     },
@@ -605,9 +602,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const queryTestRunResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> | undefined = 
     // Only execute query when results section is expanded
      useReduxDeploymentsStateQueryTemplateSelector(
-    // (!isResultsCollapsed && deploymentEntityStateFetchQueryParams) ? runQueryTemplateFromReduxDeploymentsState(
       deploymentEntityStateSelectorMap.runQueryTemplateWithExtractorCombinerTransformer,
-      queryTestRunParams
+      queryTestRunParams,
+      props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     );
 
   // ##############################################################################################

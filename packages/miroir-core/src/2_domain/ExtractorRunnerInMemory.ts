@@ -363,11 +363,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     Domain2QueryReturnType<EntityInstance>
   > = async (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstance>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select;
-    // const deploymentUuid = selectorParams.extractor.deploymentUuid;
-    const deploymentUuid = selectorParams.applicationDeploymentMap[selectorParams.extractor.application];
+    const deploymentUuid = applicationDeploymentMap[selectorParams.extractor.application];
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
       ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
@@ -418,9 +418,10 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
-    return this.extractEntityInstanceList(extractorRunnerParams, modelEnvironment).then(
+    return this.extractEntityInstanceList(extractorRunnerParams, applicationDeploymentMap, modelEnvironment).then(
       (result) => {
         // if (result.elementType == "failure") {
         if (result instanceof Domain2ElementFailed) {

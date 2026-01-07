@@ -123,6 +123,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
+        applicationDeploymentMap,
         () => ({}),
         currentMiroirModelEnvironment
       )
@@ -918,6 +919,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     <EntityInstanceSelectorPanel
                       initialEntityUuid={initialEntityUuid}
                       deploymentUuid={deploymentUuid}
+                      applicationDeploymentMap={applicationDeploymentMap}
                       showAllInstances={showAllInstances}
                     />
                   )}

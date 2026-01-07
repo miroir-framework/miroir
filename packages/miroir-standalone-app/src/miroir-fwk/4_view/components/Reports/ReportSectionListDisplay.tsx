@@ -35,7 +35,7 @@ import {
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
   type MiroirModelEnvironment,
   type ReportSection,
   type TransformerForBuildPlusRuntime
@@ -349,6 +349,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
+        props.applicationDeploymentMap,
         () => ({}),
         currentMiroirModelEnvironment
       )
@@ -446,7 +447,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
+  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerExtractorAndParams<
     ReduxDeploymentsState
   > = useMemo(
     () => {
@@ -488,14 +489,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: props.application,
-          applicationDeploymentMap: props.applicationDeploymentMap,
           deploymentUuid: props.deploymentUuid,
           pageParams: props.paramsAsdomainElements,
           queryParams: {},
           contextResults: {},
           extractors,
           runtimeTransformers
-        }, props.applicationDeploymentMap,
+        },
         deploymentEntityStateSelectorMap
       )
     },
@@ -513,7 +513,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       ReduxDeploymentsState,
       Domain2QueryReturnType<DomainElementSuccess>
     >,
-    foreignKeyObjectsFetchQueryParams
+    foreignKeyObjectsFetchQueryParams,
+    props.applicationDeploymentMap
   );
 
   // // ##############################################################################################
@@ -915,6 +916,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   currentReportTargetEntityDefinition?.jzodSchema as JzodObject
                 }
                 foreignKeyObjects={foreignKeyObjects}
+                currentApplication={props.application}
+                applicationDeploymentMap={props.applicationDeploymentMap}
                 currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                 currentApplicationSection={props.chosenApplicationSection}
                 currentAppModel={currentModel}

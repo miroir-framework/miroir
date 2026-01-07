@@ -99,42 +99,36 @@ export function getSelectorMapForTemplate(): SyncBoxedExtractorOrQueryRunnerMap<
 // ################################################################################################
 export type GetSelectorParamsForExtractorTemplateOnDomainStateType=<ExtractorTemplateType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: ExtractorTemplateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
 )=> SyncBoxedExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
 
 export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForExtractorTemplateOnDomainStateType =
 <ExtractorTemplateType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
     query: ExtractorTemplateType,
-    applicationDeploymentMap: ApplicationDeploymentMap,
     extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
   ) =>
 {
   return {
     extractorOrCombinerTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
-    applicationDeploymentMap,
   };
 }
 
 // ################################################################################################
 export type GetSelectorParamsForQueryTemplateOnDomainStateType=<QueryTemplateType extends BoxedQueryTemplateWithExtractorCombinerTransformer>(
   query: QueryTemplateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
 )=> SyncQueryTemplateRunnerParams<DomainState>;
 
 export const getQueryTemplateRunnerParamsForDomainState: GetSelectorParamsForQueryTemplateOnDomainStateType =
 <ExtractorTemplateType extends BoxedQueryTemplateWithExtractorCombinerTransformer>(
     query: ExtractorTemplateType,
-    applicationDeploymentMap: ApplicationDeploymentMap,
     extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>,
   ) =>
 {
   return {
     extractorOrCombinerTemplate: query,
     extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
-    applicationDeploymentMap,
   };
 }
 

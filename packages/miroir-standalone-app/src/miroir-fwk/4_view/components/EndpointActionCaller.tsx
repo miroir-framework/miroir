@@ -126,6 +126,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
+        defaultSelfApplicationDeploymentMap,
         () => ({}),
         currentMiroirModelEnvironment
       )

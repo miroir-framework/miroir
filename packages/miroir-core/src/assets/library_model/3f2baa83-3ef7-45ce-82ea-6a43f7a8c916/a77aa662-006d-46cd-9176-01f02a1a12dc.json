@@ -12,6 +12,7 @@
     "extractorTemplates": {
       "publishers": {
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "label": "PublisherList publishers",
         "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "returnValue",

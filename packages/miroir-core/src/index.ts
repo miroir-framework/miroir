@@ -559,7 +559,7 @@ export {
   SyncBoxedExtractorTemplateRunnerParams,
   SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
 } from "./0_interfaces/2_domain/ExtractorRunnerInterface.js";

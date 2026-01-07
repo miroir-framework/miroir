@@ -15,7 +15,7 @@ import {
   MiroirLoggerFactory,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
@@ -205,7 +205,7 @@ export function useJzodElementEditorHooks(
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
   // ######################### foreignKeyObjects #########################
-  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
+  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> = useMemo(
     () => {
       if (
         currentDeploymentUuid &&
@@ -271,7 +271,6 @@ export function useJzodElementEditorHooks(
             {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: targetApplication,
-              applicationDeploymentMap: applicationDeploymentMap,
               deploymentUuid,
               pageParams: {},
               queryParams: {},
@@ -292,20 +291,17 @@ export function useJzodElementEditorHooks(
                 },
               },
             },
-            applicationDeploymentMap,
             deploymentEntityStateSelectorMap
           );
         } else {
           return getQueryRunnerParamsForReduxDeploymentsState(
             dummyDomainManyQueryWithDeploymentUuid,
-            applicationDeploymentMap,
             deploymentEntityStateSelectorMap
           );
         }
       } else {
         return getQueryRunnerParamsForReduxDeploymentsState(
           dummyDomainManyQueryWithDeploymentUuid,
-          applicationDeploymentMap,
           deploymentEntityStateSelectorMap
         );
       }
@@ -322,11 +318,13 @@ export function useJzodElementEditorHooks(
   );
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
     useReduxDeploymentsStateQuerySelectorForCleanedResult(
-      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        ReduxDeploymentsState,
-        Domain2QueryReturnType<DomainElementSuccess>
-      >,
-      foreignKeyObjectsFetchQueryParams
+      deploymentEntityStateSelectorMap.runQuery,
+      // deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+      //   ReduxDeploymentsState,
+      //   Domain2QueryReturnType<DomainElementSuccess>
+      // >,
+      foreignKeyObjectsFetchQueryParams,
+      applicationDeploymentMap,
   ) || {};
 
   // log.info(

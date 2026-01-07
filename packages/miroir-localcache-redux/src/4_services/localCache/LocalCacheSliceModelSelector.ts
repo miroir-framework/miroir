@@ -33,6 +33,7 @@ import {
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import {
+  selectApplicationDeploymentMap,
   selectCurrentReduxDeploymentsStateFromReduxState,
   selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState,
   selectMiroirSelectorQueryParams,
@@ -48,38 +49,47 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 function selectEntityInstancesFromReduxDeploymentsState(
   reduxState: ReduxDeploymentsState,
-  application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
+  application: Uuid,
   deploymentUuid: Uuid | undefined,
   applicationSection:ApplicationSection | undefined,
   entityUuid: Uuid | undefined
 ) {
-  const result = selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState(reduxState, {
-    queryType: "localCacheEntityInstancesExtractor",
-    definition: {
-      application,
-      applicationDeploymentMap,
-      deploymentUuid,
-      applicationSection,
-      entityUuid,
-    },
-  });
+  const result = selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState(
+    reduxState,
+    applicationDeploymentMap,
+    {
+      queryType: "localCacheEntityInstancesExtractor",
+      definition: {
+        application,
+        deploymentUuid,
+        applicationSection,
+        entityUuid,
+      },
+    }
+  );
   return result;
 }
 
 // ################################################################################################
 // const selectEntities = (reduxState: ReduxStateWithUndoRedo, params:  ) => {
 const selectEntitiesFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : params.deploymentUuid ?? "undefined",
@@ -91,16 +101,22 @@ const selectEntitiesFromReduxState = createSelector(
 
 // ################################################################################################
 const selectEntityDefinitionsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : "undefined",
@@ -112,16 +128,22 @@ const selectEntityDefinitionsFromReduxState = createSelector(
 
 // ################################################################################################
 const selectJzodSchemasFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : "undefined",
@@ -138,16 +160,22 @@ const selectJzodSchemasFromReduxState = createSelector(
 
 // ################################################################################################
 const selectEndpointsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : "undefined",
@@ -163,16 +191,18 @@ const selectEndpointsFromReduxState = createSelector(
 
 // ################################################################################################
 const selectMenusFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : "undefined",
@@ -188,16 +218,22 @@ const selectMenusFromReduxState = createSelector(
 
 // ################################################################################################
 const selectReportsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : "undefined",
@@ -213,39 +249,45 @@ const selectReportsFromReduxState = createSelector(
 
 // ################################################################################################
 const selectQueriesFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
       params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
+        ? params.definition.deploymentUuid ?? "undefined"
+        : "undefined",
       params.queryType == "localCacheEntityInstancesExtractor"
-            ? params.definition.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
-              ? "data"
-              : "model"
-            : undefined,
+        ? params.definition.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+          ? "data"
+          : "model"
+        : undefined,
       entityQueryVersion.uuid
-    )
+    );
   }
 );
 
 // ################################################################################################
 const selectConfigurationsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : "undefined",
@@ -262,16 +304,22 @@ const selectConfigurationsFromReduxState = createSelector(
 
 // ################################################################################################
 const selectApplicationVersionsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
+      applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.application ?? "undefined"
         : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.applicationDeploymentMap ?? "undefined"
-        : params.applicationDeploymentMap,
       params.queryType == "localCacheEntityInstancesExtractor"
         ? params.definition.deploymentUuid ?? "undefined"
         : "undefined",
@@ -288,6 +336,7 @@ const selectApplicationVersionsFromReduxState = createSelector(
 //#########################################################################################
 export const selectModelForDeploymentFromReduxState: () => (
   state: ReduxStateWithUndoRedo,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   params: MiroirQueryTemplate
 ) => MetaModel = () =>
   createSelector(

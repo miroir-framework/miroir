@@ -1,7 +1,7 @@
 import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
+  SyncQueryRunnerExtractorAndParams,
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 
 import {
@@ -79,8 +79,9 @@ export function createReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQu
  */
 export function executeReduxDeploymentsStateQuery<T>(
   deploymentEntityState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
-  queryParams: SyncQueryRunnerParams<ReduxDeploymentsState>,
+  queryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState>,
   selectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>,
 ): T {
   const queryRunner = selectorMap.runQuery as SyncQueryRunner<
@@ -88,7 +89,12 @@ export function executeReduxDeploymentsStateQuery<T>(
     Domain2QueryReturnType<any>
   >;
   
-  const result = queryRunner(deploymentEntityState, queryParams, modelEnvironment);
+  const result = queryRunner(
+    deploymentEntityState,
+    applicationDeploymentMap,
+    queryParams,
+    modelEnvironment
+  );
   return result as T;
 }
 
@@ -124,7 +130,6 @@ export function getEntityInstancesUuidIndexNonHook(
   const queryParams = getQueryRunnerParamsForReduxDeploymentsState(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      applicationDeploymentMap,
       application,
       deploymentUuid: currentDeploymentUuid,
       pageParams: {},
@@ -142,7 +147,6 @@ export function getEntityInstancesUuidIndexNonHook(
         },
       },
     },
-    applicationDeploymentMap,
     selectorMap
   );
   
@@ -150,6 +154,7 @@ export function getEntityInstancesUuidIndexNonHook(
   // const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
   const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstance[]>>(
     deploymentEntityState,
+    applicationDeploymentMap,
     modelEnvironment,
     queryParams,
     selectorMap,
@@ -198,7 +203,6 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
   const queryParams = getQueryRunnerParamsForReduxDeploymentsState(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      applicationDeploymentMap,
       application,
       deploymentUuid: currentDeploymentUuid,
       pageParams: {},
@@ -206,13 +210,13 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
       contextResults: {},
       extractors,
     },
-    applicationDeploymentMap,
     selectorMap
   );
   
   // Execute query
   return executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
     deploymentEntityState,
+    applicationDeploymentMap,
     modelEnvironment,
     queryParams,
     selectorMap

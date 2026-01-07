@@ -80,7 +80,6 @@ export const ReportPage = () => {
     // log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
     // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
-      // <ReportPageContextProvider>
         <PageContainer
           withSidebar={true}
           withDocumentOutline={true} // ReportPage has document outline
@@ -106,43 +105,11 @@ export const ReportPage = () => {
                 </span>
               </>
             )}
-            {/* {(errorLog as any)?.errorLogs.length !== 0 && (
-              <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-            )} */}
           </ThemedBox>
           <ReportDisplay
             pageParams={pageParams}
-            // context={context}
-            // theme={theme}
           ></ReportDisplay>
-          {/* <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-            {pageParams.deploymentUuid &&
-            pageParams.applicationSection &&
-            pageParams.reportUuid &&
-            pageParams.reportUuid != "undefined" ? (
-              <>
-                  <>
-                    <ReportViewWithEditor
-                      applicationSection={pageParams.applicationSection as ApplicationSection}
-                      deploymentUuid={pageParams.deploymentUuid}
-                      instanceUuid={pageParams.instanceUuid}
-                      pageParams={pageParams}
-                      storedQueryData={currentStoredQueryData}
-                      reportDefinition={currentMiroirReport}
-                    />
-                    {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
-                  </>
-              </>
-            ) : (
-              <ThemedSpan style={{ color: theme.currentTheme.colors.error }}>
-                ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
-                applicationSection=
-                {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
-              </ThemedSpan>
-            )}
-          </ThemedBox> */}
         </PageContainer>
-      // </ReportPageContextProvider>
     );
   } else {
     return <>ReportPage Invalid parameters! {JSON.stringify(pageParams)}</>;

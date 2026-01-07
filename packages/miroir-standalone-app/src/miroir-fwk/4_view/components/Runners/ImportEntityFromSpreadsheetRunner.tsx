@@ -11,10 +11,12 @@ import type {
   EntityDefinition,
   EntityInstance,
   LoggerInterface,
-  MiroirModelEnvironment
+  MiroirModelEnvironment,
+  Uuid
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
   defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   entityDeployment,
@@ -41,18 +43,20 @@ const excelMimeType = /application\//i;
 
 // ################################################################################################
 export interface CreateEntityToolProps {
-  deploymentUuid: string;
+  application: Uuid,
+  deploymentUuid: Uuid;
 }
 
 // ################################################################################################
 export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> = ({
+  application,
   deploymentUuid,
 }) => {
   const runnerName: string = "importEntityFromSpreadsheet";
   const runnerLabel: string = "Import Entity From Spreadsheet";
   const newEntityUuid = uuidv4();
   const domainController: DomainControllerInterface = useDomainControllerService();
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(application, defaultSelfApplicationDeploymentMap);
 
   const [file, setFile] = useState(null);
   const [fileDataURL, setFileDataURL] = useState<any>(null);
@@ -156,32 +160,32 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     }, [file]);
   
   // ##############################################################################################
-  const deploymentUuidQuery:
-    | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
-    | undefined = {
-    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-    pageParams: {},
-    queryParams: {},
-    contextResults: {},
-    extractorTemplates: {
-      deployments: {
-        label: "deployments of the application",
-        extractorTemplateType: "extractorTemplateForObjectListByEntity",
-        parentUuid: entityDeployment.uuid,
-        parentName: entityDeployment.name,
-        applicationSection: "data",
-        filter: {
-          attributeName: "adminApplication",
-          value: {
-            transformerType: "mustacheStringTemplate",
-            definition: `{{${runnerName}.application}}`,
-          },
-        },
-      },
-    },
-  } as BoxedQueryTemplateWithExtractorCombinerTransformer;
+  // const deploymentUuidQuery:
+  //   | BoxedQueryWithExtractorCombinerTransformer
+  //   | BoxedQueryTemplateWithExtractorCombinerTransformer
+  //   | undefined = {
+  //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+  //   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  //   pageParams: {},
+  //   queryParams: {},
+  //   contextResults: {},
+  //   extractorTemplates: {
+  //     deployments: {
+  //       label: "deployments of the application",
+  //       extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //       parentUuid: entityDeployment.uuid,
+  //       parentName: entityDeployment.name,
+  //       applicationSection: "data",
+  //       filter: {
+  //         attributeName: "adminApplication",
+  //         value: {
+  //           transformerType: "mustacheStringTemplate",
+  //           definition: `{{${runnerName}.application}}`,
+  //         },
+  //       },
+  //     },
+  //   },
+  // } as BoxedQueryTemplateWithExtractorCombinerTransformer;
 
   // const deleteEntityActionTemplate = useMemo((): CompositeActionTemplate => {
   //   return {
@@ -326,6 +330,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "NOT_USED_HERE",
         definition: [
           // Step 1: Query to get the deployment UUID from the selected application
           {
@@ -336,11 +341,13 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
               actionType: "runBoxedExtractorOrQueryAction",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               payload: {
+                application: adminSelfApplication.uuid,
+                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 applicationSection: "data",
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  application: adminSelfApplication.uuid,
                   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                   pageParams: {},
                   queryParams: {},
@@ -391,6 +398,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
+              application: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["importEntityFromSpreadsheet", "application"],
+              } as any,
               deploymentUuid: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
@@ -403,6 +415,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
+              application: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["importEntityFromSpreadsheet", "application"],
+              } as any,
               deploymentUuid: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
@@ -537,6 +554,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     );
     await domainController.handleCompositeActionTemplate(
       action,
+      defaultSelfApplicationDeploymentMap, // TODO: use correct deployment map
       currentMiroirModelEnvironment,
       values,
     )
@@ -590,7 +608,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         //   actionType: "compositeActionTemplate",
         //   compositeActionTemplate: deleteEntityActionTemplate,
         // }}
-        labelElement={<h2>{runnerLabel}</h2>}
+        // labelElement={<h2>{runnerLabel}</h2>}
         formikValuePathAsString={runnerName}
         formLabel={runnerLabel}
         displaySubmitButton="onFirstLine"

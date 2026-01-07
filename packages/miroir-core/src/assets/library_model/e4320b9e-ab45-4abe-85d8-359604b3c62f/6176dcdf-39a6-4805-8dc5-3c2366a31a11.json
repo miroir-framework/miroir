@@ -20,6 +20,7 @@
     "combinerTemplates": {
       "BookWithPublisher": {
         "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
+        "label": "BookCountByPublisher_BookWithPublisher",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": {

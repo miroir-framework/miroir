@@ -20,7 +20,7 @@ import {
   SyncBoxedExtractorRunner,
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunner,
-  SyncQueryRunnerParams
+  SyncQueryRunnerExtractorAndParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -71,12 +71,12 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
   Domain2QueryReturnType<EntityInstance>
 > = (
   deploymentEntityState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, ReduxDeploymentsState>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance> => {
   const querySelectorParams = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
-  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
-  const deploymentUuid = selectorParams.applicationDeploymentMap[selectorParams.extractor.application];
+  const deploymentUuid = applicationDeploymentMap[selectorParams.extractor.application];
   const applicationSection: ApplicationSection =
     selectorParams.extractor.select.applicationSection ??
     ((selectorParams.extractor.pageParams?.applicationSection ??
@@ -297,9 +297,10 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   Domain2QueryReturnType<EntityInstancesUuidIndex>
 > = (
   deploymentEntityState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
-  const deploymentUuid = selectorParams.applicationDeploymentMap[selectorParams.extractor.application];
+  const deploymentUuid = applicationDeploymentMap[selectorParams.extractor.application];
   const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
 
   const entityUuid = selectorParams.extractor.select.parentUuid;
@@ -307,7 +308,7 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   log.info(
     "selectEntityInstanceUuidIndexFromReduxDeploymentsState called with params",
     "application:", selectorParams.extractor.application,
-    "applicationDeploymentMap:", selectorParams.applicationDeploymentMap,
+    "applicationDeploymentMap:", applicationDeploymentMap,
     "deploymentUuid:", deploymentUuid,
     "applicationSection:", applicationSection,
     "entityUuid:", entityUuid,
@@ -359,10 +360,16 @@ export const selectEntityInstanceListFromReduxDeploymentsState: SyncBoxedExtract
   Domain2QueryReturnType<EntityInstance[]>
 > = (
   deploymentEntityState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance[]> => {
-  const result = selectEntityInstanceUuidIndexFromReduxDeploymentsState(deploymentEntityState, selectorParams, modelEnvironment);
+  const result = selectEntityInstanceUuidIndexFromReduxDeploymentsState(
+    deploymentEntityState,
+    applicationDeploymentMap,
+    selectorParams,
+    modelEnvironment
+  );
 
   if (result instanceof Domain2ElementFailed) {
     return result;
@@ -485,18 +492,15 @@ export function getReduxDeploymentsStateJzodSchemaSelectorMap(): QueryRunnerMapF
 // ################################################################################################
 export type GetExtractorRunnerParamsForReduxDeploymentsState = <QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList>(
   query: QueryType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ) => SyncBoxedExtractorRunnerParams<QueryType, ReduxDeploymentsState>;
 
 export const getExtractorRunnerParamsForReduxDeploymentsState = <QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList>(
   query: QueryType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ): SyncBoxedExtractorRunnerParams<QueryType, ReduxDeploymentsState> =>{
   return {
     extractor: query,
-    applicationDeploymentMap,
     extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorMap(),
   };
 }
@@ -504,18 +508,15 @@ export const getExtractorRunnerParamsForReduxDeploymentsState = <QueryType exten
 // ################################################################################################
 export type GetQueryRunnerParamsForReduxDeploymentsState = (
   query: BoxedQueryWithExtractorCombinerTransformer,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
-) => SyncQueryRunnerParams<ReduxDeploymentsState>;
+) => SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState>;
 
 export const getQueryRunnerParamsForReduxDeploymentsState = (
   query: BoxedQueryWithExtractorCombinerTransformer,
-  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
-): SyncQueryRunnerParams<ReduxDeploymentsState> =>{
+): SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =>{
   return {
     extractor: query,
-    applicationDeploymentMap,
     extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorMap(),
   };
 }

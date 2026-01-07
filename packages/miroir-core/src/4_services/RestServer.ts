@@ -549,9 +549,9 @@ export async function queryTemplateActionHandler(
       case "boxedExtractorTemplateReturningObjectList": {
         queryResult = extractWithBoxedExtractorTemplate(
           domainState,
+          applicationDeploymentMap,
           getExtractorTemplateRunnerParamsForDomainState(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
-            applicationDeploymentMap,
             extractorRunnerMapOnDomainState,
           ),
           defaultMiroirModelEnvironment
@@ -561,9 +561,9 @@ export async function queryTemplateActionHandler(
       case "boxedQueryTemplateWithExtractorCombinerTransformer":
         queryResult = runQueryTemplateWithExtractorCombinerTransformer(
           domainState,
+          applicationDeploymentMap,
           getQueryTemplateRunnerParamsForDomainState(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
-            applicationDeploymentMap,
             extractorRunnerMapOnDomainState
           ),
           defaultMiroirModelEnvironment
