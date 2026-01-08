@@ -27,7 +27,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -38,7 +38,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -48,7 +48,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -59,7 +59,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -75,7 +75,7 @@
           "value": {
             "id": 5,
             "defaultLabel": "Concept Level",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -91,7 +91,7 @@
           "value": {
             "id": 6,
             "defaultLabel": "Storage Access",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -101,7 +101,7 @@
         "tag": {
           "value": {
             "id": 7,
-            "editable": false,
+            "display": { "editable": false },
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "defaultLabel": "SelfApplication",
             "selectorParams": {
@@ -117,7 +117,7 @@
           "value": {
             "id": 8,
             "defaultLabel": "Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -128,7 +128,7 @@
           "value": {
             "id": 9,
             "defaultLabel": "SelfApplication",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -139,7 +139,7 @@
           "value": {
             "id": 10,
             "defaultLabel": "Description",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       }

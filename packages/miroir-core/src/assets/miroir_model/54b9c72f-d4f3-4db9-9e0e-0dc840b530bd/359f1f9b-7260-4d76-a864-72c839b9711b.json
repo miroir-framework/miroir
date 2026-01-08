@@ -21,7 +21,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -31,7 +31,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -41,7 +41,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -52,7 +52,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -62,7 +62,7 @@
           "value": {
             "id": 5,
             "defaultLabel": "Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -73,7 +73,7 @@
           "value": {
             "id": 6,
             "defaultLabel": "Description",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -84,7 +84,7 @@
           "value": {
             "id": 7,
             "defaultLabel": "Default Label",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -94,7 +94,7 @@
           "value": {
             "id": 7,
             "defaultLabel": "Query Version definition",
-            "editable": true
+            "display": { "editable": true }
           }
         },
         "context": {
@@ -188,7 +188,7 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Label",
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -199,7 +199,7 @@
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 },
                 "definition": {
@@ -214,7 +214,7 @@
                   "value": {
                     "id": 3,
                     "defaultLabel": "Parent Name",
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -225,7 +225,7 @@
                   "value": {
                     "id": 4,
                     "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 },
                 "definition": [
@@ -691,7 +691,7 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Label",
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -702,7 +702,7 @@
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 },
                 "definition": {
@@ -718,7 +718,7 @@
                     "id": 3,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Name",
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -727,7 +727,7 @@
                 "tag": {
                   "value": {
                     "id": 4,
-                    "editable": false,
+                    "display": { "editable": false },
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -747,7 +747,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -773,7 +773,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -810,7 +810,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -869,7 +869,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -942,7 +942,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -997,7 +997,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -1112,7 +1112,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -1177,7 +1177,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -1214,7 +1214,7 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "editable": false,
+                    "display": { "editable": false },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -1303,7 +1303,7 @@
                     "tag": {
                       "value": {
                         "canBeTemplate": false,
-                        "editable": false,
+                        "display": { "editable": false },
                         "defaultLabel": "Extractor Or Combiner Type"
                       }
                     },

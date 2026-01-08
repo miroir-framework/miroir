@@ -23,33 +23,33 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "display": { "editable": false } }}
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "display": { "editable": false } }}
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "display": { "editable": false } }}
       },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "editable": false }}
+        "tag": { "value": {  "id": 5, "defaultLabel": "Concept Level", "display": { "editable": false } }}
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id": 4, "defaultLabel": "Name", "editable": true }}
+        "tag": { "value": {  "id": 4, "defaultLabel": "Name", "display": { "editable": true } }}
       },
       "country": {
         "type": "uuid",
         "optional": true,
         "tag": { "value": { 
           "id": 5,
-          "editable": true,
+          "display": { "editable": true },
           "defaultLabel": "Country",
           "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
           "selectorParams": {
@@ -61,7 +61,7 @@
       "icon": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 6, "defaultLabel": "Icon", "editable": true }}
+        "tag": { "value": {  "id": 6, "defaultLabel": "Icon", "display": { "editable": true } }}
       }
     }
   }

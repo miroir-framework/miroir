@@ -183,10 +183,6 @@ export const miroirFundamentalJzodSchema = {
                     "metaModel"
                   ]
                 },
-                "editable": {
-                  "type": "boolean",
-                  "optional": true
-                },
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
@@ -511,10 +507,6 @@ export const miroirFundamentalJzodSchema = {
                       "data",
                       "metaModel"
                     ]
-                  },
-                  "editable": {
-                    "type": "boolean",
-                    "optional": true
                   },
                   "canBeTemplate": {
                     "type": "boolean",
@@ -23374,24 +23366,6 @@ export const miroirFundamentalJzodSchema = {
                   ],
                   "discriminator": "transformerType"
                 },
-                "editable": {
-                  "type": "union",
-                  "optional": true,
-                  "discriminator": "transformerType",
-                  "definition": [
-                    {
-                      "type": "boolean",
-                      "optional": true
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "transformerForBuildCarryOnObject"
-                      }
-                    }
-                  ]
-                },
                 "canBeTemplate": {
                   "type": "union",
                   "optional": true,
@@ -24382,24 +24356,6 @@ export const miroirFundamentalJzodSchema = {
                               }
                             ],
                             "discriminator": "transformerType"
-                          },
-                          "editable": {
-                            "type": "union",
-                            "optional": true,
-                            "discriminator": "transformerType",
-                            "definition": [
-                              {
-                                "type": "boolean",
-                                "optional": true
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "transformerForBuildCarryOnObject"
-                                }
-                              }
-                            ]
                           },
                           "canBeTemplate": {
                             "type": "union",
@@ -27857,24 +27813,6 @@ export const miroirFundamentalJzodSchema = {
                   ],
                   "discriminator": "transformerType"
                 },
-                "editable": {
-                  "type": "union",
-                  "optional": true,
-                  "discriminator": "transformerType",
-                  "definition": [
-                    {
-                      "type": "boolean",
-                      "optional": true
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "transformerForBuildCarryOnObject"
-                      }
-                    }
-                  ]
-                },
                 "canBeTemplate": {
                   "type": "union",
                   "optional": true,
@@ -28826,24 +28764,6 @@ export const miroirFundamentalJzodSchema = {
                         }
                       ],
                       "discriminator": "transformerType"
-                    },
-                    "editable": {
-                      "type": "union",
-                      "optional": true,
-                      "discriminator": "transformerType",
-                      "definition": [
-                        {
-                          "type": "boolean",
-                          "optional": true
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "transformerForBuildCarryOnObject"
-                          }
-                        }
-                      ]
                     },
                     "canBeTemplate": {
                       "type": "union",
@@ -29835,24 +29755,6 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 ],
                                 "discriminator": "transformerType"
-                              },
-                              "editable": {
-                                "type": "union",
-                                "optional": true,
-                                "discriminator": "transformerType",
-                                "definition": [
-                                  {
-                                    "type": "boolean",
-                                    "optional": true
-                                  },
-                                  {
-                                    "type": "schemaReference",
-                                    "definition": {
-                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                      "relativePath": "transformerForBuildCarryOnObject"
-                                    }
-                                  }
-                                ]
                               },
                               "canBeTemplate": {
                                 "type": "union",
@@ -41634,10 +41536,6 @@ export const miroirFundamentalJzodSchema = {
                     "metaModel"
                   ]
                 },
-                "editable": {
-                  "type": "boolean",
-                  "optional": true
-                },
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
@@ -41962,10 +41860,6 @@ export const miroirFundamentalJzodSchema = {
                       "data",
                       "metaModel"
                     ]
-                  },
-                  "editable": {
-                    "type": "boolean",
-                    "optional": true
                   },
                   "canBeTemplate": {
                     "type": "boolean",
@@ -50273,10 +50167,6 @@ export const miroirFundamentalJzodSchema = {
                     "metaModel"
                   ]
                 },
-                "editable": {
-                  "type": "boolean",
-                  "optional": true
-                },
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
@@ -50601,10 +50491,6 @@ export const miroirFundamentalJzodSchema = {
                       "data",
                       "metaModel"
                     ]
-                  },
-                  "editable": {
-                    "type": "boolean",
-                    "optional": true
                   },
                   "canBeTemplate": {
                     "type": "boolean",

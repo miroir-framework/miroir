@@ -19,7 +19,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -30,7 +30,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -40,7 +40,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false,
+            "display": { "editable": false },
             "selectorParams": {
               "targetEntityApplicationSection": "model",
               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -59,7 +59,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -75,7 +75,7 @@
           "value": {
             "id": 5,
             "defaultLabel": "Concept Level",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -85,7 +85,7 @@
           "value": {
             "id": 6,
             "defaultLabel": "Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -96,7 +96,7 @@
           "value": {
             "id": 7,
             "defaultLabel": "Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -105,7 +105,7 @@
         "tag": {
           "value": {
             "id": 8,
-            "editable": false,
+            "display": { "editable": false },
             "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "selectorParams": {
@@ -121,7 +121,7 @@
         "tag": {
           "value": {
             "id": 9,
-            "editable": true,
+            "display": { "editable": true },
             "defaultLabel": "Head Version",
             "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
             "selectorParams": {
@@ -138,7 +138,7 @@
           "value": {
             "id": 10,
             "defaultLabel": "Description",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       }

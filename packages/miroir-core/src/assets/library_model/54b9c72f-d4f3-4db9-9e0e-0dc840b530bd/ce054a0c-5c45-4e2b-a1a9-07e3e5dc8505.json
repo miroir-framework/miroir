@@ -15,7 +15,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -26,7 +26,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -36,7 +36,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false,
+            "display": { "editable": false },
             "initializeTo": {
               "initializeToType": "value",
               "value": "e81078f3-2de7-4301-bd79-d3a156aec149"
@@ -51,7 +51,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -59,14 +59,14 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "editable": true,
+            "display": { "editable": true },
             "defaultLabel": "User",
             "selectorParams": {
               "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
               "targetEntityOrderInstancesBy": "name"
             },
             "display": {
-              "editable": true,
+              "display": { "editable": true },
               "modifiable": false
             }
           }
@@ -77,14 +77,14 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "editable": true,
+            "display": { "editable": true },
             "defaultLabel": "Book",
             "selectorParams": {
               "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               "targetEntityOrderInstancesBy": "name"
             },
             "display": {
-              "editable": true,
+              "display": { "editable": true },
               "modifiable": false
             }
           }

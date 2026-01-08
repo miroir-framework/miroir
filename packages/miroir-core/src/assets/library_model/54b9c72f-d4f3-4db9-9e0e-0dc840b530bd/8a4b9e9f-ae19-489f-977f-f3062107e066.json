@@ -22,7 +22,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -33,7 +33,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -43,7 +43,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -55,7 +55,7 @@
           "value": {
             "id": 5,
             "defaultLabel": "Concept Level",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -65,7 +65,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -75,7 +75,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "First Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -85,7 +85,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Last Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -95,7 +95,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Street Adress",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -105,7 +105,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Postal Code",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -115,7 +115,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "City",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -125,7 +125,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "State",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -135,7 +135,7 @@
         "tag": {
           "value": {
             "id": 5,
-            "editable": true,
+            "display": { "editable": true },
             "defaultLabel": "Country",
             "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
             "selectorParams": {

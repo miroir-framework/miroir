@@ -27,7 +27,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -37,7 +37,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -47,7 +47,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -58,7 +58,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -68,7 +68,7 @@
           "value": {
             "id": 5,
             "defaultLabel": "Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -78,7 +78,7 @@
           "value": {
             "id": 6,
             "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -94,7 +94,7 @@
           "value": {
             "id": 7,
             "defaultLabel": "Concept Level",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -105,7 +105,7 @@
           "value": {
             "id": 8,
             "defaultLabel": "Description",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -116,7 +116,7 @@
           "value": {
             "id": 9,
             "defaultLabel": "Default Report used to display instances of this Entity",
-            "editable": false,
+            "display": { "editable": false },
             "selectorParams": {
               "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
               "targetEntityApplicationSection": "model",
@@ -134,7 +134,7 @@
         "tag": {
           "value": {
             "id": 10,
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -153,7 +153,7 @@
           "value": {
             "id": 13,
             "defaultLabel": "Display Options",
-            "editable": true
+            "display": { "editable": true }
           }
         },
         "definition": {
@@ -163,7 +163,7 @@
             "tag": {
               "value": {
                 "defaultLabel": "Unfold Sub Levels",
-                "editable": true
+                "display": { "editable": true }
               }
             },
             "definition": {
@@ -179,7 +179,7 @@
           "value": {
             "id": 11,
             "defaultLabel": "Cache Options",
-            "editable": true
+            "display": { "editable": true }
           }
         },
         "definition": {
@@ -190,7 +190,7 @@
               "value": {
                 "defaultLabel": "Enable Systematic Caching of All Instances",
                 "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
-                "editable": true,
+                "display": { "editable": true },
                 "initializeTo": {
                   "initializeToType": "value", "value": true
                 }
@@ -209,7 +209,7 @@
           "value": {
             "id": 12,
             "defaultLabel": "Jzod Schema",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       }

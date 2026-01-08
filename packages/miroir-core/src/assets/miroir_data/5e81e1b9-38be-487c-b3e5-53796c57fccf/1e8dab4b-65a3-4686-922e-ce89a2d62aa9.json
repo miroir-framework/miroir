@@ -175,10 +175,6 @@
                   "optional": true,
                   "definition": ["model", "data", "metaModel"]
                 },
-                "editable": {
-                  "type": "boolean",
-                  "optional": true
-                },
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
@@ -486,10 +482,6 @@
                     "type": "enum",
                     "optional": true,
                     "definition": ["model", "data", "metaModel"]
-                  },
-                  "editable": {
-                    "type": "boolean",
-                    "optional": true
                   },
                   "canBeTemplate": {
                     "type": "boolean",

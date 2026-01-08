@@ -680,7 +680,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       }
       const localReadOnly =
         props.readOnly ||
-        localResolvedElementJzodSchemaBasedOnValue.tag?.value?.editable === false ||
         localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable === false ||
         (props.valueObjectEditMode == "update" &&
           localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.modifiable === false);
@@ -1029,7 +1028,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   <ThemedLabeledEditor
                     labelElement={enhancedLabelElement}
                     editor={
-                      props.readOnly || localResolvedElementJzodSchemaBasedOnValue.tag?.value?.editable === false ? (
+                      props.readOnly ||
+                      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable ===
+                        false ? (
                         <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
                       ) : (
                         <ThemedTextEditor

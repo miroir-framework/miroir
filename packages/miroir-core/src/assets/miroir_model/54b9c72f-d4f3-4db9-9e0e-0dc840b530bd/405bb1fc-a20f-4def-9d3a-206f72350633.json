@@ -28,7 +28,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -39,7 +39,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -54,7 +54,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "parentUuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -65,7 +65,7 @@
             "id": 9,
             "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -76,7 +76,7 @@
             "id": 10,
             "defaultLabel": "Branch",
             "description": "The Branch of the SelfApplication",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -87,7 +87,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -98,7 +98,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Skip",
-            "editable": true,
+            "display": { "editable": true },
             "description": "If true, this test will be skipped when running tests",
             "initializeTo": {
               "initializeToType": "value",
@@ -114,7 +114,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Description",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -127,7 +127,7 @@
               "value": {
                 "defaultLabel": "TransformerTest",
                 "description": "A test of a Transformer",
-                "editable": true,
+                "display": { "editable": true },
                 "display": {
                   "displayedAttributeValueWhenFolded": "transformerTestLabel"
                 }
@@ -166,7 +166,7 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Skip",
-                    "editable": true,
+                    "display": { "editable": true },
                     "description": "If true, this test will be skipped when running tests",
                     "initializeTo": {
                       "initializeToType": "value",
@@ -234,8 +234,8 @@
               "value": {
                 "defaultLabel": "TransformerTestSuite",
                 "description": "A suite of TransformerTests or nested TransformerTestSuites",
-                "editable": true,
                 "display": {
+                  "editable": true,
                   "displayedAttributeValueWhenFolded": "transformerTestLabel"
                 }
               }
@@ -255,7 +255,7 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Skip",
-                    "editable": true,
+                    "display": { "editable": true },
                     "description": "If true, this test suite will be skipped when running tests",
                     "initializeTo": {
                       "initializeToType": "value",

@@ -25,7 +25,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -36,7 +36,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -46,7 +46,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -57,7 +57,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -66,7 +66,7 @@
         "tag": {
           "value": {
             "defaultLabel": "Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -75,7 +75,7 @@
         "tag": {
           "value": {
             "defaultLabel": "Filename",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -85,7 +85,7 @@
         "tag": {
           "value": {
             "defaultLabel": "Default Label",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -95,7 +95,7 @@
         "tag": {
           "value": {
             "defaultLabel": "Description",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -105,7 +105,7 @@
         "tag": {
           "value": {
             "defaultLabel": "Contents",
-            "editable": true,
+            "display": { "editable": true },
             "isBlob": true
           }
         },
@@ -115,7 +115,7 @@
             "tag": {
               "value": {
                 "defaultLabel": "Encoding",
-                "editable": true
+                "display": { "editable": true }
               }
             },
             "definition": [
@@ -128,7 +128,7 @@
             "tag": {
               "value": {
                 "defaultLabel": "MIME Type",
-                "editable": true
+                "display": { "editable": true }
               }
             },
             "definition": [
@@ -147,7 +147,7 @@
             "tag": {
               "value": {
                 "defaultLabel": "Contents",
-                "editable": true
+                "display": { "editable": true }
               }
             }
           }

@@ -25,7 +25,7 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -36,7 +36,7 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -46,7 +46,7 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -57,7 +57,7 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "editable": false
+            "display": { "editable": false }
           }
         }
       },
@@ -67,7 +67,7 @@
           "value": {
             "id": 5,
             "defaultLabel": "Name",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -77,7 +77,7 @@
           "value": {
             "id": 6,
             "defaultLabel": "Default Label",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -87,7 +87,7 @@
         "tag": {
           "value": {
             "defaultLabel": "Description",
-            "editable": true
+            "display": { "editable": true }
           }
         }
       },
@@ -96,7 +96,7 @@
         "tag": {
           "value": {
             "defaultLabel": "formMLSchema",
-            "editable": true
+            "display": { "editable": true }
           }
         },
         "discriminator": "formMLSchemaType",
