@@ -218,7 +218,7 @@ const DisplayTransformerEvent: React.FC<{
                 {JSON.stringify(Object.keys(activity.transformerParams), null, 2)}
               </ThemedCodeBlock> */}
               <TypedValueObjectEditorWithFormik
-                mode='create'
+                valueObjectEditMode='create'
                 labelElement={<div>target:</div>}
                 initialValueObject={{ displayedParameters }}
                 formValueMLSchema={{

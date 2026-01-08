@@ -41,7 +41,7 @@ export interface ReportSectionMarkdownProps {
   formikReportDefinitionPathString?: string; // duplicates reportName?
   formikValuePath: ( string | number )[],
   reportSectionPath?: ( string | number )[],
-  editMode: boolean,
+  generalEditMode: boolean,
 
   reportSectionDEFUNCT?: MarkdownReportSection;
   label?: string;
@@ -120,7 +120,7 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   const [hasValidationErrors, setHasValidationErrors] = useState(false);
   const IconBar = () => (
     <div style={{ position: "absolute", top: 6, right: 6, zIndex: 10, display: "flex", gap: 6 }}>
-      {!isEditorOpen && props.editMode && (
+      {!isEditorOpen && props.generalEditMode && (
         <ThemedIconButton
           // title={props.isSectionModified ? "Section modified" : "Edit section"}
           title={isSectionModified ? "Section modified" : "Edit section"}

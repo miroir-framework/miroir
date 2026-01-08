@@ -54,6 +54,7 @@ import {
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
+import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -135,6 +136,7 @@ const EditableAttributeName: FC<{
 // ################################################################################################
 // Progressive Attribute Component for asynchronous rendering
 const ProgressiveAttribute: FC<{
+  valueObjectEditMode: ValueObjectEditMode;
   attribute: [string, JzodElement];
   attributeNumber: number;
   listKey: string;
@@ -174,6 +176,7 @@ const ProgressiveAttribute: FC<{
     errorMessage: string;
   };
 }> = ({
+  valueObjectEditMode,
   attribute,
   attributeNumber,
   listKey,
@@ -310,6 +313,7 @@ const ProgressiveAttribute: FC<{
           {/* <ThemedOnScreenHelper label="attribute" data={attributeRootLessListKey}/> */}
           {/* <ThemedOnScreenHelper label="attribute" data={attribute[0]}/> */}
           <JzodElementEditor
+            valueObjectEditMode={valueObjectEditMode}
             name={attribute[0]}
             existingObject={existingObject}
             labelElement={editableLabel}
@@ -375,6 +379,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const {
     name,
+    valueObjectEditMode,
     listKey,
     labelElement,
     rootLessListKey,
@@ -425,7 +430,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     formikRootLessListKeyArray,
     localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
-    currentMiroirModelEnvironment,
+    currentApplicationModelEnvironment,
     // Array / Object fold / unfold state
     itemsOrder,
     // object
@@ -568,14 +573,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         state.presentModelSnapshot.current,
         applicationDeploymentMap,
         () => ({}),
-        currentMiroirFundamentalJzodSchema?{
-          miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel,
-        }: defaultMetaModelEnvironment
+        currentApplicationModelEnvironment??defaultMetaModelEnvironment,
+        // currentMiroirFundamentalJzodSchema?{
+        //   miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+        //   currentModel,
+        //   miroirMetaModel,
+        // }: defaultMetaModelEnvironment
       )
   );
 
+  // ##############################################################################################
   const foldableItemsCount = useMemo(() => {
     return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a JzodObject
       ? Object.values(currentTypeCheckKeyMap.resolvedSchema.definition).filter(
@@ -728,11 +735,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           currentApplication,
           applicationDeploymentMap,
           currentDeploymentUuid,
-          {
-            miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-          }, // miroirEnvironment
+          currentApplicationModelEnvironment,
+          // {
+          //  miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+          //   currentModel,
+          //   miroirMetaModel,
+          // }, // miroirEnvironment
           {}, // transformerParams
           {}, // contextResults
           deploymentEntityState,
@@ -807,12 +815,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             undefined, // currentDefaultValue is not known yet, this is what this call will determine
             [], // currentPath on value is root
             true, // force optional attributes to receive a default value
+            currentApplication,
+            applicationDeploymentMap,
             currentDeploymentUuid,
-            {
-              miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
-            }, // miroirEnvironment
+            currentApplicationModelEnvironment,
             {}, // transformerParams
             {}, // contextResults
             deploymentEntityState,
@@ -986,6 +992,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             .map((attribute: [string, JzodElement], attributeNumber: number) => (
               <ProgressiveAttribute
                 key={attribute[0]}
+                valueObjectEditMode={valueObjectEditMode}
                 listKey={listKey}
                 rootLessListKey={rootLessListKey}
                 formikRootLessListKey={formikRootLessListKey}
@@ -1180,7 +1187,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       [], // transformerPath
                       currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.label, // label
                       currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.transformer, // transformer
-                      currentMiroirModelEnvironment,
+                      currentApplicationModelEnvironment,
                       {}, // queryParams
                       { originTransformer: currentValueObjectAtKey }, // contextResults - pass the instance to transform
                       "value" // resolveBuildTransformersTo

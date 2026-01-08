@@ -13,6 +13,7 @@ import {
   type ApplicationDeploymentMap
 } from "miroir-core";
 import { JzodArray } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 
 export interface UnionInformation {
   unfoldedRawSchema: JzodUnion;
@@ -23,17 +24,22 @@ export interface UnionInformation {
 }
 
 export interface JzodEditorPropsRoot {
-  labelElement?: JSX.Element; // used to display a label in the editor
+  // basic display properties
+  hidden?: boolean; // used to control visibility of the editor
+  valueObjectEditMode: ValueObjectEditMode,
   existingObject?: boolean; // used to control if the editor is for an existing object or a new one
+  readOnly?: boolean; // used to switch between editable and read-only display modes
+  labelElement?: JSX.Element; // used to display a label in the editor
+  // environment
+  currentApplication: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  currentDeploymentUuid?: Uuid,
+  currentApplicationSection?: ApplicationSection;
   name: string;
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
-  currentApplication: Uuid,
-  applicationDeploymentMap: ApplicationDeploymentMap;
-  currentDeploymentUuid?: Uuid,
-  currentApplicationSection?: ApplicationSection;
   initialFormState?: any;
   resolvedElementJzodSchemaDEFUNCT: JzodElement | undefined; // TODO: remove (?) this is included in typeCheckKeyMap
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
@@ -43,12 +49,9 @@ export interface JzodEditorPropsRoot {
   // any
   isTopLevel?: boolean; // used to control if the editor is an inner editor (used for any type)
   insideAny?: boolean;
-  hidden?: boolean; // used to control visibility of the editor
   optional?: boolean; // used to control if the displayed element can be removed or not
-  // parentType?: string; // used to control the parent type of the element, used for record elements. TODO: accept real type enum
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not
-  readOnly?: boolean; // used to switch between editable and read-only display modes
   // error highlighting
   displayError?: {
     errorPath: string[]; // Path to element that should be highlighted with red border due to error

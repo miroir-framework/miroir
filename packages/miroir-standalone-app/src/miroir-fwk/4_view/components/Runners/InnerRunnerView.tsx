@@ -205,7 +205,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
         maxRenderDepth={Infinity}
         displaySubmitButton={displaySubmitButton}
         useActionButton={useActionButton}
-        mode="create" // N/A
+        valueObjectEditMode="create" // N/A
       />
       {/* <ThemedOnScreenHelper
         label={`Runner ${runnerName} targetSchema`}

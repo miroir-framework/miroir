@@ -877,7 +877,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     applicationSection={"model"}
                     formLabel={"Transformer Definition Selector"}
                     displaySubmitButton="noDisplay"
-                    mode="create"
+                    valueObjectEditMode="create"
                     maxRenderDepth={Infinity}
                   />
                 </div>
@@ -901,7 +901,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         </ThemedTitle>
                       </ThemedHeaderSection> */}
                     <TypedValueObjectEditor
-                      mode="create"
+                      valueObjectEditMode="create"
                       labelElement={<>Input Definition</>}
                       formValueMLSchema={formMLSchema}
                       formikValuePathAsString={formikPath_TransformerEditorInputModeSelector}

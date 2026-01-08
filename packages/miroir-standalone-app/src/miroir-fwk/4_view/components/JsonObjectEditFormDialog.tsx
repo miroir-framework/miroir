@@ -45,6 +45,7 @@ import {
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
 import { reportSectionsFormSchema, reportSectionsFormValue } from "./Reports/ReportTools.js";
 import { ThemedOnScreenDebug } from "./Themes/BasicComponents.js";
+import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -62,6 +63,7 @@ export interface EditorAttribute {
 }
 
 export interface JsonObjectFormEditorCoreDialogProps {
+  valueObjectEditMode: ValueObjectEditMode,
   label?: string,
   isAttributes?: boolean,
   entityDefinition: EntityDefinition,
@@ -78,7 +80,6 @@ export interface JsonObjectFormEditorCoreDialogProps {
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
   onCreateFormObject?: (a: any) => void,
   onSubmit: (data:JsonObjectEditFormDialogInputs)=>void,
-  mode: 'create' | 'update',
 }
 
 export interface JsonObjectFormEditorWithButtonDialogProps extends JsonObjectFormEditorCoreDialogProps {
@@ -214,6 +215,7 @@ const reorderArrayField = (
 let count = 0;
 
 interface JsonElementEditorDialogProps {
+  valueObjectEditMode: ValueObjectEditMode,
   label?: string;
   count: number;
   formState: any; // TODO: is it still used?
@@ -238,7 +240,6 @@ interface JsonElementEditorDialogProps {
   onEditFormObject: (data: any) => Promise<void>;
   // 
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
-  mode: 'create' | 'update',
   // onSubmit: (data: JsonObjectEditFormDialogInputs) => void;
 }
 
@@ -485,11 +486,12 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
         >
           {currentApplicationSection && currentDeploymentUuid && (
             <ReportSectionViewWithEditor
+              valueObjectEditMode={props.valueObjectEditMode}
               applicationSection={currentApplicationSection}
               application={props.currentApplication}
               applicationDeploymentMap={props.applicationDeploymentMap}
               deploymentUuid={currentDeploymentUuid}
-              editMode={true}
+              generalEditMode={true}
               paramsAsdomainElements={{}}
               isOutlineOpen={false} // no connection to outline context here
               onToggleOutline={() => {}}
@@ -505,7 +507,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
               reportName="reportName"
               // 
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
-              mode={props.mode}
             />
           )}
         </ErrorBoundary>
@@ -765,7 +766,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           count={count}
           formIsOpen={formIsOpen}
           setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
-          mode={props.mode}
+          valueObjectEditMode={props.valueObjectEditMode}
         />
       ) : (
         <></>

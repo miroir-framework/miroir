@@ -230,9 +230,9 @@ export function MiroirContextReactProvider(props: {
   const [sidebarIsopen, setSidebarIsOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const [gridType, setGridType] = useState<GridType>("ag-grid");
-  const [editMode, setEditMode] = useState(() => {
-    // Persist editMode state across navigation
-    const saved = sessionStorage.getItem("editMode");
+  const [generalEditMode, setEditMode] = useState(() => {
+    // Persist generalEditMode state across navigation
+    const saved = sessionStorage.getItem("generalEditMode");
     return saved ? JSON.parse(saved) : false;
   });
   const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
@@ -270,8 +270,8 @@ export function MiroirContextReactProvider(props: {
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
 
   const viewParams = useMemo(() => {
-    // const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, editMode, showModelTools);
-    const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, editMode);
+    // const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, generalEditMode, showModelTools);
+    const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, generalEditMode);
     // Override setters to use React state
     params.updateSidebarIsOpen = (sidebarIsopen: boolean) => setSidebarIsOpen(sidebarIsopen);
     params.updateSidebarWidth = (width: number) => setSidebarWidth(width);
@@ -279,7 +279,7 @@ export function MiroirContextReactProvider(props: {
     params.updateEditMode = (enabled: boolean) => {
       setEditMode(enabled);
       // Persist to sessionStorage
-      sessionStorage.setItem("editMode", JSON.stringify(enabled));
+      sessionStorage.setItem("generalEditMode", JSON.stringify(enabled));
     };
     // params.updateShowModelTools = (enabled: boolean) => {
     //   setShowModelTools(enabled);
@@ -287,7 +287,7 @@ export function MiroirContextReactProvider(props: {
     //   sessionStorage.setItem("showModelTools", JSON.stringify(enabled));
     // };
     return params;
-  }, [sidebarWidth, gridType, editMode, showModelTools]);
+  }, [sidebarWidth, gridType, generalEditMode, showModelTools]);
 
   // Update functions for TransformerBuilderPage state with persistence
   const updateToolsPageStateDEFUNCT = useMemo(

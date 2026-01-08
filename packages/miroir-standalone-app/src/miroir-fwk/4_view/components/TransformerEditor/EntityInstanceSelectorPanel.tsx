@@ -470,7 +470,7 @@ export function EntityInstanceSelectorPanel(props:{
                 applicationSection={"data"}
                 formLabel={"Application Selector jzod"}
                 // onSubmit={async () => {}} // No-op for readonly
-                mode="create" // Readonly viewer mode, not relevant here
+                valueObjectEditMode="create" // Readonly viewer mode, not relevant here
                 displaySubmitButton="noDisplay"
                 maxRenderDepth={3}
                 // readonly={true}
@@ -614,7 +614,7 @@ export function EntityInstanceSelectorPanel(props:{
                   applicationSection={"data"}
                   formLabel={"All Entity Instances Viewer"}
                   onSubmit={async () => {}} // No-op for readonly
-                  mode="create" // Readonly viewer mode, not relevant here
+                  valueObjectEditMode="create" // Readonly viewer mode, not relevant here
                   maxRenderDepth={3}
                   readonly={true}
                 />
@@ -633,7 +633,7 @@ export function EntityInstanceSelectorPanel(props:{
             initiallyFolded={false}
           >
             <TypedValueObjectEditorWithFormik
-              mode="create"
+              valueObjectEditMode="create"
               labelElement={<></>}
               initialValueObject={{ selectedEntityInstance }}
               // valueObjectMMLSchema={createGenericObjectSchema()}

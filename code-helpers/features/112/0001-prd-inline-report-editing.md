@@ -35,14 +35,14 @@ This feature introduces an inline editing mode that allows users to edit Report 
 ## Functional Requirements
 
 ### FR1: Edit Mode Toggle in AppBar
-- The system must add a boolean value `editMode` to the `ViewParams` state
-- The system must display a pencil icon in the appBar to toggle `editMode`
-- The pencil icon must be grey when `editMode` is `false`
-- The pencil icon must be dark red when `editMode` is `true`
-- Clicking the icon must toggle the `editMode` value
+- The system must add a boolean value `generalEditMode` to the `ViewParams` state
+- The system must display a pencil icon in the appBar to toggle `generalEditMode`
+- The pencil icon must be grey when `generalEditMode` is `false`
+- The pencil icon must be dark red when `generalEditMode` is `true`
+- Clicking the icon must toggle the `generalEditMode` value
 
 ### FR2: Section-Level Edit Controls
-- When `editMode` is `true`, the system must display a pencil icon in the top-right corner of each Report section
+- When `generalEditMode` is `true`, the system must display a pencil icon in the top-right corner of each Report section
 - Clicking the pencil icon must enable editing for that specific section
 - The system must continue rendering the Report section based on the current (possibly edited) definition
 
@@ -90,7 +90,7 @@ This feature introduces an inline editing mode that allows users to edit Report 
 
 1. **Concurrent editing conflict resolution**: Multiple users editing the same Report simultaneously is handled by "last save wins" pattern
 2. **Edit history/undo beyond cancel**: No multi-step undo/redo functionality beyond the cancel button
-3. **Permission granularity**: No per-section or per-Report permission system; `editMode` toggle availability is uniform
+3. **Permission granularity**: No per-section or per-Report permission system; `generalEditMode` toggle availability is uniform
 4. **Real-time collaboration**: No live multi-user editing or presence indicators
 5. **Report structure changes**: No ability to add/remove sections for now, only edit existing sections. Adding / removing sections will be done in an ulterior PRD. Using KISS for now.
 6. **Version control**: No built-in version history or rollback beyond the current session
@@ -138,14 +138,14 @@ Alter existing components as little as possible, reuse existing components as mu
 - Use existing Action submission pattern from `ReportSectionEntityInstance.onEditValueObjectFormSubmit`
 
 ### Integration Points
-- `ViewParams`: Add `editMode: boolean` field
+- `ViewParams`: Add `generalEditMode: boolean` field
 - AppBar: Add edit mode toggle icon
-- Report rendering component: Add section edit controls when `editMode === true`
+- Report rendering component: Add section edit controls when `generalEditMode === true`
 - Action system: Submit Report update action similar to entity instance updates
 
 ### Data Flow
 ```
-ViewParams.editMode (appBar toggle)
+ViewParams.generalEditMode (appBar toggle)
   ↓
 Section pencil icons visible
   ↓

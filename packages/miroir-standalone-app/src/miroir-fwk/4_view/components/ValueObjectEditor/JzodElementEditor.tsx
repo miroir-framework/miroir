@@ -657,6 +657,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
              data={props.rootLessListKey}
             />
             <JzodAnyEditor
+              valueObjectEditMode={props.valueObjectEditMode}
               name={props.name}
               labelElement={props.labelElement}
               listKey={props.listKey}
@@ -681,13 +682,29 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         props.readOnly ||
         localResolvedElementJzodSchemaBasedOnValue.tag?.value?.editable === false ||
         localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable === false ||
-        (existingObject === false &&
+        (props.valueObjectEditMode == "update" &&
           localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.modifiable === false);
-      // Generate element based on schema type
+        // (existingObject === true &&
+        //   localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.modifiable === false);
+      // Generate element based on schema type 
+      log.info(
+        "JzodElementEditor",
+        count,
+        "rootLessListKey:", props.rootLessListKey,
+        "Rendering element of type:",
+        localResolvedElementJzodSchemaBasedOnValue.type,
+        "props.valueObjectEditMode",
+        props.valueObjectEditMode,
+        "localReadOnly:", localReadOnly,
+        "existingObject:", existingObject,
+        "localResolvedElementJzodSchemaBasedOnValue.tag?.value",
+        localResolvedElementJzodSchemaBasedOnValue.tag?.value
+      );
       switch (localResolvedElementJzodSchemaBasedOnValue.type) {
         case "object": {
           return (
             <JzodObjectEditor
+              valueObjectEditMode={props.valueObjectEditMode}
               name={props.name}
               isTopLevel={props.isTopLevel}
               labelElement={props.labelElement}
@@ -718,6 +735,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "array": {
           return (
             <JzodArrayEditor
+              valueObjectEditMode={props.valueObjectEditMode}
               listKey={props.listKey}
               name={props.name}
               labelElement={props.labelElement}
@@ -1042,6 +1060,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "literal": {
           return (
               <JzodLiteralEditor
+                valueObjectEditMode={props.valueObjectEditMode}
                 name={props.name}
                 labelElement={props.labelElement}
                 key={props.rootLessListKey}
@@ -1075,6 +1094,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           return (
             // <div style={{ width: "100%" }}>
               <JzodEnumEditor
+                valueObjectEditMode={props.valueObjectEditMode}
                 name={props.name}
                 labelElement={props.labelElement}
                 key={props.rootLessListKey}
@@ -1110,6 +1130,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               data={(props.typeCheckKeyMap as any)?.[props.rootLessListKey]}
             /> */}
             <JzodAnyEditor
+              valueObjectEditMode={props.valueObjectEditMode}
               name={props.name}
               labelElement={props.labelElement}
               key={props.rootLessListKey}
@@ -1310,14 +1331,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   return (
     <>
-      {/* {props.isTopLevel && (
+      {props.isTopLevel && (
         <>
-          <ThemedOnScreenHelper
-            label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
-            data={{displayAsCodeEditor, values: formik.values, localResolvedElementJzodSchemaBasedOnValue}}
+          <ThemedOnScreenDebug
+            label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type} existing ${existingObject}`}
+            data={{ existingObject }}
+            copyButton={true}
+            // initiallyUnfolded={false}
+            useCodeBlock={true}
           />
         </>
-      )} */}
+      )}
       <div>
         {/* <ThemedOnScreenHelper
           label={"element" + props.rootLessListKey}
@@ -1428,7 +1452,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         displayAsCodeEditor,
                         displayAsStructuredElement,
                         // !props.typeCheckKeyMap ||
-                        localResolvedElementJzodSchemaBasedOnValue: localResolvedElementJzodSchemaBasedOnValue??"localResolvedElementJzodSchemaBasedOnValue is undefined",
+                        localResolvedElementJzodSchemaBasedOnValue:
+                          localResolvedElementJzodSchemaBasedOnValue ??
+                          "localResolvedElementJzodSchemaBasedOnValue is undefined",
                         currentKeyMapRawSchemaType: currentKeyMap?.rawSchema?.type,
                         // currentKeyMap,
                         // typeCheckKeyMapKeys: Object.keys( props.typeCheckKeyMap || {} ),

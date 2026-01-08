@@ -53,7 +53,7 @@ export interface ViewParamsData {
   gridType: GridType;
   appTheme: AppTheme;
   toolsPage?: ToolsPageState;
-  editMode?: boolean;
+  generalEditMode?: boolean;
 }
 
 export class ViewParams {
@@ -138,11 +138,11 @@ export class ViewParams {
     };
   }
 
-  get editMode(): boolean {
+  get generalEditMode(): boolean {
     return this._editMode;
   }
 
-  set editMode(enabled: boolean) {
+  set generalEditMode(enabled: boolean) {
     this._editMode = enabled;
   }
 

@@ -189,7 +189,7 @@ export const ApplicationSelector: FC<{
         }}
       /> */}
       <TypedValueObjectEditorWithFormik
-        mode="update"
+        valueObjectEditMode="update"
         labelElement={labelElement}
         application={application}
         applicationDeploymentMap={defaultSelfApplicationDeploymentMap}

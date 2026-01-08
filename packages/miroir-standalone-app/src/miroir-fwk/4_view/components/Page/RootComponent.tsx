@@ -777,8 +777,8 @@ export const RootComponent = (props: RootComponentProps) => {
                 onOutlineToggle={handleToggleOutline}
                 gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
                 onGridTypeToggle={handleGridTypeToggle}
-                editMode={context.viewParams.editMode}
-                onEditModeToggle={() => context.viewParams.updateEditMode(!context.viewParams.editMode)}
+                generalEditMode={context.viewParams.generalEditMode}
+                onEditModeToggle={() => context.viewParams.updateEditMode(!context.viewParams.generalEditMode)}
               >
                 Bar! TODO: remove children
               </AppBar>

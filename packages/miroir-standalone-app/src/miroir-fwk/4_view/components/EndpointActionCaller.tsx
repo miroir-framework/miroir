@@ -541,7 +541,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                     applicationSection={"data"}
                     formLabel={"Submit Action"}
-                    mode="create" // Readonly viewer mode, not relevant here
+                    valueObjectEditMode="create" // Readonly viewer mode, not relevant here
                     displaySubmitButton="onTop"
                     />
                   )}

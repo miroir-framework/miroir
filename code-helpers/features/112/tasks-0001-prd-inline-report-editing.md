@@ -24,16 +24,16 @@ Generated from PRD: `0001-prd-inline-report-editing.md`
 
 ## Relevant Files
 
-- `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts` - Add `editMode` boolean field to ViewParams interface and class
-- `packages/miroir-core/src/0_interfaces/4-views/ViewParams.test.ts` - Tests for ViewParams with editMode
+- `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts` - Add `generalEditMode` boolean field to ViewParams interface and class
+- `packages/miroir-core/src/0_interfaces/4-views/ViewParams.test.ts` - Tests for ViewParams with generalEditMode
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx` - Add edit mode toggle button
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx` - New component wrapping ReportView with editing capabilities
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx` - New component wrapping ReportSectionView with section-level editing controls
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.test.tsx` - Integration tests for section editing
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportView.tsx` - Minimal modifications to integrate with ReportViewWithEditor
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx` - Minimal modifications to integrate with ReportSectionViewWithEditor
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportPage.tsx` - Update to use ReportViewWithEditor when editMode is enabled
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.tsx` - Integrate editMode into ViewParams context updates
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportPage.tsx` - Update to use ReportViewWithEditor when generalEditMode is enabled
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.tsx` - Integrate generalEditMode into ViewParams context updates
 - `packages/miroir-standalone-app/tests/4_view/ReportInlineEditing.integ.test.tsx` - Integration tests for complete inline editing flow
 
 ### Notes
@@ -48,38 +48,38 @@ Generated from PRD: `0001-prd-inline-report-editing.md`
 
 Never commit after you've checked your work, just stop short of commiting, leave that to me.
 
-- [x] 1.0 Add editMode to ViewParams and AppBar Toggle
-  - [x] 1.1 Update ViewParams EntityDefinition Jzod schema to include `editMode` boolean field in `packages/miroir-core/src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json`
+- [x] 1.0 Add generalEditMode to ViewParams and AppBar Toggle
+  - [x] 1.1 Update ViewParams EntityDefinition Jzod schema to include `generalEditMode` boolean field in `packages/miroir-core/src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json`
   - [x] 1.2 Run `npm run devBuild -w miroir-core` to regenerate TypeScript types from updated Jzod schema
-  - [x] 1.3 Add `editMode` boolean field to `ViewParamsData` interface in `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts`
+  - [x] 1.3 Add `generalEditMode` boolean field to `ViewParamsData` interface in `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts`
   - [x] 1.4 Add `_editMode` private field and getter/setter to `ViewParams` class in `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts`
   - [x] 1.5 Update `ViewParams` constructor to accept `initialEditMode` parameter (default: false)
   - [x] 1.6 Add `updateEditMode(enabled: boolean)` method to `ViewParams` class following pattern of `updateSidebarIsOpen`
   - [x] 1.7 Add edit mode toggle button to AppBar component in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx` (use Edit/EditOff Material-UI icons, grey when false, dark red when true)
   - [x] 1.8 Wire AppBar toggle to call `viewParams.updateEditMode()` and trigger ViewParams persistence via `ViewParamsUpdateQueue`
-  - [x] 1.9 Update `MiroirContextReactProvider` in `packages/miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.tsx` to include `editMode` in ViewParams initialization
-  - [x] 1.10 Write integration test in `packages/miroir-core/tests/4_views/ViewParams.integ.test.ts` to verify editMode persistence and retrieval
+  - [x] 1.9 Update `MiroirContextReactProvider` in `packages/miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.tsx` to include `generalEditMode` in ViewParams initialization
+  - [x] 1.10 Write integration test in `packages/miroir-core/tests/4_views/ViewParams.integ.test.ts` to verify generalEditMode persistence and retrieval
   - [x] 1.11 Run test: `npm run testByFile -w miroir-core -- ViewParams.integ`
 
 - [x] 2.0 Create ReportViewWithEditor Component with State Management
   - [x] 2.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx`
   - [x] 2.2 Define `ReportViewWithEditorProps` interface extending `ReportViewProps` (no additional props needed initially)
-  - [x] 2.3 Implement `ReportViewWithEditor` component that wraps `ReportView` and reads `editMode` from ViewParams context
+  - [x] 2.3 Implement `ReportViewWithEditor` component that wraps `ReportView` and reads `generalEditMode` from ViewParams context
   - [x] 2.4 Add React `useState` hook to manage edited Report definition (type: `Report | undefined`), initialized to `undefined` (no changes)
   - [x] 2.5 Add React `useState` hook to track which sections have been modified (type: `Set<string>`, where string is section path like "section.definition[0]")
   - [x] 2.6 Create `handleSectionEdit` callback that updates local Report definition state when a section is edited
   - [x] 2.7 Create `handleSectionCancel` callback that reverts a specific section to original definition
-  - [x] 2.8 Add "Submit" button at the top of report (only visible when `editMode === true` and `modifiedSections.size > 0`)
+  - [x] 2.8 Add "Submit" button at the top of report (only visible when `generalEditMode === true` and `modifiedSections.size > 0`)
   - [x] 2.9 Style Submit button to be prominent (use ThemedButton with success color from theme)
-  - [x] 2.10 Pass down `editMode`, `editedReportDefinition`, `onSectionEdit`, and `onSectionCancel` as props to child components
+  - [x] 2.10 Pass down `generalEditMode`, `editedReportDefinition`, `onSectionEdit`, and `onSectionCancel` as props to child components
   - [x] 2.11 Ensure ReportView continues to use original Report definition for rendering until section is explicitly saved locally
 
 - [x] 3.0 Create ReportSectionViewWithEditor Component with Section-Level Controls
   - [x] 3.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx`
-  - [x] 3.2 Define `ReportSectionViewWithEditorProps` interface extending `ReportSectionViewProps` with additional fields: `editMode: boolean`, `sectionPath: string`, `onSectionEdit: (path: string, newDefinition: any) => void`, `onSectionCancel: (path: string) => void`, `isSectionModified: boolean`
+  - [x] 3.2 Define `ReportSectionViewWithEditorProps` interface extending `ReportSectionViewProps` with additional fields: `generalEditMode: boolean`, `sectionPath: string`, `onSectionEdit: (path: string, newDefinition: any) => void`, `onSectionCancel: (path: string) => void`, `isSectionModified: boolean`
   - [x] 3.3 Implement `ReportSectionViewWithEditor` component that wraps `ReportSectionView`
   - [x] 3.4 Add React `useState` hook to track if current section is being edited (type: `boolean`)
-  - [x] 3.5 When `editMode === true`, render pencil icon (Edit icon from Material-UI) in top-right corner of each section container (use absolute positioning)
+  - [x] 3.5 When `generalEditMode === true`, render pencil icon (Edit icon from Material-UI) in top-right corner of each section container (use absolute positioning)
   - [x] 3.6 Style pencil icon to be grey by default, dark red when `isSectionModified === true`
   - [x] 3.7 When pencil is clicked, set `isEditing` state to true and render section editor inline
   - [x] 3.8 When section is being edited, show save icon (Save icon from Material-UI) next to pencil icon
@@ -115,7 +115,7 @@ Never commit after you've checked your work, just stop short of commiting, leave
   - [ ] 5.7 Handle action result - on error, show error snackbar with error message, keep local state for retry
   - [ ] 5.8 Disable Submit button while action is in progress (add loading state)
   - [ ] 5.9 Update `ReportPage` component in `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportPage.tsx` to use `ReportViewWithEditor` instead of `ReportView`
-  - [ ] 5.10 Write integration test in `packages/miroir-standalone-app/tests/4_view/ReportInlineEditing.integ.test.tsx` to verify full editing flow: enable editMode, edit section, save locally, submit to storage, verify persistence
+  - [ ] 5.10 Write integration test in `packages/miroir-standalone-app/tests/4_view/ReportInlineEditing.integ.test.tsx` to verify full editing flow: enable generalEditMode, edit section, save locally, submit to storage, verify persistence
   - [ ] 5.11 Test with filesystem storage: `VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem npm run testByFile -w miroir-standalone-app -- ReportInlineEditing.integ`
   - [ ] 5.12 Test with IndexedDB storage: `VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb npm run testByFile -w miroir-standalone-app -- ReportInlineEditing.integ`
   - [ ] 5.13 Test with PostgreSQL storage: `VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql npm run testByFile -w miroir-standalone-app -- ReportInlineEditing.integ`

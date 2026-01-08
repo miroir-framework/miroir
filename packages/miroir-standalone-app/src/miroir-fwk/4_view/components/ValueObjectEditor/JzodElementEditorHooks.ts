@@ -54,7 +54,7 @@ export interface JzodElementEditorHooks {
   context: MiroirReactContext;
   currentModel: MetaModel;
   miroirMetaModel: MetaModel;
-  currentMiroirModelEnvironment: MiroirModelEnvironment;
+  currentApplicationModelEnvironment: MiroirModelEnvironment;
   // ??
   deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>;
   // state
@@ -158,7 +158,7 @@ export function useJzodElementEditorHooks(
     }
   }, [formik.values, currentReportSectionFormikValues, rootLessListKeyArray]);
 
-  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+  const currentApplicationModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     currentApplication,
     applicationDeploymentMap
   );
@@ -430,7 +430,7 @@ export function useJzodElementEditorHooks(
     miroirMetaModel,
     currentValueObject: currentReportSectionFormikValues,
     currentValueObjectAtKey,
-    currentMiroirModelEnvironment,
+    currentApplicationModelEnvironment,
     formik,
     formikRootLessListKeyArray,
     formikRootLessListKey,

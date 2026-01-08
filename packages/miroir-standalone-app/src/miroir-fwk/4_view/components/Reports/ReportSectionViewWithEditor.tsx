@@ -30,7 +30,7 @@ import { cleanLevel } from '../../constants.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { ThemedIconButton, ThemedText } from '../Themes/index.js';
-import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
+import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { Formik, useFormikContext } from 'formik';
@@ -65,11 +65,11 @@ export interface ReportSectionViewPropsBase {
   isOutlineOpen?: boolean,
   onToggleOutline?: () => void,
   showPerformanceDisplay?: boolean;
-  mode?: "create" | "update",
+  valueObjectEditMode: ValueObjectEditMode,
 }
 
 export interface ReportSectionViewWithEditorProps extends ReportSectionViewPropsBase {
-  editMode: boolean,
+  generalEditMode: boolean,
   onSectionEdit?: (path: string, newDefinition: ReportSection) => void,
   onSectionCancel?: (path: string) => void,
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
@@ -93,6 +93,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
   const formik = useFormikContext<Record<string, any>>();
+  const valueObjectEditMode = props.valueObjectEditMode || "update";
 
   // log.info(
   //   "ReportSectionViewWithEditor: formik values =",
@@ -197,7 +198,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // Render icon bar (edit/save/cancel)
   // const IconBar = () => (
   //   <div style={{ position: "absolute", top: 6, right: 6, zIndex: 10, display: "flex", gap: 6 }}>
-  //     {!isEditing && props.editMode && (
+  //     {!isEditing && props.generalEditMode && (
   //       <ThemedIconButton
   //         title={props.isSectionModified ? "Section modified" : "Edit section"}
   //         onClick={() => {
@@ -267,7 +268,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   if (reportSectionDefinitionFromFormik?.type === 'grid') {
     return (
       <div style={{ position: "relative" }}>
-        {/* {props.editMode && <IconBar />} */}
+        {/* {props.generalEditMode && <IconBar />} */}
         <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
           {reportSectionDefinitionFromFormik?.definition.map((row, rowIndex) => (
             <div
@@ -314,7 +315,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       <>
         {/* <span>ReportSectionViewEditor list</span> */}
         <div style={{ position: "relative" }}>
-          {/* {props.editMode && <IconBar />} */}
+          {/* {props.generalEditMode && <IconBar />} */}
           {reportSectionDefinitionFromFormik?.definition.map((innerReportSection, index) => (
             <div key={index} style={{ marginBottom: "2em", position: "relative" }}>
               <ReportSectionViewWithEditor
@@ -336,7 +337,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   return (
     <>
       <div style={{ position: "relative" }}>
-        {/* {props.editMode && <IconBar />} */}
+        {/* {props.generalEditMode && <IconBar />} */}
         {showPerformanceDisplay && (
           <ThemedText style={{ fontSize: "12px", opacity: 0.6 }}>
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
@@ -379,6 +380,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {reportSectionDefinitionFromFormik?.type == "objectInstanceReportSection" && (
           <>
             <ReportSectionEntityInstance
+              valueObjectEditMode={valueObjectEditMode}
               application={props.application}
               applicationDeploymentMap={props.applicationDeploymentMap}
               applicationSection={props.applicationSection as ApplicationSection}
@@ -394,7 +396,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               formikAlreadyAvailable={true}
               // 
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
-              mode={props.mode || "update"}
             />
           </>
         )}
@@ -412,7 +413,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {/* {props.reportSectionDEFUNCT.type == "markdownReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown
-            editMode={props.editMode}
+            generalEditMode={props.generalEditMode}
             reportName={props.reportName}
             formikValuePath={props.reportSectionPath}
             formikReportDefinitionPathString={props.formikReportDefinitionPathString}

@@ -61,6 +61,8 @@ import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
+import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -75,6 +77,7 @@ const codeMirrorExtensions = [javascript()];
 // ################################################################################################
 // Extracted editor component for ReportSectionEntityInstance
 export interface TypedValueObjectEditorProps {
+  valueObjectEditMode: ValueObjectEditMode
   labelElement: React.ReactElement | undefined;
   // 
   // zoom functionality
@@ -109,7 +112,6 @@ export interface TypedValueObjectEditorProps {
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
   // when displayed in a JzodObjectEditFormDialog modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
-  mode: "create" | "update"
 }
  let count = 0;
 // ################################################################################################
@@ -239,7 +241,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   
   const reduxDeploymentsState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMetaModelEnvironment)
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+        () => ({}),
+        defaultMetaModelEnvironment
+      )
   );
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
@@ -405,7 +412,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application,
-              applicationDeploymentMap,
               deploymentUuid,
               pageParams: {},
               queryParams: {},
@@ -424,7 +430,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               },
             }
           : dummyDomainManyQueryWithDeploymentUuid,
-        applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+        // applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       ),
     [deploymentEntityStateSelectorMap, deploymentUuid, jzodTypeCheckResult]
@@ -436,7 +442,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         ReduxDeploymentsState,
         Domain2QueryReturnType<DomainElementSuccess>
       >,
-      foreignKeyObjectsFetchQueryParams
+      foreignKeyObjectsFetchQueryParams,
+      applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     ) || {};
 
   // log.info(
@@ -473,7 +480,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       onClick={(e) => {
         log.info("TypedValueObjectEditor submit button clicked", e);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
-        formik.setFieldValue(lastSubmitButtonClicked + "_mode", props.mode);
+        formik.setFieldValue(lastSubmitButtonClicked + "_mode", props.valueObjectEditMode);
       }}
     >
       {/* Submit {formLabel} */}
@@ -494,8 +501,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           label={`TypedValueObjectEditor for ${formikValuePathAsString} valueObject`}
           data={valueObject}
         /> */}
-        {typeError && (<span>"typeError: "{typeError}</span>) }
-        
+      {typeError && (<span>"typeError: "{typeError}</span>) }
+      <ThemedOnScreenDebug
+        label={`TypedValueObjectEditor Render Performance Metrics for ${formikValuePathAsString} mode "${props.valueObjectEditMode}"`}
+        data={props}
+        copyButton={true}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      />
       {/* </div> */}
       {/* <ThemedOnScreenHelper
         label={`TypedValueObjectEditor: "${formikValuePathAsString}"`}
@@ -536,6 +549,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             )}
           >
             <JzodElementEditor
+              valueObjectEditMode={props.valueObjectEditMode}
               // name={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
               // isTopLevel={true}
               // listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
@@ -601,6 +615,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               data={formValueMLSchema}
             /> */}
             <JzodElementEditor
+              valueObjectEditMode={props.valueObjectEditMode}
               reportSectionPathAsString={formikValuePathAsString ?? ""}
               name={"ROOT"}
               isTopLevel={true}

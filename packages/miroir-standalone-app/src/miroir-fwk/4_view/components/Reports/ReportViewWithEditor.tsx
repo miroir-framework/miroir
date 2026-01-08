@@ -71,8 +71,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
 
-  // Read editMode from ViewParams context
-  const editMode = context.viewParams.editMode;
+  // Read generalEditMode from ViewParams context
+  const generalEditMode = context.viewParams.generalEditMode;
   
   // ##############################################################################################
   // ##############################################################################################
@@ -460,7 +460,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   return (
     <>
-      {/* <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span> */}
+      {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
         {/* <ThemedOnScreenHelper
           label='ReportViewWithEditor'
@@ -498,7 +498,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 validateOnBlur={false}
               >
                 <>
-                  {editMode && entityDefinitionReport && (
+                  {generalEditMode && entityDefinitionReport && (
                     <>
                       {/* <ThemedOnScreenHelper
                         label={"ReportViewWithEditor: reportEntityDefinition"}
@@ -528,11 +528,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     </>
                   )}
                   <ReportSectionViewWithEditor
+                    valueObjectEditMode="update"
+                    generalEditMode={generalEditMode}
                     applicationSection={props.applicationSection}
                     application={props.application}
                     applicationDeploymentMap={props.applicationDeploymentMap}
                     deploymentUuid={props.deploymentUuid}
-                    editMode={editMode}
                     paramsAsdomainElements={props.pageParams}
                     isOutlineOpen={outlineContext.isOutlineOpen}
                     onToggleOutline={outlineContext.onToggleOutline}

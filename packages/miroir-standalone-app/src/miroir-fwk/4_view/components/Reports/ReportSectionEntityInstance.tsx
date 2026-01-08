@@ -107,7 +107,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 //   );
 // };
 
+export type ValueObjectEditMode = "create" | "update";
 export interface ReportSectionEntityInstanceProps {
+  valueObjectEditMode: ValueObjectEditMode,
   applicationSection: ApplicationSection,
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -131,7 +133,6 @@ export interface ReportSectionEntityInstanceProps {
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
   // when displayed in a AddObjectdialogForm modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
-  mode: "create" | "update",
 }
 
 // Test Selection Types are now in TransformerTestDisplay
@@ -741,6 +742,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
           // displayEditor ? (
           <TypedValueObjectEditor
+            valueObjectEditMode={props.valueObjectEditMode}
             labelElement={labelElement}
             application={props.application}
             applicationDeploymentMap={props.applicationDeploymentMap}
@@ -754,7 +756,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             maxRenderDepth={Infinity} // Always render fully for editor
             // 
             setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
-            mode={props.mode}
           />
         ) : (
           <div>

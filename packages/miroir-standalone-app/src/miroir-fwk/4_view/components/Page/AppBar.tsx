@@ -138,7 +138,7 @@ export interface AppBarProps extends MuiAppBarProps {
   gridType?: string,
   onGridTypeToggle?: () => void,
   // Edit mode display and toggle
-  editMode?: boolean,
+  generalEditMode?: boolean,
   onEditModeToggle?: () => void,
   // theme: any
 }
@@ -385,7 +385,7 @@ export function AppBar(props:AppBarProps) {
           {props.onEditModeToggle && (
             <Tooltip
               title={
-                props.editMode
+                props.generalEditMode
                   ? "Edit Report Mode: ON (click to disable)"
                   : "Edit Report Mode: OFF (click to enable)"
               }
@@ -395,7 +395,7 @@ export function AppBar(props:AppBarProps) {
                 onClick={props.onEditModeToggle}
                 sx={{
                   mr: 1,
-                  color: props.editMode
+                  color: props.generalEditMode
                     ? miroirTheme.currentTheme.colors.warningLight || "orange"
                     : miroirTheme.currentTheme.components.appBar.textColor,
                   transition: "all 0.3s ease-in-out",
@@ -404,7 +404,7 @@ export function AppBar(props:AppBarProps) {
                   },
                 }}
               >
-                {props.editMode ? <EditOff /> : <Edit />}
+                {props.generalEditMode ? <EditOff /> : <Edit />}
               </IconButton>
             </Tooltip>
           )}
