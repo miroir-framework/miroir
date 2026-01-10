@@ -13,6 +13,15 @@
         "label": "library",
         "items": [
           {
+            "label": "Library Application",
+            "section": "model",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+            "icon": "category",
+            "menuItemScope": "model",
+            "instanceUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+          },
+          {
             "label": "Library Entities",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",

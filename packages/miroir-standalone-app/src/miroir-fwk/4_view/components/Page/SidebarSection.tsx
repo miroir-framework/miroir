@@ -61,6 +61,33 @@ const sideBarDefaultItems: MiroirMenuItem[] = [
   },
 ];
 
+// ################################################################################################
+interface MenuItemProps {
+  menuItem: MiroirMenuItem;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  keyValue: string;
+  showPadding?: boolean;
+}
+
+const MenuItem: FC<MenuItemProps> = ({ menuItem, applicationDeploymentMap, keyValue, showPadding = false }) => {
+  return (
+    <ThemedListItem key={keyValue} disablePadding>
+      <ThemedListItemButton
+        sx={showPadding ? { padding: 0 } : undefined}
+        component={Link}
+        to={`/report/${menuItem.selfApplication}/${
+          applicationDeploymentMap[menuItem.selfApplication]
+        }/${menuItem.section}/${menuItem.reportUuid}/${menuItem.instanceUuid ?? "xxxxxx"}`}
+      >
+        <ThemedListMiroirIcon>
+          <ThemedIcon icon={menuItem.icon} />
+        </ThemedListMiroirIcon>
+        <ThemedListItemText primary={menuItem.label} />
+      </ThemedListItemButton>
+    </ThemedListItem>
+  );
+};
+
 let count = 0;
 // ################################################################################################
 export interface SidebarSectionProps {
@@ -188,20 +215,13 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                       !curr.menuItemScope || curr.menuItemScope == "data" || context.showModelTools
                   )
                   .map((i: any, index: number) => (
-                    <ThemedListItem key={i.label} disablePadding>
-                      <ThemedListItemButton
-                        sx={{ padding: 0 }}
-                        component={Link}
-                        to={`/report/${i.selfApplication}/${props.applicationDeploymentMap[i.selfApplication]}/${i.section}/${i.reportUuid}/xxxxxx`}
-                      >
-                        <ThemedListMiroirIcon>
-                          {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                          <ThemedIcon icon={i.icon} />
-                        </ThemedListMiroirIcon>
-                        <ThemedListItemText primary={i.label} />
-                        {/* <ThemedListItemText primary={`application: ${i.selfApplication}`} /> */}
-                      </ThemedListItemButton>
-                    </ThemedListItem>
+                    <MenuItem
+                      key={i.label}
+                      menuItem={i}
+                      applicationDeploymentMap={props.applicationDeploymentMap}
+                      keyValue={i.label}
+                      showPadding={true}
+                    />
                   ))}
               </ThemedList>
             ) : (
@@ -216,19 +236,12 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                       !curr.menuItemScope || curr.menuItemScope == "data" || context.showModelTools
                     )
                     .map((curr: any, index: number) => (
-                      <ThemedListItem key={curr.label + index} disablePadding>
-                        <ThemedListItemButton
-                          component={Link}
-                          to={`/report/${curr.selfApplication}/${props.applicationDeploymentMap[curr.selfApplication]}/${curr.section}/${curr.reportUuid}/xxxxxx`}
-                        >
-                          <ThemedListMiroirIcon>
-                            {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                            <ThemedIcon icon={curr.icon} />
-                          </ThemedListMiroirIcon>
-                          <ThemedListItemText primary={curr.label} />
-                        {/* <ThemedListItemText primary={`application: ${curr.selfApplication}`} /> */}
-                        </ThemedListItemButton>
-                      </ThemedListItem>
+                      <MenuItem
+                        key={curr.label + index}
+                        menuItem={curr}
+                        applicationDeploymentMap={props.applicationDeploymentMap}
+                        keyValue={curr.label + index}
+                      />
                     ))
                     .concat([<ThemedDivider key={menuSection.label + "Divider"} />])
                 )}

@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 
 // import { ReactCodeMirror } from "@uiw/react-codemirror";
-import { useCallback, useState } from "react";
 import { PageContainer } from "../components/Page/PageContainer";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
@@ -9,39 +8,22 @@ import { PageContainer } from "../components/Page/PageContainer";
 
 import {
   Domain2ElementFailed,
-  DomainAction,
   DomainControllerInterface,
-  JzodElement,
   JzodObject,
   LoggerInterface,
-  MiroirConfigClient,
   MiroirLoggerFactory,
-  StoreUnitConfiguration,
-  TestCompositeActionParams,
-  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  displayTestSuiteResultsDetails,
-  entityApplicationForAdmin,
   entityBook,
-  entityDeployment,
-  entityMenu,
-  entitySelfApplication,
   entityTransformerTest,
-  expect,
   selfApplicationDeploymentLibrary,
   selfApplicationLibrary,
   selfApplicationMiroir,
   transformerTest_resolveConditionalSchema,
-  type BoxedExtractorOrCombinerReturningObject,
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap,
-  type TestSuiteResult,
-  type TransformerTestSuite,
-  type Uuid
+  type SyncBoxedExtractorOrQueryRunnerMap
 } from "miroir-core";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
@@ -49,13 +31,10 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRed
 //   Entity,
 //   TestSuiteResult
 // } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { applicationParis, packageName } from "../../../constants.js";
-import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
-import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
+import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,
-  useMiroirContextService,
-  useMiroirContextformHelperState
+  useMiroirContextService
 } from "../MiroirContextReactProvider.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";

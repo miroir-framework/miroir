@@ -24,7 +24,9 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -35,7 +37,9 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -45,7 +49,9 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -56,7 +62,9 @@
           "value": {
             "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -65,8 +73,7 @@
         "tag": {
           "value": {
             "id": 5,
-            "defaultLabel": "Name",
-            "display": { "editable": true }
+            "defaultLabel": "Name"
           }
         }
       },
@@ -75,8 +82,7 @@
         "tag": {
           "value": {
             "id": 6,
-            "defaultLabel": "Default Label",
-            "display": { "editable": true }
+            "defaultLabel": "Default Label"
           }
         }
       },
@@ -86,10 +92,13 @@
         "tag": {
           "value": {
             "id": 7,
-            "defaultLabel": "Description",
-            "display": { "editable": true }
+            "defaultLabel": "Description"
           }
         }
+      },
+      "homePageUrl": {
+        "type": "string",
+        "optional": true
       }
     }
   }

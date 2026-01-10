@@ -106,12 +106,12 @@ export const HomePage = (props: RootComponentProps) => {
   // context utility functions
   const displayedApplication = context.application;
   const displayedDeploymentUuid = context.deploymentUuid;
-  const setDisplayedDeploymentUuid = context.setDeploymentUuid;
+  // const setDisplayedDeploymentUuid = context.setDeploymentUuid;
 
   const displayedReportUuid = context.reportUuid;
-  const setDisplayedReportUuid = context.setReportUuid;
+  // const setDisplayedReportUuid = context.setReportUuid;
   const displayedApplicationSection = context.applicationSection;
-  const setDisplayedApplicationSection = context.setApplicationSection;
+  // const setDisplayedApplicationSection = context.setApplicationSection;
 
   const currentApplicationDeploymentMap = defaultSelfApplicationDeploymentMap;
 
@@ -215,26 +215,26 @@ export const HomePage = (props: RootComponentProps) => {
     [currentMiroirReport, displayedApplication, displayedApplicationSection, displayedDeploymentUuid]
   )
 
-  const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
-    event.stopPropagation();
-    const reportUuid = defaultToEntityList(event.target.value, availableReports);
-    setDisplayedReportUuid(reportUuid?reportUuid:'');
-  };
+  // const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
+  //   event.stopPropagation();
+  //   const reportUuid = defaultToEntityList(event.target.value, availableReports);
+  //   setDisplayedReportUuid(reportUuid?reportUuid:'');
+  // };
 
-  const handleChangeDisplayedApplicationSection = (event: SelectChangeEvent) => {
-    event.stopPropagation();
-    setDisplayedApplicationSection(event.target.value as ApplicationSection);
-    setDisplayedReportUuid("");
-  };
+  // const handleChangeDisplayedApplicationSection = (event: SelectChangeEvent) => {
+  //   event.stopPropagation();
+  //   setDisplayedApplicationSection(event.target.value as ApplicationSection);
+  //   setDisplayedReportUuid("");
+  // };
 
-  const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
-    event.stopPropagation();
-    log.info('handleChangeDisplayedDeployment',event);
-    setDisplayedDeploymentUuid(event.target.value);
-    log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
-    setDisplayedApplicationSection('data');
-    setDisplayedReportUuid("");
-  };
+  // const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
+  //   event.stopPropagation();
+  //   log.info('handleChangeDisplayedDeployment',event);
+  //   setDisplayedDeploymentUuid(event.target.value);
+  //   log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
+  //   setDisplayedApplicationSection('data');
+  //   setDisplayedReportUuid("");
+  // };
 
     // // const bundleProducerQuery: QueryTemplate = useMemo(()=>queryVersionBundleProducerV1.definition,[])
     // const bundleProducerQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = useMemo(()=>({
@@ -267,10 +267,9 @@ export const HomePage = (props: RootComponentProps) => {
         },
       }}
     >
-      {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
-      {/* <Box sx={{ display: 'flex' }}> */}
+      <h2>Welcome to the Miroir Platform!</h2>
       {/* undo */}
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleActionFromUI({
@@ -286,9 +285,9 @@ export const HomePage = (props: RootComponentProps) => {
         >
           undo
         </button>
-      </span>
+      </span> */}
       {/* redo */}
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleActionFromUI({
@@ -304,71 +303,11 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Redo
         </button>
-      </span>
-      {/* commit miroir */}
-      {/* <span>
-        <button
-          onClick={async () => {
-            await domainController.handleActionFromUI(
-              {
-                actionType: "modelAction",
-                actionName: "commit",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-              },
-              defaultMiroirMetaModel
-            );
-          }}
-        >
-          Commit Miroir
-        </button>
-      </span> */}
-      {/* Commit Library app */}
-      {/* <span>
-        <button
-          onClick={async () => {
-            await domainController.handleActionFromUI(
-              {
-                actionType: "modelAction",
-                actionName: "commit",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-              },
-              defaultMiroirMetaModel
-            );
-          }}
-        >
-          Commit Library app
-        </button>
       </span> */}
       {/* rollback */}
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleActionFromUI(
-              {
-                // actionType: "modelAction",
-                actionType: "rollback",
-                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: selfApplicationMiroir.uuid,
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                },
-              },
-              currentApplicationDeploymentMap, defaultMiroirModelEnvironment
-            );
-            log.info(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ROLLBACK FOR MIROIR DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            );
-          }}
-        >
-          Rollback
-        </button>
-      </span>
-      <p />
+      {/* <p /> */}
       {/* Reset SelfApplication database */}
-      <span>
+      {/* <span>
         <button
           onClick={async () =>
             resetAndInitApplicationDeployment.bind(domainController, [
@@ -379,14 +318,13 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Reset SelfApplication database
         </button>
-      </span>
+      </span> */}
       {/* Reset Library SelfApplication Data */}
       <span>
-        <button
+        {/* <button
           onClick={async () => {
             await domainController.handleActionFromUI(
               {
-                // actionType: "modelAction",
                 actionType: "resetData",
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -403,7 +341,6 @@ export const HomePage = (props: RootComponentProps) => {
             );
             await domainController.handleActionFromUI(
               {
-                // actionType: "modelAction",
                 actionType: "rollback",
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -418,9 +355,9 @@ export const HomePage = (props: RootComponentProps) => {
           }}
         >
           Reset Library SelfApplication Data
-        </button>
+        </button> */}
       </span>
-      <p />
+      {/* <p /> */}
       {/* <span>
         <button
           onClick={async () => {
@@ -452,99 +389,9 @@ export const HomePage = (props: RootComponentProps) => {
           upload App configuration to database
         </button>
       </span> */}
-      {/* Modify Book entity name */}
-      {/* <span>
-        <button
-          onClick={async () => {
-            await domainController.handleActionFromUI(
-              {
-                // actionType: "modelAction",
-                actionType: "renameEntity",
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entityName: entityBook.name,
-                entityUuid: entityBook.uuid,
-                entityDefinitionUuid: entityDefinitionBook.uuid,
-                targetValue: "Bookss",
-              },
-              currentAppModel
-            );
-          }}
-        >
-          Modify Book entity name
-        </button>
-      </span> */}
-      {/* modify report list name */}
-      {/* <span>
-        <button
-          onClick={async () => {
-            await domainController.handleActionFromUI(
-              {
-                actionType: "transactionalInstanceAction",
-                instanceAction: {
-                  // actionType: "instanceAction",
-                  actionType: "updateInstance",
-                  applicationSection: "data",
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  objects: [
-                    {
-                      parentName: reportReportList.parentName,
-                      parentUuid: reportReportList.parentUuid,
-                      applicationSection: "data",
-                      instances: [
-                        Object.assign({}, reportReportList, {
-                          name: "Report2List",
-                          defaultLabel: "Modified List of Reports",
-                        }) as EntityInstance,
-                      ],
-                    },
-                  ],
-                },
-              },
-              defaultMiroirMetaModel // TODO replace with current Miroir model (as existing in the datastore)
-            );
-          }}
-        >
-          Modify Report List name
-        </button>
-      </span> */}
-      {/* remove author entity */}
-      {/* <span>
-        <button
-          onClick={async () => {
-            await domainController.handleActionFromUI(
-              {
-                // actionType: "modelAction",
-                actionType: "dropEntity",
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entityUuid: entityAuthor.uuid,
-                entityDefinitionUuid: entityDefinitionAuthor.uuid,
-              },
-              currentAppModel // TODO replace with current Miroir model (as existing in the datastore)
-            );
-          }}
-        >
-          Remove Author entity
-        </button>
-      </span> */}
       <p />
-      <div>uuid: {uuidv4()}</div>
-      <div>transactions: {JSON.stringify(transactions)}</div>
-      <p />
-      <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
-      <p />
-      <p />
-      {/* <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
-      <p /> */}
-      <span>Applications: {}</span>
-      <p />
-      {/* <div>
-        <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-      </div> */}
-      {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
-      <Importer
+      {/* <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span> */}
+      {/* <Importer
         filename=""
         currentModel={currentModel}
         // currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
@@ -555,90 +402,7 @@ export const HomePage = (props: RootComponentProps) => {
         // currentApplicationUuid="478d3a5d-d866-41c8-944c-121aca3ab87f" // test4
         // currentApplicationUuid="2c1d14d5-691f-42cf-9850-887122170a43" // Paris
         currentApplicationUuid={selfApplicationLibrary.uuid} 
-      ></Importer>
-      <p />
-      {/* <Box sx={{ minWidth: 50 }}> */}
-      <div>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={context.deploymentUuid}
-            label="displayedDeploymentUuid"
-            onChange={handleChangeDisplayedDeployment}
-          >
-            {deployments.map((deployment) => {
-              return (
-                <MenuItem key={deployment.name} value={deployment.uuid}>
-                  {deployment.description}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </div>
-      {/* <Box sx={{ minWidth: 50 }}> */}
-      <div>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Chosen SelfApplication Section</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={displayedApplicationSection}
-            label="displayedApplicationSection"
-            onChange={handleChangeDisplayedApplicationSection}
-          >
-            {["model", "data"].map((applicationSection) => {
-              return (
-                <MenuItem key={applicationSection} value={applicationSection}>
-                  {applicationSection}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </div>
-      <p />
-      {/* <Box sx={{ minWidth: 50 }}> */}
-      <div>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Displayed Report</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={displayedReportUuid}
-            label="displayedReportUuid"
-            onChange={handleChangeDisplayedReport}
-          >
-            {availableReports.map((r: Report) => {
-              return (
-                <MenuItem key={r.name} value={r.uuid}>
-                  {r.defaultLabel}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </div>
-      {/* {currentMiroirReport && displayedDeploymentUuid && displayedApplicationSection ? (
-        <div>
-          <ReportViewWithEditor
-            reportDefinition={currentMiroirReport?.definition}
-            applicationSection={displayedApplicationSection}
-            deploymentUuid={displayedDeploymentUuid}
-            pageParams={pageParams}
-          />
-        </div>
-      ) : (
-        <div>
-          Oops, HomePage coule not be displayed:
-          <p>
-            currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
-          </p>
-        </div>
-      )} */}
-      {/* </Box> */}
+      ></Importer> */}
     </PageContainer>
   );
 };
