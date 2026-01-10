@@ -75,24 +75,24 @@ export const dataSection = "data"
 export const emptyList:any[] = []
 export const emptyObject = {}
 
-const pageLabel = "Tools";
+// const pageLabel = "Tools";
 
 export const defaultObject: JzodObject = {
   type: "object",
   definition: {}
 } as JzodObject
 
-const initialValues = {
-  newApplicationName: "placeholder...",
-  newAdminAppApplicationUuid: applicationParis.uuid,
-  newSelfApplicationUuid: applicationParis.selfApplication,
-  newDeploymentUuid: adminConfigurationDeploymentParis.uuid,
-}
+// const initialValues = {
+//   newApplicationName: "placeholder...",
+//   newAdminAppApplicationUuid: applicationParis.uuid,
+//   newSelfApplicationUuid: applicationParis.selfApplication,
+//   newDeploymentUuid: adminConfigurationDeploymentParis.uuid,
+// }
 
-export interface MiroirForm {
-  formSchema: JzodElement,
-  formAction: DomainAction,
-}
+// export interface MiroirForm {
+//   formSchema: JzodElement,
+//   formAction: DomainAction,
+// }
 
 
 // ################################################################################################
@@ -104,9 +104,8 @@ export const TransformerBuilderPage: React.FC<any> = (
   props: any // TODO: give a type to props!!!
 ) => {
   count++;
-  const currentApplicationDeploymentMap = defaultSelfApplicationDeploymentMap;
   // const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
-  const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
+  // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   // Auto-fetch configurations when the page loads
   const { fetchConfigurations } = usePageConfiguration({
@@ -114,17 +113,18 @@ export const TransformerBuilderPage: React.FC<any> = (
     successMessage: "Tools page configurations loaded successfully",
     actionName: "tools page configuration fetch"
   });
-
+  
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
-
-  const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
-  const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
-    undefined
-  );
-  // const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
-  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
+  
+  const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  // const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
+  // const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
+  //   undefined
+  // );
+  // // const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
+  // const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
 
 
 
@@ -133,7 +133,12 @@ export const TransformerBuilderPage: React.FC<any> = (
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap?.extractState(state.presentModelSnapshot.current, () => ({}), defaultMetaModelEnvironment)
+      deploymentEntityStateSelectorMap?.extractState(
+        state.presentModelSnapshot.current,
+        currentApplicationDeploymentMap,
+        () => ({}),
+        defaultMetaModelEnvironment
+      )
   );
   
   const entityTransformerTestKey = adminConfigurationDeploymentMiroir.uuid + "_data_" + entityTransformerTest.uuid
@@ -148,8 +153,9 @@ export const TransformerBuilderPage: React.FC<any> = (
   // );
   const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<any> | undefined =
     Object.keys(deploymentEntityState).includes(entityTransformerTestKey)
-      ? (deploymentEntityStateSelectorMap.extractEntityInstance(
+      ? deploymentEntityStateSelectorMap.extractEntityInstance(
           deploymentEntityState,
+          currentApplicationDeploymentMap,
           {
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObject",
@@ -166,11 +172,11 @@ export const TransformerBuilderPage: React.FC<any> = (
                 instanceUuid: transformerTest_resolveConditionalSchema.uuid,
               },
             },
-          } as BoxedExtractorOrCombinerReturningObject,
+          }, // as BoxedExtractorOrCombinerReturningObject,
           defaultMetaModelEnvironment
-        ))
-        // ) as Domain2QueryReturnType<TransformerTestSuite>)
-      : undefined;
+        )
+      : // ) as Domain2QueryReturnType<TransformerTestSuite>)
+        undefined;
   // log.info(
   //   "Tools.tsx transformerTestSuite_resolveConditionalSchema",
   //   transformerTestSuite_resolveConditionalSchema
@@ -183,200 +189,200 @@ export const TransformerBuilderPage: React.FC<any> = (
     );
   }
 
-  // ##############################################################################################
-  const onSubmit = useCallback(
-    async (
-      actionCreateSchemaParamValues: any /* actually follows formJzodSchema */,
-      formikFunctions: { setSubmitting: any; setErrors: any }
-    ) => {
-      try {
-        //  Send values somehow
-        setformHelperState(actionCreateSchemaParamValues);
+  // // ##############################################################################################
+  // const onSubmit = useCallback(
+  //   async (
+  //     actionCreateSchemaParamValues: any /* actually follows formJzodSchema */,
+  //     formikFunctions: { setSubmitting: any; setErrors: any }
+  //   ) => {
+  //     try {
+  //       //  Send values somehow
+  //       setformHelperState(actionCreateSchemaParamValues);
 
-        log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Tools.tsx onSubmit formik values",
-          actionCreateSchemaParamValues,
-          "newApplicationName",
-          actionCreateSchemaParamValues.newApplicationName,
-          "newDeploymentUuid",
-          actionCreateSchemaParamValues.newDeploymentUuid,
-          "newSelfApplicationUuid",
-          actionCreateSchemaParamValues.newSelfApplicationUuid,
-          "newAdminAppApplicationUuid",
-          actionCreateSchemaParamValues.newAdminAppApplicationUuid
-        );
+  //       log.info(
+  //         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Tools.tsx onSubmit formik values",
+  //         actionCreateSchemaParamValues,
+  //         "newApplicationName",
+  //         actionCreateSchemaParamValues.newApplicationName,
+  //         "newDeploymentUuid",
+  //         actionCreateSchemaParamValues.newDeploymentUuid,
+  //         "newSelfApplicationUuid",
+  //         actionCreateSchemaParamValues.newSelfApplicationUuid,
+  //         "newAdminAppApplicationUuid",
+  //         actionCreateSchemaParamValues.newAdminAppApplicationUuid
+  //       );
         
-        const paramsForTemplates = {
-          ...actionCreateSchemaParamValues,
-          entityApplicationForAdmin,
-          entitySelfApplication,
-          adminConfigurationDeploymentAdmin,
-          entityMenu,
-          entityDeployment,
-        };
-        log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Tools.tsx onSubmit formik values actionCreateSchemaParamValues",
-          actionCreateSchemaParamValues,
-          "paramsForTemplates",
-          paramsForTemplates
-        );
+  //       const paramsForTemplates = {
+  //         ...actionCreateSchemaParamValues,
+  //         entityApplicationForAdmin,
+  //         entitySelfApplication,
+  //         adminConfigurationDeploymentAdmin,
+  //         entityMenu,
+  //         entityDeployment,
+  //       };
+  //       log.info(
+  //         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Tools.tsx onSubmit formik values actionCreateSchemaParamValues",
+  //         actionCreateSchemaParamValues,
+  //         "paramsForTemplates",
+  //         paramsForTemplates
+  //       );
 
-          const testStoreUnitConfiguration: StoreUnitConfiguration = {
-            admin: {
-              emulatedServerType: "filesystem",
-              directory: "./tests/tmp/miroir_admin",
-            },
-            model: {
-              emulatedServerType: "filesystem",
-              directory: "./tests/tmp/miroir_model",
-            },
-            data: {
-              emulatedServerType: "filesystem",
-              directory: "./tests/tmp/miroir_data",
-            },
-          };
+  //         const testStoreUnitConfiguration: StoreUnitConfiguration = {
+  //           admin: {
+  //             emulatedServerType: "filesystem",
+  //             directory: "./tests/tmp/miroir_admin",
+  //           },
+  //           model: {
+  //             emulatedServerType: "filesystem",
+  //             directory: "./tests/tmp/miroir_model",
+  //           },
+  //           data: {
+  //             emulatedServerType: "filesystem",
+  //             directory: "./tests/tmp/miroir_data",
+  //           },
+  //         };
 
-          const testMiroirConfig: MiroirConfigClient = {
-            miroirConfigType: "client",
-            client: {
-              emulateServer: true,
-              rootApiUrl: "http://localhost:3080",
-              deploymentStorageConfig: {
-                "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
-                  admin: {
-                    emulatedServerType: "sql",
-                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                    schema: "miroirAdmin",
-                  },
-                  model: {
-                    emulatedServerType: "sql",
-                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                    schema: "miroir",
-                  },
-                  data: {
-                    emulatedServerType: "sql",
-                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                    schema: "miroir",
-                  },
-                },
-                "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
-                  admin: {
-                    emulatedServerType: "sql",
-                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                    schema: "miroirAdmin",
-                  },
-                  model: {
-                    emulatedServerType: "sql",
-                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                    schema: "library",
-                  },
-                  data: {
-                    emulatedServerType: "sql",
-                    connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-                    schema: "library",
-                  },
-                },
-              },
-              // deploymentMode: "monoUser",
-              // monoUserAutentification: false,
-              // monoUserVersionControl: false,
-              // versionControlForDataConceptLevel: false,
-            },
-          };
+  //         const testMiroirConfig: MiroirConfigClient = {
+  //           miroirConfigType: "client",
+  //           client: {
+  //             emulateServer: true,
+  //             rootApiUrl: "http://localhost:3080",
+  //             deploymentStorageConfig: {
+  //               "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
+  //                 admin: {
+  //                   emulatedServerType: "sql",
+  //                   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //                   schema: "miroirAdmin",
+  //                 },
+  //                 model: {
+  //                   emulatedServerType: "sql",
+  //                   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //                   schema: "miroir",
+  //                 },
+  //                 data: {
+  //                   emulatedServerType: "sql",
+  //                   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //                   schema: "miroir",
+  //                 },
+  //               },
+  //               "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+  //                 admin: {
+  //                   emulatedServerType: "sql",
+  //                   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //                   schema: "miroirAdmin",
+  //                 },
+  //                 model: {
+  //                   emulatedServerType: "sql",
+  //                   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //                   schema: "library",
+  //                 },
+  //                 data: {
+  //                   emulatedServerType: "sql",
+  //                   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+  //                   schema: "library",
+  //                 },
+  //               },
+  //             },
+  //             // deploymentMode: "monoUser",
+  //             // monoUserAutentification: false,
+  //             // monoUserVersionControl: false,
+  //             // versionControlForDataConceptLevel: false,
+  //           },
+  //         };
 
-        const {
-          testSuitesForBuildPlusRuntimeCompositeAction,
-          testDeploymentStorageConfiguration,
-          testDeploymentUuid,
-        }: {
-          testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestCompositeActionParams>;
-          testDeploymentStorageConfiguration: any;
-          testDeploymentUuid: Uuid;
-        } = getTestSuitesForBuildPlusRuntimeCompositeAction(testMiroirConfig);
+  //       const {
+  //         testSuitesForBuildPlusRuntimeCompositeAction,
+  //         testDeploymentStorageConfiguration,
+  //         testDeploymentUuid,
+  //       }: {
+  //         testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestCompositeActionParams>;
+  //         testDeploymentStorageConfiguration: any;
+  //         testDeploymentUuid: Uuid;
+  //       } = getTestSuitesForBuildPlusRuntimeCompositeAction(testMiroirConfig);
 
-        for (const [currentTestSuiteName, testSuite] of Object.entries(
-          testSuitesForBuildPlusRuntimeCompositeAction as Record<string, TestCompositeActionParams>
-        )) {
-          const testSuiteResults = await runTestOrTestSuite(
-            // localCache,
-            domainController,
-            testSuite,
-            currentApplicationDeploymentMap,
-            context.miroirContext.miroirActivityTracker,
-            (testSuite as any)["testParams"]
-          );
-          log.info(
-            "testSuiteResults",
-            currentTestSuiteName,
-            testSuiteResults,
-            "testSuite",
-            testSuite
-          );
-          if (!testSuiteResults || testSuiteResults.status !== "ok") {
-            expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
-          }
-        }
+  //       for (const [currentTestSuiteName, testSuite] of Object.entries(
+  //         testSuitesForBuildPlusRuntimeCompositeAction as Record<string, TestCompositeActionParams>
+  //       )) {
+  //         const testSuiteResults = await runTestOrTestSuite(
+  //           // localCache,
+  //           domainController,
+  //           testSuite,
+  //           currentApplicationDeploymentMap,
+  //           context.miroirContext.miroirActivityTracker,
+  //           (testSuite as any)["testParams"]
+  //         );
+  //         log.info(
+  //           "testSuiteResults",
+  //           currentTestSuiteName,
+  //           testSuiteResults,
+  //           "testSuite",
+  //           testSuite
+  //         );
+  //         if (!testSuiteResults || testSuiteResults.status !== "ok") {
+  //           expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
+  //         }
+  //       }
 
-        // const deleteNewApplicationResult = await domainController.handleCompositeAction(
-        //   testOnLibrary_deleteLibraryDeployment({
-        //   miroirConfigType: "client",
-        //   client: {
-        //     emulateServer: true,
-        //     rootApiUrl: "http://localhost:3080",
-        //     deploymentStorageConfig: {
-        //       [actionCreateSchemaParamValues.newDeploymentUuid]:testDeploymentStorageConfiguration
-        //       },
-        //     }}, actionCreateSchemaParamValues.newDeploymentUuid),
-        //   paramsForTemplates,
-        //   defaultLibraryModelEnvironment // TODO: use real model environment for current deployment
-        // );
+  //       // const deleteNewApplicationResult = await domainController.handleCompositeAction(
+  //       //   testOnLibrary_deleteLibraryDeployment({
+  //       //   miroirConfigType: "client",
+  //       //   client: {
+  //       //     emulateServer: true,
+  //       //     rootApiUrl: "http://localhost:3080",
+  //       //     deploymentStorageConfig: {
+  //       //       [actionCreateSchemaParamValues.newDeploymentUuid]:testDeploymentStorageConfiguration
+  //       //       },
+  //       //     }}, actionCreateSchemaParamValues.newDeploymentUuid),
+  //       //   paramsForTemplates,
+  //       //   defaultLibraryModelEnvironment // TODO: use real model environment for current deployment
+  //       // );
 
-        // log.info(
-        //   "store deleted with uuid",
-        //   actionCreateSchemaParamValues.newDeploymentUuid,
-        //   JSON.stringify(deleteNewApplicationResult, null, 2)
-        // );
-        // // not needed in the GUI, the admin and miroir models stay there.
-        // // await deleteAndCloseApplicationDeployments(
-        // //   miroirConfig,
-        // //   domainController,
-        // //   [
-        // //     typedAdminConfigurationDeploymentMiroir
-        // //   ],
-        // // );
+  //       // log.info(
+  //       //   "store deleted with uuid",
+  //       //   actionCreateSchemaParamValues.newDeploymentUuid,
+  //       //   JSON.stringify(deleteNewApplicationResult, null, 2)
+  //       // );
+  //       // // not needed in the GUI, the admin and miroir models stay there.
+  //       // // await deleteAndCloseApplicationDeployments(
+  //       // //   miroirConfig,
+  //       // //   domainController,
+  //       // //   [
+  //       // //     typedAdminConfigurationDeploymentMiroir
+  //       // //   ],
+  //       // // );
     
-        const testSuitePath = [{ testSuite: Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]}]
-        const globalTestSuiteResults = context.miroirContext.miroirActivityTracker.getTestSuiteResult(
-          testSuitePath
-        );
-        setTestResults(globalTestSuiteResults);
-        log.info("testResults", globalTestSuiteResults);
+  //       const testSuitePath = [{ testSuite: Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]}]
+  //       const globalTestSuiteResults = context.miroirContext.miroirActivityTracker.getTestSuiteResult(
+  //         testSuitePath
+  //       );
+  //       setTestResults(globalTestSuiteResults);
+  //       log.info("testResults", globalTestSuiteResults);
 
 
-        displayTestSuiteResultsDetails(
-          // TestFramework,
-          Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0],
-          testSuitePath,
-          context.miroirContext.miroirActivityTracker
-        );
+  //       displayTestSuiteResultsDetails(
+  //         // TestFramework,
+  //         Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0],
+  //         testSuitePath,
+  //         context.miroirContext.miroirActivityTracker
+  //       );
 
 
-        // log.info("created Deployment instance in Admin App deployment");
-      } catch (e) {
-        log.error(e);
-        //  Map and show the errors in your form
-        // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
+  //       // log.info("created Deployment instance in Admin App deployment");
+  //     } catch (e) {
+  //       log.error(e);
+  //       //  Map and show the errors in your form
+  //       // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
 
-        // setErrors(formErrors)
-        // this.setState({
-        //   unknownErrors,
-        // })
-      } finally {
-        formikFunctions.setSubmitting(false);
-      }
-    },
-    []
-  ); // end onSubmit()
+  //       // setErrors(formErrors)
+  //       // this.setState({
+  //       //   unknownErrors,
+  //       // })
+  //     } finally {
+  //       formikFunctions.setSubmitting(false);
+  //     }
+  //   },
+  //   []
+  // ); // end onSubmit()
 
   // ##############################################################################################
 
@@ -393,7 +399,7 @@ export const TransformerBuilderPage: React.FC<any> = (
   //   // resolvedTestResultsJzodSchema,
   //   // (resolvedTestResultsJzodSchema as any)?.element,
   // );
-  const testSuiteKey = "resolveConditionalSchema";
+  // const testSuiteKey = "resolveConditionalSchema";
 
   return (
     <ReportPageContextProvider>

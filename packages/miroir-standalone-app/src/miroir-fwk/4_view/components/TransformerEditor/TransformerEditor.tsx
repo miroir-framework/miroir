@@ -8,6 +8,7 @@ import {
   Uuid,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
+  adminSelfApplication,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -92,10 +93,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   } = props;
   // const application: Uuid = initialApplication;
   const deploymentUuid: Uuid = initialDeploymentUuid;
-  const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap);
-  // const currentModel: MetaModel = useCurrentModel(deploymentUuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
-  // const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
   const context = useMiroirContextService();
   const reportContext = useReportPageContext();
   const miroirContextService = useMiroirContextService();
@@ -105,17 +102,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     application,
     applicationDeploymentMap
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
-  //     miroirMetaModel: miroirMetaModel,
-  //     currentModel: currentModel,
-  //   };
-  // }, [
-  //   miroirMetaModel,
-  //   currentModel,
-  //   context.miroirFundamentalJzodSchema,
-  // ]);
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -632,7 +618,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                                 defaultLabel: "Application",
                                 editable: true,
                                 selectorParams: {
-                                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                                  targetApplicationUuid: adminSelfApplication.uuid,
                                   targetEntity: entityApplicationForAdmin.uuid,
                                   targetEntityOrderInstancesBy: "name",
                                 },
@@ -648,8 +634,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                             tag: {
                               value: {
                                 selectorParams: {
-                                  targetDeploymentUuid:
-                                    transformerSelector_deploymentUuidFromApplicationUuid,
+                                  targetApplicationUuid: (
+                                    formikContext.values
+                                      .transformerEditor_transformer_selector as any
+                                  ).application,
                                   targetEntity: entityDefinitionTransformerDefinition.entityUuid,
                                   targetEntityOrderInstancesBy: "name",
                                 },
@@ -734,7 +722,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   } as JzodObject,
                 },
               };
-            }, [transformerSelector_deploymentUuidFromApplicationUuid]);
+            }, [(formikContext.values.transformerEditor_transformer_selector as any).application]);
 
             // ####################################################################################
             // ####################################################################################
@@ -760,54 +748,17 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     flexGrow: 1,
                   }}
                 >
-                  {/* <ThemedOnScreenHelper
-                      label="deploymentUuidQueryResultsData"
-                      data={deploymentUuidQueryResultsData}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                        label="deploymentUuidFromApplicationUuid"
-                        data={deploymentUuidFromApplicationUuid}
-                      /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="transformerQuery"
-                      data={transformerQuery}
-                    /> */}
-                  {/*  */}
-                  {/*  */}
-                  {/* <ThemedOnScreenHelper
-                      label="persistedState?.selector"
-                      data={persistedState?.selector}
-                      initiallyUnfolded={false}
-                    /> */}
                   <ThemedOnScreenDebug
                       label="formikValues"
                       data={formikContext.values}
                       initiallyUnfolded={false}
                       useCodeBlock={true}
                     />
-                  {/* <ThemedOnScreenHelper
-                      label="formik Transformer Definition"
-                      data={{
-                        mode: formikContext.values.transformerEditor_transformer_selector.mode,
-                        defn: formikContext.values.transformerEditor_transformer_selector.transformer,
-                      }}
-                      initiallyUnfolded={false}
-                    /> */}
                   <ThemedOnScreenDebug
                     label="inputSelector defaultAdminApplicationDeploymentMapNOTGOOD"
                     data={defaultAdminApplicationDeploymentMapNOTGOOD}
                     // initiallyUnfolded={false}
                   />
-                  {/* <ThemedOnScreenHelper
-                    label="inputSelector_applicationUuid"
-                    data={inputSelector_applicationUuid}
-                    // initiallyUnfolded={false}
-                  />
-                  <ThemedOnScreenHelper
-                    label="inputSelector_deploymentUuidFromApplicationUuid"
-                    data={inputSelector_deploymentUuidFromApplicationUuid}
-                    // initiallyUnfolded={false}
-                  /> */}
                   <ThemedOnScreenDebug
                     label={"formikContext.values." + formikPath_TransformerEditorInputModeSelector}
                     data={formikContext.values[formikPath_TransformerEditorInputModeSelector]}
@@ -818,55 +769,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     data={transformerSelector_currentFetchedTransformerDefinition}
                     initiallyUnfolded={false}
                   />
-                  {/* <ThemedOnScreenHelper
-                      label="currentHereTransformerDefinition"
-                      data={currentHereTransformerDefinition}
-                      initiallyUnfolded={false}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="transformerQueryResults"
-                      data={transformerQueryResults}
-                      initiallyUnfolded={false}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="transformer mode"
-                      data={formikContext.values.transformerEditor_transformer_selector.mode}
-                      initiallyUnfolded={false}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="transformer input"
-                      data={transformerInput}
-                      initiallyUnfolded={false}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="transformation Error"
-                      data={innermostError}
-                      initiallyUnfolded={false}
-                      // initiallyUnfolded={innermostError ? true : false}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="transformationResult"
-                      data={transformationResult}
-                      initiallyUnfolded={false}
-                      // initiallyUnfolded={innermostError ? false : true}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="transformationResultSchema"
-                      data={transformationResultSchema}
-                      initiallyUnfolded={false}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="currentTransformerDefinition"
-                      data={currentTransformerDefinition}
-                    /> */}
-                  {/* <ThemedOnScreenHelper
-                      label="currentTransformerDefinition transformerImplementation.definition"
-                      data={
-                        (currentFetchedTransformerDefinition as any)?.transformerImplementation
-                          ?.definition
-                      }
-                      initiallyUnfolded={true}
-                    /> */}
                   <TypedValueObjectEditor
                     labelElement={<>Transformer Definition</>}
                     formValueMLSchema={formMLSchema}

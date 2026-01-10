@@ -17,6 +17,7 @@ import {
   reportViewParamsDetails,
   defaultAdminViewParams,
   adminSelfApplication,
+  defaultSelfApplicationDeploymentMap,
 } from "miroir-core";
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
@@ -87,7 +88,8 @@ export const SettingsPage: React.FC<any> = (props: any) => {
       ReduxDeploymentsState,
       Domain2QueryReturnType<DomainElementSuccess>
     >,
-    stableQueryParams
+    stableQueryParams,
+    defaultSelfApplicationDeploymentMap // query uses only admin deployment
   );
 
   const viewParamsData: ViewParamsData | undefined = useMemo(

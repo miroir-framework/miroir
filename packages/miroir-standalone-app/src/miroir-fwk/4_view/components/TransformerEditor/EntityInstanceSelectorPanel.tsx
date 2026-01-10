@@ -5,9 +5,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
   adminLibraryApplication,
+  adminSelfApplication,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -15,14 +14,10 @@ import {
   defaultTransformers,
   entityApplicationForAdmin,
   getEntityInstancesUuidIndexNonHook,
-  miroirFundamentalJzodSchema,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Entity,
   type EntityDefinition,
   type JzodElement,
-  type JzodSchema,
-  type MetaModel,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap
@@ -32,7 +27,7 @@ import {
 import { useFormikContext } from 'formik';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
-import { applicationParis, packageName } from '../../../../constants';
+import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
 import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
@@ -51,7 +46,6 @@ import {
   formikPath_TransformerEditorInputModeSelector,
   type TransformerEditorFormikValueType,
 } from "./TransformerEditorInterface";
-import { transformer } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -114,9 +108,8 @@ export function EntityInstanceSelectorPanel(props:{
             tag: {
               value: {
                 defaultLabel: "Application (mls)",
-                editable: true,
                 selectorParams: {
-                  targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                  targetApplicationUuid: adminSelfApplication.uuid,
                   targetEntity: entityApplicationForAdmin.uuid,
                   targetEntityOrderInstancesBy: "name",
                 },
