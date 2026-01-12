@@ -2,12 +2,14 @@ import { useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
+  ApplicationDeploymentMap,
   CompositeActionSequence,
   CompositeActionTemplate,
   Deployment,
   InitApplicationParameters,
   LoggerInterface,
-  TransformerForBuildPlusRuntime
+  TransformerForBuildPlusRuntime,
+  Uuid
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
@@ -48,16 +50,23 @@ function formatYYYYMMDD_HHMMSS(date = new Date()) {
 
 // ################################################################################################
 export interface CreateApplicationToolProps {
-  deploymentUuid: string;
+  application: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  // deploymentUuid: string;
 }
 
 // ################################################################################################
-export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ deploymentUuid }) => {
+export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
+  application,
+  applicationDeploymentMap,
+}) => {
   const runnerName: string = "createApplicationAndDeployment";
   // const domainController: DomainControllerInterface = useDomainControllerService();
   // const currentMiroirModelEnvironment: MiroirModelEnvironment =
   //   useCurrentModelEnvironment(deploymentUuid);
 
+  const deploymentUuid: Uuid = applicationDeploymentMap[application] ?? "";
+  
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
       formMLSchemaType: "mlSchema",
@@ -367,7 +376,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
               configuration: {
                 [testDeploymentUuid]: testDeploymentStorageConfiguration as any,
               },
-            }
+            },
           },
           {
             actionType: "storeManagementAction_createStore",
@@ -442,7 +451,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               deploymentUuid: testDeploymentUuid,
-            }
+            },
           },
           {
             actionType: "initModel",
@@ -536,7 +545,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({ 
 
   return (
     <RunnerView
-      runnerName={runnerName} 
+      runnerName={runnerName}
       applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
       deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}

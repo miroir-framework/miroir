@@ -15445,6 +15445,18 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "application": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Application",
+                "display": {
+                  "modifiable": false
+                }
+              }
+            }
+          },
           "parentName": {
             "type": "string",
             "optional": true,
@@ -15519,30 +15531,81 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "formMLSchema": {
+          "definition": {
             "type": "union",
-            "tag": {
-              "value": {
-                "defaultLabel": "formMLSchema",
-                "display": {
-                  "editable": true
-                }
-              }
-            },
-            "discriminator": "formMLSchemaType",
+            "discriminator": "runnerType",
             "definition": [
               {
                 "type": "object",
                 "definition": {
-                  "formMLSchemaType": {
+                  "runnerType": {
                     "type": "literal",
-                    "definition": "mlSchema"
+                    "definition": "customRunner"
                   },
-                  "mlSchema": {
+                  "formMLSchema": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "formMLSchema",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    },
+                    "discriminator": "formMLSchemaType",
+                    "definition": [
+                      {
+                        "type": "object",
+                        "definition": {
+                          "formMLSchemaType": {
+                            "type": "literal",
+                            "definition": "mlSchema"
+                          },
+                          "mlSchema": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "jzodElement"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "formMLSchemaType": {
+                            "type": "literal",
+                            "definition": "transformer"
+                          },
+                          "initialFormValues": {
+                            "type": "record",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Initial Form Values",
+                                "description": "Initial values for the form fields, required when the formMLSchemaType is 'transformer', in the case the transformer depends on the form values"
+                              }
+                            },
+                            "definition": {
+                              "type": "any"
+                            }
+                          },
+                          "transformer": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "mlSchemaTemplate"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "actionTemplate": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodElement"
+                      "relativePath": "compositeActionTemplate"
                     }
                   }
                 }
@@ -15550,27 +15613,37 @@ export const miroirFundamentalJzodSchema = {
               {
                 "type": "object",
                 "definition": {
-                  "formMLSchemaType": {
+                  "runnerType": {
                     "type": "literal",
-                    "definition": "transformer"
+                    "definition": "actionRunner"
                   },
-                  "transformer": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "mlSchemaTemplate"
+                  "endpoint": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Endpoint",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetApplicationUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "safe": true,
+                            "referencePath": [
+                              "application"
+                            ]
+                          },
+                          "targetEntity": "d4a7b1f3-3f2e-4c5b- ninth-4c6f3e2b8e5a",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
                     }
+                  },
+                  "action": {
+                    "type": "string"
                   }
                 }
               }
             ]
-          },
-          "actionTemplate": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeActionTemplate"
-            }
           }
         }
       },

@@ -4,7 +4,8 @@ import type {
   ApplicationDeploymentMap,
   CompositeActionTemplate,
   JzodObject,
-  LoggerInterface
+  LoggerInterface,
+  Uuid
 } from "miroir-core";
 import {
   adminConfigurationDeploymentAdmin,
@@ -31,15 +32,21 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export interface DropApplicationToolProps {
-  deploymentUuid: string;
+  application: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  // deploymentUuid: string;
 }
 
 // ################################################################################################
 export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
-  deploymentUuid,
+  application,
+  applicationDeploymentMap: unused,
+  // deploymentUuid,
 }) => {
   const runnerName: string = "dropApplication";
-  const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useApplicationDeploymentMap();
+  const applicationDeploymentMap: ApplicationDeploymentMap =
+    useApplicationDeploymentMap() ?? defaultSelfApplicationDeploymentMap;
+  const deploymentUuid: Uuid = applicationDeploymentMap[application] ?? "";
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
       formMLSchemaType: "mlSchema",

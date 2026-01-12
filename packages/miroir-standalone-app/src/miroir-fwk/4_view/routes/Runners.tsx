@@ -5,6 +5,7 @@ import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentParis,
+  defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory,
   resolvePathOnObject,
   selfApplicationDeploymentLibrary,
@@ -27,6 +28,7 @@ import { noValue } from '../components/ValueObjectEditor/JzodElementEditorInterf
 import { ApplicationSelector } from '../components/interactive/ApplicationSelector.js';
 import { EndpointActionCaller } from '../components/EndpointActionCaller.js';
 import { LibraryRunner_LendDocument } from '../components/Runners/LibraryRunner_LendDocument.js';
+import { useMiroirContext, useMiroirContextService } from '../MiroirContextReactProvider';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -58,10 +60,6 @@ const runnerConfigs = [
   //   title: "Endpoint Action Caller",
   //   component: EndpointActionCaller,
   // },
-  // {
-  //   title: "Lend Document",
-  //   component: LibraryRunner_LendDocument,
-  // },
   {
     title: "Create Entity",
     component: CreateEntityRunner,
@@ -70,18 +68,22 @@ const runnerConfigs = [
     title: "Drop Entity",
     component: DeleteEntityRunner,
   },
-  {
-    title: "Create Application & Deployment",
-    component: CreateApplicationRunner,
-  },
-  {
-    title: "Drop Application & Deployment",
-    component: DropApplicationRunner,
-  },
+  // {
+  //   title: "Create Application & Deployment",
+  //   component: CreateApplicationRunner,
+  // },
+  // {
+  //   title: "Drop Application & Deployment",
+  //   component: DropApplicationRunner,
+  // },
   // {
   //   title: "Import Entity From Spreadsheet",
   //   component: ImportEntityFromSpreadsheetRunner,
   // },
+  {
+    title: "Lend Document",
+    component: LibraryRunner_LendDocument,
+  },
 ] as const;
 
 // ################################################################################################
@@ -112,6 +114,8 @@ export const RunnersPage: React.FC<any> = (
   // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
   const applicationUuid = selfApplicationLibrary.uuid;
   const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+  const context = useMiroirContextService();
+  const applicationDeploymentMap = context.applicationDeploymentMap;
 
   return (
     <ReportPageContextProvider>
@@ -133,7 +137,13 @@ export const RunnersPage: React.FC<any> = (
                 <div style={{ fontWeight: 500 }}>{config.title}</div>
               </AccordionSummary>
               <AccordionDetails>
-                <RunnerComponent deploymentUuid={deploymentUuid} />
+                {/* <RunnerComponent deploymentUuid={deploymentUuid} /> */}
+                <RunnerComponent
+                  // application={applicationUuid}
+                  applicationDeploymentMap={
+                    applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+                  }
+                />
               </AccordionDetails>
             </Accordion>
           );

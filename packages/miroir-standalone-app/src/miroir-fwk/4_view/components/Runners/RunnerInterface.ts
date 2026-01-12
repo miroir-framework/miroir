@@ -35,6 +35,7 @@ export type FormMLSchema =
     }
   | {
       formMLSchemaType: "transformer";
+      initialFormValues?: Record<string, any>;
       transformer: TransformerForBuildPlusRuntime;
     };
 
@@ -43,7 +44,7 @@ export interface RunnerProps<T extends Record<string, any>> {
   runnerName: string;
   application?: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
-  deploymentUuid: Uuid;
+  // deploymentUuid: Uuid;
   // formMLSchema: JzodObject;
   formMLSchema: FormMLSchema;
   initialFormValue: T | InitialFormValue<T>;
