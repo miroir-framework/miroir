@@ -1067,16 +1067,16 @@ export const runQuery = <StateType>(
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<Record<string,any>> => { 
 
-  // log.info("########## runQuery begin, query", selectorParams);
+  log.info("########## runQuery begin, query", selectorParams);
   const context: Record<string, any> = {
-    ...selectorParams.extractor.contextResults
+    ...(selectorParams?.extractor?.contextResults ?? {})
   };
   // log.info("########## DomainSelector runQuery will use context", context);
   const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> =
     selectorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   for (const extractor of Object.entries(
-    selectorParams.extractor.extractors ?? {}
+    selectorParams?.extractor?.extractors ?? {}
   )) {
     let result = innerSelectDomainElementFromExtractorOrCombiner(
       state,

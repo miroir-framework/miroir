@@ -38,6 +38,7 @@ import { ThemedBox, ThemedOnScreenHelper, ThemedSpan } from "../components/Theme
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
+import { lab } from "d3";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -92,6 +93,7 @@ export const ReportDisplay: React.FC<{
   
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
+
   const availableStoredQueries = currentModel.storedQueries || [];
   const currentReportQueries: Uuid[] = (currentMiroirReport.definition.runStoredQueries ?? [])
     ?.filter((sq) => !!sq.storedQuery)
@@ -121,6 +123,7 @@ export const ReportDisplay: React.FC<{
       currentStoredQueries.length > 0
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            // label: currentStoredQueries[0].label,
             application: application,
             applicationDeploymentMap: currentApplicationDeploymentMap,
             deploymentUuid: pageParams.deploymentUuid,
@@ -169,8 +172,9 @@ export const ReportDisplay: React.FC<{
       />
       <ThemedOnScreenDebug
         label="ReportDisplay availableReports"
-        data={availableReports}
-        initiallyUnfolded={false}
+        data={availableReports.map(r=>({uuid:r.uuid, name:r.name}))}
+        initiallyUnfolded={true}
+        useCodeBlock={true}
       />
       <ThemedOnScreenDebug
         label="ReportDisplay currentMiroirReport"

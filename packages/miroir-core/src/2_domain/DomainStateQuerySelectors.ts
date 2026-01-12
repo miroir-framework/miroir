@@ -62,11 +62,11 @@ const emptyDomainObject: Record<string, any> = { };
 export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorCombinerTransformer = {
   queryType: "boxedQueryWithExtractorCombinerTransformer",
   application: "",
-  // applicationDeploymentMap: {},
   deploymentUuid: "",
   pageParams: {},
   queryParams: {},
   contextResults: emptyDomainObject,
+  extractors: {},
   runtimeTransformers: {},
 };
 
@@ -78,6 +78,7 @@ export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateW
   pageParams: {},
   queryParams: {},
   contextResults: emptyDomainObject,
+  extractorTemplates: {},
   runtimeTransformers: {},
 };
 
@@ -101,6 +102,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
     pageParams: {},
     queryParams: {},
     contextResults: {},
+    extractorTemplates: {},
     runtimeTransformers: {},
   },
 };

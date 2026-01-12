@@ -40,6 +40,7 @@ import { InlineReportEditor } from './InlineReportEditor.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormSchema, reportSectionsFormValue } from './ReportTools.js';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -84,12 +85,14 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
+      props.pageParams.application &&
       props.pageParams.deploymentUuid &&
       props.pageParams.applicationSection &&
       props.pageParams.reportUuid
         ? props.reportDefinition.definition.extractorTemplates
           ? {
               queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              label: props.reportDefinition.name,
               application: props.pageParams.application??"NO_APPLICATION",
               applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
               deploymentUuid: props.pageParams.deploymentUuid,
@@ -103,6 +106,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           : props.reportDefinition.definition.extractors
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
+              label: props.reportDefinition.name,
               application: props.pageParams.application??"NO_APPLICATION",
               applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
               deploymentUuid: props.pageParams.deploymentUuid,
@@ -115,6 +119,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             }
           : {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
+              label: props.reportDefinition.name + "_DUMMY",
               application: "",
               applicationDeploymentMap: {},
               deploymentUuid: "",
@@ -257,7 +262,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         props.reportDefinition.definition.extractors &&
         reportDataQueryBase
           ? {
-            queryType: "queryByTemplateGetParamJzodSchema",
+              queryType: "queryByTemplateGetParamJzodSchema",
+              label: props.reportDefinition.name + "_fetchedDataJzodSchema",
               application: props.pageParams.application??"NO_APPLICATION",
               applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
               deploymentUuid: props.pageParams.deploymentUuid,
@@ -274,6 +280,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           : // dummy query
             {
               queryType: "queryByTemplateGetParamJzodSchema",
+              label: props.reportDefinition.name + "_DUMMY",
               application: "",
               applicationDeploymentMap: {},
               deploymentUuid: "DUMMY",
@@ -527,27 +534,33 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                       />
                     </>
                   )}
-                  <ReportSectionViewWithEditor
-                    valueObjectEditMode="update"
-                    generalEditMode={generalEditMode}
-                    applicationSection={props.applicationSection}
-                    application={props.application}
-                    applicationDeploymentMap={props.applicationDeploymentMap}
-                    deploymentUuid={props.deploymentUuid}
-                    paramsAsdomainElements={props.pageParams}
-                    isOutlineOpen={outlineContext.isOutlineOpen}
-                    onToggleOutline={outlineContext.onToggleOutline}
-                    // data
-                    reportDataDEFUNCT={reportViewData}
-                    fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
-                    //
-                    reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
-                    reportDefinitionDEFUNCT={props.reportDefinition}
-                    formValueMLSchema={formValueMLSchema}
-                    formikReportDefinitionPathString={props.reportDefinition.name}
-                    reportSectionPath={["definition", "section"]}
-                    reportName={reportName}
-                  />
+                  <>
+                    <ThemedOnScreenDebug
+                      label={`ReportViewWithEditor`}
+                      data={{reportDataQueryBase, reportDataQueryResults}}
+                    />
+                    <ReportSectionViewWithEditor
+                      valueObjectEditMode="update"
+                      generalEditMode={generalEditMode}
+                      applicationSection={props.applicationSection}
+                      application={props.application}
+                      applicationDeploymentMap={props.applicationDeploymentMap}
+                      deploymentUuid={props.deploymentUuid}
+                      paramsAsdomainElements={props.pageParams}
+                      isOutlineOpen={outlineContext.isOutlineOpen}
+                      onToggleOutline={outlineContext.onToggleOutline}
+                      // data
+                      reportDataDEFUNCT={reportViewData}
+                      fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
+                      //
+                      reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
+                      reportDefinitionDEFUNCT={props.reportDefinition}
+                      formValueMLSchema={formValueMLSchema}
+                      formikReportDefinitionPathString={props.reportDefinition.name}
+                      reportSectionPath={["definition", "section"]}
+                      reportName={reportName}
+                    />
+                  </>
                 </>
               </Formik>
             </>

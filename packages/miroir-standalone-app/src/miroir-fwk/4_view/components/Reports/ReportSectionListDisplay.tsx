@@ -64,6 +64,7 @@ import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "../Jso
 import { AddBox } from "../Themes/MaterialSymbolWrappers";
 import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/index.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -937,6 +938,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               <div>
                 {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
                 {/* {entityInstanceGrid} */}
+                <ThemedOnScreenDebug
+                  label={`ReportSectionListDisplay`}
+                  data={{formik: formikContext.values}}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
                 <EntityInstanceGrid
                   type={props.tableComponentReportType}
                   displayedDeploymentDefinition={props.displayedDeploymentDefinition}

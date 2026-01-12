@@ -23,6 +23,7 @@ import { usePageConfiguration } from "../services/index.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 import { ReportDisplay } from "./ReportDisplay.js";
+import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -91,6 +92,12 @@ export const ReportPage = () => {
             },
           }}
         >
+          <ThemedOnScreenDebug
+            label={`ReportPage Params`}
+            data={pageParams}
+            initiallyUnfolded={true}
+            useCodeBlock={true}
+          />
           <ThemedBox>
             {context.showPerformanceDisplay && (
               <>

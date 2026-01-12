@@ -12,6 +12,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   Domain2QueryReturnType,
+  dummyDomainManyQueryWithDeploymentUuid,
   entityDeployment,
   EntityInstance,
   entityRunner,
@@ -74,17 +75,17 @@ export function useQueryTemplateResults(
   reportData: Domain2QueryReturnType<Record<string, any>>;
   resolvedQuery: BoxedQueryWithExtractorCombinerTransformer;
 }> {
+  // if (!queryOrQueryTemplate) {
+  //   return {reportData: {}, resolvedQuery: {} as any};
+  // }
   // getting deployment entity state selector map
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
   const isQueryTemplate = queryOrQueryTemplate
     ? !(queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer).extractors
     : true;
-  // log.info(
-  //   "################################################################### useQueryTemplateResults isQueryTemplate",
-  //   isQueryTemplate,
-  //   queryOrQueryTemplate
-  // );
+  // const isQueryTemplate = queryOrQueryTemplate &&
+  //   !(queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer).extractors?true:false;
   const queryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer | undefined =
     queryOrQueryTemplate && isQueryTemplate
       ? (queryOrQueryTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer)
@@ -95,32 +96,56 @@ export function useQueryTemplateResults(
       ? (queryOrQueryTemplate as BoxedQueryWithExtractorCombinerTransformer)
       : undefined;
   // log.info("useQueryTemplateResults  query", query);
+  // log.info(
+  //   "################################################################### useQueryTemplateResults isQueryTemplate",
+  //   isQueryTemplate,
+  //   queryOrQueryTemplate,
+  //   queryTemplate,
+  //   query,
+  // );
 
   // fetching report definition
   const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer | undefined = useMemo(
     () =>
       queryTemplate
         ? resolveQueryTemplateWithExtractorCombinerTransformer(
-            // deploymentEntityStateFetchQueryTemplate,
             queryTemplate,
             defaultMiroirModelEnvironment // TODO: use correct model environment
           )
+        // : dummyDomainManyQueryWithDeploymentUuid,
         : undefined,
     // [deploymentEntityStateFetchQueryTemplate]
     [queryTemplate]
   );
 
-  // log.info("useQueryTemplateResults resolvedQuery", resolvedTemplateQuery);
+  log.info(
+    "################################################################### useQueryTemplateResults",
+    '"' + (queryOrQueryTemplate as any)?.label + '"',
+    "queryOrQueryTemplate",
+    queryOrQueryTemplate,
+    "isQueryTemplate",
+    isQueryTemplate,
+    "query",
+    query,
+    "queryTemplate",
+    queryTemplate,
+    "resolvedTemplateQuery",
+    resolvedTemplateQuery
+  );
   // log.info(
   //   "################################################################ useQueryTemplateResults resolved query Template DONE"
   // );
   // fetching report data
   const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
+      // query || resolvedTemplateQuery
+      //   ? ((isQueryTemplate
+      //       ? resolvedTemplateQuery: query ) as BoxedQueryWithExtractorCombinerTransformer)
       (query || resolvedTemplateQuery)
-        ? ((resolvedTemplateQuery ?? query) as BoxedQueryWithExtractorCombinerTransformer)
+        ? ((query ?? resolvedTemplateQuery) as BoxedQueryWithExtractorCombinerTransformer)
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
+            label: "DUMMY_QUERY_FOR_NO_QUERY_PROVIDED",
             application: "",
             deploymentUuid: "",
             pageParams: props.pageParams,

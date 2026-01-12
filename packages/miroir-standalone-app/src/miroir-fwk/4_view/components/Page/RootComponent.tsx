@@ -188,33 +188,40 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const fetchAdminDeploymentsQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> = useMemo(
-    () =>
-      getQueryRunnerParamsForReduxDeploymentsState(
-        adminAppModel? 
-        {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              application: adminSelfApplication.uuid,
-              // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              extractors: {
-                deployments: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  parentName: "Deployment",
-                  applicationSection: getApplicationSection(adminConfigurationDeploymentAdmin.uuid, entityDeployment.uuid),
-                  parentUuid: entityDeployment.uuid,
+  log.info("RootComponent adminAppModel",adminAppModel);
+  const fetchAdminDeploymentsQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
+    useMemo(
+      () =>
+        getQueryRunnerParamsForReduxDeploymentsState(
+          adminAppModel && adminAppModel?.entities?.length > 0
+            ? {
+                queryType: "boxedQueryWithExtractorCombinerTransformer",
+                application: adminSelfApplication.uuid,
+                // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                pageParams: {},
+                queryParams: {},
+                contextResults: {},
+                extractors: {
+                  deployments: {
+                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                    label: "RootComponent_adminDeployments",
+                    parentName: "Deployment",
+                    applicationSection: getApplicationSection(
+                      adminConfigurationDeploymentAdmin.uuid,
+                      entityDeployment.uuid
+                    ),
+                    parentUuid: entityDeployment.uuid,
+                  },
                 },
-              },
-            }
-          : dummyDomainManyQueryWithDeploymentUuid,
-      ),
-    [adminAppModel]
-  );
+              }
+            : dummyDomainManyQueryWithDeploymentUuid,
+              // (undefined as any)
+        ),
+      [adminAppModel]
+    );
 
-  // log.info("SidebarSection fetchAdminDeploymentsQueryParams",fetchAdminDeploymentsQueryParams)
+  log.info("RootComponent fetchAdminDeploymentsQueryParams",fetchAdminDeploymentsQueryParams)
   const adminDeploymentsQueryResult: 
     Domain2QueryReturnType<{deployments:Deployment[]}> = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
@@ -222,7 +229,8 @@ export const RootComponent = (props: RootComponentProps) => {
     defaultSelfApplicationDeploymentMap
   );
 
-  
+  log.info("RootComponent adminDeploymentsQueryResult",adminDeploymentsQueryResult);
+
   const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useMemo(
     () =>
       adminDeploymentsQueryResult &&
@@ -236,6 +244,7 @@ export const RootComponent = (props: RootComponentProps) => {
         : undefined,
     [adminDeploymentsQueryResult]
   );
+  log.info("RootComponent applicationDeploymentMap",applicationDeploymentMap);
 
   useEffect(() => {
     if (applicationDeploymentMap) {
@@ -542,6 +551,7 @@ export const RootComponent = (props: RootComponentProps) => {
     [currentModel?.entities?.length]
   );
 
+  log.info("RootComponent: stableQueryParams", stableQueryParams);
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
     string,
     EntityInstancesUuidIndex
@@ -554,6 +564,7 @@ export const RootComponent = (props: RootComponentProps) => {
     applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
   );
 
+  log.info("RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
   // Optimize ViewParams state management to reduce re-renders
   const defaultViewParamsFromAdminStorage: ViewParamsData | undefined = useMemo(
     () =>
@@ -798,7 +809,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 <ThemedOnScreenDebug
                   label="RootComponent applicationDeploymentMap"
                   data={applicationDeploymentMap}
-                  // initiallyUnfolded={false}
+                  initiallyUnfolded={false}
                   useCodeBlock={true}
                 />
                 {transactions && transactions.length > 0 && (

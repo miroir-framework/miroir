@@ -1,0 +1,20 @@
+{
+  "uuid": "9c0cdb97-9537-4ee2-8053-a6ece3e0afe8",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "LibraryHome",
+  "defaultLabel": "Home",
+  "definition": {
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "markdownReportSection",
+          "definition": {
+            "content": "# Welcome to the Library Application\n\nYou can browse the library or run the following actions:"
+          }
+        }
+      ]
+    }
+  },
+  "parentName": "Report"
+}

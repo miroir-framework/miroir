@@ -1,56 +1,39 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent
-} from "@mui/material";
-import { useMemo } from "react";
-import { Params } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  ApplicationSection,
-  // adminConfigurationDeploymentTest1,
-  defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  DomainControllerInterface,
+  Domain2ElementFailed,
+  dummyDomainManyQueryWithDeploymentUuid,
+  entitySelfApplication,
   LoggerInterface,
-  MetaModel,
   MiroirLoggerFactory,
   Report,
   reportEntityDefinitionDetails,
   reportEntityDefinitionList,
   reportEntityDetails,
   reportEntityList,
-  resetAndInitApplicationDeployment,
-  SelfApplicationDeploymentConfiguration,
-  selfApplicationLibrary,
-  selfApplicationMiroir
+  type BoxedQueryWithExtractorCombinerTransformer,
+  type Domain2QueryReturnType,
+  type MetaModel,
+  type SelfApplication
 } from "miroir-core";
-import { ReduxStateChanges } from "miroir-localcache-redux";
 
-import { Importer } from '../Importer.js';
 import {
-  useDomainControllerService, useErrorLogService,
-  useLocalCacheTransactions,
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
-import { useCurrentModel } from "../ReduxHooks.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { usePageConfiguration } from "../services/index.js";
 
 
 // import entityPublisher from "../../assets/library_model/";
 import {
-  deployments,
-  packageName,
-  ReportUrlParamKeys
+  packageName
 } from "../../../constants.js";
+import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
+import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
 import { cleanLevel } from "../constants.js";
+import { useCurrentModel } from "../ReduxHooks.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -90,10 +73,10 @@ const metaModelReports = [
 export const HomePage = (props: RootComponentProps) => {
   const context = useMiroirContextService();
 
-  const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  const errorLog = useErrorLogService();
-  const domainController: DomainControllerInterface = useDomainControllerService();
-  
+  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
+  // const errorLog = useErrorLogService();
+  // const domainController: DomainControllerInterface = useDomainControllerService();
+  const currentApplication = context.toolsPageState?.applicationSelector ?? context.application;
   // Auto-fetch configurations when the page loads
   const { fetchConfigurations } = usePageConfiguration({
     autoFetchOnMount: true,
@@ -104,154 +87,116 @@ export const HomePage = (props: RootComponentProps) => {
   // log.info("RootComponent deployments",deployments);
 
   // context utility functions
-  const displayedApplication = context.application;
-  const displayedDeploymentUuid = context.deploymentUuid;
+  // const displayedApplication = context.application;
+  // const displayedDeploymentUuid = context.deploymentUuid;
   // const setDisplayedDeploymentUuid = context.setDeploymentUuid;
 
-  const displayedReportUuid = context.reportUuid;
+  // const displayedReportUuid = context.reportUuid;
   // const setDisplayedReportUuid = context.setReportUuid;
   const displayedApplicationSection = context.applicationSection;
   // const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const currentApplicationDeploymentMap = defaultSelfApplicationDeploymentMap;
+  const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
 
   const currentAppModel: MetaModel = useCurrentModel(
-    displayedApplication,
+    currentApplication,
     currentApplicationDeploymentMap
   );
 
   // computing current state #####################################################################
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
-    (d) => d.uuid == displayedDeploymentUuid
+  // const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
+  //   (d) => d.uuid == displayedDeploymentUuid
+  // );
+  // log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
+
+  // // TODO: adapt to Admin app deployment!
+  // const currentModel = displayedDeploymentUuid == adminConfigurationDeploymentMiroir.uuid? defaultMiroirMetaModel:currentAppModel;
+  // // const currentModel = libraryAppModel;
+  // log.info("HomePage currentModel",currentModel);
+
+  // // const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
+  // //   currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
+  // ;
+  // log.info(
+  //   "HomePage displayedDeploymentDefinition",
+  //   displayedDeploymentDefinition?.uuid,
+  //   "displayedApplicationSection",
+  //   displayedApplicationSection
+  // );
+
+  // log.info("HomePage availableReports",availableReports);
+
+  const currentStoredQuery:
+    | BoxedQueryWithExtractorCombinerTransformer
+    // | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = useMemo(
+    () =>
+      currentApplication && currentAppModel?.entities?.length > 0
+        ? {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: currentApplication,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractors: {
+              selfApplication: {
+                extractorOrCombinerType: "extractorForObjectByDirectReference",
+                label: "HomePage_selfApplication",
+                parentName: "SelfApplication",
+                parentUuid: entitySelfApplication.uuid,
+                applicationSection: "model",
+                instanceUuid: currentApplication,
+              },
+            },
+          }
+        : dummyDomainManyQueryWithDeploymentUuid,
+    [currentApplication, currentAppModel]
   );
-  log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
 
-  // TODO: adapt to Admin app deployment!
-  const currentModel = displayedDeploymentUuid == adminConfigurationDeploymentMiroir.uuid? defaultMiroirMetaModel:currentAppModel;
-  // const currentModel = libraryAppModel;
-  log.info("HomePage currentModel",currentModel);
+  const currentStoredQueryResults: Domain2QueryReturnType<Record<string, any>> =
+    useQueryTemplateResults(
+      {
+        // applicationSection: pageParams.applicationSection as ApplicationSection,
+        // deploymentUuid: pageParams.deploymentUuid!,
+        // instanceUuid: pageParams.instanceUuid,
+        // pageParams: pageParams,
+        // reportDefinition: currentMiroirReport,
+      },
+      currentApplicationDeploymentMap,
+      currentStoredQuery
+    );
 
-  // const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
-  //   currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
-  ;
-  log.info(
-    "HomePage displayedDeploymentDefinition",
-    displayedDeploymentDefinition?.uuid,
-    "displayedApplicationSection",
-    displayedApplicationSection
-  );
+  const applicationDefinition: SelfApplication | undefined =
+    currentStoredQueryResults instanceof Domain2ElementFailed
+      ? undefined
+      : currentStoredQueryResults?.reportData?.selfApplication;
+  // log.info("HomePage currentStoredQueryResults",currentStoredQueryResults);
 
-  // const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
+  // const currentMiroirReport: Report | undefined = availableReports?.find((r: Report)=>r.uuid === displayedReportUuid);
+
+  // const pageParams:Params<ReportUrlParamKeys> = useMemo(
   //   () => (
   //     {
-  //       [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //         adminConfigurationDeploymentAdmin.uuid,
-  //         miroirMetaModel, 
-  //         adminAppModel,
-  //       ),
-  //       [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //         adminConfigurationDeploymentMiroir.uuid,
-  //         miroirMetaModel, 
-  //         miroirMetaModel, 
-  //       ),
-  //       [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //         adminConfigurationDeploymentLibrary.uuid,
-  //         miroirMetaModel, 
-  //         libraryAppModel,
-  //       ),
-  //       // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //       //   adminConfigurationDeploymentTest1.uuid,
-  //       //   miroirMetaModel, 
-  //       //   test1AppModel,
-  //       // ),
-  //       // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //       //   adminConfigurationDeploymentTest4.uuid,
-  //       //   miroirMetaModel, 
-  //       //   test4AppModel,
-  //       // ),
-  //       [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  //         adminConfigurationDeploymentParis.uuid,
-  //         miroirMetaModel, 
-  //         parisAppModel,
-  //       ),
-  //     }
+  //       application: displayedApplication,
+  //       deploymentUuid:displayedDeploymentUuid,
+  //       applicationSection:displayedApplicationSection,
+  //       reportUuid:currentMiroirReport?.uuid,
+  //       instanceUuid: "undefined"
+  //     } as Params<ReportUrlParamKeys>
   //   ),
-  //   // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
-  //   [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
-  // );
+  //   [currentMiroirReport, displayedApplication, displayedApplicationSection, displayedDeploymentUuid]
+  // )
+  const navigate = useNavigate();
 
-  // useEffect(() =>
-  //   context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
-  // );
 
-  const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    return displayedDeploymentDefinition &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
-      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
-          displayedApplicationSection??"data"
-        ]
-      : { availableReports: [], entities: [], entityDefinitions: [] };
-  }, [
-    displayedDeploymentDefinition,
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
-    displayedApplicationSection,
-  ]);
-    
-  log.info("HomePage availableReports",availableReports);
-
-  const currentMiroirReport: Report | undefined = availableReports?.find((r: Report)=>r.uuid === displayedReportUuid);
-
-  const pageParams:Params<ReportUrlParamKeys> = useMemo(
-    () => (
-      {
-        application: displayedApplication,
-        deploymentUuid:displayedDeploymentUuid,
-        applicationSection:displayedApplicationSection,
-        reportUuid:currentMiroirReport?.uuid,
-        instanceUuid: "undefined"
-      } as Params<ReportUrlParamKeys>
-    ),
-    [currentMiroirReport, displayedApplication, displayedApplicationSection, displayedDeploymentUuid]
-  )
-
-  // const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
-  //   event.stopPropagation();
-  //   const reportUuid = defaultToEntityList(event.target.value, availableReports);
-  //   setDisplayedReportUuid(reportUuid?reportUuid:'');
-  // };
-
-  // const handleChangeDisplayedApplicationSection = (event: SelectChangeEvent) => {
-  //   event.stopPropagation();
-  //   setDisplayedApplicationSection(event.target.value as ApplicationSection);
-  //   setDisplayedReportUuid("");
-  // };
-
-  // const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
-  //   event.stopPropagation();
-  //   log.info('handleChangeDisplayedDeployment',event);
-  //   setDisplayedDeploymentUuid(event.target.value);
-  //   log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
-  //   setDisplayedApplicationSection('data');
-  //   setDisplayedReportUuid("");
-  // };
-
-    // // const bundleProducerQuery: QueryTemplate = useMemo(()=>queryVersionBundleProducerV1.definition,[])
-    // const bundleProducerQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = useMemo(()=>({
-    //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    //   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-    //   applicationSection: "data",
-    //   pageParams: { elementType: "object", elementValue: {} },
-    //   contextResults: { elementType: "object", elementValue: {} },
-    //   queryParams: { elementType: "object", elementValue: { "applicationVersion": { elementType: "instanceUuid", elementValue: "695826c2-aefa-4f5f-a131-dee46fe21c13" } } },
-    //   extractors: queryVersionBundleProducerV1.definition as ExtractorOrCombinerTemplateRecord
-    // }),[miroirMetaModel])
-  
-    // const producedBundle : Domain2QueryReturnType<DomainElementSuccess> = useDomainStateCleanSelector(runQueryTemplateFromDomainState, bundleProducerQuery);
-    // // const producedBundle : any = useDomainStateCleanSelector(runQueryTemplateFromDomainState, getExtractorRunnerParamsForDomainState<BoxedQueryTemplateWithExtractorCombinerTransformer>(bundleProducerQuery));
-  
-    // log.info("producedBundle1",producedBundle)
-  
+  useEffect(() => {
+    if (applicationDefinition) {
+      log.info("HomePage fetched applicationDefinition", applicationDefinition);
+      if (applicationDefinition.homePageUrl) {
+        navigate(applicationDefinition.homePageUrl);
+      }
+    }
+  }, [applicationDefinition]);
 
   return (
     <PageContainer
@@ -259,15 +204,30 @@ export const HomePage = (props: RootComponentProps) => {
       withDocumentOutline={false} // HomePage typically doesn't have document outline
       customSx={{
         // HomePage specific styling
-        backgroundColor: 'background.default',
-        '& button': {
+        backgroundColor: "background.default",
+        "& button": {
           margin: 1,
-          maxWidth: '100%',
-          wordWrap: 'break-word',
+          maxWidth: "100%",
+          wordWrap: "break-word",
         },
       }}
     >
       <h2>Welcome to the Miroir Platform!</h2>
+      <ThemedOnScreenDebug
+        label={`HomePage application: ${currentApplication} section: ${displayedApplicationSection}`}
+        data={{
+          currentStoredQuery,
+          currentStoredQueryResults,
+          // application: context.application,
+          toolsPageState: context.toolsPageState,
+          currentApplicationDeploymentMap,
+          applicationDefinition,
+          // miroirContext: context.miroirContext,
+        }}
+        // initiallyUnfolded={false}
+        copyButton={true}
+        useCodeBlock={true}
+      />
       {/* undo */}
       {/* <span>
         <button

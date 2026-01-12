@@ -127,7 +127,6 @@
               "value": {
                 "defaultLabel": "TransformerTest",
                 "description": "A test of a Transformer",
-                "display": { "editable": true },
                 "display": {
                   "displayedAttributeValueWhenFolded": "transformerTestLabel"
                 }
