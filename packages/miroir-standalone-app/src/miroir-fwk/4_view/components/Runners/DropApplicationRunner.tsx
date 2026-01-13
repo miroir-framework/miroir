@@ -32,21 +32,21 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export interface DropApplicationToolProps {
-  application: Uuid;
+  // application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   // deploymentUuid: string;
 }
 
 // ################################################################################################
 export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
-  application,
-  applicationDeploymentMap: unused,
+  // application,
+  applicationDeploymentMap,
   // deploymentUuid,
 }) => {
   const runnerName: string = "dropApplication";
-  const applicationDeploymentMap: ApplicationDeploymentMap =
-    useApplicationDeploymentMap() ?? defaultSelfApplicationDeploymentMap;
-  const deploymentUuid: Uuid = applicationDeploymentMap[application] ?? "";
+  // const applicationDeploymentMap: ApplicationDeploymentMap =
+  //   useApplicationDeploymentMap() ?? defaultSelfApplicationDeploymentMap;
+  // const deploymentUuid: Uuid = applicationDeploymentMap[application] ?? "";
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
       formMLSchemaType: "mlSchema",
@@ -226,7 +226,7 @@ export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
     <RunnerView
       runnerName={runnerName}
       applicationDeploymentMap={applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
-      deploymentUuid={deploymentUuid}
+      // deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
       action={{

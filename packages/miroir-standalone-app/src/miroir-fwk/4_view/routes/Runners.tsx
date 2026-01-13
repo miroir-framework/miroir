@@ -68,22 +68,22 @@ const runnerConfigs = [
     title: "Drop Entity",
     component: DeleteEntityRunner,
   },
-  // {
-  //   title: "Create Application & Deployment",
-  //   component: CreateApplicationRunner,
-  // },
-  // {
-  //   title: "Drop Application & Deployment",
-  //   component: DropApplicationRunner,
-  // },
+  {
+    title: "Create Application & Deployment",
+    component: CreateApplicationRunner,
+  },
+  {
+    title: "Drop Application & Deployment",
+    component: DropApplicationRunner,
+  },
   // {
   //   title: "Import Entity From Spreadsheet",
   //   component: ImportEntityFromSpreadsheetRunner,
   // },
-  {
-    title: "Lend Document",
-    component: LibraryRunner_LendDocument,
-  },
+  // {
+  //   title: "Lend Document",
+  //   component: LibraryRunner_LendDocument,
+  // },
 ] as const;
 
 // ################################################################################################

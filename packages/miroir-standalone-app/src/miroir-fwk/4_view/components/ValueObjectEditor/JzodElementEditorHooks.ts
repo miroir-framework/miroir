@@ -208,12 +208,10 @@ export function useJzodElementEditorHooks(
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> = useMemo(
     () => {
       if (
-        currentDeploymentUuid &&
+        // currentDeploymentUuid &&
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
-        // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid &&
-        // currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid !== noValue.uuid &&
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity &&
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid
       ) {
@@ -225,6 +223,7 @@ export function useJzodElementEditorHooks(
             ? currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid
             : currentApplication;
 
+        
         if (
           typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
             ?.targetApplicationUuid == "object"
@@ -261,7 +260,15 @@ export function useJzodElementEditorHooks(
             );
           }
         }
-        let deploymentUuid: TransformerReturnType<any> = applicationDeploymentMap[targetApplication];
+        log.info(
+          "useJzodElementEditorHooks",
+          "rootLessListKey:",
+          rootLessListKey,
+          "for foreignKeyObjects",
+          "targetApplication:",
+          targetApplication,
+        );
+        let deploymentUuid: Uuid | undefined = applicationDeploymentMap[targetApplication];
         const applicationSection = getApplicationSection(
           deploymentUuid,
           currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
@@ -309,23 +316,25 @@ export function useJzodElementEditorHooks(
     [deploymentEntityStateSelectorMap, currentDeploymentUuid, currentTypecheckKeyMap?.rawSchema]
   );
 
-  log.info(
-    "useJzodElementEditorHooks",
-    "rootLessListKey",
-    rootLessListKey,
-    "foreignKeyObjectsFetchQueryParams",
-    foreignKeyObjectsFetchQueryParams,
-  );
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
     useReduxDeploymentsStateQuerySelectorForCleanedResult(
       deploymentEntityStateSelectorMap.runQuery,
-      // deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-      //   ReduxDeploymentsState,
-      //   Domain2QueryReturnType<DomainElementSuccess>
-      // >,
       foreignKeyObjectsFetchQueryParams,
       applicationDeploymentMap,
   ) || {};
+
+  log.info(
+    "useJzodElementEditorHooks",
+    "rootLessListKey:",
+    rootLessListKey,
+    "currentDeploymentUuid:",
+    currentDeploymentUuid,
+    "currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams:",
+    currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams,
+    "foreignKeyObjectsFetchQueryParams",
+    foreignKeyObjectsFetchQueryParams,
+    "foreignKeyObjects", foreignKeyObjects,
+  );
 
   // log.info(
   //   "useJzodElementEditorHooks",

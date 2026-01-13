@@ -550,7 +550,6 @@ function handleInstanceAction(
 //#########################################################################################
 function handleModelAction(
   state: LocalCacheSliceState,
-  // deploymentUuid: Uuid,
   action: ModelAction,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Action2ReturnType {
@@ -563,6 +562,8 @@ function handleModelAction(
     action.payload.application,
     "deploymentUuid",
     deploymentUuid,
+    "applicationDeploymentMap",
+    applicationDeploymentMap,
     "action",
     action, 
   );

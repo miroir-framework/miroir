@@ -53,7 +53,7 @@ export function StoredRunnerView(props: {
   runnerUuid: Uuid,
   // storedRunner: Runner,
 }) {
-  const context = useMiroirContextService();
+  // const context = useMiroirContextService();
   
   const runnerDeploymentUuid: Uuid = props.applicationDeploymentMap
     ? props.applicationDeploymentMap[props.applicationUuid]

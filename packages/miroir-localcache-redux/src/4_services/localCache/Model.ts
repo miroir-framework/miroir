@@ -40,7 +40,7 @@ import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 // #########################################################################################
 export function currentModel(
   application: Uuid,
-  appliationDeploymentMap: ApplicationDeploymentMap,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   paramDeploymentUuid: string,
   state: LocalCacheSliceState
 ): MetaModel {
@@ -51,10 +51,15 @@ export function currentModel(
   //   Object.keys(state)
   // );
 
-  const deploymentUuid = appliationDeploymentMap[application];
+  const deploymentUuid = applicationDeploymentMap[application];
 
   if (!deploymentUuid) {
-    throw new Error("currentModel(deploymentUuid) parameter can not be undefined.");
+    throw new Error(
+      "currentModel() called, could not find deploymentUuid for application " +
+        application +
+        " in applicationDeploymentMap: " +
+        JSON.stringify(Object.keys(applicationDeploymentMap), null, 2)
+    );
   } else {
     const metaModelSection = "model";
     const modelSection =

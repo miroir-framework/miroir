@@ -184,10 +184,13 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                     defaultLabel: "Application",
                     editable: true,
                     selectorParams: {
-                      targetApplicationUuid: adminSelfApplication.uuid,
-                      // targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                      targetEntity: entityApplicationForAdmin.uuid,
+                      targetApplicationUuid: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b",
                       targetEntityOrderInstancesBy: "name",
+                      // targetApplicationUuid: adminSelfApplication.uuid,
+                      // // targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                      // targetEntity: entityApplicationForAdmin.uuid,
+                      // targetEntityOrderInstancesBy: "name",
                     },
                   },
                 },
@@ -230,7 +233,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                   value: {
                     id: 1,
                     defaultLabel: "Uuid",
-                    editable: false,
+                    display: { editable: false },
                   },
                 },
               },
@@ -241,7 +244,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                   value: {
                     id: 2,
                     defaultLabel: "Entity Name",
-                    editable: false,
+                    display: { editable: false },
                   },
                 },
               },
@@ -251,7 +254,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                   value: {
                     id: 3,
                     defaultLabel: "Entity Uuid",
-                    editable: false,
+                    display: { editable: false },
                   },
                 },
               },
@@ -262,7 +265,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                   value: {
                     id: 4,
                     defaultLabel: "Entity Definition Version Uuid",
-                    editable: false,
+                    display: { editable: false },
                   },
                 },
               },
@@ -271,7 +274,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                 tag: {
                   value: {
                     defaultLabel: "Name",
-                    editable: true,
+                    display: { editable: true },
                   },
                 },
               },
@@ -290,7 +293,8 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
   return (
     <RunnerView
       runnerName={runnerName}
-      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+      applicationDeploymentMap={applicationDeploymentMap}
+      // applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
       // deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}

@@ -50,14 +50,11 @@ function formatYYYYMMDD_HHMMSS(date = new Date()) {
 
 // ################################################################################################
 export interface CreateApplicationToolProps {
-  application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
-  // deploymentUuid: string;
 }
 
 // ################################################################################################
 export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
-  application,
   applicationDeploymentMap,
 }) => {
   const runnerName: string = "createApplicationAndDeployment";
@@ -65,7 +62,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
   // const currentMiroirModelEnvironment: MiroirModelEnvironment =
   //   useCurrentModelEnvironment(deploymentUuid);
 
-  const deploymentUuid: Uuid = applicationDeploymentMap[application] ?? "";
+  // const deploymentUuid: Uuid = applicationDeploymentMap[application] ?? "";
   
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
@@ -81,7 +78,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
                 tag: {
                   value: {
                     defaultLabel: "Application Name",
-                    editable: true,
                   },
                 },
               },
@@ -161,13 +157,17 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
 
   //   return combinedCompositeAction;
   // }, []);
+  let applicationDeploymentMapWithNewApplication: ApplicationDeploymentMap = {};
+  const testSelfApplicationUuid = uuidv4();
+  const testDeploymentUuid = uuidv4();
+  const testApplicationModelBranchUuid = uuidv4();
+  const testApplicationVersionUuid = uuidv4();
+  applicationDeploymentMapWithNewApplication = {
+    ...applicationDeploymentMap,
+    [testSelfApplicationUuid]: testDeploymentUuid,
+  };
 
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
-    const testSelfApplicationUuid = uuidv4();
-    const testDeploymentUuid = uuidv4();
-    const testApplicationModelBranchUuid = uuidv4();
-    const testApplicationVersionUuid = uuidv4();
-
     const serverConfig: any = {
       emulatedServerType: "sql",
       connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
@@ -455,7 +455,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           },
           {
             actionType: "initModel",
-            actionLabel: "initStore",
+            actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
@@ -541,13 +541,20 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     };
 
     return combinedCompositeActionTemplate;
-  }, []);
+  }, [
+    applicationDeploymentMap,
+    testApplicationModelBranchUuid,
+    testDeploymentUuid,
+    testSelfApplicationUuid,
+    testApplicationVersionUuid,
+  ]);
 
   return (
     <RunnerView
       runnerName={runnerName}
-      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
-      deploymentUuid={deploymentUuid}
+      applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
+      // applicationDeploymentMap={applicationDeploymentMap}
+      // deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
       action={{
