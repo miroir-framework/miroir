@@ -100,16 +100,16 @@ export async function storeActionOrBundleActionStoreRunner(
     }
     case "storeManagementAction_deleteStore": {
       // log.warn("storeActionOrBundleActionStoreRunner deleteStore does nothing!")
-      if (!action.payload.deploymentUuid) {
+      if (!deploymentUuid) {
         return new Action2Error(
           "FailedToDeleteStore",
-          "storeActionOrBundleActionStoreRunner no deploymentUuid in action " +
-            JSON.stringify(action)
+          "storeActionOrBundleActionStoreRunner no application matching applicationDeploymentMap in action " +
+            JSON.stringify(action) + " applicationDeploymentMap keys: " + JSON.stringify(Object.keys(applicationDeploymentMap))
         );
       }
 
       const localAppPersistenceStoreController =
-        persistenceStoreControllerManager.getPersistenceStoreController(action.payload.deploymentUuid);
+        persistenceStoreControllerManager.getPersistenceStoreController(deploymentUuid);
       if (!localAppPersistenceStoreController) {
         // throw new Error(
         //   "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
@@ -119,25 +119,41 @@ export async function storeActionOrBundleActionStoreRunner(
         // );
         return new Action2Error(
           "FailedToDeleteStore",
-          "storeActionOrBundleActionStoreRunner could not find controller for deployment: " +
-            action.payload.deploymentUuid +
+          "storeActionOrBundleActionStoreRunner could not find controller for application " + 
+          action.payload.application +
+          " deployment: " +
+            deploymentUuid +
             " available controllers: " +
             persistenceStoreControllerManager.getPersistenceStoreControllers()
         );
       }
       log.info(
-        "storeActionOrBundleActionStoreRunner deleteStore for deployment",
-        action.payload.deploymentUuid,
+        "storeActionOrBundleActionStoreRunner deleteStore for application",
+        action.payload.application,
+        "deployment",
+        deploymentUuid,
         "configuration",
         JSON.stringify(action.payload.configuration, null, 2)
       );
       const appModelStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.payload.configuration.model);
-      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.payload.deploymentUuid, "model store deleted");
+      log.info(
+        "storeActionOrBundleActionStoreRunner deleteStore for application",
+        action.payload.application,
+        "deployment",
+        deploymentUuid,
+        "model store deleted"
+      );
       
       const appDataStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.payload.configuration.data);
-      log.info("storeActionOrBundleActionStoreRunner deleteStore for deployment", action.payload.deploymentUuid, "data store deleted");
+      log.info(
+        "storeActionOrBundleActionStoreRunner deleteStore for application",
+        action.payload.application,
+        "deployment",
+        deploymentUuid,
+        "data store deleted"
+      );
       if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
         return new Action2Error(
           "FailedToDeleteStore",

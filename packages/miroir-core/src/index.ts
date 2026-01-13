@@ -1023,6 +1023,8 @@ const jzodSchemajzodMiroirBootstrapSchema = require("../src/assets/miroir_data/5
 // const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 
+const runnerDropApplication = require("./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/1cd065d8-dfb0-466f-974c-e81e993f2c66.json"); //assert { type: "json" };
+
 export {
   // applicationEndpoint,
   // deploymentEndpoint,
@@ -1110,6 +1112,7 @@ export {
   reportTransformerTestDetails,
   reportTransformerTestList,
   reportViewParamsDetails,
+  runnerDropApplication,
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
@@ -1244,6 +1247,7 @@ const entityDeployment = require("./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c
 const entityDefinitionDeployment = require("./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json"); //assert { type: "json" };
 const test1SelfApplication = require("./assets/test1_model/a659d350-dd97-4da9-91de-524fa01745dc/70a866bd-a645-41be-8ec5-814451f12337.json"); //assert { type: "json" };
 const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"); //assert { type: "json" };
+
 
 export {
   adminAdminApplication, adminConfigurationDeploymentAdmin,

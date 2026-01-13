@@ -24,20 +24,18 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export interface CreateEntityToolProps {
-  // application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
-  // deploymentUuid: string;
 }
 
 
 // ################################################################################################
 export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
   // application,
-  applicationDeploymentMap: unused,
+  applicationDeploymentMap,
   // deploymentUuid,
 }) => {
   
-  const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useApplicationDeploymentMap();
+  // const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useApplicationDeploymentMap();
   
   return (
     <StoredRunnerView

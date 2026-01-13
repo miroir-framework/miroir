@@ -260,14 +260,14 @@ export function useJzodElementEditorHooks(
             );
           }
         }
-        log.info(
-          "useJzodElementEditorHooks",
-          "rootLessListKey:",
-          rootLessListKey,
-          "for foreignKeyObjects",
-          "targetApplication:",
-          targetApplication,
-        );
+        // log.info(
+        //   "useJzodElementEditorHooks",
+        //   "rootLessListKey:",
+        //   rootLessListKey,
+        //   "for foreignKeyObjects",
+        //   "targetApplication:",
+        //   targetApplication,
+        // );
         let deploymentUuid: Uuid | undefined = applicationDeploymentMap[targetApplication];
         const applicationSection = getApplicationSection(
           deploymentUuid,
@@ -323,18 +323,18 @@ export function useJzodElementEditorHooks(
       applicationDeploymentMap,
   ) || {};
 
-  log.info(
-    "useJzodElementEditorHooks",
-    "rootLessListKey:",
-    rootLessListKey,
-    "currentDeploymentUuid:",
-    currentDeploymentUuid,
-    "currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams:",
-    currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams,
-    "foreignKeyObjectsFetchQueryParams",
-    foreignKeyObjectsFetchQueryParams,
-    "foreignKeyObjects", foreignKeyObjects,
-  );
+  // log.info(
+  //   "useJzodElementEditorHooks",
+  //   "rootLessListKey:",
+  //   rootLessListKey,
+  //   "currentDeploymentUuid:",
+  //   currentDeploymentUuid,
+  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams:",
+  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams,
+  //   "foreignKeyObjectsFetchQueryParams",
+  //   foreignKeyObjectsFetchQueryParams,
+  //   "foreignKeyObjects", foreignKeyObjects,
+  // );
 
   // log.info(
   //   "useJzodElementEditorHooks",

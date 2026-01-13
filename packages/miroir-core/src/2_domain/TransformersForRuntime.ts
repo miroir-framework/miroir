@@ -1928,15 +1928,17 @@ export function transformer_mustacheStringTemplate_apply(
       "transformer_mustacheStringTemplate_apply called for transformer",
       transformer,
       "queryParams",
-      JSON.stringify(Object.keys(queryParams), null, 2),
+      queryParams,
+      // JSON.stringify(Object.keys(queryParams), null, 2),
       "contextResults",
-      JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
+      contextResults
+      // JSON.stringify(Object.keys(contextResults ?? {}), null, 2)
     );
     const result = mustache.render(
       transformer.definition,
       ((transformer as any)["interpolation"] ?? "build") == "runtime" ? contextResults : queryParams
     );
-    log.info("transformer_mustacheStringTemplate_apply result", result);
+    log.info("transformer_mustacheStringTemplate_apply result:", result);
     return result;
   } catch (error: any) {
     log.error(

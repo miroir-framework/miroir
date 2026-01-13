@@ -219,63 +219,78 @@ export function StoredRunnerView(props: {
     [storedRunner]
   );
 
-  return runnerDefinitionFromLocalCache instanceof Domain2ElementFailed ? (
-    <div>Error loading runner definition...</div>
-  ) : runnerDefinitionFromLocalCache ? (
+  return (
     <>
+      <ThemedOnScreenDebug
+        label={`StoredRunnerView for ${runnerName} props`}
+        data={props}
+        initiallyUnfolded={false}
+      />
       <ThemedOnScreenDebug
         label={`StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`}
         data={runnerDefinitionFromLocalCache}
-        initiallyUnfolded={false}
+        // initiallyUnfolded={false}
+        useCodeBlock={true}
       />
-      <ThemedOnScreenDebug
-        label={`StoredRunnerView for ${runnerName} currentActionDefinition`}
-        data={currentActionDefinition}
-        initiallyUnfolded={false}
-      />
-      <ThemedOnScreenDebug
-        label={`StoredRunnerView for ${runnerName} formMLSchema`}
-        data={formMLSchema}
-        initiallyUnfolded={false}
-      />
-      {runnerDefinitionFromLocalCache.definition.runnerType == "customRunner" ? (
-        <RunnerView
-          runnerName={runnerName}
-          applicationDeploymentMap={
-            props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-          }
-          // deploymentUuid={runnerDeploymentUuid}
-          formMLSchema={formMLSchema}
-          initialFormValue={initialFormValue}
-          action={{
-            actionType: "compositeActionTemplate",
-            compositeActionTemplate: runnerDefinitionFromLocalCache.definition.actionTemplate,
-          }}
-          formLabel={runnerDefinitionFromLocalCache.defaultLabel}
-          formikValuePathAsString={runnerName}
-          displaySubmitButton="onFirstLine"
-          useActionButton={false}
-        />
+      {runnerDefinitionFromLocalCache instanceof Domain2ElementFailed ? (
+        <div>Error loading runner definition...</div>
+      ) : runnerDefinitionFromLocalCache ? (
+        <>
+          <ThemedOnScreenDebug
+            label={`StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`}
+            data={runnerDefinitionFromLocalCache}
+            initiallyUnfolded={false}
+          />
+          <ThemedOnScreenDebug
+            label={`StoredRunnerView for ${runnerName} currentActionDefinition`}
+            data={currentActionDefinition}
+            initiallyUnfolded={false}
+          />
+          <ThemedOnScreenDebug
+            label={`StoredRunnerView for ${runnerName} formMLSchema`}
+            data={formMLSchema}
+            initiallyUnfolded={false}
+          />
+          {runnerDefinitionFromLocalCache.definition.runnerType == "customRunner" ? (
+            <RunnerView
+              runnerName={runnerName}
+              applicationDeploymentMap={
+                props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+              }
+              // deploymentUuid={runnerDeploymentUuid}
+              formMLSchema={formMLSchema}
+              initialFormValue={initialFormValue}
+              action={{
+                actionType: "compositeActionTemplate",
+                compositeActionTemplate: runnerDefinitionFromLocalCache.definition.actionTemplate,
+              }}
+              formLabel={runnerDefinitionFromLocalCache.defaultLabel}
+              formikValuePathAsString={runnerName}
+              displaySubmitButton="onFirstLine"
+              useActionButton={false}
+            />
+          ) : (
+            // <div>Application Runner type not yet supported in StoredRunnerView</div>
+            <RunnerView
+              runnerName={runnerName}
+              applicationDeploymentMap={
+                props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+              }
+              // deploymentUuid={runnerDeploymentUuid}
+              formMLSchema={formMLSchema}
+              initialFormValue={initialFormValue}
+              action={storedRunnerAction as any}
+              formLabel={runnerDefinitionFromLocalCache.defaultLabel}
+              formikValuePathAsString={runnerName}
+              displaySubmitButton="onFirstLine"
+              useActionButton={false}
+            />
+          )}
+        </>
       ) : (
-        // <div>Application Runner type not yet supported in StoredRunnerView</div>
-         <RunnerView
-          runnerName={runnerName}
-          applicationDeploymentMap={
-            props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-          }
-          // deploymentUuid={runnerDeploymentUuid}
-          formMLSchema={formMLSchema}
-          initialFormValue={initialFormValue}
-          action={storedRunnerAction as any}
-          formLabel={runnerDefinitionFromLocalCache.defaultLabel}
-          formikValuePathAsString={runnerName}
-          displaySubmitButton="onFirstLine"
-          useActionButton={false}
-        />
+        <div>Loading runner definition...</div>
       )}
     </>
-  ) : (
-    <div>Loading runner definition...</div>
   );
 }
 // ################################################################################################

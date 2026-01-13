@@ -686,19 +686,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         // (existingObject === true &&
         //   localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.modifiable === false);
       // Generate element based on schema type 
-      log.info(
-        "JzodElementEditor",
-        count,
-        "rootLessListKey:", props.rootLessListKey,
-        "Rendering element of type:",
-        localResolvedElementJzodSchemaBasedOnValue.type,
-        "props.valueObjectEditMode",
-        props.valueObjectEditMode,
-        "localReadOnly:", localReadOnly,
-        "existingObject:", existingObject,
-        "localResolvedElementJzodSchemaBasedOnValue.tag?.value",
-        localResolvedElementJzodSchemaBasedOnValue.tag?.value
-      );
+      // log.info(
+      //   "JzodElementEditor",
+      //   count,
+      //   "rootLessListKey:", props.rootLessListKey,
+      //   "Rendering element of type:",
+      //   localResolvedElementJzodSchemaBasedOnValue.type,
+      //   "props.valueObjectEditMode",
+      //   props.valueObjectEditMode,
+      //   "localReadOnly:", localReadOnly,
+      //   "existingObject:", existingObject,
+      //   "localResolvedElementJzodSchemaBasedOnValue.tag?.value",
+      //   localResolvedElementJzodSchemaBasedOnValue.tag?.value
+      // );
       switch (localResolvedElementJzodSchemaBasedOnValue.type) {
         case "object": {
           return (

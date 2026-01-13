@@ -80,10 +80,10 @@ const runnerConfigs = [
   //   title: "Import Entity From Spreadsheet",
   //   component: ImportEntityFromSpreadsheetRunner,
   // },
-  // {
-  //   title: "Lend Document",
-  //   component: LibraryRunner_LendDocument,
-  // },
+  {
+    title: "Lend Document",
+    component: LibraryRunner_LendDocument,
+  },
 ] as const;
 
 // ################################################################################################

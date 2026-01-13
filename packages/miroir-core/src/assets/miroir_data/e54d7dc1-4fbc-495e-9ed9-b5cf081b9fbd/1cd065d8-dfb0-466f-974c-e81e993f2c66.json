@@ -1,0 +1,155 @@
+{
+  "uuid": "1cd065d8-dfb0-466f-974c-e81e993f2c66",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "name": "dropApplication",
+  "defaultLabel": "Drop Application & Deployment",
+  "parentName": "Runner",
+  "definition": {
+    "runnerType": "customRunner",
+    "formMLSchema": {
+      "formMLSchemaType": "mlSchema",
+      "mlSchema": {
+        "type": "object",
+        "definition": {
+          "application": {
+            "type": "uuid",
+            "nullable": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Application",
+                "selectorParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actionTemplate": {
+      "actionType": "compositeActionSequence",
+      "actionLabel": "dropApplicationSequence",
+      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      "payload": {
+        "application": "NOT_USED_IN_COMPOSITE_TEMPLATE",
+        "definition": [
+          {
+            "actionType": "compositeRunBoxedExtractorOrQueryAction",
+            "actionLabel": "getDeploymentForApplication",
+            "nameGivenToResult": "deploymentInfo",
+            "query": {
+              "actionType": "runBoxedExtractorOrQueryAction",
+              "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              "payload": {
+                "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                "applicationSection": "data",
+                "query": {
+                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                  "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "pageParams": {},
+                  "queryParams": {},
+                  "contextResults": {},
+                  "extractors": {
+                    "deployments": {
+                      "label": "deployments of the application",
+                      "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                      "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "parentName": "Deployment",
+                      "applicationSection": "data",
+                      "filter": {
+                        "attributeName": "adminApplication",
+                        "value": {
+                          "transformerType": "mustacheStringTemplate",
+                          "interpolation": "build",
+                          "definition": "{{dropApplication.application}}"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "actionType": "storeManagementAction_deleteStore",
+            "actionLabel": "deleteStore",
+            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "endpoint": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+            "payload": {
+              "application": {
+                "transformerType": "mustacheStringTemplate",
+                "definition": "{{dropApplication.application}}"
+              },
+              "configuration": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": ["deploymentInfo", "deployments", 0, "configuration"]
+              }
+            }
+          },
+          {
+            "actionType": "deleteInstance",
+            "actionLabel": "deleteDeployment",
+            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            "payload": {
+              "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+              "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+              "applicationSection": "data",
+              "objects": [
+                {
+                  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+                  "applicationSection": "data",
+                  "instances": [
+                    {
+                      "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "uuid": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "runtime",
+                        "definition": "{{deploymentInfo.deployments.0.uuid}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "actionType": "deleteInstance",
+            "actionLabel": "deleteAdminApplication",
+            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            "payload": {
+              "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+              "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+              "applicationSection": "data",
+              "objects": [
+                {
+                  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "applicationSection": "data",
+                  "instances": [
+                    {
+                      "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "uuid": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "build",
+                        "definition": "{{dropApplication.application}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

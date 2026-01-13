@@ -355,26 +355,26 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     !!parentKeyMap?.discriminator && 
     !!parentKeyMap?.discriminatorValues;
 
-  log.info(
-    "JzodLiteralEditor render count",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    rootLessListKey,
-    "name",
-    name,
-    "parentKey",
-    parentKey,
-    "parentKeyMap",
-    parentKeyMap,
-    "isDiscriminator",
-    JSON.stringify(isDiscriminator),
-    "parentKeyMap?.discriminator",
-    JSON.stringify(parentKeyMap?.discriminator),
-    "parentKeyMap?.discriminatorValues",
-    JSON.stringify(parentKeyMap?.discriminatorValues),
-    // "currentKeyMap",
-    // currentKeyMap,
-  );
+  // log.info(
+  //   "JzodLiteralEditor render count",
+  //   JzodLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "name",
+  //   name,
+  //   "parentKey",
+  //   parentKey,
+  //   "parentKeyMap",
+  //   parentKeyMap,
+  //   "isDiscriminator",
+  //   JSON.stringify(isDiscriminator),
+  //   "parentKeyMap?.discriminator",
+  //   JSON.stringify(parentKeyMap?.discriminator),
+  //   "parentKeyMap?.discriminatorValues",
+  //   JSON.stringify(parentKeyMap?.discriminatorValues),
+  //   // "currentKeyMap",
+  //   // currentKeyMap,
+  // );
   
   // const discriminatorIndex: number = !parentKeyMap?.discriminator
   //   ? -1
