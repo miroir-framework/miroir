@@ -35,7 +35,7 @@ import { useRunner } from "../Reports/ReportHooks.js";
 import { ThemedOnScreenDebug } from "../Themes/BasicComponents.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
-import type { FormMLSchema, RunnerProps } from "./RunnerInterface.js";
+import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 
@@ -196,10 +196,14 @@ export function StoredRunnerView(props: {
     ;
   }, [runnerName]);
 
-  const storedRunnerAction: CompositeActionTemplate | undefined = useMemo(
+  const storedRunnerAction: RunnerAction<Record<string, any>> | undefined
+  // CompositeActionTemplate | undefined 
+  = useMemo(
     () =>
       storedRunner && storedRunner.definition.runnerType === "actionRunner"
         ? {
+          actionType: "compositeActionTemplate",
+          compositeActionTemplate: {
             actionType: "compositeActionSequence",
             actionLabel: storedRunner.defaultLabel,
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -214,7 +218,7 @@ export function StoredRunnerView(props: {
                 } as any, // TODO: fix type!!
               ],
             },
-          }
+          }}
         : undefined,
     [storedRunner]
   );
@@ -271,6 +275,13 @@ export function StoredRunnerView(props: {
             />
           ) : (
             // <div>Application Runner type not yet supported in StoredRunnerView</div>
+            <>
+            <ThemedOnScreenDebug
+              label={`StoredRunnerView for ${runnerName} storedRunnerAction`}
+              data={storedRunnerAction}
+              // initiallyUnfolded={false}
+              useCodeBlock={true}
+            />
             <RunnerView
               runnerName={runnerName}
               applicationDeploymentMap={
@@ -285,6 +296,7 @@ export function StoredRunnerView(props: {
               displaySubmitButton="onFirstLine"
               useActionButton={false}
             />
+            </>
           )}
         </>
       ) : (
@@ -338,14 +350,15 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
 
   
   const handleSubmit = async (values: T, formikHelpers: FormikHelpers<T>) => {
-    log.info("RunnerView handleSubmit", action.actionType, "values", values);
+    log.info("RunnerView handleSubmit", action.actionType, "action", action, "values", values);
 
     switch (action.actionType) {
       case "onSubmit": {
         return action.onSubmit(values, formikHelpers);
         break;
       }
-      case "compositeActionSequence": {
+      case "compositeActionSequence": 
+      {
         log.info("RunnerView handleSubmit compositeActionSequence", action.compositeActionSequence);
         return handleAsyncAction(async () => {
         // return async () => {
