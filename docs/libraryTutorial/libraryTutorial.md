@@ -1,4 +1,4 @@
-# The Library Tutorial
+# Miroir: The Library Tutorial
 
 This tutorial introduces the Miroir Framework through a concrete example: a Library application. You'll learn by doing - starting with basic operations, then discovering how Miroir's architecture makes them possible.
 
@@ -14,13 +14,14 @@ TBW
 
 TBW
 
-## Part 1: Using the Library Application
+## Part 1: Discovering the Library Application
 
 ### The Home Page
 
 ![The Library Application Homepage](./library_homepage.png)
 
 The interface has three main areas:
+
 - **Left**: The catalogue menu for browsing data
 - **Top**: The application bar
 - **Center**: The current view (a Report)
@@ -35,20 +36,20 @@ The Library organizes its data into **Entities** - collections of related items 
 - **Author** - book creators, with name, nationality, and dates
 - **Publisher** - book publishers
 - **User** - library members
-- **Country** - referenced by Authors and Publishers
+- **LendingHistoryItem** - records when some Book has been borrowed by some user (incl. out and return dates)
+- **Country** - ancilary concept referenced by Authors and Publishers
 
 Each menu item displays instances of one Entity.
 
 ### Working with Users
 
-Click "Library Users" in the catalogue menu to see the list:
+Click "Library Users" in the catalogue menu to see the Users' list Report:
 
 ![The Users](./library_users.png)
 
 #### Viewing User Details
 
-Click on the name a user in the list to see its full information, which displays
-the following form:
+Click on the name a user in the list to see the report displaying its full information, with the form:
 
 ![An example User](./library_user_details.png)
 
@@ -58,7 +59,7 @@ Miroir manipulates data in the [JSON](https://en.wikipedia.org/wiki/JSON) format
 
 #### Modifying a User
 
-Modification on data is possible (depending on the Entity definition that we will see below) directly, in the form or in the JSON display. Validate your changes by clicking on the blue button on top:
+Modification on data is possible directly in the details Report, in the form or in the JSON display. Validate your changes by clicking on the blue button on top:
 
 ![Edit an example User](./library_user_details_EDIT.png)
 
@@ -68,66 +69,80 @@ A confirmation is displayed, and the value modified persistently.
 
 #### Creating a New User
 
-TBW - Use the "New User" button
+Use the "New User" button:
 
-**What just happened?** You performed Create, Read, and Update operations without writing any code. Miroir provided these capabilities automatically based on the User Entity's definition.
+![Display new User Form](./library_user_ADD.png)
 
-## Part 2: Understanding Reports
+You get a new user creation form, that you can fill out to add a new user:
+
+![Add a new User](./library_user_ADD_form_filled.png)
+
+Upon validation, a success notification is displayed, and the added User can be seen in the Users' list.
+
+![Add a new User Succeeded](./library_user_ADD_SUCCESS.png)
+
+#### Deleting a User
+
+In the `UserList` report, find the `Delete` icon for the user you just added.
+
+![Drop a User](./library_user_DROP.png)
+
+Confirm the Drop:
+
+![Drop a User: confirm](./library_user_DROP_confirm.png)
+
+A success message is displayed, and the user disappears from the Users' list.
+
+**What just happened?** You performed Create, Read, Update and Delete (CRUD) operations for instances of the User Entity without writing any code. Miroir provided these capabilities automatically based on the User Entity's definition.
+
+### (Briefly) Looking Under the Hood
+
+We have introduced Entity and Report concepts, we now recap and introduce some of the other main concepts in Miroir.
+
+When you clicked on the "Library Users" item in the menu:
+
+1. The app displayed the `UserList` **Report**
+2. The Report executed a **Query** to fetch all User instances
+3. Miroir rendered the data using the Report's display specification and the `User` **Entity**'s declared attributes
+
+When you updated, created or deleted a User:
+
+1. The form submitted an update, create or delete **Action** 
+2. The Action validated data against the User's **Entity** definition
+3. Miroir persisted the instance through the configured store for the Application's **Deployment**
+4. The UI refreshed automatically
+
+All of this was configured through JSON declarations, not imperative code. We will now see how.
+
+## Part 2: Working with Reports
+
+We will demonstrate the creation of a new Report, based on the following use case: suppose we want to find the books that have never been borrowed.
 
 The views you've been using are called **Reports** in Miroir. A Report declares:
 - What data to fetch (a **Query**)
 - How to display it (display sections)
 
-### The User List Report
 
-The User list is a Report that:
-1. Queries all User instances
-2. Displays them in a table format
-
-### The User Details Report
-
-The User details view is another Report that:
-1. Queries a specific User by ID
-2. Displays fields in a form layout
 
 **Key insight**: Reports are declarative. You describe *what* to show, not *how* to fetch or render it. Miroir handles the implementation.
 
-## Part 3: Miroir's Core Concepts
 
-Now that you've used the Library app, let's understand what powers it.
+## Part 3: Working with Entities
 
-### Entities and EntityDefinitions
+Entities are versioned, enabling controlled evolution of the data model.
 
-An **Entity** is a concept in your domain (like "Book" or "Author"). Its **EntityDefinition** specifies the shape of its instances using Jzod schemas.
+## Part 4: Working with Queries and Transformers
+
+## Part 4: Working with Endpoints, Actions and Runners
 
 Example: The User EntityDefinition declares fields like `name`, `email`, `registrationDate`.
 
 These definitions are stored as JSON, not hardcoded in TypeScript. This is what makes Miroir applications data-driven.
 
-### The Meta-Model
-
-Miroir has a special property: it defines itself using its own concepts.
-
-- **Entity** is itself an Entity
-- **EntityDefinition** is itself an EntityDefinition
-- This bootstrapping enables Miroir to be fully introspective
-
-### Model vs Data
-
-Every Miroir application deployment stores two things:
-
-**Model** (in `library_model/`):
-- Entity and EntityDefinition declarations
-- Queries, Reports, Actions definitions
-- The structure of your application
-
-**Data** (in `library_data/`):
-- Actual instances: specific books, authors, users
-- The content of your application
-
 ### Queries: Fetching Data
 
 A **Query** specifies what data to retrieve. Queries combine:
+
 - **Extractors** - fetch raw data from storage
 - **Transformers** - shape the data (filter, map, aggregate)
 - **Combiners** - merge multiple queries
@@ -152,23 +167,6 @@ Actions are declared in **Endpoints** and executed by the framework.
 
 The same Transformer can run client-side, server-side, or be converted to SQL - Miroir handles the translation.
 
-## Part 4: How It All Connects
-
-When you clicked "Users" in the menu:
-
-1. The app displayed the **User List Report**
-2. The Report executed its **Query**
-3. The Query used an **Extractor** to fetch all User instances
-4. Miroir rendered the data using the Report's display specification
-
-When you created a new User:
-
-1. The form submitted an **Action**
-2. The Action validated data against the User **EntityDefinition**
-3. Miroir persisted the instance through the configured store
-4. The UI refreshed automatically
-
-All of this was configured through JSON declarations, not imperative code.
 
 ## What's Next?
 
