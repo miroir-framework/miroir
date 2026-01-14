@@ -294,6 +294,23 @@
                   "sortByAttribute": {
                     "type": "string",
                     "optional": true
+                  },
+                  "sortOrder": {
+                    "type": "enum",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Sort Order",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "DESC"
+                        }
+                      }
+                    },
+                    "definition": [
+                      "asc",
+                      "desc"
+                    ]
                   }
                 }
               }

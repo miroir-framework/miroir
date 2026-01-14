@@ -538,6 +538,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     <ThemedOnScreenDebug
                       label={`ReportViewWithEditor`}
                       data={{reportDataQueryBase, reportDataQueryResults}}
+                      initiallyUnfolded={false}
+                      useCodeBlock={true}
                     />
                     <ReportSectionViewWithEditor
                       valueObjectEditMode="update"

@@ -10789,6 +10789,23 @@ export const miroirFundamentalJzodSchema = {
               "sortByAttribute": {
                 "type": "string",
                 "optional": true
+              },
+              "sortOrder": {
+                "type": "enum",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Sort Order",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "DESC"
+                    }
+                  }
+                },
+                "definition": [
+                  "asc",
+                  "desc"
+                ]
               }
             }
           }
@@ -11787,6 +11804,23 @@ export const miroirFundamentalJzodSchema = {
                       "sortByAttribute": {
                         "type": "string",
                         "optional": true
+                      },
+                      "sortOrder": {
+                        "type": "enum",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sort Order",
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "DESC"
+                            }
+                          }
+                        },
+                        "definition": [
+                          "asc",
+                          "desc"
+                        ]
                       }
                     }
                   }
@@ -35780,6 +35814,23 @@ export const miroirFundamentalJzodSchema = {
                               "sortByAttribute": {
                                 "type": "string",
                                 "optional": true
+                              },
+                              "sortOrder": {
+                                "type": "enum",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Sort Order",
+                                    "initializeTo": {
+                                      "initializeToType": "value",
+                                      "value": "DESC"
+                                    }
+                                  }
+                                },
+                                "definition": [
+                                  "asc",
+                                  "desc"
+                                ]
                               }
                             }
                           }
@@ -39327,6 +39378,47 @@ export const miroirFundamentalJzodSchema = {
                             }
                           }
                         ]
+                      },
+                      "sortOrder": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Sort Order",
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "DESC"
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Sort Order",
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "DESC"
+                                }
+                              }
+                            },
+                            "definition": [
+                              "asc",
+                              "desc"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ],
+                        "discriminator": "transformerType"
                       }
                     }
                   }

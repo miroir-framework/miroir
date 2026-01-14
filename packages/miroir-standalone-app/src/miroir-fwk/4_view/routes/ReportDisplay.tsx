@@ -173,7 +173,7 @@ export const ReportDisplay: React.FC<{
       <ThemedOnScreenDebug
         label="ReportDisplay availableReports"
         data={availableReports.map(r=>({uuid:r.uuid, name:r.name}))}
-        initiallyUnfolded={true}
+        initiallyUnfolded={false}
         useCodeBlock={true}
       />
       <ThemedOnScreenDebug
