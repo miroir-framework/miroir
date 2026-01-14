@@ -268,6 +268,8 @@ export {
   objectInstanceReportSection,
   ObjectListReportSection,
   objectListReportSection,
+  RunnerReportSection,
+  runnerReportSection,
   PersistenceAction, Query,
   query, QueryByEntityUuidGetEntityDefinition,
   queryByEntityUuidGetEntityDefinition,

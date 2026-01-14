@@ -12,6 +12,14 @@
           "definition": {
             "content": "# Welcome to the Library Application\n\nYou can browse the library or run the following actions:"
           }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "lendBook",
+            "runner": "cc853632-f158-43fa-b9ed-437c9c25f539"
+          }
         }
       ]
     }

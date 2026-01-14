@@ -899,6 +899,7 @@ export function getMiroirFundamentalJzodSchema(
               "listReportSection",
               "graphReportSection",
               "markdownReportSection",
+              "runnerReportSection",
               "reportSection",
               "rootReport",
               "runStoredQuery",

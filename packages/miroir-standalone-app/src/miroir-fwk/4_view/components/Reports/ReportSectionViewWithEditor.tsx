@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   ApplicationSection,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   Entity,
@@ -34,6 +35,7 @@ import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportS
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { Formik, useFormikContext } from 'formik';
+import { StoredRunnerView } from '../Runners/RunnerView';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -385,7 +387,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               applicationDeploymentMap={props.applicationDeploymentMap}
               applicationSection={props.applicationSection as ApplicationSection}
               deploymentUuid={props.deploymentUuid}
-              // 
+              //
               initialInstanceValueDEFUNCT={objectInstanceReportSectionEntityInstanceDEFUNCT}
               entityUuidDEFUNCT={reportSectionDefinitionFromFormik.definition.parentUuid} // entityUuid-based section display, independent of report section definition
               //
@@ -394,7 +396,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               reportSectionPath={props.reportSectionPath}
               formValueMLSchema={props.formValueMLSchema}
               formikAlreadyAvailable={true}
-              // 
+              //
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
             />
           </>
@@ -409,6 +411,25 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               showPerformanceDisplay={props.showPerformanceDisplay}
             />
           </div>
+        )}
+        {reportSectionDefinitionFromFormik?.type == "runnerReportSection" && (
+          <>
+            {reportSectionDefinitionFromFormik.definition.runnerReportSectionType ===
+            "storedRunner" ? (
+              <StoredRunnerView
+                applicationUuid={props.application}
+                applicationDeploymentMap={
+                  props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+                }
+                runnerUuid={reportSectionDefinitionFromFormik.definition.runner}
+              />
+            ) : (
+              <div>
+                Unsupported runner report section type:{" "}
+                {reportSectionDefinitionFromFormik.definition.runnerReportSectionType}
+              </div>
+            )}
+          </>
         )}
         {/* {props.reportSectionDEFUNCT.type == "markdownReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (

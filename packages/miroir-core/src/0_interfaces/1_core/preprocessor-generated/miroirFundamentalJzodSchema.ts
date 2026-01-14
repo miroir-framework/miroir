@@ -11047,6 +11047,84 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "runnerReportSection": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "runnerReportSection"
+          },
+          "definition": {
+            "type": "union",
+            "discriminator": "runnerReportSectionType",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "runnerReportSectionType": {
+                    "type": "literal",
+                    "definition": "embeddedRunner"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "runnerReportSectionType": {
+                    "type": "literal",
+                    "definition": "storedRunner"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  },
+                  "runner": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Runner",
+                        "selectorParams": {
+                          "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
       "gridReportSection": {
         "type": "object",
         "definition": {
@@ -11163,6 +11241,13 @@ export const miroirFundamentalJzodSchema = {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "objectListReportSection"
                   }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "runnerReportSection"
+                  }
                 }
               ]
             }
@@ -11213,6 +11298,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "objectInstanceReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "runnerReportSection"
             }
           }
         ]
@@ -12062,6 +12154,84 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "runnerReportSection": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "runnerReportSection"
+                  },
+                  "definition": {
+                    "type": "union",
+                    "discriminator": "runnerReportSectionType",
+                    "definition": [
+                      {
+                        "type": "object",
+                        "definition": {
+                          "runnerReportSectionType": {
+                            "type": "literal",
+                            "definition": "embeddedRunner"
+                          },
+                          "label": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "runnerReportSectionType": {
+                            "type": "literal",
+                            "definition": "storedRunner"
+                          },
+                          "label": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          },
+                          "runner": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Runner",
+                                "selectorParams": {
+                                  "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                                  "targetEntityOrderInstancesBy": "name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
               "gridReportSection": {
                 "type": "object",
                 "definition": {
@@ -12178,6 +12348,13 @@ export const miroirFundamentalJzodSchema = {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "objectListReportSection"
                           }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runnerReportSection"
+                          }
                         }
                       ]
                     }
@@ -12228,6 +12405,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "objectInstanceReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runnerReportSection"
                     }
                   }
                 ]
@@ -36072,6 +36256,84 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       },
+                      "runnerReportSection": {
+                        "type": "object",
+                        "tag": {
+                          "value": {
+                            "display": {
+                              "displayedAttributeValueWhenFolded": "definition.label"
+                            }
+                          }
+                        },
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "runnerReportSection"
+                          },
+                          "definition": {
+                            "type": "union",
+                            "discriminator": "runnerReportSectionType",
+                            "definition": [
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "runnerReportSectionType": {
+                                    "type": "literal",
+                                    "definition": "embeddedRunner"
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "id": 1,
+                                        "defaultLabel": "Label",
+                                        "display": {
+                                          "editable": true
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "runnerReportSectionType": {
+                                    "type": "literal",
+                                    "definition": "storedRunner"
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "id": 1,
+                                        "defaultLabel": "Label",
+                                        "display": {
+                                          "editable": true
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "runner": {
+                                    "type": "uuid",
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Runner",
+                                        "selectorParams": {
+                                          "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                                          "targetEntityOrderInstancesBy": "name"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
                       "gridReportSection": {
                         "type": "object",
                         "definition": {
@@ -36199,6 +36461,14 @@ export const miroirFundamentalJzodSchema = {
                                     "relativePath": "objectListReportSection"
                                   },
                                   "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "runnerReportSection"
+                                  },
+                                  "context": {}
                                 }
                               ]
                             }
@@ -36254,6 +36524,14 @@ export const miroirFundamentalJzodSchema = {
                             "definition": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "objectInstanceReportSection"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "runnerReportSection"
                             },
                             "context": {}
                           }
@@ -37808,6 +38086,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuildCarryOnObject"
             }
           }
@@ -38943,6 +39228,13 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "transformerForBuildCarryOnObject"
                           }
                         }
@@ -39661,6 +39953,189 @@ export const miroirFundamentalJzodSchema = {
                           }
                         ]
                       }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection": {
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            },
+            "isTemplate": true
+          }
+        },
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "runnerReportSection"
+              },
+              "definition": {
+                "type": "union",
+                "discriminator": [
+                  [
+                    "runnerReportSectionType",
+                    "transformerType"
+                  ]
+                ],
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "runnerReportSectionType": {
+                        "type": "literal",
+                        "definition": "embeddedRunner"
+                      },
+                      "label": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label",
+                            "display": {
+                              "editable": true
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "runnerReportSectionType": {
+                        "type": "literal",
+                        "definition": "storedRunner"
+                      },
+                      "label": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label",
+                            "display": {
+                              "editable": true
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Label",
+                                "display": {
+                                  "editable": true
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "runner": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Runner",
+                            "selectorParams": {
+                              "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                              "targetEntityOrderInstancesBy": "name"
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Runner",
+                                "selectorParams": {
+                                  "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                                  "targetEntityOrderInstancesBy": "name"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
                 ]
@@ -50821,6 +51296,13 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "objectInstanceReportSection"
         }
       },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "runnerReportSection"
+        }
+      },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject": {
         "type": "schemaReference",
         "definition": {
@@ -59498,6 +59980,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "objectInstanceReportSection"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "runnerReportSection"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject": {

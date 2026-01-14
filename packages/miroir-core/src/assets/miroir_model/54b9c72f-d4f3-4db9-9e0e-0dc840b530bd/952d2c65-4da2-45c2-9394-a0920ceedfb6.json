@@ -524,6 +524,80 @@
               }
             }
           },
+          "runnerReportSection": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "runnerReportSection"
+              },
+              "definition": {
+                "type": "union",
+                "discriminator": "runnerReportSectionType",
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "runnerReportSectionType": {
+                        "type": "literal",
+                        "definition": "embeddedRunner"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label",
+                            "display": { "editable": true }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "runnerReportSectionType": {
+                        "type": "literal",
+                        "definition": "storedRunner"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 1,
+                            "defaultLabel": "Label",
+                            "display": { "editable": true }
+                          }
+                        }
+                      },
+                      "runner": {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Runner",
+                            "selectorParams": {
+                              "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                              "targetEntityOrderInstancesBy": "name"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
           "gridReportSection": {
             "type": "object",
             "definition": {
@@ -640,6 +714,13 @@
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "objectListReportSection"
                       }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runnerReportSection"
+                      }
                     }
                   ]
                 }
@@ -690,6 +771,13 @@
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "objectInstanceReportSection"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "runnerReportSection"
                 }
               }
             ]

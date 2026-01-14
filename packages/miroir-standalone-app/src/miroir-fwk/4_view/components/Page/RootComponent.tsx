@@ -799,7 +799,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 outlineOpen={isOutlineOpen}
                 outlineWidth={outlineWidth}
               >
-                <ThemedText>uuid: {uuidv4()}</ThemedText>
+                {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
                 <ThemedOnScreenDebug
                   label="RootComponent adminDeploymentsQueryResult"
                   data={adminDeploymentsQueryResult}
