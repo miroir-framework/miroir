@@ -42,41 +42,20 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
       name: "search",
     }
   },
-  {
-    "label": "Transformer Builder",
-    targetRoot: "transformerBuilder",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-    // "icon": "category",
-    "icon": {
-      iconType: "mui",
-      name: "build",
-      superImpose: {
-        letter: "T",
-        color: "#FF0000",
-      }
-      // color: "red",
-      // color: {
-      //   colorType: "themeColor",
-      //   currentThemeColorPath: "colors.warning"
-      // }
-    }
-
-  },
   // {
-  //   "label": "concept",
+  //   "label": "Transformer Builder",
+  //   targetRoot: "transformerBuilder",
   //   "section": "model",
-  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-  //   "icon": "category"
-  // },
-  // {
-  //   "label": "check",
-  //   "section": "model",
-  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-  //   "icon": "category"
+  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
+  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
+  //   "icon": {
+  //     iconType: "mui",
+  //     name: "build",
+  //     superImpose: {
+  //       letter: "T",
+  //       color: "#FF0000",
+  //     }
+  //   }
   // },
   {
     "label": "runners",
@@ -99,13 +78,13 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
     // "icon": "error"
   },
-  {
-    "label": "error-logs",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    "icon": "engineering"
-  },
+  // {
+  //   "label": "error-logs",
+  //   "section": "model",
+  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+  //   "icon": "engineering"
+  // },
   {
     "label": "settings",
     "section": "model",
@@ -449,32 +428,6 @@ export function AppBar(props:AppBarProps) {
             >
               <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
             </ThemedIconButton>
-            {/* Performance Monitor Indicator */}
-            {context.setShowPerformanceDisplay && (
-              <Tooltip
-                title={
-                  context.showPerformanceDisplay
-                    ? "Performance Monitor: ON (click to disable)"
-                    : "Performance Monitor: OFF (click to enable)"
-                }
-              >
-                <ThemedIconButton
-                  onClick={() =>
-                    context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay) as any
-                  }
-                  aria-label="Performance Monitor"
-                  // title="Fetch Miroir & App configurations from database"
-                >
-                  <ThemedIcon
-                    icon={
-                      context.showPerformanceDisplay
-                        ? { iconType: "mui", name: "timer_off" }
-                        : { iconType: "mui", name: "timer" }
-                    }
-                  />
-                </ThemedIconButton>
-              </Tooltip>
-            )}{" "}
             {/* Action Timeline Indicator */}
             {context.setShowActionTimeline && (
               <Tooltip
@@ -529,6 +482,32 @@ export function AppBar(props:AppBarProps) {
                             iconType: "mui",
                             name: "bug_report",
                           }
+                    }
+                  />
+                </ThemedIconButton>
+              </Tooltip>
+            )}
+            {/* Performance Monitor Indicator */}
+            {context.setShowPerformanceDisplay && (
+              <Tooltip
+                title={
+                  context.showPerformanceDisplay
+                    ? "Performance Monitor: ON (click to disable)"
+                    : "Performance Monitor: OFF (click to enable)"
+                }
+              >
+                <ThemedIconButton
+                  onClick={() =>
+                    context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay) as any
+                  }
+                  aria-label="Performance Monitor"
+                  // title="Fetch Miroir & App configurations from database"
+                >
+                  <ThemedIcon
+                    icon={
+                      context.showPerformanceDisplay
+                        ? { iconType: "mui", name: "timer_off" }
+                        : { iconType: "mui", name: "timer" }
                     }
                   />
                 </ThemedIconButton>
