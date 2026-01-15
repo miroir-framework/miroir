@@ -28,7 +28,7 @@ The interface has three main areas:
 
 ### Browsing Data Through Entities
 
-<img src="./library_homepage_menu.jpg" alt="The Library Catalogue Menu" width="40%"/>
+<img src="./library_homepage_menu.jpg" alt="The Library Catalogue Menu" width="30%"/>
 
 The Library organizes its data into **Entities** - collections of related instances with a common structure:
 
@@ -164,7 +164,26 @@ This displays the definition, in which the attributes of the Entity are shown:
 
 <img src="./library-model-Book_entity_definition.png" alt="The Book Entity Definition" width="85%"/>
 
-Of particular interest is the `mlSchema` attribute, that describes the structure of a `Book`.
+Of special interest is the `mlSchema` attribute, that describes the structure of a `Book`:
+
+<img src="./library-model-Book_entity_definition_mlSchema.png" alt="The Book Entity Definition Attributes" width="85%"/>
+
+
+A `Book` has the following attributes:
+
+- **uuid**: Unique identifier for the book. Every entity instance must have one.
+- **parentName**: Name of the parent Entity or type (optional).
+- **parentUuid**: Unique identifier of the parent Entity. Every Entity instance must point to its Entity through this attribute.
+- **conceptLevel**: Level or type of concept (optional, `model` or `data`, usal objects are implicitly `data`).
+- **name**: The name of the book (title).
+- **year**: The year associated with the book (year of first publication).
+- **author**: Reference to the author of the book.
+- **publisher**: Reference to the publisher of the book.
+
+The `name` is a simple `string`, that will be shown as `Book Title` in forms:
+
+<img src="./library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Definition Attribute: 'name'" width="85%"/>
+
 
 
 <!-- These definitions are stored as JSON, not hardcoded in TypeScript. This is what makes Miroir applications data-driven. -->
