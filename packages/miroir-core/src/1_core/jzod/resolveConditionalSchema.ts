@@ -71,7 +71,7 @@ export function resolveConditionalSchema(
   // activityTracker: MiroirActivityTrackerInterface | undefined,
   step: Step,
   transformerPath: string[],
-  jzodSchema: JzodElement,
+  mlSchema: JzodElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
   modelEnvironment: MiroirModelEnvironment,
@@ -81,11 +81,11 @@ export function resolveConditionalSchema(
   deploymentUuid: Uuid | undefined = undefined,
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
 ): ResolveConditionalSchemaResult {
-  let effectiveSchema: JzodElement = jzodSchema;
+  let effectiveSchema: JzodElement = mlSchema;
   // log.info(
-  //   "resolveConditionalSchema called with jzodSchema",
-  //   jzodSchema,
-  //  //   JSON.stringify(jzodSchema, null, 2),
+  //   "resolveConditionalSchema called with mlSchema",
+  //   mlSchema,
+  //  //   JSON.stringify(mlSchema, null, 2),
   //   "rootObject",
   //   rootObject,
   //   "currentValuePath",
@@ -104,9 +104,9 @@ export function resolveConditionalSchema(
   //   "context",
   //   context
   // );
-  if (jzodSchema?.tag && jzodSchema.tag.value && !jzodSchema.tag.value.isTemplate && jzodSchema.tag.value.ifThenElseMMLS) {
+  if (mlSchema?.tag && mlSchema.tag.value && !mlSchema.tag.value.isTemplate && mlSchema.tag.value.ifThenElseMMLS) {
     // If the schema has a ifThenElseMMLS, we use it as the effective schema
-    const ifThenElseConfig = jzodSchema.tag.value.ifThenElseMMLS;
+    const ifThenElseConfig = mlSchema.tag.value.ifThenElseMMLS;
     // the runtime path is given by the parentUuid, to be found in the reduxDeploymentsState
     if (ifThenElseConfig.parentUuid && typeof ifThenElseConfig.parentUuid === "object") {
       if (!modelEnvironment.currentModel || modelEnvironment.currentModel.entityDefinitions.length === 0) {
@@ -199,7 +199,7 @@ export function resolveConditionalSchema(
           details: `No entity definition found for parentUuid ${parentUuidStr} in deployment ${deploymentUuid}`
         };
       }
-      effectiveSchema = parentEntityDefinition.jzodSchema;
+      effectiveSchema = parentEntityDefinition.mlSchema;
     }
     log.info(
       "resolveConditionalSchema return effectiveSchema",

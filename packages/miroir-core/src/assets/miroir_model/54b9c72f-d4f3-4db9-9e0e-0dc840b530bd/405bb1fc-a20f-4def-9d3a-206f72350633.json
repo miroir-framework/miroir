@@ -14,7 +14,7 @@
     "uuid",
     "description"
   ],
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

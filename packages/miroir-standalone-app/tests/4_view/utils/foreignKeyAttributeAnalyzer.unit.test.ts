@@ -19,7 +19,7 @@ describe('analyzeForeignKeyAttributes', () => {
     conceptLevel: "Model" as any,
     name: `${name}Definition`,
     entityUuid,
-    jzodSchema: {
+    mlSchema: {
       type: "object",
       definition
     }
@@ -174,10 +174,10 @@ describe('analyzeForeignKeyAttributes', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle entity definition without jzodSchema', () => {
+    it('should handle entity definition without mlSchema', () => {
       const invalidEntityDef = {
         ...bookEntityDef,
-        jzodSchema: undefined as any
+        mlSchema: undefined as any
       };
 
       const result = analyzeForeignKeyAttributes(
@@ -191,7 +191,7 @@ describe('analyzeForeignKeyAttributes', () => {
     it('should handle entity definition without schema definition', () => {
       const invalidEntityDef = {
         ...bookEntityDef,
-        jzodSchema: {
+        mlSchema: {
           type: "object" as const,
           definition: undefined as any
         }

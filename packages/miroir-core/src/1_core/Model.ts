@@ -78,7 +78,7 @@ import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor
 import {
   Entity,
   EntityDefinition,
-  JzodSchema,
+  MlSchema,
   Menu,
   MetaModel,
   Report,
@@ -174,7 +174,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     queryEndpointVersionV1 as EndpointDefinition,
     persistenceEndpointVersionV1 as EndpointDefinition,
   ],
-  jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as JzodSchema],
+  jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as MlSchema],
   menus: [menuDefaultMiroir as Menu],
   applicationVersions: [selfApplicationVersionInitialMiroirVersion],
   reports: [ // TODO: MISSING "DETAILS" REPORTS
@@ -211,14 +211,14 @@ const defaultEndpointsByUuid: Record<Uuid, EndpointDefinition> = {
 };
 
 export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
   // currentModel: defaultMiroirMetaModel,
   // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,

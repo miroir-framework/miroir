@@ -25,7 +25,7 @@ import {
   EntityInstance,
   JzodPlainAttribute,
   // JzodAttribute,
-  JzodSchema,
+  MlSchema,
   Menu,
   MetaModel,
   Report,
@@ -98,7 +98,7 @@ export function selectCurrentDeploymentModel(
           domainState[deploymentUuid] &&
           domainState[deploymentUuid]["model"] &&
           domainState[deploymentUuid]["model"][entityJzodSchema.uuid]
-          ? Object.values(domainState[deploymentUuid]["model"][entityJzodSchema.uuid]) as JzodSchema[]
+          ? Object.values(domainState[deploymentUuid]["model"][entityJzodSchema.uuid]) as MlSchema[]
           : []
         ),
         reports: (
@@ -146,14 +146,14 @@ export function selectCurrentDeploymentModel(
 
 // ################################################################################################
 export function selectEntityInstancesFromJzodAttribute(
-  jzodSchema: JzodPlainAttribute | undefined
+  mlSchema: JzodPlainAttribute | undefined
 ): EntitiesDomainStateEntityInstanceArraySelector {
   return (domainState: EntitiesDomainState): EntityInstance[] => {
     // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
-    // if (jzodSchema?.tag?.value?.targetEntity && domainState[jzodSchema?.tag?.value.targetEntity]) {
-    if (jzodSchema?.tag?.value?.selectorParams?.targetEntity && domainState[jzodSchema?.tag?.value?.selectorParams.targetEntity]) {
+    // if (mlSchema?.tag?.value?.targetEntity && domainState[mlSchema?.tag?.value.targetEntity]) {
+    if (mlSchema?.tag?.value?.selectorParams?.targetEntity && domainState[mlSchema?.tag?.value?.selectorParams.targetEntity]) {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
-      return DomainInstanceUuidIndexToArray(domainState[jzodSchema?.tag?.value.selectorParams.targetEntity]);
+      return DomainInstanceUuidIndexToArray(domainState[mlSchema?.tag?.value.selectorParams.targetEntity]);
     } else {
       return [];
     }
@@ -161,9 +161,9 @@ export function selectEntityInstancesFromJzodAttribute(
 }
 
 // ################################################################################################
-export function selectEntityUuidFromJzodAttribute(jzodSchema:JzodPlainAttribute | undefined):Uuid | undefined{
-  // return jzodSchema?.tag?.value?.targetEntity;
-  return jzodSchema?.tag?.value?.selectorParams?.targetEntity;
+export function selectEntityUuidFromJzodAttribute(mlSchema:JzodPlainAttribute | undefined):Uuid | undefined{
+  // return mlSchema?.tag?.value?.targetEntity;
+  return mlSchema?.tag?.value?.selectorParams?.targetEntity;
 }
 
 // ################################################################################################

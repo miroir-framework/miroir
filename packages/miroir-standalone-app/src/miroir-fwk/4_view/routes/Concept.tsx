@@ -241,7 +241,7 @@ export const ConceptPage: React.FC<any> = (
   const createEntity_newEntityDescription = "Description of the new entity";
 
   // log.info("createEntity fileData", fileData);
-  const jzodSchema:JzodObject = {
+  const mlSchema:JzodObject = {
     type: "object",
     definition: 
     // Object.assign(
@@ -351,7 +351,7 @@ export const ConceptPage: React.FC<any> = (
         //   createEntity_newEntityListReportUuid: uuidv4(),
         //   adminConfigurationDeploymentParis,
         //   //TODO: tag params, should be passed as context instead?
-        //   jzodSchema,
+        //   mlSchema,
         //   entityEntityDefinition,
         //   entityReport,
         //   createEntity_newEntity: newEntity,
@@ -416,9 +416,9 @@ export const ConceptPage: React.FC<any> = (
         //         transformerType: "getFromParameters",
         //         referenceName: "createEntity_newEntityDetailsReportUuid",
         //       },
-        //       jzodSchema: {
+        //       mlSchema: {
         //         transformerType: "getFromParameters",
-        //         referenceName: "jzodSchema",
+        //         referenceName: "mlSchema",
         //       },
         //     },
         //     // list of instances Report Definition

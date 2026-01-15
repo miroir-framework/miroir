@@ -49,7 +49,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         uuid: "abc-123",
         parentUuid: "parent-1",
       },
-      jzodSchema: baseJzodSchema,
+      mlSchema: baseJzodSchema,
       foreignKeyObjects: {},
     },
     {
@@ -66,7 +66,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         uuid: "def-456",
         parentUuid: "parent-1",
       },
-      jzodSchema: baseJzodSchema,
+      mlSchema: baseJzodSchema,
       foreignKeyObjects: {},
     },
   ];
@@ -235,7 +235,7 @@ describe("calculateAdaptiveColumnWidths", () => {
     const columnDefs = [
       { field: "fk", headerName: "FK", cellRendererParams: { isFK: true, entityUuid: "entity1" } },
     ];
-    const jzodSchema: Record<string, JzodElement> = {
+    const mlSchema: Record<string, JzodElement> = {
       fk: { type: "string", tag: { value: { selectorParams: {targetEntity: "entity1"} } } },
     };
     const rows: TableComponentRow[] = [
@@ -243,7 +243,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         deploymentUuid: "550e8400-e29b-41d4-a716-446655440000",
         displayedValue: { fk: "ref-1" },
         rawValue: { uuid: "test-uuid", parentUuid: "parent-1" },
-        jzodSchema,
+        mlSchema,
         foreignKeyObjects: {
           entity1: {
             "ref-1": {
@@ -259,13 +259,13 @@ describe("calculateAdaptiveColumnWidths", () => {
       rows,
       800,
       defaultToolsColumnDef,
-      jzodSchema
+      mlSchema
     );
     expect(specs[1].type).toBe("foreignKey");
     expect(specs[1].calculatedWidth).toBeGreaterThan(0);
   });
 
-  it("should not throw if jzodSchema is undefined", () => {
+  it("should not throw if mlSchema is undefined", () => {
     expect(() =>
       calculateAdaptiveColumnWidths(baseColumnDefs, baseRows, 1200, defaultToolsColumnDef)
     ).not.toThrow();
@@ -290,7 +290,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         deploymentUuid: "550e8400-e29b-41d4-a716-446655440000",
         displayedValue: { name: "A very very very long name for testing column width" },
         rawValue: { uuid: "test-uuid", parentUuid: "parent-1" },
-        jzodSchema: baseJzodSchema,
+        mlSchema: baseJzodSchema,
         foreignKeyObjects: {},
       },
     ];

@@ -729,11 +729,11 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           [
             {
               ...entityDefinitionAuthor,
-              jzodSchema: {
+              mlSchema: {
                 type: "object",
                 definition: {
                   ...Object.fromEntries(
-                    Object.entries(entityDefinitionAuthor.jzodSchema.definition).filter(
+                    Object.entries(entityDefinitionAuthor.mlSchema.definition).filter(
                       (i) => !modelActionAlterAttribute.payload.removeColumns?.includes(i[0])
                     )
                   ),

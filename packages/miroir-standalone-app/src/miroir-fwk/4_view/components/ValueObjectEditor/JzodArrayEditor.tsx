@@ -20,7 +20,7 @@ import {
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodReference,
-  type JzodSchema,
+  type MlSchema,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type Uuid
@@ -48,6 +48,7 @@ import {
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
+import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -136,6 +137,7 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
 // ################################################################################################
 interface ProgressiveArrayItemProps {
   index: number;
+  valueObjectEditMode: ValueObjectEditMode;
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
@@ -291,6 +293,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
               />
               <JzodElementEditor
                 name={"" + index}
+                valueObjectEditMode={props.valueObjectEditMode}
                 listKey={listKey + "." + index}
                 indentLevel={usedIndentLevel + 1}
                 labelElement={<></>}
@@ -418,7 +421,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
-  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
   //     currentModel: currentModel,
   //     miroirMetaModel: miroirMetaModel,
   //   };
@@ -446,7 +449,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         currentMiroirModelEnvironment
         // {
         //   miroirFundamentalJzodSchema:
-        //     context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+        //     context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
         //   currentModel: currentModel,
         //   miroirMetaModel: miroirMetaModel,
         // }
@@ -578,7 +581,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               JSON.stringify(newItemEntityUuid, null, 2)
           );
         }
-        newItemSchema = newItemEntity.jzodSchema;
+        newItemSchema = newItemEntity.mlSchema;
       }
 
       // const newItemEntity:EntityDefinition  =  entityDefinitions[newItemEntityUuid];
@@ -735,6 +738,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   currentValue={currentValue}
                   maxRenderDepth={maxRenderDepth}
                   readOnly={readOnly}
+                  valueObjectEditMode={props.valueObjectEditMode}
                   
                   displayError={displayError}
                   onChangeVector={onChangeVector}

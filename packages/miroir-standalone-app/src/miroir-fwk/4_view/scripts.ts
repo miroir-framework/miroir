@@ -63,7 +63,7 @@ export const deleteCascade = async (p: {
   const foreignKeysPointingToEntity = Object.fromEntries(
     Object.entries(p.entityDefinitions)
       .map((e: [string, EntityDefinition]) => {
-        const fkAttributes = Object.entries(e[1].jzodSchema.definition).find(
+        const fkAttributes = Object.entries(e[1].mlSchema.definition).find(
           (a) => a[1].tag?.value?.selectorParams?.targetEntity == p.entityDefinition.entityUuid
         );
         return [e[1].entityUuid, fkAttributes ? fkAttributes[0] : undefined];

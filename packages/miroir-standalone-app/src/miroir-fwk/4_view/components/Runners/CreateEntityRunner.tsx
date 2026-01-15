@@ -189,8 +189,8 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                   },
                 },
               },
-              entity: entityDefinitionEntity.jzodSchema,
-              entityDefinition: entityDefinitionEntityDefinition.jzodSchema,
+              entity: entityDefinitionEntity.mlSchema,
+              entityDefinition: entityDefinitionEntityDefinition.mlSchema,
             },
           },
         },
@@ -218,7 +218,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
           parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
           name: "",
           entityUuid: entityUuid,
-          jzodSchema: {
+          mlSchema: {
             type: "object",
             definition: {
               uuid: {

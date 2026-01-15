@@ -21,7 +21,7 @@ import {
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
   DomainControllerInterface,
   JzodElement,
-  JzodSchema,
+  MlSchema,
   LoggerInterface,
   MiroirContext,
   MiroirContextInterface,
@@ -122,7 +122,7 @@ export interface MiroirReactContext {
   viewParams: ViewParams;
   // ###################################################################################################
   // Miroir meta-model
-  miroirFundamentalJzodSchema: JzodSchema | undefined;
+  miroirFundamentalJzodSchema: MlSchema | undefined;
   setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>;
   // ###################################################################################################
   // Form state management
@@ -222,9 +222,9 @@ export function MiroirContextReactProvider(props: {
     setDeploymentUuidToReportsEntitiesDefinitionsMapping,
   ] = useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
   const [miroirFundamentalJzodSchema, setMiroirFundamentalJzodSchema] = useState<
-    JzodSchema | undefined
-  >(globalMiroirFundamentalJzodSchema as JzodSchema);
-  // useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
+    MlSchema | undefined
+  >(globalMiroirFundamentalJzodSchema as MlSchema);
+  // useState<MlSchema>({name: "dummyJzodSchema", parentName: "MlSchema", parentUuid:"", uuid: ""});
 
   // Create ViewParams instance to track UI state with reactive state
   const [sidebarIsopen, setSidebarIsOpen] = useState(true);

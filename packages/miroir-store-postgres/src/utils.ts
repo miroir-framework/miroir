@@ -59,8 +59,8 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
 export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   entityDefinition: EntityDefinition
 ): ModelAttributes<Model, Attributes<Model>> {
-  const jzodSchema: JzodObject = entityDefinition.jzodSchema ? entityDefinition.jzodSchema : { type: "object", definition: {}};
-  const jzodObjectAttributes = jzodSchema.definition;
+  const mlSchema: JzodObject = entityDefinition.mlSchema ? entityDefinition.mlSchema : { type: "object", definition: {}};
+  const jzodObjectAttributes = mlSchema.definition;
   const result = Object.fromEntries(
     Object.entries(jzodObjectAttributes).map((a: [string, JzodElement]) => {
       return [
@@ -108,7 +108,7 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
       ];
     })
   );
-  // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
+  // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "mlSchema",entityDefinition.mlSchema, "result", result);
   return result;
 }
 // // ##############################################################################################

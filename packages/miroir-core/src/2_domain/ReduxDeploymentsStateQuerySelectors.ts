@@ -423,7 +423,7 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
       );
       return undefined;
     }
-    const result: JzodObject = entityDefinition.jzodSchema;
+    const result: JzodObject = entityDefinition.mlSchema;
 
     // log.info("extractEntityJzodSchemaFromReduxDeploymentsState selectorParams", selectorParams, "result", result);
 

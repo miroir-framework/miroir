@@ -139,7 +139,7 @@ export async function modelInitialize(
     
     // bootstrap EntityJzodSchema
     await persistenceStoreController.createEntity(entityJzodSchema as MetaEntity, entityDefinitionJzodSchema as EntityDefinition);
-    log.info(logHeader, 'created entity JzodSchema',persistenceStoreController.getEntityUuids());
+    log.info(logHeader, 'created entity MlSchema',persistenceStoreController.getEntityUuids());
     
     // bootstrap EntityReport
     await persistenceStoreController.createEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);

@@ -17,7 +17,7 @@ const entityDefinitionBook: EntityDefinition = {
     cacheAllInstancesOnRefresh: true,
   },
   viewAttributes: ["name", "author", "year", "publisher", "uuid"],
-  jzodSchema: {
+  mlSchema: {
     type: "object",
     definition: {
       uuid: {
@@ -145,16 +145,16 @@ const tests: getModelUpdateTest[] = [
     },
     expectedModelUpdate: new Error("EntityDefinitions must have the same UUID to compute a ModelUpdate.")
   },
-  // "should return ModelAction for adding a single string attribute to jzodSchema"
+  // "should return ModelAction for adding a single string attribute to mlSchema"
   {
-    testLabel: "should return ModelAction for adding a single string attribute to jzodSchema",
+    testLabel: "should return ModelAction for adding a single string attribute to mlSchema",
     entityDefinitionBefore: entityDefinitionBook,
     entityDefinitionAfter: {
       ...entityDefinitionBook,
-      jzodSchema: {
-        ...entityDefinitionBook.jzodSchema,
+      mlSchema: {
+        ...entityDefinitionBook.mlSchema,
         definition: {
-          ...entityDefinitionBook.jzodSchema.definition,
+          ...entityDefinitionBook.mlSchema.definition,
           isbn: {
             type: "string",
             optional: true,
@@ -202,10 +202,10 @@ const tests: getModelUpdateTest[] = [
     entityDefinitionBefore: entityDefinitionBook,
     entityDefinitionAfter: {
       ...entityDefinitionBook,
-      jzodSchema: {
-        ...entityDefinitionBook.jzodSchema,
+      mlSchema: {
+        ...entityDefinitionBook.mlSchema,
         definition: {
-          ...entityDefinitionBook.jzodSchema.definition,
+          ...entityDefinitionBook.mlSchema.definition,
           name: {
             type: "string",
             tag: {
@@ -221,16 +221,16 @@ const tests: getModelUpdateTest[] = [
     },
     expectedModelUpdate: null
   },
-  // "should return ModelAction for removing a single attribute from jzodSchema"
+  // "should return ModelAction for removing a single attribute from mlSchema"
   {
-    testLabel: "should return ModelAction for removing a single attribute from jzodSchema",
+    testLabel: "should return ModelAction for removing a single attribute from mlSchema",
     entityDefinitionBefore: entityDefinitionBook,
     entityDefinitionAfter: {
       ...entityDefinitionBook,
-      jzodSchema: {
-        ...entityDefinitionBook.jzodSchema,
+      mlSchema: {
+        ...entityDefinitionBook.mlSchema,
         definition: (() => {
-          const { publisher, ...rest } = entityDefinitionBook.jzodSchema.definition;
+          const { publisher, ...rest } = entityDefinitionBook.mlSchema.definition;
           return rest;
         })(),
       },
@@ -253,10 +253,10 @@ const tests: getModelUpdateTest[] = [
     entityDefinitionBefore: entityDefinitionBook,
     entityDefinitionAfter: {
       ...entityDefinitionBook,
-      jzodSchema: {
-        ...entityDefinitionBook.jzodSchema,
+      mlSchema: {
+        ...entityDefinitionBook.mlSchema,
         definition: (() => {
-          const { publisher, ...rest } = entityDefinitionBook.jzodSchema.definition;
+          const { publisher, ...rest } = entityDefinitionBook.mlSchema.definition;
           return {
             ...rest,
             isbn: {

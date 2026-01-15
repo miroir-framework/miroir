@@ -7,7 +7,7 @@
   "conceptLevel":"Model",
   "name":"ApplicationVersion",
   "icon": "Interests",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

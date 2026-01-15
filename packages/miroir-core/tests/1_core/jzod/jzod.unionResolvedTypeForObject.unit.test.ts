@@ -3,7 +3,7 @@ import {
   JzodElement,
   JzodLiteral,
   JzodObject,
-  JzodSchema,
+  MlSchema,
   JzodUnion,
   MetaModel,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -15,7 +15,7 @@ import {
 
 describe('jzodUnionResolvedTypeForObject', () => {
   // Mock data for all tests
-  const mockMiroirFundamentalJzodSchema = {} as JzodSchema;
+  const mockMiroirFundamentalJzodSchema = {} as MlSchema;
   const mockCurrentModel = {} as MetaModel;
   const mockMiroirMetaModel = {} as MetaModel;
   const mockRelativeReferenceJzodContext = {};

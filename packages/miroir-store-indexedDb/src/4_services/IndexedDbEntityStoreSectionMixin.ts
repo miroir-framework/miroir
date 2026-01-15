@@ -197,16 +197,16 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       const localEntityJzodSchemaDefinition =
         update.payload.removeColumns != undefined && Array.isArray(update.payload.removeColumns)
           ? Object.fromEntries(
-              Object.entries(localEntityDefinition.jzodSchema.definition).filter(
+              Object.entries(localEntityDefinition.mlSchema.definition).filter(
                 (i) => update.payload.removeColumns ?? ([] as string[]).includes(i[0])
               )
             )
-          : localEntityDefinition.jzodSchema.definition;
+          : localEntityDefinition.mlSchema.definition;
       const modifiedEntityDefinition: EntityDefinition = Object.assign(
         {},
         localEntityDefinition,
         {
-          jzodSchema: {
+          mlSchema: {
             type: "object",
             definition: {
               ...localEntityJzodSchemaDefinition,

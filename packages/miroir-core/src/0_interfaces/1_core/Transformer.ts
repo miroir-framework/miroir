@@ -3,14 +3,14 @@ import type { Domain2QueryReturnType } from "../2_domain/DomainElement";
 import type { ReduxDeploymentsState } from "../2_domain/ReduxDeploymentsStateInterface";
 import type { Uuid } from "./EntityDefinition";
 import type {
-  JzodSchema,
+  MlSchema,
   MetaModel,
   TransformerForBuild,
   TransformerForBuildPlusRuntime,
 } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelEnvironment {
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   miroirMetaModel?: MetaModel,
   endpointsByUuid: Record<Uuid, any>,
   currentModel?: MetaModel,

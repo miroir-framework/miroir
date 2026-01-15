@@ -209,7 +209,7 @@ export function EntityInstanceSelectorPanel(props:{
   //   return {
   //     miroirFundamentalJzodSchema:
   //       context.miroirFundamentalJzodSchema ??
-  //       (miroirFundamentalJzodSchema as JzodSchema),
+  //       (miroirFundamentalJzodSchema as MlSchema),
   //     miroirMetaModel: miroirMetaModel,
   //     currentModel: currentModel,
   //   };
@@ -571,7 +571,7 @@ export function EntityInstanceSelectorPanel(props:{
                       definition: {
                         type: "array",
                         definition:
-                          currentReportTargetEntityDefinition?.jzodSchema ??
+                          currentReportTargetEntityDefinition?.mlSchema ??
                           createGenericObjectSchema(),
                       },
                     },
@@ -594,7 +594,7 @@ export function EntityInstanceSelectorPanel(props:{
                         entityInstances: {
                           type: "array",
                           definition:
-                            currentReportTargetEntityDefinition?.jzodSchema ??
+                            currentReportTargetEntityDefinition?.mlSchema ??
                             createGenericObjectSchema(),
                         },
                       },
@@ -634,7 +634,7 @@ export function EntityInstanceSelectorPanel(props:{
                 type: "object",
                 definition: {
                   selectedEntityInstance:
-                    currentReportTargetEntityDefinition?.jzodSchema ?? createGenericObjectSchema(),
+                    currentReportTargetEntityDefinition?.mlSchema ?? createGenericObjectSchema(),
                 },
               }}
               formikValuePathAsString="selectedEntityInstance"

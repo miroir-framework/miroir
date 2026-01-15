@@ -1,16 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { jzodObjectFlatten } from "../../../src/1_core/jzod/jzodObjectFlatten";
-import { JzodObject, JzodReference, JzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { JzodObject, JzodReference, MlSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { defaultMiroirMetaModel } from "../../test_assets/defaultMiroirMetaModel";
 
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
 const defaultModelEnvironment = {
   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
   currentModel: defaultMiroirMetaModel,
   miroirMetaModel: defaultMiroirMetaModel
-} as const satisfies { miroirFundamentalJzodSchema: JzodSchema; currentModel: any; miroirMetaModel: any; };
+} as const satisfies { miroirFundamentalJzodSchema: MlSchema; currentModel: any; miroirMetaModel: any; };
 
 describe("jzodObjectFlatten", () => {
   // ##############################################################################################

@@ -1,5 +1,5 @@
 // import { describe, it, expect } from "jest";
-import { getAttributeTypesFromJzodSchema } from "../src/1_core/jzodSchema";
+import { getAttributeTypesFromJzodSchema } from "../src/1_core/mlSchema";
 
 
 describe("getAttributeTypesFromJzodSchema.unit", () => {
@@ -9,7 +9,7 @@ describe("getAttributeTypesFromJzodSchema.unit", () => {
       // type is missing
       definition: {},
     } as any;
-    expect(() => getAttributeTypesFromJzodSchema(jzodElement)).toThrowError("JzodSchema has no type");
+    expect(() => getAttributeTypesFromJzodSchema(jzodElement)).toThrowError("MlSchema has no type");
   });
 
   // ##############################################################################################
@@ -18,7 +18,7 @@ describe("getAttributeTypesFromJzodSchema.unit", () => {
       type: "string",
       definition: {},
     } as any;
-    expect(() => getAttributeTypesFromJzodSchema(jzodElement)).toThrowError("JzodSchema type is not object");
+    expect(() => getAttributeTypesFromJzodSchema(jzodElement)).toThrowError("MlSchema type is not object");
   });
 
   // ##############################################################################################

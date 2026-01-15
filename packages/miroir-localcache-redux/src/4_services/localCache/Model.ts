@@ -24,7 +24,7 @@ import {
   type StoreBasedConfiguration,
   type MetaEntity,
   type EntityDefinition,
-  type JzodSchema,
+  type MlSchema,
   type Menu,
   type Report,
   type Query,
@@ -123,7 +123,7 @@ export function currentModel(
         : []) as EntityDefinition[],
       jzodSchemas: (jzodSchemas && jzodSchemas.entities
         ? Object.values(jzodSchemas.entities)
-        : []) as JzodSchema[],
+        : []) as MlSchema[],
       menus: (menus && menus.entities ? Object.values(menus.entities) : []) as Menu[],
       reports: (reports && reports.entities ? Object.values(reports.entities) : []) as Report[],
       storedQueries: (queries && queries.entities
@@ -145,7 +145,7 @@ export function currentModelEnvironment(
   const model = currentModel(application, appliationDeploymentMap, deploymentUuid, state);
   return {
     deploymentUuid: deploymentUuid,
-    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
     miroirMetaModel: defaultMiroirMetaModel,
     currentModel: model,
     endpointsByUuid: model.endpoints.reduce((acc, endpoint) => {

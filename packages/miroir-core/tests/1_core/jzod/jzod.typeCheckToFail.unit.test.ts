@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   JzodElement,
-  JzodSchema
+  MlSchema
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
@@ -10,7 +10,7 @@ import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel
 import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
 import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
 
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
 // ################################################################################################
 // ################################################################################################

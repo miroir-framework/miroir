@@ -470,7 +470,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       }
 
       let foreignKeyObjects: Record<string, any> = {};
-      for (const attribute of Object.entries(currentObjectEntityDefinition.jzodSchema.definition) ?? []) {
+      for (const attribute of Object.entries(currentObjectEntityDefinition.mlSchema.definition) ?? []) {
         log.debug("selectEntityInstanceFromObjectQueryAndDomainState checking attribute", attribute);
         if (attribute[1].type != "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
         if (!attribute[1].tag?.value?.targetEntity) {
@@ -600,7 +600,7 @@ export const selectEntityJzodSchemaFromDomainStateNew = (
     ) as EntityDefinition[];
     const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
 
-    const result: JzodObject | undefined = index > -1 ? values[index].jzodSchema : undefined;
+    const result: JzodObject | undefined = index > -1 ? values[index].mlSchema : undefined;
 
     // log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
 

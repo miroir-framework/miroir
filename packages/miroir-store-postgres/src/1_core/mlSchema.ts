@@ -40,10 +40,10 @@ export const jzodToPostgresTypeMap: Record<
 
 export function getAttributeTypesFromJzodSchema(jzodElement: JzodElement): Record<string, string> {
   if (!jzodElement.type) {
-    throw new Error("JzodSchema has no type");
+    throw new Error("MlSchema has no type");
   }
   if (jzodElement.type !== "object") {
-    throw new Error("JzodSchema type is not object");
+    throw new Error("MlSchema type is not object");
     
   }
   const attributeTypes: Record<string, string> = {};

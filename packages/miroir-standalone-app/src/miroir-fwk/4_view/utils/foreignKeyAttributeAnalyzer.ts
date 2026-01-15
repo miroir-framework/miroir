@@ -36,7 +36,7 @@ export interface AnalyzeForeignKeyAttributesOptions {
  * ```typescript
  * // Analyze a Book entity that has Author and Publisher foreign keys
  * const bookEntityDef = {
- *   jzodSchema: {
+ *   mlSchema: {
  *     definition: {
  *       title: { type: "string" },
  *       authorUuid: { type: "uuid", tag: { value: { targetEntity: "author-uuid" } } },
@@ -46,7 +46,7 @@ export interface AnalyzeForeignKeyAttributesOptions {
  * };
  * 
  * const authorEntityDef = {
- *   jzodSchema: {
+ *   mlSchema: {
  *     definition: {
  *       name: { type: "string" },
  *       countryUuid: { type: "uuid", tag: { value: { targetEntity: "country-uuid" } } }
@@ -77,7 +77,7 @@ export function analyzeForeignKeyAttributes(
 ): ForeignKeyAttributeDefinition[] {
   const { includeTransitive = true, maxDepth = 5 } = options;
   
-  if (!mainEntityDefinition?.jzodSchema?.definition) {
+  if (!mainEntityDefinition?.mlSchema?.definition) {
     return [];
   }
 
@@ -86,7 +86,7 @@ export function analyzeForeignKeyAttributes(
   const processedEntities = new Set<string>();
   
   // First, add all direct foreign key attributes from the main entity
-  Object.entries(mainEntityDefinition.jzodSchema.definition).forEach(([attributeName, schema]: [string, any]) => {
+  Object.entries(mainEntityDefinition.mlSchema.definition).forEach(([attributeName, schema]: [string, any]) => {
     if (schema.tag?.value?.selectorParams?.targetEntity) {
       result.push({
         attributeName,
@@ -111,7 +111,7 @@ export function analyzeForeignKeyAttributes(
     
     const entityDef = allEntityDefinitions.find(e => e.entityUuid === entityUuid);
     if (entityDef) {
-      Object.entries(entityDef.jzodSchema.definition).forEach(([nestedAttributeName, schema]: [string, any]) => {
+      Object.entries(entityDef.mlSchema.definition).forEach(([nestedAttributeName, schema]: [string, any]) => {
         if (schema.tag?.value?.selectorParams?.targetEntity && !allForeignKeyEntities.has(schema.tag.value.selectorParams?.targetEntity)) {
           // Add a synthetic entry for the foreign key entity that needs to be fetched
           // but is not a direct attribute of the main entity

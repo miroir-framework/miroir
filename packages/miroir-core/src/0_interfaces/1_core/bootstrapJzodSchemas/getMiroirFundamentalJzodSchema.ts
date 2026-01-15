@@ -90,20 +90,20 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionEndpointDefinition: any,
 // ): JzodReference {
   // ): any /** JzodReference, avoiding reference to ensure proper compilation */ {
-  ): any /** JzodSchema, avoiding reference to ensure proper compilation */ {
+  ): any /** MlSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
   log.info("getMiroirFundamentalJzodSchema called!");
   // log.info(
-  //   "graphConfig: (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context.graphReportSection.definition.definition.definition.config",
-  //   JSON.stringify((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context.graphReportSection.definition.definition.definition.config??{},null,2)
-  //   // JSON.stringify(entityDefinitionJzodSchemaV1.jzodSchema.definition.definition.context.miroirTransformersForBuild ?? {}, null, 2)
+  //   "graphConfig: (entityDefinitionReportV1 as any).mlSchema.definition.definition.context.graphReportSection.definition.definition.definition.config",
+  //   JSON.stringify((entityDefinitionReportV1 as any).mlSchema.definition.definition.context.graphReportSection.definition.definition.definition.config??{},null,2)
+  //   // JSON.stringify(entityDefinitionJzodSchemaV1.mlSchema.definition.definition.context.miroirTransformersForBuild ?? {}, null, 2)
   // );
   // log.info(
-  //   "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.jzodSchema.definition.definition.context",
-  //   entityDefinitionTransformerTest.jzodSchema.definition.definition.context
+  //   "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.mlSchema.definition.definition.context",
+  //   entityDefinitionTransformerTest.mlSchema.definition.definition.context
   // );
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
-    entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
+    entityDefinitionQueryVersionV1.mlSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
   ) as any;
 
@@ -123,9 +123,9 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   const miroirFundamentalJzodSchema: any = {
-    // const miroirFundamentalJzodSchema: JzodSchema = {
+    // const miroirFundamentalJzodSchema: MlSchema = {
     uuid: miroirFundamentalJzodSchemaUuid,
-    parentName: "JzodSchema",
+    parentName: "MlSchema",
     parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
     name: "miroirFundamentalJzodSchema",
     defaultLabel:
@@ -143,7 +143,7 @@ export function getMiroirFundamentalJzodSchema(
             true
           ) as any
         ).context,
-        // miroirIcon: entityDefinitionEntityDefinitionV1.jzodSchema.definition.icon,
+        // miroirIcon: entityDefinitionEntityDefinitionV1.mlSchema.definition.icon,
         miroirIcon: {
           type: "union",
           discriminator: "iconType",
@@ -474,10 +474,10 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        ...entityDefinitionTransformerDefinition.jzodSchema.definition.transformerInterface
+        ...entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface
           .definition.inputOutput.context,
-        // inputOutputObject: entityDefinitionTransformerDefinition.jzodSchema.definition.transformerInterface.definition.inputOutput as any,
-        transformerDefinition: entityDefinitionTransformerDefinition.jzodSchema as any,
+        // inputOutputObject: entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition.inputOutput as any,
+        transformerDefinition: entityDefinitionTransformerDefinition.mlSchema as any,
         ______________________________________________miroirMetaModel_____________________________________________:
           {
             type: "never",
@@ -753,12 +753,12 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        conceptLevel: entityDefinitionEntity.jzodSchema.definition.conceptLevel,
+        conceptLevel: entityDefinitionEntity.mlSchema.definition.conceptLevel,
         // {
         //   type: "enum",
         //   definition: ["MetaModel", "Model", "Data"],
         // },
-        storageAccess: entityDefinitionEntity.jzodSchema.definition.storageAccess,
+        storageAccess: entityDefinitionEntity.mlSchema.definition.storageAccess,
         dataStoreType: {
           type: "enum",
           definition: ["miroir", "app"],
@@ -805,11 +805,11 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
         ...makeReferencesAbsolute(
-          entityDefinitionTransformerTest.jzodSchema.definition.definition,
+          entityDefinitionTransformerTest.mlSchema.definition.definition,
           miroirFundamentalJzodSchemaUuid,
           true
         ).context,
-        transformerTestDefinition: entityDefinitionTransformerTest.jzodSchema as any,
+        transformerTestDefinition: entityDefinitionTransformerTest.mlSchema as any,
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
@@ -820,76 +820,76 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        adminApplication: entityDefinitionAdminApplication.jzodSchema as any,
-        selfApplication: entityDefinitionSelfApplicationV1.jzodSchema as any,
-        applicationVersion: entityDefinitionSelfApplicationVersionV1.jzodSchema as any,
-        bundle: entityDefinitionBundleV1.jzodSchema as any,
-        deployment: entityDefinitionDeployment.jzodSchema as any,
-        entity: entityDefinitionEntity.jzodSchema as any,
-        entityDefinition: entityDefinitionEntityDefinitionV1.jzodSchema as any,
+        adminApplication: entityDefinitionAdminApplication.mlSchema as any,
+        selfApplication: entityDefinitionSelfApplicationV1.mlSchema as any,
+        applicationVersion: entityDefinitionSelfApplicationVersionV1.mlSchema as any,
+        bundle: entityDefinitionBundleV1.mlSchema as any,
+        deployment: entityDefinitionDeployment.mlSchema as any,
+        entity: entityDefinitionEntity.mlSchema as any,
+        entityDefinition: entityDefinitionEntityDefinitionV1.mlSchema as any,
         testCompositeAction: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeAction"
         ),
         testCompositeActionSuite: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionSuite"
         ),
         testBuildCompositeAction: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildCompositeAction"
         ),
         testBuildCompositeActionSuite: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildCompositeActionSuite"
         ),
         testBuildPlusRuntimeCompositeAction: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildPlusRuntimeCompositeAction"
         ),
         testBuildPlusRuntimeCompositeActionSuite: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testBuildPlusRuntimeCompositeActionSuite"
         ),
         testCompositeActionTemplate: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplate"
         ),
         testCompositeActionTemplateSuite: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testCompositeActionTemplateSuite"
         ),
         testAssertion: (
-          entityDefinitionTest.jzodSchema as any
+          entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
           (e: any) => e.definition.testType.definition == "testAssertion"
         ),
-        test: entityDefinitionTest.jzodSchema as any,
+        test: entityDefinitionTest.mlSchema as any,
         testCompositeActionParams,
         selfApplicationDeploymentConfiguration:
-          entityDefinitionSelfApplicationDeploymentConfiguration.jzodSchema as any,
-        // selfApplication: entityDefinitionSelfApplicationV1.jzodSchema as JzodObject,
-        // applicationVersion: entityDefinitionSelfApplicationVersionV1.jzodSchema as JzodObject,
-        // bundle: entityDefinitionBundleV1.jzodSchema as JzodObject,
-        // deployment: entityDefinitionDeployment.jzodSchema as JzodObject,
-        // entity: entityDefinitionEntity.jzodSchema as JzodObject,
-        // entityDefinition: entityDefinitionEntityDefinitionV1.jzodSchema as JzodObject,
-        ...(entityDefinitionMenu.jzodSchema.definition.definition as any).context,
-        menu: entityDefinitionMenu.jzodSchema as any,
-        // menu: entityDefinitionMenu.jzodSchema as JzodObject,
-        graphConfig: (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context
+          entityDefinitionSelfApplicationDeploymentConfiguration.mlSchema as any,
+        // selfApplication: entityDefinitionSelfApplicationV1.mlSchema as JzodObject,
+        // applicationVersion: entityDefinitionSelfApplicationVersionV1.mlSchema as JzodObject,
+        // bundle: entityDefinitionBundleV1.mlSchema as JzodObject,
+        // deployment: entityDefinitionDeployment.mlSchema as JzodObject,
+        // entity: entityDefinitionEntity.mlSchema as JzodObject,
+        // entityDefinition: entityDefinitionEntityDefinitionV1.mlSchema as JzodObject,
+        ...(entityDefinitionMenu.mlSchema.definition.definition as any).context,
+        menu: entityDefinitionMenu.mlSchema as any,
+        // menu: entityDefinitionMenu.mlSchema as JzodObject,
+        graphConfig: (entityDefinitionReportV1 as any).mlSchema.definition.definition.context
           .graphReportSection.definition.definition.definition.config,
         ...Object.fromEntries(
           Object.entries(
-            (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context
+            (entityDefinitionReportV1 as any).mlSchema.definition.definition.context
           ).filter((e) =>
             [
               // TODO: remove this filter, this introduces unnecessary coupling
@@ -906,11 +906,11 @@ export function getMiroirFundamentalJzodSchema(
             ].includes(e[0])
           )
         ),
-        jzodObjectOrReference: (entityDefinitionJzodSchemaV1 as any).jzodSchema.definition
+        jzodObjectOrReference: (entityDefinitionJzodSchemaV1 as any).mlSchema.definition
           .definition.context.jzodObjectOrReference,
-        jzodSchema: entityDefinitionJzodSchemaV1.jzodSchema as any,
-        // jzodSchema: entityDefinitionJzodSchemaV1.jzodSchema as JzodObject,
-        report: (entityDefinitionReportV1 as any).jzodSchema,
+        mlSchema: entityDefinitionJzodSchemaV1.mlSchema as any,
+        // mlSchema: entityDefinitionJzodSchemaV1.mlSchema as JzodObject,
+        report: (entityDefinitionReportV1 as any).mlSchema,
         metaModel: {
           type: "object",
           definition: {
@@ -1007,8 +1007,8 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  // relativePath: "jzodSchema",
-                  relativePath: "jzodSchema",
+                  // relativePath: "mlSchema",
+                  relativePath: "mlSchema",
                 },
               },
             },
@@ -1256,7 +1256,7 @@ export function getMiroirFundamentalJzodSchema(
         commit: {
           type: "object",
           definition: {
-            ...entityDefinitionCommit.jzodSchema.definition,
+            ...entityDefinitionCommit.mlSchema.definition,
             actions: {
               type: "array",
               definition: {
@@ -1327,7 +1327,7 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.jzodSchema.definition.definition,miroirFundamentalJzodSchemaUuid) as any).context,
+        // ...(makeReferencesAbsolute(entityDefinitionQueryVersionV1.mlSchema.definition.definition,miroirFundamentalJzodSchemaUuid) as any).context,
         ...entityDefinitionQueryVersionV1WithAbsoluteReferences.context,
         domainElementVoid: {
           type: "object",
@@ -2099,7 +2099,7 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        // JzodSchema queries  ##############################################################
+        // MlSchema queries  ##############################################################
         queryByEntityUuidGetEntityDefinition: {
           type: "object",
           extend: {
@@ -2418,7 +2418,7 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        runner: entityDefinitionRunner.jzodSchema,
+        runner: entityDefinitionRunner.mlSchema,
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
@@ -3336,10 +3336,10 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        ...entityDefinitionEndpointDefinition.jzodSchema.definition.definition.definition.actions
+        ...entityDefinitionEndpointDefinition.mlSchema.definition.definition.definition.actions
           .context,
-        // endpointDefinition: entityDefinitionEndpointDefinition.jzodSchema.definition.definition,
-        endpointDefinition: entityDefinitionEndpointDefinition.jzodSchema,
+        // endpointDefinition: entityDefinitionEndpointDefinition.mlSchema.definition.definition,
+        endpointDefinition: entityDefinitionEndpointDefinition.mlSchema,
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,

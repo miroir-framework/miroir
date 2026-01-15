@@ -100,7 +100,7 @@
 // import {
 //   JzodElement,
 //   JzodObject,
-//   JzodSchema,
+//   MlSchema,
 //   MetaModel,
 //   Entity,
 //   EntityDefinition,
@@ -135,7 +135,7 @@
 //     entityDefinitionReport as EntityDefinition,
 //     entityDefinitionStoreBasedConfiguration as EntityDefinition,
 //   ],
-//   jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as JzodSchema],
+//   jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as MlSchema],
 //   menus: [menuDefaultMiroir as Menu],
 //   applicationVersions: [selfApplicationVersionInitialMiroirVersion],
 //   reports: [

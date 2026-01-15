@@ -1,7 +1,7 @@
 import {
   JzodElement,
   JzodObject,
-  JzodSchema,
+  MlSchema,
   MetaModel,
   MiroirLoggerFactory,
   resolveJzodSchemaReference,
@@ -21,7 +21,7 @@ export type JzodEnumSchemaToJzodElementResolver = (type: string, definition?: an
 
 export function getCurrentEnumJzodSchemaResolver(
   currentMiroirModel: MetaModel,
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
 ):JzodEnumSchemaToJzodElementResolver  {
   return (type: string, definition?: any) => {
     log.info("getCurrentEnumJzodSchemaResolver called with", type, "definition", definition);

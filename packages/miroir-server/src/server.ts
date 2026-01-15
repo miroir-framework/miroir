@@ -166,13 +166,13 @@ const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
 // const serverModelEnvironments: Record<string, MiroirModelEnvironment> = {
 //   [adminConfigurationDeploymentMiroir.uuid]: {
-//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
 //     miroirMetaModel: defaultMiroirMetaModel,
 //     currentModel: defaultMiroirMetaModel,
 //     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
 //   },
 //   [adminConfigurationDeploymentLibrary.uuid]: {
-//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
 //     miroirMetaModel: defaultMiroirMetaModel,
 //     currentModel: defaultLibraryAppModel,
 //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
@@ -251,7 +251,7 @@ const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQue
     queryExecutionStrategy: "storage",
     query: {
       application: adminSelfApplication.uuid,
-      applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+      // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
       deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       pageParams: {},

@@ -158,7 +158,7 @@ export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
     ) as EntityDefinition[];
     const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
 
-    const result: JzodObject | undefined = index > -1 ? values[index].jzodSchema : undefined;
+    const result: JzodObject | undefined = index > -1 ? values[index].mlSchema : undefined;
 
     // log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
 

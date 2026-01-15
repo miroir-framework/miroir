@@ -61,7 +61,7 @@ import {
   sqlQueryHereTableDefinition,
   sqlSelectColumns,
 } from "./SqlQueryBuilder";
-import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./jzodSchema";
+import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./mlSchema";
 import { SqlQuerySelectExpressionSchema } from "../generated";
 
 

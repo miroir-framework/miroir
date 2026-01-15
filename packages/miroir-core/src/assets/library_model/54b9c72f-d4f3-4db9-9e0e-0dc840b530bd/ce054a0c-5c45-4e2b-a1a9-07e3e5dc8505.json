@@ -6,7 +6,7 @@
   "name": "LendingHistoryItem",
   "entityUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
   "defaultInstanceDetailsReportUuid": "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

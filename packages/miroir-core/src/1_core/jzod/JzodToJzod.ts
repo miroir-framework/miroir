@@ -205,7 +205,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           ...castTag.schema,
           // isTemplate: true,
           valueSchema: applyLimitedCarryOnSchemaOnLevel(
-            castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
+            castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" mlSchema definition
             carryOnSchema,
             carryOnSchemaDiscriminator,
             alwaysPropagate,

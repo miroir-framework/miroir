@@ -272,7 +272,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                       interpolation: "build",
                       referenceName: "defaultInstanceDetailsReportUuid",
                     },
-                    jzodSchema: {
+                    mlSchema: {
                       transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "newEntityJzodSchema",
@@ -972,7 +972,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                           interpolation: "build",
                           referenceName: "defaultInstanceDetailsReportUuid",
                         },
-                        jzodSchema: {
+                        mlSchema: {
                           transformerType: "getFromParameters",
                           interpolation: "build",
                           referenceName: "newEntityJzodSchema",

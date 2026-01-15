@@ -22,7 +22,7 @@
       "definition": true
     }
   },
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "tag": {
       "value": {

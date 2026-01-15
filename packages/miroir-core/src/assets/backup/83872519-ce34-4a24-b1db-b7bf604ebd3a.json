@@ -8,7 +8,7 @@
   "name": "Test",
   "description": "Test Library Entity",
   "icon": "building",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "try": {

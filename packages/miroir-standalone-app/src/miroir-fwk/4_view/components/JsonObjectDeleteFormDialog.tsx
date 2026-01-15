@@ -136,7 +136,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
   log.info(
     "JsonObjectDeleteFormDialog called jzodTypeCheck for valueObject",
     props.defaultFormValuesObject,
-    "jzodSchema",
+    "mlSchema",
     props.entityDefinitionJzodSchema,
     " resolvedJzodSchema",
     resolvedJzodSchema

@@ -9,7 +9,7 @@
   "icon": "Interests",
   "defaultInstanceDetailsReportUuid": "f730ecf1-88b6-46ea-8147-aa24ff7cdfcf",
   "viewAttributes": ["name", "defaultLabel", "description", "selfApplication", "uuid"],
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

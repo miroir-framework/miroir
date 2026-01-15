@@ -2579,7 +2579,7 @@ export class DomainController implements DomainControllerInterface {
       for (const t of Object.entries(buildPlusRuntimeCompositeAction.payload.templates)) {
         // const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
         const newLocalParameters: Record<string, any> = {
-          // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+          // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
           // TODO: missing miroirMetaModel: MetaModel
           // currentModel,
           ...localActionParams,

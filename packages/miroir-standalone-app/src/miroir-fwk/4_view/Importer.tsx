@@ -257,7 +257,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     name: newEntityName,
   //   }
   //   log.info("createEntity fileData", fileData);
-  //   const jzodSchema:JzodObject = {
+  //   const mlSchema:JzodObject = {
   //     type: "object",
   //     definition: Object.assign(
   //       {},
@@ -309,7 +309,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     createEntity_newEntityListReportUuid: uuidv4(),
   //     adminConfigurationDeploymentParis,
   //     //TODO: tag params, should be passed as context instead?
-  //     jzodSchema,
+  //     mlSchema,
   //     entityEntityDefinition,
   //     entityReport,
   //     createEntity_newEntity: newEntity,
@@ -394,9 +394,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //         transformerType: "getFromParameters",
   //   //         referenceName: "createEntity_newEntityDetailsReportUuid",
   //   //       },
-  //   //       jzodSchema: {
+  //   //       mlSchema: {
   //   //         transformerType: "getFromParameters",
-  //   //         referenceName: "jzodSchema",
+  //   //         referenceName: "mlSchema",
   //   //       },
   //   //     },
   //   //     // list of instances Report Definition
@@ -844,7 +844,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     splitEntity_newEntityDefinitionUuid: uuidv4(),
   //     adminConfigurationDeploymentParis,
   //     //TODO: tag params, should be passed as context instead?
-  //     // jzodSchema,
+  //     // mlSchema,
   //     // splittedEntityDefinition, // !!!
   //     entityEntity,
   //     entityEntityDefinition,
@@ -920,7 +920,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityDetailsReportUuid",
   //         },
-  //         jzodSchema: {
+  //         mlSchema: {
   //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityJzodSchema",
   //         },

@@ -30,7 +30,7 @@ import {
   Action2Error,
   miroirFundamentalJzodSchema,
   defaultMiroirMetaModel,
-  type JzodSchema,
+  type MlSchema,
   defaultMetaModelEnvironment,
   type MiroirModelEnvironment,
   type ApplicationDeploymentMap

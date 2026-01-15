@@ -603,7 +603,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
 
   // if (
-  //   ["jzodSchema", "jzodSchema.definition.definition.context.transformerTest"].includes(rootLessListKey)
+  //   ["mlSchema", "mlSchema.definition.definition.context.transformerTest"].includes(rootLessListKey)
   // ) {
   //   log.info(
   //     "JzodObjectEditor computed for type tag unfoldingDepth",

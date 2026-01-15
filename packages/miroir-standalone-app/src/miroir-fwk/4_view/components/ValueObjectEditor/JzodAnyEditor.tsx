@@ -12,7 +12,7 @@ import {
   type MiroirModelEnvironment
 } from "miroir-core";
 
-import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { JzodElement, MlSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
@@ -81,7 +81,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
   //     miroirFundamentalJzodSchema:
-  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
   //     currentModel: currentModel,
   //     miroirMetaModel: miroirMetaModel,
   //   };
@@ -135,6 +135,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       <div>
         <JzodElementEditor
           name={name}
+          valueObjectEditMode={props.valueObjectEditMode}
           existingObject={props.existingObject}
           listKey={listKey}
           rootLessListKey={rootLessListKey}

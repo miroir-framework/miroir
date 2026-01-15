@@ -1,6 +1,6 @@
 {
   "uuid": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-  "parentName": "JzodSchema",
+  "parentName": "MlSchema",
   "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
   "name": "jzodMiroirBootstrapSchema",
   "defaultLabel": "The Jzod Schema for Miroir Jzod Schemas. Parses itself.",

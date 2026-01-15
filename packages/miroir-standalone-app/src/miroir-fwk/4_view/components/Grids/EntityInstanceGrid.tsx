@@ -309,15 +309,15 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           deploymentUuid: contextDeploymentUuid,
           rawValue: i,
           foreignKeyObjects: props.foreignKeyObjects,
-          jzodSchema:
+          mlSchema:
             props.type == TableComponentTypeSchema.enum.EntityInstance
-              ? props.currentEntityDefinition.jzodSchema.definition
+              ? props.currentEntityDefinition.mlSchema.definition
               : {},
           displayedValue: Object.fromEntries(
             Object.entries(i).map((e) => {
               const currentAttributeDefinition =
                 props.type == TableComponentTypeSchema.enum.EntityInstance
-                  ? Object.entries(props.currentEntityDefinition?.jzodSchema.definition ?? {}).find((a) => a[0] == e[0])
+                  ? Object.entries(props.currentEntityDefinition?.mlSchema.definition ?? {}).find((a) => a[0] == e[0])
                   : undefined;
               return [
                 e[0],
@@ -671,7 +671,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           );
         } else {
           // Cache schema definition lookup
-          const schemaDefinition = props.currentEntityDefinition?.jzodSchema.definition ?? {};
+          const schemaDefinition = props.currentEntityDefinition?.mlSchema.definition ?? {};
           const columnDefinitionAttribute = schemaDefinition[fieldName];
 
           if (
@@ -756,7 +756,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           );
         } else { // other columns
           // Cache schema definition lookup
-          const schemaDefinition = props.currentEntityDefinition?.jzodSchema.definition ?? {};
+          const schemaDefinition = props.currentEntityDefinition?.mlSchema.definition ?? {};
           const columnDefinitionAttribute = schemaDefinition[fieldName];
 
           log.info("onCellClicked foreign key navigation columnDefinitionAttribute", columnDefinitionAttribute);
@@ -836,7 +836,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
                 label={props.currentEntity?.name ?? "No Entity Found!"}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
                 entityDefinition={props.currentEntityDefinition}
-                entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
+                entityDefinitionJzodSchema={props.currentEntityDefinition?.mlSchema as JzodObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentApplication={props.application}
                 applicationDeploymentMap={props.applicationDeploymentMap}
@@ -860,7 +860,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
                 currentMiroirModel={miroirMetaModel}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
                 deleteObjectdialogFormIsOpen={deleteDialogFormIsOpen}
-                entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
+                entityDefinitionJzodSchema={props.currentEntityDefinition?.mlSchema as JzodObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 isOpen={deleteDialogFormIsOpen} // redundant with deleteObjectdialogFormIsOpen?
                 isAttributes={true}
@@ -979,7 +979,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
         // For non-EntityInstance types (JSON_ARRAY), use ValueObjectGrid
         <ValueObjectGrid
           valueObjects={(props as any).rowData || []}
-          jzodSchema={{
+          mlSchema={{
             type: "object",
             definition: Object.fromEntries(
               props.columnDefs.columnDefs.map((colDef: any) => [

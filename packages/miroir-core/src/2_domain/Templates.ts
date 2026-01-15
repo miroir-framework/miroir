@@ -14,7 +14,7 @@ import {
   ExtractorWrapper,
   QueryFailed,
   Transformer_contextOrParameterReferenceTO_REMOVE,
-  type JzodSchema
+  type MlSchema
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -302,7 +302,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
 ): BoxedQueryWithExtractorCombinerTransformer {
 
   const params: Record<string, any> = {
-    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
     ...queryTemplate.pageParams,
     ...queryTemplate.queryParams,
   };
@@ -407,7 +407,7 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
 ): BoxedExtractorOrCombinerReturningObjectOrObjectList {
 
   const params: Record<string, any> = {
-    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
     ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
     ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
   };

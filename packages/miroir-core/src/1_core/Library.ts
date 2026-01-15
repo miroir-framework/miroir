@@ -1,4 +1,4 @@
-import type { JzodSchema, MetaModel } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MlSchema, MetaModel } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // import adminConfigurationDeploymentLibrary = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
 const adminConfigurationDeploymentLibrary = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
@@ -65,7 +65,7 @@ export const defaultLibraryAppModel: MetaModel = {
 };
 
 export const defaultLibraryModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+  miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,

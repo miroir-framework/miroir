@@ -18,7 +18,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "literal",
             "definition": "myLiteral"
           },
@@ -27,7 +27,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
@@ -58,7 +58,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "string"
           },
           "path": [],
@@ -66,7 +66,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
@@ -96,7 +96,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "context": {
               "a": {
@@ -112,7 +112,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
@@ -143,7 +143,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "a": {
@@ -169,7 +169,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
@@ -210,7 +210,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "array",
             "definition": {
               "type": "schemaReference",
@@ -229,7 +229,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
@@ -263,7 +263,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "context": {
               "myObject": {
@@ -296,7 +296,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
@@ -366,7 +366,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "record",
             "definition": {
               "type": "union",
@@ -400,7 +400,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
@@ -457,7 +457,7 @@
         "transformer": {
           "transformerType": "unfoldSchemaOnce",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "union",
             "definition": [
               {
@@ -489,7 +489,7 @@
           "depth": 0,
           "miroirFundamentalJzodSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "parentName": "JzodSchema",
+            "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalJzodSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",

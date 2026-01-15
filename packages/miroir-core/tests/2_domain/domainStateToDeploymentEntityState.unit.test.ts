@@ -72,7 +72,7 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
               conceptLevel: "Model",
               name: "Book",
               icon: "Book",
-              jzodSchema: {
+              mlSchema: {
                 type: "object",
                 definition: {
                   uuid: {
@@ -172,7 +172,7 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
               name: "Publisher",
               description: "Publisher",
               icon: "building",
-              jzodSchema: {
+              mlSchema: {
                 type: "object",
                 definition: {
                   uuid: {
@@ -244,7 +244,7 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
               name: "Author",
               description: "author",
               icon: "Person",
-              jzodSchema: {
+              mlSchema: {
                 type: "object",
                 definition: {
                   uuid: {

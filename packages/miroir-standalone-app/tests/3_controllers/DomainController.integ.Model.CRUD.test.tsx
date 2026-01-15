@@ -1348,10 +1348,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
             //       expectedValue: [
             //         {
             //           ...entityDefinitionPublisher,
-            //           jzodSchema: {
-            //             ...entityDefinitionPublisher.jzodSchema,
+            //           mlSchema: {
+            //             ...entityDefinitionPublisher.mlSchema,
             //             definition: {
-            //               ...entityDefinitionPublisher.jzodSchema.definition,
+            //               ...entityDefinitionPublisher.mlSchema.definition,
             //               aNewColumnForTest: columnForTestDefinition,
             //             },
             //           },
@@ -1373,10 +1373,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
             //       expectedValue: [
             //         {
             //           ...entityDefinitionPublisher,
-            //           jzodSchema: {
-            //             ...entityDefinitionPublisher.jzodSchema,
+            //           mlSchema: {
+            //             ...entityDefinitionPublisher.mlSchema,
             //             definition: {
-            //               ...entityDefinitionPublisher.jzodSchema.definition,
+            //               ...entityDefinitionPublisher.mlSchema.definition,
             //               aNewColumnForTest: columnForTestDefinition,
             //             },
             //           },

@@ -12,7 +12,7 @@
     "cacheAllInstancesOnRefresh": true
   },
   "viewAttributes": ["name", "defaultLabel", "description", "uuid"],
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

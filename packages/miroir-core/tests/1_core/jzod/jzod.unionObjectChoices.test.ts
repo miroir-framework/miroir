@@ -3,7 +3,7 @@ import type {
   JzodElement,
   JzodObject,
   JzodReference,
-  JzodSchema,
+  MlSchema,
   JzodUnion,
   MetaModel,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -18,15 +18,15 @@ import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/pr
 import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
 import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
 
-// Minimal mocks for MetaModel and JzodSchema
+// Minimal mocks for MetaModel and MlSchema
 // const mockMetaModel: MetaModel = {} as MetaModel;
-// const mockJzodSchema: JzodSchema = {
+// const mockJzodSchema: MlSchema = {
 //   uuid: "mock",
 //   definition: { context: {} }
-// } as JzodSchema;
+// } as MlSchema;
 import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
 
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
 describe("unionObjectChoices", () => {
   it("returns only object types from a flat union", () => {

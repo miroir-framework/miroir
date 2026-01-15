@@ -332,7 +332,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
   //     miroirFundamentalJzodSchema:
-  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
   //     currentModel,
   //     miroirMetaModel: miroirMetaModel,
   //   };

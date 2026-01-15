@@ -152,25 +152,25 @@ export const testCompositeActionParams: JzodElement = {
 // ################################################################################################
 /**
  * adds given absolutePath to all references in the schema
- * @param jzodSchema
+ * @param mlSchema
  * @param absolutePath
  * @param force
  * @returns
  */
-export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absolutePath: string, force?: boolean): any /** JzodElement */ {
-  // log.info("makeReferencesAbsolute called", JSON.stringify(jzodSchema), absolutePath, force);
-  switch (jzodSchema.type) {
+export function makeReferencesAbsolute(mlSchema: any /** JzodElement */, absolutePath: string, force?: boolean): any /** JzodElement */ {
+  // log.info("makeReferencesAbsolute called", JSON.stringify(mlSchema), absolutePath, force);
+  switch (mlSchema.type) {
     case "schemaReference": {
       const convertedContext = Object.fromEntries(
-        Object.entries(jzodSchema.context ?? {}).map((e: [string, any]) => {
+        Object.entries(mlSchema.context ?? {}).map((e: [string, any]) => {
           if (!e[1]) {
             throw new Error(
-              "makeReferencesAbsolute schemaReference: context jzodSchema is undefined for " + e[0]
+              "makeReferencesAbsolute schemaReference: context mlSchema is undefined for " + e[0]
             );
-            // throw new Error("makeReferencesAbsolute schemaReference: context jzodSchema is undefined for " + e[0] + " context " + JSON.stringify(Object.keys(jzodSchema.context)));
+            // throw new Error("makeReferencesAbsolute schemaReference: context mlSchema is undefined for " + e[0] + " context " + JSON.stringify(Object.keys(mlSchema.context)));
           }
           return [
-            // Object.entries(jzodSchema.context ?? {}).map((e: [string, JzodElement]) => [
+            // Object.entries(mlSchema.context ?? {}).map((e: [string, JzodElement]) => [
             e[0],
             makeReferencesAbsolute(e[1], absolutePath, force),
           ];
@@ -178,45 +178,45 @@ export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absol
       );
 
       const result =
-        jzodSchema.definition.absolutePath && !force
+        mlSchema.definition.absolutePath && !force
           ? {
-              ...jzodSchema,
+              ...mlSchema,
               context: convertedContext,
             }
           : {
-              ...jzodSchema,
+              ...mlSchema,
               context: convertedContext,
               definition: {
-                ...jzodSchema.definition,
+                ...mlSchema.definition,
                 absolutePath,
               },
             };
-      // log.info("makeReferencesAbsolute schemaReference received", JSON.stringify(jzodSchema));
+      // log.info("makeReferencesAbsolute schemaReference received", JSON.stringify(mlSchema));
       // log.info("makeReferencesAbsolute schemaReference returns", JSON.stringify(result));
       return result;
       break;
     }
     case "object": {
-      const convertedExtend = jzodSchema.extend
-        ? typeof jzodSchema.extend == "object" && !Array.isArray(jzodSchema.extend)
-          ? makeReferencesAbsolute(jzodSchema.extend, absolutePath, force)
-          : jzodSchema.extend.map((e: any) => makeReferencesAbsolute(e, absolutePath, force))
+      const convertedExtend = mlSchema.extend
+        ? typeof mlSchema.extend == "object" && !Array.isArray(mlSchema.extend)
+          ? makeReferencesAbsolute(mlSchema.extend, absolutePath, force)
+          : mlSchema.extend.map((e: any) => makeReferencesAbsolute(e, absolutePath, force))
         : (undefined as any);
       const convertedDefinition = Object.fromEntries(
-        Object.entries(jzodSchema.definition).map((e: [string, any]) => [
-          // Object.entries(jzodSchema.definition).map((e: [string, JzodElement]) => [
+        Object.entries(mlSchema.definition).map((e: [string, any]) => [
+          // Object.entries(mlSchema.definition).map((e: [string, JzodElement]) => [
           e[0],
           makeReferencesAbsolute(e[1], absolutePath, force),
         ])
       );
       return convertedExtend
         ? {
-            ...jzodSchema,
+            ...mlSchema,
             extend: convertedExtend,
             definition: convertedDefinition,
           }
         : {
-            ...jzodSchema,
+            ...mlSchema,
             definition: convertedDefinition,
           };
       break;
@@ -226,78 +226,78 @@ export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absol
     case "record":
     case "promise":
     case "set": {
-      if (!jzodSchema.definition) {
+      if (!mlSchema.definition) {
         throw new Error(
-          "makeReferencesAbsolute set: jzodSchema.definition is undefined " +
-            JSON.stringify(jzodSchema)
+          "makeReferencesAbsolute set: mlSchema.definition is undefined " +
+            JSON.stringify(mlSchema)
         );
       }
       return {
-        ...jzodSchema,
-        definition: makeReferencesAbsolute(jzodSchema.definition, absolutePath, force) as any,
+        ...mlSchema,
+        definition: makeReferencesAbsolute(mlSchema.definition, absolutePath, force) as any,
       };
       break;
     }
     case "map": {
-      if (!jzodSchema.definition[0]) {
+      if (!mlSchema.definition[0]) {
         throw new Error(
-          "makeReferencesAbsolute map: jzodSchema.definition[0] is undefined " +
-            JSON.stringify(jzodSchema)
+          "makeReferencesAbsolute map: mlSchema.definition[0] is undefined " +
+            JSON.stringify(mlSchema)
         );
       }
-      if (!jzodSchema.definition[1]) {
+      if (!mlSchema.definition[1]) {
         throw new Error(
-          "makeReferencesAbsolute map: jzodSchema.definition[0] is undefined " +
-            JSON.stringify(jzodSchema)
+          "makeReferencesAbsolute map: mlSchema.definition[0] is undefined " +
+            JSON.stringify(mlSchema)
         );
       }
       return {
-        ...jzodSchema,
+        ...mlSchema,
         definition: [
-          makeReferencesAbsolute(jzodSchema.definition[0], absolutePath, force),
-          makeReferencesAbsolute(jzodSchema.definition[1], absolutePath, force),
+          makeReferencesAbsolute(mlSchema.definition[0], absolutePath, force),
+          makeReferencesAbsolute(mlSchema.definition[1], absolutePath, force),
         ],
       };
     }
     case "function": {
-      if (!jzodSchema.definition.returns) {
+      if (!mlSchema.definition.returns) {
         throw new Error(
-          "makeReferencesAbsolute: jzodSchema.definition is undefined " + JSON.stringify(jzodSchema)
+          "makeReferencesAbsolute: mlSchema.definition is undefined " + JSON.stringify(mlSchema)
         );
       }
 
       return {
-        ...jzodSchema,
+        ...mlSchema,
         definition: {
-          args: jzodSchema.definition.args.map((e: any) =>
+          args: mlSchema.definition.args.map((e: any) =>
             makeReferencesAbsolute(e, absolutePath, force)
           ),
-          returns: jzodSchema.definition.returns
-            ? makeReferencesAbsolute(jzodSchema.definition.returns, absolutePath, force)
+          returns: mlSchema.definition.returns
+            ? makeReferencesAbsolute(mlSchema.definition.returns, absolutePath, force)
             : undefined,
         },
       };
       break;
     }
     case "intersection": {
-      if (!jzodSchema.definition.left) {
+      if (!mlSchema.definition.left) {
         throw new Error(
-          "makeReferencesAbsolute intersection: jzodSchema.definition.left is undefined " +
-            JSON.stringify(jzodSchema)
+          "makeReferencesAbsolute intersection: mlSchema.definition.left is undefined " +
+            JSON.stringify(mlSchema)
         );
       }
-      if (!jzodSchema.definition.right) {
+      if (!mlSchema.definition.right) {
         throw new Error(
-          "makeReferencesAbsolute intersection: jzodSchema.definition.left is undefined " +
-            JSON.stringify(jzodSchema)
+          "makeReferencesAbsolute intersection: mlSchema.definition.left is undefined " +
+            JSON.stringify(mlSchema)
         );
       }
 
       return {
-        ...jzodSchema,
+        ...mlSchema,
         definition: {
-          left: makeReferencesAbsolute(jzodSchema.definition.left, absolutePath, force),
-          right: makeReferencesAbsolute(jzodSchema.definition.right, absolutePath, force),
+          left: makeReferencesAbsolute(mlSchema.definition.left, absolutePath, force),
+          right: makeReferencesAbsolute(mlSchema.definition.right, absolutePath, force),
         },
       };
       break;
@@ -305,8 +305,8 @@ export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absol
     case "union":
     case "tuple": {
       return {
-        ...jzodSchema,
-        definition: jzodSchema.definition.map((e: any) =>
+        ...mlSchema,
+        definition: mlSchema.definition.map((e: any) =>
           makeReferencesAbsolute(e, absolutePath, force)
         ),
       };
@@ -317,7 +317,7 @@ export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absol
     case "enum":
     case "literal":
     default: {
-      return jzodSchema;
+      return mlSchema;
       break;
     }
   }

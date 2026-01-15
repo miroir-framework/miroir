@@ -499,7 +499,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
         },
         conceptLevel: "Model",
         defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-        jzodSchema: {
+        mlSchema: {
           transformerType: "getFromContext",
           interpolation: "runtime",
           referenceName: "newEntityJzodSchema",
@@ -829,7 +829,7 @@ const createEntityCompositeActionTemplateAssertions = [
             entityUuid: newEntityUuid,
             conceptLevel: "Model",
             defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-            jzodSchema: newEntityJzodSchema,
+            mlSchema: newEntityJzodSchema,
           },
           // {
           //   transformerType: "getFromParameters",

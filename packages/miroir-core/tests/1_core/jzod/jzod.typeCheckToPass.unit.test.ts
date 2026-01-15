@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import type {
   JzodElement,
-  JzodSchema,
+  MlSchema,
   KeyMapEntry,
   TransformerTestSuite
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -28,7 +28,7 @@ import { log } from 'console';
 import { miroirFundamentalJzodSchemaUuid } from '../../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers';
 
 
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
 // ################################################################################################
 // ################################################################################################
@@ -114,7 +114,7 @@ const extradisplayAttributes = {
 //       transformer: {
 //         transformerType: "jzodTypeCheck",
 //         interpolation: "build",
-//         jzodSchema: {
+//         mlSchema: {
 //           type: "literal",
 //           definition: "myLiteral",
 //         },
@@ -4596,7 +4596,7 @@ const tests: { [k: string]: testFormat } = {
   // // ##########################################################################################
   // // ################################# JZOD SCHEMAS ###########################################
   // // ##########################################################################################
-  // JzodSchema: literal
+  // MlSchema: literal
   test300: {
     testSchema: {
       type: "schemaReference",
@@ -4955,7 +4955,7 @@ const tests: { [k: string]: testFormat } = {
     },
     expectedKeyMap: undefined,
   },
-  //     // JzodSchema: string
+  //     // MlSchema: string
   test310: {
     testSchema: {
       type: "schemaReference",
@@ -5311,7 +5311,7 @@ const tests: { [k: string]: testFormat } = {
     testValueObject: { type: "string" },
     expectedKeyMap: undefined,
   },
-  // JzodSchema: object, simpleType attributes
+  // MlSchema: object, simpleType attributes
   test320: {
     testSchema: {
       type: "schemaReference",
@@ -5700,7 +5700,7 @@ const tests: { [k: string]: testFormat } = {
     testValueObject: { type: "object", definition: { a: { type: "string" } } },
     expectedKeyMap: undefined,
   },
-  // JzodSchema: schema reference with simple attribute
+  // MlSchema: schema reference with simple attribute
   test330: {
     testSchema: {
       type: "schemaReference",
@@ -5988,7 +5988,7 @@ const tests: { [k: string]: testFormat } = {
     },
     expectedKeyMap: undefined,
   },
-  //     // JzodSchema: schema reference for object with extend clause
+  //     // MlSchema: schema reference for object with extend clause
   test340: {
     testSchema: {
       type: "schemaReference",
@@ -10563,7 +10563,7 @@ const tests: { [k: string]: testFormat } = {
       icon: "Book",
       defaultInstanceDetailsReportUuid: "c3503412-3d8a-43ef-a168-aa36e975e606",
       viewAttributes: ["name", "author", "publisher", "uuid"],
-      jzodSchema: {
+      mlSchema: {
         type: "object",
         definition: {
           uuid: {
@@ -10765,7 +10765,7 @@ const tests: { [k: string]: testFormat } = {
             },
           },
         },
-        jzodSchema: {
+        mlSchema: {
           type: "object",
           definition: {
             type: {

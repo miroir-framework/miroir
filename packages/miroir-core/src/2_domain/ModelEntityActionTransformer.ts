@@ -184,13 +184,13 @@ export class ModelEntityActionTransformer{
           const localEntityJzodSchemaDefinition =
             modelAction.payload.removeColumns != undefined && Array.isArray(modelAction.payload.removeColumns)
               ? Object.fromEntries(
-                  Object.entries(currentEntityDefinition.jzodSchema.definition).filter(
+                  Object.entries(currentEntityDefinition.mlSchema.definition).filter(
                     (i) => modelAction.payload.removeColumns ?? ([] as string[]).includes(i[0])
                   )
                 )
-              : currentEntityDefinition.jzodSchema.definition;
+              : currentEntityDefinition.mlSchema.definition;
           const modifiedEntityDefinition: EntityDefinition = Object.assign({}, currentEntityDefinition, {
-            jzodSchema: {
+            mlSchema: {
               type: "object",
               definition: {
                 ...localEntityJzodSchemaDefinition,

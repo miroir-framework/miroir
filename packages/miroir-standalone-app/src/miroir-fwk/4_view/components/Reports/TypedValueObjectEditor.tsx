@@ -33,7 +33,7 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type JzodObject,
-  type JzodSchema,
+  type MlSchema,
   type MiroirModelEnvironment
 } from "miroir-core";
 import {
@@ -255,7 +255,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //     return {
-  //       miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+  //       miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as MlSchema,
   //       miroirMetaModel: currentMiroirModel,
   //       currentModel: currentModel,
   //     };

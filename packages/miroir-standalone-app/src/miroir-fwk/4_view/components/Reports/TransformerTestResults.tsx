@@ -566,7 +566,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       <div style={{ width: "100%" }}>
         <ValueObjectGrid
           valueObjects={transformerTestResultsDataWithSelection}
-          jzodSchema={resolveConditionalSchemaResultSchema}
+          mlSchema={resolveConditionalSchemaResultSchema}
           columnDefs={columnDefs}
           styles={{
             height: "400px",

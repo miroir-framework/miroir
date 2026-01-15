@@ -9,7 +9,7 @@ import entityDefinitionBook from "../../../src/assets/library_model/54b9c72f-d4f
 import {
   JzodElement,
   JzodReference,
-  JzodSchema,
+  MlSchema,
   JzodUnion,
   MetaModel,
   type JzodUnion_RecursivelyUnfold_ReturnTypeError,
@@ -25,7 +25,7 @@ import { entity } from "../../../dist";
 import { defaultMiroirMetaModel } from "../../test_assets/defaultMiroirMetaModel";
 import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
 
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
 function local_jzodUnion_recursivelyUnfold(
   schema: JzodUnion,

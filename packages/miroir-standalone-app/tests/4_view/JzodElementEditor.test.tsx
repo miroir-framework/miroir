@@ -1947,7 +1947,7 @@ export function getJzodBookEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityDefinitionBook.jzodSchema,
+            rawJzodSchema: entityDefinitionBook.mlSchema,
             // rawJzodSchema: {
             //   type: "object",
             //   definition: {a:{ type: "string" }, b:{ type: "number" }},
@@ -2063,7 +2063,7 @@ export function getJzodEntityDefinitionEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
+            rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).mlSchema,
             initialFormState: entityDefinitionBook,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
@@ -2177,7 +2177,7 @@ export function getJzodEditorPerformanceTests(
         //     listKey: "ROOT.testField",
         //     rootLessListKey: "testField",
         //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
+        //     rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).mlSchema,
         //     initialFormState: entityDefinitionBook
         //   },
         //   tests: async (expect: ExpectStatic, container: Container) => {
@@ -2218,7 +2218,7 @@ export function getJzodEndpointEditorTests(
         //     listKey: "ROOT.testField",
         //     rootLessListKey: "testField",
         //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
+        //     rawJzodSchema: entityDefinitionEndpoint.mlSchema,
         //     initialFormState: applicationEndpointV1
         //   },
         //   tests: async (expect: ExpectStatic, container: Container) => {
@@ -2254,7 +2254,7 @@ export function getJzodEndpointEditorTests(
         //     listKey: "ROOT.testField",
         //     rootLessListKey: "testField",
         //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
+        //     rawJzodSchema: entityDefinitionEndpoint.mlSchema,
         //     initialFormState: queryEndpointVersionV1
         //   },
         //   tests: async (expect: ExpectStatic, container: Container) => {
@@ -2290,7 +2290,7 @@ export function getJzodEndpointEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityDefinitionTest.jzodSchema,
+            rawJzodSchema: entityDefinitionTest.mlSchema,
             initialFormState: test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
           },
           tests: async (expect: ExpectStatic, container: Container) => {

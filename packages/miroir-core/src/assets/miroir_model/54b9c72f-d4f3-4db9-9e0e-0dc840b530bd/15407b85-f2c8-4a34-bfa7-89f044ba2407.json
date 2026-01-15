@@ -5,12 +5,12 @@
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
   "conceptLevel": "Model",
-  "name": "JzodSchema",
+  "name": "MlSchema",
   "icon": "Interests",
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

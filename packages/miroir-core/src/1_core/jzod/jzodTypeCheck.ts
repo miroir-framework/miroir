@@ -94,7 +94,7 @@ export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvi
       // return ({
       //   status: "error",
       //   error: "jzodTypeCheck object extend clause schema " +
-      //       JSON.stringify(jzodSchema) +
+      //       JSON.stringify(mlSchema) +
       //       " is not an object " +
       //       JSON.stringify(extension)
       // })
@@ -709,7 +709,7 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
  * @param relativeReferenceJzodContext - Context for resolving relative references in Jzod schemas.
  */
 export function jzodTypeCheck(
-  jzodSchema: JzodElement,
+  mlSchema: JzodElement,
   valueObject: any,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
@@ -727,27 +727,27 @@ export function jzodTypeCheck(
   //   "value",
   //   // // JSON.stringify(valueObject, null, 2),
   //   valueObject,
-  //   "jzodSchema",
-  //   jzodSchema,
+  //   "mlSchema",
+  //   mlSchema,
   //   // "schema",
-  //   // JSON.stringify(jzodSchema, null, 2)
+  //   // JSON.stringify(mlSchema, null, 2)
   // );
 
   // Check for null and undefined values first
   if (valueObject === null || valueObject === undefined) {
     // Check if the schema is optional or nullable
-    const isOptional = jzodSchema.optional === true;
-    const isNullable = jzodSchema.nullable === true;
+    const isOptional = mlSchema.optional === true;
+    const isNullable = mlSchema.nullable === true;
     
-    if (!isOptional && !isNullable && jzodSchema.type !== "any" && jzodSchema.type !== "undefined") {
+    if (!isOptional && !isNullable && mlSchema.type !== "any" && mlSchema.type !== "undefined") {
       return {
         status: "error",
         error: `jzodTypeCheck expected a value but got ${valueObject === null ? 'null' : 'undefined'} for non-optional schema`,
-        rawJzodSchemaType: jzodSchema.type,
+        rawJzodSchemaType: mlSchema.type,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         value: valueObject,
-        rawSchema: jzodSchema,
+        rawSchema: mlSchema,
       };
     }
     
@@ -756,14 +756,14 @@ export function jzodTypeCheck(
       status: "ok",
       valuePath: currentValuePath,
       typePath: currentTypePath,
-      rawSchema: jzodSchema,
-      resolvedSchema: jzodSchema,
+      rawSchema: mlSchema,
+      resolvedSchema: mlSchema,
       keyMap: {
         [currentValuePath.join(".")]: {
-          rawSchema: jzodSchema,
+          rawSchema: mlSchema,
           // resolvedSchema: effectiveSchema
           // resolvedSchema: valueToJzod(valueObject) as JzodElement,
-          resolvedSchema: jzodSchema,
+          resolvedSchema: mlSchema,
           valuePath: currentValuePath,
           typePath: currentTypePath,
         }, // map the current value path to the resolved schema
@@ -780,7 +780,7 @@ export function jzodTypeCheck(
       resolveConditionalSchema(
         "build", // TODO: can typeCheck be used in "runtime"? What does it mean in this context?
         [], // transformerPath
-        jzodSchema,
+        mlSchema,
         rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
         currentValuePath as string[],
         modelEnvironment,
@@ -789,7 +789,7 @@ export function jzodTypeCheck(
         reduxDeploymentsState,
         deploymentUuid,
         'typeCheck' // Specify this is for type checking
-      ) : jzodSchema;
+      ) : mlSchema;
 
   // log.info(
   //   "jzodTypeCheck",
@@ -801,11 +801,11 @@ export function jzodTypeCheck(
     return {
       status: "error",
       error: `jzodTypeCheck: resolveConditionalSchema returned error: ${effectiveSchemaOrError.error}`,
-      rawJzodSchemaType: jzodSchema.type,
+      rawJzodSchemaType: mlSchema.type,
       valuePath: currentValuePath,
       typePath: currentTypePath,
       value: valueObject,
-      rawSchema: jzodSchema,
+      rawSchema: mlSchema,
       innerError: {
         status: "error",
         error:
@@ -814,7 +814,7 @@ export function jzodTypeCheck(
         valuePath: currentValuePath,
         typePath: currentTypePath,
         value: effectiveSchemaOrError, // embed the original error object for debugging
-        rawSchema: jzodSchema,
+        rawSchema: mlSchema,
       },
     };
   }
@@ -2081,7 +2081,7 @@ export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
   contextResults?: Record<string, any>,
 ): ResolvedJzodSchemaReturnType {
   const {
-    jzodSchema,
+    mlSchema,
     valueObject,
     currentValuePath = [],
     currentTypePath = [],
@@ -2096,7 +2096,7 @@ export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
   } = transformer;
 
   return jzodTypeCheck(
-    jzodSchema,
+    mlSchema,
     valueObject,
     currentValuePath,
     currentTypePath,

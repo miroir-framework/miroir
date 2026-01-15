@@ -10,7 +10,7 @@
     "extractorTemplates": {
       "jzodSchemas": {
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
-        "parentName": "JzodSchema",
+        "parentName": "MlSchema",
         "parentUuid": {
           "transformerType": "returnValue",
           "value": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
@@ -21,7 +21,7 @@
       "type": "objectListReportSection",
       "definition": {
         "label": "Jzod Schemas",
-        "parentName": "JzodSchema",
+        "parentName": "MlSchema",
         "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
         "fetchedDataReference": "jzodSchemas",
         "sortByAttribute": "name"

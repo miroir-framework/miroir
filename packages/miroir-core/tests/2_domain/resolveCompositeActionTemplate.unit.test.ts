@@ -93,9 +93,9 @@ describe('resolveTestCompositeActionTemplate', () => {
                 interpolation: "build",
                 referenceName: "createEntity_newEntityDetailsReportUuid",
               },
-              jzodSchema: {
+              mlSchema: {
                 // transformerType: "getFromParameters",
-                // referenceName: "jzodSchema",
+                // referenceName: "mlSchema",
                 type: "object",
                 definition: {
                   a: { type: "string" },
@@ -163,7 +163,7 @@ describe('resolveTestCompositeActionTemplate', () => {
         createEntity_newEntityListReportUuid: uuidv4(),
         adminConfigurationDeploymentParis,
         //TODO: tag params, should be passed as context instead?
-        // jzodSchema,
+        // mlSchema,
         entityEntityDefinition,
         entityReport,
         createEntity_newEntity: newEntity,
@@ -223,7 +223,7 @@ describe('resolveTestCompositeActionTemplate', () => {
                       conceptLevel: "Model",
                       defaultInstanceDetailsReportUuid:
                         actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
-                      jzodSchema: {
+                      mlSchema: {
                         type: "object",
                         definition: {
                           a: { type: "string" },
@@ -289,7 +289,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
       entityUuid: newEntity.uuid,
       conceptLevel: "Model",
       defaultInstanceDetailsReportUuid: uuidv4(),
-      jzodSchema: {
+      mlSchema: {
         type: "object",
         definition: {
           a: { type: "string" },
@@ -398,7 +398,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                           conceptLevel: "Model",
                           defaultInstanceDetailsReportUuid: (newEntityDefinition as any)
                             .defaultInstanceDetailsReportUuid,
-                          jzodSchema: {
+                          mlSchema: {
                             type: "object",
                             definition: {
                               a: {

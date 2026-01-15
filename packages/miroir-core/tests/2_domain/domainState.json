@@ -36,7 +36,7 @@
           "conceptLevel": "Model",
           "name": "Book",
           "icon": "Book",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -136,7 +136,7 @@
           "name": "Publisher",
           "description": "Publisher",
           "icon": "building",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -181,7 +181,7 @@
           "name": "Author",
           "description": "author",
           "icon": "Person",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {

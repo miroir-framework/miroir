@@ -8,7 +8,7 @@
   "name":"Bundle",
   "icon": "Interests",
   "defaultInstanceDetailsReportUuid": "faaf8c68-020a-48b1-b439-abc196855295",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

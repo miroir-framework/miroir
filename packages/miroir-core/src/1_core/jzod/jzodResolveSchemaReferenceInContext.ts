@@ -3,7 +3,7 @@ import {
   JzodElement,
   JzodObject,
   JzodReference,
-  JzodSchema,
+  MlSchema,
   MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
@@ -92,7 +92,7 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
       ] // very inefficient!
     : [miroirEnvironment.miroirFundamentalJzodSchema];
   const absoluteReferenceTargetJzodSchema: { [k: string]: JzodElement } = jzodReference?.definition.absolutePath
-    ? absoluteReferences.find((s: JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition
+    ? absoluteReferences.find((s: MlSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition
         .context ?? {}
     : relativeReferenceJzodContext ?? jzodReference;
 
@@ -133,7 +133,7 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
 // TODO: redundant to resolveJzodSchemaReferenceInContext, resolveJzodSchemaReference is used only in JzodTools,
 // refactor / merge with resolveJzodSchemaReferenceInContext.
 export function resolveJzodSchemaReference(
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   jzodReference?: JzodReference,
   currentModel?: MetaModel,
   relativeReferenceJzodContext?: JzodObject | JzodReference,
@@ -148,7 +148,7 @@ export function resolveJzodSchemaReference(
     ? {
         type: "object",
         definition:
-          absoluteReferences.find((s: JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ?? {},
+          absoluteReferences.find((s: MlSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ?? {},
       }
     : relativeReferenceJzodContext ?? jzodReference;
   const targetJzodSchema = jzodReference?.definition.relativePath
@@ -162,7 +162,7 @@ export function resolveJzodSchemaReference(
 
   if (!targetJzodSchema) {
     console.error(
-      "resolveJzodSchemaReference failed for jzodSchema",
+      "resolveJzodSchemaReference failed for mlSchema",
       jzodReference,
       "result",
       targetJzodSchema,

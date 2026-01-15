@@ -303,7 +303,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
   //     miroirFundamentalJzodSchema:
-  //       currentMiroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+  //       currentMiroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
   //     currentModel,
   //     miroirMetaModel: miroirMetaModel,
   //   };

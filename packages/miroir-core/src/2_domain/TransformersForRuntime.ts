@@ -184,7 +184,7 @@ export const defaultTransformers = { // TODO: should it be exported? Should'nt i
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(
   step: Step,
-  jzodSchema: JzodElement,
+  mlSchema: JzodElement,
   rootObject: any | undefined, // Optional parameter for backward compatibility
   rootLessListKey: string,
   currentDefaultValue: any = undefined,
@@ -202,7 +202,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   let effectiveSchemaOrError = resolveConditionalSchema(
     step,
     [], // transformerPath
-    jzodSchema,
+    mlSchema,
     rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
     currentValuePath,
     miroirEnvironment,
@@ -217,8 +217,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
     "getDefaultValueForJzodSchemaWithResolution called with",
     "step",
     step,
-    "jzodSchema",
-    jzodSchema,
+    "mlSchema",
+    mlSchema,
     "rootObject",
     rootObject,
     "currentValuePath",
@@ -281,7 +281,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     //   deploymentUuid,
     //   "rootObject",
     //   rootObject,
-    //   "jzodSchema.tag.value.initializeTo.transformer",
+    //   "mlSchema.tag.value.initializeTo.transformer",
     //   effectiveSchema.tag.value.initializeTo.transformer
     // );
     const result = transformer_extended_apply_wrapper(
@@ -410,7 +410,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         // log.info(
         //   "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper for UUID",
         //   "deploymentUuid", deploymentUuid,
-        //   "jzodSchema.tag.value.initializeTo.transformer",
+        //   "mlSchema.tag.value.initializeTo.transformer",
         //   effectiveSchema.tag.value.initializeTo.transformer
         // );
         const result = transformer_extended_apply_wrapper(
@@ -494,7 +494,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "void": {
       throw new Error(
         "getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " +
-          jzodSchema.type
+          mlSchema.type
       );
     }
     case "literal": {
@@ -551,8 +551,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
             JSON.stringify(effectiveSchema, null, 2)
         );
       }
-      if (jzodSchema.tag?.value?.initializeTo?.initializeToType == "value") {
-        return jzodSchema.tag?.value?.initializeTo.value;
+      if (mlSchema.tag?.value?.initializeTo?.initializeToType == "value") {
+        return mlSchema.tag?.value?.initializeTo.value;
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
           step,
@@ -607,7 +607,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
   step: Step,
-  jzodSchema: JzodElement,
+  mlSchema: JzodElement,
   rootObject: any = undefined,
   rootLessListKey: string,
   currentDefaultValue: any = undefined,
@@ -630,8 +630,8 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     deploymentUuid,
     "rootObject",
     rootObject,
-    "jzodSchema",
-    jzodSchema,
+    "mlSchema",
+    mlSchema,
     "forceOptional",
     forceOptional,
     "currentDefaultValue",
@@ -644,7 +644,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
     return getDefaultValueForJzodSchemaWithResolution(
       step,
-      jzodSchema,
+      mlSchema,
       rootObject,
       rootLessListKey,
       currentDefaultValue,
@@ -663,7 +663,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
 
   return getDefaultValueForJzodSchemaWithResolution(
     step,
-    jzodSchema,
+    mlSchema,
     rootObject,
     rootLessListKey,
     currentDefaultValue,

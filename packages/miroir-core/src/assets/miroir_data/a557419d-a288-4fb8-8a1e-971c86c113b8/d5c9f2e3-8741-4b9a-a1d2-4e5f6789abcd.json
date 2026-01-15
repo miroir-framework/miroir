@@ -21,7 +21,7 @@
       "transformerDefinition": {
         "type": "object",
         "definition": {
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -55,7 +55,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodSchema"
+              "relativePath": "mlSchema"
             }
           },
           "currentModel": {

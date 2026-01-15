@@ -42,7 +42,7 @@
           "uuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
           "parentName": "Entity",
           "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-          "name": "JzodSchema",
+          "name": "MlSchema",
           "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           "conceptLevel": "Model",
           "description": "Common Jzod Schema definitions, available to all Entity definitions"
@@ -100,9 +100,9 @@
           "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
           "entityUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
           "conceptLevel": "Model",
-          "name": "JzodSchema",
+          "name": "MlSchema",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -175,7 +175,7 @@
           "conceptLevel": "Model",
           "name": "ApplicationVersion",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -271,7 +271,7 @@
           "name": "Entity",
           "conceptLevel": "MetaModel",
           "description": "Entities",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -323,7 +323,7 @@
           "conceptLevel": "Model",
           "name": "ApplicationModelBranch",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -394,7 +394,7 @@
           "conceptLevel": "Model",
           "name": "SelfApplication",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -434,7 +434,7 @@
           "conceptLevel": "Model",
           "name": "Report",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -676,7 +676,7 @@
           "conceptLevel": "Model",
           "name": "SelfApplicationDeploymentConfiguration",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -744,7 +744,7 @@
           "name": "EntityDefinition",
           "conceptLevel": "MetaModel",
           "description": "definition of an entity",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -774,7 +774,7 @@
                 "optional": true,
                 "tag": { "value": {  "id": 6, "defaultLabel": "Description", "editable": true }}
               },
-              "jzodSchema": {
+              "mlSchema": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
@@ -795,7 +795,7 @@
           "name": "ApplicationVersionCrossEntityDefinition",
           "description": "The mapping among SelfApplication Versions and Entity Definitions",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -871,7 +871,7 @@
           "conceptLevel": "Model",
           "name": "StoreBasedConfiguration",
           "icon": "Interests",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -1009,7 +1009,7 @@
           "defaultLabel": "List of Jzod Schemas",
           "definition": {
             "type": "objectListReportSection",
-            "definition": { "parentName": "JzodSchema", "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf" }
+            "definition": { "parentName": "MlSchema", "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf" }
           }
         },
         "c9ea3359-690c-4620-9603-b5b402e4a2b9": {
@@ -1053,7 +1053,7 @@
       "5e81e1b9-38be-487c-b3e5-53796c57fccf": {
         "04f8773e-1c9d-4e5a-853e-1f94982f2e94": {
           "uuid": "04f8773e-1c9d-4e5a-853e-1f94982f2e94",
-          "parentName": "JzodSchema",
+          "parentName": "MlSchema",
           "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
           "name": "jzodBootstrapSchema",
           "defaultLabel": "The Jzod Schema of all Jzod Schemas. Comes from the @miroir-framework/jzod library. Parses itself.",
@@ -1286,7 +1286,7 @@
         },
         "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
           "uuid": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          "parentName": "JzodSchema",
+          "parentName": "MlSchema",
           "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
           "name": "jzodMiroirBootstrapSchema",
           "defaultLabel": "The Jzod Schema for Miroir Jzod Schemas. Parses itself.",
@@ -2202,7 +2202,7 @@
           "conceptLevel": "Model",
           "name": "Book",
           "icon": "Book",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -2254,7 +2254,7 @@
           "name": "Publisher",
           "description": "Publisher",
           "icon": "building",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {
@@ -2292,7 +2292,7 @@
           "name": "Test",
           "description": "Test Library Entity",
           "icon": "building",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "try": {
@@ -2378,7 +2378,7 @@
           "name": "Author",
           "description": "author",
           "icon": "Person",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "object",
             "definition": {
               "uuid": {

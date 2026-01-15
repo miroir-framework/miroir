@@ -17,7 +17,7 @@
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

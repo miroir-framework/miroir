@@ -530,7 +530,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         definition: `{{${runnerName}.entityName}} Definition`,
       } as any,
       entityUuid: newEntityUuid,
-      jzodSchema: {
+      mlSchema: {
         transformerType: "spreadSheetToJzodSchema",
         spreadsheetContents: fileData,
       } as any,

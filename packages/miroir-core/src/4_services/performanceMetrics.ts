@@ -34,7 +34,7 @@ export function measurePerformance<T extends (...args: any[]) => any>(
   func: T, 
   logFrequency: number = 10,
   listKey?: string,
-  jzodSchema?: any
+  mlSchema?: any
 ): T {
   // Initialize metrics for this function if needed
   if (!performanceMetrics[funcName]) {
@@ -70,7 +70,7 @@ export function measurePerformance<T extends (...args: any[]) => any>(
         `Avg: ${(metrics.totalTime / metrics.callCount).toFixed(2)}ms,`,
         `Min: ${metrics.minDuration.toFixed(2)}ms,`,
         `Max: ${metrics.maxDuration.toFixed(2)}ms`,
-        `Jzod Schema:`, jzodSchema ?? "N/A",
+        `Jzod Schema:`, mlSchema ?? "N/A",
       );
     }
     

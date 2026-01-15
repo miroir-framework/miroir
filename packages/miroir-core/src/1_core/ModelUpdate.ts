@@ -34,10 +34,10 @@ export function getModelUpdate(
     return null;
   }
 
-  // Analyze changes to jzodSchema.definition
-  const jzodSchemaChanges = changes?.jzodSchema?.definition;
+  // Analyze changes to mlSchema.definition
+  const jzodSchemaChanges = changes?.mlSchema?.definition;
   if (!jzodSchemaChanges) {
-    throw new Error("getModelUpdate: Only jzodSchema.definition changes are currently supported.");
+    throw new Error("getModelUpdate: Only mlSchema.definition changes are currently supported.");
   }
 
   // Extract added and removed columns and check for structural changes

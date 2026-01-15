@@ -4,7 +4,7 @@ import {
   JzodArray,
   JzodTuple,
   JzodUnion,
-  JzodSchema,
+  MlSchema,
   MetaModel,
 // } from "../src/1_core/jzod/types";
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -14,7 +14,7 @@ import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jz
 import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
 import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
 
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
 
 describe('unionArrayChoices', () => {

@@ -388,7 +388,7 @@ const createEntity_newEntityDefinition: EntityDefinition = {
   entityUuid: createEntity_newEntity.uuid,
   conceptLevel: "Model",
   defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-  jzodSchema: newEntityJzodSchema,
+  mlSchema: newEntityJzodSchema,
 };
 
 const createEntityCompositeAction: CompositeActionSequence = {
@@ -461,7 +461,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
       //   },
       //   conceptLevel: "Model",
       //   defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-      //   jzodSchema: {
+      //   mlSchema: {
       //     transformerType: "getFromContext",
       //     interpolation: "runtime",
       //     referenceName: "newEntityJzodSchema",
@@ -761,7 +761,7 @@ const createEntityCompositeActionAssertions: CompositeRunTestAssertion[] = [
             entityUuid: newEntityUuid,
             conceptLevel: "Model",
             defaultInstanceDetailsReportUuid: defaultInstanceDetailsReportUuid,
-            jzodSchema: newEntityJzodSchema,
+            mlSchema: newEntityJzodSchema,
           },
           // {
           //   transformerType: "getFromParameters",

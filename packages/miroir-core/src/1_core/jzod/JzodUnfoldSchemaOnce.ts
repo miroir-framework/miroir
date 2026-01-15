@@ -1,7 +1,7 @@
 import {
   JzodElement,
   JzodObject,
-  JzodSchema,
+  MlSchema,
   MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
@@ -39,7 +39,7 @@ export type UnfoldJzodSchemaOnceReturnType = UnfoldJzodSchemaOnceReturnTypeError
 
 // ################################################################################################
 export function localizeJzodSchemaReferenceContext<T extends JzodElement>(
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   jzodElement: T,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
@@ -152,9 +152,9 @@ let recursionLevel = 0;
 // #####################################################################################################
 // NOT CONSISTENT AT ALL, SHOULD RETURN ONLY ERROR CODES, NOT THROW EXCEPTIONS!
 export function unfoldJzodSchemaOnce(
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   currentModelEnvironment: MiroirModelEnvironment,
-  jzodSchema: JzodElement | undefined,
+  mlSchema: JzodElement | undefined,
   path: string[],
   unfoldingReference: string[],
   rootSchema:JzodElement | undefined,
@@ -171,20 +171,20 @@ export function unfoldJzodSchemaOnce(
   // log.info(
   //   // `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for type`,
   //   `unfoldJzodSchemaOnce called for type`,
-  //   jzodSchema?.type,
+  //   mlSchema?.type,
   //   "path",
   //   "'" + path.join(".") + "'",
   //   "depth",
   //   depth,
   //   "schema",
-  //   JSON.stringify(jzodSchema, null, 2),
+  //   JSON.stringify(mlSchema, null, 2),
   //   "object keys:",
-  //   jzodSchema?.type == "object"
-  //     ? JSON.stringify(Object.keys((jzodSchema as any).definition ?? {}), null, 2)
+  //   mlSchema?.type == "object"
+  //     ? JSON.stringify(Object.keys((mlSchema as any).definition ?? {}), null, 2)
   //     : "not an object",
   // );
 
-  if (!jzodSchema) {
+  if (!mlSchema) {
     recursionLevel--;
     const endTime = performance.now();
     const executionTime = endTime - startTime;
@@ -193,9 +193,9 @@ export function unfoldJzodSchemaOnce(
   }
 
   if (
-    (jzodSchema.type != "union" && depth > 1) ||
-    // (jzodSchema.type == "union" && depth > 2) 
-    (jzodSchema.type == "union" && depth > 1) 
+    (mlSchema.type != "union" && depth > 1) ||
+    // (mlSchema.type == "union" && depth > 2) 
+    (mlSchema.type == "union" && depth > 1) 
     
   ) {
     // we let unions within unions be unfolded
@@ -209,24 +209,24 @@ export function unfoldJzodSchemaOnce(
     // );
     return {
       status: "ok",
-      element: jzodSchema,
+      element: mlSchema,
     };
   }
-  switch (jzodSchema?.type) {
+  switch (mlSchema?.type) {
     case "schemaReference": {
       const unfoldedReferenceJzodSchema = localizeJzodSchemaReferenceContext(
         currentModelEnvironment.miroirFundamentalJzodSchema,
-        jzodSchema,
+        mlSchema,
         currentModelEnvironment.currentModel,
         currentModelEnvironment.miroirMetaModel,
-        {...relativeReferenceJzodContext, ...jzodSchema.context}
+        {...relativeReferenceJzodContext, ...mlSchema.context}
       );
 
       const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
         {
           type: "schemaReference",
           context: unfoldedReferenceJzodSchema.context,
-          definition: jzodSchema.definition,
+          definition: mlSchema.definition,
         },
         { ...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context }, // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
         currentModelEnvironment,//{ miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
@@ -235,30 +235,30 @@ export function unfoldJzodSchemaOnce(
       // log.info("unfoldJzodSchemaOnce resolvedJzodSchema", resolvedJzodSchema);
       const resultJzodSchema = {...resolvedJzodSchema}
       // {
-        // ...jzodSchema, // could be an issue if resolvedJzodSchema forces a value for an attribute already in jzodSchema (example: jzodSchema.optional = true, resolvedJzodSchema.optional=false)
-        // optional: jzodSchema.optional, // TODO: what is the semantics of optional for a schema reference? COMPARE WITH JZOD TO ZOD!!!!!!!!!!
-        // nullable: jzodSchema.nullable,
-        // tag: jzodSchema.tag,
+        // ...mlSchema, // could be an issue if resolvedJzodSchema forces a value for an attribute already in mlSchema (example: mlSchema.optional = true, resolvedJzodSchema.optional=false)
+        // optional: mlSchema.optional, // TODO: what is the semantics of optional for a schema reference? COMPARE WITH JZOD TO ZOD!!!!!!!!!!
+        // nullable: mlSchema.nullable,
+        // tag: mlSchema.tag,
       //   ...resolvedJzodSchema
       // }
-      if (Object.hasOwn(jzodSchema, "optional")) {
-        resultJzodSchema.optional = jzodSchema.optional;
+      if (Object.hasOwn(mlSchema, "optional")) {
+        resultJzodSchema.optional = mlSchema.optional;
       }
-      if (Object.hasOwn(jzodSchema, "nullable")) {
-        resultJzodSchema.optional = jzodSchema.nullable;
+      if (Object.hasOwn(mlSchema, "nullable")) {
+        resultJzodSchema.optional = mlSchema.nullable;
       }
-      if (jzodSchema.tag) {
-        resultJzodSchema.tag = jzodSchema.tag;
+      if (mlSchema.tag) {
+        resultJzodSchema.tag = mlSchema.tag;
       }
 
-      if (resultJzodSchema.optional != jzodSchema.optional) {
+      if (resultJzodSchema.optional != mlSchema.optional) {
         throw new Error(
           "unfoldJzodSchemaOnce mismatch on optional jzoSchema=" +
-            JSON.stringify(jzodSchema) +
+            JSON.stringify(mlSchema) +
             " resolvedJzodSchema=" +
             JSON.stringify(resultJzodSchema) +
             " for schemaReference " +
-            jzodSchema.definition.relativePath
+            mlSchema.definition.relativePath
         );
       }
       // log.info(
@@ -277,31 +277,31 @@ export function unfoldJzodSchemaOnce(
     }
     case "object": {
       let extendedJzodSchema: JzodObject
-      if (jzodSchema.extend) {
+      if (mlSchema.extend) {
         const extension = resolveJzodSchemaReferenceInContext(
-          jzodSchema.extend,
+          mlSchema.extend,
           relativeReferenceJzodContext,
           currentModelEnvironment,// { miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
         );
         if (extension.type == "object") {
           extendedJzodSchema = {
             // type: "object",
-            ...jzodSchema,
+            ...mlSchema,
             definition: {
               ...extension.definition,
-              ...jzodSchema.definition
+              ...mlSchema.definition
             }
           }
         } else {
           throw new Error(
             "unfoldJzodSchemaOnce object extend clause schema " +
-              JSON.stringify(jzodSchema) +
+              JSON.stringify(mlSchema) +
               " is not an object " +
               JSON.stringify(extension)
           );
         }
       } else {
-        extendedJzodSchema = jzodSchema
+        extendedJzodSchema = mlSchema
       }
       // log.info("unfoldJzodSchemaOnce object extendedJzodSchema",extendedJzodSchema)
 
@@ -366,9 +366,9 @@ export function unfoldJzodSchemaOnce(
     }
     // ############################################################################################
     case "union":{
-      // const unfoldedJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
+      // const unfoldedJzodSchemas: JzodElement[] = mlSchema.definition.map((a: JzodElement) =>
       const unfoldedJzodSchemaReturnType: {referenceRelativeName?: string, unfolded: UnfoldJzodSchemaOnceReturnType}[] =
-        jzodSchema.definition.map((a: JzodElement) =>
+        mlSchema.definition.map((a: JzodElement) =>
           (
             {
               referenceRelativeName: a.type == "schemaReference" ? a.definition.relativePath : undefined,
@@ -417,7 +417,7 @@ export function unfoldJzodSchemaOnce(
             JSON.stringify(failedIndex, null, 2)
         };
       }
-      // log.info("unfoldJzodSchemaOnce for union ",jzodSchema, "unfoldedJzodSchemaReturnType", unfoldedJzodSchemaReturnType);
+      // log.info("unfoldJzodSchemaOnce for union ",mlSchema, "unfoldedJzodSchemaReturnType", unfoldedJzodSchemaReturnType);
       const firstLevelUnfoldedJzodSchemas: {referenceRelativeName?: string, unfolded: JzodElement}[] = (
         // unfoldedJzodSchemaReturnType as UnfoldJzodSchemaOnceReturnTypeOK[]
         unfoldedJzodSchemaReturnType as {referenceRelativeName?: string, unfolded: UnfoldJzodSchemaOnceReturnTypeOK}[]
@@ -471,8 +471,8 @@ export function unfoldJzodSchemaOnce(
         }
         return (s as any).element;
       });
-      // const resultElement = { ...jzodSchema, definition: firstLevelUnfoldedJzodSchemas}
-      const resultElement = { ...jzodSchema, definition: secondLevelUnfoldedResults}
+      // const resultElement = { ...mlSchema, definition: firstLevelUnfoldedJzodSchemas}
+      const resultElement = { ...mlSchema, definition: secondLevelUnfoldedResults}
       // log.info("unfoldJzodSchemaOnce union resultElement", resultElement);
       recursionLevel--;
       const endTime = performance.now();
@@ -485,7 +485,7 @@ export function unfoldJzodSchemaOnce(
       const resultSchemaTmp: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
         currentModelEnvironment,
-        jzodSchema.definition,
+        mlSchema.definition,
         path.concat("recordEntry"), // path
         unfoldingReference,
         rootSchema, // rootSchema
@@ -497,7 +497,7 @@ export function unfoldJzodSchemaOnce(
       if (resultSchemaTmp.status == "ok") {
         const result: UnfoldJzodSchemaOnceReturnType = {
           status: "ok",
-          element: { ...jzodSchema, definition: resultSchemaTmp.element },
+          element: { ...mlSchema, definition: resultSchemaTmp.element },
         };
         // log.info("unfoldJzodSchemaOnce record, result", JSON.stringify(result, null, 2))
         recursionLevel--;
@@ -508,7 +508,7 @@ export function unfoldJzodSchemaOnce(
       } else {
         log.warn(
           "unfoldJzodSchemaOnce record could not find schema for definition '" +
-          jzodSchema.definition +
+          mlSchema.definition +
           "' error:", JSON.stringify(resultSchemaTmp, null, 2)
         );
         recursionLevel--;
@@ -524,7 +524,7 @@ export function unfoldJzodSchemaOnce(
       const endTime = performance.now();
       const executionTime = endTime - startTime;
       // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - literal resolved`);
-      return { status: "ok", element: jzodSchema };
+      return { status: "ok", element: mlSchema };
       break;
     }
     case "enum": {
@@ -532,10 +532,10 @@ export function unfoldJzodSchemaOnce(
       const endTime = performance.now();
       const executionTime = endTime - startTime;
       // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - enum resolved`);
-      return { status: "ok", element: jzodSchema };
+      return { status: "ok", element: mlSchema };
     }
     case "tuple": {
-      const subTypes = jzodSchema.definition.map((e) =>
+      const subTypes = mlSchema.definition.map((e) =>
         unfoldJzodSchemaOnce(
           miroirFundamentalJzodSchema,
           currentModelEnvironment,
@@ -558,7 +558,7 @@ export function unfoldJzodSchemaOnce(
         return {
           status: "error",
           error: "unfoldJzodSchemaOnce can not handle tuple schema " +
-          JSON.stringify(jzodSchema) + " error " + JSON.stringify(foundError)
+          JSON.stringify(mlSchema) + " error " + JSON.stringify(foundError)
         }
       }
       recursionLevel--;
@@ -568,7 +568,7 @@ export function unfoldJzodSchemaOnce(
       return {
         status: "ok",
         element: {
-          ...jzodSchema,
+          ...mlSchema,
           definition: subTypes.map((e:any) => e.element)
         }
       }
@@ -578,7 +578,7 @@ export function unfoldJzodSchemaOnce(
       const subType = unfoldJzodSchemaOnce(
         miroirFundamentalJzodSchema,
         currentModelEnvironment,
-        jzodSchema.definition,
+        mlSchema.definition,
         path.concat("arrayItem"), // path
         unfoldingReference,
         rootSchema, // rootSchema
@@ -596,7 +596,7 @@ export function unfoldJzodSchemaOnce(
         return {
           status: "ok",
           element: {
-            ...jzodSchema,
+            ...mlSchema,
             definition: subType.element
           }
         }
@@ -604,7 +604,7 @@ export function unfoldJzodSchemaOnce(
         // return resultSchemaTmp;
         log.warn(
           "unfoldJzodSchemaOnce error on resolving array type for " +
-            JSON.stringify(jzodSchema) +
+            JSON.stringify(mlSchema) +
             // " valueObject " +
             // JSON.stringify(valueObject) +
             " found error: " + subType.error
@@ -641,14 +641,14 @@ export function unfoldJzodSchemaOnce(
       recursionLevel--;
       const endTime = performance.now();
       const executionTime = endTime - startTime;
-      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - ${jzodSchema.type} resolved`);
-      return {status: "ok", element: jzodSchema}
+      // log.info(`unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] execution time: ${executionTime.toFixed(2)}ms - ${mlSchema.type} resolved`);
+      return {status: "ok", element: mlSchema}
     }
     default: {
-      // log.trace("unfoldJzodSchemaOnce could not resolve schemaReferences once for ", jzodSchema)
+      // log.trace("unfoldJzodSchemaOnce could not resolve schemaReferences once for ", mlSchema)
       throw new Error(
         "unfoldJzodSchemaOnce could not resolve schemaReferences once for " +
-        JSON.stringify(jzodSchema)
+        JSON.stringify(mlSchema)
       );
       break;
     }
@@ -671,7 +671,7 @@ export function unfoldSchemaOnceTransformer(
   return unfoldJzodSchemaOnce(
     transformer.miroirFundamentalJzodSchema,
     modelEnvironment,
-    transformer.jzodSchema,
+    transformer.mlSchema,
     transformer.path || [],
     transformer.unfoldingReference || [],
     transformer.rootSchema,

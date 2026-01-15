@@ -323,7 +323,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       type: "object",
       definition: {
         ...r,
-        [formikReportDefinitionPath]: entityDefinitionReport.jzodSchema,
+        [formikReportDefinitionPath]: entityDefinitionReport.mlSchema,
       },
     };
     // log.info(

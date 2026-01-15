@@ -85,7 +85,7 @@ export const reportSectionsFormSchema = (
         );
       }
       return {
-        [reportSectionPath.join("_")]:targetEntityDefinition.jzodSchema
+        [reportSectionPath.join("_")]:targetEntityDefinition.mlSchema
       };
     }
     case "objectListReportSection":

@@ -210,9 +210,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       type: "object",
       definition: {
         ...r,
-        [reportReportDetailsKey]: entityDefinitionReport.jzodSchema,
-        [entityDefinitionReportKey]: entityDefinitionEntityDefinition.jzodSchema, // will contain reportEntityDefinition-itself
-        [reportName]: entityDefinitionReport.jzodSchema,
+        [reportReportDetailsKey]: entityDefinitionReport.mlSchema,
+        [entityDefinitionReportKey]: entityDefinitionEntityDefinition.mlSchema, // will contain reportEntityDefinition-itself
+        [reportName]: entityDefinitionReport.mlSchema,
         [lastSubmitButtonClicked]: { type: "string", optional: true}
       }
     };

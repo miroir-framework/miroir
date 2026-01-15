@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   EntityDefinition,
   JzodElement,
-  JzodSchema
+  MlSchema
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { localizeJzodSchemaReferenceContext } from "../../../src/1_core/jzod/JzodUnfoldSchemaOnce";
@@ -58,7 +58,7 @@ import entityDefinitionDeployment from "../../../src/assets/admin_model/54b9c72f
 import transformerMenuV1 from "../../../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json";
 
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 import { defaultMiroirMetaModel } from '../../../src/1_core/Model';
 
 // export const defaultMiroirMetaModel: MetaModel = {
@@ -89,7 +89,7 @@ import { defaultMiroirMetaModel } from '../../../src/1_core/Model';
 //     entityDefinitionStoreBasedConfiguration as EntityDefinition,
 //   ],
 //   jzodSchemas: [
-//     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+//     jzodSchemajzodMiroirBootstrapSchema as MlSchema,
 //   ],
 //   menus: [
 //     menuDefaultMiroir as Menu,
@@ -130,7 +130,7 @@ import { defaultMiroirMetaModel } from '../../../src/1_core/Model';
 
 function testLocalizeReferenceContext(
   testId: string,
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   // testSchema: JzodReference,
   testSchema: JzodElement,
   expectedResult: JzodElement,
@@ -150,7 +150,7 @@ function testLocalizeReferenceContext(
 interface testFormat {
   // testId: string,
   // testSchema: JzodElement,
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   testSchema: JzodElement,
   // testValueObject: any,
   expectedResult: JzodElement,
@@ -169,7 +169,7 @@ describe(
     it(
       'miroir entity definition object format',
       () => {
-        // const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
+        // const miroirFundamentalJzodSchema: MlSchema = getMiroirFundamentalJzodSchema(
         // const miroirFundamentalJzodSchema: any = getMiroirFundamentalJzodSchema(
         //   entityDefinitionBundleV1 as EntityDefinition,
         //   entityDefinitionCommit as EntityDefinition,
@@ -182,8 +182,8 @@ describe(
         //   queryEndpointVersionV1,
         //   persistenceEndpointVersionV1,
         //   testEndpointVersionV1,
-        //   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-        //   transformerJzodSchema as JzodSchema, 
+        //   jzodSchemajzodMiroirBootstrapSchema as MlSchema,
+        //   transformerJzodSchema as MlSchema, 
         //   [transformerMenuV1], 
         //   entityDefinitionAdminApplication as EntityDefinition,
         //   entityDefinitionSelfApplication as EntityDefinition,

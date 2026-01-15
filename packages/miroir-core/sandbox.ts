@@ -79,7 +79,7 @@
 //                     interpolation: "build",
 //                     referenceName: "defaultInstanceDetailsReportUuid",
 //                   },
-//                   jzodSchema: {
+//                   mlSchema: {
 //                     transformerType: "getFromParameters",
 //                     interpolation: "build",
 //                     referenceName: "newEntityJzodSchema",
@@ -797,7 +797,7 @@
 //                       interpolation: "build",
 //                       referenceName: "defaultInstanceDetailsReportUuid",
 //                     },
-//                     jzodSchema: {
+//                     mlSchema: {
 //                       transformerType: "getFromParameters",
 //                       interpolation: "build",
 //                       referenceName: "newEntityJzodSchema",

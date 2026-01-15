@@ -4,12 +4,12 @@ import {
   JzodArray,
   JzodTuple,
   JzodUnion,
-  JzodSchema,
+  MlSchema,
   MetaModel,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 describe('jzodUnionResolvedTypeForArray', () => {
-  const mockMiroirFundamentalJzodSchema = {} as JzodSchema;
+  const mockMiroirFundamentalJzodSchema = {} as MlSchema;
   const mockCurrentModel = {} as MetaModel;
   const mockMiroirMetaModel = {} as MetaModel;
   const mockRelativeReferenceJzodContext = {};

@@ -151,7 +151,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 //   resolvedElementJzodSchemaBasedOnValue: JzodElement | undefined,
 //   currentModel: MetaModel,
 //   miroirMetaModel: MetaModel,
-//   miroirFundamentalJzodSchema: JzodSchema,
+//   miroirFundamentalJzodSchema: MlSchema,
 //   currentValue: any // current value of the jzod element
 // ): Record<string, { resolvedElementJzodSchema: JzodElement }> {
 //   let localResolvedElementJzodSchemaBasedOnValue: JzodElement;

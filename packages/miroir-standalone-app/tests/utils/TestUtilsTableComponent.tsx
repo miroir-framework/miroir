@@ -115,7 +115,7 @@ export const TestUtilsTableComponent = (
   log.info("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   
   // const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];
-  const currentAttributes = currentMiroirEntityDefinition?.jzodSchema ? Object.entries(currentMiroirEntityDefinition?.jzodSchema.definition)?.filter(a=>a[0]!=='parentUuid'):[];
+  const currentAttributes = currentMiroirEntityDefinition?.mlSchema ? Object.entries(currentMiroirEntityDefinition?.mlSchema.definition)?.filter(a=>a[0]!=='parentUuid'):[];
   log.info("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
   return (
     <div>

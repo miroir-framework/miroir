@@ -1,7 +1,7 @@
 import {
   Entity,
   EntityDefinition,
-  JzodSchema,
+  MlSchema,
   Menu,
   MetaModel,
   Report
@@ -55,8 +55,40 @@ import applicationVersionInitialMiroirVersionCrossEntityDefinitionReport from '.
 import selfApplicationVersionInitialMiroirVersion from '../../src/assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import menuDefaultMiroir from '../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json';
 
+import applicationEndpointV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json';
+// import deploymentEndpointV1 from './assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json';
+import instanceEndpointV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json';
+import modelEndpointV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json';
+import domainEndpointVersionV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json';
+import testEndpointVersionV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a9139e2d-a714-4c9c-bdee-c104488e2eaa.json';
+import storeManagementEndpoint from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json';
+import instanceEndpointVersionV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json';
+import undoRedoEndpointVersionV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json';
+import localCacheEndpointVersionV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9e404b3c-368c-40cb-be8b-e3c28550c25e.json';
+import queryEndpointVersionV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0faae143-0d7b-4a8a-a950-4fc3df943bde.json';
+import persistenceEndpointVersionV1 from '../../src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json';
+
+
+
+
+import type { EndpointDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
+  endpoints: [
+    applicationEndpointV1 as EndpointDefinition,
+    // deploymentEndpointV1,
+    instanceEndpointV1 as any as EndpointDefinition,
+    modelEndpointV1 as any as EndpointDefinition,
+    domainEndpointVersionV1 as any as EndpointDefinition,
+    testEndpointVersionV1 as any as EndpointDefinition,
+    storeManagementEndpoint as any as EndpointDefinition,
+    instanceEndpointVersionV1 as any as EndpointDefinition,
+    undoRedoEndpointVersionV1 as any as EndpointDefinition,
+    localCacheEndpointVersionV1 as any as EndpointDefinition,
+    queryEndpointVersionV1 as any as EndpointDefinition,
+    persistenceEndpointVersionV1 as any as EndpointDefinition,
+  ],
   entities: [
     entitySelfApplication as Entity,
     entitySelfApplicationDeploymentConfiguration as Entity,
@@ -83,7 +115,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionStoreBasedConfiguration as EntityDefinition,
   ],
   jzodSchemas: [
-    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+    jzodSchemajzodMiroirBootstrapSchema as MlSchema,
   ],
   menus: [
     menuDefaultMiroir as Menu,
@@ -102,6 +134,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportJzodSchemaList as Report,
     reportMenuList as Report,
     reportReportList as Report,
+  ],
+  storedQueries: [
   ],
   applicationVersionCrossEntityDefinition: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,

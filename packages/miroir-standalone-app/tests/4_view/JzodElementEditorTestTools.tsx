@@ -1620,7 +1620,7 @@ export function extractValuesFromRenderedElements(
       //       for (const labelEl of labelElements) {
       //         const labelId = labelEl.id;
       //         if (labelId.includes(".definition.") && labelId.endsWith(".type.label")) {
-      //           // Extract the field path from something like "testField.jzodSchema.definition.conceptLevel.type.label"
+      //           // Extract the field path from something like "testField.mlSchema.definition.conceptLevel.type.label"
       //           const fieldPath = labelId.replace(".type.label", "");
       //           contextPath = removeLabelPrefix(fieldPath);
       //           console.log(

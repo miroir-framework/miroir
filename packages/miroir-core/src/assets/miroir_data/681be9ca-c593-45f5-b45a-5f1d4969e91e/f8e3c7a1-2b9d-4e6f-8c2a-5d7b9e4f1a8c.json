@@ -17,7 +17,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "literal",
             "definition": "myLiteral"
           },
@@ -62,7 +62,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "string"
           },
           "valueObject": "myString",
@@ -102,7 +102,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "boolean"
           },
           "valueObject": true,
@@ -142,7 +142,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "boolean"
           },
           "valueObject": false,
@@ -182,7 +182,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "context": {
               "a": {
@@ -248,7 +248,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "context": {
               "myObject": {
@@ -635,7 +635,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "context": {
               "myObject": {
@@ -1450,7 +1450,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "context": {
               "myObject": {
@@ -2452,7 +2452,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "schemaReference",
             "context": {
               "myObject": {
@@ -3632,7 +3632,7 @@
         "transformer": {
           "transformerType": "jzodTypeCheck",
           "interpolation": "build",
-          "jzodSchema": {
+          "mlSchema": {
             "type": "union",
             "definition": [
               {

@@ -14,7 +14,7 @@ import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   JzodElement,
   JzodPlainAttribute,
-  JzodSchema,
+  MlSchema,
   JzodSchemaQuerySelector,
   JzodSchemaQueryTemplateSelector,
   LocalCacheExtractor,
@@ -344,7 +344,7 @@ export function useCurrentModelEnvironment(
   return useMemo(() => {
     return {
       miroirFundamentalJzodSchema:
-        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
       miroirMetaModel: miroirMetaModel,
       endpointsByUuid,
       currentModel: currentModel,
@@ -394,9 +394,9 @@ export function useLocalCacheInstancesForJzodAttribute(
   applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: string | undefined,
   applicationSection: ApplicationSection | undefined,
-  jzodSchema: JzodPlainAttribute | undefined
+  mlSchema: JzodPlainAttribute | undefined
 ): EntityInstance[] {
-  const entityUuid = selectEntityUuidFromJzodAttribute(jzodSchema);
+  const entityUuid = selectEntityUuidFromJzodAttribute(mlSchema);
   const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>
     selectInstanceArrayForDeploymentSectionEntity(state, applicationDeploymentMap,{
       queryType: "localCacheEntityInstancesExtractor",
@@ -412,7 +412,7 @@ export function useLocalCacheInstancesForJzodAttribute(
     "useLocalCacheInstancesForJzodAttribute",
     deploymentUuid,
     applicationSection,
-    jzodSchema,
+    mlSchema,
     entityUuid,
     miroirEntities
   );

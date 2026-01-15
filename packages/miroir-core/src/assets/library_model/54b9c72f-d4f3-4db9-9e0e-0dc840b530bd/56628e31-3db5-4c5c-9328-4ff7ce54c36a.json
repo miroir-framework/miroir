@@ -17,7 +17,7 @@
     "icon",
     "uuid"
   ],
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {

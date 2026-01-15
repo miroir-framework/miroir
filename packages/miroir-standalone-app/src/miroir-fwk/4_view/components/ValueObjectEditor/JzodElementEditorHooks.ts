@@ -24,7 +24,7 @@ import {
   type Uuid,
   type MiroirModelEnvironment,
   miroirFundamentalJzodSchema,
-  type JzodSchema,
+  type MlSchema,
   defaultMiroirModelEnvironment,
   transformer_extended_apply_wrapper,
   type TransformerReturnType,
@@ -83,8 +83,8 @@ export interface JzodElementEditorHooks {
 
 // ################################################################################################
 // ##############################################################################################
-export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undefined) {
-  return (jzodSchema?.type == "object" || jzodSchema?.type == "record") &&
+export function getItemsOrder(currentValue: any, mlSchema: JzodElement | undefined) {
+  return (mlSchema?.type == "object" || mlSchema?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null
     ? Object.keys(currentValue)
@@ -164,7 +164,7 @@ export function useJzodElementEditorHooks(
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
-  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as MlSchema,
   //     miroirMetaModel: miroirMetaModel,
   //     currentModel: currentModel,
   //   };

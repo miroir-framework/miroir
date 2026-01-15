@@ -295,7 +295,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
 
     const foreignKeyObjects: Record<string, EntityInstance> = {};
     if (querySelectorParams.foreignKeysForTransformer) {
-      for (const attribute of Object.entries(currentEntityDefnition?.jzodSchema.definition??{})) {
+      for (const attribute of Object.entries(currentEntityDefnition?.mlSchema.definition??{})) {
         if (attribute[0] === "uuid") continue;
         if (attribute[1]?.type !== "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
         if (!attribute[1].tag?.value?.targetEntity) {

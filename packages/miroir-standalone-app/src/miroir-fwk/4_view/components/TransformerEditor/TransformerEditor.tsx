@@ -22,7 +22,7 @@ import {
   transformer_extended_apply_wrapper,
   type JzodElement,
   type JzodObject,
-  type JzodSchema,
+  type MlSchema,
   type JzodUnion,
   type MetaModel,
   type MiroirModelEnvironment,

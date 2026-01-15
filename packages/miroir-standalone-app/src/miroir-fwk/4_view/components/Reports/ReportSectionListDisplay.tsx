@@ -319,7 +319,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
-  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as MlSchema,
   //     miroirMetaModel: miroirMetaModel,
   //     currentModel: currentModel,
   //   };
@@ -401,10 +401,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         ? props.fetchedDataJzodSchemaDEFUNCT[
             props.reportSectionDEFUNCT.definition.fetchedDataReference
           ]
-        : currentReportTargetEntityDefinition?.jzodSchema,
+        : currentReportTargetEntityDefinition?.mlSchema,
     [
       currentReportTargetEntityDefinition,
-      currentReportTargetEntityDefinition?.jzodSchema,
+      currentReportTargetEntityDefinition?.mlSchema,
       props.fetchedDataJzodSchemaDEFUNCT,
       props.reportSectionDEFUNCT,
     ]
@@ -441,7 +441,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       return convertToLegacyFormat(foreignKeyAttributes);
     },
     [
-      currentReportTargetEntityDefinition?.jzodSchema.definition,
+      currentReportTargetEntityDefinition?.mlSchema.definition,
       currentReportTargetEntityDefinition?.entityUuid,
       props.tableComponentReportType,
       entityDefinitions,
@@ -749,11 +749,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       const defaultFormValuesObject =
         currentReportTargetEntity &&
         currentReportTargetEntityDefinition &&
-        currentReportTargetEntityDefinition?.jzodSchema &&
+        currentReportTargetEntityDefinition?.mlSchema &&
         context.miroirFundamentalJzodSchema
           ? getDefaultValueForJzodSchemaWithResolutionNonHook(
               "build",
-              currentReportTargetEntityDefinition?.jzodSchema,
+              currentReportTargetEntityDefinition?.mlSchema,
               undefined, // rootObject
               "", // rootLessListKey,
               undefined, // No need to pass currentDefaultValue here
@@ -876,7 +876,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 defaultFormValuesObject={dialogOuterFormObject}
                 entityDefinition={currentReportTargetEntityDefinition}
                 entityDefinitionJzodSchema={
-                  currentReportTargetEntityDefinition?.jzodSchema as JzodObject
+                  currentReportTargetEntityDefinition?.mlSchema as JzodObject
                 }
                 foreignKeyObjects={foreignKeyObjects}
                 currentApplication={props.application}
@@ -962,8 +962,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   //       {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
   //       {/* <JsonObjectEditFormDialog
   //         showButton={true}
-  //         jzodSchema={entityDefinitionEntityDefinition.jzodSchema as JzodObject}
-  //         initialValuesObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.jzodSchema as JzodObject, [], existingRows)}
+  //         mlSchema={entityDefinitionEntityDefinition.mlSchema as JzodObject}
+  //         initialValuesObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.mlSchema as JzodObject, [], existingRows)}
   //         label='InnerDialog'
   //         onSubmit={onSubmitInnerFormDialog}
   //       />

@@ -5,8 +5,8 @@ import {
   EntityInstance,
   JzodElement,
   JzodReference,
-  jzodSchema,
-  JzodSchema,
+  mlSchema,
+  MlSchema,
   Menu,
   MetaModel,
   Report,
@@ -114,7 +114,7 @@ import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jz
 import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
 import { miroirFundamentalJzodSchema} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
-const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
 export const defaultMiroirMetaModel_DONOTUSE: MetaModel = {
   // configuration: [instanceConfigurationReference],
@@ -146,7 +146,7 @@ export const defaultMiroirMetaModel_DONOTUSE: MetaModel = {
   endpoints: [],
   storedQueries: [],
   jzodSchemas: [
-    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+    jzodSchemajzodMiroirBootstrapSchema as MlSchema,
   ],
   menus: [
     menuDefaultMiroir as Menu,
@@ -186,7 +186,7 @@ export const defaultMiroirMetaModel_DONOTUSE: MetaModel = {
 
 function testResolveReferenceInContext(
   testId: string,
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   testSchema: JzodReference,
   // testValueObject: any,
   expectedResult: JzodElement,
@@ -206,7 +206,7 @@ function testResolveReferenceInContext(
 interface testFormat {
   // testId: string,
   // testSchema: JzodElement,
-  miroirFundamentalJzodSchema: JzodSchema,
+  miroirFundamentalJzodSchema: MlSchema,
   testSchema: JzodReference,
   // testValueObject: any,
   expectedResult: JzodElement,
@@ -225,7 +225,7 @@ describe(
     it(
       'miroir entity definition object format',
       () => {
-        // const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
+        // const miroirFundamentalJzodSchema: MlSchema = getMiroirFundamentalJzodSchema(
         // const miroirFundamentalJzodSchema: any = getMiroirFundamentalJzodSchema(
         //   entityDefinitionBundleV1 as EntityDefinition,
         //   entityDefinitionCommit as EntityDefinition,
@@ -238,8 +238,8 @@ describe(
         //   queryEndpointVersionV1,
         //   persistenceEndpointVersionV1,
         //   testEndpointVersionV1,
-        //   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-        //   transformerJzodSchema as JzodSchema,
+        //   jzodSchemajzodMiroirBootstrapSchema as MlSchema,
+        //   transformerJzodSchema as MlSchema,
         //   [transformerMenuV1],
         //   entityDefinitionAdminApplication as EntityDefinition,
         //   entityDefinitionSelfApplication as EntityDefinition,

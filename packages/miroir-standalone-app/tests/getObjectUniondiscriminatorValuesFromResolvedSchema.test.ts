@@ -2,7 +2,7 @@ import type { MiroirModelEnvironment } from "miroir-core";
 import {
   getObjectUniondiscriminatorValuesFromResolvedSchema,
   JzodElement,
-  JzodSchema,
+  MlSchema,
   jzodTypeCheck,
   JzodUnion,
   jzodUnion_recursivelyUnfold,
@@ -21,7 +21,7 @@ import { jzodUnionResolvedTypeForObject } from "miroir-core";
 // function local_test(schema: JzodElement, instance: any): string[][] {
 function local_test(schema: JzodUnion, instance: any): string[][] {
   const modelEnvironment: MiroirModelEnvironment =     {
-      miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+      miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
       currentModel: currentModel as any as MetaModel,
       miroirMetaModel: currentMiroirModel as any as MetaModel
     };
@@ -41,7 +41,7 @@ function local_test(schema: JzodUnion, instance: any): string[][] {
 
 
   const unfoldedRawSchema: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
-    miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
+    miroirFundamentalJzodSchema as MlSchema, // context.miroirFundamentalJzodSchema,
     schema,
     [], // path
     [], // unfodingReference,
