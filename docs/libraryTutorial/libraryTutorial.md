@@ -200,6 +200,7 @@ The same Transformer can run client-side, server-side, or be converted to SQL - 
 
 ## Part 5: Batch Updates
 
+Showing how to use Queries to perform batch updates of data and building tools in your application beyond the simple CRUD operations.
 
 ## What's Next?
 
@@ -210,4 +211,4 @@ You've seen how Miroir applications work from the outside and understand the cor
 - Explore how Queries and Actions are declared
 - Try creating your own Entity
 
-The power of Miroir lies in making applications declarative, introspective, and data-driven - just like Smalltalk, but for the web.
+The power of Miroir lies in making applications declarative, introspective, and data-driven. Furthermore, one can edit an application while running it, without re-buiding and re-packaging this application (just like Smalltalk, but for the web).
