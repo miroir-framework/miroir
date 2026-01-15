@@ -801,6 +801,12 @@ export const RootComponent = (props: RootComponentProps) => {
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
                 <ThemedOnScreenDebug
+                  label="RootComponent viewParams generalEditMode"
+                  data={context.viewParams.generalEditMode}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                <ThemedOnScreenDebug
                   label="RootComponent adminDeploymentsQueryResult"
                   data={adminDeploymentsQueryResult}
                   initiallyUnfolded={false}

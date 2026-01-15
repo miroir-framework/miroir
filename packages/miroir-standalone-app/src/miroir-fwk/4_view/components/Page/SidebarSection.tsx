@@ -14,6 +14,7 @@ import {
 
 
 import {
+  adminSelfApplication,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
@@ -23,6 +24,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
+  selfApplicationDeploymentMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerExtractorAndParams,
   Uuid,
@@ -94,6 +96,8 @@ export interface SidebarSectionProps {
   applicationUuid: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
+
+// ################################################################################################
 export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProps) => {
   count++;
   const theme = useTheme();
@@ -212,7 +216,16 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                 )
                   .filter(
                     (curr: MiroirMenuItem) =>
-                      !curr.menuItemScope || curr.menuItemScope == "data" || context.showModelTools
+                      // context.viewParams.generalEditMode
+                      (
+                        (curr.selfApplication === adminSelfApplication.uuid || curr.selfApplication === selfApplicationDeploymentMiroir)
+                        && context.showModelTools
+                      ) 
+                      ||
+                      (
+                        (curr.selfApplication !== adminSelfApplication.uuid && curr.selfApplication !== selfApplicationDeploymentMiroir)
+                        && (!curr.menuItemScope || curr.menuItemScope == "data" || context.viewParams.generalEditMode)
+                      ) 
                   )
                   .map((i: any, index: number) => (
                     <MenuItem
@@ -233,7 +246,16 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   menuSection.items
                     .filter(
                       (curr: MiroirMenuItem) =>
-                      !curr.menuItemScope || curr.menuItemScope == "data" || context.showModelTools
+                      // !curr.menuItemScope || curr.menuItemScope == "data" || context.showModelTools
+                      (
+                        (curr.selfApplication === adminSelfApplication.uuid || curr.selfApplication === selfApplicationDeploymentMiroir)
+                        && context.showModelTools
+                      ) 
+                      ||
+                      (
+                        (curr.selfApplication !== adminSelfApplication.uuid && curr.selfApplication !== selfApplicationDeploymentMiroir)
+                        && (!curr.menuItemScope || curr.menuItemScope == "data" || context.viewParams.generalEditMode)
+                      ) 
                     )
                     .map((curr: any, index: number) => (
                       <MenuItem

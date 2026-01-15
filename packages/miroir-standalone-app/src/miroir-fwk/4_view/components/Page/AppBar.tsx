@@ -312,7 +312,7 @@ export function AppBar(props:AppBarProps) {
             {appbarItems.map((item) => (
               <Button
                 key={item.label}
-                onClick={(e: any) => goToLabelPage(e, item.targetRoot??item.label)}
+                onClick={(e: any) => goToLabelPage(e, item.targetRoot ?? item.label)}
                 sx={{
                   my: 2,
                   color: miroirTheme.currentTheme.components.appBar.textColor,
@@ -323,43 +323,6 @@ export function AppBar(props:AppBarProps) {
               </Button>
             ))}
           </Box>
-            {/* Model Tools Indicator */}
-            {context.setShowModelTools && (
-              <Tooltip
-                title={
-                  context.showModelTools
-                    ? "Model Tools: ON (click to disable)"
-                    : "Model Tools: OFF (click to enable)"
-                }
-              >
-                <ThemedIconButton
-                  onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
-                  aria-label="Model Tools"
-                >
-                  <ThemedIcon
-                    icon={
-                      context.showModelTools
-                        ? {
-                            iconType: "mui",
-                            // name: "architecture",
-                            name: "wbIncandescent",
-                            // name: "draw",
-                            color: {
-                              colorType: "themeColor",
-                              currentThemeColorPath: "colors.warning",
-                            },
-                          }
-                        : {
-                            iconType: "mui",
-                            // name: "architecture",
-                            name: "lightbulb",
-                            // name: "draw",
-                          }
-                    }
-                  />
-                </ThemedIconButton>
-              </Tooltip>
-            )}
           {/* Edit Mode Toggle Button */}
           {props.onEditModeToggle && (
             <Tooltip
@@ -428,6 +391,43 @@ export function AppBar(props:AppBarProps) {
             >
               <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
             </ThemedIconButton>
+            {/* Model Tools Indicator */}
+            {context.setShowModelTools && (
+              <Tooltip
+                title={
+                  context.showModelTools
+                    ? "Model Tools: ON (click to disable)"
+                    : "Model Tools: OFF (click to enable)"
+                }
+              >
+                <ThemedIconButton
+                  onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
+                  aria-label="Model Tools"
+                >
+                  <ThemedIcon
+                    icon={
+                      context.showModelTools
+                        ? {
+                            iconType: "mui",
+                            // name: "architecture",
+                            name: "wbIncandescent",
+                            // name: "draw",
+                            color: {
+                              colorType: "themeColor",
+                              currentThemeColorPath: "colors.warning",
+                            },
+                          }
+                        : {
+                            iconType: "mui",
+                            // name: "architecture",
+                            name: "lightbulb",
+                            // name: "draw",
+                          }
+                    }
+                  />
+                </ThemedIconButton>
+              </Tooltip>
+            )}
             {/* Action Timeline Indicator */}
             {context.setShowActionTimeline && (
               <Tooltip
