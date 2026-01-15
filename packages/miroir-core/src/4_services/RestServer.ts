@@ -493,8 +493,10 @@ export async function queryTemplateActionHandler(
   // log.info("RestServer queryTemplateActionHandler params", params, "body", body);
   // log.info("queryTemplateActionHandler called with method", method);
   // log.info("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
-  log.info("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
-  log.info("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
+  log.info("queryTemplateActionHandler called with","body", body);
+  log.info("queryTemplateActionHandler called with params", params);
+  // log.info("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  // log.info("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
 
   const action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction = body?.action
     ? (body.action as RunBoxedQueryTemplateOrBoxedExtractorTemplateAction)

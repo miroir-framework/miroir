@@ -273,116 +273,13 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   // Add state for folded object attributes/array items
   const context = useMiroirContextService();
 
-  // const formikEditedInstancePath = "formikEditedInstancePath";
   const formikReportDefinitionPath = "formikReportDefinitionPath";
   const reportSectionPath: (string | number)[] = ["definition", "section", "definition", 0];
   const currentDeploymentReportsEntitiesDefinitionsMapping:DeploymentUuidToReportsEntitiesDefinitions | undefined  =
-    // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentDeploymentUuid??""] || {};
 
   const currentModel: MetaModel = currentAppModel;
 
-  // const entityDefinitionLendingHistoryItem: EntityDefinition = {
-  //   uuid: "ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505",
-  //   parentName: "EntityDefinition",
-  //   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  //   parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
-  //   name: "LendingHistoryItem",
-  //   entityUuid: "e81078f3-2de7-4301-bd79-d3a156aec149",
-  //   defaultInstanceDetailsReportUuid: "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
-  //   jzodSchema: {
-  //     type: "object",
-  //     definition: {
-  //       uuid: {
-  //         type: "uuid",
-  //         tag: {
-  //           value: {
-  //             id: 1,
-  //             defaultLabel: "Uuid",
-  //             editable: false,
-  //           },
-  //         },
-  //       },
-  //       parentName: {
-  //         type: "string",
-  //         optional: true,
-  //         tag: {
-  //           value: {
-  //             id: 2,
-  //             defaultLabel: "Entity Name",
-  //             editable: false,
-  //           },
-  //         },
-  //       },
-  //       parentUuid: {
-  //         type: "uuid",
-  //         tag: {
-  //           value: {
-  //             id: 3,
-  //             defaultLabel: "Entity Uuid",
-  //             editable: false,
-  //             initializeTo: {
-  //               initializeToType: "value",
-  //               value: "e81078f3-2de7-4301-bd79-d3a156aec149",
-  //             },
-  //           },
-  //         },
-  //       },
-  //       parentDefinitionVersionUuid: {
-  //         type: "uuid",
-  //         optional: true,
-  //         tag: {
-  //           value: {
-  //             id: 4,
-  //             defaultLabel: "Entity Definition Version Uuid",
-  //             editable: false,
-  //           },
-  //         },
-  //       },
-  //       // name: {
-  //       //   type: "string",
-  //       //   optional: true,
-  //       // },
-  //       user: {
-  //         type: "uuid",
-  //         tag: {
-  //           value: {
-  //             editable: false,
-  //             defaultLabel: "User",
-  //             selectorParams: {
-  //               targetEntity: "ca794e28-b2dc-45b3-8137-00151557eea8",
-  //               targetEntityOrderInstancesBy: "name",
-  //             },
-  //           },
-  //         },
-  //         optional: true,
-  //       },
-  //       book: {
-  //         type: "uuid",
-  //         tag: {
-  //           value: {
-  //             editable: false,
-  //             defaultLabel: "Book",
-  //             selectorParams: {
-  //               targetEntity: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  //               targetEntityOrderInstancesBy: "name",
-  //             },
-  //           },
-  //         },
-  //         optional: true,
-  //       },
-  //       startDate: {
-  //         type: "date",
-  //       },
-  //       endDate: {
-  //         type: "date",
-  //         optional: true,
-  //       },
-  //     },
-  //   },
-  //   description: "The history of book lendings",
-  //   viewAttributes: ["uuid", "user", "book", "startDate", "endDate"],
-  // };
   const defaultDetailsReport: Report | undefined = useMemo(() => {
     return entityDefinition.defaultInstanceDetailsReportUuid
       ? currentDeploymentReportsEntitiesDefinitionsMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
@@ -409,9 +306,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
 
   // ##############################################################################################
   const formValueMLSchema: JzodObject = useMemo(() => {
-    // if (!currentDeploymentUuid || !entityDefinitionReport?.entityUuid) {
-    //   return { type: "object", definition: {} };
-    // }
     const r = currentDeploymentUuid?reportSectionsFormSchema(
       (defaultDetailsReport as any)?.definition?.section?.definition[0],
       currentDeploymentUuid,
@@ -422,8 +316,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
         [reportSectionPath.join("_")]: defaultFormValuesObject,
         formikReportDefinitionPath: defaultDetailsReport,
       },
-      // initialReportSectionsFormValue,
-      // [formikEditedInstancePath]
       reportSectionPath
     )
      : { };

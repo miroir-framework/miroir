@@ -690,6 +690,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
           await deleteCascade(
             {
+              application: props.application,
+              applicationDeploymentMap: props.applicationDeploymentMap,
               applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data" as ApplicationSection,
               deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               domainController: domainController,

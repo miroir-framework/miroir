@@ -12,7 +12,10 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  jzodTypeCheck
+  defaultSelfApplicationDeploymentMap,
+  jzodTypeCheck,
+  type ApplicationDeploymentMap,
+  type MiroirModelEnvironment
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
@@ -21,6 +24,7 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
+import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -43,6 +47,8 @@ export interface JsonObjectDeleteFormCoreDialogProps {
   deleteObjectdialogFormIsOpen: boolean,
   entityDefinitionJzodSchema: JzodObject,
   isAttributes?: boolean,
+  currentApplication: Uuid,
+  currentApplicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection,
   currentAppModel: MetaModel,
@@ -96,6 +102,15 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
   );
   const context = useMiroirContextService();
 
+  // const currentModel: MetaModel = useCurrentModelEnvironment(
+  const currentModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    props.currentApplication,
+    props.currentApplicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+  );
+  const currentDeploymentUuid = props.currentDeploymentUuid ?? props.currentApplicationDeploymentMap[props.currentApplication];
+  const currentDeploymentReportsEntitiesDefinitionsMapping =
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentDeploymentUuid] || {};
+
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
@@ -112,11 +127,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
             props.defaultFormValuesObject,
             [], // currentValuePath
             [], // currentTypePath
-            {
-              miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-              currentModel: props.currentAppModel,
-              miroirMetaModel: props.currentMiroirModel,
-            },
+            currentModelEnvironment,
             {}
           )
         : undefined,
@@ -153,29 +164,6 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
         "dialogOuterFormObject",
         dialogOuterFormObject,
       );
-      // event?.stopPropagation();
-      // let newVersion = {...data,...data['ROOT']};
-
-      // const effectiveData = codeEditorChangedValue? JSON.parse(codeEditorValue): data
-      // const effectiveData = source == "param" && data?data:dialogOuterFormObject;
-      // log.info("handleDeleteObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
-
-      // let result: any;
-      // const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
-      // delete newVersion["ROOT"];
-      // log.info(
-      //   // "handleDeleteObjectDialogFormSubmit called for buttonType",
-      //   // buttonType,
-      //   "handleDeleteObjectDialogFormSubmit producing",
-      //   "newVersion",
-      //   newVersion,
-      //   "data",
-      //   data,
-      //   "props",
-      //   props,
-      //   "passed value",
-      // );
-      // result = props.onSubmit(newVersion);
       if (props?.onDeleteFormObject) {
         await props.onDeleteFormObject(dialogOuterFormObject);
       } else {
@@ -188,36 +176,43 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
     [props,JSON.stringify(dialogOuterFormObject, null, 2)]
   );
 
-  // const dialogStyle = useMemo(()=>({
-  //   height: "90vh",
-  //   width: "200vw",
-  //   display: "flex",
-  // }),[])
-
   return (
     <div className="JsonObjectDeleteFormDialog">
       {/* <span> */}
-        {props.showButton ? (
-          <h3>
-            Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)
-          </h3>
-        ) : (
-          <div></div>
-        )}
-      {/* </span> */}
-      {/* {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && props.defaultFormValuesObject ? ( */}
-      {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && dialogOuterFormObject ? (
-        <Dialog onClose={handleDeleteObjectDialogFormClose} open={formIsOpen} fullScreen>
-          <DialogTitle>{props.label} Delete Element</DialogTitle>
-          <span>form: {"form." + props.label}, JsonObjectDeleteFormDialog count {count}</span>
-          <button type="button" name={props.label+".OK"} onClick={handleDeleteObjectDialogFormSubmit}>OK</button>
-          <button type="button" name={props.label+".CANCEL"} onClick={handleDeleteObjectDialogFormClose}>CANCEL</button>
-        </Dialog>
-      // </FormProvider>
-      ) : (
-        <></>
-        // <span>No form to display!</span>
+      {props.showButton && (
+        <h3>
+          Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)
+        </h3>
       )}
+      {props.currentDeploymentUuid &&
+        props.currentApplicationSection &&
+        !props.showButton &&
+        props?.isOpen &&
+        dialogOuterFormObject && (
+          <Dialog
+            onClose={handleDeleteObjectDialogFormClose}
+            open={formIsOpen}
+          >
+            <DialogTitle>{props.label} Delete Element</DialogTitle>
+            <span>
+              form: {"form." + props.label}, JsonObjectDeleteFormDialog count {count}
+            </span>
+            <button
+              type="button"
+              name={props.label + ".OK"}
+              onClick={handleDeleteObjectDialogFormSubmit}
+            >
+              OK
+            </button>
+            <button
+              type="button"
+              name={props.label + ".CANCEL"}
+              onClick={handleDeleteObjectDialogFormClose}
+            >
+              CANCEL
+            </button>
+          </Dialog>
+        )}
     </div>
   );
 }

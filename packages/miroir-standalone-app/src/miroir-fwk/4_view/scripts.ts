@@ -10,10 +10,13 @@ import {
   EntityInstance,
   InstanceAction,
   LoggerInterface,
-  MiroirLoggerFactory
+  MiroirLoggerFactory,
+  type ApplicationDeploymentMap,
+  type Uuid
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
+import type { ExtractorTemplateForObjectListByEntity } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -40,7 +43,9 @@ export const splitEntity = async (p: {
 
 // ################################################################################################
 export const deleteCascade = async (p: {
-  domainController: DomainControllerInterface,
+  domainController: DomainControllerInterface;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  application: Uuid;
   deploymentUuid: string;
   applicationSection: ApplicationSection;
   // state: LocalCacheSliceState;
@@ -74,10 +79,11 @@ export const deleteCascade = async (p: {
   // // delete current list of objects (on a relational database, this would require suspending foreign key constraints for the involved relations)
   const deleteCurrentEntityInstancesAction: InstanceAction = {
     actionType: "deleteInstance",
-    deploymentUuid: p.deploymentUuid,
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
+      application: p.application,
+      deploymentUuid: p.deploymentUuid,
       applicationSection: p.applicationSection,
       objects:
         p.entityInstances.length > 0
@@ -97,17 +103,22 @@ export const deleteCascade = async (p: {
     "deleteInstanceWithCascade deleteCascade deleting current instances action",
     deleteCurrentEntityInstancesAction
   );
-  p.domainController.handleAction(deleteCurrentEntityInstancesAction);
+  p.domainController.handleAction(
+    deleteCurrentEntityInstancesAction,
+    p.applicationDeploymentMap,
+    defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
+  ); 
   log.info("deleteInstanceWithCascade deleteCascade deleting current instances DONE");
-  
+
   if (Object.keys(foreignKeysPointingToEntity).length > 0) {
-    const pageParams: Domain2QueryReturnType<Record<string,any>> = {
-      deploymentUuid: p.deploymentUuid ,
-      applicationSection: p.applicationSection ,
+    const pageParams: Domain2QueryReturnType<Record<string, any>> = {
+      deploymentUuid: p.deploymentUuid,
+      applicationSection: p.applicationSection,
     };
-  
+
     const foreignKeyObjectsFetchQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: p.application,
       deploymentUuid: p.deploymentUuid,
       pageParams,
       queryParams: {},
@@ -115,66 +126,89 @@ export const deleteCascade = async (p: {
       extractorTemplates: Object.fromEntries(
         Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
           entityUuid,
-          {
-            extractorOrCombinerType: "extractorTemplateForObjectListByEntity",
+          { // TODO: FILTER ON FK TO ONLY THE ONES POINTING TO THE DELETED INSTANCES
+            extractorTemplateType: "extractorTemplateForObjectListByEntity",
+            // application: p.application,
             applicationSection: p.applicationSection,
             parentName: "",
             parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
               value: entityUuid,
             },
-          },
+          } as ExtractorTemplateForObjectListByEntity,
         ])
-      ) as any,
+      ),
     };
-  
-    const foreignKeyUnfilteredObjects: Action2ReturnType = 
+
+    const foreignKeyUnfilteredObjects: Action2ReturnType =
       await p.domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
         {
           actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-          deploymentUuid:p.deploymentUuid,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
+            application: p.application,
+            deploymentUuid: p.deploymentUuid,
             applicationSection: p.applicationSection,
-            query: foreignKeyObjectsFetchQuery
-          }
+            query: foreignKeyObjectsFetchQuery,
+          },
         },
-        defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
-      )
-  
+        p.applicationDeploymentMap,
+        defaultMiroirModelEnvironment // TODO: use actual current deployment environment
+      );
+
     if (foreignKeyUnfilteredObjects instanceof Action2Error) {
-      throw new Error("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects with error " + foreignKeyUnfilteredObjects);
+      throw new Error(
+        "deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects with error " +
+          foreignKeyUnfilteredObjects
+      );
     }
-  
+
     // if (foreignKeyUnfilteredObjects.returnedDomainElement.elementType != "entityInstanceCollection") {
     //   throw new Error("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects not an instance collection " + foreignKeyUnfilteredObjects.returnedDomainElement);
     // }
-    log.info("deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects", JSON.stringify(foreignKeyUnfilteredObjects));
-  
-    const foreignKeyObjects: EntityInstance[] = foreignKeyUnfilteredObjects.returnedDomainElement.instances.filter(
-      (entityInstance: any) =>
-        p.entityInstances.find((e) => e.uuid == (entityInstance as any)[foreignKeysPointingToEntity[entityInstance.parentUuid]]) !=
-        undefined
+    log.info(
+      "deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects",
+      foreignKeyUnfilteredObjects
+      // JSON.stringify(foreignKeyUnfilteredObjects)
     );
-  
+
+    const foreignKeyObjects: EntityInstance[] = (
+      Object.values(foreignKeyUnfilteredObjects.returnedDomainElement).flat() as EntityInstance[]
+    ).filter(
+      (entityInstance: any) =>
+        p.entityInstances.find(
+          (e) =>
+            e.uuid ==
+            (entityInstance as any)[foreignKeysPointingToEntity[entityInstance.parentUuid]]
+        ) != undefined
+    );
+
     log.info(
       "deleteInstanceWithCascade deleteCascade found foreign key objects pointing to objects to delete",
-      JSON.stringify(foreignKeyObjects)
+      foreignKeyObjects
+      // JSON.stringify(foreignKeyObjects)
     );
     // recursive calls
     for (const entityInstance of foreignKeyObjects) {
-      const entityDefinitionTmp: [string, EntityDefinition] | undefined = Object.entries(p.entityDefinitions ?? {}).find(
-        (e: [string, EntityDefinition]) => e[1].entityUuid == entityInstance.parentUuid
-      );
+      const entityDefinitionTmp: [string, EntityDefinition] | undefined = Object.entries(
+        p.entityDefinitions ?? {}
+      ).find((e: [string, EntityDefinition]) => e[1].entityUuid == entityInstance.parentUuid);
       if (!p.entityDefinitions || !entityDefinitionTmp) {
-        throw new Error("deleteInstanceWithCascade deleteCascade could not find definition for Entity " + entityInstance.parentUuid + " entity definition: " + JSON.stringify(p.entityDefinitions));
+        throw new Error(
+          "deleteInstanceWithCascade deleteCascade could not find definition for Entity " +
+            entityInstance.parentUuid +
+            " entity definition: " +
+            JSON.stringify(p.entityDefinitions)
+        );
       }
-      
+
       const entityDefinition: EntityDefinition = entityDefinitionTmp[1];
       deleteCascade({
         domainController: p.domainController,
+        application: p.application,
+        applicationDeploymentMap: p.applicationDeploymentMap,
         deploymentUuid: p.deploymentUuid,
         applicationSection: p.applicationSection,
         entityDefinition: entityDefinition,
@@ -183,8 +217,6 @@ export const deleteCascade = async (p: {
       });
     }
   }
-
-
 
   // log.info("deleteInstanceWithCascade deleteCascade foreign key objects to delete", JSON.stringify(foreignKeyObjects));
 };
