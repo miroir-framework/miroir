@@ -1,5 +1,5 @@
 
-import { Dialog, DialogTitle } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useCallback, useMemo } from "react";
 
 
@@ -189,14 +189,19 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
         !props.showButton &&
         props?.isOpen &&
         dialogOuterFormObject && (
-          <Dialog
-            onClose={handleDeleteObjectDialogFormClose}
-            open={formIsOpen}
-          >
-            <DialogTitle>{props.label} Delete Element</DialogTitle>
-            <span>
-              form: {"form." + props.label}, JsonObjectDeleteFormDialog count {count}
-            </span>
+          <Dialog onClose={handleDeleteObjectDialogFormClose} open={formIsOpen}>
+            <DialogTitle>Delete Element: {props.label}</DialogTitle>
+            <DialogContent>
+              <div style={{ marginBottom: 12 }}>
+                <strong>UUID:</strong> <span style={{ wordBreak: 'break-all' }}>{dialogOuterFormObject?.uuid}</span>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <strong>Name:</strong> <span>{dialogOuterFormObject?.name}</span>
+              </div>
+              <div style={{ marginTop: 16, marginBottom: 8 }}>
+                <span style={{ fontWeight: 500, color: '#b71c1c' }}>Are you sure you want to delete this object?</span>
+              </div>
+            </DialogContent>
             <button
               type="button"
               name={props.label + ".OK"}

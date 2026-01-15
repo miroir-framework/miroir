@@ -338,7 +338,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   ]);
 
   return (
-    <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
+    <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
       <DialogTitle>{label} add / edit Element</DialogTitle>
       <div>
         <ThemedOnScreenDebug
@@ -356,9 +356,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
           initiallyUnfolded={false}
         />
       </div>
-      <span>
-        form: {"form." + label}, JsonObjectEditFormDialog count {count}
-      </span>
       <span style={{ paddingTop: 0, paddingBottom: 0 }}>
         <ErrorBoundary
           FallbackComponent={({ error, resetErrorBoundary }) => (
