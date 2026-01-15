@@ -37,9 +37,9 @@ The Library organizes its data into **Entities** - collections of related items 
 - **Publisher** - book publishers
 - **User** - library members
 - **LendingHistoryItem** - records when some Book has been borrowed by some user (incl. out and return dates)
-- **Country** - ancilary concept referenced by Authors and Publishers
+- **Country** - ancillary concept referenced by Authors and Publishers
 
-Each menu item displays instances of one Entity.
+Each menu item enables the display of instances for one Entity.
 
 ### Working with Users
 
@@ -93,9 +93,7 @@ Confirm the Drop:
 
 A success message is displayed, and the user disappears from the Users' list.
 
-**What just happened?** You performed Create, Read, Update and Delete (CRUD) operations for instances of the User Entity without writing any code. Miroir provided these capabilities automatically based on the User Entity's definition.
-
-### (Briefly) Looking Under the Hood
+### Going Further: How Does it Work?
 
 We have introduced Entity and Report concepts, we now recap and introduce some of the other main concepts in Miroir.
 
@@ -114,32 +112,49 @@ When you updated, created or deleted a User:
 
 All of this was configured through JSON declarations, not imperative code. We will now see how.
 
-## Part 2: Working with Reports
+## Part 2: Working with Entities
+
+We will show how to add an `ISBN` optional attribute to the `Book` Entity.
+
+### Going into 'Design' Mode
+
+Click on the pencil icon on the right of the app bar to enable `Design Mode`. The design mode enables altering the application itself, not only the data the application manipulates.
+
+![Enable Design Mode](./miroir-enabling_design_mode.png)
+
+The 'report editor' is now shown on the top of the current view and the 'model' menu items are now shown on the left.
+
+![In Design Mode](./miroir-design_mode.png)
+
+click on the `Library Entity Definitions` menu item.
+
+### Editing the Book Entity Definition
+
+In the lifetime of an application, the precise meaning of an identified concept often fluctuates. For example, we oversaw the necessity of knowing the ISBN of each book, extremely useful to communicate with book sellers.
+
+Adding the ISBN will thus alter the definition of the `Book` entity, without altering the `Book` Entity itself.
+<!-- Entities are versioned, enabling controlled evolution of the data model. -->
+<!-- Example: The User EntityDefinition declares fields like `name`, `email`, `registrationDate`. -->
+
+Click on the `Book` Entity Definition:
+
+![Select Book Entity Definition](./library-entityDefinitions_select_Book.png)
+
+This displays the definition, in which the attributes of the Entity are shown:
+
+![The Book Entity Definition](./library-model-Book_entity_definition.png)
+
+Of particular interest is the `mlSchema` attribute, that describes the structure of a `Book`.
+
+
+<!-- These definitions are stored as JSON, not hardcoded in TypeScript. This is what makes Miroir applications data-driven. -->
+
+
+## Part 3: Working with Reports
 
 We will demonstrate the creation of a new Report, based on the following use case: suppose we want to find the books that have never been borrowed.
 
-The views you've been using are called **Reports** in Miroir. A Report declares:
-- What data to fetch (a **Query**)
-- How to display it (display sections)
-
-
-
-**Key insight**: Reports are declarative. You describe *what* to show, not *how* to fetch or render it. Miroir handles the implementation.
-
-
-## Part 3: Working with Entities
-
-Entities are versioned, enabling controlled evolution of the data model.
-
-## Part 4: Working with Queries and Transformers
-
-## Part 4: Working with Endpoints, Actions and Runners
-
-Example: The User EntityDefinition declares fields like `name`, `email`, `registrationDate`.
-
-These definitions are stored as JSON, not hardcoded in TypeScript. This is what makes Miroir applications data-driven.
-
-### Queries: Fetching Data
+### Working with Queries and Transformers
 
 A **Query** specifies what data to retrieve. Queries combine:
 
@@ -148,6 +163,22 @@ A **Query** specifies what data to retrieve. Queries combine:
 - **Combiners** - merge multiple queries
 
 Queries can execute in-memory (client/server) or in the database (for SQL backends).
+
+**Key insight**: stored Queries can be used in many reports, and run in the client, the server, or the Database (via SQL translation)
+
+The views you've been using are called **Reports** in Miroir. A Report declares:
+- What data to fetch (a **Query**)
+- How to display it (display sections)
+
+
+**Key insight**: Reports are declarative. You describe *what* to show, not *how* to fetch or render it. Miroir handles the implementation.
+
+### other report types
+
+Charts and Graphs, Maps, etc.
+
+## Part 4: Working with Endpoints, Actions and Runners
+
 
 ### Actions: Modifying Data
 
@@ -166,6 +197,8 @@ Actions are declared in **Endpoints** and executed by the framework.
 - Compose into pipelines
 
 The same Transformer can run client-side, server-side, or be converted to SQL - Miroir handles the translation.
+
+## Part 5: Batch Updates
 
 
 ## What's Next?
