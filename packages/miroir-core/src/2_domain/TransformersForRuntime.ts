@@ -438,8 +438,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
       if (
         effectiveSchema.tag &&
         effectiveSchema.tag.value &&
-        effectiveSchema.tag.value.selectorParams &&
-        effectiveSchema.tag.value.selectorParams.targetEntity
+        effectiveSchema.tag.value.foreignKeyParams &&
+        effectiveSchema.tag.value.foreignKeyParams.targetEntity
       ) {
         if (!reduxDeploymentsState) {
           throw new Error(
@@ -467,8 +467,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
           application,
           applicationDeploymentMap,
           deploymentUuid,
-          effectiveSchema.tag.value.selectorParams.targetEntity,
-          effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
+          effectiveSchema.tag.value.foreignKeyParams.targetEntity,
+          effectiveSchema.tag.value.foreignKeyParams.targetEntityOrderInstancesBy
         );
 
         const result = Object.values(foreignKeyObjects)[0]?.uuid;

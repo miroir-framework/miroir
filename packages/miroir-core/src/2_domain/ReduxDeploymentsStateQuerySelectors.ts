@@ -62,7 +62,7 @@ export const runQueryFromReduxDeploymentsState: SyncQueryRunner<
 /**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param deploymentEntityState
- * @param selectorParams
+ * @param foreignKeyParams
  * @returns
  */
 export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRunner<
@@ -72,14 +72,14 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
 > = (
   deploymentEntityState: ReduxDeploymentsState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, ReduxDeploymentsState>,
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, ReduxDeploymentsState>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance> => {
-  const querySelectorParams = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
-  const deploymentUuid = applicationDeploymentMap[selectorParams.extractor.application];
+  const querySelectorParams = foreignKeyParams.extractor.select as ExtractorOrCombinerReturningObject;
+  const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
   const applicationSection: ApplicationSection =
-    selectorParams.extractor.select.applicationSection ??
-    ((selectorParams.extractor.pageParams?.applicationSection ??
+    foreignKeyParams.extractor.select.applicationSection ??
+    ((foreignKeyParams.extractor.pageParams?.applicationSection ??
       "data") as ApplicationSection);
 
   const entityUuidReference = querySelectorParams.parentUuid
@@ -109,10 +109,10 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           referenceName: querySelectorParams.objectReference,
         },
         "value",
-        // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
-        selectorParams.extractor.queryParams,
-        selectorParams.extractor.contextResults
+        foreignKeyParams.extractor.queryParams,
+        foreignKeyParams.extractor.contextResults
       );
 
       if (referenceObject.elementType == "failure") {
@@ -130,13 +130,13 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           "referenceObject",
           referenceObject,
           "queryParams",
-          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+          JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams), undefined, 2),
           "######### contextResults",
-          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
+          JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults), undefined, 2)
         );
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",
-          queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+          queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams),
           queryContext:
             "selectEntityInstanceFromReduxDeploymentsState querySelectorParams is missing querySelectorParams.AttributeOfObjectToCompareToReferenceUuid, querySlectorParams=" +
             JSON.stringify(querySelectorParams),
@@ -161,9 +161,9 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       //   "######### referenceObject",
       //   referenceObject,
       //   "######### queryParams",
-      //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+      //   JSON.stringify(foreignKeyParams.query.queryParams, undefined, 2),
       //   "######### contextResults",
-      //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
+      //   JSON.stringify(foreignKeyParams.query.contextResults, undefined, 2)
       // );
       log.info("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation referenceObject:", referenceObject);
       
@@ -197,11 +197,11 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           "combinerForObjectByRelation",
           querySelectorParams.applyTransformer,
           "value",
-          // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
           modelEnvironment,
-          selectorParams.extractor.queryParams,
+          foreignKeyParams.extractor.queryParams,
           {
-            ...selectorParams.extractor.contextResults,
+            ...foreignKeyParams.extractor.contextResults,
             referenceObject: actualReferenceObject,
             foreignKeyObject: foreignKeyObject
           }
@@ -269,9 +269,9 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       //   "######### context entityUuid",
       //   entityUuidReference,
       //   "######### queryParams",
-      //   JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+      //   JSON.stringify(foreignKeyParams.extractor.queryParams, undefined, 2),
       //   "######### contextResults",
-      //   JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
+      //   JSON.stringify(foreignKeyParams.extractor.contextResults, undefined, 2),
       //   "domainState",
       //   deploymentEntityState
       // );
@@ -279,10 +279,10 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       break;
     }
     default: {
-      // log.error("selectEntityInstanceFromReduxDeploymentsState can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" + selectorParams.extractor.select.extractorOrCombinerType);
+      // log.error("selectEntityInstanceFromReduxDeploymentsState can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" + foreignKeyParams.extractor.select.extractorOrCombinerType);
       throw new Error(
         "selectEntityInstanceFromReduxDeploymentsState can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
-          selectorParams.extractor.select.extractorOrCombinerType
+          foreignKeyParams.extractor.select.extractorOrCombinerType
       );
       break;
     }
@@ -298,21 +298,21 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
 > = (
   deploymentEntityState: ReduxDeploymentsState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
-  const deploymentUuid = applicationDeploymentMap[selectorParams.extractor.application];
-  const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
+  const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
+  const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? "data";
 
-  const entityUuid = selectorParams.extractor.select.parentUuid;
+  const entityUuid = foreignKeyParams.extractor.select.parentUuid;
 
   log.info(
     "selectEntityInstanceUuidIndexFromReduxDeploymentsState called with params",
-    "application:", selectorParams.extractor.application,
+    "application:", foreignKeyParams.extractor.application,
     "applicationDeploymentMap:", applicationDeploymentMap,
     "deploymentUuid:", deploymentUuid,
     "applicationSection:", applicationSection,
     "entityUuid:", entityUuid,
-    selectorParams,
+    foreignKeyParams,
   );
 
   // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState deploymentEntityState", deploymentEntityState);
@@ -361,13 +361,13 @@ export const selectEntityInstanceListFromReduxDeploymentsState: SyncBoxedExtract
 > = (
   deploymentEntityState: ReduxDeploymentsState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>,
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance[]> => {
   const result = selectEntityInstanceUuidIndexFromReduxDeploymentsState(
     deploymentEntityState,
     applicationDeploymentMap,
-    selectorParams,
+    foreignKeyParams,
     modelEnvironment
   );
 
@@ -386,9 +386,9 @@ export const selectEntityInstanceListFromReduxDeploymentsState: SyncBoxedExtract
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromReduxDeploymentsState = (
   deploymentEntityState: ReduxDeploymentsState,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
+  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
 ): JzodObject | undefined => {
-  const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
+  const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
 
   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
     localQuery.deploymentUuid,
@@ -396,28 +396,28 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
     entityEntityDefinition.uuid
   );
 
-  // log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with selectorParams", selectorParams);
+  // log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with foreignKeyParams", foreignKeyParams);
 
   if (
     deploymentEntityState &&
     deploymentEntityState[deploymentEntityStateIndex] &&
     deploymentEntityState[deploymentEntityStateIndex].entities
     // deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
-    // deploymentEntityState[deploymentEntityStateIndex].entities[selectorParams.query.entityUuid]
+    // deploymentEntityState[deploymentEntityStateIndex].entities[foreignKeyParams.query.entityUuid]
   ) {
     const entityDefinition: EntityDefinition | undefined = Object.values(
       deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
-    ).find((e: EntityDefinition) => e.entityUuid == selectorParams.query.entityUuid);
+    ).find((e: EntityDefinition) => e.entityUuid == foreignKeyParams.query.entityUuid);
     if (!entityDefinition) {
       log.warn(
-        "extractEntityJzodSchemaFromReduxDeploymentsState selectorParams",
-        selectorParams,
+        "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+        foreignKeyParams,
         "could not find entity definition for index",
         deploymentEntityStateIndex,
         "in state",
         deploymentEntityState,
         "for entity",
-        selectorParams.query.entityUuid,
+        foreignKeyParams.query.entityUuid,
         "in deployment",
         localQuery.deploymentUuid
       );
@@ -425,19 +425,19 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
     }
     const result: JzodObject = entityDefinition.mlSchema;
 
-    // log.info("extractEntityJzodSchemaFromReduxDeploymentsState selectorParams", selectorParams, "result", result);
+    // log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
 
     return result;
   } else {
     log.warn(
-      "extractEntityJzodSchemaFromReduxDeploymentsState selectorParams",
-      selectorParams,
+      "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+      foreignKeyParams,
       "could not find index",
       deploymentEntityStateIndex,
       "in state",
       deploymentEntityState,
       "for entity",
-      selectorParams.query.entityUuid,
+      foreignKeyParams.query.entityUuid,
       "in deployment",
       localQuery.deploymentUuid
     );

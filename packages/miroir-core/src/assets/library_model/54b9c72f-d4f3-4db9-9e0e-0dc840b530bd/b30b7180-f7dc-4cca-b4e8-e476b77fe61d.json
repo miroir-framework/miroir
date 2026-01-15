@@ -123,7 +123,7 @@
             "display": { "editable": true },
             "defaultLabel": "Country",
             "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
               "targetEntityOrderInstancesBy": "name"
             }

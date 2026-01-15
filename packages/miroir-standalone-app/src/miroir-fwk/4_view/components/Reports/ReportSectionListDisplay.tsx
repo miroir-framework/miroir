@@ -149,7 +149,7 @@ export function defaultFormValues(
       
       const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,attributeJzodSchema)=>{
         let result
-        if (attributeJzodSchema[1].tag?.value?.selectorParams?.targetEntity) {
+        if (attributeJzodSchema[1].tag?.value?.foreignKeyParams?.targetEntity) {
           result = Object.assign({},acc,{[attributeJzodSchema[0]]:noValue})
         } else {
           if (Object.keys(attributeDefaultValue).includes(attributeJzodSchema[0])) {
@@ -454,16 +454,16 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     () => {
       const extractors: ExtractorOrCombinerRecord = Object.fromEntries(
         foreignKeyObjectsAttributeDefinition.map((e) => [
-          e[1].tag?.value?.selectorParams?.targetEntity + "_extractor",
+          e[1].tag?.value?.foreignKeyParams?.targetEntity + "_extractor",
           {
             extractorOrCombinerType: "extractorByEntityReturningObjectList",
             label: "extractorForForeignKey_" + e[0],
             applicationSection: getApplicationSection(
               props.deploymentUuid,
-              e[1].tag?.value?.selectorParams?.targetEntity ?? "undefined"
+              e[1].tag?.value?.foreignKeyParams?.targetEntity ?? "undefined"
             ),
             parentName: "",
-            parentUuid: e[1].tag?.value?.selectorParams?.targetEntity??"ERROR NO TARGET ENTITY FOR ATTRIBUTE " + e[0], // does not happen because of filter in foreignKeyObjectsAttributeDefinition
+            parentUuid: e[1].tag?.value?.foreignKeyParams?.targetEntity??"ERROR NO TARGET ENTITY FOR ATTRIBUTE " + e[0], // does not happen because of filter in foreignKeyObjectsAttributeDefinition
           },
         ])
       );
@@ -472,14 +472,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       } = {
         ...Object.fromEntries(
           foreignKeyObjectsAttributeDefinition.map((e) => [
-            e[1].tag?.value?.selectorParams?.targetEntity,
+            e[1].tag?.value?.foreignKeyParams?.targetEntity,
             {
               transformerType: "indexListBy",
               interpolation: "runtime",
               applyTo: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
-                referenceName: e[1].tag?.value?.selectorParams?.targetEntity + "_extractor",
+                referenceName: e[1].tag?.value?.foreignKeyParams?.targetEntity + "_extractor",
               },
               indexAttribute: "uuid",
             },

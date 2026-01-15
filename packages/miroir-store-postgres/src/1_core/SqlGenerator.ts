@@ -3401,12 +3401,12 @@ export interface QueryParameterSqlWithClause {
 
 // ################################################################################################
 export function sqlStringForQuery(
-  selectorParams: AsyncQueryRunnerParams,
+  foreignKeyParams: AsyncQueryRunnerParams,
   schema: string,
   preparedStatementParameters: any[],
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<SqlStringForExtractorReturnType> {
-  const extractorRawQueries = Object.entries(selectorParams.extractor.extractors ?? {}).map(
+  const extractorRawQueries = Object.entries(foreignKeyParams.extractor.extractors ?? {}).map(
     ([key, value]) => {
       return [key, sqlStringForExtractor(value, schema, modelEnvironment)];
     }
@@ -3416,12 +3416,12 @@ export function sqlStringForQuery(
     "sqlStringForQuery extractorRawQueries",
     JSON.stringify(extractorRawQueries, null, 2),
     "for",
-    selectorParams.extractor.extractors
+    foreignKeyParams.extractor.extractors
   );
 
-  // const combinerRawQueries: [string, Domain2QueryReturnType<SqlStringForCombinerReturnType>][] = Object.entries(selectorParams.extractor.combiners ?? {}).map(
+  // const combinerRawQueries: [string, Domain2QueryReturnType<SqlStringForCombinerReturnType>][] = Object.entries(foreignKeyParams.extractor.combiners ?? {}).map(
   const combinerRawQueries: [string, SqlStringForCombinerReturnType][] = Object.entries(
-    selectorParams.extractor.combiners ?? {}
+    foreignKeyParams.extractor.combiners ?? {}
   ).map(([key, value]) => {
     return [key, sqlStringForCombiner(value, schema)];
   });
@@ -3429,7 +3429,7 @@ export function sqlStringForQuery(
 
   let newPreparedStatementParameters: any[]= [...preparedStatementParameters];
   const queryParamsWithClauses: QueryParameterSqlWithClause[] = Object.entries(
-    selectorParams.extractor.queryParams ?? {}
+    foreignKeyParams.extractor.queryParams ?? {}
   ).map(([key, value]) => {
     const convertedParam = sqlStringForRuntimeTransformer(
       {
@@ -3439,7 +3439,7 @@ export function sqlStringForQuery(
       },
       newPreparedStatementParameters.length,
       0, //indentLevel,
-      selectorParams.extractor.queryParams,
+      foreignKeyParams.extractor.queryParams,
       {}
     );
     if (convertedParam instanceof Domain2ElementFailed) {
@@ -3502,13 +3502,13 @@ export function sqlStringForQuery(
     // JSON.stringify(newPreparedStatementParameters, null, 2)
   );
   const transformerRawQueries: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>][] = Object.entries(
-    selectorParams.extractor.runtimeTransformers ?? {}
+    foreignKeyParams.extractor.runtimeTransformers ?? {}
   ).map(([key, value]) => {
     const transformerRawQuery = sqlStringForRuntimeTransformer(
       value as TransformerForBuildPlusRuntime,
       newPreparedStatementParameters.length,
       1, // indentLevel,
-      selectorParams.extractor.queryParams,
+      foreignKeyParams.extractor.queryParams,
       paramsAndextractorAndCombinerContextEntries // definedContextEntries
     );
     if (!(transformerRawQuery instanceof Domain2ElementFailed) && transformerRawQuery.preparedStatementParameters) {
@@ -3536,17 +3536,17 @@ export function sqlStringForQuery(
   const transformerRawQueriesObject: Record<string, SqlStringForTransformerElementValue> =
     Object.fromEntries(cleanTransformerRawQueries);
 
-  const lastEntryIndex = selectorParams.extractor.runtimeTransformers
+  const lastEntryIndex = foreignKeyParams.extractor.runtimeTransformers
     ? transformerRawQueries.length - 1
-    : selectorParams.extractor.combiners
+    : foreignKeyParams.extractor.combiners
     ? combinerRawQueries.length - 1
     : extractorRawQueries.length - 1;
 
   const endResultName =
     Object.keys(
-      selectorParams.extractor.runtimeTransformers ??
-        selectorParams.extractor.combiners ??
-        selectorParams.extractor.extractors ??
+      foreignKeyParams.extractor.runtimeTransformers ??
+        foreignKeyParams.extractor.combiners ??
+        foreignKeyParams.extractor.extractors ??
         {}
     )[lastEntryIndex] ?? "endResultNotFound";
 

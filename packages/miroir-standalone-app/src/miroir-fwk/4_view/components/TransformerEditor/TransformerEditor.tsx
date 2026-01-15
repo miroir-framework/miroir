@@ -617,7 +617,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                               value: {
                                 defaultLabel: "Application",
                                 editable: true,
-                                selectorParams: {
+                                foreignKeyParams: {
                                   targetApplicationUuid: adminSelfApplication.uuid,
                                   targetEntity: entityApplicationForAdmin.uuid,
                                   targetEntityOrderInstancesBy: "name",
@@ -633,7 +633,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                             type: "uuid",
                             tag: {
                               value: {
-                                selectorParams: {
+                                foreignKeyParams: {
                                   targetApplicationUuid: (
                                     formikContext.values
                                       .transformerEditor_transformer_selector as any

@@ -408,7 +408,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           jzodTypeCheckResult &&
           jzodTypeCheckResult.status == "ok" &&
           jzodTypeCheckResult.resolvedSchema.type == "uuid" &&
-          jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity
+          jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application,
@@ -417,15 +417,15 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               queryParams: {},
               contextResults: {},
               extractors: {
-                [jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity]: {
+                [jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
                     deploymentUuid,
-                    jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity
+                    jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity
                   ),
                   parentName: "",
                   parentUuid:
-                    jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity,
+                    jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity,
                 },
               },
             }

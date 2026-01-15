@@ -123,7 +123,7 @@
             "display": { "editable": true },
             "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "targetEntityOrderInstancesBy": "name"
             }
@@ -265,7 +265,7 @@
                         "display": { "editable": false },
                         "defaultLabel": "Entity Uuid",
                         "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "selectorParams": {
+                        "foreignKeyParams": {
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
                         }
@@ -585,7 +585,7 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Runner",
-                            "selectorParams": {
+                            "foreignKeyParams": {
                               "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
                               "targetEntityOrderInstancesBy": "name"
                             }
@@ -795,7 +795,7 @@
                   "value": {
                     "defaultLabel": "Stored Query",
                     "display": { "editable": true },
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
                       "targetEntityOrderInstancesBy": "name"
                     }

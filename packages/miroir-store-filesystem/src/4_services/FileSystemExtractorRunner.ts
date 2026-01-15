@@ -32,7 +32,8 @@ import {
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  transformer_InnerReference_resolve
+  transformer_InnerReference_resolve,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -47,15 +48,19 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   private selectorMap: AsyncBoxedExtractorOrQueryRunnerMap;
 
   // ################################################################################################
-  constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
+  constructor(
+    private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface
+  ) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstanceList: this.extractEntityInstanceList,
       extractEntityInstance: this.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractor:
+        asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor:
+        asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
       extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
@@ -65,7 +70,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   }
 
   // ################################################################################################
-  async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<Action2ReturnType> {
+  async handleBoxedExtractorAction(
+    runBoxedExtractorAction: RunBoxedExtractorAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleBoxedExtractorAction",
@@ -73,41 +81,53 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       JSON.stringify(runBoxedExtractorAction, null, 2)
     );
     let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-    queryResult = await this.selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-      {
-        extractor: runBoxedExtractorAction.payload.query,
-        extractorRunnerMap: this.selectorMap,
-        applicationDeploymentMap: runBoxedExtractorAction.payload.query.applicationDeploymentMap,
-      }, defaultMiroirModelEnvironment
-    );
+    queryResult =
+      await this.selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
+        {
+          extractor: runBoxedExtractorAction.payload.query,
+          extractorRunnerMap: this.selectorMap,
+        },
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment
+      );
     if (queryResult instanceof Domain2ElementFailed) {
-      return Promise.resolve(new Action2Error(
-        "FailedToGetInstances",
-        JSON.stringify(queryResult)
-      ));
+      return Promise.resolve(new Action2Error("FailedToGetInstances", JSON.stringify(queryResult)));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", runBoxedExtractorAction, "result", JSON.stringify(result, null, 2));
+      log.info(
+        this.logHeader,
+        "handleBoxedExtractorAction",
+        "runBoxedExtractorAction",
+        runBoxedExtractorAction,
+        "result",
+        JSON.stringify(result, null, 2)
+      );
       return result;
     }
   }
 
   // ################################################################################################
-  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<Action2ReturnType> {
-    log.info(this.logHeader, "handleBoxedQueryAction", "runBoxedQueryAction", JSON.stringify(runBoxedQueryAction, null, 2));
+  async handleBoxedQueryAction(
+    runBoxedQueryAction: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    log.info(
+      this.logHeader,
+      "handleBoxedQueryAction",
+      "runBoxedQueryAction",
+      JSON.stringify(runBoxedQueryAction, null, 2)
+    );
     let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.runQuery(
       {
         extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.selectorMap,
-        applicationDeploymentMap: runBoxedQueryAction.payload.query.applicationDeploymentMap,
-      }, defaultMiroirModelEnvironment
+      },
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment
     );
     if (queryResult instanceof Domain2ElementFailed) {
-      return Promise.resolve(new Action2Error(
-        "FailedToGetInstances",
-        JSON.stringify(queryResult)
-      ));
+      return Promise.resolve(new Action2Error("FailedToGetInstances", JSON.stringify(queryResult)));
     } else {
       const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
       log.info(
@@ -127,14 +147,14 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     BoxedExtractorOrCombinerReturningObject,
     Domain2QueryReturnType<EntityInstance>
   > = async (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
+    foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
   ): Promise<Domain2QueryReturnType<EntityInstance>> => {
-    const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
-    const deploymentUuid = selectorParams.extractor.deploymentUuid;
+    const querySelectorParams: ExtractorOrCombinerReturningObject = foreignKeyParams.extractor
+      .select as ExtractorOrCombinerReturningObject;
+    const deploymentUuid = foreignKeyParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
-      selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.applicationSection ??
-        "data") as ApplicationSection);
+      foreignKeyParams.extractor.select.applicationSection ??
+      ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
     const entityUuidReference: string = querySelectorParams.parentUuid;
 
@@ -154,21 +174,20 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           { transformerType: "getFromContext", referenceName: querySelectorParams.objectReference },
           "value",
           defaultMiroirModelEnvironment,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          foreignKeyParams.extractor.queryParams,
+          foreignKeyParams.extractor.contextResults
         );
-  
+
         if (
-          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-          ||
+          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
           referenceObject instanceof Domain2ElementFailed
         ) {
           return {
             elementType: "failure",
             queryFailure: "IncorrectParameters",
             failureOrigin: ["FileSystemExtractorRunner", "combinerForObjectByRelation"],
-            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-            queryContext: JSON.stringify(selectorParams.extractor.contextResults),
+            queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams),
+            queryContext: JSON.stringify(foreignKeyParams.extractor.contextResults),
           };
         }
 
@@ -177,7 +196,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
         );
 
-        if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
+        if (
+          result instanceof Action2Error ||
+          result.returnedDomainElement instanceof Domain2ElementFailed
+        ) {
           return {
             elementType: "failure",
             queryFailure: "InstanceNotFound",
@@ -194,9 +216,9 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         //   "######### referenceObject",
         //   referenceObject,
         //   "######### queryParams",
-        //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+        //   JSON.stringify(foreignKeyParams.query.queryParams, undefined, 2),
         //   "######### contextResults",
-        //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
+        //   JSON.stringify(foreignKeyParams.query.contextResults, undefined, 2)
         // );
         return result.returnedDomainElement;
         break;
@@ -205,10 +227,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         const instanceDomainElement = querySelectorParams.instanceUuid;
         // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
 
-        log.info(
-          "extractEntityInstance found instanceUuid",
-          JSON.stringify(instanceDomainElement)
-        );
+        log.info("extractEntityInstance found instanceUuid", JSON.stringify(instanceDomainElement));
 
         log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
         const result = await this.persistenceStoreController.getInstance(
@@ -216,7 +235,10 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           instanceDomainElement
         );
 
-        if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
+        if (
+          result instanceof Action2Error ||
+          result.returnedDomainElement instanceof Domain2ElementFailed
+        ) {
           return {
             elementType: "failure",
             queryFailure: "InstanceNotFound",
@@ -234,9 +256,9 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           "######### context entityUuid",
           entityUuidReference,
           "######### queryParams",
-          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+          JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams), undefined, 2),
           "######### contextResults",
-          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
+          JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults), undefined, 2)
         );
         return result.returnedDomainElement;
         break;
@@ -244,7 +266,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       default: {
         throw new Error(
           "extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
-            selectorParams.extractor.select.extractorOrCombinerType
+            foreignKeyParams.extractor.select.extractorOrCombinerType
         );
         break;
       }
@@ -256,10 +278,12 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     BoxedExtractorOrCombinerReturningObjectList,
     Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
-    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     return this.extractEntityInstanceList(
       extractorRunnerParams,
+      applicationDeploymentMap,
       defaultMiroirModelEnvironment
     ).then((result) => {
       if (result instanceof Domain2ElementFailed) {
@@ -268,7 +292,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [i.uuid, i]));
       return entityInstanceUuidIndex;
     });
-  }
+  };
 
   // ##############################################################################################
   public extractEntityInstanceList: AsyncBoxedExtractorRunner<
@@ -279,11 +303,11 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
-    const entityUuid = extractorRunnerParams.extractor.select.parentUuid
-  
-    // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
+
+    // log.info("extractEntityInstanceUuidIndex params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
-  
+
     if (!deploymentUuid || !applicationSection || !entityUuid) {
       return {
         // new object
@@ -293,11 +317,14 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       };
       // resolving by fetchDataReference, fetchDataReferenceAttribute
     }
-  
+
     const entityInstanceCollection: Action2EntityInstanceCollectionOrFailure =
       await this.persistenceStoreController.getInstances(/*applicationSection, */ entityUuid);
-  
-    if (entityInstanceCollection instanceof Action2Error || entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
+
+    if (
+      entityInstanceCollection instanceof Action2Error ||
+      entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed
+    ) {
       // return data;
       return {
         elementType: "failure",

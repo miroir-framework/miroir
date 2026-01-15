@@ -61,7 +61,7 @@
           "value": {
             "display": { "editable": true },
             "defaultLabel": "User",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
               "targetEntityOrderInstancesBy": "name"
             },
@@ -79,7 +79,7 @@
           "value": {
             "display": { "editable": true },
             "defaultLabel": "Book",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               "targetEntityOrderInstancesBy": "name"
             },

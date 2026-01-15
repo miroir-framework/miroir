@@ -136,13 +136,19 @@
                   "type": "boolean",
                   "optional": true
                 },
-                "selectorParams": {
+                "foreignKeyParams": {
                   "type": "object",
                   "optional": true,
                   "definition": {
                     "targetApplicationUuid": {
                       "type": "uuid",
-                      "optional": true
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Foreign Key Application",
+                          "description": "The application where the Foreign Key entity is located."
+                        }
+                      }
                     },
                     "targetDeploymentUuid": {
                       "type": "uuid",
@@ -151,29 +157,39 @@
                     "targetEntityApplicationSection": {
                       "type": "enum",
                       "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Foreign Key Entity Application Section",
+                          "description": "The application section where the Foreign Key entity is located."
+                        }
+                      },
                       "definition": ["model", "data", "metaModel"]
                     },
                     "targetEntity": {
-                      "type": "uuid"
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Foreign Key Entity",
+                          "description": "The entity of the Foreign Key.",
+                          "foreignKeyParams": {
+                            "targetEntityApplicationSection": "model",
+                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
                     },
                     "targetEntityOrderInstancesBy": {
                       "type": "string",
-                      "optional": true
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Order Foreign Key Instances by attribute (ascending)",
+                          "description": "The attribute name to order instances by."
+                        }
+                      }
                     }
                   }
-                },
-                "targetEntity": {
-                  "type": "string",
-                  "optional": true
-                },
-                "targetEntityOrderInstancesBy": {
-                  "type": "string",
-                  "optional": true
-                },
-                "targetEntityApplicationSection": {
-                  "type": "enum",
-                  "optional": true,
-                  "definition": ["model", "data", "metaModel"]
                 },
                 "canBeTemplate": {
                   "type": "boolean",
@@ -444,13 +460,19 @@
                     "type": "boolean",
                     "optional": true
                   },
-                  "selectorParams": {
+                  "foreignKeyParams": {
                     "type": "object",
                     "optional": true,
                     "definition": {
                       "targetApplicationUuid": {
                         "type": "uuid",
-                        "optional": true
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Foreign Key Application",
+                            "description": "The application where the Foreign Key entity is located."
+                          }
+                        }
                       },
                       "targetDeploymentUuid": {
                         "type": "uuid",
@@ -459,29 +481,39 @@
                       "targetEntityApplicationSection": {
                         "type": "enum",
                         "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Foreign Key Entity Application Section",
+                            "description": "The application section where the Foreign Key entity is located."
+                          }
+                        },
                         "definition": ["model", "data", "metaModel"]
                       },
                       "targetEntity": {
-                        "type": "uuid"
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Foreign Key Entity",
+                            "description": "The entity of the Foreign Key.",
+                            "foreignKeyParams": {
+                              "targetEntityApplicationSection": "model",
+                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                              "targetEntityOrderInstancesBy": "name"
+                            }
+                          }
+                        }
                       },
                       "targetEntityOrderInstancesBy": {
                         "type": "string",
-                        "optional": true
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Order Foreign Key Instances by attribute (ascending)",
+                            "description": "The attribute name to order instances by."
+                          }
+                        }
                       }
                     }
-                  },
-                  "targetEntity": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "targetEntityOrderInstancesBy": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "targetEntityApplicationSection": {
-                    "type": "enum",
-                    "optional": true,
-                    "definition": ["model", "data", "metaModel"]
                   },
                   "canBeTemplate": {
                     "type": "boolean",

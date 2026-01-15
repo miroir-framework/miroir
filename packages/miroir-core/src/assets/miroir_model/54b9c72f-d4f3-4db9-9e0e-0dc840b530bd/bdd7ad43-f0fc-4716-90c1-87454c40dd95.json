@@ -25,7 +25,6 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 1,
             "defaultLabel": "Uuid",
             "display": { "editable": false }
           }
@@ -35,7 +34,6 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 2,
             "defaultLabel": "Entity Name",
             "display": { "editable": false }
           }
@@ -45,7 +43,6 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 3,
             "defaultLabel": "Entity Uuid",
             "display": { "editable": false }
           }
@@ -56,7 +53,6 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 4,
             "defaultLabel": "Entity Definition Version Uuid",
             "display": { "editable": false }
           }
@@ -92,7 +88,6 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 7,
             "defaultLabel": "Concept Level",
             "display": { "editable": false }
           }
@@ -103,9 +98,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 8,
-            "defaultLabel": "Description",
-            "display": { "editable": true }
+            "defaultLabel": "Description"
           }
         }
       },
@@ -114,10 +107,9 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 9,
             "defaultLabel": "Default Report used to display instances of this Entity",
             "display": { "editable": false },
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
               "targetEntityApplicationSection": "model",
               "targetEntityOrderInstancesBy": "name"
@@ -133,7 +125,8 @@
         },
         "tag": {
           "value": {
-            "id": 10,
+            "defaultLabel": "Attributes shown in list",
+            "description": "List of attribute names to be shown when displaying lists of instances of this entity.",
             "display": { "editable": true }
           }
         }
@@ -151,9 +144,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 13,
-            "defaultLabel": "Display Options",
-            "display": { "editable": true }
+            "defaultLabel": "Display Options"
           }
         },
         "definition": {
@@ -162,8 +153,7 @@
             "optional": true,
             "tag": {
               "value": {
-                "defaultLabel": "Unfold Sub Levels",
-                "display": { "editable": true }
+                "defaultLabel": "Unfold Sub Levels"
               }
             },
             "definition": {
@@ -177,10 +167,8 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 11,
-            "defaultLabel": "Cache Options",
-            "display": { "editable": true }
-          }
+            "defaultLabel": "Cache Options"
+          } 
         },
         "definition": {
           "cacheAllInstancesOnRefresh": {
@@ -190,7 +178,6 @@
               "value": {
                 "defaultLabel": "Enable Systematic Caching of All Instances",
                 "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
-                "display": { "editable": true },
                 "initializeTo": {
                   "initializeToType": "value", "value": true
                 }
@@ -207,9 +194,7 @@
         },
         "tag": {
           "value": {
-            "id": 12,
-            "defaultLabel": "Jzod Schema",
-            "display": { "editable": true }
+            "defaultLabel": "ML Schema"
           }
         }
       }

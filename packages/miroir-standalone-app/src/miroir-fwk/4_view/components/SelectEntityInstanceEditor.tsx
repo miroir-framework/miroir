@@ -86,7 +86,7 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams<TableCompon
 //     const context = useMiroirContextService();
 //     const deploymentUuid = context.deploymentUuid;
 
-//     const selectorParams:LocalCacheExtractor = useMemo(
+//     const foreignKeyParams:LocalCacheExtractor = useMemo(
 //       () => ({
 //         queryType: "localCacheEntityInstancesExtractor",
 //         definition: {
@@ -98,7 +98,7 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams<TableCompon
 //       [deploymentUuid, (props as any).entityUuid]
 //     );
 //     const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
-//       selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
+//       selectInstanceArrayForDeploymentSectionEntity(state, foreignKeyParams)
 //     ) as EntityInstanceWithName[];
       
 //     const [ready, setReady] = useState(false);

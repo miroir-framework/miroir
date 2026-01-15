@@ -63,19 +63,19 @@ const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
 /**
  * returns an Entity Instance List, from a ListQuery
  * @param deploymentEntityState 
- * @param selectorParams 
+ * @param foreignKeyParams 
  * @returns 
  */
 export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 = (
-  selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+  foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
   const result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> = (
-    selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap
+    foreignKeyParams?.extractorRunnerMap ?? emptyAsyncSelectorMap
   )
-    .extractEntityInstanceUuidIndex(selectorParams, applicationDeploymentMap, modelEnvironment)
+    .extractEntityInstanceUuidIndex(foreignKeyParams, applicationDeploymentMap, modelEnvironment)
     .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex>) => {
       log.info(
         "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
@@ -84,7 +84,7 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 
       return applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory(
         selectedInstancesUuidIndex,
-        selectorParams.extractor
+        foreignKeyParams.extractor
       );
     });
   ;
@@ -95,19 +95,19 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
 /**
  * returns an Entity Instance List, from a ListQuery
  * @param deploymentEntityState 
- * @param selectorParams 
+ * @param foreignKeyParams 
  * @returns 
  */
 export const asyncExtractEntityInstanceListWithObjectListExtractor
 = (
-  selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+  foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
   const result: Promise<Domain2QueryReturnType<EntityInstance[]>> = (
-    selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap
+    foreignKeyParams?.extractorRunnerMap ?? emptyAsyncSelectorMap
   )
-    .extractEntityInstanceList(selectorParams, applicationDeploymentMap, modelEnvironment)
+    .extractEntityInstanceList(foreignKeyParams, applicationDeploymentMap, modelEnvironment)
     .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]>) => {
       log.info(
         "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
@@ -116,7 +116,7 @@ export const asyncExtractEntityInstanceListWithObjectListExtractor
 
       return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
         selectedInstancesUuidIndex,
-        selectorParams.extractor
+        foreignKeyParams.extractor
       );
     });
   ;
@@ -413,34 +413,34 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
 
 // ################################################################################################
 export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /**: SyncBoxedExtractorTemplateRunner */= (
-  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<BoxedQueryTemplateWithExtractorCombinerTransformer, ReduxDeploymentsState>,
-  selectorParams: AsyncBoxedExtractorRunnerParams<
+  // foreignKeyParams: SyncExtractorOrQueryTemplateRunnerParams<BoxedQueryTemplateWithExtractorCombinerTransformer, ReduxDeploymentsState>,
+  foreignKeyParams: AsyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList
   >,
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<DomainElementSuccess>> => {
-  // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap = selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+  // log.info("########## extractExtractor begin, query", foreignKeyParams);
+  const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap = foreignKeyParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   const result = asyncInnerSelectElementFromQuery(
-    selectorParams.extractor.contextResults,
-    selectorParams.extractor.pageParams,
+    foreignKeyParams.extractor.contextResults,
+    foreignKeyParams.extractor.pageParams,
     modelEnvironment,
-    selectorParams.extractor.queryParams,
+    foreignKeyParams.extractor.queryParams,
     localSelectorMap as any,
-    selectorParams.extractor.application,
+    foreignKeyParams.extractor.application,
     applicationDeploymentMap,
-    selectorParams.extractor.deploymentUuid,
+    foreignKeyParams.extractor.deploymentUuid,
     {},
-    selectorParams.extractor.select
+    foreignKeyParams.extractor.select
   );
   return result;
 
   // log.info(
   //   "extractExtractor",
   //   "query",
-  //   selectorParams,
+  //   foreignKeyParams,
   //   "domainState",
   //   deploymentEntityState,
   //   "newFetchedData",
@@ -458,42 +458,42 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
  * 
  * 
  * @param state: StateType
- * @param selectorParams 
+ * @param foreignKeyParams 
  * @returns 
  */
 
 export const asyncRunQuery = async (
-  selectorParams: AsyncQueryRunnerParams,
+  foreignKeyParams: AsyncQueryRunnerParams,
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<any>> => {
 
-  // log.info("########## asyncRunQuery begin, query", selectorParams);
+  // log.info("########## asyncRunQuery begin, query", foreignKeyParams);
 
 
   const context: Record<string, any> = {
-    ...selectorParams.extractor.contextResults,
+    ...foreignKeyParams.extractor.contextResults,
   };
   // log.info("########## DomainSelector asyncRunQuery will use context", context);
   const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap =
-    selectorParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+    foreignKeyParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   // Sequentially execute each extractor and update the context
-  for (const [key, extractor] of Object.entries(selectorParams.extractor.extractors ?? {})) {
+  for (const [key, extractor] of Object.entries(foreignKeyParams.extractor.extractors ?? {})) {
     const result = await asyncInnerSelectElementFromQuery(
       context,
-      selectorParams.extractor.pageParams,
+      foreignKeyParams.extractor.pageParams,
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        ...foreignKeyParams.extractor.pageParams,
+        ...foreignKeyParams.extractor.queryParams,
       },
       localSelectorMap as any,
-      selectorParams.extractor.application,
+      foreignKeyParams.extractor.application,
       applicationDeploymentMap,
-      selectorParams.extractor.deploymentUuid,
-      selectorParams.extractor.extractors ?? {} as any,
+      foreignKeyParams.extractor.deploymentUuid,
+      foreignKeyParams.extractor.extractors ?? {} as any,
       extractor
     );
     log.info("asyncRunQuery for extractor", key, "result", JSON.stringify(result, null, 2));
@@ -509,21 +509,21 @@ export const asyncRunQuery = async (
       errorStack: extractorFailure as any,
     });
   }
-  for (const [key, combiner] of Object.entries(selectorParams.extractor.combiners ?? {})) {
+  for (const [key, combiner] of Object.entries(foreignKeyParams.extractor.combiners ?? {})) {
     const result = await asyncInnerSelectElementFromQuery(
       context,
-      selectorParams.extractor.pageParams,
+      foreignKeyParams.extractor.pageParams,
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        ...foreignKeyParams.extractor.pageParams,
+        ...foreignKeyParams.extractor.queryParams,
       },
       localSelectorMap as any,
-      selectorParams.extractor.application,
+      foreignKeyParams.extractor.application,
       applicationDeploymentMap,
-      selectorParams.extractor.deploymentUuid,
-      selectorParams.extractor.extractors ?? ({} as any),
+      foreignKeyParams.extractor.deploymentUuid,
+      foreignKeyParams.extractor.extractors ?? ({} as any),
       combiner
     );
     log.info("asyncRunQuery for combiner", key, "result", JSON.stringify(result, null, 2));
@@ -531,17 +531,17 @@ export const asyncRunQuery = async (
   }
 
 
-  for (const transformer of Object.entries(selectorParams.extractor.runtimeTransformers ?? {})) {
+  for (const transformer of Object.entries(foreignKeyParams.extractor.runtimeTransformers ?? {})) {
     const result = await localSelectorMap
       .applyExtractorTransformer(
         transformer[1],
         modelEnvironment,
         {
-          ...selectorParams.extractor.pageParams,
-          ...selectorParams.extractor.queryParams,
+          ...foreignKeyParams.extractor.pageParams,
+          ...foreignKeyParams.extractor.queryParams,
         },
         context,
-        selectorParams.extractor.extractors ?? ({} as any)
+        foreignKeyParams.extractor.extractors ?? ({} as any)
       )
       .then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
         return [transformer[0], result]; // TODO: check for failure!
@@ -559,7 +559,7 @@ export const asyncRunQuery = async (
   // log.info(
   //   "runQueryTemplateWithExtractorCombinerTransformer",
   //   "query",
-  //   selectorParams,
+  //   foreignKeyParams,
   //   "domainState",
   //   deploymentEntityState,
   //   "newFetchedData",

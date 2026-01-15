@@ -114,7 +114,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
 
   // ################################################################################################
   private async extractEntityInstanceByCombinerForObjectByRelation(
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
     modelEnvironment: MiroirModelEnvironment,
     querySelectorParams: CombinerForObjectByRelation,
     deploymentUuid: string,
@@ -133,10 +133,10 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         referenceName: querySelectorParams.objectReference,
       },
       "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
-      // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+      // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
       modelEnvironment,
-      selectorParams.extractor.queryParams,
-      selectorParams.extractor.contextResults
+      foreignKeyParams.extractor.queryParams,
+      foreignKeyParams.extractor.contextResults
     );
     log.info(
       "extractEntityInstance combinerForObjectByRelation found referenceObject",
@@ -145,7 +145,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
       return new Domain2ElementFailed({
         queryFailure: "IncorrectParameters",
-        queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+        queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams),
         queryContext:
           "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" +
           JSON.stringify(querySelectorParams),
@@ -197,9 +197,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       "######### referenceObject",
       referenceObject,
       "######### queryParams",
-      JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams), undefined, 2),
       "######### contextResults",
-      JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults), undefined, 2)
     );
     if (querySelectorParams.applyTransformer) {
       const transformedResult = transformer_extended_apply(
@@ -208,10 +208,10 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
         querySelectorParams.applyTransformer,
         "value",
-        // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
-        selectorParams.extractor.queryParams,
-        {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result.returnedDomainElement}
+        foreignKeyParams.extractor.queryParams,
+        {...foreignKeyParams.extractor.contextResults, referenceObject, foreignKeyObject: result.returnedDomainElement}
       );
       log.info(
         "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
@@ -226,7 +226,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
 
   // ################################################################################################
   private async extractEntityInstanceByDirectReference(
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
     modelEnvironment: MiroirModelEnvironment,
     querySelectorParams: ExtractorForObjectByDirectReference,
     deploymentUuid: string,
@@ -281,9 +281,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       "######### context entityUuid",
       entityUuidReference,
       "######### queryParams",
-      JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams), undefined, 2),
       "######### contextResults",
-      JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults), undefined, 2)
     );
     const referenceObject = getInstanceResult.returnedDomainElement;
     if (!querySelectorParams.applyTransformer) {
@@ -298,21 +298,21 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       for (const attribute of Object.entries(currentEntityDefnition?.mlSchema.definition??{})) {
         if (attribute[0] === "uuid") continue;
         if (attribute[1]?.type !== "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
-        if (!attribute[1].tag?.value?.targetEntity) {
+        if (!attribute[1].tag?.value?.foreignKeyParams?.targetEntity) {
           return new Domain2ElementFailed({
             queryFailure: "IncorrectParameters",
             queryContext: `extractRunnerInMemory extractEntityInstance transformer foreignKeysForTransformer attribute ${attribute[0]} does not have targetEntity tag defined in the model for entity ${entityUuidReference}`,
-            queryParameters: JSON.stringify(selectorParams.extractor),
+            queryParameters: JSON.stringify(foreignKeyParams.extractor),
           });
         }
         const attributeName = attribute[0];
         const attributeValue = (referenceObject as any)[attributeName];
         const foreignKeyObjectResult = await this.persistenceStoreController.getInstance(
-          attribute[1].tag?.value?.targetEntity,
+          attribute[1].tag?.value?.foreignKeyParams?.targetEntity,
           attributeValue
         );
         if (foreignKeyObjectResult instanceof Action2Error) {
-          const failureMessage = `extractRunnerInMemory could not find foreignKeyObject of Entity ${attribute[1].tag?.value?.targetEntity} with uuid=${attributeValue} for attribute ${attributeName} of entity ${entityUuidReference}`;
+          const failureMessage = `extractRunnerInMemory could not find foreignKeyObject of Entity ${attribute[1].tag?.value?.foreignKeyParams?.targetEntity} with uuid=${attributeValue} for attribute ${attributeName} of entity ${entityUuidReference}`;
           return new Domain2ElementFailed({
             queryFailure: "InstanceNotFound",
             deploymentUuid,
@@ -335,10 +335,10 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
       querySelectorParams.applyTransformer,
       "value",
-      // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+      // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
       modelEnvironment,
-      selectorParams.extractor.queryParams,
-      {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObjects}
+      foreignKeyParams.extractor.queryParams,
+      {...foreignKeyParams.extractor.contextResults, referenceObject, foreignKeyObjects}
     );
     if (transformedResult instanceof TransformerFailure) {
      return new Domain2ElementFailed({
@@ -347,7 +347,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
        errorStack: transformedResult.errorStack,
        innerError: transformedResult as any,
        queryContext: `extractRunnerInMemory extractEntityInstance transformer failure for entity ${entityUuidReference} with instance uuid=${instanceUuid}`,
-       queryParameters: JSON.stringify(selectorParams.extractor),
+       queryParameters: JSON.stringify(foreignKeyParams.extractor),
        deploymentUuid,
        applicationSection,
        entityUuid: entityUuidReference,
@@ -362,15 +362,15 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     BoxedExtractorOrCombinerReturningObject,
     Domain2QueryReturnType<EntityInstance>
   > = async (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstance>> => {
-    const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select;
-    const deploymentUuid = applicationDeploymentMap[selectorParams.extractor.application];
+    const querySelectorParams: ExtractorOrCombinerReturningObject = foreignKeyParams.extractor.select;
+    const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
     const applicationSection: ApplicationSection =
-      selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
+      foreignKeyParams.extractor.select.applicationSection ??
+      ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
     const entityUuidReference = querySelectorParams.parentUuid; // TODO: we assume this ia a constant here
 
@@ -385,7 +385,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     switch (querySelectorParams?.extractorOrCombinerType) {
       case "combinerForObjectByRelation": {
         return this.extractEntityInstanceByCombinerForObjectByRelation(
-          selectorParams,
+          foreignKeyParams,
           modelEnvironment,
           querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "combinerForObjectByRelation" },
           deploymentUuid,
@@ -395,7 +395,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       }
       case "extractorForObjectByDirectReference": {
         return this.extractEntityInstanceByDirectReference(
-          selectorParams,
+          foreignKeyParams,
           modelEnvironment,
           querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "extractorForObjectByDirectReference" },
           deploymentUuid,
@@ -406,7 +406,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       default: {
         throw new Error(
           "extractRunnerInMemory extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
-            selectorParams.extractor.select.extractorOrCombinerType
+            foreignKeyParams.extractor.select.extractorOrCombinerType
         );
       }
     }
@@ -445,7 +445,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
-    // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("extractEntityInstanceUuidIndex params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {

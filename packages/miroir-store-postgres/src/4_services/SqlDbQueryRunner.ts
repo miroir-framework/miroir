@@ -136,27 +136,27 @@ export class SqlDbQueryRunner {
   /**
    * Apply extractor, combiners and transformers to the database using a single SQL query
    * alternative to asyncRunQuery from AsyncQuerySelector.ts
-   * @param selectorParams
+   * @param foreignKeyParams
    * @returns
    */
   asyncExtractWithQuery = async (
-    selectorParams: AsyncQueryRunnerParams,
+    foreignKeyParams: AsyncQueryRunnerParams,
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<Record<string, any>>> => {
     log.info(
-      "########## asyncExtractWithQuery begin, selectorParams",
-      JSON.stringify(Object.keys(selectorParams), null, 2)
+      "########## asyncExtractWithQuery begin, foreignKeyParams",
+      JSON.stringify(Object.keys(foreignKeyParams), null, 2)
     );
 
-    // if (selectorParams.extractor.)
-    const sqlQueryParams = sqlStringForQuery(selectorParams, this.schema, [], modelEnvironment);
+    // if (foreignKeyParams.extractor.)
+    const sqlQueryParams = sqlStringForQuery(foreignKeyParams, this.schema, [], modelEnvironment);
     if (sqlQueryParams instanceof Domain2ElementFailed) {
       return Promise.resolve(
         new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureMessage: "could not generate SQL query for transformer",
-          query: JSON.stringify(selectorParams),
+          query: JSON.stringify(foreignKeyParams),
           innerError: sqlQueryParams,
         })
       );
@@ -198,31 +198,31 @@ export class SqlDbQueryRunner {
       }
 
       const endResultPath =
-        selectorParams.extractor.runtimeTransformers &&
+        foreignKeyParams.extractor.runtimeTransformers &&
         transformerRawQueriesObject[endResultName].resultAccessPath
           ? transformerRawQueriesObject[endResultName].resultAccessPath
-          : selectorParams.extractor.combiners &&
+          : foreignKeyParams.extractor.combiners &&
             combinerRawQueriesObject[endResultName].resultAccessPath
           ? combinerRawQueriesObject[endResultName].resultAccessPath
           : undefined;
       const encloseEndResultInArray =
-        selectorParams.extractor.runtimeTransformers &&
+        foreignKeyParams.extractor.runtimeTransformers &&
         transformerRawQueriesObject[endResultName].encloseEndResultInArray
           ? transformerRawQueriesObject[endResultName].encloseEndResultInArray
-          : selectorParams.extractor.combiners &&
+          : foreignKeyParams.extractor.combiners &&
             combinerRawQueriesObject[endResultName].encloseEndResultInArray
           ? combinerRawQueriesObject[endResultName].encloseEndResultInArray
           : undefined;
       log.info(
         "asyncExtractWithQuery runtimeTransformers",
-        selectorParams.extractor.runtimeTransformers &&
+        foreignKeyParams.extractor.runtimeTransformers &&
           Array.isArray(transformerRawQueriesObject[endResultName].resultAccessPath),
         "endResultName",
         endResultName,
         "endResultPath",
         endResultPath,
         endResultPath !== undefined,
-        !!selectorParams.extractor.runtimeTransformers,
+        !!foreignKeyParams.extractor.runtimeTransformers,
         "transformerRawQueriesObject",
         JSON.stringify(transformerRawQueriesObject, null, 2)
       );
@@ -266,7 +266,7 @@ export class SqlDbQueryRunner {
           queryFailure: "QueryNotExecutable",
           // queryFailure: "FailedExtractor",
           failureOrigin: ["asyncExtractWithQuery"],
-          query: JSON.stringify(selectorParams),
+          query: JSON.stringify(foreignKeyParams),
           failureMessage: error as any,
         })
       );
@@ -277,44 +277,44 @@ export class SqlDbQueryRunner {
   /**
    * returns an Entity Instance List, from a ListQuery
    * @param deploymentEntityState
-   * @param selectorParams
+   * @param foreignKeyParams
    * @returns
    */
   public asyncSqlDbExtractEntityInstanceListWithObjectListExtractor = (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
-    switch (selectorParams.extractor.select.extractorOrCombinerType) {
+    switch (foreignKeyParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceListWithFilter(
-          selectorParams,
+          foreignKeyParams,
           applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
       case "combinerByRelationReturningObjectList":
       case "combinerByManyToManyRelationReturningObjectList": {
-        if (!selectorParams.extractorRunnerMap) {
+        if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
             "asyncSqlDbExtractEntityInstanceListWithObjectListExtractor missing extractorRunnerMap"
           );
         }
-        return selectorParams.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
+        return foreignKeyParams.extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
           {
             // this is actually a recursive call
-            extractorRunnerMap: selectorParams.extractorRunnerMap,
+            extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObjectList",
-              application: selectorParams.extractor.application,
-              deploymentUuid: selectorParams.extractor.deploymentUuid,
-              contextResults: selectorParams.extractor.contextResults,
-              pageParams: selectorParams.extractor.pageParams,
-              queryParams: selectorParams.extractor.queryParams,
-              select: selectorParams.extractor.select.applicationSection
-                ? selectorParams.extractor.select
+              application: foreignKeyParams.extractor.application,
+              deploymentUuid: foreignKeyParams.extractor.deploymentUuid,
+              contextResults: foreignKeyParams.extractor.contextResults,
+              pageParams: foreignKeyParams.extractor.pageParams,
+              queryParams: foreignKeyParams.extractor.queryParams,
+              select: foreignKeyParams.extractor.select.applicationSection
+                ? foreignKeyParams.extractor.select
                 : {
-                    ...selectorParams.extractor.select,
-                    applicationSection: selectorParams.extractor.pageParams
+                    ...foreignKeyParams.extractor.select,
+                    applicationSection: foreignKeyParams.extractor.pageParams
                       .applicationSection as ApplicationSection,
                   },
             },
@@ -328,7 +328,7 @@ export class SqlDbQueryRunner {
         return Promise.resolve(
           new Domain2ElementFailed({
             queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams),
+            queryParameters: JSON.stringify(foreignKeyParams),
           })
         );
         break;
@@ -340,45 +340,45 @@ export class SqlDbQueryRunner {
   /**
    * returns an Entity Instance List, from a ListQuery
    * @param deploymentEntityState
-   * @param selectorParams
+   * @param foreignKeyParams
    * @returns
    */
   public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     // let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
-    switch (selectorParams.extractor.select.extractorOrCombinerType) {
+    switch (foreignKeyParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceUuidIndexWithFilter(
-          selectorParams,
+          foreignKeyParams,
           applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
       case "combinerByRelationReturningObjectList":
       case "combinerByManyToManyRelationReturningObjectList": {
-        if (!selectorParams.extractorRunnerMap) {
+        if (!foreignKeyParams.extractorRunnerMap) {
           throw new Error(
             "asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor missing extractorRunnerMap"
           );
         }
-        return selectorParams.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(
+        return foreignKeyParams.extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor(
           {
             // this is actually a recursive call
-            extractorRunnerMap: selectorParams.extractorRunnerMap,
+            extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObjectList",
-              application: selectorParams.extractor.application,
-              deploymentUuid: selectorParams.extractor.deploymentUuid,
-              contextResults: selectorParams.extractor.contextResults,
-              pageParams: selectorParams.extractor.pageParams,
-              queryParams: selectorParams.extractor.queryParams,
-              select: selectorParams.extractor.select.applicationSection
-                ? selectorParams.extractor.select
+              application: foreignKeyParams.extractor.application,
+              deploymentUuid: foreignKeyParams.extractor.deploymentUuid,
+              contextResults: foreignKeyParams.extractor.contextResults,
+              pageParams: foreignKeyParams.extractor.pageParams,
+              queryParams: foreignKeyParams.extractor.queryParams,
+              select: foreignKeyParams.extractor.select.applicationSection
+                ? foreignKeyParams.extractor.select
                 : {
-                    ...selectorParams.extractor.select,
-                    applicationSection: selectorParams.extractor.pageParams
+                    ...foreignKeyParams.extractor.select,
+                    applicationSection: foreignKeyParams.extractor.pageParams
                       .applicationSection as ApplicationSection,
                   },
             },
@@ -392,7 +392,7 @@ export class SqlDbQueryRunner {
         return Promise.resolve(
           new Domain2ElementFailed({
             queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams),
+            queryParameters: JSON.stringify(foreignKeyParams),
           })
         );
         break;
@@ -507,11 +507,11 @@ export class SqlDbQueryRunner {
     BoxedExtractorOrCombinerReturningObject,
     Domain2QueryReturnType<EntityInstance>
   > = async (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    foreignKeyParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<Domain2QueryReturnType<EntityInstance>>> => {
     return this.extractorRunnerInMemory.extractEntityInstance(
-      selectorParams,
+      foreignKeyParams,
       applicationDeploymentMap,
       defaultMiroirModelEnvironment
     );
@@ -550,7 +550,7 @@ export class SqlDbQueryRunner {
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
-    // log.info("extractEntityInstanceUuidIndex params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("extractEntityInstanceUuidIndex params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
     const entityInstanceCollection: Action2EntityInstanceCollectionOrFailure =
@@ -617,7 +617,7 @@ export class SqlDbQueryRunner {
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
-    // log.info("extractEntityInstanceUuidIndexWithFilter params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+    // log.info("extractEntityInstanceUuidIndexWithFilter params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndexWithFilter domainState", domainState);
 
     if (!deploymentUuid || !applicationSection || !entityUuid) {

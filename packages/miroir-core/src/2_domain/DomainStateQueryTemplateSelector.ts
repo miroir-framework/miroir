@@ -144,9 +144,9 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = 
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
   domainState: DomainState,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
+  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
 ): JzodObject | undefined => {
-  const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
+  const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
   if (
     domainState &&
     domainState[localQuery.deploymentUuid] &&

@@ -104,7 +104,7 @@
           "value": {
             "display": { "editable": false },
             "defaultLabel": "SelfApplication",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "targetEntityOrderInstancesBy": "name"
             }
@@ -120,7 +120,7 @@
             "defaultLabel": "Branch",
             "description": "The Branch of this SelfApplication Version",
             "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
               "targetEntityOrderInstancesBy": "name"
             }
@@ -137,7 +137,7 @@
             "defaultLabel": "Previous SelfApplication Version",
             "description": "Previous version of the selfApplication on this Branch.",
             "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               "targetEntityOrderInstancesBy": "name"
             }

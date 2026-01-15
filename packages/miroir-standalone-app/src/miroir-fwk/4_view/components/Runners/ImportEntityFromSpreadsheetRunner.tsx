@@ -82,7 +82,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                   value: {
                     defaultLabel: "Application",
                     editable: true,
-                    selectorParams: {
+                    foreignKeyParams: {
                       targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                       targetEntity: entityApplicationForAdmin.uuid,
                       targetEntityOrderInstancesBy: "name",

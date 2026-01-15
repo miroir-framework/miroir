@@ -151,9 +151,9 @@ export function selectEntityInstancesFromJzodAttribute(
   return (domainState: EntitiesDomainState): EntityInstance[] => {
     // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
     // if (mlSchema?.tag?.value?.targetEntity && domainState[mlSchema?.tag?.value.targetEntity]) {
-    if (mlSchema?.tag?.value?.selectorParams?.targetEntity && domainState[mlSchema?.tag?.value?.selectorParams.targetEntity]) {
+    if (mlSchema?.tag?.value?.foreignKeyParams?.targetEntity && domainState[mlSchema?.tag?.value?.foreignKeyParams.targetEntity]) {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
-      return DomainInstanceUuidIndexToArray(domainState[mlSchema?.tag?.value.selectorParams.targetEntity]);
+      return DomainInstanceUuidIndexToArray(domainState[mlSchema?.tag?.value.foreignKeyParams.targetEntity]);
     } else {
       return [];
     }
@@ -163,7 +163,7 @@ export function selectEntityInstancesFromJzodAttribute(
 // ################################################################################################
 export function selectEntityUuidFromJzodAttribute(mlSchema:JzodPlainAttribute | undefined):Uuid | undefined{
   // return mlSchema?.tag?.value?.targetEntity;
-  return mlSchema?.tag?.value?.selectorParams?.targetEntity;
+  return mlSchema?.tag?.value?.foreignKeyParams?.targetEntity;
 }
 
 // ################################################################################################

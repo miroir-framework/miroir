@@ -108,7 +108,7 @@ export function EntityInstanceSelectorPanel(props:{
             tag: {
               value: {
                 defaultLabel: "Application (mls)",
-                selectorParams: {
+                foreignKeyParams: {
                   targetApplicationUuid: adminSelfApplication.uuid,
                   targetEntity: entityApplicationForAdmin.uuid,
                   targetEntityOrderInstancesBy: "name",

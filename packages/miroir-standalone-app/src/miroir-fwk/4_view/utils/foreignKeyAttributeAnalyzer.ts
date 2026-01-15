@@ -87,14 +87,14 @@ export function analyzeForeignKeyAttributes(
   
   // First, add all direct foreign key attributes from the main entity
   Object.entries(mainEntityDefinition.mlSchema.definition).forEach(([attributeName, schema]: [string, any]) => {
-    if (schema.tag?.value?.selectorParams?.targetEntity) {
+    if (schema.tag?.value?.foreignKeyParams?.targetEntity) {
       result.push({
         attributeName,
         schema,
         isDirect: true,
-        targetEntityUuid: schema.tag.value.selectorParams?.targetEntity
+        targetEntityUuid: schema.tag.value.foreignKeyParams?.targetEntity
       });
-      allForeignKeyEntities.add(schema.tag.value.selectorParams?.targetEntity);
+      allForeignKeyEntities.add(schema.tag.value.foreignKeyParams?.targetEntity);
     }
   });
   
@@ -112,20 +112,20 @@ export function analyzeForeignKeyAttributes(
     const entityDef = allEntityDefinitions.find(e => e.entityUuid === entityUuid);
     if (entityDef) {
       Object.entries(entityDef.mlSchema.definition).forEach(([nestedAttributeName, schema]: [string, any]) => {
-        if (schema.tag?.value?.selectorParams?.targetEntity && !allForeignKeyEntities.has(schema.tag.value.selectorParams?.targetEntity)) {
+        if (schema.tag?.value?.foreignKeyParams?.targetEntity && !allForeignKeyEntities.has(schema.tag.value.foreignKeyParams?.targetEntity)) {
           // Add a synthetic entry for the foreign key entity that needs to be fetched
           // but is not a direct attribute of the main entity
-          const syntheticKey = `__fk_${schema.tag.value.selectorParams?.targetEntity}`;
+          const syntheticKey = `__fk_${schema.tag.value.foreignKeyParams?.targetEntity}`;
           result.push({
             attributeName: syntheticKey,
             schema,
             isDirect: false,
-            targetEntityUuid: schema.tag.value.selectorParams?.targetEntity
+            targetEntityUuid: schema.tag.value.foreignKeyParams?.targetEntity
           });
-          allForeignKeyEntities.add(schema.tag.value.selectorParams?.targetEntity);
+          allForeignKeyEntities.add(schema.tag.value.foreignKeyParams?.targetEntity);
           
           // Recursively find foreign keys of this entity
-          findAdditionalForeignKeyEntities(schema.tag.value.selectorParams?.targetEntity, depth + 1);
+          findAdditionalForeignKeyEntities(schema.tag.value.foreignKeyParams?.targetEntity, depth + 1);
         }
       });
     }

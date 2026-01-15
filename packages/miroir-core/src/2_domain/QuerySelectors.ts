@@ -384,7 +384,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
     }
     default: {
       throw new Error(
-        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory could not handle query, selectorParams=" +
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory could not handle query, foreignKeyParams=" +
           JSON.stringify(query.select, undefined, 2)
       );
       break;
@@ -563,7 +563,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
     }
     default: {
       throw new Error(
-        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory could not handle query, selectorParams=" +
+        "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory could not handle query, foreignKeyParams=" +
           JSON.stringify(query.select, undefined, 2)
       );
       break;
@@ -575,22 +575,22 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 /**
  * returns an Entity Instance List, from a ListQuery
  * @param deploymentEntityState 
- * @param selectorParams 
+ * @param foreignKeyParams 
  * @returns 
  */
 export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<
   BoxedExtractorOrCombinerReturningObjectList, 
     StateType
   >,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex> = (
-    selectorParams?.extractorRunnerMap ?? emptySelectorMap
-  ).extractEntityInstanceUuidIndex(deploymentEntityState, applicationDeploymentMap, selectorParams, modelEnvironment);
+    foreignKeyParams?.extractorRunnerMap ?? emptySelectorMap
+  ).extractEntityInstanceUuidIndex(deploymentEntityState, applicationDeploymentMap, foreignKeyParams, modelEnvironment);
 
   // log.info(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory found selectedInstances", selectedInstancesUuidIndex
@@ -598,7 +598,7 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 
   return applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory(
     selectedInstancesUuidIndex,
-    selectorParams.extractor,
+    foreignKeyParams.extractor,
   );
 
 };
@@ -606,34 +606,34 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 /**
  * returns an Entity Instance List, from a ListQuery
  * @param deploymentEntityState 
- * @param selectorParams 
+ * @param foreignKeyParams 
  * @returns 
  */
 export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>,
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance[]> => {
   const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]> = (
-    selectorParams?.extractorRunnerMap ?? emptySelectorMap
+    foreignKeyParams?.extractorRunnerMap ?? emptySelectorMap
   ).extractEntityInstanceList(
     deploymentEntityState,
     applicationDeploymentMap,
-    selectorParams,
+    foreignKeyParams,
     modelEnvironment
   );
 
   // log.trace(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
-  //   selectorParams,
+  //   foreignKeyParams,
   //   "found selectedInstances", selectedInstancesUuidIndex,
   // );
 
   return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
     selectedInstancesUuidIndex,
-    selectorParams.extractor,
+    foreignKeyParams.extractor,
   );
 
 };
@@ -1017,33 +1017,33 @@ export type ExtractWithExtractorType<StateType> = SyncBoxedExtractorRunner<
 export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: ExtractWithExtractorType*/ = <StateType>(
   state: StateType,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList,
     StateType
   >,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<DomainElementSuccess> => {
-  // log.info("########## extractExtractor begin, query", selectorParams);
-  const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
+  // log.info("########## extractExtractor begin, query", foreignKeyParams);
+  const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> = foreignKeyParams?.extractorRunnerMap ?? emptySelectorMap;
 
   const result = innerSelectDomainElementFromExtractorOrCombiner(
     state,
-    selectorParams.extractor.contextResults,
-    selectorParams.extractor.pageParams,
+    foreignKeyParams.extractor.contextResults,
+    foreignKeyParams.extractor.pageParams,
     modelEnvironment,
-    selectorParams.extractor.queryParams,
+    foreignKeyParams.extractor.queryParams,
     localSelectorMap as any,
-    selectorParams.extractor.application,
+    foreignKeyParams.extractor.application,
     applicationDeploymentMap,
-    selectorParams.extractor.deploymentUuid,
-    selectorParams.extractor.select
+    foreignKeyParams.extractor.deploymentUuid,
+    foreignKeyParams.extractor.select
   );
   return result;
 
   // log.info(
   //   "extractExtractor",
   //   "query",
-  //   selectorParams,
+  //   foreignKeyParams,
   //   "domainState",
   //   deploymentEntityState,
   //   "newFetchedData",
@@ -1057,48 +1057,48 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
  * StateType is the type of the deploymentEntityState, which may be a ReduxDeploymentsState or a ReduxDeploymentsStateWithUuidIndex
  * 
  * 
- * @param selectorParams the array of basic extractor functions
+ * @param foreignKeyParams the array of basic extractor functions
  * @returns 
  */
 export const runQuery = <StateType>(
   state: StateType,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncQueryRunnerExtractorAndParams<StateType>,
+  foreignKeyParams: SyncQueryRunnerExtractorAndParams<StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<Record<string,any>> => { 
 
-  log.info("########## runQuery begin, query", selectorParams);
+  log.info("########## runQuery begin, query", foreignKeyParams);
   const context: Record<string, any> = {
-    ...(selectorParams?.extractor?.contextResults ?? {})
+    ...(foreignKeyParams?.extractor?.contextResults ?? {})
   };
   // log.info("########## DomainSelector runQuery will use context", context);
   const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> =
-    selectorParams?.extractorRunnerMap ?? emptySelectorMap;
+    foreignKeyParams?.extractorRunnerMap ?? emptySelectorMap;
 
   for (const extractor of Object.entries(
-    selectorParams?.extractor?.extractors ?? {}
+    foreignKeyParams?.extractor?.extractors ?? {}
   )) {
     let result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
-      selectorParams.extractor.pageParams,
+      foreignKeyParams.extractor.pageParams,
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        ...foreignKeyParams.extractor.pageParams,
+        ...foreignKeyParams.extractor.queryParams,
       },
       localSelectorMap as any,
-      selectorParams.extractor.application,
+      foreignKeyParams.extractor.application,
       applicationDeploymentMap,
-      selectorParams.extractor.deploymentUuid,
+      foreignKeyParams.extractor.deploymentUuid,
       extractor[1]
     );
     // TODO: test for error!
     if (result instanceof Domain2ElementFailed) {
       log.error(
         "runQuery failed for deployment",
-        selectorParams.extractor.deploymentUuid,
+        foreignKeyParams.extractor.deploymentUuid,
         "extractor",
         extractor[0],
         "query",
@@ -1131,21 +1131,21 @@ export const runQuery = <StateType>(
   //   Object.keys(context)
   // );
   for (const combiner of Object.entries(
-    selectorParams.extractor.combiners ?? {}
+    foreignKeyParams.extractor.combiners ?? {}
   )) {
     let result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
-      selectorParams.extractor.pageParams,
+      foreignKeyParams.extractor.pageParams,
       modelEnvironment,
       {
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        ...foreignKeyParams.extractor.pageParams,
+        ...foreignKeyParams.extractor.queryParams,
       },
       localSelectorMap as any,
-      selectorParams.extractor.application,
+      foreignKeyParams.extractor.application,
       applicationDeploymentMap,
-      selectorParams.extractor.deploymentUuid,
+      foreignKeyParams.extractor.deploymentUuid,
       combiner[1]
     );
     context[combiner[0]] = result; // does side effect!
@@ -1164,14 +1164,14 @@ export const runQuery = <StateType>(
 
   for (const transformerForBuildPlusRuntime of 
     Object.entries(
-    selectorParams.extractor.runtimeTransformers ?? {}
+    foreignKeyParams.extractor.runtimeTransformers ?? {}
   )) {
     let result = applyExtractorTransformerInMemory(
       transformerForBuildPlusRuntime[1],
       modelEnvironment,
       {
-        ...selectorParams.extractor.pageParams,
-        ...selectorParams.extractor.queryParams,
+        ...foreignKeyParams.extractor.pageParams,
+        ...foreignKeyParams.extractor.queryParams,
       },
       context
     );
@@ -1194,7 +1194,7 @@ export const runQuery = <StateType>(
   // log.info(
   //   "runQuery",
   //   "query",
-  //   selectorParams,
+  //   foreignKeyParams,
   //   "domainState",
   //   deploymentEntityState,
   //   "newFetchedData",
@@ -1261,30 +1261,30 @@ export const extractzodSchemaForSingleSelectQuery = <StateType>(
 // ################################################################################################
 export const extractJzodSchemaForDomainModelQuery = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<QueryJzodSchemaParams, StateType>,
+  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryJzodSchemaParams, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): RecordOfJzodElement | JzodElement | undefined => {
-  switch (selectorParams.query.queryType) {
+  switch (foreignKeyParams.query.queryType) {
     case "getEntityDefinition":{ 
-      return selectorParams.extractorRunnerMap.extractEntityJzodSchema(
+      return foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
         deploymentEntityState,
-        selectorParams as ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
+        foreignKeyParams as ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
         modelEnvironment
       );
       break;
     }
     case "queryByTemplateGetParamJzodSchema": {
-      return selectorParams.extractorRunnerMap.extractFetchQueryJzodSchema(
+      return foreignKeyParams.extractorRunnerMap.extractFetchQueryJzodSchema(
         deploymentEntityState,
-        selectorParams as ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>,
+        foreignKeyParams as ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>,
         modelEnvironment
       );
       break;
     }
     case "getQueryJzodSchema": {
-      return selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
+      return foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
         deploymentEntityState,
-        selectorParams as ExtractorRunnerParamsForJzodSchema<QueryByQueryGetParamJzodSchema, StateType>,
+        foreignKeyParams as ExtractorRunnerParamsForJzodSchema<QueryByQueryGetParamJzodSchema, StateType>,
         modelEnvironment
       );
       break;
@@ -1305,26 +1305,26 @@ export const extractJzodSchemaForDomainModelQuery = <StateType>(
  */
 export const extractFetchQueryJzodSchema = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>,
+  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: BoxedQueryWithExtractorCombinerTransformer = selectorParams.query.fetchParams
-  // log.info("selectFetchQueryJzodSchemaFromDomainState called", selectorParams.query);
+  const localFetchParams: BoxedQueryWithExtractorCombinerTransformer = foreignKeyParams.query.fetchParams
+  // log.info("selectFetchQueryJzodSchemaFromDomainState called", foreignKeyParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combiners ?? {}).map(
       (entry: [string, ExtractorOrCombiner]) => [
         entry[0],
-        selectorParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
+        foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
           deploymentEntityState,
           {
-            extractorRunnerMap: selectorParams.extractorRunnerMap,
+            extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
             query: {
               queryType: "getQueryJzodSchema",
               deploymentUuid: localFetchParams.deploymentUuid,
               contextResults: {},
-              pageParams: selectorParams.query.pageParams,
-              queryParams: selectorParams.query.queryParams,
+              pageParams: foreignKeyParams.query.pageParams,
+              queryParams: foreignKeyParams.query.queryParams,
               select: entry[1],
             },
           } as ExtractorRunnerParamsForJzodSchema<QueryByQueryGetParamJzodSchema, StateType>,
@@ -1350,6 +1350,6 @@ export const extractFetchQueryJzodSchema = <StateType>(
   //   )};
   // }
 
-  // log.info("selectFetchQueryJzodSchemaFromDomainState query", JSON.stringify(selectorParams.query, undefined, 2), "fetchQueryJzodSchema", fetchQueryJzodSchema)
+  // log.info("selectFetchQueryJzodSchemaFromDomainState query", JSON.stringify(foreignKeyParams.query, undefined, 2), "fetchQueryJzodSchema", fetchQueryJzodSchema)
   return fetchQueryJzodSchema;
 };

@@ -80,7 +80,7 @@ export const ApplicationSelector: FC<{
                       selector: "muiSelector", // "portalSelector" or "muiSelector"
                     },
                   },
-                  selectorParams: {
+                  foreignKeyParams: {
                     targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                     targetEntity: entityApplicationForAdmin.uuid,
                     targetEntityOrderInstancesBy: "name",

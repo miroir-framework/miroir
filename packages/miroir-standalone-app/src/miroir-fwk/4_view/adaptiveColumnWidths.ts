@@ -70,8 +70,8 @@ export function calculateAdaptiveColumnWidths(
       type = 'uuid';
     } else if (field === 'name') {
       type = 'name';
-    // } else if (attributeSchema?.cellRendererParams?.isFK || attributeSchema?.tag?.value?.selectorParams?.targetEntity) {
-    } else if (colDef?.cellRendererParams?.isFK || attributeSchema?.tag?.value?.selectorParams?.targetEntity) {
+    // } else if (attributeSchema?.cellRendererParams?.isFK || attributeSchema?.tag?.value?.foreignKeyParams?.targetEntity) {
+    } else if (colDef?.cellRendererParams?.isFK || attributeSchema?.tag?.value?.foreignKeyParams?.targetEntity) {
       type = 'foreignKey';
     } else if (attributeSchema) {
       switch (attributeSchema.type) {

@@ -731,7 +731,7 @@
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
                     }
                   }

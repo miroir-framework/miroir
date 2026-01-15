@@ -27,7 +27,9 @@
           "value": {
             "id": 1,
             "defaultLabel": "Uuid",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -38,7 +40,9 @@
           "value": {
             "id": 2,
             "defaultLabel": "Entity Name",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -48,7 +52,9 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -64,7 +70,9 @@
           "value": {
             "id": 5,
             "defaultLabel": "Concept Level",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -72,9 +80,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "Book Title",
-            "display": { "editable": true }
+            "defaultLabel": "Book Title"
           }
         }
       },
@@ -85,20 +91,18 @@
           "value": {
             "id": 5,
             "defaultLabel": "Year of Publication",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
       "author": {
         "type": "uuid",
-        "optional": true,
         "tag": {
           "value": {
-            "id": 6,
-            "display": { "editable": true },
             "defaultLabel": "Author",
-            "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
               "targetEntityOrderInstancesBy": "name"
             }
@@ -107,14 +111,10 @@
       },
       "publisher": {
         "type": "uuid",
-        "optional": true,
         "tag": {
           "value": {
-            "id": 7,
-            "display": { "editable": true },
             "defaultLabel": "Publisher",
-            "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "selectorParams": {
+            "foreignKeyParams": {
               "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
               "targetEntityOrderInstancesBy": "name"
             }

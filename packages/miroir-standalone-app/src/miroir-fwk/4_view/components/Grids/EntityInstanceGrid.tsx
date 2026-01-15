@@ -677,7 +677,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           if (
             columnDefinitionAttribute &&
             (columnDefinitionAttribute as any).type === "uuid" &&
-            (columnDefinitionAttribute as any).tag?.value?.selectorParams?.targetEntity
+            (columnDefinitionAttribute as any).tag?.value?.foreignKeyParams?.targetEntity
           ) {
             // Find the column definition to get the target entity UUID
             const columnDef = props.columnDefs.columnDefs.find((cd: any) => cd.field === fieldName);
@@ -689,7 +689,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
               );
 
             const targetApplicationSection =
-              (columnDefinitionAttribute as any)?.tag?.value?.selectorParams?.targetEntityApplicationSection ||
+              (columnDefinitionAttribute as any)?.tag?.value?.foreignKeyParams?.targetEntityApplicationSection ||
               context.applicationSection;
 
             navigate(
@@ -763,7 +763,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           if (
             columnDefinitionAttribute &&
             (columnDefinitionAttribute as any).type === "uuid" &&
-            (columnDefinitionAttribute as any).tag?.value?.selectorParams?.targetEntity
+            (columnDefinitionAttribute as any).tag?.value?.foreignKeyParams?.targetEntity
           ) {
             const targetEntityDefinition: EntityDefinition | undefined =
               currentModel.entityDefinitions.find(

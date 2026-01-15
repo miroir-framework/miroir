@@ -4315,7 +4315,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "boolean",
                     optional: true,
                   },
-                  selectorParams: {
+                  foreignKeyParams: {
                     type: "object",
                     optional: true,
                     definition: {
@@ -4749,7 +4749,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              selectorParams: {
+              foreignKeyParams: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -5104,7 +5104,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              selectorParams: {
+              foreignKeyParams: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -5482,7 +5482,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "boolean",
                         optional: true,
                       },
-                      selectorParams: {
+                      foreignKeyParams: {
                         type: "object",
                         optional: true,
                         definition: {
@@ -5863,7 +5863,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              selectorParams: {
+              foreignKeyParams: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -6154,7 +6154,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "boolean",
                         optional: true,
                       },
-                      selectorParams: {
+                      foreignKeyParams: {
                         type: "object",
                         optional: true,
                         definition: {
@@ -6415,7 +6415,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              selectorParams: {
+              foreignKeyParams: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -6786,7 +6786,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              selectorParams: {
+              foreignKeyParams: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -7861,7 +7861,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          selectorParams: {
+                          foreignKeyParams: {
                             type: "object",
                             optional: true,
                             definition: {
@@ -8147,7 +8147,7 @@ const tests: { [k: string]: testFormat } = {
                                   type: "boolean",
                                   optional: true,
                                 },
-                                selectorParams: {
+                                foreignKeyParams: {
                                   type: "object",
                                   optional: true,
                                   definition: {
@@ -8452,7 +8452,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "boolean",
                                     optional: true,
                                   },
-                                  selectorParams: {
+                                  foreignKeyParams: {
                                     type: "object",
                                     optional: true,
                                     definition: {
@@ -8712,7 +8712,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "boolean",
                                     optional: true,
                                   },
-                                  selectorParams: {
+                                  foreignKeyParams: {
                                     type: "object",
                                     optional: true,
                                     definition: {
@@ -8984,7 +8984,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "boolean",
                                     optional: true,
                                   },
-                                  selectorParams: {
+                                  foreignKeyParams: {
                                     type: "object",
                                     optional: true,
                                     definition: {
@@ -9295,7 +9295,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "boolean",
                         optional: true,
                       },
-                      selectorParams: {
+                      foreignKeyParams: {
                         type: "object",
                         optional: true,
                         definition: {
@@ -9606,7 +9606,7 @@ const tests: { [k: string]: testFormat } = {
                       canBeTemplate: true,
                       defaultLabel: "Parent Uuid",
                       targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      selectorParams: {
+                      foreignKeyParams: {
                         targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       },
                     },
@@ -10733,7 +10733,7 @@ const tests: { [k: string]: testFormat } = {
               id: 9,
               defaultLabel: "Default Report used to display instances of this Entity",
               editable: false,
-              selectorParams: {
+              foreignKeyParams: {
                 targetEntity: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
                 targetEntityApplicationSection: "model",
                 targetEntityOrderInstancesBy: "name",
@@ -11002,7 +11002,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          selectorParams: {
+                          foreignKeyParams: {
                             type: "object",
                             optional: true,
                             definition: {
@@ -11418,7 +11418,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          selectorParams: {
+                          foreignKeyParams: {
                             type: "object",
                             optional: true,
                             definition: {
@@ -11752,7 +11752,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          selectorParams: {
+                          foreignKeyParams: {
                             type: "object",
                             optional: true,
                             definition: {

@@ -900,7 +900,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //   "stringSelectList",
           //   stringSelectList
           // );
-          if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity) {
+          if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity) {
             // Convert stringSelectList to options for selectors
             const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({
               value: e[1].uuid,

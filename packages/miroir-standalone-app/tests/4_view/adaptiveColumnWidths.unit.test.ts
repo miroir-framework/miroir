@@ -236,7 +236,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       { field: "fk", headerName: "FK", cellRendererParams: { isFK: true, entityUuid: "entity1" } },
     ];
     const mlSchema: Record<string, JzodElement> = {
-      fk: { type: "string", tag: { value: { selectorParams: {targetEntity: "entity1"} } } },
+      fk: { type: "string", tag: { value: { foreignKeyParams: {targetEntity: "entity1"} } } },
     };
     const rows: TableComponentRow[] = [
       {

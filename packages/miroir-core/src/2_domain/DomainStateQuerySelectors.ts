@@ -116,21 +116,21 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 > = (
   domainState: DomainState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
-  const deploymentUuid = selectorParams.extractor.deploymentUuid;
-  const applicationSection = selectorParams.extractor.select.applicationSection ?? "data";
+  const deploymentUuid = foreignKeyParams.extractor.deploymentUuid;
+  const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? "data";
 
-  const entityUuid: Uuid = selectorParams.extractor.select.parentUuid;
+  const entityUuid: Uuid = foreignKeyParams.extractor.select.parentUuid;
 
-  // log.info("selectEntityInstanceUuidIndexFromDomainState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
+  // log.info("selectEntityInstanceUuidIndexFromDomainState params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
   // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
 
   if (!deploymentUuid || !applicationSection || !entityUuid) {
     return new Domain2ElementFailed({
       queryFailure: "IncorrectParameters",
       queryContext: "deploymentUuid=" + deploymentUuid + ", applicationSection=" + applicationSection + ", entityUuid=" + entityUuid,
-      queryParameters: JSON.stringify(selectorParams),
+      queryParameters: JSON.stringify(foreignKeyParams),
     });
     // resolving by fetchDataReference, fetchDataReferenceAttribute
   }
@@ -189,13 +189,13 @@ export const selectEntityInstanceListFromDomainState: SyncBoxedExtractorRunner<
 > = (
   domainState: DomainState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>,
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance[]> => {
   const result = selectEntityInstanceUuidIndexFromDomainState(
     domainState,
     applicationDeploymentMap,
-    selectorParams,
+    foreignKeyParams,
     modelEnvironment
   );
 
@@ -210,23 +210,23 @@ export const selectEntityInstanceListFromDomainState: SyncBoxedExtractorRunner<
 /**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param domainState
-//  * @param selectorParams
+//  * @param foreignKeyParams
  * @returns
  */
 function selectEntityInstanceDomainState (
   domainState: DomainState,
-  // selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
+  // foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
   entityUuidReference: Uuid,
   instanceUuidDomainElement: Uuid,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance> {
-  // const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
-  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
+  // const querySelectorParams: ExtractorOrCombinerReturningObject = foreignKeyParams.extractor.select as ExtractorOrCombinerReturningObject;
+  // const deploymentUuid = foreignKeyParams.extractor.deploymentUuid;
   // const applicationSection: ApplicationSection =
-  //   selectorParams.extractor.select.applicationSection ??
-  //   ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
+  //   foreignKeyParams.extractor.select.applicationSection ??
+  //   ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
   log.info(
     "selectEntityInstanceDomainState params",
@@ -299,7 +299,7 @@ function selectEntityInstanceDomainState (
 /**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param domainState
- * @param selectorParams
+ * @param foreignKeyParams
  * @returns
  */
 export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtractorRunner<
@@ -309,14 +309,14 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
 > = (
   domainState: DomainState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance> => {
-  const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
-  const deploymentUuid = selectorParams.extractor.deploymentUuid??applicationDeploymentMap[selectorParams.extractor.application];
+  const querySelectorParams: ExtractorOrCombinerReturningObject = foreignKeyParams.extractor.select as ExtractorOrCombinerReturningObject;
+  const deploymentUuid = foreignKeyParams.extractor.deploymentUuid??applicationDeploymentMap[foreignKeyParams.extractor.application];
   const applicationSection: ApplicationSection =
-    selectorParams.extractor.select.applicationSection ??
-    ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
+    foreignKeyParams.extractor.select.applicationSection ??
+    ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
   log.info(
     "selectEntityInstanceFromObjectQueryAndDomainState params",
@@ -342,16 +342,16 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           referenceName: querySelectorParams.objectReference,
         },
         "value", // TODO: not consistent with "runtime" evaluation, this has no influence on the result of "runtime" evaluations.
-        // {...modelEnvironment,...selectorParams.extractor.queryParams},
+        // {...modelEnvironment,...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
-        selectorParams.extractor.queryParams,
-        selectorParams.extractor.contextResults
+        foreignKeyParams.extractor.queryParams,
+        foreignKeyParams.extractor.contextResults
       );
 
       if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",
-          queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+          queryParameters: JSON.stringify(foreignKeyParams.extractor.pageParams),
           queryContext:
             "DomainStateQuerySelectors combinerForObjectByRelation did not find AttributeOfObjectToCompareToReferenceUuid in " +
             JSON.stringify(querySelectorParams),
@@ -402,9 +402,9 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       //   "######### referenceObject",
       //   referenceObject,
       //   "######### queryParams",
-      //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
+      //   JSON.stringify(foreignKeyParams.query.queryParams, undefined, 2),
       //   "######### contextResults",
-      //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
+      //   JSON.stringify(foreignKeyParams.query.contextResults, undefined, 2)
       // );
       const targetObject = domainState[deploymentUuid][applicationSection][entityUuidReference];
       const result = targetObject[
@@ -422,10 +422,10 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           querySelectorParams.label ?? querySelectorParams.extractorOrCombinerType,
           querySelectorParams.applyTransformer,
           "value",
-          // {...modelEnvironment,...selectorParams.extractor.queryParams},
+          // {...modelEnvironment,...foreignKeyParams.extractor.queryParams},
           modelEnvironment,
-          selectorParams.extractor.queryParams,
-          { ...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result }
+          foreignKeyParams.extractor.queryParams,
+          { ...foreignKeyParams.extractor.contextResults, referenceObject, foreignKeyObject: result }
         );
         log.info(
           "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, after applyTransformer",
@@ -473,7 +473,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       for (const attribute of Object.entries(currentObjectEntityDefinition.mlSchema.definition) ?? []) {
         log.debug("selectEntityInstanceFromObjectQueryAndDomainState checking attribute", attribute);
         if (attribute[1].type != "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
-        if (!attribute[1].tag?.value?.targetEntity) {
+        if (!attribute[1].tag?.value?.foreignKeyParams?.targetEntity) {
           return new Domain2ElementFailed({
             queryFailure: "IncorrectParameters",
             queryContext:
@@ -489,7 +489,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           domainState,
           deploymentUuid,
           applicationSection,
-          attribute[1].tag?.value?.targetEntity,
+          attribute[1].tag?.value?.foreignKeyParams?.targetEntity,
           attributeValue,
           modelEnvironment
         );
@@ -506,11 +506,11 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         querySelectorParams.label ?? querySelectorParams.extractorOrCombinerType,
         querySelectorParams.applyTransformer,
         "value",
-        // {...modelEnvironment,...selectorParams.extractor.queryParams},
+        // {...modelEnvironment,...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
-        selectorParams.extractor.queryParams,
+        foreignKeyParams.extractor.queryParams,
         {
-          ...selectorParams.extractor.contextResults,
+          ...foreignKeyParams.extractor.contextResults,
           foreignKeyObjects,
           referenceObject: currentObject,
         }
@@ -527,7 +527,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
     default: {
       throw new Error(
         "selectEntityInstanceFromObjectQueryAndDomainState can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
-          selectorParams.extractor.select.extractorOrCombinerType
+          foreignKeyParams.extractor.select.extractorOrCombinerType
       );
       break;
     }
@@ -538,7 +538,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
 /**
  * returns an Entity Instance List, from a ListQuery
  * @param domainState
- * @param selectorParams
+ * @param foreignKeyParams
  * @returns
  */
 export const extractEntityInstanceUuidIndexFromListQueryAndDomainState: SyncBoxedExtractorRunner<
@@ -551,7 +551,7 @@ export const extractEntityInstanceUuidIndexFromListQueryAndDomainState: SyncBoxe
 /**
  * returns an Entity Instance List, from a ListQuery
  * @param domainState
- * @param selectorParams
+ * @param foreignKeyParams
  * @returns
  */
 export const extractEntityInstanceListFromListQueryAndDomainState: SyncBoxedExtractorRunner<
@@ -586,9 +586,9 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = extractzodS
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNew = (
   domainState: DomainState,
-  selectorParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
+  foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
 ): JzodObject | undefined => {
-  const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
+  const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
   if (
     domainState &&
     domainState[localQuery.deploymentUuid] &&

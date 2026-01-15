@@ -191,7 +191,7 @@
                   "value": {
                     "defaultLabel": "Endpoint",
                     "editable": true,
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetApplicationUuid": {
                         "transformerType": "getFromParameters",
                         "interpolation": "build",

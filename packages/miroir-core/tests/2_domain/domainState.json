@@ -101,7 +101,7 @@
                     "editable": true,
                     "defaultLabel": "Author",
                     "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
                       "targetEntityOrderInstancesBy": "name"
                     }
@@ -117,7 +117,7 @@
                     "editable": true,
                     "defaultLabel": "Publisher",
                     "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
                       "targetEntityOrderInstancesBy": "name"
                     }

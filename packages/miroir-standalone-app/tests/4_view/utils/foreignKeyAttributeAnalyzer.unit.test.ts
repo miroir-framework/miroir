@@ -30,11 +30,11 @@ describe('analyzeForeignKeyAttributes', () => {
     title: { type: "string" },
     authorUuid: { 
       type: "uuid", 
-      tag: { value: { selectorParams: {targetEntity: "author-uuid"} } } 
+      tag: { value: { foreignKeyParams: {targetEntity: "author-uuid"} } } 
     },
     publisherUuid: { 
       type: "uuid", 
-      tag: { value: { selectorParams: {targetEntity: "publisher-uuid"} } } 
+      tag: { value: { foreignKeyParams: {targetEntity: "publisher-uuid"} } } 
     }
   });
 
@@ -43,7 +43,7 @@ describe('analyzeForeignKeyAttributes', () => {
     name: { type: "string" },
     countryUuid: { 
       type: "uuid", 
-      tag: { value: { selectorParams: {targetEntity: "country-uuid"} } } 
+      tag: { value: { foreignKeyParams: {targetEntity: "country-uuid"} } } 
     }
   });
 
@@ -52,7 +52,7 @@ describe('analyzeForeignKeyAttributes', () => {
     name: { type: "string" },
     countryUuid: { 
       type: "uuid", 
-      tag: { value: { selectorParams: {targetEntity: "country-uuid"} } } 
+      tag: { value: { foreignKeyParams: {targetEntity: "country-uuid"} } } 
     }
   });
 
@@ -142,16 +142,16 @@ describe('analyzeForeignKeyAttributes', () => {
     it('should respect maxDepth option', () => {
       // Create a circular reference scenario
       const entityA = createEntityDefinition("entity-a", "EntityA", {
-        entityBUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "entity-b"} } } }
+        entityBUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "entity-b"} } } }
       });
       const entityB = createEntityDefinition("entity-b", "EntityB", {
-        entityCUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "entity-c"} } } }
+        entityCUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "entity-c"} } } }
       });
       const entityC = createEntityDefinition("entity-c", "EntityC", {
-        entityDUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "entity-d"} } } }
+        entityDUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "entity-d"} } } }
       });
       const entityD = createEntityDefinition("entity-d", "EntityD", {
-        entityEUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "entity-e"} } } }
+        entityEUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "entity-e"} } } }
       });
       const entityE = createEntityDefinition("entity-e", "EntityE", {
         name: { type: "string" }
@@ -222,10 +222,10 @@ describe('analyzeForeignKeyAttributes', () => {
 
     it('should handle circular foreign key references', () => {
       const entityA = createEntityDefinition("entity-a", "EntityA", {
-        entityBUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "entity-b"} } } }
+        entityBUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "entity-b"} } } }
       });
       const entityB = createEntityDefinition("entity-b", "EntityB", {
-        entityAUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "entity-a"} } } }
+        entityAUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "entity-a"} } } }
       });
 
       const circularEntities = [entityA, entityB];
@@ -247,13 +247,13 @@ describe('analyzeForeignKeyAttributes', () => {
       const foreignKeyAttributes: ForeignKeyAttributeDefinition[] = [
         {
           attributeName: 'authorUuid',
-          schema: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "author-uuid"} } } } as any,
+          schema: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "author-uuid"} } } } as any,
           isDirect: true,
           targetEntityUuid: 'author-uuid'
         },
         {
           attributeName: '__fk_aggregatery-uuid',
-          schema: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "country-uuid"} } } } as any,
+          schema: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "country-uuid"} } } } as any,
           isDirect: false,
           targetEntityUuid: 'country-uuid'
         }
@@ -283,9 +283,9 @@ describe('analyzeForeignKeyAttributes', () => {
       const complexBookEntityDef = createEntityDefinition("book-uuid", "Book", {
         uuid: { type: "uuid" },
         title: { type: "string" },
-        authorUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "author-uuid"} } } },
-        publisherUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "publisher-uuid"} } } },
-        genreUuid: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "genre-uuid"} } } }
+        authorUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "author-uuid"} } } },
+        publisherUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "publisher-uuid"} } } },
+        genreUuid: { type: "uuid", tag: { value: { foreignKeyParams: {targetEntity: "genre-uuid"} } } }
       });
 
       const complexEntities = [complexBookEntityDef, authorEntityDef, publisherEntityDef, countryEntityDef, genreEntityDef];

@@ -212,20 +212,20 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity !== noValue.uuid
+        currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity &&
+        currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity !== noValue.uuid
       ) {
 
         let targetApplication: TransformerReturnType<any> =
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid &&
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid !==
+          currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid &&
+          currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid !==
             noValue.uuid
-            ? currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid
+            ? currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid
             : currentApplication;
 
         
         if (
-          typeof currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+          typeof currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams
             ?.targetApplicationUuid == "object"
         ) {
           targetApplication = transformer_extended_apply_wrapper(
@@ -233,10 +233,10 @@ export function useJzodElementEditorHooks(
             "runtime", // step
             [], // transformerPath
             (
-              currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+              currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams
                 ?.targetApplicationUuid as any
             )?.label ?? "evaluation of hidden property", // label
-            currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid, // transformer
+            currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid, // transformer
             defaultMiroirModelEnvironment, // TODO: use the real environment
             formik.values, // queryParams
             formik.values, // contextResults - pass the instance to transform
@@ -249,9 +249,9 @@ export function useJzodElementEditorHooks(
             targetApplication,
             "for",
             (
-              currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+              currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams
                 ?.targetApplicationUuid as any
-            )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetApplicationUuid
+            )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid
           );
           if (targetApplication instanceof TransformerFailure) {
             throw new Error(
@@ -271,7 +271,7 @@ export function useJzodElementEditorHooks(
         let deploymentUuid: Uuid | undefined = applicationDeploymentMap[targetApplication];
         const applicationSection = getApplicationSection(
           deploymentUuid,
-          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
+          currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity
         );
         if (targetApplication !== noValue.uuid) {
           return getQueryRunnerParamsForReduxDeploymentsState(
@@ -283,16 +283,16 @@ export function useJzodElementEditorHooks(
               queryParams: {},
               contextResults: {},
               extractors: {
-                [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
+                [currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   label: "jzodElementEditorHooks foreign key objects",
                   applicationSection,
                   parentName: "",
                   parentUuid:
-                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity,
                   orderBy: {
                     attributeName:
-                      currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+                      currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams
                         ?.targetEntityOrderInstancesBy ?? "name",
                   },
                 },
@@ -329,8 +329,8 @@ export function useJzodElementEditorHooks(
   //   rootLessListKey,
   //   "currentDeploymentUuid:",
   //   currentDeploymentUuid,
-  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams:",
-  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.selectorParams,
+  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
+  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
   //   "foreignKeyObjectsFetchQueryParams",
   //   foreignKeyObjectsFetchQueryParams,
   //   "foreignKeyObjects", foreignKeyObjects,
@@ -342,8 +342,8 @@ export function useJzodElementEditorHooks(
   //   rootLessListKey,
   //   "currentTypecheckKeyMap",
   //   currentTypecheckKeyMap,
-  //   "selectorParams",
-  //   currentTypecheckKeyMap?.rawSchema?.tag?.value?.selectorParams,
+  //   "foreignKeyParams",
+  //   currentTypecheckKeyMap?.rawSchema?.tag?.value?.foreignKeyParams,
   //   "aggregate",
   //   count,
   //   "caller",
@@ -419,12 +419,12 @@ export function useJzodElementEditorHooks(
   const stringSelectList = useMemo(() => {
     if (
       localResolvedElementJzodSchemaBasedOnValue?.type == "uuid" &&
-      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity
+      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity
     ) {
       return [
         [noValue.uuid, noValue] as [string, EntityInstance],
         ...Object.entries(
-          foreignKeyObjects[localResolvedElementJzodSchemaBasedOnValue.tag.value?.selectorParams?.targetEntity] ??
+          foreignKeyObjects[localResolvedElementJzodSchemaBasedOnValue.tag.value?.foreignKeyParams?.targetEntity] ??
             {}
         ),
       ];

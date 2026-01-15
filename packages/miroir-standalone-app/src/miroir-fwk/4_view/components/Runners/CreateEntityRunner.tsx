@@ -177,7 +177,7 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                   value: {
                     defaultLabel: "Application",
                     editable: true,
-                    selectorParams: {
+                    foreignKeyParams: {
                       targetApplicationUuid: "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b",
                       targetEntityOrderInstancesBy: "name",

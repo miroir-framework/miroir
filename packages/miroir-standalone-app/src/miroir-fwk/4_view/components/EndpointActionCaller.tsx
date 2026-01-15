@@ -310,7 +310,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                       value: {
                         defaultLabel: "Application",
                         editable: true,
-                        selectorParams: {
+                        foreignKeyParams: {
                           targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                           targetEntity: entityApplicationForAdmin.uuid,
                           targetEntityOrderInstancesBy: "name",
@@ -333,7 +333,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                       value: {
                         defaultLabel: "Endpoint",
                         editable: true,
-                        selectorParams: {
+                        foreignKeyParams: {
                           targetDeploymentUuid: {
                             transformerType: "getActiveDeployment",
                             label: "endpointUuid: Get Active Deployment for selected Application",

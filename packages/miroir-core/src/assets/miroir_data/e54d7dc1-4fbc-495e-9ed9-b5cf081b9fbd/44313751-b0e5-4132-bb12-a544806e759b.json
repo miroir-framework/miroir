@@ -24,7 +24,7 @@
                   "initializeToType": "value",
                   "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
                 },
-                "selectorParams": {
+                "foreignKeyParams": {
                   "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                   "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                   "targetEntityOrderInstancesBy": "name"
@@ -42,7 +42,7 @@
                   "initializeToType": "value",
                   "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
                 },
-                "selectorParams": {
+                "foreignKeyParams": {
                   "targetApplicationUuid": {
                     "transformerType": "!=",
                     "interpolation": "build",

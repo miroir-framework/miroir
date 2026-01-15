@@ -224,11 +224,11 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     case "number": 
     case "date": 
     case "string": {
-      const targetEntityUuid = targetJzodSchema.tag?.value?.selectorParams?.targetEntity
+      const targetEntityUuid = targetJzodSchema.tag?.value?.foreignKeyParams?.targetEntity
       if (
         context.applicationSection &&
         targetJzodSchema.type == "uuid" &&
-        targetJzodSchema?.tag?.value?.selectorParams?.targetEntity &&
+        targetJzodSchema?.tag?.value?.foreignKeyParams?.targetEntity &&
         targetEntityUuid
       ) {
         const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
@@ -240,7 +240,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
             <EntityInstanceLink
               deploymentUuid={context.deploymentUuid}
               applicationSection={context.applicationSection}
-              entityUuid={targetJzodSchema?.tag?.value?.selectorParams?.targetEntity}
+              entityUuid={targetJzodSchema?.tag?.value?.foreignKeyParams?.targetEntity}
               instanceUuid={props.element}
               key={props.name}
             />

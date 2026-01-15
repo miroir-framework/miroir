@@ -39,7 +39,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
@@ -123,7 +123,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
@@ -207,7 +207,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
@@ -291,7 +291,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
@@ -375,7 +375,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
@@ -459,7 +459,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
@@ -543,7 +543,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
@@ -627,7 +627,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
-                    "selectorParams": {
+                    "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"

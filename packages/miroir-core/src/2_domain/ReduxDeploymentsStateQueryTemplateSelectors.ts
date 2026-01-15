@@ -124,9 +124,9 @@ export function getQueryTemplateRunnerParamsForReduxDeploymentsState(
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
   deploymentEntityState: ReduxDeploymentsState,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
+  foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
 ): JzodObject | undefined => {
-  const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
+  const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
 
   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
     localQuery.deploymentUuid,
@@ -134,28 +134,28 @@ export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
     entityEntityDefinition.uuid
   );
 
-  log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with selectorParams", selectorParams);
+  log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with foreignKeyParams", foreignKeyParams);
 
   if (
     deploymentEntityState &&
     deploymentEntityState[deploymentEntityStateIndex] &&
     deploymentEntityState[deploymentEntityStateIndex].entities
     // deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
-    // deploymentEntityState[deploymentEntityStateIndex].entities[selectorParams.query.entityUuid]
+    // deploymentEntityState[deploymentEntityStateIndex].entities[foreignKeyParams.query.entityUuid]
   ) {
     const entityDefinition: EntityDefinition | undefined = Object.values(
       deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
-    ).find((e: EntityDefinition) => e.entityUuid == selectorParams.query.entityUuid);
+    ).find((e: EntityDefinition) => e.entityUuid == foreignKeyParams.query.entityUuid);
     if (!entityDefinition) {
       log.warn(
-        "extractEntityJzodSchemaFromReduxDeploymentsState selectorParams",
-        selectorParams,
+        "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+        foreignKeyParams,
         "could not find entity definition for index",
         deploymentEntityStateIndex,
         "in state",
         deploymentEntityState,
         "for entity",
-        selectorParams.query.entityUuid,
+        foreignKeyParams.query.entityUuid,
         "in deployment",
         localQuery.deploymentUuid
       );
@@ -163,22 +163,22 @@ export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
     }
     const result: JzodObject = entityDefinition.mlSchema;
     // const result: JzodObject = (
-    //   deploymentEntityState[deploymentEntityStateIndex].entities[selectorParams.query.entityUuid] as EntityDefinition
+    //   deploymentEntityState[deploymentEntityStateIndex].entities[foreignKeyParams.query.entityUuid] as EntityDefinition
     // ).mlSchema;
 
-    log.info("extractEntityJzodSchemaFromReduxDeploymentsState selectorParams", selectorParams, "result", result);
+    log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
 
     return result;
   } else {
     log.warn(
-      "extractEntityJzodSchemaFromReduxDeploymentsState selectorParams",
-      selectorParams,
+      "extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams",
+      foreignKeyParams,
       "could not find index",
       deploymentEntityStateIndex,
       "in state",
       deploymentEntityState,
       "for entity",
-      selectorParams.query.entityUuid,
+      foreignKeyParams.query.entityUuid,
       "in deployment",
       localQuery.deploymentUuid
     );
