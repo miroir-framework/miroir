@@ -20,7 +20,8 @@ import {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -42,37 +43,54 @@ export class SqlDbExtractTemplateRunner {
   constructor(
     private persistenceStoreController:
       | SqlDbDataStoreSection
-      | SqlDbModelStoreSection, /* concrete types for MixedSqlDbInstanceStoreSection */
-    private sqlDbExtractorRunner: SqlDbQueryRunner
-  ) // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
-  {
+      | SqlDbModelStoreSection /* concrete types for MixedSqlDbInstanceStoreSection */,
+    private sqlDbExtractorRunner: SqlDbQueryRunner // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
+  ) {
     this.logHeader = "SqlDbExtractTemplateRunner " + persistenceStoreController.getStoreName();
     const InMemoryImplementationExtractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap = {
       extractorType: "async",
-      extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
-      extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
-      extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(this.sqlDbExtractorRunner),
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
+      extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(
+        this.sqlDbExtractorRunner
+      ),
+      extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(
+        this.sqlDbExtractorRunner
+      ),
+      extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(
+        this.sqlDbExtractorRunner
+      ),
+      extractEntityInstanceUuidIndexWithObjectListExtractor:
+        asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor:
+        asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
       extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
-      // 
+      //
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
     const dbImplementationExtractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap = {
       extractorType: "async",
-      extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(this.sqlDbExtractorRunner),
-      extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(this.sqlDbExtractorRunner),
-      extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(this.sqlDbExtractorRunner),
+      extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(
+        this.sqlDbExtractorRunner
+      ),
+      extractEntityInstanceList: this.sqlDbExtractorRunner.extractEntityInstanceList.bind(
+        this.sqlDbExtractorRunner
+      ),
+      extractEntityInstance: this.sqlDbExtractorRunner.extractEntityInstance.bind(
+        this.sqlDbExtractorRunner
+      ),
       extractEntityInstanceUuidIndexWithObjectListExtractor:
-        this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
+        this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor.bind(
+          this.sqlDbExtractorRunner
+        ),
       extractEntityInstanceListWithObjectListExtractor:
-        this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceListWithObjectListExtractor.bind(this.sqlDbExtractorRunner),
+        this.sqlDbExtractorRunner.asyncSqlDbExtractEntityInstanceListWithObjectListExtractor.bind(
+          this.sqlDbExtractorRunner
+        ),
       runQuery: this.sqlDbExtractorRunner.asyncExtractWithQuery.bind(this.sqlDbExtractorRunner),
       extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: undefined as any,
-      // 
+      //
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
 
@@ -81,28 +99,64 @@ export class SqlDbExtractTemplateRunner {
   }
 
   // ##############################################################################################
-  async handleQueryTemplateActionForServerONLY(runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
-    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runBoxedQueryTemplateAction", JSON.stringify(runBoxedQueryTemplateAction, null, 2));
-    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateAction, this.extractorRunnerMapForServerOnly, defaultMetaModelEnvironment);
+  async handleQueryTemplateActionForServerONLY(
+    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    log.info(
+      this.logHeader,
+      "handleQueryTemplateActionForServerONLY",
+      "runBoxedQueryTemplateAction",
+      JSON.stringify(runBoxedQueryTemplateAction, null, 2)
+    );
+    return handleQueryTemplateAction(
+      "SqlDbQueryTemplateRunner",
+      runBoxedQueryTemplateAction,
+      applicationDeploymentMap,
+      this.extractorRunnerMapForServerOnly,
+      defaultMetaModelEnvironment
+    );
   }
 
   // ##############################################################################################
-  async handleBoxedExtractorTemplateActionForServerONLY(runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
-    log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "runBoxedExtractorTemplateAction", JSON.stringify(runBoxedExtractorTemplateAction, null, 2));
-    return handleBoxedExtractorTemplateAction("SqlDbQueryTemplateRunner", runBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly, defaultMetaModelEnvironment);
+  async handleBoxedExtractorTemplateActionForServerONLY(
+    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    log.info(
+      this.logHeader,
+      "handleBoxedExtractorTemplateActionForServerONLY",
+      "runBoxedExtractorTemplateAction",
+      JSON.stringify(runBoxedExtractorTemplateAction, null, 2)
+    );
+    return handleBoxedExtractorTemplateAction(
+      "SqlDbQueryTemplateRunner",
+      runBoxedExtractorTemplateAction,
+      applicationDeploymentMap,
+      this.extractorRunnerMapForServerOnly,
+      defaultMetaModelEnvironment
+    );
   }
 
   // ##############################################################################################
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
+  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
       "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
       "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
       JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
     );
-    return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly, defaultMetaModelEnvironment);
+    return handleBoxedExtractorTemplateOrQueryTemplateAction(
+      "SqlDbQueryTemplateRunner",
+      runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+      applicationDeploymentMap,
+      this.extractorRunnerMapForServerOnly,
+      defaultMetaModelEnvironment
+    );
   }
-
 }
 
 export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {

@@ -66,8 +66,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       this.extractorRunnerInMemory = new ExtractorRunnerInMemory(this);
       this.sqlDbQueryRunner = new SqlDbQueryRunner(
         this.schema,
-        this as any, /*SqlDbQueryRunner takes a concrete implementation*/
-        this.extractorRunnerInMemory,
+        this as any /*SqlDbQueryRunner takes a concrete implementation*/,
+        this.extractorRunnerInMemory
       );
       this.extractorTemplateRunner = new SqlDbExtractTemplateRunner(
         this as any /*SqlDbExtractTemplateRunner takes a concrete implementation*/,
@@ -96,7 +96,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       query:
         | BoxedExtractorOrCombinerReturningObjectOrObjectList
         | BoxedQueryWithExtractorCombinerTransformer,
-      modelEnvironment: MiroirModelEnvironment,
+      modelEnvironment: MiroirModelEnvironment
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -193,12 +193,16 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // #############################################################################################
     async handleQueryTemplateActionForServerONLY(
-      query: RunBoxedQueryTemplateAction
+      query: RunBoxedQueryTemplateAction,
+      appliationDeploymentMap: ApplicationDeploymentMap
     ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", query);
 
       const result: Action2ReturnType =
-        await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+        await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(
+          query,
+          appliationDeploymentMap
+        );
 
       log.info(
         this.logHeader,
@@ -213,12 +217,16 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // #############################################################################################
     async handleBoxedExtractorTemplateActionForServerONLY(
-      query: RunBoxedExtractorTemplateAction
+      query: RunBoxedExtractorTemplateAction,
+      applicationDeploymentMap: ApplicationDeploymentMap
     ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", query);
 
       const result: Action2ReturnType =
-        await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
+        await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(
+          query,
+          applicationDeploymentMap
+        );
 
       log.info(
         this.logHeader,
@@ -233,7 +241,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // #############################################################################################
     async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-      query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+      query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+      applicationDeploymentMap: ApplicationDeploymentMap
     ): Promise<Action2ReturnType> {
       log.info(
         this.logHeader,
@@ -244,7 +253,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
       const result: Action2ReturnType =
         await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-          query
+          query,
+          applicationDeploymentMap
         );
 
       log.info(
@@ -259,11 +269,15 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
+    async handleBoxedExtractorAction(
+      query: RunBoxedExtractorAction,
+      applicationDeploymentMap: ApplicationDeploymentMap
+    ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedExtractorAction", "query", query);
 
       const result: Action2ReturnType = await this.sqlDbQueryRunner.handleBoxedExtractorAction(
-        query
+        query,
+        applicationDeploymentMap
       );
 
       log.info(this.logHeader, "handleBoxedExtractorAction", "query", query, "result", result);
@@ -280,6 +294,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
       const result: Action2ReturnType = await this.sqlDbQueryRunner.handleBoxedQueryAction(
         query,
+        appliationDeploymentMap,
         currentModelEnvironment
       );
 

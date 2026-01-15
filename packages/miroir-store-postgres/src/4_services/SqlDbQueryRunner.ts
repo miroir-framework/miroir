@@ -35,6 +35,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
   transformer_InnerReference_resolve,
+  type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
   type MetaModel,
   type MiroirModelEnvironment
@@ -84,8 +85,8 @@ export class SqlDbQueryRunner {
     private schema: string,
     private persistenceStoreController:
       | SqlDbDataStoreSection
-      | SqlDbModelStoreSection, /* concrete types for MixedSqlDbInstanceStoreSection */ // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
-    private extractorRunnerInMemory: ExtractorRunnerInMemory,
+      | SqlDbModelStoreSection /* concrete types for MixedSqlDbInstanceStoreSection */, // private persistenceStoreController: typeof MixedSqlDbInstanceStoreSection // does not work
+    private extractorRunnerInMemory: ExtractorRunnerInMemory
   ) {
     this.logHeader = "SqlDbQueryRunner " + persistenceStoreController.getStoreName();
     this.sqlDbExtractTemplateRunner = new SqlDbExtractTemplateRunner(
@@ -140,6 +141,7 @@ export class SqlDbQueryRunner {
    */
   asyncExtractWithQuery = async (
     selectorParams: AsyncQueryRunnerParams,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<Record<string, any>>> => {
     log.info(
@@ -279,12 +281,14 @@ export class SqlDbQueryRunner {
    * @returns
    */
   public asyncSqlDbExtractEntityInstanceListWithObjectListExtractor = (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceListWithFilter(
           selectorParams,
+          applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
@@ -301,6 +305,7 @@ export class SqlDbQueryRunner {
             extractorRunnerMap: selectorParams.extractorRunnerMap,
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObjectList",
+              application: selectorParams.extractor.application,
               deploymentUuid: selectorParams.extractor.deploymentUuid,
               contextResults: selectorParams.extractor.contextResults,
               pageParams: selectorParams.extractor.pageParams,
@@ -314,6 +319,7 @@ export class SqlDbQueryRunner {
                   },
             },
           },
+          applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
         break;
@@ -338,13 +344,15 @@ export class SqlDbQueryRunner {
    * @returns
    */
   public asyncSqlDbExtractEntityInstanceUuidIndexWithObjectListExtractor = (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     // let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
         return this.extractEntityInstanceUuidIndexWithFilter(
           selectorParams,
+          applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
       }
@@ -361,6 +369,7 @@ export class SqlDbQueryRunner {
             extractorRunnerMap: selectorParams.extractorRunnerMap,
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObjectList",
+              application: selectorParams.extractor.application,
               deploymentUuid: selectorParams.extractor.deploymentUuid,
               contextResults: selectorParams.extractor.contextResults,
               pageParams: selectorParams.extractor.pageParams,
@@ -374,6 +383,7 @@ export class SqlDbQueryRunner {
                   },
             },
           },
+          applicationDeploymentMap,
           defaultMetaModelEnvironment
         );
         break;
@@ -392,7 +402,8 @@ export class SqlDbQueryRunner {
 
   // ##############################################################################################
   async handleBoxedExtractorAction(
-    runBoxedExtractorAction: RunBoxedExtractorAction
+    runBoxedExtractorAction: RunBoxedExtractorAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -407,6 +418,7 @@ export class SqlDbQueryRunner {
           extractor: runBoxedExtractorAction.payload.query,
           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
         },
+        applicationDeploymentMap,
         defaultMetaModelEnvironment
       );
     if (queryResult instanceof Domain2ElementFailed) {
@@ -439,6 +451,7 @@ export class SqlDbQueryRunner {
   // ##############################################################################################
   async handleBoxedQueryAction(
     runBoxedQueryAction: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     log.info(
@@ -453,7 +466,8 @@ export class SqlDbQueryRunner {
           extractor: runBoxedQueryAction.payload.query,
           extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
         },
-        currentModelEnvironment?? defaultMetaModelEnvironment // TODO: make currentModelEnvironment required in interface (not optional)
+        applicationDeploymentMap,
+        currentModelEnvironment ?? defaultMetaModelEnvironment // TODO: make currentModelEnvironment required in interface (not optional)
       );
     } else {
       queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery(
@@ -461,7 +475,8 @@ export class SqlDbQueryRunner {
           extractor: runBoxedQueryAction.payload.query,
           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
         },
-        currentModelEnvironment?? defaultMetaModelEnvironment // TODO: make currentModelEnvironment required in interface (not optional)
+        applicationDeploymentMap,
+        currentModelEnvironment ?? defaultMetaModelEnvironment // TODO: make currentModelEnvironment required in interface (not optional)
       );
     }
     if (queryResult instanceof Domain2ElementFailed) {
@@ -492,199 +507,14 @@ export class SqlDbQueryRunner {
     BoxedExtractorOrCombinerReturningObject,
     Domain2QueryReturnType<EntityInstance>
   > = async (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
+    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Domain2QueryReturnType<Domain2QueryReturnType<EntityInstance>>> => {
     return this.extractorRunnerInMemory.extractEntityInstance(
       selectorParams,
-      defaultMiroirModelEnvironment,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment
     );
-    // const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor
-    //   .select as ExtractorOrCombinerReturningObject;
-    // const deploymentUuid = selectorParams.extractor.deploymentUuid;
-    // const applicationSection: ApplicationSection =
-    //   selectorParams.extractor.select.applicationSection ??
-    //   ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
-
-    // const entityUuidReference = querySelectorParams.parentUuid;
-
-    // // log.info(
-    // //   "extractEntityInstance params",
-    // //   querySelectorParams,
-    // //   deploymentUuid,
-    // //   applicationSection,
-    // //   entityUuidReference
-    // // );
-
-    // switch (querySelectorParams?.extractorOrCombinerType) {
-    //   case "combinerForObjectByRelation": {
-    //     const referenceObject = transformer_InnerReference_resolve(
-    //       "runtime",
-    //       [],
-    //       {
-    //         transformerType: "getFromContext",
-    //         interpolation: "runtime",
-    //         referenceName: querySelectorParams.objectReference,
-    //       },
-    //       "value",
-    //       // { ...defaultMetaModelEnvironment, ...selectorParams.extractor.queryParams },
-    //       defaultMetaModelEnvironment, // TODO: use correct model environment
-    //       selectorParams.extractor.queryParams,
-    //       selectorParams.extractor.contextResults
-    //     );
-
-    //     if (
-    //       !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
-    //       referenceObject instanceof Domain2ElementFailed
-    //     ) {
-    //       return new Domain2ElementFailed({
-    //         queryFailure: "IncorrectParameters",
-    //         failureMessage:
-    //           "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
-    //           JSON.stringify(querySelectorParams.objectReference),
-    //         query: JSON.stringify(querySelectorParams),
-    //         queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-    //         queryContext: JSON.stringify(selectorParams.extractor.contextResults),
-    //       });
-    //     }
-
-    //     const result = await this.persistenceStoreController.getInstance(
-    //       entityUuidReference,
-    //       referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-    //     );
-
-    //     if (
-    //       result instanceof Action2Error ||
-    //       result.returnedDomainElement instanceof Domain2ElementFailed
-    //     ) {
-    //       return new Domain2ElementFailed({
-    //         queryFailure: "InstanceNotFound",
-    //         deploymentUuid,
-    //         applicationSection,
-    //         entityUuid: entityUuidReference,
-    //       });
-    //     }
-    //     // log.info(
-    //     //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
-    //     //   querySelectorParams,
-    //     //   "######### context entityUuid",
-    //     //   entityUuidReference,
-    //     //   "######### referenceObject",
-    //     //   referenceObject,
-    //     //   "######### queryParams",
-    //     //   JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
-    //     //   "######### contextResults",
-    //     //   JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
-    //     // );
-    //     return result.returnedDomainElement;
-    //     break;
-    //   }
-    //   case "extractorForObjectByDirectReference": {
-    //     const instanceDomainElement = querySelectorParams.instanceUuid;
-    //     // log.info("selectEntityInstanceFromReduxDeploymentsStateForTemplate extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
-    //     // const extractResult = await this.asyncExtractWithQuery(
-    //     //   // selectorParams,
-    //     //   {
-    //     //     extractor: {
-    //     //       queryType: "boxedQueryWithExtractorCombinerTransformer",
-    //     //       deploymentUuid: selectorParams.extractor.deploymentUuid,
-    //     //       contextResults: selectorParams.extractor.contextResults,
-    //     //       pageParams: selectorParams.extractor.pageParams,
-    //     //       queryParams: selectorParams.extractor.queryParams,
-    //     //       runAsSql: true,
-    //     //       extractors: {
-    //     //         select: querySelectorParams
-    //     //         // select: {
-    //     //         //   extractorOrCombinerType: "extractorByEntityReturningObject",
-    //     //         //   parentUuid: entityUuidReference,
-    //     //         //   applicationSection: selectorParams.extractor.select.applicationSection,
-    //     //         //   instanceUuid: querySelectorParams.instanceUuid,
-    //     //         // },
-    //     //       }
-    //     //     },
-    //     //     extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
-    //     //   },
-    //     //   defaultMetaModelEnvironment
-    //     // );
-    //     // log.info("extractEntityInstance extractResult", JSON.stringify(extractResult));
-
-
-    //     // if (extractResult instanceof Domain2ElementFailed) {
-    //     //   return extractResult;
-    //     // }
-    //     // if (
-    //     //   !extractResult?.select ||
-    //     //   !Array.isArray(extractResult.select) ||
-    //     //   extractResult.select.length == 0
-    //     // ) {
-    //     //   return new Domain2ElementFailed({
-    //     //     queryFailure: "InstanceNotFound",
-    //     //     deploymentUuid,
-    //     //     applicationSection,
-    //     //     entityUuid: entityUuidReference,
-    //     //     instanceUuid: instanceDomainElement,
-    //     //   });
-    //     // }
-    //     // log.info(
-    //     //   "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
-    //     //   querySelectorParams,
-    //     //   "entityUuidReference",
-    //     //   entityUuidReference,
-    //     //   "######### context entityUuid",
-    //     //   entityUuidReference,
-    //     //   "######### queryParams",
-    //     //   JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
-    //     //   "######### contextResults",
-    //     //   JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
-    //     //   "######### result",
-    //     //   JSON.stringify(extractResult.select[0], undefined, 2)
-    //     // );
-    //     // return extractResult.select[0];
-
-    //     log.info("extractEntityInstance found instanceUuid", JSON.stringify(instanceDomainElement));
-
-    //     log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
-    //     const result = await this.persistenceStoreController.getInstance(
-    //       entityUuidReference,
-    //       instanceDomainElement
-    //     );
-
-    //     if (
-    //       result instanceof Action2Error ||
-    //       result.returnedDomainElement instanceof Domain2ElementFailed
-    //     ) {
-    //       return new Domain2ElementFailed({
-    //         queryFailure: "InstanceNotFound",
-    //         deploymentUuid,
-    //         applicationSection,
-    //         entityUuid: entityUuidReference,
-    //         instanceUuid: instanceDomainElement,
-    //       });
-    //     }
-    //     log.info(
-    //       "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
-    //       querySelectorParams,
-    //       "entityUuidReference",
-    //       entityUuidReference,
-    //       "######### context entityUuid",
-    //       entityUuidReference,
-    //       "######### queryParams",
-    //       JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
-    //       "######### contextResults",
-    //       JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
-    //       "######### result",
-    //       JSON.stringify(result, undefined, 2)
-    //     );
-    //     return result.returnedDomainElement;
-    //     break;
-    //   }
-    //   default: {
-    //     throw new Error(
-    //       "extractEntityInstance can not handle ExtractorTemplateReturningObject query with queryType=" +
-    //         selectorParams.extractor.select.extractorOrCombinerType
-    //     );
-    //     break;
-    //   }
-    // }
   };
 
   // ##############################################################################################
@@ -692,17 +522,20 @@ export class SqlDbQueryRunner {
     BoxedExtractorOrCombinerReturningObjectList,
     Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
-    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
-    return this.extractEntityInstanceList(extractorRunnerParams, defaultMetaModelEnvironment).then(
-      (result) => {
-        if (result instanceof Domain2ElementFailed) {
-          return result;
-        }
-        const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [i.uuid, i]));
-        return entityInstanceUuidIndex;
+    return this.extractEntityInstanceList(
+      extractorRunnerParams,
+      applicationDeploymentMap,
+      defaultMetaModelEnvironment
+    ).then((result) => {
+      if (result instanceof Domain2ElementFailed) {
+        return result;
       }
-    );
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [i.uuid, i]));
+      return entityInstanceUuidIndex;
+    });
   };
 
   // ##############################################################################################
@@ -756,10 +589,12 @@ export class SqlDbQueryRunner {
     BoxedExtractorOrCombinerReturningObjectList,
     Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
-    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
     return this.extractEntityInstanceListWithFilter(
       extractorRunnerParams,
+      applicationDeploymentMap,
       defaultMetaModelEnvironment
     ).then((result) => {
       if (result instanceof Domain2ElementFailed) {
