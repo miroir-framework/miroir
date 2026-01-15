@@ -18,7 +18,7 @@ TBW
 
 ### The Home Page
 
-![The Library Application Homepage](./library_homepage.png)
+<img src="./library_homepage.png" alt="The Library Application Homepage" width="85%"/>
 
 The interface has three main areas:
 
@@ -28,9 +28,9 @@ The interface has three main areas:
 
 ### Browsing Data Through Entities
 
-![The Library Catalogue Menu](./library_homepage_menu.jpg)
+<img src="./library_homepage_menu.jpg" alt="The Library Catalogue Menu" width="50%"/>
 
-The Library organizes its data into **Entities** - collections of related items with a common structure:
+The Library organizes its data into **Entities** - collections of related instances with a common structure:
 
 - **Book** - volumes in the library's collection
 - **Author** - book creators, with name, nationality, and dates
@@ -45,51 +45,71 @@ Each menu item enables the display of instances for one Entity.
 
 Click "Library Users" in the catalogue menu to see the Users' list Report:
 
-![The Users](./library_users.png)
+<img src="./library_users.png" alt="The Users" width="80%"/>
 
 #### Viewing User Details
 
 Click on the name a user in the list to see the report displaying its full information, with the form:
 
-![An example User](./library_user_details.png)
+<img src="./library_user_details.png" alt="An example User" width="70%"/>
 
 Miroir manipulates data in the [JSON](https://en.wikipedia.org/wiki/JSON) format. The JSON format for the displayed user can be shown using the above-highlighted switch on the top-right corner.
 
-![An example User in JSON format](./library_user_details_JSON.png)
+<img src="./library_user_details_JSON.png" alt="An example User in JSON format" width="70%"/>
 
 #### Modifying a User
 
 Modification on data is possible directly in the details Report, in the form or in the JSON display. Validate your changes by clicking on the blue button on top:
 
-![Edit an example User](./library_user_details_EDIT.png)
+<img src="./library_user_details_EDIT.png" alt="Edit an example User" width="70%"/>
 
 A confirmation is displayed, and the value modified persistently.
 
-![Edit an example User](./library_user_details_EDIT_SUCCESS.png)
+<img src="./library_user_details_EDIT_SUCCESS.png" alt="Edit an example User - Success" width="70%"/>
 
 #### Creating a New User
 
 Use the "New User" button:
 
-![Display new User Form](./library_user_ADD.png)
+<img src="./library_user_ADD.png" alt="Display new User Form" width="65%"/>
 
-You get a new user creation form, that you can fill out to add a new user:
+You get a new user creation form, that you can fill out to add a new user. If you copy / paste the following JSON:
 
-![Add a new User](./library_user_ADD_form_filled.png)
+```json
+{
+  "uuid": "6d4882c3-0438-49e2-973a-0d4b82f23aba",
+  "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+  "name": "Albert Einstein",
+  "firstName": "Albert",
+  "lastName": "Einstein",
+  "street": "33 Park Lane",
+  "postalCode": "NJ-4287",
+  "city": "Princeton",
+  "state": "New Jersey",
+  "parentName": "User",
+  "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11"
+}
+```
+
+you will get the following screen:
+
+<img src="./library_user_ADD_form_filled.png" alt="Add a new User" width="70%"/>
 
 Upon validation, a success notification is displayed, and the added User can be seen in the Users' list.
 
-![Add a new User Succeeded](./library_user_ADD_SUCCESS.png)
+<img src="./library_user_ADD_SUCCESS.png" alt="Add a new User Succeeded" width="70%"/>
 
 #### Deleting a User
 
 In the `UserList` report, find the `Delete` icon for the user you just added.
 
-![Drop a User](./library_user_DROP.png)
+<img src="./library_user_DROP.png" alt="Drop a User" width="75%"/>
 
 Confirm the Drop:
 
-![Drop a User: confirm](./library_user_DROP_confirm.png)
+<!-- ![Drop a User: confirm](./library_user_DROP_confirm.png) -->
+
+<img src="./library_user_DROP_confirm.png" width="60%"/>
 
 A success message is displayed, and the user disappears from the Users' list.
 
@@ -120,11 +140,11 @@ We will show how to add an `ISBN` optional attribute to the `Book` Entity.
 
 Click on the pencil icon on the right of the app bar to enable `Design Mode`. The design mode enables altering the application itself, not only the data the application manipulates.
 
-![Enable Design Mode](./miroir-enabling_design_mode.png)
+<img src="./miroir-enabling_design_mode.png" alt="Enable Design Mode" width="60%"/>
 
 The 'report editor' is now shown on the top of the current view and the 'model' menu items are now shown on the left.
 
-![In Design Mode](./miroir-design_mode.png)
+<img src="./miroir-design_mode.png" alt="In Design Mode" width="85%"/>
 
 click on the `Library Entity Definitions` menu item.
 
@@ -138,11 +158,11 @@ Adding the ISBN will thus alter the definition of the `Book` entity, without alt
 
 Click on the `Book` Entity Definition:
 
-![Select Book Entity Definition](./library-entityDefinitions_select_Book.png)
+<img src="./library-entityDefinitions_select_Book.png" alt="Select Book Entity Definition" width="75%"/>
 
 This displays the definition, in which the attributes of the Entity are shown:
 
-![The Book Entity Definition](./library-model-Book_entity_definition.png)
+<img src="./library-model-Book_entity_definition.png" alt="The Book Entity Definition" width="75%"/>
 
 Of particular interest is the `mlSchema` attribute, that describes the structure of a `Book`.
 
