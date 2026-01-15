@@ -171,7 +171,7 @@ Of special interest is the `mlSchema` attribute, that describes the structure of
 
 A `Book` has the following attributes:
 
-- **uuid**: Unique identifier for the book. Every entity instance must have one.
+- **uuid**: Unique, primary identifier for the book. Every entity instance must have one.
 - **parentName**: Name of the parent Entity or type (optional).
 - **parentUuid**: Unique identifier of the parent Entity. Every Entity instance must point to its Entity through this attribute.
 - **conceptLevel**: Level or type of concept (optional, `model` or `data`, usal objects are implicitly `data`).
@@ -184,14 +184,34 @@ The `name` is a simple `string`, that will be shown as `Book Title` in forms:
 
 <img src="./library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Definition Attribute: 'name'" width="85%"/>
 
+The `author` is a `uuid`, that is a reference to an instance of the `Author` Entity, a relationship commonly called a [Foreign Key](https://en.wikipedia.org/wiki/Foreign_key) in database systems:
 
+<img src="./library-model-Book_entity_definition_mlSchema_author.png" alt="The Book Entity Definition Attribute: 'author'" width="85%"/>
 
-<!-- These definitions are stored as JSON, not hardcoded in TypeScript. This is what makes Miroir applications data-driven. -->
+The `foreignKeyParams` attribute in the `tag` informs the Miroir platform of the intended interpretation for the Foreign Key: in this case the given `uuid` shall be found as primary identifier for a `Book` instance. When selecting a book in the UI, the displayed list of books shall be sorted by the `name` attribute.
 
+To add an attribute, click on the blue **+** icon:
+
+<img src="./library-model-Book_entity_definition_mlSchema_ADD_attribute.png" alt="Adding an Attribute to the Book Entity" width="85%"/>
+
+Edit the attribute's definition to declare it a simple, **optional** string. **remember to declare it optional, because the existing Books do not have a value for it yet, and the structure check for them would otherwise fail!**
+
+<img src="./library-model-Book_entity_definition_mlSchema_ADD_attribute_ISBN.png" alt="Adding ISBN to the Book Entity" width="80%"/>
+
+Validate when ready!
+
+<img src="./library-model-Book_entity_definition_mlSchema_VALIDATE.png" alt="Validate the Book Entity update!" width="50%"/>
+
+Now when displaying the Book details Report for a given book, an optional `ISBN` attribute can be added:
+
+<img src="./library-data-book_add_ISBN.png" alt="Add an ISBN value to a Book" width="50%"/>
+
+Try a value like `123456789` and you're done with Part 2! Congrats!
 
 ## Part 3: Working with Reports
 
-We will demonstrate the creation of a new Report, based on the following use case: suppose we want to find the books that have never been borrowed.
+<!-- We will demonstrate the creation of a new Report, based on the following use case: suppose we want to find the books that have never been borrowed. -->
+We will demonstrate the creation of a new Report that will show the list of books that do not have an ISBN in our database yet.
 
 ### Working with Queries and Transformers
 
