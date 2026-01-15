@@ -28,7 +28,7 @@ The interface has three main areas:
 
 ### Browsing Data Through Entities
 
-<img src="./library_homepage_menu.jpg" alt="The Library Catalogue Menu" width="60%"/>
+<img src="./library_homepage_menu.jpg" alt="The Library Catalogue Menu" width="40%"/>
 
 The Library organizes its data into **Entities** - collections of related instances with a common structure:
 
@@ -97,7 +97,7 @@ you will get the following screen:
 
 Upon validation, a success notification is displayed, and the added User can be seen in the Users' list.
 
-<img src="./library_user_ADD_SUCCESS.png" alt="Add a new User Succeeded" width="80%"/>
+<img src="./library_user_ADD_SUCCESS.png" alt="Add a new User Succeeded" width="60%"/>
 
 #### Deleting a User
 
@@ -109,7 +109,7 @@ Confirm the Drop:
 
 <!-- ![Drop a User: confirm](./library_user_DROP_confirm.png) -->
 
-<img src="./library_user_DROP_confirm.png" width="70%"/>
+<img src="./library_user_DROP_confirm.png" width="80%"/>
 
 A success message is displayed, and the user disappears from the Users' list.
 
