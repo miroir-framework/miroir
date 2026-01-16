@@ -18,6 +18,7 @@ import {
   ConfigurationService,
   defaultLevels,
   defaultMiroirMetaModel,
+  defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -48,7 +49,8 @@ import {
   Report,
   reportBookList,
   resetAndInitApplicationDeployment,
-  StoreUnitConfiguration
+  StoreUnitConfiguration,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 
 
@@ -76,6 +78,8 @@ import { removeUndefinedProperties } from 'miroir-core';
 import { ignorePostgresExtraAttributes } from 'miroir-core';
 import { createDeploymentCompositeAction } from 'miroir-core';
 import { adminLibraryApplication } from 'miroir-core';
+import { selfApplicationDeploymentLibrary } from 'miroir-core';
+import { selfApplicationDeploymentMiroir } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -122,6 +126,11 @@ MiroirLoggerFactory.startRegisteredLoggers(
 );
 myConsoleLog("started registered loggers DONE");
 
+const applicationDeploymentMap: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+};
+
 const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
@@ -162,7 +171,8 @@ beforeAll(
     const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
-      domainController
+      domainController,
+      applicationDeploymentMap,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController) {
@@ -180,7 +190,12 @@ beforeAll(
       adminLibraryApplication.uuid,
       libraryDeploymentStorageConfiguration
     );
-    const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirModelEnvironment, {});
+    const result = await domainController.handleCompositeAction(
+      createLibraryDeploymentAction,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+      {}
+    );
 
     if (result.status !== "ok") {
       throw new Error("beforeAll failed createLibraryDeploymentAction!");
@@ -201,7 +216,11 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await resetAndInitApplicationDeployment(domainController, selfApplicationDeploymentConfigurations);
+    await resetAndInitApplicationDeployment(
+      domainController,
+      applicationDeploymentMap,
+      selfApplicationDeploymentConfigurations
+    );
     document.body.innerHTML = '';
     await addEntitiesAndInstances(
       localAppPersistenceStoreController,
@@ -209,6 +228,7 @@ beforeEach(
       localCache,
       miroirConfig,
       adminConfigurationDeploymentLibrary,
+      applicationDeploymentMap,
       [
         // authors
         {
@@ -298,14 +318,14 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
           await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(
             {
               actionType: "runBoxedExtractorTemplateAction",
-              // actionName: "runQuery",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-              // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
+                application: selfApplicationDeploymentMiroir.uuid,
+                // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                 applicationSection: applicationSection,
                 query: {
+                  application: selfApplicationDeploymentMiroir.uuid,
                   queryType: "boxedExtractorTemplateReturningObject",
                   pageParams: {},
                   queryParams: {},
@@ -331,7 +351,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   },
                 },
               },
-            }
+            },
+            applicationDeploymentMap
           );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
@@ -369,36 +390,40 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult: Action2ReturnType =
-          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runBoxedQueryTemplateAction",
-            // actionName: "runQuery",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            payload: {
-              applicationSection: applicationSection,
-              query: {
-                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                extractorTemplates: {
-                  entities: {
-                    extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                    applicationSection: applicationSection,
-                    parentName: entityEntity.name,
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: entityEntity.uuid,
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+            {
+              actionType: "runBoxedQueryTemplateAction",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                application: selfApplicationDeploymentLibrary.uuid,
+                applicationSection: applicationSection,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                query: {
+                  application: selfApplicationDeploymentLibrary.uuid,
+                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  extractorTemplates: {
+                    entities: {
+                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      applicationSection: applicationSection,
+                      parentName: entityEntity.name,
+                      parentUuid: {
+                        transformerType: "returnValue",
+                        mlSchema: { type: "uuid" },
+                        interpolation: "build",
+                        value: entityEntity.uuid,
+                      },
                     },
                   },
                 },
               },
             },
-          });
+            applicationDeploymentMap
+          );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
@@ -422,46 +447,50 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "model";
         const queryResult =
-          await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runBoxedQueryTemplateAction",
-            // actionName: "runQuery",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            payload: {
-              applicationSection: applicationSection,
-              query: {
-                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                extractorTemplates: {
-                  entities: {
-                    extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                    applicationSection: applicationSection,
-                    parentName: "Entity",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    },
-                    filter: {
-                      attributeName: "name",
-                      value: {
+          await localMiroirPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+            {
+              actionType: "runBoxedQueryTemplateAction",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                application: selfApplicationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                applicationSection: applicationSection,
+                query: {
+                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                  application: selfApplicationDeploymentLibrary.uuid,
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  extractorTemplates: {
+                    entities: {
+                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      applicationSection: applicationSection,
+                      parentName: "Entity",
+                      parentUuid: {
                         transformerType: "returnValue",
-                        mlSchema: { type: "string" },
+                        mlSchema: { type: "uuid" },
                         interpolation: "build",
-                        // value: "or",
-                        value: "en",
+                        value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      },
+                      filter: {
+                        attributeName: "name",
+                        value: {
+                          transformerType: "returnValue",
+                          mlSchema: { type: "string" },
+                          interpolation: "build",
+                          // value: "or",
+                          value: "en",
+                        },
                       },
                     },
                   },
                 },
               },
             },
-          });
+            applicationDeploymentMap
+          );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
@@ -488,50 +517,54 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult =
-          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runBoxedQueryTemplateAction",
-            // actionName: "runQuery",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            payload: {
-              applicationSection: applicationSection,
-              query: {
-                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+            {
+              actionType: "runBoxedQueryTemplateAction",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                application: selfApplicationDeploymentLibrary.uuid,
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                extractorTemplates: {
-                  books: {
-                    extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                    applicationSection: applicationSection,
-                    parentName: "Book",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      value: entityBook.uuid,
+                applicationSection: applicationSection,
+                query: {
+                  application: selfApplicationDeploymentLibrary.uuid,
+                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  extractorTemplates: {
+                    books: {
+                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      applicationSection: applicationSection,
+                      parentName: "Book",
+                      parentUuid: {
+                        transformerType: "returnValue",
+                        mlSchema: { type: "uuid" },
+                        interpolation: "build",
+                        // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        value: entityBook.uuid,
+                      },
                     },
                   },
-                },
-                runtimeTransformers: {
-                  getUniqueValuesAuthors: {
-                    transformerType: "getUniqueValues",
-                    interpolation: "runtime",
-                    applyTo: {
-                      transformerType: "getFromContext",
+                  runtimeTransformers: {
+                    getUniqueValuesAuthors: {
+                      transformerType: "getUniqueValues",
                       interpolation: "runtime",
-                      referenceName: "books",
+                      applyTo: {
+                        transformerType: "getFromContext",
+                        interpolation: "runtime",
+                        referenceName: "books",
+                      },
+                      attribute: "author",
+                      orderBy: "author",
                     },
-                    attribute: "author",
-                    orderBy: "author",
                   },
                 },
               },
             },
-          });
+            applicationDeploymentMap
+          );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
@@ -557,47 +590,50 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult =
-          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runBoxedQueryTemplateAction",
-            // actionName: "runQuery",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            payload: {
-              applicationSection: applicationSection,
-              query: {
-                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                extractorTemplates: {
-                  books: {
-                    extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                    applicationSection: applicationSection,
-                    parentName: "Book",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: entityBook.uuid,
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+            {
+              actionType: "runBoxedQueryTemplateAction",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                application: selfApplicationDeploymentLibrary.uuid,
+                applicationSection: applicationSection,
+                query: {
+                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                  application: selfApplicationDeploymentLibrary.uuid,
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  extractorTemplates: {
+                    books: {
+                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      applicationSection: applicationSection,
+                      parentName: "Book",
+                      parentUuid: {
+                        transformerType: "returnValue",
+                        mlSchema: { type: "uuid" },
+                        interpolation: "build",
+                        value: entityBook.uuid,
+                      },
                     },
                   },
-                },
-                runtimeTransformers: {
-                  getUniqueValuesAuthors: {
-                    interpolation: "runtime",
-                    transformerType: "aggregate",
-                    applyTo: {
-                      transformerType: "getFromContext",
+                  runtimeTransformers: {
+                    getUniqueValuesAuthors: {
                       interpolation: "runtime",
-                      referenceName: "books",
+                      transformerType: "aggregate",
+                      applyTo: {
+                        transformerType: "getFromContext",
+                        interpolation: "runtime",
+                        referenceName: "books",
+                      },
                     },
                   },
                 },
               },
             },
-          });
+            applicationDeploymentMap
+          );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
@@ -617,49 +653,53 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult =
-          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runBoxedQueryTemplateAction",
-            // actionName: "runQuery",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            payload: {
-              applicationSection: applicationSection,
-              query: {
-                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                pageParams: {},
-                queryParams: {},
-                contextResults: {},
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+            {
+              actionType: "runBoxedQueryTemplateAction",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                application: selfApplicationDeploymentLibrary.uuid,
                 deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                extractorTemplates: {
-                  books: {
-                    extractorTemplateType: "extractorTemplateForObjectListByEntity",
-                    applicationSection: applicationSection,
-                    parentName: "Book",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: entityBook.uuid,
+                applicationSection: applicationSection,
+                query: {
+                  application: selfApplicationDeploymentLibrary.uuid,
+                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  extractorTemplates: {
+                    books: {
+                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      applicationSection: applicationSection,
+                      parentName: "Book",
+                      parentUuid: {
+                        transformerType: "returnValue",
+                        mlSchema: { type: "uuid" },
+                        interpolation: "build",
+                        value: entityBook.uuid,
+                      },
                     },
                   },
-                },
-                runtimeTransformers: {
-                  countBooksByAuthors: {
-                    transformerType: "aggregate",
-                    interpolation: "runtime",
-                    groupBy: "author",
-                    applyTo: {
-                      transformerType: "getFromContext",
+                  runtimeTransformers: {
+                    countBooksByAuthors: {
+                      transformerType: "aggregate",
                       interpolation: "runtime",
-                      referenceName: "books",
+                      groupBy: "author",
+                      applyTo: {
+                        transformerType: "getFromContext",
+                        interpolation: "runtime",
+                        referenceName: "books",
+                      },
+                      // orderBy: "author",
                     },
-                    // orderBy: "author",
                   },
                 },
               },
             },
-          });
+            applicationDeploymentMap
+          );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
@@ -809,80 +849,87 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       async () => {
         const applicationSection: ApplicationSection = "data";
         const queryResult =
-          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
-            actionType: "runBoxedQueryTemplateAction",
-            // actionName: "runQuery",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-            payload: {
-              applicationSection: applicationSection,
-              query: {
-                queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                pageParams: {},
-                queryParams: {
-                  instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
-                },
-                contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                extractorTemplates: {
-                  book: {
-                    extractorTemplateType: "extractorForObjectByDirectReference",
-                    parentName: "Book",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                    },
-                    instanceUuid: {
-                      transformerType: "getFromParameters",
-                      referenceName: "instanceUuid",
+          await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+            {
+              actionType: "runBoxedQueryTemplateAction",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                application: selfApplicationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                applicationSection: applicationSection,
+                query: {
+                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                  application: selfApplicationDeploymentLibrary.uuid,
+                  pageParams: {},
+                  queryParams: {
+                    instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                  },
+                  contextResults: {},
+                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  extractorTemplates: {
+                    book: {
+                      extractorTemplateType: "extractorForObjectByDirectReference",
+                      parentName: "Book",
+                      parentUuid: {
+                        transformerType: "returnValue",
+                        mlSchema: { type: "uuid" },
+                        interpolation: "build",
+                        value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      },
+                      instanceUuid: {
+                        transformerType: "getFromParameters",
+                        referenceName: "instanceUuid",
+                      },
                     },
                   },
-                },
-                combinerTemplates: {
-                  author: {
-                    extractorTemplateType: "combinerForObjectByRelation",
-                    parentName: "Author",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  combinerTemplates: {
+                    author: {
+                      extractorTemplateType: "combinerForObjectByRelation",
+                      parentName: "Author",
+                      parentUuid: {
+                        transformerType: "returnValue",
+                        mlSchema: { type: "uuid" },
+                        interpolation: "build",
+                        value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                      },
+                      objectReference: {
+                        transformerType: "getFromContext",
+                        interpolation: "runtime",
+                        referenceName: "book",
+                      },
+                      AttributeOfObjectToCompareToReferenceUuid: "author",
                     },
-                    objectReference: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referenceName: "book",
+                    booksOfAuthor: {
+                      extractorTemplateType: "combinerByRelationReturningObjectList",
+                      parentName: "Book",
+                      parentUuid: {
+                        transformerType: "returnValue",
+                        mlSchema: { type: "uuid" },
+                        interpolation: "build",
+                        value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                      },
+                      objectReference: {
+                        transformerType: "getFromContext",
+                        interpolation: "runtime",
+                        referenceName: "author",
+                      },
+                      AttributeOfListObjectToCompareToReferenceUuid: "author",
                     },
-                    AttributeOfObjectToCompareToReferenceUuid: "author",
-                  },
-                  booksOfAuthor: {
-                    extractorTemplateType: "combinerByRelationReturningObjectList",
-                    parentName: "Book",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                    },
-                    objectReference: {
-                      transformerType: "getFromContext",
-                      interpolation: "runtime",
-                      referenceName: "author",
-                    },
-                    AttributeOfListObjectToCompareToReferenceUuid: "author",
                   },
                 },
               },
             },
-          });
+            applicationDeploymentMap
+          );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
       // (a) => (a as any).returnedDomainElement.booksOfAuthor,
-      (a: any) => resultHandler(a.returnedDomainElement.booksOfAuthor).sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      (a: any) =>
+        resultHandler(a.returnedDomainElement.booksOfAuthor).sort((a: any, b: any) =>
+          a.name.localeCompare(b.name)
+        ),
       // (a) => {
       //   // console.log("ICI!!!");
       //   const result = ignorePostgresExtraAttributesOnList(

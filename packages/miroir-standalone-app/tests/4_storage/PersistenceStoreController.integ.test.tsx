@@ -31,13 +31,15 @@ import {
   book1,
   defaultLevels,
   defaultMiroirMetaModel,
+  defaultSelfApplicationDeploymentMap,
   entityAuthor,
   entityDefinitionAuthor,
   entityEntity,
   entityEntityDefinition,
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
-  resetAndInitApplicationDeployment
+  resetAndInitApplicationDeployment,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 
 
@@ -60,6 +62,7 @@ import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { createDeploymentCompositeAction } from 'miroir-core';
 import { adminLibraryApplication } from 'miroir-core';
 import { defaultMiroirModelEnvironment } from 'miroir-core';
+import { selfApplicationLibrary } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -109,6 +112,11 @@ MiroirLoggerFactory.startRegisteredLoggers(
 );
 myConsoleLog("started registered loggers DONE");
 
+const applicationDeploymentMap: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+};
+
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
@@ -148,7 +156,8 @@ beforeAll(
     const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
-      domainController
+      domainController,
+      applicationDeploymentMap,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController) {
@@ -167,6 +176,7 @@ beforeAll(
     );
     const result = await domainController.handleCompositeAction(
       createLibraryDeploymentAction,
+      applicationDeploymentMap,
       defaultMiroirModelEnvironment,
       {}
     );
@@ -190,7 +200,11 @@ beforeAll(
 // ################################################################################################
 beforeEach(
   async  () => {
-    await resetAndInitApplicationDeployment(domainController, selfApplicationDeploymentConfigurations);
+    await resetAndInitApplicationDeployment(
+      domainController,
+      applicationDeploymentMap,
+      selfApplicationDeploymentConfigurations
+    );
   }
 )
 
@@ -208,6 +222,7 @@ afterAll(
     await deleteAndCloseApplicationDeployments(
       miroirConfig,
       domainController,
+      applicationDeploymentMap,
       adminApplicationDeploymentConfigurations
     );
 
@@ -462,9 +477,10 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       // actionType: "modelAction",
       actionType: "renameEntity",
       application:"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
         entityUuid: entityAuthor.uuid, 
         entityName: entityAuthor.name,
         entityDefinitionUuid: entityDefinitionAuthor.uuid,
@@ -555,8 +571,9 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       actionType: "dropEntity",
       application:"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       payload: {
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
         entityUuid: entityAuthor.uuid, 
         // entityName: entityAuthor.name,
         entityDefinitionUuid: entityDefinitionAuthor.uuid
@@ -643,15 +660,16 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     const iconsDefinition: JzodElement = {
       type: "number",
       optional: true,
-      tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
+      tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)" } },
     };
     const modelActionAlterAttribute:ModelAction =  {
       // actionType: "modelAction",
       actionType: "alterEntityAttribute",
-      deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       application:"360fcf1f-f0d4-4f8a-9262-07886e70fa15", 
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
         entityUuid: entityAuthor.uuid, 
         entityDefinitionUuid: entityDefinitionAuthor.uuid,
         entityName: entityAuthor.name,
