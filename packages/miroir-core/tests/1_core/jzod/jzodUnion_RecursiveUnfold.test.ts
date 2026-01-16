@@ -60,7 +60,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
         { type: "string" },
         { type: "number" },
         { type: "boolean" },
-        { type: "null" },
+        // { type: "null" },
       ],
       expandedReferences: new Set(),
     });
@@ -90,7 +90,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
         { type: "number" },
         { type: "string" },
         { type: "boolean" },
-        { type: "null" },
+        // { type: "null" },
       ],
       expandedReferences: new Set(),
     });
@@ -174,7 +174,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
         { type: "number" },
         { type: "string" },
         { type: "boolean" },
-        // { type: "null" },
+        { type: "any" },
       ],
       expandedReferences: new Set(["MyReference"]),
     });
@@ -455,6 +455,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
             type: {
               type: "literal",
               definition: "array",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
             },
             definition: {
               type: "schemaReference",
@@ -494,7 +499,8 @@ describe("jzodUnion_RecursiveUnfold", () => {
                 value: {
                   description:
                     "The type of a plain attribute (not object, not array) with no validation.",
-                  editable: true,
+                  editable: false,
+                  canBeTemplate: false,
                   initializeTo: {
                     initializeToType: "value",
                     value: "any",
@@ -506,7 +512,6 @@ describe("jzodUnion_RecursiveUnfold", () => {
                 "bigint",
                 "boolean",
                 "never",
-                "null",
                 "uuid",
                 "undefined",
                 "unknown",
@@ -534,6 +539,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
             type: {
               type: "literal",
               definition: "date",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
             },
             coerce: {
               type: "boolean",
@@ -568,6 +578,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
             type: {
               type: "literal",
               definition: "number",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
             },
             coerce: {
               type: "boolean",
@@ -601,6 +616,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "string",
             },
             coerce: {
@@ -635,6 +655,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "enum",
             },
             definition: {
@@ -659,6 +684,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "function",
             },
             definition: {
@@ -702,6 +732,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "lazy",
             },
             definition: {
@@ -728,6 +763,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "literal",
             },
             definition: {
@@ -749,6 +789,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "intersection",
             },
             definition: {
@@ -788,6 +833,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "map",
             },
             definition: {
@@ -828,7 +878,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
             value: {
               display: {
                 unfoldSubLevels: 2,
-              }
+              },
             },
           },
           definition: {
@@ -890,6 +940,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
             },
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "object",
             },
             nonStrict: {
@@ -902,6 +957,12 @@ describe("jzodUnion_RecursiveUnfold", () => {
             },
             definition: {
               type: "record",
+              tag: {
+                value: {
+                  description: "The attributes of the object schema.",
+                  editable: true,
+                },
+              },
               definition: {
                 type: "schemaReference",
                 definition: {
@@ -927,6 +988,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "promise",
             },
             definition: {
@@ -953,6 +1019,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "record",
             },
             definition: {
@@ -979,6 +1050,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "schemaReference",
             },
             context: {
@@ -1029,6 +1105,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "set",
             },
             definition: {
@@ -1055,6 +1136,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "tuple",
             },
             definition: {
@@ -1084,6 +1170,11 @@ describe("jzodUnion_RecursiveUnfold", () => {
           definition: {
             type: {
               type: "literal",
+              tag: {
+                value: {
+                  canBeTemplate: false,
+                },
+              },
               definition: "union",
             },
             discriminator: {
@@ -1096,7 +1187,18 @@ describe("jzodUnion_RecursiveUnfold", () => {
                 {
                   type: "array",
                   definition: {
-                    type: "string",
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "array",
+                        definition: {
+                          type: "string",
+                        },
+                      },
+                    ],
                   },
                 },
               ],
@@ -1246,7 +1348,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       CircularRefB: {
         type: "union",
         definition: [
-          { type: "null" },
+          { type: "undefined" },
           {
             type: "schemaReference",
             definition: { relativePath: "CircularRefA" }, // Back to A
@@ -1263,7 +1365,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       { type: "string" },
       { type: "number" },
       { type: "boolean" },
-      { type: "null" },
+      { type: "undefined" },
     ]);
     expect(
       Array.from((result as JzodUnion_RecursivelyUnfold_ReturnTypeOK).expandedReferences)
@@ -1302,7 +1404,7 @@ describe("jzodUnion_RecursiveUnfold", () => {
       CircularRefB: {
         type: "union",
         definition: [
-          { type: "null" },
+          { type: "undefined" },
           {
             type: "schemaReference",
             definition: { relativePath: "CircularRefC" },
@@ -1329,8 +1431,8 @@ describe("jzodUnion_RecursiveUnfold", () => {
       { type: "string" },
       { type: "number" },
       { type: "boolean" },
-      { type: "null" },
       { type: "undefined" },
+      { type: "undefined" }, // TODO: make them unique
     ]);
     expect(
       Array.from((result as JzodUnion_RecursivelyUnfold_ReturnTypeOK).expandedReferences)

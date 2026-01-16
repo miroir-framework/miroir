@@ -36,6 +36,8 @@ import entityDefinitionEntity from "../../src/assets/miroir_model/54b9c72f-d4f3-
 import entityMenu from "../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json";
 import menuDefaultMiroir from "../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
 import adminConfigurationDeploymentMiroir from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import selfApplicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+import selfApplicationMiroir from "../../src/assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 
 
 
@@ -208,7 +210,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             definition: {
               type: "number",
               optional: true,
-              tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)", editable: true } },
+              tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)" } },
             },
           },
         ],
@@ -593,6 +595,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         applicationSection: "data",
         query: {
           queryType: "boxedExtractorOrCombinerReturningObject",
+          application: selfApplicationLibrary.uuid,
           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
           pageParams: {},
           queryParams: {},
@@ -620,6 +623,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         applicationSection: "data",
         query: {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
+          application: selfApplicationMiroir.uuid,
           deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
           pageParams: {},
           queryParams: {},
@@ -678,6 +682,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: miroirQueryTemplate,
     action: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      application: selfApplicationMiroir.uuid,
       deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       contextResults: {},
       pageParams: {
@@ -718,11 +723,11 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     zodSchema: domainAction,
     action: {
       actionType: "compositeActionSequence",
-      deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
-        application: "IGNORED",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15", // IGNORED
+        // deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         definition: [
           {
             actionType: "createInstance",

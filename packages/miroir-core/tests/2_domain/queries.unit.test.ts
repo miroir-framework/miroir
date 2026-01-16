@@ -30,40 +30,51 @@ import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInt
 import domainStateImport from "./domainState.json";
 // import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
 import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
-import { ReduxDeploymentsState } from '../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface';
-import { domainStateToReduxDeploymentsState, resolvePathOnObject } from '../../src/tools.js';
+import selfApplicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+
+// import {
+//   BoxedQueryTemplateWithExtractorCombinerTransformer,
+//   BoxedQueryWithExtractorCombinerTransformer,
+//   SyncQueryRunner,
+//   SyncQueryTemplateRunner,
+// } from "../../dist";
 import {
-  getQueryTemplateRunnerParamsForDomainState,
-  GetSelectorParamsForQueryTemplateOnDomainStateType,
-  runQueryTemplateFromDomainState,
-} from "../../src/2_domain/DomainStateQueryTemplateSelector.js";
+  Domain2QueryReturnType
+} from "../../src/0_interfaces/2_domain/DomainElement.js";
+import { ReduxDeploymentsState } from '../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface';
+import { defaultSelfApplicationDeploymentMap, type ApplicationDeploymentMap } from "../../src/1_core/Deployment";
+import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
 import {
   GetQueryRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
   runQueryFromDomainState,
 } from "../../src/2_domain/DomainStateQuerySelectors.js";
 import {
-  GetQueryTemplateRunnerParamsForReduxDeploymentsState,
-  getQueryTemplateRunnerParamsForReduxDeploymentsState,
-  runQueryTemplateFromReduxDeploymentsState,
-} from "../../src/2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
+  getQueryTemplateRunnerParamsForDomainState,
+  GetSelectorParamsForQueryTemplateOnDomainStateType,
+  runQueryTemplateFromDomainState,
+} from "../../src/2_domain/DomainStateQueryTemplateSelector.js";
 import {
   GetQueryRunnerParamsForReduxDeploymentsState,
   getQueryRunnerParamsForReduxDeploymentsState,
   runQueryFromReduxDeploymentsState,
 } from "../../src/2_domain/ReduxDeploymentsStateQuerySelectors.js";
 import {
-  Domain2ElementFailed,
-  Domain2QueryReturnType,
-} from "../../src/0_interfaces/2_domain/DomainElement.js";
+  GetQueryTemplateRunnerParamsForReduxDeploymentsState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState,
+  runQueryTemplateFromReduxDeploymentsState,
+} from "../../src/2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 import { ignorePostgresExtraAttributes } from '../../src/4_services/otherTools.js';
-import {
+import { domainStateToReduxDeploymentsState, resolvePathOnObject } from '../../src/tools.js';
+import type {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  SyncQueryRunner,
-  SyncQueryTemplateRunner,
-} from "../../dist";
-import { defaultMetaModelEnvironment } from "../../src";
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+
+import {
+  type SyncQueryRunner,
+  type SyncQueryTemplateRunner,
+} from "../../src/0_interfaces/2_domain/ExtractorRunnerInterface.js";
 
 const domainState: DomainState = domainStateImport as DomainState;
 const deploymentEntityState: ReduxDeploymentsState = domainStateToReduxDeploymentsState(domainState);
@@ -162,7 +173,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "error on non-existing Entity: EntityNotFound": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -187,7 +199,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -214,7 +227,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "error on non-existing object uuid: InstanceNotFound": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -239,7 +253,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -265,7 +280,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select 1 object from Domain State": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -290,7 +306,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -340,7 +357,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     // },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -393,7 +411,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select 1 object from Domain State using direct query parameter reference": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
@@ -417,7 +436,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
@@ -445,7 +465,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select 1 object from the uuid found in an attribute of another object from Domain State": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -488,7 +509,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -526,7 +548,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {},
         queryParams: {},
@@ -590,7 +613,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {},
         queryParams: {},
@@ -650,7 +674,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: selfApplicationLibrary.uuid,
         contextResults: {},
         pageParams: {},
         queryParams: {},
@@ -728,59 +752,60 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           },
         },
       },
-      query: {
-        queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        contextResults: {},
-        pageParams: {},
-        queryParams: {},
-        extractors: {
-          author: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
-            parentName: "Author",
-            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-            instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-          },
-        },
-        combiners: {
-          booksOfAuthor: {
-            extractorOrCombinerType: "combinerByRelationReturningObjectList",
-            parentName: "Book",
-            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            objectReference: "author",
-            AttributeOfListObjectToCompareToReferenceUuid: "author",
-          },
-          publishersOfBooks: {
-            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
-            parentName: "Publisher",
-            parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-            objectListReference: "booksOfAuthor",
-            objectListReferenceAttribute: "publisher",
-            applyTransformer: {
-              transformerType: "createObject",
-              interpolation: "runtime",
-              definition: {
-                authorUuid: {
-                  transformerType: "getFromContext",
-                  interpolation: "runtime",
-                  referencePath: ["referenceObject", "author"],
-                },
-                publisherName: {
-                  transformerType: "getFromContext",
-                  interpolation: "runtime",
-                  referencePath: ["foreignKeyObject", "name"],
-                },
-                publisherUuid: {
-                  transformerType: "getFromContext",
-                  interpolation: "runtime",
-                  referencePath: ["foreignKeyObject", "uuid"],
-                },
-              },
-            },
-          },
-        },
-        runtimeTransformers: {},
-      },
+      // query: {
+      //   queryType: "boxedQueryWithExtractorCombinerTransformer",
+      //   application: selfApplicationLibrary.uuid,
+      //   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //   contextResults: {},
+      //   pageParams: {},
+      //   queryParams: {},
+      //   extractors: {
+      //     author: {
+      //       extractorOrCombinerType: "extractorForObjectByDirectReference",
+      //       parentName: "Author",
+      //       parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      //       instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+      //     },
+      //   },
+      //   combiners: {
+      //     booksOfAuthor: {
+      //       extractorOrCombinerType: "combinerByRelationReturningObjectList",
+      //       parentName: "Book",
+      //       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      //       objectReference: "author",
+      //       AttributeOfListObjectToCompareToReferenceUuid: "author",
+      //     },
+      //     publishersOfBooks: {
+      //       extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+      //       parentName: "Publisher",
+      //       parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+      //       objectListReference: "booksOfAuthor",
+      //       objectListReferenceAttribute: "publisher",
+      //       applyTransformer: {
+      //         transformerType: "createObject",
+      //         interpolation: "runtime",
+      //         definition: {
+      //           authorUuid: {
+      //             transformerType: "getFromContext",
+      //             interpolation: "runtime",
+      //             referencePath: ["referenceObject", "author"],
+      //           },
+      //           publisherName: {
+      //             transformerType: "getFromContext",
+      //             interpolation: "runtime",
+      //             referencePath: ["foreignKeyObject", "name"],
+      //           },
+      //           publisherUuid: {
+      //             transformerType: "getFromContext",
+      //             interpolation: "runtime",
+      //             referencePath: ["foreignKeyObject", "uuid"],
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   runtimeTransformers: {},
+      // },
       ...testExtractorTools,
       testAssertions: {
         test1: {
@@ -799,7 +824,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select Authors": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -821,7 +847,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -874,7 +901,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select Authors with filter": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -904,7 +932,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -947,7 +976,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select Books of Publisher of given Book from Domain State": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1010,7 +1040,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1067,7 +1098,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select custom-built result: Books of Publisher of given Book from Domain State": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1153,7 +1185,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1264,7 +1297,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select custom-built result: return Books of Author from Domain State": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1303,7 +1337,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1365,7 +1400,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1420,7 +1456,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1522,7 +1559,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1570,7 +1608,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        application: selfApplicationLibrary.uuid,
+        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1627,7 +1666,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select Unique Publisher Uuids of Books": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1659,7 +1699,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     },
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1716,87 +1757,123 @@ function cleanupResult(
   return result;
 }
 
+const applicationDeploymentMap: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+};
+
 describe("queries.unit", () => {
   // ###########################################################################################
-  it.each(Object.entries(testExtractorParams))('test %s', (currentTestName, testParams:TestExtractorParams) => {
-    console.log("STARTING test:", currentTestName);
-    expect(currentTestName != undefined).toBeTruthy();
-    expect(testParams.testAssertions).toBeDefined();
-    // Testing Extractors
-    if (testParams.query) {
-      // Domain State
-      if (testParams.runQueryFromDomainState && testParams.getQueryRunnerParamsForDomainState) {
-        const preResult = testParams.runQueryFromDomainState(
-          domainState,
-          testParams.getQueryRunnerParamsForDomainState(testParams.query),
-          defaultMetaModelEnvironment,
-          // getExtractorRunnerParamsForDomainState(testParams.query)
-        );
-        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.log(
-            `############################################## running query for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`
+  it.each(Object.entries(testExtractorParams))(
+    "test %s",
+    (currentTestName, testParams: TestExtractorParams) => {
+      console.log("STARTING test:", currentTestName);
+      expect(currentTestName != undefined).toBeTruthy();
+      expect(testParams.testAssertions).toBeDefined();
+      // Testing Extractors
+      if (testParams.query) {
+        // Domain State
+        if (testParams.runQueryFromDomainState && testParams.getQueryRunnerParamsForDomainState) {
+          const preResult = testParams.runQueryFromDomainState(
+            domainState,
+            applicationDeploymentMap,
+            testParams.getQueryRunnerParamsForDomainState(testParams.query),
+            defaultMetaModelEnvironment
+            // getExtractorRunnerParamsForDomainState(testParams.query)
           );
-          console.log(`For test named ${currentTestName} ${testAssertionName} preResult: `, JSON.stringify(preResult, null, 2));
-          const result = cleanupResult(preResult, testAssertionParams);
-          console.log(`For test named ${currentTestName} ${testAssertionName} result: `, result);
-          expect(result).toEqual(testAssertionParams.expectedResult);
+          for (const [testAssertionName, testAssertionParams] of Object.entries(
+            testParams.testAssertions
+          )) {
+            console.log(
+              `############################################## running query for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`
+            );
+            console.log(
+              `For test named ${currentTestName} ${testAssertionName} preResult: `,
+              JSON.stringify(preResult, null, 2)
+            );
+            const result = cleanupResult(preResult, testAssertionParams);
+            console.log(`For test named ${currentTestName} ${testAssertionName} result: `, result);
+            expect(result).toEqual(testAssertionParams.expectedResult);
+          }
+        }
+        // Deployment Entity State
+        if (
+          testParams.runQueryFromReduxDeploymentsState &&
+          testParams.getQueryRunnerParamsForReduxDeploymentsState
+        ) {
+          const preResult = testParams.runQueryFromReduxDeploymentsState(
+            deploymentEntityState,
+            applicationDeploymentMap,
+            testParams.getQueryRunnerParamsForReduxDeploymentsState(testParams.query),
+            defaultMetaModelEnvironment
+          );
+          for (const [testAssertionName, testAssertionParams] of Object.entries(
+            testParams.testAssertions
+          )) {
+            console.log(
+              `############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`
+            );
+            const result = cleanupResult(preResult, testAssertionParams);
+            console.log(`For test named ${currentTestName} ${testAssertionName} result: `, result);
+            expect(result).toEqual(testAssertionParams.expectedResult);
+          }
         }
       }
-      // Deployment Entity State
-      if (testParams.runQueryFromReduxDeploymentsState && testParams.getQueryRunnerParamsForReduxDeploymentsState) {
-        const preResult = testParams.runQueryFromReduxDeploymentsState(
-          deploymentEntityState,
-          testParams.getQueryRunnerParamsForReduxDeploymentsState(testParams.query),
-          defaultMetaModelEnvironment,
-        );
-        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-        console.log(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
-          const result = cleanupResult(preResult, testAssertionParams);
-          console.log(`For test named ${currentTestName} ${testAssertionName} result: `, result);
-          expect(result).toEqual(testAssertionParams.expectedResult);
+      // ################################################################################################
+      // Testing Extractor Templates
+      if (testParams.queryTemplate) {
+        // Domain State
+        if (
+          testParams.getQueryTemplateRunnerParamsForDomainState &&
+          testParams.runQueryTemplateFromDomainState
+        ) {
+          const preTemplateResult = testParams.runQueryTemplateFromDomainState(
+            domainState,
+            applicationDeploymentMap,
+            testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate),
+            defaultMetaModelEnvironment
+          ) as any;
+          for (const [testAssertionName, testAssertionParams] of Object.entries(
+            testParams.testAssertions
+          )) {
+            console.log(
+              `############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`
+            );
+            const result = cleanupResult(preTemplateResult, testAssertionParams);
+            // console.log(`For test named ${currentTestName} ${testName} Template result: `, result);
+            // console.log(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
+            expect(result).toEqual(testAssertionParams.expectedResult);
+          }
+        }
+        // Deployment Entity State
+        if (
+          testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState &&
+          testParams.runQueryTemplateFromReduxDeploymentsState
+        ) {
+          const preTemplateResult = testParams.runQueryTemplateFromReduxDeploymentsState(
+            deploymentEntityState,
+            applicationDeploymentMap,
+            testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState(
+              testParams.queryTemplate,
+              applicationDeploymentMap
+
+            ),
+            defaultMetaModelEnvironment
+          ) as any;
+          for (const [testAssertionName, testAssertionParams] of Object.entries(
+            testParams.testAssertions
+          )) {
+            console.log(
+              `############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`
+            );
+            const result = cleanupResult(preTemplateResult, testAssertionParams);
+            // console.log(`For test named ${currentTestName} ${testName} Template result: `, result);
+            // console.log(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
+            expect(result).toEqual(testAssertionParams.expectedResult);
+          }
         }
       }
     }
-    // ################################################################################################
-    // Testing Extractor Templates
-    if (testParams.queryTemplate) {
-      // Domain State
-      if (
-        testParams.getQueryTemplateRunnerParamsForDomainState &&
-        testParams.runQueryTemplateFromDomainState
-      ) {
-        const preTemplateResult = testParams.runQueryTemplateFromDomainState(
-          domainState,
-          testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate),
-          defaultMetaModelEnvironment,
-        ) as any;
-        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.log(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
-          const result = cleanupResult(preTemplateResult, testAssertionParams);
-          // console.log(`For test named ${currentTestName} ${testName} Template result: `, result);
-          // console.log(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
-          expect(result).toEqual(testAssertionParams.expectedResult);
-        }
-      }
-      // Deployment Entity State
-      if (
-        testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState &&
-        testParams.runQueryTemplateFromReduxDeploymentsState
-      ) {
-        const preTemplateResult = testParams.runQueryTemplateFromReduxDeploymentsState(
-          deploymentEntityState,
-          testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState(testParams.queryTemplate),
-          defaultMetaModelEnvironment,
-        ) as any;
-        for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
-          console.log(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
-          const result = cleanupResult(preTemplateResult, testAssertionParams);
-          // console.log(`For test named ${currentTestName} ${testName} Template result: `, result);
-          // console.log(`For test named ${currentTestName} ${testName} expected Template result: `, testParams.expectedResult);
-          expect(result).toEqual(testAssertionParams.expectedResult);
-        }
-      }
-    }
-  });
+  );
 });
 

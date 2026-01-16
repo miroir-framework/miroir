@@ -42,7 +42,7 @@
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id": 4, "defaultLabel": "Name", "display": { "editable": true } }}
+        "tag": { "value": {  "id": 4, "defaultLabel": "Name" }}
       },
       "country": {
         "type": "uuid",
@@ -51,7 +51,6 @@
           "id": 5,
           "display": { "editable": true },
           "defaultLabel": "Country",
-          "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
           "foreignKeyParams": {
             "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
             "targetEntityOrderInstancesBy": "name"
@@ -61,7 +60,7 @@
       "icon": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 6, "defaultLabel": "Icon", "display": { "editable": true } }}
+        "tag": { "value": {  "id": 6, "defaultLabel": "Icon" }}
       }
     }
   }

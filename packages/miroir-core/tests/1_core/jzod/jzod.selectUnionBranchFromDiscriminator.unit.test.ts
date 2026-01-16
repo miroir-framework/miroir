@@ -733,105 +733,105 @@ describe("selectUnionBranchFromDiscriminator", () => {
     if (result.status === "ok") {
       expect(result.flattenedUnionChoices.length).toBe(1);
       expect(result.currentDiscriminatedObjectJzodSchema).toEqual({
-      type: "object",
-      definition: {
-        label: {
-          type: "string",
-          optional: true,
-          tag: {
-            value: {
-              id: 1,
-              defaultLabel: "Label",
-              editable: false,
-            },
-          },
-        },
-        applicationSection: {
-          type: "schemaReference",
-          optional: true,
-          tag: {
-            value: {
-              id: 2,
-              defaultLabel: "SelfApplication Section",
-              editable: false,
-            },
-          },
-          definition: {
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "applicationSection",
-          },
-          context: {},
-        },
-        parentName: {
-          type: "string",
-          optional: true,
-          tag: {
-            value: {
-              id: 3,
-              defaultLabel: "Parent Name",
-              editable: false,
-            },
-          },
-        },
-        parentUuid: {
-          type: "union",
-          discriminator: "transformerType",
-          tag: {
-            value: {
-              id: 4,
-              defaultLabel: "Parent Uuid",
-              editable: false,
-            },
-          },
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForBuildPlusRuntime",
+        type: "object",
+        definition: {
+          label: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Label",
+                display: { editable: false },
               },
-              context: {},
-            },
-          ],
-        },
-        extractorTemplateType: {
-          type: "literal",
-          definition: "combinerByRelationReturningObjectList",
-        },
-        orderBy: {
-          type: "object",
-          optional: true,
-          definition: {
-            attributeName: {
-              type: "string",
-            },
-            direction: {
-              type: "enum",
-              optional: true,
-              definition: ["ASC", "DESC"],
             },
           },
-        },
-        objectReference: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "transformerForRuntime_InnerReference",
+          applicationSection: {
+            type: "schemaReference",
+            optional: true,
+            tag: {
+              value: {
+                id: 2,
+                defaultLabel: "SelfApplication Section",
+                display: { editable: false },
+              },
+            },
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "applicationSection",
+            },
+            context: {},
           },
-          context: {},
+          parentName: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 3,
+                defaultLabel: "Parent Name",
+                display: { editable: false },
+              },
+            },
+          },
+          parentUuid: {
+            type: "union",
+            discriminator: "transformerType",
+            tag: {
+              value: {
+                id: 4,
+                defaultLabel: "Parent Uuid",
+                display: { editable: false },
+              },
+            },
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+                context: {},
+              },
+            ],
+          },
+          extractorTemplateType: {
+            type: "literal",
+            definition: "combinerByRelationReturningObjectList",
+          },
+          orderBy: {
+            type: "object",
+            optional: true,
+            definition: {
+              attributeName: {
+                type: "string",
+              },
+              direction: {
+                type: "enum",
+                optional: true,
+                definition: ["ASC", "DESC"],
+              },
+            },
+          },
+          objectReference: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForRuntime_InnerReference",
+            },
+            context: {},
+          },
+          objectReferenceAttribute: {
+            type: "string",
+            optional: true,
+          },
+          AttributeOfListObjectToCompareToReferenceUuid: {
+            type: "string",
+          },
         },
-        objectReferenceAttribute: {
-          type: "string",
-          optional: true,
-        },
-        AttributeOfListObjectToCompareToReferenceUuid: {
-          type: "string",
-        },
-      }
-    });
+      });
     }
   });
 

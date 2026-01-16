@@ -63,9 +63,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "Name",
-            "display": { "editable": true }
+            "defaultLabel": "Name"
           }
         }
       },
@@ -73,9 +71,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "First Name",
-            "display": { "editable": true }
+            "defaultLabel": "First Name"
           }
         }
       },
@@ -83,9 +79,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "Last Name",
-            "display": { "editable": true }
+            "defaultLabel": "Last Name"
           }
         }
       },
@@ -93,9 +87,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "Street Adress",
-            "display": { "editable": true }
+            "defaultLabel": "Street Adress"
           }
         }
       },
@@ -103,9 +95,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "Postal Code",
-            "display": { "editable": true }
+            "defaultLabel": "Postal Code"
           }
         }
       },
@@ -113,9 +103,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "City",
-            "display": { "editable": true }
+            "defaultLabel": "City"
           }
         }
       },
@@ -123,9 +111,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 4,
-            "defaultLabel": "State",
-            "display": { "editable": true }
+            "defaultLabel": "State"
           }
         }
       },
@@ -134,10 +120,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 5,
-            "display": { "editable": true },
             "defaultLabel": "Country",
-            "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
             "foreignKeyParams": {
               "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
               "targetEntityOrderInstancesBy": "name"

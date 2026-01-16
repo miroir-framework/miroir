@@ -32,9 +32,6 @@ export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
         a,
         { ...relativeReferenceJzodContext, ...a.context },
         modelEnvironment
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
       )
     );
 
@@ -69,9 +66,6 @@ export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
         r as JzodUnion,
         newExpandedReferences,
         modelEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
         relativeReferenceJzodContext
       );
 
@@ -89,7 +83,7 @@ export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
       status: "ok",
       result,
       expandedReferences: newExpandedReferences,
-      discriminator: jzodUnion.discriminator,
+      ...(jzodUnion.discriminator?{discriminator: jzodUnion.discriminator}: {}),
     };
   } catch (error) {
     return {

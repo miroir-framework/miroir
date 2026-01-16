@@ -289,7 +289,14 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
       modelEnvironment
     ); 
 
-  log.info("runQueryTemplateWithExtractorCombinerTransformer called", foreignKeyParams, "resolvedExtractor", resolvedExtractor);
+  // log.info(
+  //   "runQueryTemplateWithExtractorCombinerTransformer called",
+  //   foreignKeyParams,
+  //   "resolvedExtractor",
+  //   resolvedExtractor,
+  //   "applicationDeploymentMap",
+  //   applicationDeploymentMap,
+  // );
 
   return runQuery(
     state,

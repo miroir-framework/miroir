@@ -118,7 +118,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
   applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
-  const deploymentUuid = foreignKeyParams.extractor.deploymentUuid;
+  const deploymentUuid = foreignKeyParams.extractor.deploymentUuid ?? applicationDeploymentMap[foreignKeyParams.extractor.application];
   const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? "data";
 
   const entityUuid: Uuid = foreignKeyParams.extractor.select.parentUuid;

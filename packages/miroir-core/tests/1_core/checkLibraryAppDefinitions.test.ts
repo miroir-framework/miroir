@@ -8,8 +8,6 @@ import {
   extractorOrCombinerTemplateRecord,
   report,
   rootReport,
-  transformerForBuild_constantUuid,
-  transformerForBuild_InnerReference,
   transformerForBuildPlusRuntime_InnerReference,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 

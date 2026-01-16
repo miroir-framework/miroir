@@ -109,6 +109,7 @@ export type GetQueryTemplateRunnerParamsForReduxDeploymentsState = (
 
 export function getQueryTemplateRunnerParamsForReduxDeploymentsState(
   query: BoxedQueryTemplateWithExtractorCombinerTransformer,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ): SyncQueryTemplateRunnerParams<ReduxDeploymentsState> {
   return {

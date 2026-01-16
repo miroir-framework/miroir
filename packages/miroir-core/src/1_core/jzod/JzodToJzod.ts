@@ -297,6 +297,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
         undefined, // skipObjectAttributesOnFirstLevel,
         skipReference,
       );
+      // log.info("applyLimitedCarryOnSchemaOnLevel record convertedSubSchema", JSON.stringify(convertedSubSchema, null, 2));
+
       for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
         convertedSubSchemasReferences[c[0]] = c[1];
       }
@@ -307,34 +309,34 @@ export function applyLimitedCarryOnSchemaOnLevel(
       //     !castTag.canBeTemplate
       //   )
       // )
-      if (
-        applyOnFirstLevel &&
-        (alwaysPropagate ||
-          (castTag &&
-            castTag.value &&
-            Object.hasOwn(castTag.value, "canBeTemplate") &&
-            castTag.value.canBeTemplate))
-      ) {
-      //   return {
-      //     resultSchema: {
-      //       ...baseSchema,
-      //       tag: convertedTag,
-      //       type: "union",
-      //       discriminator: carryOnSchemaDiscriminator,
-      //       definition: [
-      //         {
-      //           ...baseSchema,
-      //           tag: convertedTag,
-      //           type: "record",
-      //           definition: convertedSubSchema.resultSchema,
-      //         } as any,
-      //         carryOnSchema,
-      //       ],
-      //     } as any,
-      //     hasBeenApplied: true,
-      //     resolvedReferences: convertedSubSchemasReferences,
-      //   };
-      // } else {
+      // if (
+      //   applyOnFirstLevel &&
+      //   (alwaysPropagate ||
+      //     (castTag &&
+      //       castTag.value &&
+      //       Object.hasOwn(castTag.value, "canBeTemplate") &&
+      //       castTag.value.canBeTemplate))
+      // ) {
+      // //   return {
+      // //     resultSchema: {
+      // //       ...baseSchema,
+      // //       tag: convertedTag,
+      // //       type: "union",
+      // //       discriminator: carryOnSchemaDiscriminator,
+      // //       definition: [
+      // //         {
+      // //           ...baseSchema,
+      // //           tag: convertedTag,
+      // //           type: "record",
+      // //           definition: convertedSubSchema.resultSchema,
+      // //         } as any,
+      // //         carryOnSchema,
+      // //       ],
+      // //     } as any,
+      // //     hasBeenApplied: true,
+      // //     resolvedReferences: convertedSubSchemasReferences,
+      // //   };
+      // // } else {
         return {
           resultSchema: {
             ...baseSchema,
@@ -345,13 +347,13 @@ export function applyLimitedCarryOnSchemaOnLevel(
           hasBeenApplied: convertedSubSchema.hasBeenApplied,
           resolvedReferences: {},
         };
-      } else {
-        return {
-          resultSchema: baseSchema,
-          hasBeenApplied: false,
-          resolvedReferences: convertedReferences,
-        };
-      }
+      // } else {
+      //   return {
+      //     resultSchema: baseSchema,
+      //     hasBeenApplied: false,
+      //     resolvedReferences: convertedReferences,
+      //   };
+      // }
       break;
     }
     case "set": {

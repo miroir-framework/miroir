@@ -366,7 +366,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     queryParams: queryTemplate.queryParams,
     contextResults: queryTemplate.contextResults,
     application: queryTemplate.application,
-    deploymentUuid: queryTemplate.deploymentUuid,
+    ...(queryTemplate.deploymentUuid ? {deploymentUuid: queryTemplate.deploymentUuid} : {}),
     extractors: queries as ExtractorOrCombinerRecord,
     combiners: combiners as Record<string, ExtractorOrCombiner>,
     runtimeTransformers: queryTemplate.runtimeTransformers,

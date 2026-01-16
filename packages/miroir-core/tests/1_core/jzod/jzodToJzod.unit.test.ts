@@ -1760,7 +1760,7 @@ describe(
                       isTemplate: true,
                     },
                   },
-                  discriminator: "type",
+                  discriminator: ["type"],
                   definition: [
                     {
                       type: "schemaReference",

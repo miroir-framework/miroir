@@ -16,7 +16,8 @@ import {
   entityReport,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
-  resetAndinitializeDeploymentCompositeAction
+  resetAndinitializeDeploymentCompositeAction,
+  selfApplicationLibrary
 } from "miroir-core";
 
 // import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "./ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
@@ -161,6 +162,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
   const testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestCompositeActionParams> = {
     [testSuiteNameForBuildPlusRuntimeCompositeAction]: {
       testActionType: "testBuildPlusRuntimeCompositeActionSuite",
+      application: selfApplicationLibrary.uuid, // NOT USED
       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       testActionLabel: testSuiteNameForBuildPlusRuntimeCompositeAction,
       testParams: {
@@ -192,6 +194,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
           testDeploymentStorageConfiguration
         ),
         beforeEach: resetAndinitializeDeploymentCompositeAction(
+          testSelfApplicationUuid,
           testDeploymentUuid,
           initParametersForTest,
           []
@@ -216,216 +219,221 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               // endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
-                templates: {
-                  createEntity_newEntity: {
-                    uuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "newEntityUuid",
-                    },
-                    parentUuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referencePath: ["entityEntity", "uuid"],
-                    },
-                    selfApplication: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "testSelfApplicationUuid",
-                    },
-                    description: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "createEntity_newEntityDescription",
-                    },
-                    name: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "newEntityName",
-                    },
-                  },
-                  createEntity_newEntityDefinition: {
-                    name: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "newEntityName",
-                    },
-                    uuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "newEntityDefinitionUuid",
-                    },
-                    parentName: "EntityDefinition",
-                    parentUuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referencePath: ["entityEntityDefinition", "uuid"],
-                    },
-                    entityUuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referencePath: ["createEntity_newEntity", "uuid"],
-                    },
-                    conceptLevel: "Model",
-                    defaultInstanceDetailsReportUuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "defaultInstanceDetailsReportUuid",
-                    },
-                    mlSchema: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "newEntityJzodSchema",
-                    },
-                  },
-                  newEntityListReport: {
-                    uuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "createEntity_newEntityListReportUuid",
-                    },
-                    selfApplication: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "testSelfApplicationUuid",
-                    },
-                    parentName: "Report",
-                    parentUuid: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{entityReport.uuid}}",
-                    },
-                    conceptLevel: "Model",
-                    name: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{newEntityName}}List",
-                    },
-                    defaultLabel: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "List of {{newEntityName}}s",
-                    },
-                    type: "list",
-                    definition: {
-                      extractors: {
-                        instanceList: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          parentName: {
-                            transformerType: "getFromParameters",
-                            interpolation: "build",
-                            referenceName: "newEntityName",
-                          },
-                          parentUuid: {
-                            transformerType: "mustacheStringTemplate",
-                            interpolation: "build",
-                            definition: "{{createEntity_newEntity.uuid}}",
-                          },
-                        },
-                      },
-                      section: {
-                        type: "objectListReportSection",
-                        definition: {
-                          label: {
-                            transformerType: "mustacheStringTemplate",
-                            interpolation: "build",
-                            definition: "{{newEntityName}}s",
-                          },
-                          parentUuid: {
-                            transformerType: "mustacheStringTemplate",
-                            interpolation: "build",
-                            definition: "{{createEntity_newEntity.uuid}}",
-                          },
-                          fetchedDataReference: "instanceList",
-                        },
-                      },
-                    },
-                  },
-                  newEntityDetailsReport: {
-                    uuid: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "createEntity_newEntityDetailsReportUuid",
-                    },
-                    selfApplication: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "testSelfApplicationUuid",
-                    },
-                    parentName: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{entityReport.name}}",
-                    },
-                    parentUuid: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{entityReport.uuid}}",
-                    },
-                    conceptLevel: "Model",
-                    name: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "{{newEntityName}}Details",
-                    },
-                    defaultLabel: {
-                      transformerType: "mustacheStringTemplate",
-                      interpolation: "build",
-                      definition: "Details of {{newEntityName}}",
-                    },
-                    definition: {
-                      extractorTemplates: {
-                        elementToDisplay: {
-                          transformerType: "returnValue",
-                          interpolation: "build",
-                          value: {
-                            extractorTemplateType: "extractorForObjectByDirectReference",
-                            parentName: {
-                              transformerType: "getFromContext",
-                              interpolation: "build",
-                              referenceName: "newEntityName",
-                            },
-                            parentUuid: {
-                              transformerType: "mustacheStringTemplate",
-                              interpolation: "build",
-                              definition: "{{newEntityUuid}}",
-                            },
-                            instanceUuid: {
-                              transformerType: "returnValue",
-                              interpolation: "runtime",
-                              value: {
-                                transformerType: "getFromContext",
-                                interpolation: "runtime",
-                                referenceName: "instanceUuid",
-                              },
-                            },
-                          },
-                        },
-                      },
-                      section: {
-                        type: "list",
-                        definition: [
-                          {
-                            type: "objectInstanceReportSection",
-                            definition: {
-                              label: {
-                                transformerType: "mustacheStringTemplate",
-                                interpolation: "build",
-                                definition: "My {{newEntityName}}",
-                              },
-                              parentUuid: {
-                                transformerType: "mustacheStringTemplate",
-                                interpolation: "build",
-                                definition: "{{newEntityUuid}}",
-                              },
-                              fetchedDataReference: "elementToDisplay",
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                },
+                application: {
+                  transformerType: "getFromParameters",
+                  interpolation: "build",
+                  referenceName: "testSelfApplicationUuid",
+                } as any,
+                // templates: {
+                //   createEntity_newEntity: {
+                //     uuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "newEntityUuid",
+                //     },
+                //     parentUuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referencePath: ["entityEntity", "uuid"],
+                //     },
+                //     selfApplication: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "testSelfApplicationUuid",
+                //     },
+                //     description: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "createEntity_newEntityDescription",
+                //     },
+                //     name: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "newEntityName",
+                //     },
+                //   },
+                //   createEntity_newEntityDefinition: {
+                //     name: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "newEntityName",
+                //     },
+                //     uuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "newEntityDefinitionUuid",
+                //     },
+                //     parentName: "EntityDefinition",
+                //     parentUuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referencePath: ["entityEntityDefinition", "uuid"],
+                //     },
+                //     entityUuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referencePath: ["createEntity_newEntity", "uuid"],
+                //     },
+                //     conceptLevel: "Model",
+                //     defaultInstanceDetailsReportUuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "defaultInstanceDetailsReportUuid",
+                //     },
+                //     mlSchema: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "newEntityJzodSchema",
+                //     },
+                //   },
+                //   newEntityListReport: {
+                //     uuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "createEntity_newEntityListReportUuid",
+                //     },
+                //     selfApplication: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "testSelfApplicationUuid",
+                //     },
+                //     parentName: "Report",
+                //     parentUuid: {
+                //       transformerType: "mustacheStringTemplate",
+                //       interpolation: "build",
+                //       definition: "{{entityReport.uuid}}",
+                //     },
+                //     conceptLevel: "Model",
+                //     name: {
+                //       transformerType: "mustacheStringTemplate",
+                //       interpolation: "build",
+                //       definition: "{{newEntityName}}List",
+                //     },
+                //     defaultLabel: {
+                //       transformerType: "mustacheStringTemplate",
+                //       interpolation: "build",
+                //       definition: "List of {{newEntityName}}s",
+                //     },
+                //     type: "list",
+                //     definition: {
+                //       extractors: {
+                //         instanceList: {
+                //           extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                //           parentName: {
+                //             transformerType: "getFromParameters",
+                //             interpolation: "build",
+                //             referenceName: "newEntityName",
+                //           },
+                //           parentUuid: {
+                //             transformerType: "mustacheStringTemplate",
+                //             interpolation: "build",
+                //             definition: "{{createEntity_newEntity.uuid}}",
+                //           },
+                //         },
+                //       },
+                //       section: {
+                //         type: "objectListReportSection",
+                //         definition: {
+                //           label: {
+                //             transformerType: "mustacheStringTemplate",
+                //             interpolation: "build",
+                //             definition: "{{newEntityName}}s",
+                //           },
+                //           parentUuid: {
+                //             transformerType: "mustacheStringTemplate",
+                //             interpolation: "build",
+                //             definition: "{{createEntity_newEntity.uuid}}",
+                //           },
+                //           fetchedDataReference: "instanceList",
+                //         },
+                //       },
+                //     },
+                //   },
+                //   newEntityDetailsReport: {
+                //     uuid: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "createEntity_newEntityDetailsReportUuid",
+                //     },
+                //     selfApplication: {
+                //       transformerType: "getFromParameters",
+                //       interpolation: "build",
+                //       referenceName: "testSelfApplicationUuid",
+                //     },
+                //     parentName: {
+                //       transformerType: "mustacheStringTemplate",
+                //       interpolation: "build",
+                //       definition: "{{entityReport.name}}",
+                //     },
+                //     parentUuid: {
+                //       transformerType: "mustacheStringTemplate",
+                //       interpolation: "build",
+                //       definition: "{{entityReport.uuid}}",
+                //     },
+                //     conceptLevel: "Model",
+                //     name: {
+                //       transformerType: "mustacheStringTemplate",
+                //       interpolation: "build",
+                //       definition: "{{newEntityName}}Details",
+                //     },
+                //     defaultLabel: {
+                //       transformerType: "mustacheStringTemplate",
+                //       interpolation: "build",
+                //       definition: "Details of {{newEntityName}}",
+                //     },
+                //     definition: {
+                //       extractorTemplates: {
+                //         elementToDisplay: {
+                //           transformerType: "returnValue",
+                //           interpolation: "build",
+                //           value: {
+                //             extractorTemplateType: "extractorForObjectByDirectReference",
+                //             parentName: {
+                //               transformerType: "getFromContext",
+                //               interpolation: "build",
+                //               referenceName: "newEntityName",
+                //             },
+                //             parentUuid: {
+                //               transformerType: "mustacheStringTemplate",
+                //               interpolation: "build",
+                //               definition: "{{newEntityUuid}}",
+                //             },
+                //             instanceUuid: {
+                //               transformerType: "returnValue",
+                //               interpolation: "runtime",
+                //               value: {
+                //                 transformerType: "getFromContext",
+                //                 interpolation: "runtime",
+                //                 referenceName: "instanceUuid",
+                //               },
+                //             },
+                //           },
+                //         },
+                //       },
+                //       section: {
+                //         type: "list",
+                //         definition: [
+                //           {
+                //             type: "objectInstanceReportSection",
+                //             definition: {
+                //               label: {
+                //                 transformerType: "mustacheStringTemplate",
+                //                 interpolation: "build",
+                //                 definition: "My {{newEntityName}}",
+                //               },
+                //               parentUuid: {
+                //                 transformerType: "mustacheStringTemplate",
+                //                 interpolation: "build",
+                //                 definition: "{{newEntityUuid}}",
+                //               },
+                //               fetchedDataReference: "elementToDisplay",
+                //             },
+                //           },
+                //         ],
+                //       },
+                //     },
+                //   },
+                // },
                 definition: [
                   // createEntity
                   {
@@ -434,6 +442,11 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
+                      application: {
+                        transformerType: "getFromParameters",
+                        interpolation: "build",
+                        referenceName: "testSelfApplicationUuid",
+                      } as any,
                       deploymentUuid: {
                         transformerType: "getFromParameters",
                         interpolation: "build",
@@ -455,50 +468,50 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                       ],
                     },
                   },
-                  // // createReports
-                  // {
-                  //   actionType: "transactionalInstanceAction",
-                  //   actionLabel: "createReports",
-                  //   instanceAction: {
-                  //     actionType: "createInstance",
-                  //     deploymentUuid: {
-                  //       transformerType: "getFromParameters",
-                  //       interpolation: "build",
-                  //       referenceName: "testDeploymentUuid",
-                  //     },
-                  //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  //     payload: {
-                  //       applicationSection: "model",
-                  //       objects: [
-                  //         {
-                  //           parentName: {
-                  //             transformerType: "getFromParameters",
-                  //             interpolation: "build",
-                  //             referencePath: ["newEntityListReport", "parentName"],
-                  //           },
-                  //           parentUuid: {
-                  //             transformerType: "getFromParameters",
-                  //             interpolation: "build",
-                  //             referencePath: ["newEntityListReport", "parentUuid"],
-                  //           },
-                  //           applicationSection: "model",
-                  //           instances: [
-                  //             {
-                  //               transformerType: "getFromParameters",
-                  //               interpolation: "build",
-                  //               referenceName: "newEntityListReport",
-                  //             },
-                  //             {
-                  //               transformerType: "getFromParameters",
-                  //               interpolation: "build",
-                  //               referenceName: "newEntityDetailsReport",
-                  //             },
-                  //           ],
-                  //         },
-                  //       ],
-                  //     },
-                  //   },
-                  // },
+                  // // // createReports
+                  // // {
+                  // //   actionType: "transactionalInstanceAction",
+                  // //   actionLabel: "createReports",
+                  // //   instanceAction: {
+                  // //     actionType: "createInstance",
+                  // //     deploymentUuid: {
+                  // //       transformerType: "getFromParameters",
+                  // //       interpolation: "build",
+                  // //       referenceName: "testDeploymentUuid",
+                  // //     },
+                  // //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  // //     payload: {
+                  // //       applicationSection: "model",
+                  // //       objects: [
+                  // //         {
+                  // //           parentName: {
+                  // //             transformerType: "getFromParameters",
+                  // //             interpolation: "build",
+                  // //             referencePath: ["newEntityListReport", "parentName"],
+                  // //           },
+                  // //           parentUuid: {
+                  // //             transformerType: "getFromParameters",
+                  // //             interpolation: "build",
+                  // //             referencePath: ["newEntityListReport", "parentUuid"],
+                  // //           },
+                  // //           applicationSection: "model",
+                  // //           instances: [
+                  // //             {
+                  // //               transformerType: "getFromParameters",
+                  // //               interpolation: "build",
+                  // //               referenceName: "newEntityListReport",
+                  // //             },
+                  // //             {
+                  // //               transformerType: "getFromParameters",
+                  // //               interpolation: "build",
+                  // //               referenceName: "newEntityDetailsReport",
+                  // //             },
+                  // //           ],
+                  // //         },
+                  // //       ],
+                  // //     },
+                  // //   },
+                  // // },
                   // commit
                   {
                     actionType: "commit",
@@ -506,6 +519,11 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
+                      application: {
+                        transformerType: "getFromParameters",
+                        interpolation: "build",
+                        referenceName: "testSelfApplicationUuid",
+                      } as any,
                       deploymentUuid: {
                         transformerType: "getFromParameters",
                         interpolation: "build",
@@ -520,10 +538,14 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     nameGivenToResult: "newApplicationEntityDefinitionList",
                     query: {
                       actionType: "runBoxedExtractorOrQueryAction",
-                      // actionName: "runQuery",
                       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                       payload: {
+                        application: {
+                          transformerType: "getFromParameters",
+                          interpolation: "build",
+                          referenceName: "testSelfApplicationUuid",
+                        } as any,
                         deploymentUuid: {
                           transformerType: "getFromParameters",
                           interpolation: "build",
@@ -532,6 +554,11 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                         applicationSection: "model",
                         query: {
                           queryType: "boxedQueryWithExtractorCombinerTransformer",
+                          application: {
+                            transformerType: "getFromParameters",
+                            interpolation: "build",
+                            referenceName: "testSelfApplicationUuid",
+                          } as any,
                           deploymentUuid: {
                             transformerType: "getFromParameters",
                             interpolation: "build",
@@ -554,12 +581,12 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                                 transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referencePath: ["entityEntityDefinition", "name"],
-                              },
+                              } as any,
                               parentUuid: {
                                 transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referencePath: ["entityEntityDefinition", "uuid"],
-                              },
+                              } as any,
                               orderBy: {
                                 attributeName: "name",
                                 direction: "ASC",
@@ -577,23 +604,32 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                     nameGivenToResult: "newApplicationEntityList",
                     query: {
                       actionType: "runBoxedExtractorOrQueryAction",
-                      // actionName: "runQuery",
                       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                      deploymentUuid: {
-                        transformerType: "getFromParameters",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
                       payload: {
+                        application: {
+                          transformerType: "getFromParameters",
+                          interpolation: "build",
+                          referenceName: "testSelfApplicationUuid"
+                        } as any,
+                        deploymentUuid: {
+                          transformerType: "getFromParameters",
+                          interpolation: "build",
+                          referenceName: "testDeploymentUuid",
+                        } as any,
                         applicationSection: "model",
                         query: {
                           queryType: "boxedQueryWithExtractorCombinerTransformer",
+                          application: {
+                            transformerType: "getFromParameters",
+                            interpolation: "build",
+                            referenceName: "testSelfApplicationUuid",
+                          } as any,
                           deploymentUuid: {
                             transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "testDeploymentUuid",
-                          },
+                          } as any,
                           pageParams: {
                             currentDeploymentUuid: {
                               transformerType: "getFromParameters",
@@ -611,12 +647,12 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                                 transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referencePath: ["entityEntity", "name"],
-                              },
+                              } as any,
                               parentUuid: {
                                 transformerType: "getFromParameters",
                                 interpolation: "build",
                                 referencePath: ["entityEntity", "uuid"],
-                              },
+                              } as any,
                               orderBy: {
                                 attributeName: "name",
                                 direction: "ASC",
@@ -627,251 +663,251 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                       },
                     },
                   },
-                  // // getListOfReports
-                  // {
-                  //   actionType: "compositeRunBoxedExtractorOrQueryAction",
-                  //   actionLabel: "getListOfReports",
-                  //   nameGivenToResult: "newApplicationReportList",
-                  //   query: {
-                  //     actionType: "runBoxedExtractorOrQueryAction",
-                  //     actionName: "runQuery",
-                  //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  //     deploymentUuid: {
-                  //       transformerType: "getFromParameters",
-                  //       interpolation: "build",
-                  //       referenceName: "testDeploymentUuid",
-                  //     },
-                  //     payload: {
-                  //       applicationSection: "model",
-                  //       query: {
-                  //         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  //         deploymentUuid: {
-                  //           transformerType: "getFromParameters",
-                  //           interpolation: "build",
-                  //           referenceName: "testDeploymentUuid",
-                  //         },
-                  //         pageParams: {
-                  //           currentDeploymentUuid: {
-                  //             transformerType: "getFromParameters",
-                  //             interpolation: "build",
-                  //             referenceName: "testDeploymentUuid",
-                  //           },
-                  //         },
-                  //         runAsSql: true,
-                  //         queryParams: {},
-                  //         contextResults: {},
-                  //         extractors: {
-                  //           reports: {
-                  //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  //             applicationSection: "model",
-                  //             parentName: {
-                  //               transformerType: "getFromParameters",
-                  //               interpolation: "build",
-                  //               referencePath: ["entityReport", "name"],
-                  //             },
-                  //             parentUuid: {
-                  //               transformerType: "getFromParameters",
-                  //               interpolation: "build",
-                  //               referencePath: ["entityReport", "uuid"],
-                  //             },
-                  //             orderBy: {
-                  //               attributeName: "name",
-                  //               direction: "ASC",
-                  //             },
-                  //           },
-                  //         },
-                  //       },
-                  //     },
-                  //   },
-                  // },
-                  // // getMenu
-                  // {
-                  //   actionType: "compositeRunBoxedQueryAction",
-                  //   actionLabel: "getMenu",
-                  //   nameGivenToResult: "menuUpdateQueryResult",
-                  //   queryTemplate: {
-                  //     actionType: "runBoxedQueryAction",
-                  //     actionName: "runQuery",
-                  //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  //     deploymentUuid: {
-                  //       transformerType: "getFromParameters",
-                  //       interpolation: "build",
-                  //       referenceName: "testDeploymentUuid",
-                  //     },
-                  //     payload: {
-                  //       applicationSection: "model",
-                  //       query: {
-                  //         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  //         deploymentUuid: {
-                  //           transformerType: "getFromParameters",
-                  //           interpolation: "build",
-                  //           referenceName: "testDeploymentUuid",
-                  //         },
-                  //         pageParams: {},
-                  //         queryParams: {},
-                  //         contextResults: {},
-                  //         extractors: {
-                  //           menuList: {
-                  //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  //             applicationSection: "model",
-                  //             parentName: {
-                  //               transformerType: "getFromParameters",
-                  //               interpolation: "build",
-                  //               referencePath: ["entityMenu", "name"],
-                  //             },
-                  //             parentUuid: {
-                  //               transformerType: "getFromParameters",
-                  //               interpolation: "build",
-                  //               referencePath: ["entityMenu", "uuid"],
-                  //             },
-                  //           },
-                  //         },
-                  //         runtimeTransformers: {
-                  //           menu: {
-                  //             transformerType: "pickFromList",
-                  //             interpolation: "runtime",
-                  //             applyTo: {
-                  //               transformerType: "getFromContext",
-                  //               interpolation: "runtime",
-                  //               referenceName: "menuList",
-                  //             },
-                  //             index: 0,
-                  //           },
-                  //           menuItem: {
-                  //             transformerType: "createObject",
-                  //             interpolation: "runtime",
-                  //             definition: {
-                  //               reportUuid: {
-                  //                 transformerType: "getFromParameters",
-                  //                 interpolation: "build",
-                  //                 referenceName: "createEntity_newEntityListReportUuid",
-                  //               },
-                  //               label: {
-                  //                 transformerType: "mustacheStringTemplate",
-                  //                 interpolation: "build",
-                  //                 definition: "List of {{newEntityName}}s",
-                  //               },
-                  //               section: "data",
-                  //               selfApplication: {
-                  //                 transformerType: "getFromParameters",
-                  //                 interpolation: "build",
-                  //                 referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-                  //               },
-                  //               icon: "local_drink",
-                  //             },
-                  //           },
-                  //           updatedMenu: {
-                  //             transformerType: "transformer_menu_addItem",
-                  //             interpolation: "runtime",
-                  //             menuItemReference: {
-                  //               transformerType: "getFromContext",
-                  //               interpolation: "runtime",
-                  //               referenceName: "menuItem",
-                  //             },
-                  //             menuReference: {
-                  //               transformerType: "getFromContext",
-                  //               interpolation: "runtime",
-                  //               referenceName: "menu",
-                  //             },
-                  //             menuSectionItemInsertionIndex: -1,
-                  //           },
-                  //         },
-                  //       },
-                  //     },
-                  //   },
-                  // },
-                  // // updateMenu
-                  // {
-                  //   actionType: "transactionalInstanceAction",
-                  //   actionLabel: "updateMenu",
-                  //   instanceAction: {
-                  //     actionType: "updateInstance",
-                  //     deploymentUuid: {
-                  //       transformerType: "getFromParameters",
-                  //       interpolation: "build",
-                  //       referenceName: "testDeploymentUuid",
-                  //     },
-                  //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  //     payload: {
-                  //       applicationSection: "model",
-                  //       objects: [
-                  //         {
-                  //           parentName: {
-                  //             transformerType: "getFromParameters",
-                  //             interpolation: "build",
-                  //             referencePath: ["entityMenu", "name"],
-                  //           },
-                  //           parentUuid: {
-                  //             transformerType: "getFromParameters",
-                  //             interpolation: "build",
-                  //             referencePath: ["entityMenu", "uuid"],
-                  //           },
-                  //           applicationSection: "model",
-                  //           instances: [
-                  //             {
-                  //               transformerType: "getFromContext",
-                  //               interpolation: "runtime",
-                  //               referencePath: ["menuUpdateQueryResult", "updatedMenu"],
-                  //             },
-                  //           ],
-                  //         },
-                  //       ],
-                  //     },
-                  //   },
-                  // },
-                  // // commit
-                  // {
-                  //   actionType: "commit",
-                  //   actionLabel: "commit",
-                  //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  //   deploymentUuid: {
-                  //     transformerType: "getFromParameters",
-                  //     interpolation: "build",
-                  //     referenceName: "testDeploymentUuid",
-                  //   },
-                  // },
-                  // // getNewMenuList
-                  // {
-                  //   actionType: "compositeRunBoxedQueryAction",
-                  //   actionLabel: "getNewMenuList",
-                  //   nameGivenToResult: "newMenuList",
-                  //   queryTemplate: {
-                  //     actionType: "runBoxedQueryAction",
-                  //     actionName: "runQuery",
-                  //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  //     deploymentUuid: {
-                  //       transformerType: "getFromParameters",
-                  //       interpolation: "build",
-                  //       referenceName: "testDeploymentUuid",
-                  //     },
-                  //     payload: {
-                  //       applicationSection: "model",
-                  //       query: {
-                  //         queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  //         deploymentUuid: {
-                  //           transformerType: "getFromParameters",
-                  //           interpolation: "build",
-                  //           referenceName: "testDeploymentUuid",
-                  //         },
-                  //         pageParams: {},
-                  //         queryParams: {},
-                  //         contextResults: {},
-                  //         extractors: {
-                  //           menuList: {
-                  //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  //             applicationSection: "model",
-                  //             parentName: "Menu",
-                  //             parentUuid: {
-                  //               transformerType: "getFromParameters",
-                  //               interpolation: "build",
-                  //               referencePath: ["entityMenu", "uuid"],
-                  //             },
-                  //           },
-                  //         },
-                  //       },
-                  //     },
-                  //   },
-                  // },
+                  // // // getListOfReports
+                  // // {
+                  // //   actionType: "compositeRunBoxedExtractorOrQueryAction",
+                  // //   actionLabel: "getListOfReports",
+                  // //   nameGivenToResult: "newApplicationReportList",
+                  // //   query: {
+                  // //     actionType: "runBoxedExtractorOrQueryAction",
+                  // //     actionName: "runQuery",
+                  // //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  // //     deploymentUuid: {
+                  // //       transformerType: "getFromParameters",
+                  // //       interpolation: "build",
+                  // //       referenceName: "testDeploymentUuid",
+                  // //     },
+                  // //     payload: {
+                  // //       applicationSection: "model",
+                  // //       query: {
+                  // //         queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  // //         deploymentUuid: {
+                  // //           transformerType: "getFromParameters",
+                  // //           interpolation: "build",
+                  // //           referenceName: "testDeploymentUuid",
+                  // //         },
+                  // //         pageParams: {
+                  // //           currentDeploymentUuid: {
+                  // //             transformerType: "getFromParameters",
+                  // //             interpolation: "build",
+                  // //             referenceName: "testDeploymentUuid",
+                  // //           },
+                  // //         },
+                  // //         runAsSql: true,
+                  // //         queryParams: {},
+                  // //         contextResults: {},
+                  // //         extractors: {
+                  // //           reports: {
+                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             applicationSection: "model",
+                  // //             parentName: {
+                  // //               transformerType: "getFromParameters",
+                  // //               interpolation: "build",
+                  // //               referencePath: ["entityReport", "name"],
+                  // //             },
+                  // //             parentUuid: {
+                  // //               transformerType: "getFromParameters",
+                  // //               interpolation: "build",
+                  // //               referencePath: ["entityReport", "uuid"],
+                  // //             },
+                  // //             orderBy: {
+                  // //               attributeName: "name",
+                  // //               direction: "ASC",
+                  // //             },
+                  // //           },
+                  // //         },
+                  // //       },
+                  // //     },
+                  // //   },
+                  // // },
+                  // // // getMenu
+                  // // {
+                  // //   actionType: "compositeRunBoxedQueryAction",
+                  // //   actionLabel: "getMenu",
+                  // //   nameGivenToResult: "menuUpdateQueryResult",
+                  // //   queryTemplate: {
+                  // //     actionType: "runBoxedQueryAction",
+                  // //     actionName: "runQuery",
+                  // //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  // //     deploymentUuid: {
+                  // //       transformerType: "getFromParameters",
+                  // //       interpolation: "build",
+                  // //       referenceName: "testDeploymentUuid",
+                  // //     },
+                  // //     payload: {
+                  // //       applicationSection: "model",
+                  // //       query: {
+                  // //         queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  // //         deploymentUuid: {
+                  // //           transformerType: "getFromParameters",
+                  // //           interpolation: "build",
+                  // //           referenceName: "testDeploymentUuid",
+                  // //         },
+                  // //         pageParams: {},
+                  // //         queryParams: {},
+                  // //         contextResults: {},
+                  // //         extractors: {
+                  // //           menuList: {
+                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             applicationSection: "model",
+                  // //             parentName: {
+                  // //               transformerType: "getFromParameters",
+                  // //               interpolation: "build",
+                  // //               referencePath: ["entityMenu", "name"],
+                  // //             },
+                  // //             parentUuid: {
+                  // //               transformerType: "getFromParameters",
+                  // //               interpolation: "build",
+                  // //               referencePath: ["entityMenu", "uuid"],
+                  // //             },
+                  // //           },
+                  // //         },
+                  // //         runtimeTransformers: {
+                  // //           menu: {
+                  // //             transformerType: "pickFromList",
+                  // //             interpolation: "runtime",
+                  // //             applyTo: {
+                  // //               transformerType: "getFromContext",
+                  // //               interpolation: "runtime",
+                  // //               referenceName: "menuList",
+                  // //             },
+                  // //             index: 0,
+                  // //           },
+                  // //           menuItem: {
+                  // //             transformerType: "createObject",
+                  // //             interpolation: "runtime",
+                  // //             definition: {
+                  // //               reportUuid: {
+                  // //                 transformerType: "getFromParameters",
+                  // //                 interpolation: "build",
+                  // //                 referenceName: "createEntity_newEntityListReportUuid",
+                  // //               },
+                  // //               label: {
+                  // //                 transformerType: "mustacheStringTemplate",
+                  // //                 interpolation: "build",
+                  // //                 definition: "List of {{newEntityName}}s",
+                  // //               },
+                  // //               section: "data",
+                  // //               selfApplication: {
+                  // //                 transformerType: "getFromParameters",
+                  // //                 interpolation: "build",
+                  // //                 referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+                  // //               },
+                  // //               icon: "local_drink",
+                  // //             },
+                  // //           },
+                  // //           updatedMenu: {
+                  // //             transformerType: "transformer_menu_addItem",
+                  // //             interpolation: "runtime",
+                  // //             menuItemReference: {
+                  // //               transformerType: "getFromContext",
+                  // //               interpolation: "runtime",
+                  // //               referenceName: "menuItem",
+                  // //             },
+                  // //             menuReference: {
+                  // //               transformerType: "getFromContext",
+                  // //               interpolation: "runtime",
+                  // //               referenceName: "menu",
+                  // //             },
+                  // //             menuSectionItemInsertionIndex: -1,
+                  // //           },
+                  // //         },
+                  // //       },
+                  // //     },
+                  // //   },
+                  // // },
+                  // // // updateMenu
+                  // // {
+                  // //   actionType: "transactionalInstanceAction",
+                  // //   actionLabel: "updateMenu",
+                  // //   instanceAction: {
+                  // //     actionType: "updateInstance",
+                  // //     deploymentUuid: {
+                  // //       transformerType: "getFromParameters",
+                  // //       interpolation: "build",
+                  // //       referenceName: "testDeploymentUuid",
+                  // //     },
+                  // //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  // //     payload: {
+                  // //       applicationSection: "model",
+                  // //       objects: [
+                  // //         {
+                  // //           parentName: {
+                  // //             transformerType: "getFromParameters",
+                  // //             interpolation: "build",
+                  // //             referencePath: ["entityMenu", "name"],
+                  // //           },
+                  // //           parentUuid: {
+                  // //             transformerType: "getFromParameters",
+                  // //             interpolation: "build",
+                  // //             referencePath: ["entityMenu", "uuid"],
+                  // //           },
+                  // //           applicationSection: "model",
+                  // //           instances: [
+                  // //             {
+                  // //               transformerType: "getFromContext",
+                  // //               interpolation: "runtime",
+                  // //               referencePath: ["menuUpdateQueryResult", "updatedMenu"],
+                  // //             },
+                  // //           ],
+                  // //         },
+                  // //       ],
+                  // //     },
+                  // //   },
+                  // // },
+                  // // // commit
+                  // // {
+                  // //   actionType: "commit",
+                  // //   actionLabel: "commit",
+                  // //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  // //   deploymentUuid: {
+                  // //     transformerType: "getFromParameters",
+                  // //     interpolation: "build",
+                  // //     referenceName: "testDeploymentUuid",
+                  // //   },
+                  // // },
+                  // // // getNewMenuList
+                  // // {
+                  // //   actionType: "compositeRunBoxedQueryAction",
+                  // //   actionLabel: "getNewMenuList",
+                  // //   nameGivenToResult: "newMenuList",
+                  // //   queryTemplate: {
+                  // //     actionType: "runBoxedQueryAction",
+                  // //     actionName: "runQuery",
+                  // //     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  // //     deploymentUuid: {
+                  // //       transformerType: "getFromParameters",
+                  // //       interpolation: "build",
+                  // //       referenceName: "testDeploymentUuid",
+                  // //     },
+                  // //     payload: {
+                  // //       applicationSection: "model",
+                  // //       query: {
+                  // //         queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  // //         deploymentUuid: {
+                  // //           transformerType: "getFromParameters",
+                  // //           interpolation: "build",
+                  // //           referenceName: "testDeploymentUuid",
+                  // //         },
+                  // //         pageParams: {},
+                  // //         queryParams: {},
+                  // //         contextResults: {},
+                  // //         extractors: {
+                  // //           menuList: {
+                  // //             extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                  // //             applicationSection: "model",
+                  // //             parentName: "Menu",
+                  // //             parentUuid: {
+                  // //               transformerType: "getFromParameters",
+                  // //               interpolation: "build",
+                  // //               referencePath: ["entityMenu", "uuid"],
+                  // //             },
+                  // //           },
+                  // //         },
+                  // //       },
+                  // //     },
+                  // //   },
+                  // // },
                 ],
               },
             },
