@@ -102,7 +102,6 @@
           "value": {
             "id": 7,
             "display": { "editable": false },
-            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "defaultLabel": "SelfApplication",
             "foreignKeyParams": {
               "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -116,8 +115,7 @@
         "tag": {
           "value": {
             "id": 8,
-            "defaultLabel": "Name",
-            "display": { "editable": true }
+            "defaultLabel": "Name"
           }
         }
       },
@@ -127,8 +125,7 @@
         "tag": {
           "value": {
             "id": 9,
-            "defaultLabel": "SelfApplication",
-            "display": { "editable": true }
+            "defaultLabel": "SelfApplication"
           }
         }
       },
@@ -138,8 +135,7 @@
         "tag": {
           "value": {
             "id": 10,
-            "defaultLabel": "Description",
-            "display": { "editable": true }
+            "defaultLabel": "Description"
           }
         }
       }

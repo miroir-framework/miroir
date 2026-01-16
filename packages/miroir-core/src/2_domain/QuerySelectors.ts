@@ -1067,7 +1067,7 @@ export const runQuery = <StateType>(
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<Record<string,any>> => { 
 
-  log.info("########## runQuery begin, query", foreignKeyParams);
+  // log.info("########## runQuery begin, query", foreignKeyParams);
   const context: Record<string, any> = {
     ...(foreignKeyParams?.extractor?.contextResults ?? {})
   };

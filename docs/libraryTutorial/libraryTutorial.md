@@ -213,24 +213,57 @@ Try a value like `123456789` and you're done with Part 2! Congrats!
 <!-- We will demonstrate the creation of a new Report, based on the following use case: suppose we want to find the books that have never been borrowed. -->
 We will demonstrate the creation of a new Report that will show the list of books that do not have an ISBN in our database yet.
 
-### Working with Queries and Transformers
+In order to create this general-purpose Report, we are first going to create a Query, that can be used in the Report and later in other circumstances to help implementing new functions.
 
-A **Query** specifies what data to retrieve. Queries combine:
+Reports are declarative. You describe **what** to show, not **how** to fetch or render it. Miroir handles the implementation. In turn, Queries are also declarative, they describe **which** data elements must be fetched, not **how** to fetch them.
+
+### Working with Queries
+
+A **Query** specifies what data to retrieve. Queries execute, in the following order:
 
 - **Extractors** - fetch raw data from storage
-- **Transformers** - shape the data (filter, map, aggregate)
-- **Combiners** - merge multiple queries
+- **Combiners** - join multiple extractors together
+- **Transformers** - further shape the data (filter, map, aggregate)
 
-Queries can execute in-memory (client/server) or in the database (for SQL backends).
+Stored Queries are instances of the **Query** Entity, and have an **uuid** like any other Entity instance.
 
-**Key insight**: stored Queries can be used in many reports, and run in the client, the server, or the Database (via SQL translation)
+The existing Queries for the Library Application can be displayed by using the menu when the **Design Mode** is active (using the pencil icon in the app bar).
 
-The views you've been using are called **Reports** in Miroir. A Report declares:
-- What data to fetch (a **Query**)
-- How to display it (display sections)
+<img src="./library-model-Query_list.png" alt="The List of Library Queries" width="70%"/>
 
+### Adding the *Book_Lacking_ISBN* Query
 
-**Key insight**: Reports are declarative. You describe *what* to show, not *how* to fetch or render it. Miroir handles the implementation.
+Add a new query by using the **"+"** icon on the Queries List. Fill it out with the following definition:
+
+```json
+{
+  "uuid": "df972710-31ac-4dbe-a114-c0f4cc67e335",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "Book_Lacking_ISBN",
+  "definition": {
+    "extractorTemplates": {
+      "books": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "applicationSection": "data",
+        "parentName": "Book",
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "orderBy": {
+          "attributeName": "name",
+          "direction": "ASC"
+        },
+        "filter": {
+          "attributeName": "ISBN",
+          "value": {
+            "transformerType": "returnValue",
+            "value": "123456789"
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ### other report types
 

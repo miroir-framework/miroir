@@ -1,0 +1,27 @@
+{
+  "uuid": "df972710-31ac-4dbe-a114-c0f4cc67e335",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "Book_Lacking_ISBN",
+  "definition": {
+    "extractorTemplates": {
+      "books": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "applicationSection": "data",
+        "parentName": "Book",
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "orderBy": {
+          "attributeName": "name",
+          "direction": "ASC"
+        },
+        "filter": {
+          "attributeName": "ISBN",
+          "value": {
+            "transformerType": "returnValue",
+            "value": "123456789"
+          }
+        }
+      }
+    }
+  }
+}

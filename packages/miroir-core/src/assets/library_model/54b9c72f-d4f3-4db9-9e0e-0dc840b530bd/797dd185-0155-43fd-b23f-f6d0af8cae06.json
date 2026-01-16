@@ -120,6 +120,10 @@
             }
           }
         }
+      },
+      "ISBN": {
+        "type": "string",
+        "optional": true
       }
     }
   }
