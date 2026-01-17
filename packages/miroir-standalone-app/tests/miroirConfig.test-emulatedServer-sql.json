@@ -6,15 +6,15 @@
       "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
         "admin": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-standalone-app/tests/tmp/admin"
+          "directory": "../miroir-standalone-app/tests/assets/admin"
         },
         "model": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-standalone-app/tests/tmp/admin_model"
+          "directory": "../miroir-standalone-app/tests/assets/admin_model"
         },
         "data": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-standalone-app/tests/tmp/admin_data"
+          "directory": "../miroir-standalone-app/tests/assets/admin_data"
         }
       },
       "10ff36f2-50a3-48d8-b80f-e48e5d13af8e":{

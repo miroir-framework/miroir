@@ -3,6 +3,7 @@ import { describe } from 'vitest';
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   Action2ReturnType,
+  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
@@ -78,7 +79,7 @@ import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 import { storageAccess } from 'miroir-core';
 import { defaultMiroirModelEnvironment } from 'miroir-core';
 import { defaultLibraryModelEnvironment } from 'miroir-core';
-import type { ApplicationEntitiesAndInstances } from 'miroir-core';
+import type { ApplicationEntitiesAndInstances, Deployment } from 'miroir-core';
 import { adminLibraryApplication } from 'miroir-core';
 import { createDeploymentCompositeAction } from 'miroir-core';
 import { resetAndinitializeDeploymentCompositeAction } from 'miroir-core';
@@ -150,6 +151,16 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+
+  
+const adminDeployment: Deployment = {
+  ...adminConfigurationDeploymentAdmin,
+  configuration: adminDeploymentStorageConfiguration,
+};
+
 const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
@@ -215,7 +226,8 @@ beforeAll(
       miroirConfig as MiroirConfigClient,
       persistenceStoreControllerManager,
       domainController,
-      applicationDeploymentMap
+      applicationDeploymentMap,
+      adminDeployment,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController) {
@@ -229,7 +241,8 @@ beforeAll(
     const createLibraryDeploymentAction = createDeploymentCompositeAction(
       "library",
       adminConfigurationDeploymentLibrary.uuid,
-      adminLibraryApplication.uuid,
+      selfApplicationLibrary.uuid,
+      adminDeployment,
       libraryDeploymentStorageConfiguration);
     const result = await domainController.handleCompositeAction(
       createLibraryDeploymentAction,
@@ -348,13 +361,13 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                 applicationSection: applicationSection,
                 query: {
-                  application: selfApplicationMiroir.uuid,
                   queryType: "boxedExtractorOrCombinerReturningObject",
+                  application: selfApplicationMiroir.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   // runAsSql, // TODO: should be supported
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   select: {
                     extractorOrCombinerType: "extractorForObjectByDirectReference",
                     applicationSection: "model",
@@ -408,11 +421,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   runAsSql,
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractors: {
                     entities: {
                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -587,11 +600,11 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   runAsSql,
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractors: {
                     entities: {
                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -639,13 +652,13 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
-                  application: selfApplicationLibrary.uuid,
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
+                  application: selfApplicationLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   runAsSql,
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractors: {
                     menus: {
                       extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -821,7 +834,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 extractors: {
                   entities: {
                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -879,7 +892,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 extractors: {
                   books: {
                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -944,7 +957,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               pageParams: {},
               queryParams: {},
               contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               extractors: {
                 books: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -1005,7 +1018,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 extractors: {
                   books: {
                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -1071,7 +1084,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 extractors: {
                   book: {
                     extractorOrCombinerType: "extractorForObjectByDirectReference",
@@ -1127,16 +1140,16 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 application: selfApplicationLibrary.uuid,
                 runAsSql,
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 extractors: {
                   author: {
                     extractorOrCombinerType: "extractorForObjectByDirectReference",
@@ -1312,7 +1325,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 // instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
               },
               contextResults: {},
-              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+              // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               extractors: {
                 book: {
                   extractorOrCombinerType: "extractorForObjectByDirectReference",
@@ -1399,7 +1412,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 extractors: {
                   books: {
                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -1484,7 +1497,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   select: {
                     extractorOrCombinerType: "extractorForObjectByDirectReference",
                     applicationSection: applicationSection,

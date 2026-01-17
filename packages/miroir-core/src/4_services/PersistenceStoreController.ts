@@ -372,6 +372,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       case "createInstance":
       case "updateInstance": {
         for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
+          log.info(
+            this.logHeader,"handleAction upsertInstance for section: ", instanceCollection.applicationSection,
+            "instances", instanceCollection.instances
+          )
           for (const instance of instanceCollection.instances) {
             const result = await this.upsertInstance(
               instanceCollection.applicationSection,
@@ -863,8 +867,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       "upsertInstance",
       "section",
       section,
-      "storeName",
+      "modelStoreName",
       "'" + this.modelStoreSection.getStoreName() + "'",
+      "dataStoreName",
+      "'" + this.dataStoreSection.getStoreName() + "'",
       "instance",
       instance,
       "model entities",
@@ -881,11 +887,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           section,
           "entityUuid",
           instance.parentUuid,
-          "error: Entity not found in data section."
+          "error: Entity not found in data section, existing entities: " + this.getEntityUuids()
         );
         return new Action2Error(
           "FailedToUpsertInstance",
-          `upsertInstance failed for section: ${section}, entityUuid ${instance.parentUuid}, error: Entity not found in data section.`
+          `upsertInstance failed for section: ${section}, entityUuid ${instance.parentUuid}, error: Entity not found in data section, existing entities: ${this.getEntityUuids()}.`
         );
       }
       return this.dataStoreSection.upsertInstance(instance.parentUuid, instance);

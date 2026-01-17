@@ -83,7 +83,7 @@ export function testOnLibrary_resetLibraryDeployment(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application,
-            deploymentUuid,
+            // deploymentUuid,
           },
         },
       ],
@@ -92,10 +92,14 @@ export function testOnLibrary_resetLibraryDeployment(
 }
 export function testOnLibrary_deleteLibraryDeployment(
   miroirConfig: MiroirConfigClient,
-  application: Uuid = selfApplicationDeploymentLibrary.uuid,
-  deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
+  application: Uuid,
+  deploymentUuid: Uuid,
 ): CompositeActionSequence {
-  console.log("testOnLibrary_deleteLibraryDeployment", deploymentUuid,  JSON.stringify(miroirConfig, null, 2));
+  console.log(
+    "testOnLibrary_deleteLibraryDeployment",
+    deploymentUuid,
+    JSON.stringify(miroirConfig, null, 2),
+  );
   return {
     actionType: "compositeActionSequence",
     actionLabel: "deleteLibraryDeployment",
