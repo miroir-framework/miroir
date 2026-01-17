@@ -1,0 +1,8 @@
+{
+  "uuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "parentName":"SelfApplication",
+  "parentUuid":"a659d350-dd97-4da9-91de-524fa01745dc",
+  "name":"Admin",
+  "defaultLabel": "The Admin self selfApplication.",
+  "description": "The model and data of the Admin self selfApplication."
+}

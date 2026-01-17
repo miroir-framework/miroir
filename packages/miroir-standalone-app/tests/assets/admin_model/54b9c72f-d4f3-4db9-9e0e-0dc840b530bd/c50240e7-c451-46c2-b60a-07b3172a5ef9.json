@@ -1,0 +1,106 @@
+{
+  "uuid": "c50240e7-c451-46c2-b60a-07b3172a5ef9",
+  "parentName":"EntityDefinition",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "conceptLevel":"Model",
+  "name":"Deployment",
+  "icon": "Interests",
+  "defaultInstanceDetailsReportUuid": "08acd6c2-710a-4b17-a92a-60b81c936cfc",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "bundle",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": { "value": {  "id": 1, "defaultLabel": "Uuid", "display": { "editable": false } }}
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id": 2, "defaultLabel": "Entity Name", "display": { "editable": false } }}
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": { "value": {  "id": 3, "defaultLabel": "Entity Uuid", "display": { "editable": false } }}
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "display": { "editable": false } }}
+      },
+      "name": {
+        "type": "string",
+        "tag": { "value": {  "id": 5, "defaultLabel": "Name", "display": { "editable": true } }}
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": { "value": {  "id": 6, "defaultLabel": "Default Label", "display": { "editable": true } }}
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id": 7, "defaultLabel": "Description", "display": { "editable": true } }}
+      },
+      "adminApplication": {
+        "type": "uuid",
+        "tag": { "value": { 
+          "id": 8,
+          "display": { "editable": false },
+          "defaultLabel": "AdminApplication",
+          "description": "The AdminApplication of the Branch.",
+          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+          "foreignKeyParams": {
+            "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+            "targetEntityOrderInstancesBy": "name"
+          }
+        }}
+      },
+      "bundle": {
+        "type": "uuid",
+        "optional": true,
+        "tag": { "value": { 
+          "id": 8,
+          "defaultLabel": "Bundle",
+          "description": "The deployed bundle.",
+          "targetEntity": "",
+          "display": { "editable": false }
+        }}
+      },
+      "configuration": {
+        "type": "schemaReference",
+        "optional": true,
+        "tag": { "value": {  "id": 9, "defaultLabel": "Deployment Configuration", "display": { "editable": true } }},
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storeUnitConfiguration"
+        }
+      },
+      "model": {
+        "type": "schemaReference",
+        "optional": true,
+        "tag": { "value": {  "id": 9, "defaultLabel": "SelfApplication Deployment Model", "display": { "editable": true } }},
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodObject"
+        }
+      },
+      "data": {
+        "type": "schemaReference",
+        "optional": true,
+        "tag": { "value": {  "id": 10, "defaultLabel": "SelfApplication Deployment Data", "display": { "editable": true } }},
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodObject"
+        }
+      }
+    }
+  }
+}

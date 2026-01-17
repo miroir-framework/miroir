@@ -1,0 +1,33 @@
+{
+  "uuid": "e4488cba-b743-4b46-80e5-18c441c9882c",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name":"DeploymentList",
+  "defaultLabel": "Deployments",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates":{
+      "ApplicationDeployments": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "parentName": "Deployment",
+        "parentUuid": {
+          "transformerType": "returnValue",
+          "mlSchema": { "type": "uuid" },
+          "interpolation": "build",
+          "value": "7959d814-400c-4e80-988f-a00fe582ab98"
+        }
+      }
+    },
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "label": "Deployments 2",
+        "parentName": "Deployment",
+        "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+        "fetchedDataReference": "ApplicationDeployments",
+        "sortByAttribute": "name"
+      }
+    }
+  }
+}

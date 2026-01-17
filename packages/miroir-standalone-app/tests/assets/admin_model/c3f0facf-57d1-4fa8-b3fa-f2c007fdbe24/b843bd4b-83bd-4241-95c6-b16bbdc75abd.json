@@ -1,0 +1,12 @@
+{
+  "uuid": "b843bd4b-83bd-4241-95c6-b16bbdc75abd",
+  "parentName":"SelfApplicationVersion",
+  "parentUuid":"c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+  "name":"Initial",
+  "selfApplication":"55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "branch":"9034141b-0d0d-4beb-82af-dfc02be15c2d",
+  "description": "Initial Admin selfApplication version",
+  "previousVersion": "",
+  "modelStructureMigration":[],
+  "modelCUDMigration":[]
+}

@@ -77,6 +77,7 @@ import { adminMiroirApplication } from "miroir-core";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 import { selfApplicationMiroir } from "miroir-core";
 import { adminConfigurationDeploymentAdmin } from "miroir-core";
+import type { Deployment } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -140,6 +141,11 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+const adminDeployment: Deployment = {
+  ...adminConfigurationDeploymentAdmin,
+  configuration: adminDeploymentStorageConfiguration,
+};
+
 // const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
 //   adminConfigurationDeploymentLibrary as any;
 
@@ -194,10 +200,7 @@ beforeAll(async () => {
     "miroir",
     adminConfigurationDeploymentMiroir.uuid,
     adminMiroirApplication.uuid,
-    {
-      ...adminConfigurationDeploymentAdmin,
-      configuration: adminDeploymentStorageConfiguration
-    },
+    adminDeployment,
     miroirDeploymentStorageConfiguration,
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
@@ -248,6 +251,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         "library",
         testApplicationDeploymentUuid,
         testApplicationUuid,
+        adminDeployment,
         // testApplicationDeploymentUuid,
         // adminConfigurationDeploymentLibrary.uuid,
         testDeploymentStorageConfiguration

@@ -1,0 +1,119 @@
+{
+  "uuid": "53edf3b4-c8ff-4de5-9f28-2d1ecda2a02a",
+  "parentName":"EntityDefinition",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
+  "conceptLevel":"Model",
+  "name":"ApplicationVersion",
+  "icon": "Interests",
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "display": { "editable": false } }}
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "display": { "editable": false } }}
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "display": { "editable": false } }}
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "display": { "editable": false } }}
+      },
+      "name": {
+        "type": "string",
+        "tag": { "value": {  "id":5, "defaultLabel": "Name", "display": { "editable": true } }}
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id":6, "defaultLabel": "Default Label", "display": { "editable": true } }}
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id":7, "defaultLabel": "Description", "display": { "editable": true } }}
+      },
+      "type": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": {  "id":8, "defaultLabel": "Type of Report", "display": { "editable": true } }}
+      },
+      "adminApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 9,
+            "display": { "editable": false },
+            "defaultLabel": "AdminApplication",
+            "foreignKeyParams": {
+              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "display": { "editable": false },
+            "defaultLabel": "SelfApplication",
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "branch": {
+        "type": "uuid",
+        "tag": { "value": {  "id":10, "defaultLabel": "Branch", "description":"The Branch of this SelfApplication Version", "display": { "editable": false } }}
+      },
+      "previousVersion": {
+        "type": "uuid",
+        "optional": true,
+        "tag": { "value": { 
+          "id": 11,
+          "display": { "editable": false },
+          "defaultLabel": "Previous SelfApplication Version",
+          "description": "Previous version of the selfApplication on this Branch.",
+          "foreignKeyParams": {
+            "targetEntity": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
+            "targetEntityOrderInstancesBy": "name"
+          }
+        }}
+      },
+      "modelStructureMigration": {
+        "type": "array",
+        "optional": true,
+        "tag": { "value": {  "id":12, "defaultLabel": "Structure Migration from Previous Version", "display": { "editable": true } }},
+        "definition": {
+          "type": "record",
+          "definition": {
+            "type": "any"
+          }
+        }
+      },
+      "modelCUDMigration": {
+        "type": "array",
+        "optional": true,
+        "tag": { "value": {  "id":13, "defaultLabel": "Create-Update-Delete Migration from Previous Version", "display": { "editable": true } }},
+        "definition": {
+          "type": "record",
+          "definition": {
+            "type": "any" 
+          }
+        }
+      }
+    }
+  }
+}
