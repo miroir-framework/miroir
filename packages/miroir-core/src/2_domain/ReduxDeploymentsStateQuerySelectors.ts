@@ -386,12 +386,14 @@ export const selectEntityInstanceListFromReduxDeploymentsState: SyncBoxedExtract
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromReduxDeploymentsState = (
   deploymentEntityState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
 ): JzodObject | undefined => {
   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
+  const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
 
   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
-    localQuery.deploymentUuid,
+    deploymentUuid,
     "model",
     entityEntityDefinition.uuid
   );
@@ -419,7 +421,7 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
         "for entity",
         foreignKeyParams.query.entityUuid,
         "in deployment",
-        localQuery.deploymentUuid
+        deploymentUuid
       );
       return undefined;
     }
@@ -439,7 +441,7 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
       "for entity",
       foreignKeyParams.query.entityUuid,
       "in deployment",
-      localQuery.deploymentUuid
+      deploymentUuid
     );
     // throw new Error(
     //   "DomainSelector extractEntityJzodSchemaFromReduxDeploymentsState could not find entity " +

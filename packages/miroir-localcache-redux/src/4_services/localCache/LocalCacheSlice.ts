@@ -317,7 +317,6 @@ function handleInstanceAction(
   applicationDeploymentMap: ApplicationDeploymentMap
 ): Action2ReturnType {
   const deploymentUuid =
-    instanceAction.payload.deploymentUuid ??
     applicationDeploymentMap[instanceAction.payload.application];
   // log.info(
   //   "localCacheSliceObject handleInstanceAction",
@@ -554,7 +553,7 @@ function handleModelAction(
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Action2ReturnType {
   const deploymentUuid =
-    action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
+    applicationDeploymentMap[action.payload.application];
   log.info(
     "localCacheSliceObject handleModelAction called",
     action.actionType,
@@ -603,7 +602,7 @@ function handleModelAction(
       const localInstanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
         deploymentUuid,
         action,
-        currentModel(action.payload.application, applicationDeploymentMap, deploymentUuid, state)
+        currentModel(action.payload.application, applicationDeploymentMap, state)
       );
       log.info(
         "localCacheSliceObject handleModelAction generated instanceActions",

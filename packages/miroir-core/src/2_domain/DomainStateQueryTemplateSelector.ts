@@ -144,17 +144,19 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate = 
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNewForTemplate = (
   domainState: DomainState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
 ): JzodObject | undefined => {
   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
+  const deploymentUuid = applicationDeploymentMap[localQuery.application];
   if (
     domainState &&
-    domainState[localQuery.deploymentUuid] &&
-    domainState[localQuery.deploymentUuid]["model"] &&
-    domainState[localQuery.deploymentUuid]["model"][entityEntityDefinition.uuid]
+    domainState[deploymentUuid] &&
+    domainState[deploymentUuid]["model"] &&
+    domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
   ) {
     const values: EntityDefinition[] = Object.values(
-      domainState[localQuery.deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
+      domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
     ) as EntityDefinition[];
     const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
 

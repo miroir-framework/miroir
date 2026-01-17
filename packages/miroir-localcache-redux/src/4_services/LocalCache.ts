@@ -163,8 +163,9 @@ export class LocalCache implements LocalCacheInterface {
   public currentModel(
     application: string,
     appliationDeploymentMap: ApplicationDeploymentMap,
-    deploymentUuid: string): MetaModel {
-    log.info("called currentModel(", deploymentUuid, ")");
+    // deploymentUuid: string
+  ): MetaModel {
+    log.info("called currentModel(", application, appliationDeploymentMap, ")");
     // log.trace(
     //   "called currentModel(",
     //   deploymentUuid,
@@ -173,7 +174,7 @@ export class LocalCache implements LocalCacheInterface {
     // );
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
-    return currentModel(application, appliationDeploymentMap, deploymentUuid, reduxState);
+    return currentModel(application, appliationDeploymentMap, reduxState);
   }
 
   // ###############################################################################
@@ -181,11 +182,13 @@ export class LocalCache implements LocalCacheInterface {
   public currentModelEnvironment(
     application: string,
     appliationDeploymentMap: ApplicationDeploymentMap,
-    deploymentUuid: string): MiroirModelEnvironment {
-    log.info("called currentModelEnvironment(", deploymentUuid, ")");
+    // deploymentUuid: string
+  ): MiroirModelEnvironment {
+    log.info("called currentModelEnvironment(", application, appliationDeploymentMap, ")");
     log.trace(
       "called currentModelEnvironment(",
-      deploymentUuid,
+      application,
+      appliationDeploymentMap,
       ") from state:",
       this.innerReduxStore.getState().presentModelSnapshot
     );
@@ -194,7 +197,6 @@ export class LocalCache implements LocalCacheInterface {
     return currentModelEnvironment(
       application,
       appliationDeploymentMap,
-      deploymentUuid,
       reduxState
     );
   }

@@ -438,9 +438,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     BoxedExtractorOrCombinerReturningObjectList,
     Domain2QueryReturnType<EntityInstance[]>
   > = async (
-    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    const deploymentUuid = applicationDeploymentMap[extractorRunnerParams.extractor.application];
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
@@ -453,7 +455,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         // new object
         queryFailure: "IncorrectParameters",
         queryContext:
-          "extractRunnerInMemory extractEntityInstanceList wrong context as deploymentUuid, applicationSection, entityUuid not found, deploymentUuid=" +
+          "extractRunnerInMemory extractEntityInstanceList wrong context as deploymentUuid, applicationSection, or entityUuid not found, application=" +
+          extractorRunnerParams.extractor.application +
+          "deploymentUuid=" +
           deploymentUuid +
           ", applicationSection=" +
           applicationSection +

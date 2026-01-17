@@ -41,7 +41,7 @@ import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 export function currentModel(
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  paramDeploymentUuid: string,
+  // paramDeploymentUuid: string,
   state: LocalCacheSliceState
 ): MetaModel {
   // log.info(
@@ -139,10 +139,11 @@ export function currentModel(
 export function currentModelEnvironment(
   application: Uuid,
   appliationDeploymentMap: ApplicationDeploymentMap,
-  deploymentUuid: string,
+  // deploymentUuid: string,
   state: LocalCacheSliceState
 ): MiroirModelEnvironment {
-  const model = currentModel(application, appliationDeploymentMap, deploymentUuid, state);
+  const deploymentUuid = appliationDeploymentMap[application];
+  const model = currentModel(application, appliationDeploymentMap, state);
   return {
     deploymentUuid: deploymentUuid,
     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,

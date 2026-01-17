@@ -87,7 +87,7 @@ export async function handleQueryTemplateAction(
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
         application: queryTemplateAction.payload.application,
-        deploymentUuid: queryTemplateAction.payload.deploymentUuid,
+        // deploymentUuid: queryTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
       }
@@ -123,7 +123,7 @@ export async function handleBoxedExtractorTemplateAction(
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
     payload: {
       application: boxedExtractorTemplateAction.payload.application,
-      deploymentUuid: boxedExtractorTemplateAction.payload.deploymentUuid,
+      // deploymentUuid: boxedExtractorTemplateAction.payload.deploymentUuid,
       applicationSection: boxedExtractorTemplateAction.payload.applicationSection,
       query: resolvedQuery as any,
     }
@@ -186,7 +186,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
         payload: {
           application: queryTemplateOrExtractorTemplateAction.payload.application,
-          deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
+          // deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
           applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
           query: resolvedQuery as any,
         }
@@ -215,7 +215,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
       payload: {
         application: queryTemplateOrExtractorTemplateAction.payload.application,
-        deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
+        // deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
       }
@@ -316,6 +316,7 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
 // ################################################################################################
 export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
   deploymentEntityState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByQueryTemplateGetParamJzodSchema, StateType>,
   modelEnvironment: MiroirModelEnvironment
 ): JzodObject | undefined => {
@@ -367,6 +368,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
 
   const result = foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
     deploymentEntityState,
+    applicationDeploymentMap,
     {
       extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
       query: {
@@ -374,7 +376,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
         contextResults: {},
         pageParams: foreignKeyParams.query.pageParams,
         queryParams: foreignKeyParams.query.queryParams,
-        deploymentUuid: foreignKeyParams.query.deploymentUuid ?? "",
+        // deploymentUuid: foreignKeyParams.query.deploymentUuid ?? "",
         entityUuid: entityUuidDomainElement,
       },
     } as ExtractorTemplateRunnerParamsForJzodSchema<
@@ -391,6 +393,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
 // ################################################################################################
 export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
   deploymentEntityState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<DomainModelQueryTemplateJzodSchemaParams, StateType>,
   modelEnvironment: MiroirModelEnvironment
 ): RecordOfJzodElement | JzodElement | undefined => {
@@ -398,6 +401,7 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
     case "getEntityDefinition":{ 
       return foreignKeyParams.extractorRunnerMap.extractEntityJzodSchema(
         deploymentEntityState,
+        applicationDeploymentMap,
         foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, StateType>,
         modelEnvironment
       );
@@ -406,6 +410,7 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
     case "queryByTemplateGetParamJzodSchema": {
       return foreignKeyParams.extractorRunnerMap.extractFetchQueryJzodSchema(
         deploymentEntityState,
+        applicationDeploymentMap,
         foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>,
         modelEnvironment
       );
@@ -414,6 +419,7 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
     case "getQueryJzodSchema": {
       return foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
         deploymentEntityState,
+        applicationDeploymentMap,
         foreignKeyParams as ExtractorTemplateRunnerParamsForJzodSchema<QueryByQueryTemplateGetParamJzodSchema, StateType>,
         modelEnvironment
       );
@@ -435,6 +441,7 @@ export const extractJzodSchemaForDomainModelQueryTemplate = <StateType>(
 //  */
 export const extractFetchQueryTemplateJzodSchema = <StateType>(
   deploymentEntityState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByTemplateGetParamJzodSchema, StateType>,
   modelEnvironment: MiroirModelEnvironment
 ):  RecordOfJzodObject | undefined => {
@@ -447,11 +454,12 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
         entry[0],
         foreignKeyParams.extractorRunnerMap.extractzodSchemaForSingleSelectQuery(
           deploymentEntityState,
+          applicationDeploymentMap,
           {
             extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
             query: {
               queryType: "getQueryJzodSchema",
-              deploymentUuid: localFetchParams.deploymentUuid,
+              // deploymentUuid: localFetchParams.deploymentUuid,
               contextResults: {},
               pageParams: foreignKeyParams.query.pageParams,
               queryParams: foreignKeyParams.query.queryParams,

@@ -141,16 +141,25 @@ export function getMemoizedReduxDeploymentsStateSelectorForTemplateMap(): SyncBo
 // ################################################################################################
 const deploymentEntityStateSelectorForMLS = (
   domainState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   params: any,
   modelEnvironment: MiroirModelEnvironment
 ) => domainState;
+const applicationDeploymentMapSelectorForMLS = (
+  domainState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  params: any,
+  modelEnvironment: MiroirModelEnvironment
+) => applicationDeploymentMap;
 const deploymentEntityStateSelectorParamsForMLS = (
   domainState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   params: any,
   modelEnvironment: MiroirModelEnvironment
 ) => params;
 const miroirModelEnvironmentSelectorParamsForMLS = (
   deploymentEntityState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   params: any,
   modelEnvironment: MiroirModelEnvironment
 ) => modelEnvironment;
@@ -158,20 +167,40 @@ const miroirModelEnvironmentSelectorParamsForMLS = (
 export function getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<ReduxDeploymentsState> {
   return {
     extractJzodSchemaForDomainModelQuery: createSelector(
-      [deploymentEntityStateSelectorForMLS, deploymentEntityStateSelectorParamsForMLS, miroirModelEnvironmentSelectorParamsForMLS],
-      extractJzodSchemaForDomainModelQuery
+      [
+        deploymentEntityStateSelectorForMLS,
+        applicationDeploymentMapSelectorForMLS,
+        deploymentEntityStateSelectorParamsForMLS,
+        miroirModelEnvironmentSelectorParamsForMLS,
+      ],
+      extractJzodSchemaForDomainModelQuery,
     ),
     extractEntityJzodSchema: createSelector(
-      [deploymentEntityStateSelectorForMLS, deploymentEntityStateSelectorParamsForMLS, miroirModelEnvironmentSelectorParamsForMLS],
-      extractEntityJzodSchemaFromReduxDeploymentsState
+      [
+        deploymentEntityStateSelectorForMLS,
+        applicationDeploymentMapSelectorForMLS,
+        deploymentEntityStateSelectorParamsForMLS,
+        miroirModelEnvironmentSelectorParamsForMLS,
+      ],
+      extractEntityJzodSchemaFromReduxDeploymentsState,
     ),
     extractFetchQueryJzodSchema: createSelector(
-      [deploymentEntityStateSelectorForMLS, deploymentEntityStateSelectorParamsForMLS, miroirModelEnvironmentSelectorParamsForMLS],
-      extractFetchQueryJzodSchema
+      [
+        deploymentEntityStateSelectorForMLS,
+        applicationDeploymentMapSelectorForMLS,
+        deploymentEntityStateSelectorParamsForMLS,
+        miroirModelEnvironmentSelectorParamsForMLS,
+      ],
+      extractFetchQueryJzodSchema,
     ),
     extractzodSchemaForSingleSelectQuery: createSelector(
-      [deploymentEntityStateSelectorForMLS, deploymentEntityStateSelectorParamsForMLS, miroirModelEnvironmentSelectorParamsForMLS],
-      extractzodSchemaForSingleSelectQuery
+      [
+        deploymentEntityStateSelectorForMLS,
+        applicationDeploymentMapSelectorForMLS,
+        deploymentEntityStateSelectorParamsForMLS,
+        miroirModelEnvironmentSelectorParamsForMLS,
+      ],
+      extractzodSchemaForSingleSelectQuery,
     ),
   };
 }

@@ -22,7 +22,8 @@ import {
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -60,7 +61,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
   // ################################################################################################
   async handleQueryTemplateActionForServerONLY(
-    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction
+    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -71,7 +73,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleQueryTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedQueryTemplateAction,
-      runBoxedQueryTemplateAction.payload.query.applicationDeploymentMap,
+      applicationDeploymentMap,
       this.selectorMap,
       defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
     );
@@ -79,7 +81,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
   // ################################################################################################
   async handleBoxedExtractorTemplateActionForServerONLY(
-    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction
+    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -90,7 +93,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleBoxedExtractorTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedExtractorTemplateAction,
-      runBoxedExtractorTemplateAction.payload.query.applicationDeploymentMap,
+      applicationDeploymentMap,
       this.selectorMap,
       defaultMiroirModelEnvironment // TODO: use actual current deployment environment
     );
@@ -98,7 +101,8 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
 
   // ################################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -109,7 +113,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     return handleBoxedExtractorTemplateOrQueryTemplateAction(
       "FileSystemExtractorTemplateRunner",
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query.applicationDeploymentMap,
+      applicationDeploymentMap,
       this.selectorMap,
       defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
     );

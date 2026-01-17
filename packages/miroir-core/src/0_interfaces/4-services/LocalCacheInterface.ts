@@ -30,12 +30,12 @@ export declare interface LocalCacheInterface {
   currentModel(
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    deploymentUuid: string
+    // deploymentUuid: string
   ): MetaModel;
   currentModelEnvironment(
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    deploymentUuid: string
+    // deploymentUuid: string
   ): MiroirModelEnvironment;
   currentTransaction(): (TransactionalInstanceAction | ModelActionReplayableAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 

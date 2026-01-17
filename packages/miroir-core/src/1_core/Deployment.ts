@@ -20,8 +20,8 @@ import selfApplicationMiroir from '../assets/miroir_data/a659d350-dd97-4da9-91de
 // import selfApplicationModelBranchMiroirMasterBranch from '../assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
 // import selfApplicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 // import selfApplicationStoreBasedConfigurationMiroir from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/21840247-b5b1-4344-baec-f818f4797d92.json';
-import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import adminConfigurationDeploymentLibrary from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
+import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 // import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 // import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 // import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
@@ -98,7 +98,7 @@ export function createApplicationCompositeAction(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           payload: {
-            deploymentUuid: deploymentUuid,
+            // deploymentUuid: deploymentUuid,
             application: newSelfApplicationUuid,
             applicationSection: "data",
             objects: [
@@ -195,8 +195,8 @@ export function createDeploymentCompositeAction(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
-            application: selfApplicationUuid,
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            application: adminSelfApplication.uuid,
+            // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             applicationSection: "data",
             objects: [
               {
@@ -255,9 +255,6 @@ export function resetAndinitializeDeploymentCompositeAction(
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: applicationUuid, // to be ignored?
-      // transformerType: "returnValue",
-      // interpolation: "runtime",
-      // value: {
       definition: [
         {
           actionType: "resetModel",
@@ -266,7 +263,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            deploymentUuid: deploymentUuid,
+            // deploymentUuid: deploymentUuid,
           },
         },
         {
@@ -276,7 +273,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            deploymentUuid: deploymentUuid,
+            // deploymentUuid: deploymentUuid,
             params: initApplicationParameters,
             //  this is not a template, no transformer interpolation occurs before runtime
             // transformerType: "returnValue",
@@ -292,7 +289,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            deploymentUuid: deploymentUuid,
+            // deploymentUuid: deploymentUuid,
           },
         },
         {
@@ -302,7 +299,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            deploymentUuid: deploymentUuid,
+            // deploymentUuid: deploymentUuid,
             entities: appEntitesAndInstances,
           },
         },
@@ -313,7 +310,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            deploymentUuid: deploymentUuid,
+            // deploymentUuid: deploymentUuid,
           },
         },
         {
@@ -323,7 +320,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: applicationUuid,
-            deploymentUuid: deploymentUuid,
+            // deploymentUuid: deploymentUuid,
             applicationSection: "data",
             objects: appEntitesAndInstances.map((e) => {
               return {

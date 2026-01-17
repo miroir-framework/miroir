@@ -274,10 +274,10 @@
                 "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   },
                   "entities": [
                     {
@@ -299,20 +299,20 @@
                 "actionType": "transactionalInstanceAction",
                 "actionLabel": "createReports",
                 "payload": {
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   },
                   "instanceAction": {
                     "actionType": "createInstance",
                     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     "payload": {
-                      "deploymentUuid": {
+                      "application": {
                         "transformerType": "getFromParameters",
                         "interpolation": "build",
-                        "referenceName": "testDeploymentUuid"
+                        "referenceName": "testApplicationUuid"
                       },
                       "applicationSection": "model",
                       "objects": [
@@ -351,10 +351,10 @@
                 "actionLabel": "commit",
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   }
                 }
               },
@@ -365,19 +365,19 @@
                 "query": {
                   "actionType": "runBoxedExtractorOrQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   },
                   "payload": {
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                      "deploymentUuid": {
+                      "application": {
                         "transformerType": "getFromParameters",
                         "interpolation": "build",
-                        "referenceName": "testDeploymentUuid"
+                        "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {
                         "currentDeploymentUuid": {
@@ -420,25 +420,25 @@
                 "query": {
                   "actionType": "runBoxedExtractorOrQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   },
                   "payload": {
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                      "deploymentUuid": {
+                      "application": {
                         "transformerType": "getFromParameters",
                         "interpolation": "build",
-                        "referenceName": "testDeploymentUuid"
+                        "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {
-                        "currentDeploymentUuid": {
+                        "currentApplicationUuid": {
                           "transformerType": "getFromParameters",
                           "interpolation": "build",
-                          "referenceName": "testDeploymentUuid"
+                          "referenceName": "testApplicationUuid"
                         }
                       },
                       "queryParams": {},
@@ -474,25 +474,25 @@
                 "query": {
                   "actionType": "runBoxedExtractorOrQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   },
                   "payload": {
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                      "deploymentUuid": {
+                      "application": {
                         "transformerType": "getFromParameters",
                         "interpolation": "build",
-                        "referenceName": "testDeploymentUuid"
+                        "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {
-                        "currentDeploymentUuid": {
+                        "currentApplicationUuid": {
                           "transformerType": "getFromParameters",
                           "interpolation": "build",
-                          "referenceName": "testDeploymentUuid"
+                          "referenceName": "testApplicationUuid"
                         }
                       },
                       "runAsSql": true,
@@ -530,18 +530,18 @@
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
-                    "deploymentUuid": {
+                    "application": {
                       "transformerType": "getFromParameters",
                       "interpolation": "build",
-                      "referenceName": "testDeploymentUuid"
+                      "referenceName": "testApplicationUuid"
                     },
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                      "deploymentUuid": {
+                      "application": {
                         "transformerType": "getFromParameters",
                         "interpolation": "build",
-                        "referenceName": "testDeploymentUuid"
+                        "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {},
                       "queryParams": {},
@@ -620,21 +620,21 @@
                 "actionType": "transactionalInstanceAction",
                 "actionLabel": "updateMenu",
                 "payload": {
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   },
                   "instanceAction": {
                     "actionType": "updateInstance",
-                    "deploymentUuid": {
-                      "transformerType": "getFromParameters",
-                      "interpolation": "build",
-                      "referenceName": "testDeploymentUuid"
-                    },
                     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                     "payload": {
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
                       "applicationSection": "model",
                       "objects": [
                         {
@@ -667,10 +667,10 @@
                 "actionLabel": "commit",
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
-                  "deploymentUuid": {
+                  "application": {
                     "transformerType": "getFromParameters",
                     "interpolation": "build",
-                    "referenceName": "testDeploymentUuid"
+                    "referenceName": "testApplicationUuid"
                   }
                 }
               },
@@ -682,18 +682,18 @@
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
-                    "deploymentUuid": {
+                    "application": {
                       "transformerType": "getFromParameters",
                       "interpolation": "build",
-                      "referenceName": "testDeploymentUuid"
+                      "referenceName": "testApplicationUuid"
                     },
                     "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                      "deploymentUuid": {
+                      "application": {
                         "transformerType": "getFromParameters",
                         "interpolation": "build",
-                        "referenceName": "testDeploymentUuid"
+                        "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {},
                       "queryParams": {},

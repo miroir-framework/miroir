@@ -28,11 +28,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -112,11 +107,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -196,11 +186,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -280,11 +265,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -364,11 +344,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -448,11 +423,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -532,11 +502,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -616,11 +581,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": { "value": { "defaultLabel": "Uuid", "editable": false } }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {

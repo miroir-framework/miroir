@@ -47,12 +47,10 @@
               "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               "payload": {
                 "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-                "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                 "applicationSection": "data",
                 "query": {
                   "queryType": "boxedQueryWithExtractorCombinerTransformer",
                   "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-                  "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                   "pageParams": {},
                   "queryParams": {},
                   "contextResults": {},
@@ -101,7 +99,6 @@
             "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
             "payload": {
               "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-              "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
               "applicationSection": "data",
               "objects": [
                 {
@@ -128,7 +125,6 @@
             "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
             "payload": {
               "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-              "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
               "applicationSection": "data",
               "objects": [
                 {

@@ -131,7 +131,7 @@ export function getEntityInstancesUuidIndexNonHook(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application,
-      deploymentUuid: currentDeploymentUuid,
+      // deploymentUuid: currentDeploymentUuid,
       pageParams: {},
       queryParams: {},
       contextResults: {},
@@ -204,7 +204,7 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application,
-      deploymentUuid: currentDeploymentUuid,
+      // deploymentUuid: currentDeploymentUuid,
       pageParams: {},
       queryParams: {},
       contextResults: {},

@@ -2,6 +2,8 @@
 
 import type { EntityDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getModelUpdate } from "../../src/1_core/ModelUpdate.js";
+import selfApplicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+// import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 
 const entityDefinitionBook: EntityDefinition = {
   uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",
@@ -26,7 +28,7 @@ const entityDefinitionBook: EntityDefinition = {
           value: {
             id: 1,
             defaultLabel: "Uuid",
-            editable: false,
+            display: { editable: false },
           },
         },
       },
@@ -37,7 +39,7 @@ const entityDefinitionBook: EntityDefinition = {
           value: {
             id: 2,
             defaultLabel: "Entity Name",
-            editable: false,
+            display: { editable: false },
           },
         },
       },
@@ -47,7 +49,7 @@ const entityDefinitionBook: EntityDefinition = {
           value: {
             id: 3,
             defaultLabel: "Entity Uuid",
-            editable: false,
+            display: { editable: false },
           },
         },
       },
@@ -59,7 +61,7 @@ const entityDefinitionBook: EntityDefinition = {
           value: {
             id: 5,
             defaultLabel: "Concept Level",
-            editable: false,
+            display: { editable: false },
           },
         },
       },
@@ -68,8 +70,7 @@ const entityDefinitionBook: EntityDefinition = {
         tag: {
           value: {
             id: 4,
-            defaultLabel: "Name",
-            editable: true,
+            defaultLabel: "Name"
           },
         },
       },
@@ -79,8 +80,7 @@ const entityDefinitionBook: EntityDefinition = {
         tag: {
           value: {
             id: 5,
-            defaultLabel: "Year of Publication",
-            editable: true,
+            defaultLabel: "Year of Publication"
           },
         },
       },
@@ -90,9 +90,7 @@ const entityDefinitionBook: EntityDefinition = {
         tag: {
           value: {
             id: 6,
-            editable: true,
             defaultLabel: "Author",
-            targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             foreignKeyParams: {
               targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
               targetEntityOrderInstancesBy: "name",
@@ -106,9 +104,7 @@ const entityDefinitionBook: EntityDefinition = {
         tag: {
           value: {
             id: 7,
-            editable: true,
             defaultLabel: "Publisher",
-            targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
             foreignKeyParams: {
               targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
               targetEntityOrderInstancesBy: "name",
@@ -161,8 +157,7 @@ const tests: getModelUpdateTest[] = [
             tag: {
               value: {
                 id: 8,
-                defaultLabel: "ISBN",
-                editable: true,
+                defaultLabel: "ISBN"
               },
             },
           },
@@ -211,8 +206,7 @@ const tests: getModelUpdateTest[] = [
             tag: {
               value: {
                 id: 4,
-                defaultLabel: "Book Title", // Changed from "Name"
-                editable: true,
+                defaultLabel: "Book Title" // Changed from "Name"
               },
             },
           },
@@ -306,9 +300,15 @@ const tests: getModelUpdateTest[] = [
 describe('modelUpdates.unit', () => {
   it.each(tests)('$testLabel', ({ entityDefinitionBefore, entityDefinitionAfter, expectedModelUpdate }) => {
     if (expectedModelUpdate instanceof Error) {
-      expect(() => getModelUpdate(entityDefinitionBefore, entityDefinitionAfter)).toThrow(expectedModelUpdate.message);
+      expect(() => getModelUpdate(
+        selfApplicationLibrary.uuid,
+        entityDefinitionBefore, entityDefinitionAfter)).toThrow(expectedModelUpdate.message);
     } else {
-      const result = getModelUpdate(entityDefinitionBefore, entityDefinitionAfter);
+      const result = getModelUpdate(
+        selfApplicationLibrary.uuid,
+        entityDefinitionBefore,
+        entityDefinitionAfter,
+      );
       expect(result).toEqual(expectedModelUpdate);
     }
   });

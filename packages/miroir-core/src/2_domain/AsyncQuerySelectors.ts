@@ -151,7 +151,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
   extractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap,
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  deploymentUuid: Uuid | undefined,
+  // deploymentUuid: Uuid | undefined,
   extractors: Record<
     string,
     | BoxedExtractorOrCombinerReturningObjectList
@@ -160,6 +160,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
   >,
   extractorOrCombiner: ExtractorOrCombiner
 ): Promise<Domain2QueryReturnType<any>> {
+  const deploymentUuid = applicationDeploymentMap[application];
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
       return Promise.resolve(extractorOrCombiner.definition);
@@ -183,8 +184,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObjectList",
             application,
-            // applicationDeploymentMap,
-            deploymentUuid,
             contextResults: newFetchedData,
             pageParams: pageParams,
             queryParams,
@@ -223,8 +222,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObject",
             application,
-            // applicationDeploymentMap,
-            deploymentUuid,
             contextResults: newFetchedData,
             pageParams,
             queryParams,
@@ -261,7 +258,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           extractorRunnerMap,
           application,
           applicationDeploymentMap,
-          deploymentUuid,
+          // deploymentUuid,
           extractors,
           extractor
         );
@@ -282,7 +279,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           extractorRunnerMap,
           application,
           applicationDeploymentMap,
-          deploymentUuid,
+          // deploymentUuid,
           extractors,
           e
         );
@@ -303,7 +300,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractorRunnerMap,
               application,
               applicationDeploymentMap,
-              deploymentUuid,
+              // deploymentUuid,
               extractors,
               {
                 extractorOrCombinerType: "extractorOrCombinerContextReference",
@@ -318,7 +315,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractorRunnerMap,
               application,
               applicationDeploymentMap,
-              deploymentUuid,
+              // deploymentUuid,
               extractors,
               extractorOrCombiner.rootExtractorOrReference
             );
@@ -359,7 +356,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractorRunnerMap,
               application,
               applicationDeploymentMap,
-              deploymentUuid,
+              // deploymentUuid,
               extractors,
               resolvedQuery as ExtractorOrCombiner
             );
@@ -423,6 +420,8 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
   // log.info("########## extractExtractor begin, query", foreignKeyParams);
   const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap = foreignKeyParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
+  // const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
+
   const result = asyncInnerSelectElementFromQuery(
     foreignKeyParams.extractor.contextResults,
     foreignKeyParams.extractor.pageParams,
@@ -431,7 +430,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
     localSelectorMap as any,
     foreignKeyParams.extractor.application,
     applicationDeploymentMap,
-    foreignKeyParams.extractor.deploymentUuid,
+    // deploymentUuid,
     {},
     foreignKeyParams.extractor.select
   );
@@ -470,6 +469,7 @@ export const asyncRunQuery = async (
 
   // log.info("########## asyncRunQuery begin, query", foreignKeyParams);
 
+  const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
 
   const context: Record<string, any> = {
     ...foreignKeyParams.extractor.contextResults,
@@ -492,7 +492,7 @@ export const asyncRunQuery = async (
       localSelectorMap as any,
       foreignKeyParams.extractor.application,
       applicationDeploymentMap,
-      foreignKeyParams.extractor.deploymentUuid,
+      // deploymentUuid,
       foreignKeyParams.extractor.extractors ?? {} as any,
       extractor
     );
@@ -522,7 +522,7 @@ export const asyncRunQuery = async (
       localSelectorMap as any,
       foreignKeyParams.extractor.application,
       applicationDeploymentMap,
-      foreignKeyParams.extractor.deploymentUuid,
+      // deploymentUuid,
       foreignKeyParams.extractor.extractors ?? ({} as any),
       combiner
     );

@@ -366,7 +366,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     queryParams: queryTemplate.queryParams,
     contextResults: queryTemplate.contextResults,
     application: queryTemplate.application,
-    ...(queryTemplate.deploymentUuid ? {deploymentUuid: queryTemplate.deploymentUuid} : {}),
+    // ...(queryTemplate.deploymentUuid ? {deploymentUuid: queryTemplate.deploymentUuid} : {}),
     extractors: queries as ExtractorOrCombinerRecord,
     combiners: combiners as Record<string, ExtractorOrCombiner>,
     runtimeTransformers: queryTemplate.runtimeTransformers,
@@ -427,7 +427,7 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
     contextResults: boxedExtractorTemplateReturningObjectOrObjectList.contextResults,
     // applicationDeploymentMap: boxedExtractorTemplateReturningObjectOrObjectList.applicationDeploymentMap,
     application: boxedExtractorTemplateReturningObjectOrObjectList.application,
-    deploymentUuid: boxedExtractorTemplateReturningObjectOrObjectList.deploymentUuid,
+    // deploymentUuid: boxedExtractorTemplateReturningObjectOrObjectList.deploymentUuid,
     queryType:
       boxedExtractorTemplateReturningObjectOrObjectList.queryType == "boxedExtractorTemplateReturningObjectList"
         ? "boxedExtractorOrCombinerReturningObjectList"

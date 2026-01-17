@@ -340,7 +340,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
-    const deploymentUuid = action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
+    const deploymentUuid = applicationDeploymentMap[action.payload.application];
     // actionsWithDeploymentInPayload.includes(action.actionType) ? (action as any).payload.deploymentUuid : (action as any).deploymentUuid;
     log.info(
       "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called",
@@ -441,8 +441,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "LocalPersistenceAction_delete": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.payload.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for" +
+              "application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+              " deployment: " +
+              applicationDeploymentMap[action.payload.application],
           );
         }
         const actionMap: {
@@ -464,7 +469,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: action.payload.application,
-            deploymentUuid: action.payload.deploymentUuid, // ONLY for createInstance
+            // deploymentUuid: action.payload.deploymentUuid, // ONLY for createInstance
             applicationSection: action.payload.section,
             objects: [
               {
@@ -543,8 +548,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedExtractorOrQueryAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.payload.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for" +
+              " application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+            " deployment: " +
+              deploymentUuid
           );
         }
         switch (action.payload.query.queryType) {
@@ -560,7 +570,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   endpoint: action.endpoint,
                   payload: {
                     application: action.payload.application,
-                    deploymentUuid: action.payload.deploymentUuid,
+                    // deploymentUuid: action.payload.deploymentUuid,
                     applicationSection: action.payload.applicationSection,
                     query: localQuery,
                   },
@@ -582,7 +592,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                   endpoint: action.endpoint,
                   payload: {
                     application: action.payload.application,
-                    deploymentUuid: action.payload.deploymentUuid,
+                    // deploymentUuid: action.payload.deploymentUuid,
                     applicationSection: action.payload.applicationSection,
                     query: localQuery,
                   },
@@ -607,8 +617,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedQueryTemplateAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.payload.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+            " deployment: " +
+              deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
@@ -620,8 +634,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedExtractorTemplateAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.payload.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+              " deployment: " +
+              deploymentUuid,
           );
         }
         const localStoreResult = yield* call(() =>
@@ -633,8 +651,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              action.payload.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+              " deployment: " +
+              deploymentUuid,
           );
         }
         const localStoreResult = yield* call(() =>
@@ -982,7 +1004,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         //   "action",
         //   action
         // );
-        const deploymentUuid = action.payload.deploymentUuid??applicationDeploymentMap[action.payload.application];
+        const deploymentUuid = applicationDeploymentMap[action.payload.application];
         // const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
         //   ? (action as any).payload.deploymentUuid
         //   : (action as any).deploymentUuid;
@@ -1086,7 +1108,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
       > {
         const { action, applicationDeploymentMap, currentModel } = p.payload;
-        const deploymentUuid = action.payload.deploymentUuid ?? applicationDeploymentMap[action.payload.application];
+        const deploymentUuid = applicationDeploymentMap[action.payload.application];
         // const deploymentUuid = actionsWithDeploymentInPayload.includes(action.actionType)
         //   ? (action as any).payload.deploymentUuid
         //   : (action as any).deploymentUuid;

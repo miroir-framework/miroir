@@ -1763,11 +1763,11 @@ export function getMiroirFundamentalJzodSchema(
                 //     type: "uuid",
                 //   }
                 // },
-                deploymentUuid: {
-                  type: "uuid",
-                  optional: true,
-                  tag: { value: { defaultLabel: "Uuid", editable: false } },
-                },
+                // deploymentUuid: {
+                //   type: "uuid",
+                //   optional: true,
+                //   tag: { value: { defaultLabel: "Uuid", editable: false } },
+                // },
                 applicationSection: {
                   type: "schemaReference",
                   optional: true,
@@ -1810,18 +1810,18 @@ export function getMiroirFundamentalJzodSchema(
             //     type: "uuid",
             //   }
             // },
-            deploymentUuid: {
-              // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
-              type: "uuid",
-              optional: true,
-              tag: {
-                value: {
-                  canBeTemplate: true,
-                  defaultLabel: "Deployment Uuid",
-                  editable: false,
-                },
-              },
-            },
+            // deploymentUuid: {
+            //   // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
+            //   type: "uuid",
+            //   optional: true,
+            //   tag: {
+            //     value: {
+            //       canBeTemplate: true,
+            //       defaultLabel: "Deployment Uuid",
+            //       editable: false,
+            //     },
+            //   },
+            // },
             pageParams: {
               type: "record",
               definition: {
@@ -2115,10 +2115,14 @@ export function getMiroirFundamentalJzodSchema(
               type: "literal",
               definition: "getEntityDefinition",
             },
-            deploymentUuid: {
+            application: {
               type: "uuid",
-              tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+              tag: { value: { defaultLabel: "Application", editable: false } },
             },
+            // deploymentUuid: {
+            //   type: "uuid",
+            //   tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+            // },
             entityUuid: {
               type: "uuid",
               tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
@@ -2957,11 +2961,11 @@ export function getMiroirFundamentalJzodSchema(
             actionType: { type: "literal", definition: "compositeActionSequence" },
             actionName: { type: "literal", definition: "sequence" },
             actionLabel: { type: "string", optional: true },
-            deploymentUuid: {
-              type: "uuid",
-              optional: true,
-              tag: { value: { defaultLabel: "Module Deployment Uuid", editable: false } },
-            },
+            // deploymentUuid: {
+            //   type: "uuid",
+            //   optional: true,
+            //   tag: { value: { defaultLabel: "Module Deployment Uuid", editable: false } },
+            // },
             templates: {
               type: "record",
               optional: true,
@@ -3199,10 +3203,10 @@ export function getMiroirFundamentalJzodSchema(
                 payload: {
                   type: "object",
                   definition: {
-                    deploymentUuid: {
-                      type: "uuid",
-                      tag: { value: { defaultLabel: "Deployment", editable: false } },
-                    },
+                    // deploymentUuid: {
+                    //   type: "uuid",
+                    //   tag: { value: { defaultLabel: "Deployment", editable: false } },
+                    // },
                     application: {
                       type: "uuid",
                       tag: { value: { defaultLabel: "Application", editable: false } },
@@ -3229,10 +3233,10 @@ export function getMiroirFundamentalJzodSchema(
                 payload: {
                   type: "object",
                   definition: {
-                    deploymentUuid: {
-                      type: "uuid",
-                      tag: { value: { defaultLabel: "Deployment", editable: false } },
-                    },
+                    // deploymentUuid: {
+                    //   type: "uuid",
+                    //   tag: { value: { defaultLabel: "Deployment", editable: false } },
+                    // },
                     application: {
                       type: "uuid",
                       tag: { value: { defaultLabel: "Application", editable: false } },

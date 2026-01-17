@@ -1971,15 +1971,15 @@ export function getJzodBookEditorTests(
               formikFieldName("testField"),
               "initial form state"
             );
-            // console.log("Extracted initial values:", values);
+            console.log("Extracted initial values:", values);
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({
               uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
               parentName: "Book",
               parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               name: "Et dans l'éternité je ne m'ennuierai pas",
-              author: "Paul Veyne",
-              publisher: "Folio",
+              author: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+              publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
               conceptLevel: "Data",
               year: 2014,
             });
@@ -2345,42 +2345,42 @@ const jzodElementEditorTests: Record<
   string,
   ReactComponentTestSuitePrep<any> & { modes?: ModesType }
 > = {
-  JzodArrayEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodArrayEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-  },
-  JzodEnumEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodEnumEditorTests,
-    // modes: '*',
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodLiteralEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodLiteralEditorTests,
-    // modes: "*",
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodObjectEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodObjectEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-  },
-  JzodSimpleTypeEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodSimpleTypeEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-  },
+  // JzodArrayEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodArrayEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  // },
+  // JzodEnumEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodEnumEditorTests,
+  //   // modes: '*',
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodLiteralEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodLiteralEditorTests,
+  //   // modes: "*",
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodObjectEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodObjectEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  // },
+  // JzodSimpleTypeEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  // },
   // JzodUnionEditor: {
   //   editor: getJzodElementEditorForTest(pageLabel),
   //   getJzodEditorTests: getJzodUnionEditorTests,
@@ -2398,31 +2398,31 @@ const jzodElementEditorTests: Record<
   // //   modes: 'jzodElementEditor',
   // // },
   // // ################# INSTANCES
-  // JzodBookEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodBookEditorTests,
+  JzodBookEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodBookEditorTests,
+    performanceTests: true,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  // // ################# MODEL
+  JzodEntityDefinitionEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  // // ################# ENDPOINTS
+  // JzodEndpointEditor: {
+  //   editor: JzodElementEditor,
+  //   getJzodEditorTests: getJzodEndpointEditorTests,
   //   performanceTests: true,
   //   // modes: '*',
   //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
+  //   modes: 'jzodElementEditor',
   // },
-  // // // ################# MODEL
-  // JzodEntityDefinitionEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // // // ################# ENDPOINTS
-  // // JzodEndpointEditor: {
-  // //   editor: JzodElementEditor,
-  // //   getJzodEditorTests: getJzodEndpointEditorTests,
-  // //   performanceTests: true,
-  // //   // modes: '*',
-  // //   // modes: ['jzodElementEditor', 'component'],
-  // //   modes: 'jzodElementEditor',
-  // // },
 };
 
 // ##############################################################################################

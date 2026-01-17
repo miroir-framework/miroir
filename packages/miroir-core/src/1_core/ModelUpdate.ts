@@ -6,6 +6,7 @@ import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import type { Uuid } from '../0_interfaces/1_core/EntityDefinition';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -22,6 +23,7 @@ MiroirLoggerFactory.registerLoggerToStart(
  * @returns 
  */
 export function getModelUpdate(
+  application: Uuid,
   entityDefinitionBefore: EntityDefinition,
   entityDefinitionAfter: EntityDefinition
 ): ModelAction | null {
@@ -79,9 +81,11 @@ export function getModelUpdate(
   // Build the ModelAction
   const modelAction: ModelAction = {
     actionType: "alterEntityAttribute",
+    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-    deploymentUuid: entityDefinitionBefore.parentUuid,
     payload: {
+      application: application,
+      // deploymentUuid: entityDefinitionBefore.parentUuid,
       entityName: entityDefinitionBefore.name,
       entityUuid: entityDefinitionBefore.entityUuid,
       entityDefinitionUuid: entityDefinitionBefore.uuid,

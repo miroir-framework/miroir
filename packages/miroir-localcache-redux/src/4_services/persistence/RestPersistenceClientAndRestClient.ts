@@ -363,11 +363,11 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
             "handleNetworkPersistenceAction could not find application"
           );
         }
-        if (typeof persistenceAction.payload.deploymentUuid !== "string") {
-          throw new Error(
-            "handleNetworkPersistenceAction could not find deploymentUuid"
-          );
-        }
+        // if (typeof persistenceAction.payload.deploymentUuid !== "string") {
+        //   throw new Error(
+        //     "handleNetworkPersistenceAction could not find deploymentUuid"
+        //   );
+        // }
         if (typeof persistenceAction.payload.parentUuid !== "string") {
           return Promise.resolve({
             ...new Action2Error(
@@ -390,7 +390,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           persistenceAction,
           this.rootApiUrl +
             "/CRUD/" +
-            persistenceAction.payload.deploymentUuid +
+            applicationDeploymentMap[persistenceAction.payload.application] +
             "/" +
             persistenceAction.payload.section.toString() +
             "/entity",
@@ -400,7 +400,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           ...callParams.args,
           // actionName: action.actionName,
           application: persistenceAction.payload.application,
-          deploymentUuid: persistenceAction.payload.deploymentUuid,
+          deploymentUuid: applicationDeploymentMap[persistenceAction.payload.application],
           section: persistenceAction.payload.section,
           parentUuid: persistenceAction.payload.parentUuid,
           applicationDeploymentMap,

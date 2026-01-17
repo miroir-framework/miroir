@@ -205,12 +205,12 @@ export interface DomainControllerInterface {
   currentModel(
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    deploymentUuid: Uuid
+    // deploymentUuid: Uuid
   ): MetaModel;
   currentModelEnvironment(
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    deploymentUuid: Uuid
+    // deploymentUuid: Uuid
   ): MiroirModelEnvironment;
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[];
   currentLocalCacheInfo(): LocalCacheInfo;

@@ -744,7 +744,7 @@ export async function runTestOrTestSuite(
               domainController.currentModelEnvironment(
                 testAction.application,
                 applicationDeploymentMap,
-                testAction.deploymentUuid
+                // testAction.deploymentUuid
               ),
               newParams
             )
@@ -784,7 +784,7 @@ export async function runTestOrTestSuite(
               domainController.currentModelEnvironment(
                 testAction.application,
                 applicationDeploymentMap,
-                testAction.deploymentUuid
+                // testAction.deploymentUuid
               ),
               {},
             )
@@ -815,7 +815,7 @@ export async function runTestOrTestSuite(
             domainController.currentModelEnvironment(
               testAction.application,
               applicationDeploymentMap,
-              testAction.deploymentUuid
+              // testAction.deploymentUuid
             ),
             testActionParamValues??{},
           )

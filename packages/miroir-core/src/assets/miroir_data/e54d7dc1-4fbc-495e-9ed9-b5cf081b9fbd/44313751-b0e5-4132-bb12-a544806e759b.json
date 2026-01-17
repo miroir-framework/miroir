@@ -94,14 +94,12 @@
               "actionType": "runBoxedExtractorOrQueryAction",
               "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
               "payload": {
                 "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                 "applicationSection": "data",
                 "query": {
                   "queryType": "boxedQueryWithExtractorCombinerTransformer",
                   "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-                  "deploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                   "pageParams": {},
                   "queryParams": {},
                   "contextResults": {},
@@ -148,11 +146,6 @@
                     "interpolation": "runtime",
                     "referencePath": ["dropEntity", "application"]
                   },
-                  "deploymentUuid": {
-                    "transformerType": "getFromContext",
-                    "interpolation": "runtime",
-                    "referencePath": ["deploymentInfo", "deployments", "0", "uuid"]
-                  },
                   "pageParams": {},
                   "queryParams": {},
                   "contextResults": {},
@@ -188,11 +181,6 @@
                 "interpolation": "runtime",
                 "referencePath": ["dropEntity", "application"]
               },
-              "deploymentUuid": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "runtime",
-                "definition": "{{deploymentInfo.deployments.0.uuid}}"
-              },
               "entityUuid": {
                 "transformerType": "getFromParameters",
                 "interpolation": "build",
@@ -215,11 +203,6 @@
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
                 "referencePath": ["dropEntity", "application"]
-              },
-              "deploymentUuid": {
-                "transformerType": "mustacheStringTemplate",
-                "interpolation": "runtime",
-                "definition": "{{deploymentInfo.deployments.0.uuid}}"
               }
             }
           }

@@ -360,18 +360,21 @@ export type QueryRunnerMapForJzodSchema<StateType> = {
 // ################################################################################################
 export interface ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> {
   extractorRunnerMap: QueryTemplateRunnerMapForJzodSchema<StateType>
+  applicationDeploymentMap: ApplicationDeploymentMap,
   query: QueryTemplateType
 }
 
 // ################################################################################################
 export interface ExtractorRunnerParamsForJzodSchema<QueryType extends QueryJzodSchemaParams, StateType> {
   extractorRunnerMap: QueryRunnerMapForJzodSchema<StateType>
+  applicationDeploymentMap: ApplicationDeploymentMap,
   query: QueryType
 }
 
 // ################################################################################################
 export type JzodSchemaQueryTemplateSelector<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> = (
   domainState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   params: ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ) => RecordOfJzodElement | JzodElement | undefined;
@@ -379,6 +382,7 @@ export type JzodSchemaQueryTemplateSelector<QueryTemplateType extends DomainMode
 // ################################################################################################
 export type JzodSchemaQuerySelector<QueryType extends QueryJzodSchemaParams, StateType> = (
   domainState: StateType,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ) => RecordOfJzodElement | JzodElement | undefined;

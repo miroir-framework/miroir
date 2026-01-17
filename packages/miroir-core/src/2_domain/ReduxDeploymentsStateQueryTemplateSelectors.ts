@@ -125,12 +125,13 @@ export function getQueryTemplateRunnerParamsForReduxDeploymentsState(
 // ACCESSES deploymentEntityState
 export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
   deploymentEntityState: ReduxDeploymentsState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
 ): JzodObject | undefined => {
   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
-
+  const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
-    localQuery.deploymentUuid,
+    deploymentUuid,
     "model",
     entityEntityDefinition.uuid
   );
@@ -158,7 +159,7 @@ export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
         "for entity",
         foreignKeyParams.query.entityUuid,
         "in deployment",
-        localQuery.deploymentUuid
+        deploymentUuid
       );
       return undefined;
     }
@@ -181,7 +182,7 @@ export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
       "for entity",
       foreignKeyParams.query.entityUuid,
       "in deployment",
-      localQuery.deploymentUuid
+      deploymentUuid
     );
     // throw new Error(
     //   "DomainSelector extractEntityJzodSchemaFromReduxDeploymentsState could not find entity " +

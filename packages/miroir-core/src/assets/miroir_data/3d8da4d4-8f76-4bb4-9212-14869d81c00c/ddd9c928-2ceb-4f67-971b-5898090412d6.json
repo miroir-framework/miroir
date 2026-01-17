@@ -116,17 +116,6 @@
                   }
                 }
               },
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "Deployment",
-                    "editable": false
-                  }
-                }
-              },
               "objects": {
                 "type": "array",
                 "tag": {

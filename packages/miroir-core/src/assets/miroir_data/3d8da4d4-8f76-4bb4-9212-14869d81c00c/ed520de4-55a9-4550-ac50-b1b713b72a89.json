@@ -34,30 +34,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "deployment Uuid",
-                    "editable": false,
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "interpolation": "build",
-                        "referenceName": "deploymentUuid"
-                      }
-                    }
-                  }
-                }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -211,30 +187,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "deployment Uuid",
-                    "editable": false,
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "interpolation": "build",
-                        "referenceName": "deploymentUuid"
-                      }
-                    }
-                  }
-                }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -313,30 +265,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "deployment Uuid",
-                    "editable": false,
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "interpolation": "build",
-                        "referenceName": "deploymentUuid"
-                      }
-                    }
-                  }
-                }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -415,30 +343,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "deployment Uuid",
-                    "editable": false,
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "interpolation": "build",
-                        "referenceName": "deploymentUuid"
-                      }
-                    }
-                  }
-                }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -538,30 +442,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "deployment Uuid",
-                    "editable": false,
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "interpolation": "build",
-                        "referenceName": "deploymentUuid"
-                      }
-                    }
-                  }
-                }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -629,30 +509,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "deployment Uuid",
-                    "editable": false,
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "interpolation": "build",
-                        "referenceName": "deploymentUuid"
-                      }
-                    }
-                  }
-                }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {
@@ -729,30 +585,6 @@
           "payload": {
             "type": "object",
             "definition": {
-              "deploymentUuid": {
-                "type": "uuid",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "deployment Uuid",
-                    "editable": false,
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "interpolation": "build",
-                        "referenceName": "deploymentUuid"
-                      }
-                    }
-                  }
-                }
-              },
               "application": {
                 "type": "uuid",
                 "tag": {

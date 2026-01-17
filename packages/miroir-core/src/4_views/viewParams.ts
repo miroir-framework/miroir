@@ -20,7 +20,7 @@ export const defaultViewParamsFromAdminStorageFetchQueryParams: (
       {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: adminSelfApplication.uuid,
-        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         pageParams: {},
         queryParams: {},
         contextResults: {},

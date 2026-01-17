@@ -62,7 +62,7 @@ const emptyDomainObject: Record<string, any> = { };
 export const dummyDomainManyQueryWithDeploymentUuid: BoxedQueryWithExtractorCombinerTransformer = {
   queryType: "boxedQueryWithExtractorCombinerTransformer",
   application: "",
-  deploymentUuid: "",
+  // deploymentUuid: "",
   pageParams: {},
   queryParams: {},
   contextResults: emptyDomainObject,
@@ -74,7 +74,7 @@ export const dummyDomainManyQueryTemplateWithDeploymentUuid: BoxedQueryTemplateW
   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
   application: "",
   // applicationDeploymentMap: {},
-  deploymentUuid: "",
+  // deploymentUuid: "",
   pageParams: {},
   queryParams: {},
   contextResults: emptyDomainObject,
@@ -86,7 +86,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
   queryType: "queryByTemplateGetParamJzodSchema",
   application: "",
   // applicationDeploymentMap: {},
-  deploymentUuid: "",
+  // deploymentUuid: "",
   pageParams: {
     applicationSection: "data" ,
     deploymentUuid: "" ,
@@ -98,7 +98,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
     queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
     application: "",
     // applicationDeploymentMap: {},
-    deploymentUuid: "",
+    // deploymentUuid: "",
     pageParams: {},
     queryParams: {},
     contextResults: {},
@@ -118,7 +118,8 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
   applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
-  const deploymentUuid = foreignKeyParams.extractor.deploymentUuid ?? applicationDeploymentMap[foreignKeyParams.extractor.application];
+  const deploymentUuid =
+    applicationDeploymentMap[foreignKeyParams.extractor.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
   const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? "data";
 
   const entityUuid: Uuid = foreignKeyParams.extractor.select.parentUuid;
@@ -313,7 +314,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance> => {
   const querySelectorParams: ExtractorOrCombinerReturningObject = foreignKeyParams.extractor.select as ExtractorOrCombinerReturningObject;
-  const deploymentUuid = foreignKeyParams.extractor.deploymentUuid??applicationDeploymentMap[foreignKeyParams.extractor.application];
+  const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
   const applicationSection: ApplicationSection =
     foreignKeyParams.extractor.select.applicationSection ??
     ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
@@ -586,17 +587,19 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainStateNew = extractzodS
 // ACCESSES DOMAIN STATE
 export const selectEntityJzodSchemaFromDomainStateNew = (
   domainState: DomainState,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DomainState>
 ): JzodObject | undefined => {
   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
+  const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
   if (
     domainState &&
-    domainState[localQuery.deploymentUuid] &&
-    domainState[localQuery.deploymentUuid]["model"] &&
-    domainState[localQuery.deploymentUuid]["model"][entityEntityDefinition.uuid]
+    domainState[deploymentUuid] &&
+    domainState[deploymentUuid]["model"] &&
+    domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
   ) {
     const values: EntityDefinition[] = Object.values(
-      domainState[localQuery.deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
+      domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?? {}
     ) as EntityDefinition[];
     const index = values.findIndex((e: EntityDefinition) => e.entityUuid == localQuery.entityUuid);
 
