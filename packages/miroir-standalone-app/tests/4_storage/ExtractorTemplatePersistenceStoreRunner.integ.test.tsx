@@ -80,6 +80,7 @@ import { createDeploymentCompositeAction } from 'miroir-core';
 import { adminLibraryApplication } from 'miroir-core';
 import { selfApplicationDeploymentLibrary } from 'miroir-core';
 import { selfApplicationDeploymentMiroir } from 'miroir-core';
+import { selfApplicationLibrary } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -128,7 +129,7 @@ myConsoleLog("started registered loggers DONE");
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
 const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer

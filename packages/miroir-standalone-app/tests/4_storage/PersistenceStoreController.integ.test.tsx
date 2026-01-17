@@ -114,7 +114,7 @@ myConsoleLog("started registered loggers DONE");
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer

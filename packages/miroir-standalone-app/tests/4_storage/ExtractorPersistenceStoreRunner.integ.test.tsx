@@ -154,7 +154,7 @@ const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfigu
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);

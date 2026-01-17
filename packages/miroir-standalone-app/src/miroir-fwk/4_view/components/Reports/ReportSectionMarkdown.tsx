@@ -10,6 +10,7 @@ import {
   MiroirLoggerFactory,
   resolvePathOnObject,
   Uuid,
+  type ApplicationDeploymentMap,
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
@@ -35,6 +36,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface ReportSectionMarkdownProps {
+  application: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
   applicationSection: ApplicationSection;
   deploymentUuid: Uuid;
   reportName: string,
@@ -383,6 +386,8 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
         initialContent={currentContent}
         onSave={handleSave}
         onCancel={handleCancel}
+        application={props.application}
+        applicationDeploymentMap={props.applicationDeploymentMap}
         deploymentUuid={props.deploymentUuid}
         applicationSection={props.applicationSection}
       />

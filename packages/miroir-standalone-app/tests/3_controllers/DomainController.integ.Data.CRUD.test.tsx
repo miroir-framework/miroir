@@ -303,7 +303,6 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                         deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
@@ -445,12 +444,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      deploymentUuid: testApplicationDeploymentUuid,
+                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                         deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
@@ -586,8 +584,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-                        deploymentUuid: testApplicationDeploymentUuid,
+                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
@@ -720,8 +717,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-                        deploymentUuid: testApplicationDeploymentUuid,
+                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
@@ -870,8 +866,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-                        deploymentUuid: testApplicationDeploymentUuid,
+                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
@@ -1016,8 +1011,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-                        deploymentUuid: testApplicationDeploymentUuid,
+                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },

@@ -14,6 +14,7 @@ import {
   resolvePathOnObject,
   setValueAtPath,
   Uuid,
+  type ApplicationDeploymentMap,
 } from "miroir-core";
 
 import { DraggableContainer } from '../DraggableContainer.js';
@@ -47,6 +48,8 @@ export interface MarkdownEditorModalProps {
   initialContent: string;
   onSave: (content: string) => void;
   onCancel: () => void;
+  application: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   applicationSection: ApplicationSection;
 }
@@ -157,13 +160,15 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         payload: {
-          deploymentUuid: props.deploymentUuid,
+          application: props.application,
+          // deploymentUuid: props.deploymentUuid,
           instanceAction: {
             actionType: "updateInstance",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              deploymentUuid: props.deploymentUuid,
+              application: props.application,
+              // deploymentUuid: props.deploymentUuid,
               applicationSection: applicationSection,
               objects: [
                 {
@@ -177,6 +182,7 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
           },
         },
       },
+      props.applicationDeploymentMap,
       defaultMiroirModelEnvironment // TODO: use correct model environment
     );
     props.onSave(editedContent);

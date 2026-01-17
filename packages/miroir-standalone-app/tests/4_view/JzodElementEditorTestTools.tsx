@@ -53,7 +53,7 @@ import { Container } from "react-dom";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
-import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
+import { useCurrentModel, useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
 import { ResolvedJzodSchemaReturnType } from "miroir-core";
 import { measuredJzodTypeCheck } from "../../src/miroir-fwk/4_view/tools/hookPerformanceMeasure";
@@ -66,6 +66,7 @@ import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Concept";
 import { selfApplicationDeploymentMiroir } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-core";
 import { selfApplicationMiroir } from "miroir-core";
+import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
@@ -281,7 +282,10 @@ export interface ReactComponentTestSuite<PropType extends Record<string, any>> {
 };
 export type ReactComponentTestSuites<T extends Record<string, any>> = Record<string, ReactComponentTestSuite<T>>;
 
-
+const applicationDeploymentMap: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [selfApplicationLibrary.uuid]: selfApplicationDeploymentLibrary.uuid,
+};
 
 // ################################################################################################
 const handleAction = vi.fn();
@@ -411,9 +415,16 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     const context = useMiroirContextService();
     context.setDeploymentUuid
 
-    const currentModel: MetaModel = useCurrentModel(selfApplicationDeploymentLibrary.uuid);
+    const currentModel: MetaModel = useCurrentModel(
+      selfApplicationDeploymentLibrary.uuid,
+      applicationDeploymentMap
+    );
 
     const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+    const currentMiroirModelEnvironment = useCurrentModelEnvironment(
+      selfApplicationMiroir.uuid,
+      defaultSelfApplicationDeploymentMap
+    );
     // console.log("currentMiroirModel", currentMiroirModel);
 
     const effectiveRawJzodSchema: JzodElement | undefined = useMemo(() => {
@@ -494,11 +505,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         formik.values[testSectionName],
                         [], // currentValuePath
                         [], // currentTypePath
-                        {
-                          miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-                          currentModel,
-                          miroirMetaModel: currentMiroirModel,
-                        },
+                        currentMiroirModelEnvironment,
                         {}
                       )
                     : undefined;
@@ -549,12 +556,15 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                     <>
                       <JzodElementEditor
                         name={name}
+                        valueObjectEditMode="update"
+                        currentDeploymentUuid={context.deploymentUuid}
+                        currentApplication={context.application}
+                        applicationDeploymentMap={applicationDeploymentMap}
                         listKey={"ROOT"}
                         rootLessListKey={""}
                         rootLessListKeyArray={[]}
                         reportSectionPathAsString="TESTSECTION"
                         labelElement={labelElement}
-                        currentDeploymentUuid={context.deploymentUuid}
                         currentApplicationSection={"data"}
                         resolvedElementJzodSchemaDEFUNCT={resolvedJzodSchema.resolvedSchema}
                         typeCheckKeyMap={resolvedJzodSchema.keyMap}
@@ -613,10 +623,9 @@ export function getWrapperLoadingLocalCache(
   const resultForLoadingMiroirMetaModel: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-    // deploymentUuid: applicationDeploymentAdmin.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
-      application: selfApplicationDeploymentMiroir.uuid,
+      application: selfApplicationMiroir.uuid,
       deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       objects: [
         {
@@ -688,7 +697,7 @@ export function getWrapperLoadingLocalCache(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
-      application: selfApplicationDeploymentLibrary.uuid,
+      application: selfApplicationLibrary.uuid,
       deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       objects: [
         {

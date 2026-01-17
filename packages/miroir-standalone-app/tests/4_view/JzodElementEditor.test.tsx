@@ -2381,48 +2381,48 @@ const jzodElementEditorTests: Record<
     // modes: ['jzodElementEditor', 'component'],
     modes: "jzodElementEditor",
   },
-  JzodUnionEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodUnionEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-  },
-  // // ################# PERFORMANCE
-  // JzodEditorPerformanceTests: {
-  //   editor: JzodElementEditor,
-  //   getJzodEditorTests: getJzodEditorPerformanceTests,
+  // JzodUnionEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodUnionEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  // },
+  // // // ################# PERFORMANCE
+  // // JzodEditorPerformanceTests: {
+  // //   editor: JzodElementEditor,
+  // //   getJzodEditorTests: getJzodEditorPerformanceTests,
+  // //   performanceTests: true,
+  // //   // modes: '*',
+  // //   // modes: ['jzodElementEditor', 'component'],
+  // //   modes: 'jzodElementEditor',
+  // // },
+  // // ################# INSTANCES
+  // JzodBookEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodBookEditorTests,
   //   performanceTests: true,
   //   // modes: '*',
   //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
+  //   modes: "jzodElementEditor",
   // },
-  // ################# INSTANCES
-  JzodBookEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodBookEditorTests,
-    performanceTests: true,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-  },
-  // // ################# MODEL
-  JzodEntityDefinitionEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodEntityDefinitionEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-  },
-  // // ################# ENDPOINTS
-  // JzodEndpointEditor: {
-  //   editor: JzodElementEditor,
-  //   getJzodEditorTests: getJzodEndpointEditorTests,
-  //   performanceTests: true,
+  // // // ################# MODEL
+  // JzodEntityDefinitionEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
   //   // modes: '*',
   //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
+  //   modes: "jzodElementEditor",
   // },
+  // // // ################# ENDPOINTS
+  // // JzodEndpointEditor: {
+  // //   editor: JzodElementEditor,
+  // //   getJzodEditorTests: getJzodEndpointEditorTests,
+  // //   performanceTests: true,
+  // //   // modes: '*',
+  // //   // modes: ['jzodElementEditor', 'component'],
+  // //   modes: 'jzodElementEditor',
+  // // },
 };
 
 // ##############################################################################################

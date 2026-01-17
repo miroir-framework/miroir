@@ -455,7 +455,10 @@ export function MiroirContextReactProvider(props: {
         return clientConfig.serverConfig.rootApiUrl;
       }
     } else {
-      throw new Error("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
+      log.info("MiroirContextReactProvider found config:", JSON.stringify(config, null, 2));
+      log.warn("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
+      return '';
+      // throw new Error("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
     }
     // return 'http://localhost:3080'; // fallback default
   }, [props.miroirContext]);
