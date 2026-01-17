@@ -133,14 +133,15 @@ export function createDeploymentCompositeAction(
   applicationName: string,
   newDeploymentUuid: Uuid,
   selfApplicationUuid: Uuid,
-  deploymentConfiguration: StoreUnitConfiguration
+  adminDeploymentConfiguration: Deployment,
+  newDeploymentConfiguration: StoreUnitConfiguration
 ): CompositeActionSequence {
   log.info(
     "createDeploymentCompositeAction deploymentConfiguration",
     "newDeploymentUuid:",
     newDeploymentUuid,
     "deploymentConfiguration:",
-    deploymentConfiguration
+    newDeploymentConfiguration
   );
   return {
     actionType: "compositeActionSequence",
@@ -157,11 +158,16 @@ export function createDeploymentCompositeAction(
           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
           payload: {
             application: adminSelfApplication.uuid,
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            deploymentUuid: adminDeploymentConfiguration.uuid,
             configuration: {
-              [adminConfigurationDeploymentAdmin.uuid]:
-                adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
+              [adminDeploymentConfiguration.uuid]:
+                adminDeploymentConfiguration.configuration as StoreUnitConfiguration,
             },
+            // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            // configuration: {
+            //   [adminConfigurationDeploymentAdmin.uuid]:
+            //     adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
+            // },
           },
         },
         {
@@ -173,7 +179,7 @@ export function createDeploymentCompositeAction(
             application: selfApplicationUuid,
             deploymentUuid: newDeploymentUuid,
             configuration: {
-              [newDeploymentUuid]: deploymentConfiguration,
+              [newDeploymentUuid]: newDeploymentConfiguration,
             },
           },
         },
@@ -186,7 +192,7 @@ export function createDeploymentCompositeAction(
           payload: {
             application: selfApplicationUuid,
             deploymentUuid: newDeploymentUuid,
-            configuration: deploymentConfiguration,
+            configuration: newDeploymentConfiguration,
           },
         },
         {
@@ -212,7 +218,7 @@ export function createDeploymentCompositeAction(
                     defaultLabel: `The deployment of application ${applicationName}`,
                     description: `The description of deployment of application ${applicationName}`,
                     adminApplication: selfApplicationUuid, // TODO: this should be selfApplication
-                    configuration: deploymentConfiguration,
+                    configuration: newDeploymentConfiguration,
                   } as Deployment,
                 ],
               },

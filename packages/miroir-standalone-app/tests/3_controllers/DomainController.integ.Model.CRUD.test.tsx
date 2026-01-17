@@ -76,6 +76,7 @@ import type { ApplicationEntitiesAndInstances } from "miroir-core";
 import { adminMiroirApplication } from "miroir-core";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 import { selfApplicationMiroir } from "miroir-core";
+import { adminConfigurationDeploymentAdmin } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -127,6 +128,10 @@ const columnForTestDefinition: JzodElement = {
 const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
 
 const testApplicationUuid = selfApplicationLibrary.uuid;
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
@@ -189,7 +194,11 @@ beforeAll(async () => {
     "miroir",
     adminConfigurationDeploymentMiroir.uuid,
     adminMiroirApplication.uuid,
-    miroirDeploymentStorageConfiguration
+    {
+      ...adminConfigurationDeploymentAdmin,
+      configuration: adminDeploymentStorageConfiguration
+    },
+    miroirDeploymentStorageConfiguration,
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
