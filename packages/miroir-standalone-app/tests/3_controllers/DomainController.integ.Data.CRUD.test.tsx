@@ -73,6 +73,9 @@ import { defaultMiroirModelEnvironment } from "miroir-core";
 import { adminMiroirApplication } from "miroir-core";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 import { selfApplicationMiroir } from "miroir-core";
+import type { ApplicationDeploymentMap } from "miroir-core";
+import type { Deployment } from "miroir-core";
+import { adminConfigurationDeploymentAdmin } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 
@@ -116,9 +119,24 @@ myConsoleLog("started registered loggers DONE");
 
 const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;
+const applicationDeploymentMap: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+}
+
 const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+
+  
+const adminDeployment: Deployment = {
+  ...adminConfigurationDeploymentAdmin,
+  configuration: adminDeploymentStorageConfiguration,
+};
 
 const testApplicationUuid = selfApplicationLibrary.uuid;
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
@@ -127,9 +145,14 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
-const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
-  adminConfigurationDeploymentLibrary as any;
+const testDeployment: Deployment = {
+  ...adminConfigurationDeploymentLibrary,
+  configuration: testDeploymentStorageConfiguration,
+};
 
+
+// const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
+//   adminConfigurationDeploymentLibrary as any;
   
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;
@@ -182,15 +205,20 @@ beforeAll(async () => {
     "miroir",
     adminConfigurationDeploymentMiroir.uuid,
     adminMiroirApplication.uuid,
-    miroirDeploymentStorageConfiguration
+    adminDeployment,
+    miroirDeploymentStorageConfiguration,
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
-    defaultSelfApplicationDeploymentMap,
+    applicationDeploymentMap,
     defaultMiroirModelEnvironment,
-    {}
+    {},
   );
   if (createDeploymentResult.status !== "ok") {
+    log.error(
+      "Failed to create Miroir deployment, createMiroirDeploymentCompositeAction:",
+      JSON.stringify(createMiroirDeploymentCompositeAction, null, 2)
+    );
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));
   }
   myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
@@ -200,7 +228,7 @@ beforeAll(async () => {
 
 // TODO: move it in TestCompositeAction.beforeEach
 beforeEach(async () => {
-  await resetAndInitApplicationDeployment(domainController, defaultSelfApplicationDeploymentMap, [
+  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
     selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
   ]);
   document.body.innerHTML = "";
@@ -224,7 +252,7 @@ afterAll(async () => {
 const testActions: Record<string, TestCompositeActionParams> = {
   "DomainController.integ.Data.CRUD": {
     testActionType: "testCompositeActionSuite",
-    deploymentUuid: testApplicationDeploymentUuid,
+    // deploymentUuid: testApplicationDeploymentUuid,
     testActionLabel: "DomainController.integ.Data.CRUD",
     application: testApplicationUuid,
     testCompositeAction: {
@@ -232,9 +260,10 @@ const testActions: Record<string, TestCompositeActionParams> = {
       // testType: "testCompositeAction",
       testLabel: "DomainController.integ.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
-        "TEST",
+        "library",
         testApplicationDeploymentUuid,
         testApplicationUuid,
+        adminDeployment,
         testDeploymentStorageConfiguration
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
@@ -252,6 +281,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
       afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
       afterAll: testOnLibrary_deleteLibraryDeployment(
         miroirConfig,
+        selfApplicationLibrary.uuid,
         adminConfigurationDeploymentLibrary.uuid
       ),
       testCompositeActions: {
@@ -274,7 +304,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
                 {
@@ -285,7 +315,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -298,12 +328,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      deploymentUuid: testApplicationDeploymentUuid,
+                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        deploymentUuid: testApplicationDeploymentUuid,
+                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
@@ -399,7 +429,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
                 {
@@ -410,7 +440,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -421,7 +451,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
                     parentUuid: entityBook.uuid,
                     objects: [
@@ -449,7 +479,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        deploymentUuid: testApplicationDeploymentUuid,
+                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },
@@ -533,7 +563,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
                 {
@@ -544,7 +574,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -555,7 +585,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
                     parentUuid: entityBook.uuid,
                     objects: [
@@ -579,7 +609,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     // deploymentUuid: testApplicationDeploymentUuid,
                     payload: {
                       application: testApplicationUuid,
-                      deploymentUuid: testApplicationDeploymentUuid,
+                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -668,7 +698,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
                 {
@@ -679,7 +709,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -690,7 +720,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
                     objects: [
                       {
@@ -712,7 +742,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      deploymentUuid: testApplicationDeploymentUuid,
+                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -807,7 +837,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
                 {
@@ -817,7 +847,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -828,7 +858,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
                     objects: [
                       {
@@ -848,7 +878,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -861,7 +891,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      deploymentUuid: testApplicationDeploymentUuid,
+                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -957,7 +987,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
                 {
@@ -968,7 +998,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -979,7 +1009,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
-                    deploymentUuid: testApplicationDeploymentUuid,
+                    // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
                     objects: [
                       {
@@ -1006,7 +1036,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
                       application: testApplicationUuid,
-                      deploymentUuid: testApplicationDeploymentUuid,
+                      // deploymentUuid: testApplicationDeploymentUuid,
                       applicationSection: "data", // TODO: give only selfApplication section in individual queries?
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
