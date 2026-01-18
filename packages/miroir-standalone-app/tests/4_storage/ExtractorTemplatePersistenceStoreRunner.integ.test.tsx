@@ -81,6 +81,9 @@ import { adminLibraryApplication } from 'miroir-core';
 import { selfApplicationDeploymentLibrary } from 'miroir-core';
 import { selfApplicationDeploymentMiroir } from 'miroir-core';
 import { selfApplicationLibrary } from 'miroir-core';
+import type { Deployment } from 'miroir-core';
+import { adminConfigurationDeploymentAdmin } from 'miroir-core';
+import type { AdminApplicationDeploymentConfiguration } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -96,7 +99,7 @@ const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 // const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-const fileName = "ExtractorPersistenceStoreRunner.integ.test";
+const fileName = "ExtractorTemplatePersistenceStoreRunner.integ.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -141,6 +144,23 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+
+  
+const adminDeployment: Deployment = {
+  ...adminConfigurationDeploymentAdmin,
+  configuration: adminDeploymentStorageConfiguration,
+};
+
+const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+
+const ApplicationDeploymentMap: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+};
+
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // ################################################################################################
@@ -174,6 +194,7 @@ beforeAll(
       persistenceStoreControllerManager,
       domainController,
       applicationDeploymentMap,
+      adminDeployment,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController) {
@@ -188,9 +209,9 @@ beforeAll(
     const createLibraryDeploymentAction = createDeploymentCompositeAction(
       "library",
       adminConfigurationDeploymentLibrary.uuid,
-      adminLibraryApplication.uuid,
-      libraryDeploymentStorageConfiguration
-    );
+      selfApplicationLibrary.uuid,
+      adminDeployment,
+      libraryDeploymentStorageConfiguration);
     const result = await domainController.handleCompositeAction(
       createLibraryDeploymentAction,
       applicationDeploymentMap,
@@ -270,26 +291,31 @@ beforeEach(
   }
 )
 
-// // ################################################################################################
-// afterEach(
-//   async () => {
-//     await resetApplicationDeployments(deploymentConfigurations, domainController, localCache);
-//   }
-// )
+// ################################################################################################
+afterEach(
+  async () => {
+    await resetApplicationDeployments(
+      deploymentConfigurations,
+      applicationDeploymentMap,
+      domainController,
+      localCache,
+    );
+  }
+)
 
-// // ################################################################################################
-// afterAll(
-//   async () => {
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-//     try {
-//       await localMiroirPersistenceStoreController.close();
-//       await localAppPersistenceStoreController.close();
-//     } catch (error) {
-//       console.error('Error afterAll',error);
-//     }
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-//   }
-// )
+// ################################################################################################
+afterAll(
+  async () => {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+    try {
+      await localMiroirPersistenceStoreController.close();
+      await localAppPersistenceStoreController.close();
+    } catch (error) {
+      console.error('Error afterAll',error);
+    }
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+  }
+)
 
 
 const resultHandler = (a: any, ignoreAttributes?: string[]) =>
@@ -331,7 +357,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   select: {
                     extractorTemplateType: "extractorForObjectByDirectReference",
@@ -406,7 +432,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     entities: {
                       extractorTemplateType: "extractorTemplateForObjectListByEntity",
@@ -463,7 +489,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     entities: {
                       extractorTemplateType: "extractorTemplateForObjectListByEntity",
@@ -525,7 +551,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationDeploymentLibrary.uuid,
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
                   application: selfApplicationDeploymentLibrary.uuid,
@@ -533,7 +559,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     books: {
                       extractorTemplateType: "extractorTemplateForObjectListByEntity",
@@ -605,7 +631,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     books: {
                       extractorTemplateType: "extractorTemplateForObjectListByEntity",
@@ -661,7 +687,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationDeploymentLibrary.uuid,
-                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
                   application: selfApplicationDeploymentLibrary.uuid,
@@ -669,7 +695,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     books: {
                       extractorTemplateType: "extractorTemplateForObjectListByEntity",
@@ -867,7 +893,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
                   },
                   contextResults: {},
-                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     book: {
                       extractorTemplateType: "extractorForObjectByDirectReference",

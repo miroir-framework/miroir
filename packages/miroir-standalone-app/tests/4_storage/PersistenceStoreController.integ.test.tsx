@@ -25,6 +25,7 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
+  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   author1,
@@ -39,7 +40,9 @@ import {
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
   resetAndInitApplicationDeployment,
-  type ApplicationDeploymentMap
+  type AdminApplicationDeploymentConfiguration,
+  type ApplicationDeploymentMap,
+  type Deployment
 } from "miroir-core";
 
 
@@ -126,6 +129,32 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+
+  
+const adminDeployment: Deployment = {
+  ...adminConfigurationDeploymentAdmin,
+  configuration: adminDeploymentStorageConfiguration,
+};
+
+const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+
+// const applicationDeploymentMap: ApplicationDeploymentMap = {
+//   ...defaultSelfApplicationDeploymentMap,
+//   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+// };
+
+// const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+//   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+//   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+
+// const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+// const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+//   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
+//   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
+
 // ################################################################################################
 beforeAll(
   async () => {
@@ -158,6 +187,7 @@ beforeAll(
       persistenceStoreControllerManager,
       domainController,
       applicationDeploymentMap,
+      adminDeployment,
     );
     if (wrapped) {
       if (wrapped.localMiroirPersistenceStoreController) {
@@ -171,7 +201,8 @@ beforeAll(
     const createLibraryDeploymentAction = createDeploymentCompositeAction(
       "library",
       adminConfigurationDeploymentLibrary.uuid,
-      adminLibraryApplication.uuid,
+      selfApplicationLibrary.uuid,
+      adminDeployment,
       libraryDeploymentStorageConfiguration
     );
     const result = await domainController.handleCompositeAction(
@@ -851,7 +882,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     console.log("instanceAdded", instanceAdded)
     expect({errorType: instanceAdded.errorType, errorMessage: instanceAdded.errorMessage}, "failed to add Book instance").toEqual({
       errorType: "FailedToUpsertInstance",
-      errorMessage: "upsertInstance failed for section: data, entityUuid e8ba151b-d68e-4cc3-9a83-3459d309ccf5, error: Entity not found in data section.",
+      errorMessage: "upsertInstance failed for section: data, entityUuid e8ba151b-d68e-4cc3-9a83-3459d309ccf5, error: Entity not found in data section, existing entities: d7a144ff-d1b9-4135-800c-a7cfc1f38733.",
     });
   });
 

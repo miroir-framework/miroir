@@ -46,6 +46,7 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationDeploymentMiroir,
   selfApplicationLibrary,
+  selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment,
   type MiroirActivityTrackerInterface
@@ -539,7 +540,7 @@ export async function createDeploymentGetPersistenceStoreController(
   applicationName: string,
   miroirConfig: MiroirConfigClient,
   adminConfigurationDeploymentUuid: Uuid,
-  selfApplicationDeploymentUuid: Uuid,
+  selfApplicationUuid: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   adminDeployment: Deployment,
   storeUnitConfiguration: StoreUnitConfiguration,
@@ -552,7 +553,7 @@ export async function createDeploymentGetPersistenceStoreController(
     const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(
       applicationName,
       adminConfigurationDeploymentUuid, // adminConfigurationDeploymentUuid
-      selfApplicationDeploymentUuid,
+      selfApplicationUuid,
       adminDeployment,
       storeUnitConfiguration
     );
@@ -609,7 +610,7 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
     "miroir",
     miroirConfig,
     adminConfigurationDeploymentMiroir.uuid,
-    selfApplicationDeploymentMiroir.uuid,
+    selfApplicationMiroir.uuid,
     applicationDeploymentMap,
     adminDeployment,
     miroirConfig.client.emulateServer
