@@ -17,6 +17,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
+  resolveJzodSchemaReference,
+  resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   transformer_extended_apply_wrapper,
@@ -1058,6 +1060,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
   ]);
 
+  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveJzodSchemaReferenceInContext(
+    currentTypeCheckKeyMap?.rawSchema,
+    currentTypeCheckKeyMap?.rawSchema.context ?? {},
+    currentApplicationModelEnvironment
+  ) : currentTypeCheckKeyMap?.rawSchema;
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <ThemedOnScreenDebug
@@ -1066,6 +1073,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           rootLessListKey,
           formikRootLessListKey,
           currentValueObjectAtKey,
+          // currentTypeCheckKeyMap: currentTypeCheckKeyMap
           // currentKeyMap: currentTypeCheckKeyMap,
         }}
         copyButton={true}
@@ -1118,7 +1126,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           {/* add record attribute button for records */}
           <span>
             {!readOnly &&
-            currentTypeCheckKeyMap?.rawSchema.type == "record" &&
+            (currentTypeCheckKeyMap?.rawSchema.type == "record" || resolvedRawSchema?.type == "record") &&
             !reportContext.isNodeFolded(rootLessListKeyArray) ? (
               <ThemedSizedButton
                 id={formikRootLessListKey + ".addRecordAttribute"}
