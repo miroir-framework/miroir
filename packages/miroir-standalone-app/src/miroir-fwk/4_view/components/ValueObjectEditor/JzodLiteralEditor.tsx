@@ -586,7 +586,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         readOnly ? (
           <ThemedDisplayValue value={currentValue} type="literal" />
         ) : isDiscriminator ? (
-          <>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap"  }}>
             <ThemedSelectWithPortal
               // name={name}
               name={formikRootLessListKey}
@@ -599,11 +599,10 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
               minWidth="200px"
               // error={hasPathError}
             />
-
-            <span style={{ fontSize: "1.2em", color: "#87CEEB" }} title="Literal discriminator">
+            <div style={{ fontSize: "1.2em", color: "#87CEEB" }} title="Literal discriminator">
               ★
-            </span>
-          </>
+            </div>
+          </div>
         ) : (
           <>
             <input

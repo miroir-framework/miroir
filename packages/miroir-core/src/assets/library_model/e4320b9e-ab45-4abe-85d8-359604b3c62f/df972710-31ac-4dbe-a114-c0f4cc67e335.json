@@ -2,7 +2,7 @@
   "uuid": "df972710-31ac-4dbe-a114-c0f4cc67e335",
   "parentName": "Query",
   "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-  "name": "Book_Lacking_ISBN",
+  "name": "Book_without_ISBN",
   "definition": {
     "extractorTemplates": {
       "books": {
@@ -16,10 +16,7 @@
         },
         "filter": {
           "attributeName": "ISBN",
-          "value": {
-            "transformerType": "returnValue",
-            "value": "123456789"
-          }
+          "undefined": true
         }
       }
     }

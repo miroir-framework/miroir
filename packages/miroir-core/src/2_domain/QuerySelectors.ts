@@ -191,24 +191,35 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
   switch (query.select.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList": {
       const localQuery: ExtractorByEntityReturningObjectList = query.select;
-      const filterTest = localQuery.filter
-        ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
-        : undefined;
+      const filterValueTest: (value: string | undefined) => boolean = localQuery.filter
+        ? localQuery.filter.undefined
+          ? (value: string | undefined) => value === undefined
+          : new RegExp(localQuery.filter.value ?? "", "i").test as any // TODO: check for correct type
+        : (value: string | undefined) => true;
+
+      const filterTest: (value: string | undefined) => boolean = localQuery.filter?.not
+        ? (value: string | undefined) => !filterValueTest(value)
+        : (value: string | undefined) => filterValueTest(value);
+
       // TODO: implement orderBy.direction!
-      const sortFunction = localQuery.orderBy?(a: EntityInstance, b: EntityInstance) => {
-        return (a as any)[localQuery.orderBy?.attributeName ?? ""].localeCompare(
-          (b as any)[localQuery.orderBy?.attributeName ?? ""],
-          "en",
-          { sensitivity: "base" }
-        );
-      }: undefined;
+      const sortFunction = localQuery.orderBy
+        ? (a: EntityInstance, b: EntityInstance) => {
+            return (a as any)[localQuery.orderBy?.attributeName ?? ""].localeCompare(
+              (b as any)[localQuery.orderBy?.attributeName ?? ""],
+              "en",
+              { sensitivity: "base" },
+            );
+          }
+        : undefined;
       // log.info(
       //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory filter",
       //   JSON.stringify(localQuery.filter)
       // );
       const filteredResult: Domain2QueryReturnType<EntityInstance[]> = localQuery.filter
         ? selectedInstancesList.filter((i: EntityInstance) => {
-            const matchResult = filterTest?.test((i as any)[localQuery.filter?.attributeName ?? ""]);
+            const matchResult = filterTest(
+              (i as any)[localQuery.filter?.attributeName ?? ""],
+            );
             // log.info(
             //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory filter",
             //   JSON.stringify(i[1]),
@@ -218,8 +229,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
             return matchResult;
           })
         : selectedInstancesList;
-      ;
-      const orderResult = sortFunction?filteredResult.sort(sortFunction):filteredResult;
+      const orderResult = sortFunction ? filteredResult.sort(sortFunction) : filteredResult;
       return orderResult;
       break;
     }

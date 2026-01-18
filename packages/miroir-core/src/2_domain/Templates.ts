@@ -79,7 +79,8 @@ export function resolveExtractorTemplate(
                   contextResults
                 ), // TODO: check for failure!
           filter: {
-            attributeName: extractorOrCombinerTemplate.filter.attributeName,
+            ...extractorOrCombinerTemplate.filter,
+            // attributeName: extractorOrCombinerTemplate.filter.attributeName,
             value: filterValue, // TODO: check for failure!
           },
         };

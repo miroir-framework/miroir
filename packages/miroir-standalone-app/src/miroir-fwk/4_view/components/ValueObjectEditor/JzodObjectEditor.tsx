@@ -604,20 +604,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     return (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
   }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
 
-  // if (
-  //   ["mlSchema", "mlSchema.definition.definition.context.transformerTest"].includes(rootLessListKey)
-  // ) {
-  //   log.info(
-  //     "JzodObjectEditor computed for type tag unfoldingDepth",
-  //     currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display,
-  //     "rootLessListKey",
-  //     rootLessListKey,
-  //     "unfoldingDepth",
-  //     unfoldingDepth,
-  //     "currentTypeCheckKeyMap",
-  //     currentTypeCheckKeyMap,
-  //   );
-  // }
+
+  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveJzodSchemaReferenceInContext(
+    currentTypeCheckKeyMap?.rawSchema,
+    currentTypeCheckKeyMap?.rawSchema.context ?? {},
+    currentApplicationModelEnvironment
+  ) : currentTypeCheckKeyMap?.rawSchema;
 
   // ##############################################################################################
   // JzodSchemaTooltip
@@ -711,24 +703,21 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         localResolvedElementJzodSchemaBasedOnValue
       );
     }
-    // log.info(
-    //   "addExtraRecordEntry clicked!",
-    //   rootLessListKey,
-    //   itemsOrder,
-    //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-    //   "formik",
-    //   formik.values
-    // );
-    if (currentTypeCheckKeyMap?.rawSchema.type != "record" || currentTypeCheckKeyMap.rawSchema?.type != "record") {
+
+    if (currentTypeCheckKeyMap?.rawSchema?.type != "record" && resolvedRawSchema?.type != "record") {
       throw "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type;
     }
+    const effectiveRawSchema: JzodRecord =
+      currentTypeCheckKeyMap?.rawSchema?.type === "record"
+        ? (currentTypeCheckKeyMap?.rawSchema as JzodRecord)
+        : (resolvedRawSchema as JzodRecord);
 
-    const newAttributeType: JzodElement = (currentTypeCheckKeyMap.rawSchema as JzodRecord)?.definition;
+    // const newAttributeType: JzodElement = (currentTypeCheckKeyMap.rawSchema as JzodRecord)?.definition;
     // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
           "build",
-          currentTypeCheckKeyMap?.rawSchema.definition,
+          effectiveRawSchema.definition,
           currentValueObject,//formik.values, // rootObject
           rootLessListKey,
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
@@ -738,11 +727,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           applicationDeploymentMap,
           currentDeploymentUuid,
           currentApplicationModelEnvironment,
-          // {
-          //  miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
-          //   currentModel,
-          //   miroirMetaModel,
-          // }, // miroirEnvironment
           {}, // transformerParams
           {}, // contextResults
           deploymentEntityState,
@@ -750,7 +734,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         )
       : undefined;
 
-    // const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
     const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValueObjectAtKey };
     // log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
@@ -778,6 +761,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentModel,
     miroirMetaModel,
     formik.values,
+    resolvedRawSchema
   ]);
 
   // ##############################################################################################
@@ -1060,11 +1044,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
   ]);
 
-  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveJzodSchemaReferenceInContext(
-    currentTypeCheckKeyMap?.rawSchema,
-    currentTypeCheckKeyMap?.rawSchema.context ?? {},
-    currentApplicationModelEnvironment
-  ) : currentTypeCheckKeyMap?.rawSchema;
+  // const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveJzodSchemaReferenceInContext(
+  //   currentTypeCheckKeyMap?.rawSchema,
+  //   currentTypeCheckKeyMap?.rawSchema.context ?? {},
+  //   currentApplicationModelEnvironment
+  // ) : currentTypeCheckKeyMap?.rawSchema;
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <ThemedOnScreenDebug

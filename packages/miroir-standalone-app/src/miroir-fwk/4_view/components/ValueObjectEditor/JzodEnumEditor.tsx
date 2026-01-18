@@ -442,7 +442,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       return (
         <div>
           {isDiscriminator ? (
-            <>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap"  }}>
               <ThemedSelectWithPortal
                 filterable={true}
                 options={selectOptions}
@@ -453,10 +453,10 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
                 filterPlaceholder="Type to filter options..."
                 minWidth="200px"
               />
-              <span style={{ fontSize: "1.2em", color: "#696969" }} title="Enum discriminator">
+              <div style={{ fontSize: "1.2em", color: "#696969" }} title="Enum discriminator">
                 ★
-              </span>
-            </>
+              </div>
+            </div>
           ) : (
             <ThemedSelectWithPortal
               filterable={true}
