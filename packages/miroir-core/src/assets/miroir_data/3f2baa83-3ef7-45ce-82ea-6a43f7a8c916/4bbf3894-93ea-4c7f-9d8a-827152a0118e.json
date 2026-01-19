@@ -11,10 +11,7 @@
       "elementToDisplay": {
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Query",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
-        },
+        "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"

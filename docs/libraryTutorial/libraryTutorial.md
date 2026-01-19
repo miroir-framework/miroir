@@ -240,7 +240,7 @@ Add a new query by using the **"+"** icon on the Queries List. Fill it out with 
   "uuid": "df972710-31ac-4dbe-a114-c0f4cc67e335",
   "parentName": "Query",
   "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-  "name": "Book_Lacking_ISBN",
+  "name": "Book_without_ISBN",
   "definition": {
     "extractorTemplates": {
       "books": {
@@ -254,16 +254,26 @@ Add a new query by using the **"+"** icon on the Queries List. Fill it out with 
         },
         "filter": {
           "attributeName": "ISBN",
-          "value": {
-            "transformerType": "returnValue",
-            "value": "123456789"
-          }
+          "undefined": true
         }
       }
     }
   }
 }
 ```
+
+Which looks like:
+
+<img src="./library-model-Query-Book_without_ISBN.png" alt="The Library Query: Books Without ISBN" width="70%"/>
+
+
+You can check the result of the Query by opening the `Query Results` section:
+
+<img src="./library-model-Query-Book_without_ISBN-Results.png" alt="The Library Query Results: Books Without ISBN" width="70%"/>
+
+In our case, the book which we added an ISBN to is missing from the list, which validates our Query.
+
+
 
 ### other report types
 
