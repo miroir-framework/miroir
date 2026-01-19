@@ -202,6 +202,7 @@ export function useDomainStateJzodSchemaSelector<
   QueryType extends DomainModelQueryTemplateJzodSchemaParams
 >(
   domainStateSelector: JzodSchemaQueryTemplateSelector<QueryType, DomainState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryType, DomainState>,
   customQueryInterpreter?: {
     [k: string]: (
@@ -214,7 +215,7 @@ export function useDomainStateJzodSchemaSelector<
   }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, foreignKeyParams, defaultMetaModelEnvironment)
+      innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -224,6 +225,7 @@ export function useReduxDeploymentsStateJzodSchemaSelectorForTemplate<
   QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams
 >(
   domainStateSelector: JzodSchemaQueryTemplateSelector<QueryTemplateType, ReduxDeploymentsState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorTemplateRunnerParamsForJzodSchema<
     QueryTemplateType,
     ReduxDeploymentsState
@@ -239,7 +241,7 @@ export function useReduxDeploymentsStateJzodSchemaSelectorForTemplate<
   }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, foreignKeyParams, defaultMetaModelEnvironment)
+      innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -247,6 +249,7 @@ export function useReduxDeploymentsStateJzodSchemaSelectorForTemplate<
 // ################################################################################################
 export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends QueryJzodSchemaParams>(
   domainStateSelector: JzodSchemaQuerySelector<QueryType, ReduxDeploymentsState>,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryType, ReduxDeploymentsState>,
   customQueryInterpreter?: {
     [k: string]: (query: QueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined;
@@ -255,9 +258,16 @@ export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends Que
   const innerSelector = useMemo(() => {
     return applyReduxDeploymentsStateJzodSchemaSelector(domainStateSelector);
   }, [domainStateSelector]);
+  log.info(
+    "useReduxDeploymentsStateJzodSchemaSelector called",
+    applicationDeploymentMap,
+    foreignKeyParams,
+    "innerSelector",
+    innerSelector
+  );
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, foreignKeyParams, defaultMetaModelEnvironment)
+      innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -296,28 +306,6 @@ export function useCurrentModel(
   );
 }
 
-
-// ################################################################################################
-// TODO
-export function useCurrentModelEnvironmentNOT_IMPLEMENTED(
-  deploymentUuid: string | undefined,
-  applicationDeploymentMap: ApplicationDeploymentMap
-): any {
-  const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
-  const foreignKeyParams: LocalCacheExtractor = useMemo(
-    () =>
-      ({
-        queryType: "localCacheEntityInstancesExtractor",
-        definition: {
-          deploymentUuid,
-        },
-      } as LocalCacheExtractor),
-    [deploymentUuid]
-  );
-  return useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, applicationDeploymentMap, foreignKeyParams)
-  );
-}
 
 // ################################################################################################
 /**
@@ -402,7 +390,7 @@ export function useLocalCacheInstancesForJzodAttribute(
       queryType: "localCacheEntityInstancesExtractor",
       definition: {
         application,
-        deploymentUuid,
+        // deploymentUuid,
         applicationSection,
         entityUuid,
       },

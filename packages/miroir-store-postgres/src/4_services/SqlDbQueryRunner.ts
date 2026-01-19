@@ -306,7 +306,7 @@ export class SqlDbQueryRunner {
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObjectList",
               application: foreignKeyParams.extractor.application,
-              deploymentUuid: foreignKeyParams.extractor.deploymentUuid,
+              // deploymentUuid: foreignKeyParams.extractor.deploymentUuid,
               contextResults: foreignKeyParams.extractor.contextResults,
               pageParams: foreignKeyParams.extractor.pageParams,
               queryParams: foreignKeyParams.extractor.queryParams,
@@ -370,7 +370,7 @@ export class SqlDbQueryRunner {
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObjectList",
               application: foreignKeyParams.extractor.application,
-              deploymentUuid: foreignKeyParams.extractor.deploymentUuid,
+              // deploymentUuid: foreignKeyParams.extractor.deploymentUuid,
               contextResults: foreignKeyParams.extractor.contextResults,
               pageParams: foreignKeyParams.extractor.pageParams,
               queryParams: foreignKeyParams.extractor.queryParams,
@@ -545,7 +545,8 @@ export class SqlDbQueryRunner {
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    // const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    const application = extractorRunnerParams.extractor.application;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
@@ -564,7 +565,7 @@ export class SqlDbQueryRunner {
 
       return new Domain2ElementFailed({
         queryFailure: "EntityNotFound",
-        deploymentUuid,
+        application,
         applicationSection,
         entityUuid: entityUuid,
       });
@@ -576,7 +577,7 @@ export class SqlDbQueryRunner {
       );
       return new Domain2ElementFailed({
         queryFailure: "EntityNotFound",
-        deploymentUuid,
+        application,
         applicationSection,
         entityUuid: entityUuid,
       });
@@ -612,7 +613,8 @@ export class SqlDbQueryRunner {
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    // const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    const application = extractorRunnerParams.extractor.application;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
@@ -620,7 +622,7 @@ export class SqlDbQueryRunner {
     // log.info("extractEntityInstanceUuidIndexWithFilter params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndexWithFilter domainState", domainState);
 
-    if (!deploymentUuid || !applicationSection || !entityUuid) {
+    if (!application || !applicationSection || !entityUuid) {
       return Promise.resolve(
         new Domain2ElementFailed({
           // new object
@@ -667,7 +669,7 @@ export class SqlDbQueryRunner {
       return Promise.resolve(
         new Domain2ElementFailed({
           queryFailure: "EntityNotFound",
-          deploymentUuid,
+          application,
           applicationSection,
           entityUuid: entityUuid,
         })

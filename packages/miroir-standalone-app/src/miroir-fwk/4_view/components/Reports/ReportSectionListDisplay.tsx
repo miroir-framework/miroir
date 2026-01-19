@@ -251,26 +251,17 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // ##############################################################################################
   const instancesToDisplay: EntityInstancesUuidIndex = useMemo(
     () =>
-      formikValuePathAsString &&
-      formikContext.values &&
-      formikContext.values[formikValuePathAsString]
-        ? formikContext.values[formikValuePathAsString]
-        : props.domainElementObjectDEFUNCT &&
-          // props.domainElementObject.elementType == "object" &&
-          props.reportSectionDEFUNCT?.definition.fetchedDataReference &&
-          props.domainElementObjectDEFUNCT[
-            props.reportSectionDEFUNCT.definition.fetchedDataReference
-          ]
-        ? (props.domainElementObjectDEFUNCT[
-            props.reportSectionDEFUNCT.definition.fetchedDataReference
-          ] as any as EntityInstancesUuidIndex)
-        : {},
+      formikContext.values && props.reportSectionDEFUNCT?.definition.fetchedDataReference
+        ? formikContext.values[props.reportSectionDEFUNCT.definition.fetchedDataReference]
+        : formikValuePathAsString && formikContext.values[formikValuePathAsString]
+          ? formikContext.values[formikValuePathAsString]
+          : {},
     [
       formikValuePathAsString,
       formikContext.values,
       props.domainElementObjectDEFUNCT,
       props.reportSectionDEFUNCT?.definition.fetchedDataReference,
-    ]
+    ],
   );
 
 
@@ -490,7 +481,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: props.application,
-          deploymentUuid: props.deploymentUuid,
+          // deploymentUuid: props.deploymentUuid,
           pageParams: props.paramsAsdomainElements,
           queryParams: {},
           contextResults: {},
@@ -532,14 +523,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.displayedDeploymentDefinition.selfApplication,
-                deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "createInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: props.application,
-                    deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                    // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                     applicationSection: currentApplicationSection,
                     parentUuid: data.parentUuid,
                     objects: [
@@ -569,7 +560,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: props.displayedDeploymentDefinition.selfApplication,
-              deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+              // deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               applicationSection: currentApplicationSection,
               parentUuid: data.parentUuid,
               objects: [
@@ -607,14 +598,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.displayedDeploymentDefinition.selfApplication,
-                deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "updateInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: props.displayedDeploymentDefinition.selfApplication,
-                    deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                    // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                     applicationSection: "model",
                     objects: [
                       {
@@ -640,7 +631,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: props.displayedDeploymentDefinition.selfApplication,
-              deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+              // deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               applicationSection: props.chosenApplicationSection
                 ? props.chosenApplicationSection
                 : "data",
@@ -834,6 +825,18 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.
         </div>
       )}
+      <ThemedOnScreenDebug
+        label={`ReportSectionListDisplay props`}
+        data={{
+          props: props,
+          formikValuePathAsString,
+          val: formikContext.values[formikValuePathAsString],
+          domainElementObjectDEFUNCT: props.domainElementObjectDEFUNCT,
+          fetchedDataReference: props.reportSectionDEFUNCT?.definition.fetchedDataReference,
+        }}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      />
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
       {reportSectionDefinitionFromFormik &&
       reportSectionDefinitionFromFormik.type == "objectListReportSection" &&
@@ -902,7 +905,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 {/* {entityInstanceGrid} */}
                 <ThemedOnScreenDebug
                   label={`ReportSectionListDisplay formik values`}
-                  data={{formik: formikContext.values}}
+                  data={{ formik: formikContext.values }}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                 />

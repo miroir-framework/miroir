@@ -165,12 +165,12 @@ export const ReportDisplay: React.FC<{
   return (
     <>
       <ThemedOnScreenDebug label="ReportDisplay pageParams" data={pageParams} />
-      <ThemedOnScreenDebug
+      {/* <ThemedOnScreenDebug
         label="ReportDisplay currentModel"
         data={currentModel}
         initiallyUnfolded={false}
-      />
-      <ThemedOnScreenDebug
+      /> */}
+      {/* <ThemedOnScreenDebug
         label="ReportDisplay availableReports"
         data={availableReports.map(r=>({uuid:r.uuid, name:r.name}))}
         initiallyUnfolded={false}
@@ -180,6 +180,12 @@ export const ReportDisplay: React.FC<{
         label="ReportDisplay currentMiroirReport"
         data={currentMiroirReport}
         initiallyUnfolded={false}
+      /> */}
+      <ThemedOnScreenDebug
+        label="ReportDisplay currentStoredQueryResults"
+        data={currentStoredQueryResults}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
       />
       <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
         {!pageParams.deploymentUuid ||

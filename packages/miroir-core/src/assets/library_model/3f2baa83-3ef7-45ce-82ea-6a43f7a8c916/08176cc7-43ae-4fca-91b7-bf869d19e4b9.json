@@ -18,6 +18,12 @@
         }
       }
     },
+    "runStoredQueries": [
+      {
+        "label": "AuthorsByCountryCount",
+        "storedQuery": "6eaaec37-e3bc-40e4-af1b-4088412c0e34"
+      }
+    ],
     "section": {
       "type": "list",
       "definition": [
@@ -50,12 +56,6 @@
           }
         }
       ]
-    },
-    "runStoredQueries": [
-      {
-        "label": "AuthorsByCountryCount",
-        "storedQuery": "6eaaec37-e3bc-40e4-af1b-4088412c0e34"
-      }
-    ]
+    }
   }
 }

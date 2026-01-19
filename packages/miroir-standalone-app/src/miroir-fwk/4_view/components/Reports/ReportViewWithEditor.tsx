@@ -255,8 +255,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   > = useMemo(
     () => ({
       extractorRunnerMap: jzodSchemaSelectorMap,
+      applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
       query:
-        props.pageParams.deploymentUuid &&
+        props.pageParams.application &&
         props.pageParams.applicationSection &&
         props.pageParams.reportUuid &&
         props.reportDefinition.definition.extractors &&
@@ -265,7 +266,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               queryType: "queryByTemplateGetParamJzodSchema",
               label: props.reportDefinition.name + "_fetchedDataJzodSchema",
               application: props.pageParams.application??"NO_APPLICATION",
-              applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+              // applicationDeploymentMap: props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: {
                 applicationSection: props.pageParams.applicationSection,
@@ -282,7 +283,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               queryType: "queryByTemplateGetParamJzodSchema",
               label: props.reportDefinition.name + "_DUMMY",
               application: "",
-              applicationDeploymentMap: {},
+              // applicationDeploymentMap: {},
               deploymentUuid: "DUMMY",
               pageParams: {
                 applicationSection: "data",
@@ -294,7 +295,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               fetchParams: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: "",
-                applicationDeploymentMap: {},
+                // applicationDeploymentMap: {},
                 deploymentUuid: "DUMMY",
                 pageParams: props.pageParams,
                 queryParams: {},
@@ -306,8 +307,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     }),
     [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]
   );
+  log.info("fetchedDataJzodSchemaParams", fetchedDataJzodSchemaParams, props.applicationDeploymentMap);
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useReduxDeploymentsStateJzodSchemaSelector(
     jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     fetchedDataJzodSchemaParams
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type
   // ##############################################################################################
@@ -399,7 +402,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.pageParams.application ?? "NO_APPLICATION",
-                deploymentUuid: props.deploymentUuid,
+                // deploymentUuid: props.deploymentUuid,
                 instanceAction: {
                   actionType: mode == "create" ? "createInstance" : "updateInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -407,7 +410,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   // deploymentUuid: props.deploymentUuid, // NOT FOR createInstance
                   payload: {
                     application: props.pageParams.application ?? "NO_APPLICATION",
-                    deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
+                    // deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
                     applicationSection,
                     parentUuid: currentInstance.parentUuid,
                     objects: [
@@ -434,7 +437,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             payload: {
               // applicationSection: "data",
               application: props.pageParams.application ?? "NO_APPLICATION",
-              deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
+              // deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
               applicationSection: applicationSection,
               objects: [
                 {

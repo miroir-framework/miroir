@@ -1326,8 +1326,14 @@ export const extractFetchQueryJzodSchema = <StateType>(
   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByQuery2GetParamJzodSchema, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ):  RecordOfJzodObject | undefined => {
+  log.info(
+    "extractFetchQueryJzodSchema called",
+    applicationDeploymentMap,
+    foreignKeyParams,
+    new Error().stack,
+  );
+  
   const localFetchParams: BoxedQueryWithExtractorCombinerTransformer = foreignKeyParams.query.fetchParams
-  // log.info("selectFetchQueryJzodSchemaFromDomainState called", foreignKeyParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combiners ?? {}).map(

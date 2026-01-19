@@ -221,7 +221,9 @@ export const selectJzodSchemaSelectorParamsForTemplate = <QueryTemplateType exte
 // ################################################################################################
 export const selectJzodSchemaSelectorParams = <QueryType extends QueryJzodSchemaParams, StateType>(
   reduxState: ReduxStateWithUndoRedo,
-  params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>,
+  modelEnvironment: MiroirModelEnvironment
 ) => {
   return params;
 };

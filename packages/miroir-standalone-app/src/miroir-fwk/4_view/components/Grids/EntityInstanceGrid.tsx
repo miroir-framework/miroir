@@ -854,6 +854,8 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
               />
               <JsonObjectDeleteFormDialog
                 showButton={false}
+                currentApplication={props.application}
+                currentApplicationDeploymentMap={props.applicationDeploymentMap}
                 currentDeploymentUuid={contextDeploymentUuid}
                 currentApplicationSection={context.applicationSection}
                 currentAppModel={currentModel}

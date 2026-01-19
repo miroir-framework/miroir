@@ -151,7 +151,8 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   ): Promise<Domain2QueryReturnType<EntityInstance>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = foreignKeyParams.extractor
       .select as ExtractorOrCombinerReturningObject;
-    const deploymentUuid = foreignKeyParams.extractor.deploymentUuid;
+    // const deploymentUuid = foreignKeyParams.extractor.deploymentUuid;
+    const application = foreignKeyParams.extractor.application;
     const applicationSection: ApplicationSection =
       foreignKeyParams.extractor.select.applicationSection ??
       ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
@@ -161,7 +162,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
     log.info(
       "extractEntityInstance params",
       querySelectorParams,
-      deploymentUuid,
+      application,
       applicationSection,
       entityUuidReference
     );
@@ -203,7 +204,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           return {
             elementType: "failure",
             queryFailure: "InstanceNotFound",
-            deploymentUuid,
+            application,
             applicationSection,
             entityUuid: entityUuidReference,
           };
@@ -242,7 +243,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           return {
             elementType: "failure",
             queryFailure: "InstanceNotFound",
-            deploymentUuid,
+            application,
             applicationSection,
             entityUuid: entityUuidReference,
             instanceUuid: instanceDomainElement,
@@ -301,14 +302,15 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
-    const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    // const deploymentUuid = extractorRunnerParams.extractor.deploymentUuid;
+    const application = extractorRunnerParams.extractor.application;
     const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 
     // log.info("extractEntityInstanceUuidIndex params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
     // log.info("extractEntityInstanceUuidIndex domainState", domainState);
 
-    if (!deploymentUuid || !applicationSection || !entityUuid) {
+    if (!application || !applicationSection || !entityUuid) {
       return {
         // new object
         elementType: "failure",
@@ -329,7 +331,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       return {
         elementType: "failure",
         queryFailure: "EntityNotFound", // TODO: find corresponding queryFailure from data.status
-        deploymentUuid,
+        application,
         applicationSection,
         entityUuid: entityUuid,
       };

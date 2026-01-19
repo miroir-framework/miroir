@@ -15,6 +15,8 @@ import {
   type JzodObject,
   type KeyMapEntry,
   type MiroirModelEnvironment,
+  type ReduxDeploymentsState,
+  type SyncBoxedExtractorOrQueryRunnerMap,
   type Uuid
 } from "miroir-core";
 
@@ -28,6 +30,8 @@ import {
   ThemedSelectWithPortal
 } from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
+import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { useSelector } from "react-redux";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -45,9 +49,10 @@ const handleDiscriminatorChange = (
   rootLessListKeyArray: (string | number)[],
   reportSectionPathAsString: string,
   currentApplication: Uuid,
-  appliationDeploymentMap: ApplicationDeploymentMap,
+  applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string | undefined,
   modelEnvironment: MiroirModelEnvironment,
+  ReduxDeploymentsState: ReduxDeploymentsState | undefined,
   formik: any,
   log: LoggerInterface,
   onChangeCallback?: (value: any, rootLessListKey: string) => void
@@ -164,29 +169,6 @@ const handleDiscriminatorChange = (
       );
     }
     newJzodSchema = resolveUnionResult.resolvedJzodObjectSchema;
-      // parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
-      //   if (a.type !== "object") return false;
-      //   const discriminatorElement = a.definition[discriminator as string];
-      //   if (!discriminatorElement) return false;
-        
-      //   if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
-      //     return (discriminatorElement as JzodLiteral).definition === selectedValue;
-      //   } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
-      //     return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
-      //   } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
-      //     return (
-      //       typeof discriminatorElement.definition === "object" &&
-      //       discriminatorElement.definition.relativePath === selectedValue
-      //     );
-      //   } else {
-      //     // fallback: try to match .definition directly if it exists, otherwise compare the element itself
-      //     if (typeof discriminatorElement === "object" && "definition" in discriminatorElement) {
-      //       return (discriminatorElement as any).definition === selectedValue;
-      //     } else {
-      //       return false; // unknown discriminator type, don't match
-      //     }
-      //   }
-      // });
   } else {
     localChosenDiscriminator = parentKeyMap.discriminator as string;
     newJzodSchema =
@@ -195,10 +177,8 @@ const handleDiscriminatorChange = (
         const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
         if (!discriminatorElement) return false;
         
-        // if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
         if (discriminatorElement.type === "literal") {
           return (discriminatorElement as JzodLiteral).definition === selectedValue;
-        // } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
         } else if (discriminatorElement.type === "enum") {
           log.info(
             "handleDiscriminatorChange checking enum",
@@ -230,6 +210,7 @@ const handleDiscriminatorChange = (
     );
   }
 
+
   const newJzodSchemaWithOptional = parentKeyMap.rawSchema.optional
     ? {
         ...newJzodSchema,
@@ -250,9 +231,12 @@ const handleDiscriminatorChange = (
         // undefined,
         true,
         currentApplication,
-        appliationDeploymentMap,
+        applicationDeploymentMap,
         currentDeploymentUuid,
-        modelEnvironment
+        modelEnvironment,
+        {}, // transformerParams
+        {}, // contextResult
+        ReduxDeploymentsState,
       ),
       // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
       [localChosenDiscriminator]: selectedValue,
@@ -314,7 +298,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     rootLessListKeyArray,
     reportSectionPathAsString,
     currentApplication,
-    applicationDeploymentMap: appliationDeploymentMap,
+    applicationDeploymentMap,
     currentDeploymentUuid,
     typeCheckKeyMap,
     readOnly,
@@ -327,7 +311,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     currentApplication,
-    appliationDeploymentMap
+    applicationDeploymentMap
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
@@ -349,6 +333,25 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const parentKey = rootLessListKey.includes('.') ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf('.')) : '';
   const parentKeyMap:KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap: KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+
+  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+  //   currentApplication,
+  //   applicationDeploymentMap
+  // );
+
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
+
+  
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        applicationDeploymentMap,
+        () => ({}),
+        currentMiroirModelEnvironment
+      )
+  );
 
     // Check if this literal is a discriminator
   const isDiscriminator = 
@@ -474,9 +477,10 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         rootLessListKeyArray,
         reportSectionPathAsString,
         currentApplication,
-        appliationDeploymentMap,
+        applicationDeploymentMap,
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
+        deploymentEntityState,
         formik,
         log,
         onChangeCallback

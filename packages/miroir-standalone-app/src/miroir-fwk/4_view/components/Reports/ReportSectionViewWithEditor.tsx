@@ -434,6 +434,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {/* {props.reportSectionDEFUNCT.type == "markdownReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown
+            application={props.application}
+            applicationDeploymentMap={props.applicationDeploymentMap}
             generalEditMode={props.generalEditMode}
             reportName={props.reportName}
             formikValuePath={props.reportSectionPath}

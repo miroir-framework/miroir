@@ -360,14 +360,14 @@ export type QueryRunnerMapForJzodSchema<StateType> = {
 // ################################################################################################
 export interface ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> {
   extractorRunnerMap: QueryTemplateRunnerMapForJzodSchema<StateType>
-  applicationDeploymentMap: ApplicationDeploymentMap,
+  // applicationDeploymentMap: ApplicationDeploymentMap,
   query: QueryTemplateType
 }
 
 // ################################################################################################
 export interface ExtractorRunnerParamsForJzodSchema<QueryType extends QueryJzodSchemaParams, StateType> {
   extractorRunnerMap: QueryRunnerMapForJzodSchema<StateType>
-  applicationDeploymentMap: ApplicationDeploymentMap,
+  // applicationDeploymentMap: ApplicationDeploymentMap,
   query: QueryType
 }
 
