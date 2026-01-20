@@ -13,19 +13,21 @@ import {
   MiroirLoggerFactory,
   RecordOfJzodObject,
   Report,
+  reportReportDetails,
   ReportSection,
   resolvePathOnObject,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
+  transformer_extended_apply_wrapper,
+  TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type InstanceAction,
-  type JzodObject
-} from "miroir-core";
+  type JzodObject} from "miroir-core";
 
 import { CloseIcon, EditIcon, SaveIcon } from '../Themes/MaterialSymbolWrappers';
-import { deployments, packageName } from '../../../../constants.js';
+import { deployments, packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
@@ -36,6 +38,9 @@ import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { Formik, useFormikContext } from 'formik';
 import { StoredRunnerView } from '../Runners/RunnerView';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
+import type { Params } from 'react-router-dom';
+import { ReportDisplay } from '../../routes/ReportDisplay';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -191,6 +196,23 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         ]
       : undefined;
 
+  const storedReportDisplayParameters: Params<ReportUrlParamKeys> | TransformerFailure | undefined = useMemo(() => {
+    if (reportSectionDefinitionFromFormik?.type !== "storedReportDisplay") {
+      return undefined;
+    }
+    return transformer_extended_apply_wrapper(
+      context.miroirContext.miroirActivityTracker, // activityTracker
+      "runtime", // step
+      [], // transformerPath
+      reportSectionDefinitionFromFormik?.label ?? "evaluation of storedReportDisplay parameters", // label
+      reportSectionDefinitionFromFormik?.definition, // transformer
+      defaultMiroirModelEnvironment, // TODO: use the real environment
+      formik.values, // queryParams
+      formik.values, // contextResults - pass the instance to transform
+      "value", // resolveBuildTransformersTo
+    );
+  }, [reportSectionDefinitionFromFormik]);
+
   // // helper to get active definition (if editing locally)
   // const activeDefinitionDEFUNCT =
   //   isEditing && localEditedDefinition !== undefined
@@ -333,8 +355,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     );
   }
 
-    // ##############################################################################################
-  
+  // ##############################################################################################
   // Leaf section types
   return (
     <>
@@ -355,7 +376,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 defaultlabel={interpolateExpression(
                   reportSectionDefinitionFromFormik?.definition?.label,
                   props.reportDataDEFUNCT.reportData,
-                  "report label"
+                  "report label",
                 )}
                 application={props.application}
                 applicationDeploymentMap={props.applicationDeploymentMap}
@@ -400,6 +421,48 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
             />
           </>
+        )}
+        {reportSectionDefinitionFromFormik?.type == "storedReportDisplay" && (
+          <div>
+            <ThemedOnScreenDebug
+              label={"ReportSectionViewWithEditor - storedReportDisplay section"}
+              data={{ reportSectionDefinitionFromFormik, storedReportDisplayParameters }}
+              useCodeBlock={true}
+              // initiallyUnfolded={false}
+            />
+            {storedReportDisplayParameters instanceof TransformerFailure ? (
+              <div style={{ color: "red" }}>
+                Error evaluating storedReportDisplay parameters:{" "}
+                {JSON.stringify(storedReportDisplayParameters, null, 2)}
+              </div>
+            ) : !storedReportDisplayParameters ? (
+              <div>storedReportDisplay: no parameters found</div>
+            ) : storedReportDisplayParameters?.reportUuid === reportReportDetails.uuid &&
+              storedReportDisplayParameters?.instanceUuid === reportReportDetails.uuid ? (
+              <div style={{ color: "red" }}>
+                Report itself is not displayed on the reportDetails report to avoid infinite loop.
+              </div>
+            ) : (
+              <ReportDisplay
+                pageParams={{
+                  application: storedReportDisplayParameters.application,
+                  // applicationSection: storedReportDisplayParameters.applicationSection,
+                  applicationSection: "data",
+                  deploymentUuid: storedReportDisplayParameters.deploymentUuid,
+                  reportUuid: storedReportDisplayParameters.instanceUuid,
+                  instanceUuid: "none",
+                }}
+              />
+            )}
+            {/* not implemented yet */}
+            {/* <GraphReportSectionView
+              applicationSection={props.applicationSection}
+              deploymentUuid={props.deploymentUuid}
+              queryResults={formik.values}
+              reportSection={reportSectionDefinitionFromFormik as any}
+              showPerformanceDisplay={props.showPerformanceDisplay}
+            /> */}
+          </div>
         )}
         {reportSectionDefinitionFromFormik?.type == "graphReportSection" && (
           <div>

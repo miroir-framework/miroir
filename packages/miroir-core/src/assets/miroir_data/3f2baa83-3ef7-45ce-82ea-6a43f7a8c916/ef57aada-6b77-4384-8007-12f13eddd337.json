@@ -11,10 +11,7 @@
       "report": {
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Report",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
-        },
+        "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"
@@ -30,6 +27,35 @@
             "label": "Report Details: ${instance.name}",
             "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
             "fetchedDataReference": "report"
+          }
+        },
+        {
+          "type": "storedReportDisplay",
+          "definition": {
+            "transformerType": "dataflowObject",
+            "label": "Report Details Test: ${instance.name}",
+            "definition": {
+              "application": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["pageParams", "application"]
+              },
+              "applicationSection": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["pageParams", "applicationSection"]
+              },
+              "deploymentUuid": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["pageParams", "deploymentUuid"]
+              },
+              "reportUuid": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["pageParams", "reportUuid"]
+              },
+              "instanceUuid": {
+                "transformerType": "getFromParameters",
+                "referencePath": ["pageParams", "instanceUuid"]
+              }
+            }
           }
         }
       ]

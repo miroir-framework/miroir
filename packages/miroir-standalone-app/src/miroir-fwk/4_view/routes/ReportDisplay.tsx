@@ -188,7 +188,8 @@ export const ReportDisplay: React.FC<{
         useCodeBlock={true}
       />
       <ThemedBox style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-        {!pageParams.deploymentUuid ||
+        {
+        !pageParams.deploymentUuid ||
         !pageParams.applicationSection ||
         !pageParams.reportUuid ||
         // !pageParams.instanceUuid ||

@@ -145,6 +145,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   const reportViewData = useMemo(() => ({
       ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
+      pageParams: props.pageParams,
       reportData,
       storedQueryData: props.storedQueryData
   }), [reportData, props.storedQueryData]);

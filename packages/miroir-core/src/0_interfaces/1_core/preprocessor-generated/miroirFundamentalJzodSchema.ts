@@ -10462,6 +10462,39 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "reportDisplayParams": {
+        "type": "object",
+        "definition": {
+          "application": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Application",
+                "canBeTemplate": true
+              }
+            }
+          },
+          "instance": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Instance",
+                "canBeTemplate": true
+              }
+            }
+          },
+          "report": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report",
+                "canBeTemplate": true
+              }
+            }
+          }
+        }
+      },
       "graphConfig": {
         "type": "object",
         "optional": true,
@@ -11217,8 +11250,41 @@ export const miroirFundamentalJzodSchema = {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "runnerReportSection"
                   }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "storedReportDisplay"
+                  }
                 }
               ]
+            }
+          }
+        }
+      },
+      "storedReportDisplay": {
+        "type": "object",
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "storedReportDisplay"
+          },
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "definition": {
+            "type": "schemaReference",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report Display Params",
+                "description": "Display any report by returning an object matching the ReportDisplayParams schema"
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
             }
           }
         }
@@ -11267,6 +11333,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "objectInstanceReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storedReportDisplay"
             }
           },
           {
@@ -12324,8 +12397,41 @@ export const miroirFundamentalJzodSchema = {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "runnerReportSection"
                           }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "storedReportDisplay"
+                          }
                         }
                       ]
+                    }
+                  }
+                }
+              },
+              "storedReportDisplay": {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "storedReportDisplay"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report Display Params",
+                        "description": "Display any report by returning an object matching the ReportDisplayParams schema"
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildPlusRuntime"
                     }
                   }
                 }
@@ -12374,6 +12480,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "objectInstanceReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "storedReportDisplay"
                     }
                   },
                   {
@@ -35539,9 +35652,44 @@ export const miroirFundamentalJzodSchema = {
                                     "relativePath": "runnerReportSection"
                                   },
                                   "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "storedReportDisplay"
+                                  },
+                                  "context": {}
                                 }
                               ]
                             }
+                          }
+                        }
+                      },
+                      "storedReportDisplay": {
+                        "type": "object",
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "storedReportDisplay"
+                          },
+                          "label": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "definition": {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Report Display Params",
+                                "description": "Display any report by returning an object matching the ReportDisplayParams schema"
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
                           }
                         }
                       },
@@ -35594,6 +35742,14 @@ export const miroirFundamentalJzodSchema = {
                             "definition": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "objectInstanceReportSection"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "storedReportDisplay"
                             },
                             "context": {}
                           },
@@ -37156,6 +37312,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection"
             }
           },
@@ -38305,6 +38468,13 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "transformerForBuildCarryOnObject"
                           }
                         }
@@ -39026,6 +39196,60 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 ]
+              }
+            }
+          }
+        ]
+      },
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "storedReportDisplay"
+              },
+              "label": {
+                "type": "union",
+                "optional": true,
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "definition": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Report Display Params",
+                    "description": "Display any report by returning an object matching the ReportDisplayParams schema"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                },
+                "context": {}
               }
             }
           }
@@ -48945,9 +49169,43 @@ export const miroirFundamentalJzodSchema = {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection"
                           }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay"
+                          }
                         }
                       ]
                     }
+                  }
+                }
+              },
+              "storedReportDisplay": {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "storedReportDisplay"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report Display Params",
+                        "description": "Display any report by returning an object matching the ReportDisplayParams schema"
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildPlusRuntime"
+                    },
+                    "context": {}
                   }
                 }
               },
@@ -48995,6 +49253,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay"
                     }
                   },
                   {
@@ -51180,6 +51445,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "objectInstanceReportSection"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storedReportDisplay"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection": {
@@ -58423,9 +58695,43 @@ export const miroirFundamentalJzodSchema = {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection"
                           }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay"
+                          }
                         }
                       ]
                     }
+                  }
+                }
+              },
+              "storedReportDisplay": {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "storedReportDisplay"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report Display Params",
+                        "description": "Display any report by returning an object matching the ReportDisplayParams schema"
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildPlusRuntime"
+                    },
+                    "context": {}
                   }
                 }
               },
@@ -58473,6 +58779,13 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay"
                     }
                   },
                   {
@@ -60658,6 +60971,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "objectInstanceReportSection"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storedReportDisplay": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storedReportDisplay"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runnerReportSection": {

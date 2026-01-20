@@ -15,6 +15,7 @@ import {
   type ReactComponentTestSuites,
 } from "./JzodElementEditorTestTools";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
+import { selfApplicationLibrary } from "miroir-core";
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -103,15 +104,16 @@ const jzodElementEditorTests: Record<
           tests: {
             "object renders as json-like input fields with proper value": {
               props: {
+                application: selfApplicationLibrary.uuid,
                 applicationSection: "data",
                 deploymentUuid: selfApplicationDeploymentLibrary.uuid,
                 // instanceUuid: undefined, // TODO: remove, this is specific to entity instance views
                 pageParams: {
                   applicationSection: "data",
+                  application: selfApplicationLibrary.uuid,
                   deploymentUuid: selfApplicationDeploymentLibrary.uuid,
                   instanceUuid: undefined, // TODO: remove, this is specific to entity instance views
                   reportUuid: reportCountryList.uuid,
-                  useReportViewWithEditor: "true",
                 },
                 reportDefinition: reportCountryList,
                 // storedQueryData?: any,

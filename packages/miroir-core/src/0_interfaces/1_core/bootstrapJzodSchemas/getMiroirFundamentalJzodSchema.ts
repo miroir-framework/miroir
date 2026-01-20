@@ -885,6 +885,24 @@ export function getMiroirFundamentalJzodSchema(
         ...(entityDefinitionMenu.mlSchema.definition.definition as any).context,
         menu: entityDefinitionMenu.mlSchema as any,
         // menu: entityDefinitionMenu.mlSchema as JzodObject,
+        reportDisplayParams: {
+          type: "object",
+          definition: {
+            application: {
+              type: "uuid",
+              tag: { value: { defaultLabel: "Application", canBeTemplate: true } },
+            },
+            instance: {
+              type: "uuid",
+              optional: true,
+              tag: { value: { defaultLabel: "Instance", canBeTemplate: true } },
+            },
+            report: {
+              type: "uuid",
+              tag: { value: { defaultLabel: "Report", canBeTemplate: true } },
+            }
+          }
+        },
         graphConfig: (entityDefinitionReportV1 as any).mlSchema.definition.definition.context
           .graphReportSection.definition.definition.definition.config,
         ...Object.fromEntries(
@@ -900,6 +918,7 @@ export function getMiroirFundamentalJzodSchema(
               "graphReportSection",
               "markdownReportSection",
               "runnerReportSection",
+              "storedReportDisplay",
               "reportSection",
               "rootReport",
               "runStoredQuery",
@@ -3344,6 +3363,34 @@ export function getMiroirFundamentalJzodSchema(
           .context,
         // endpointDefinition: entityDefinitionEndpointDefinition.mlSchema.definition.definition,
         endpointDefinition: entityDefinitionEndpointDefinition.mlSchema,
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ########################################################################################
+        // ______________________________________________reports_____________________________________________:
+        //   {
+        //     type: "never",
+        //   },
+        //   reportDisplayParams: {
+        //     type: "object",
+        //     definition: {
+        //       application: {
+        //         type: "uuid",
+        //         tag: { value: { defaultLabel: "Application", canBeTemplate: true } },
+        //       },
+        //       instance: {
+        //         type: "uuid",
+        //         optional: true,
+        //         tag: { value: { defaultLabel: "Instance", canBeTemplate: true } },
+        //       },
+        //       report: {
+        //         type: "uuid",
+        //         tag: { value: { defaultLabel: "Report", canBeTemplate: true } },
+        //       }
+        //     }
+        //   }
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,
@@ -3419,6 +3466,11 @@ export function getMiroirFundamentalJzodSchema(
       ),
     }
   }
+
+  const addExtraItems: string[] = [
+    // "reportDisplayParams",
+  ];
+
   // ##############################################################################
   const transformerForBuildCarryOnTemplateSchema: any = miroirFundamentalJzodSchema.definition.context
     .transformerForBuild as any;
@@ -3462,6 +3514,9 @@ export function getMiroirFundamentalJzodSchema(
   Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
     jzodElementDependencySet.add(key);
   });
+
+  // TODO: HACK!! reportDisplayParams should appear in jzodElementDependencySet from jzodTransitiveDependencySet, or?
+  addExtraItems.forEach(item => jzodElementDependencySet.add(item));
 
 
   log.info(
@@ -3571,7 +3626,9 @@ export function getMiroirFundamentalJzodSchema(
   Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
     domainActionDependencySet.add(key);
   });
-  
+
+  addExtraItems.forEach(item => domainActionDependencySet.add(item));
+
     [
     "transformerForBuild_Abstract", 
     "transformerForBuild_optional_Abstract",

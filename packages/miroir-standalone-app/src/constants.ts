@@ -18,8 +18,7 @@ export type ReportUrlParamKeys =
   | "applicationSection"
   | "reportUuid"
   | "instanceUuid"
-  | "useReportViewWithEditor";
-
+  ;
 
 // ################################################################################################
 // to place in admin_data/7959d814-400c-4e80-988f-a00fe582ab98/
