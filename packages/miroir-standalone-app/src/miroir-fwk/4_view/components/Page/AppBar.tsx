@@ -371,7 +371,7 @@ export function AppBar(props:AppBarProps) {
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: noValue.uuid,
-                      deploymentUuid: noValue.uuid,
+                      // deploymentUuid: noValue.uuid,
                     },
                   },
                   defaultSelfApplicationDeploymentMap,

@@ -231,7 +231,7 @@ The existing Queries for the Library Application can be displayed by using the m
 
 <img src="./library-model-Query_list.png" alt="The List of Library Queries" width="70%"/>
 
-### Adding the *Book_Lacking_ISBN* Query
+### Adding the *Book_Without_ISBN* Query
 
 Add a new query by using the **"+"** icon on the Queries List. Fill it out with the following definition:
 
@@ -273,11 +273,60 @@ You can check the result of the Query by opening the `Query Results` section:
 
 In our case, the book which we added an ISBN to is missing from the list, which validates our Query.
 
+### Adding the *Book_Without_ISBN* Report
+
+Add a new Report by using the **"+"** icon on the Report List:
+
+<img src="./library-model-Report_list-ADD.png" alt="The Library Reports: adding a Report" width="70%"/>
 
 
-### other report types
+ Fill it out with the following definition:
 
-Charts and Graphs, Maps, etc.
+```json
+{
+  "uuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "BooksWithoutISBN",
+  "defaultLabel": "Books Without ISBN",
+  "definition": {
+    "runStoredQueries": [
+      {
+        "storedQuery": "df972710-31ac-4dbe-a114-c0f4cc67e335",
+        "label": "booksWithoutISBN"
+      }
+    ],
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "parentName": "Book",
+            "fetchedDataReference": "books",
+            "label": "Books Without ISBN"
+          }
+        }
+      ]
+    }
+  },
+  "parentName": "Report"
+}
+```
+
+Which looks like:
+
+<img src="./library-model-Report_Book_without_ISBN.png" alt="The Library Report: Book Without ISBN" width="70%"/>
+
+To check that the Report Works, use the **Stored Report Display** at the bottom of the page:
+
+<img src="./library-model-Report_Book_without_ISBN-test.png" alt=" Testing The Library Report: Book Without ISBN" width="70%"/>
+
+In our case, the Book(s) to which you have added an ISBN must be missing from the list.
+
+<img src="./library-model-Report_Book_without_ISBN-result.png" alt="The Library Report Results: Book Without ISBN" width="70%"/>
+
+Congrats, you've finished part 3!
 
 ## Part 4: Working with Endpoints, Actions and Runners
 

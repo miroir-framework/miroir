@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import {
   ApplicationSection,
@@ -17,30 +17,29 @@ import {
   ReportSection,
   resolvePathOnObject,
   SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentMiroir,
   transformer_extended_apply_wrapper,
   TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
-  type DomainControllerInterface,
-  type InstanceAction,
-  type JzodObject} from "miroir-core";
+  type JzodObject
+} from "miroir-core";
 
-import { CloseIcon, EditIcon, SaveIcon } from '../Themes/MaterialSymbolWrappers';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import { useFormikContext } from 'formik';
+import type { Params } from 'react-router-dom';
 import { deployments, packageName, type ReportUrlParamKeys } from '../../../../constants.js';
-import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
+import { ReportDisplay } from '../../routes/ReportDisplay';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
-import { ThemedIconButton, ThemedText } from '../Themes/index.js';
+import { StoredRunnerView } from '../Runners/RunnerView';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
+import { ExpandMoreIcon } from '../Themes/MaterialSymbolWrappers';
+import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
-import { Formik, useFormikContext } from 'formik';
-import { StoredRunnerView } from '../Runners/RunnerView';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
-import type { Params } from 'react-router-dom';
-import { ReportDisplay } from '../../routes/ReportDisplay';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -367,6 +366,24 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           </ThemedText>
         )}
         {/* {props.reportSectionDEFUNCT.type == "objectListReportSection" && ( */}
+        {reportSectionDefinitionFromFormik?.type == "accordionReportSection" && (
+          <ThemedBox>
+            <Accordion style={{ marginBottom: 12 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <div>{reportSectionDefinitionFromFormik?.label}</div>
+              </AccordionSummary>
+              <AccordionDetails>
+                {
+                  <ReportSectionViewWithEditor
+                    {...props}
+                    reportSectionDEFUNCT={reportSectionDefinitionFromFormik?.definition}
+                    reportSectionPath={[...(props.reportSectionPath ?? []), "definition"]}
+                  />
+                }
+              </AccordionDetails>
+            </Accordion>
+          </ThemedBox>
+        )}
         {reportSectionDefinitionFromFormik?.type == "objectListReportSection" && (
           <div>
             {currentListReportTargetEntity && currentListReportTargetEntityDefinition ? (

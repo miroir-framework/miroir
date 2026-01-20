@@ -11,10 +11,7 @@
       "author": {
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Author",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-        },
+        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"
@@ -36,10 +33,7 @@
       "publishersOfBooks": {
         "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
         "parentName": "Publisher",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
-        },
+        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
         "objectListReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
@@ -50,10 +44,7 @@
       "BooksOfPublishers": {
         "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
         "parentName": "Book",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-        },
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectListReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",

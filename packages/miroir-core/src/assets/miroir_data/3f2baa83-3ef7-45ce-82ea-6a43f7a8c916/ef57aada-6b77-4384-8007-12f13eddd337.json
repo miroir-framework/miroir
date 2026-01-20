@@ -30,30 +30,34 @@
           }
         },
         {
-          "type": "storedReportDisplay",
+          "type": "accordionReportSection",
+          "label": "Stored Report Display",
           "definition": {
-            "transformerType": "dataflowObject",
-            "label": "Report Details Test: ${instance.name}",
+            "type": "storedReportDisplay",
             "definition": {
-              "application": {
-                "transformerType": "getFromParameters",
-                "referencePath": ["pageParams", "application"]
-              },
-              "applicationSection": {
-                "transformerType": "getFromParameters",
-                "referencePath": ["pageParams", "applicationSection"]
-              },
-              "deploymentUuid": {
-                "transformerType": "getFromParameters",
-                "referencePath": ["pageParams", "deploymentUuid"]
-              },
-              "reportUuid": {
-                "transformerType": "getFromParameters",
-                "referencePath": ["pageParams", "reportUuid"]
-              },
-              "instanceUuid": {
-                "transformerType": "getFromParameters",
-                "referencePath": ["pageParams", "instanceUuid"]
+              "transformerType": "dataflowObject",
+              "label": "Report Details Test: ${instance.name}",
+              "definition": {
+                "application": {
+                  "transformerType": "getFromParameters",
+                  "referencePath": ["pageParams", "application"]
+                },
+                "applicationSection": {
+                  "transformerType": "getFromParameters",
+                  "referencePath": ["pageParams", "applicationSection"]
+                },
+                "deploymentUuid": {
+                  "transformerType": "getFromParameters",
+                  "referencePath": ["pageParams", "deploymentUuid"]
+                },
+                "reportUuid": {
+                  "transformerType": "getFromParameters",
+                  "referencePath": ["pageParams", "reportUuid"]
+                },
+                "instanceUuid": {
+                  "transformerType": "getFromParameters",
+                  "referencePath": ["pageParams", "instanceUuid"]
+                }
               }
             }
           }

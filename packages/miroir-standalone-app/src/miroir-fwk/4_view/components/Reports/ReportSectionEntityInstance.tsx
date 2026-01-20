@@ -448,87 +448,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
   }
 
-  // // ##############################################################################################
-  // const handleDisplayEditorSwitchChange = useCallback(
-  //   (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     setDisplayEditor(event.target.checked);
-  //   },
-  //   [setDisplayEditor]
-  // );
-
-  // // ##############################################################################################
-  // const onEditValueObjectFormSubmitDEFUNCT = useCallback(
-  //   async (data: any) => {
-  //     log.info(
-  //       "onEditValueObjectFormSubmit called on formikValuePathAsString",
-  //       formikValuePathAsString,
-  //       "with new object value",
-  //       data
-  //     );
-  //     // TODO: use action queue
-  //     if (props.deploymentUuid) {
-  //       if (!data || !data[formikValuePathAsString]) {
-  //         throw new Error(
-  //           "onEditValueObjectFormSubmit called with undefined data:" +
-  //             formikValuePathAsString +
-  //             " not found in data: " +
-  //             Object.keys(data)
-  //         );
-  //       }
-  //       if (!data[formikValuePathAsString].parentUuid) {
-  //         throw new Error("onEditValueObjectFormSubmit called with object missing parentUuid: " + Object.keys(data[formikValuePathAsString]));
-  //       }
-  //       const applicationSection = getApplicationSection(props.deploymentUuid, data[formikValuePathAsString].parentUuid);
-  //       if (applicationSection == "model") {
-  //         await domainController.handleActionFromUI(
-  //           {
-  //             actionType: "transactionalInstanceAction",
-  //             deploymentUuid: props.deploymentUuid,
-  //             instanceAction: {
-  //               actionType: "updateInstance",
-  //               deploymentUuid: props.deploymentUuid,
-  //               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-  //               payload: {
-  //                 applicationSection: "model",
-  //                 objects: [
-  //                   {
-  //                     parentName: data[formikValuePathAsString].name,
-  //                     parentUuid: data[formikValuePathAsString].parentUuid,
-  //                     applicationSection: props.applicationSection,
-  //                     instances: [data[formikValuePathAsString]],
-  //                   },
-  //                 ],
-  //               },
-  //             },
-  //           },
-  //           currentModelEnvironment // TODO: use correct model environment
-  //         );
-  //       } else {
-  //         const updateAction: InstanceAction = {
-  //           actionType: "updateInstance",
-  //           deploymentUuid: props.deploymentUuid,
-  //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-  //           payload: {
-  //             applicationSection: props.applicationSection ? props.applicationSection : "data",
-  //             objects: [
-  //               {
-  //                 parentName: data[formikValuePathAsString].name,
-  //                 parentUuid: data[formikValuePathAsString].parentUuid,
-  //                 applicationSection: props.applicationSection ? props.applicationSection : "data",
-  //                 instances: [data[formikValuePathAsString]],
-  //               },
-  //             ],
-  //           },
-  //         };
-  //         await domainController.handleActionFromUI(updateAction);
-  //       }
-  //     } else {
-  //       throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
-  //     }
-  //   },
-  //   [domainController, props]
-  // );
-
   // ##############################################################################################
   // Check if this is a TransformerTest entity instance
   const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
@@ -557,7 +476,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         ? {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            deploymentUuid: props.deploymentUuid,
+            // deploymentUuid: props.deploymentUuid,
             pageParams: {
               deploymentUuid: props.deploymentUuid,
               applicationSection: "model",
@@ -572,7 +491,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         : {
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             application: props.application,
-            deploymentUuid: props.deploymentUuid,
+            // deploymentUuid: props.deploymentUuid,
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -594,6 +513,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       // return getQueryRunnerParamsForReduxDeploymentsState(
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
         queryForTestRun,
+        props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       );
     },
@@ -640,10 +560,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         )}
         <ThemedHeaderSection>
           <ThemedTitle>
-            {/* {currentReportTargetEntity?.name} details: {instance.name}{" "} */}
-            {/* <span><pre>props.reportSectionPath: {JSON.stringify(props.reportSectionPath)}</pre></span>
-            <span><pre>reportDefinitionFromFormik: {JSON.stringify(reportDefinitionFromFormik)}</pre></span>
-            <span><pre>reportSectionDefinitionFromFormik: {JSON.stringify(reportSectionDefinitionFromFormik)}</pre></span> */}
             {props.defaultLabel ??
               (reportSectionDefinitionFromFormik?.definition?.label
                 ? interpolateExpression(
@@ -653,13 +569,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   )
                 : undefined) ??
               currentReportTargetEntity?.name + " details: " + instance.name}
-            {/* {props.zoomInPath && (
-              <span style={{ fontSize: "0.8em", fontStyle: "italic", color: "#666" }}>
-                (viewing: {props.zoomInPath})
-              </span>
-            )} */}
           </ThemedTitle>
-          <ThemedTooltip
+          {/* <ThemedTooltip
             title={outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}
           >
             <ThemedIconButton
@@ -670,7 +581,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             >
               <Toc />
             </ThemedIconButton>
-          </ThemedTooltip>
+          </ThemedTooltip> */}
         </ThemedHeaderSection>
         {/* Query Results Section - Collapsible */}
         {isQueryEntity && (
@@ -740,7 +651,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         )}
 
         {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
-          // displayEditor ? (
           <TypedValueObjectEditor
             valueObjectEditMode={props.valueObjectEditMode}
             labelElement={labelElement}

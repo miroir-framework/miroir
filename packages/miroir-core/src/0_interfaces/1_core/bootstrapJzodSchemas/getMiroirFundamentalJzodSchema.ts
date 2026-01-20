@@ -911,12 +911,13 @@ export function getMiroirFundamentalJzodSchema(
           ).filter((e) =>
             [
               // TODO: remove this filter, this introduces unnecessary coupling
-              "objectInstanceReportSection",
-              "objectListReportSection",
+              "accordionReportSection",
+              "graphReportSection",
               "gridReportSection",
               "listReportSection",
-              "graphReportSection",
               "markdownReportSection",
+              "objectInstanceReportSection",
+              "objectListReportSection",
               "runnerReportSection",
               "storedReportDisplay",
               "reportSection",

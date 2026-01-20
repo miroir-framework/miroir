@@ -412,7 +412,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application,
-              deploymentUuid,
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -550,11 +549,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           >
             <JzodElementEditor
               valueObjectEditMode={props.valueObjectEditMode}
-              // name={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
-              // isTopLevel={true}
-              // listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
-              // rootLessListKey={reportSectionPathAsString??""}
-              // rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
               reportSectionPathAsString={formikValuePathAsString ?? ""}
               name={"ROOT"}
               isTopLevel={true}
