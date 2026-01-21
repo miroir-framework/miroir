@@ -366,7 +366,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           type: "schemaReference",
           definition: {
             eager: true,
-            relativePath: "extractorTemplateRoot",
+            relativePath: "extractorOrCombinerRoot",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           },
           context: {},
@@ -393,7 +393,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           type: "schemaReference",
           definition: {
             eager: true,
-            relativePath: "extractorTemplateRoot",
+            relativePath: "extractorOrCombinerRoot",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           },
           context: {},
@@ -418,7 +418,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           type: "schemaReference",
           definition: {
             eager: true,
-            relativePath: "extractorTemplateRoot",
+            relativePath: "extractorOrCombinerRoot",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           },
           context: {},
@@ -455,7 +455,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           type: "schemaReference",
           definition: {
             eager: true,
-            relativePath: "extractorTemplateRoot",
+            relativePath: "extractorOrCombinerRoot",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           },
           context: {},
@@ -591,7 +591,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           type: "schemaReference",
           definition: {
             eager: true,
-            relativePath: "extractorTemplateRoot",
+            relativePath: "extractorOrCombinerRoot",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           },
           context: {},
@@ -633,7 +633,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //     type: "schemaReference",
       //     definition: {
       //       eager: true,
-      //       relativePath: "extractorTemplateRoot",
+      //       relativePath: "extractorOrCombinerRoot",
       //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
       //     },
       //     context: {},
@@ -670,7 +670,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //     type: "schemaReference",
       //     definition: {
       //       eager: true,
-      //       relativePath: "extractorTemplateRoot",
+      //       relativePath: "extractorOrCombinerRoot",
       //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
       //     },
       //     context: {},

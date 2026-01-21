@@ -152,8 +152,6 @@ export {
   extractorTemplateReturningObject,
   ExtractorTemplateReturningObjectList,
   extractorTemplateReturningObjectList,
-  ExtractorTemplateRoot,
-  extractorTemplateRoot,
   // ===
   ExtractorWrapper,
   // ===

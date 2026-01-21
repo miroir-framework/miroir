@@ -192,18 +192,18 @@ export function JzodSchemaReferencesSet(
 export function jzodTransitiveDependencySet(
   miroirFundamentalJzodSchema: JzodReference,
   contextElementName: string,
-  includeExtend: boolean = false
+  includeExtend: boolean = false,
 ): Set<string> {
   const visitedSet = new Set<string>();
-  const toVisitSet = new Set<string>();
-  toVisitSet.add( contextElementName );
+  const toVisitMap = new Map<string, string[]>();
+  toVisitMap.set(contextElementName, [contextElementName]);
 
   if (!miroirFundamentalJzodSchema.context) {
     throw new Error("miroirFundamentalJzodSchema.context is not defined");
   }
 
-  function visit(element: string, miroirFundamentalJzodSchema: JzodReference) {
-    console.log("jzodTransitiveDependencySet visiting", element);
+  function visit(element: string, path: string[], miroirFundamentalJzodSchema: JzodReference) {
+    console.log("jzodTransitiveDependencySet visiting", element, (element.includes("report") ? "path: " + path.join("."): ""), "visitedSet size", visitedSet.size);
     if (!miroirFundamentalJzodSchema.context) {
       throw new Error("miroirFundamentalJzodSchema.context is not defined");
     }
@@ -230,19 +230,23 @@ export function jzodTransitiveDependencySet(
       if (visitedSet.has(ref)) {
         continue;
       } else {
-        toVisitSet.add(ref);
+        toVisitMap.set(ref, [...path, ref]);
       }
     }
   }
 
-  while (toVisitSet.size > 0) {
-    const element = toVisitSet.values().next().value;
+  while (toVisitMap.size > 0) {
+    const entry = toVisitMap.entries().next().value;
+    if (!entry) {
+      throw new Error("entry is undefined");
+    }
+    const [element, path] = entry;
     if (!element) {
       throw new Error("element is undefined");
     }
     // console.log("jzodTransitiveDependencySet visiting element", element, "visitedSet", visitedSet.size);
-    toVisitSet.delete(element);
-    visit(element, miroirFundamentalJzodSchema);
+    toVisitMap.delete(element);
+    visit(element, path, miroirFundamentalJzodSchema);
   }
   return visitedSet;
 }

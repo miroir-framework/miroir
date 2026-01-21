@@ -3546,7 +3546,7 @@ export function getMiroirFundamentalJzodSchema(
   };
   const jzodElement_extendedSchemas = [
         "jzodBaseObject",
-        "extractorTemplateRoot",
+        "extractorOrCombinerRoot",
         "extractorOrCombinerRoot",
         "transformer_inner_label",
         "transformer_orderBy",

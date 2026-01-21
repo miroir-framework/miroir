@@ -219,7 +219,6 @@ export function useDeploymentUuidFromApplicationUuid2(
       : {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: "",
-          // deploymentUuid: "",
           pageParams: {},
           queryParams: {},
           contextResults: {},

@@ -720,17 +720,109 @@
                 "optional": true
               },
               "definition": {
-                "type": "schemaReference",
+                "type": "union",
+                "discriminator": ["transformerType"],
                 "tag": {
                   "value": {
                     "defaultLabel": "Report Display Params",
                     "description": "Display any report by returning an object matching the ReportDisplayParams schema"
                   }
                 },
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntime"
-                }
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "application": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "deploymentUuid": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "applicationSection": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "definition": ["data", "model"]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "reportUuid": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "instanceUuid": {
+                        "type": "union",
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildPlusRuntime"
+                    }
+                  }
+                ]
               }
             }
           },

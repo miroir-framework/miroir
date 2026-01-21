@@ -897,7 +897,7 @@
                   }
                 }
               },
-              "extractorTemplateRoot": {
+              "extractorOrCombinerRoot": {
                 "type": "object",
                 "definition": {
                   "label": {
@@ -959,7 +959,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "eager": true,
-                    "relativePath": "extractorTemplateRoot"
+                    "relativePath": "extractorOrCombinerRoot"
                   }
                 },
                 "definition": {
@@ -985,7 +985,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "eager": true,
-                    "relativePath": "extractorTemplateRoot"
+                    "relativePath": "extractorOrCombinerRoot"
                   }
                 },
                 "definition": {
@@ -1026,7 +1026,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "eager": true,
-                    "relativePath": "extractorTemplateRoot"
+                    "relativePath": "extractorOrCombinerRoot"
                   }
                 },
                 "definition": {
@@ -1066,13 +1066,13 @@
                   }
                 }
               },
-              "extractorTemplateByRelationReturningObjectList": {
+              "combinerTemplateByRelationReturningObjectList": {
                 "type": "object",
                 "extend": {
                   "type": "schemaReference",
                   "definition": {
                     "eager": true,
-                    "relativePath": "extractorTemplateRoot"
+                    "relativePath": "extractorOrCombinerRoot"
                   }
                 },
                 "definition": {
@@ -1116,7 +1116,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "eager": true,
-                    "relativePath": "extractorTemplateRoot"
+                    "relativePath": "extractorOrCombinerRoot"
                   }
                 },
                 "definition": {
@@ -1168,7 +1168,7 @@
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "extractorTemplateByRelationReturningObjectList"
+                      "relativePath": "combinerTemplateByRelationReturningObjectList"
                     }
                   },
                   {
@@ -1325,7 +1325,7 @@
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "extractorTemplateByRelationReturningObjectList"
+                      "relativePath": "combinerTemplateByRelationReturningObjectList"
                     }
                   },
                   {

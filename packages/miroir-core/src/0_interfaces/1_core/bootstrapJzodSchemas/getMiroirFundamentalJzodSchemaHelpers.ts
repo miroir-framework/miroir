@@ -330,7 +330,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchemaDefinition
     "applicationSection",
     "shippingBox",
     // "entityAttributeUntypedCore",
-    "extractorTemplateRoot",
+    "extractorOrCombinerRoot",
     "extractorOrCombinerRoot",
     "transformer_inner_label",
     "transformer_orderBy",

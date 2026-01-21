@@ -178,7 +178,7 @@
               }
             }
           },
-          "extractorTemplateRoot": {
+          "extractorOrCombinerRoot": {
             "type": "object",
             "definition": {
               "label": {
@@ -186,7 +186,9 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Label"
+                    "id": 1,
+                    "defaultLabel": "Label",
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -195,7 +197,9 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "SelfApplication Section"
+                    "id": 2,
+                    "defaultLabel": "SelfApplication Section",
+                    "display": { "editable": false }
                   }
                 },
                 "definition": {
@@ -208,7 +212,10 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "defaultLabel": "Parent Name"
+                    "id": 3,
+                    "canBeTemplate": true,
+                    "defaultLabel": "Parent Name",
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -216,11 +223,12 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
+                    "id": 4,
+                    "display": { "editable": false },
+                    "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
-                      "targetEntityApplicationSection": "model",
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      "targetEntityOrderInstancesBy": "name"
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
                     }
                   }
                 }
@@ -233,7 +241,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "extractorTemplateRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
@@ -267,7 +275,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "extractorTemplateRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
@@ -323,7 +331,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "extractorTemplateRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
@@ -372,13 +380,68 @@
               }
             }
           },
-          "extractorTemplateByRelationReturningObjectList": {
+          "combinerByRelationReturningObjectList": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "extractorTemplateRoot"
+                "relativePath": "extractorOrCombinerRoot"
+              }
+            },
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": { "editable": false },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "combinerByRelationReturningObjectList"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": ["ASC", "DESC"]
+                  }
+                }
+              },
+              "objectReference": {
+                "type": "string"
+              },
+              "objectReferenceAttribute": {
+                "type": "string",
+                "optional": true
+              },
+              "AttributeOfListObjectToCompareToReferenceUuid": {
+                "type": "string"
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "combinerTemplateByRelationReturningObjectList": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
@@ -430,7 +493,7 @@
               "type": "schemaReference",
               "definition": {
                 "eager": true,
-                "relativePath": "extractorTemplateRoot"
+                "relativePath": "extractorOrCombinerRoot"
               }
             },
             "definition": {
@@ -490,7 +553,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorTemplateByRelationReturningObjectList"
+                  "relativePath": "combinerTemplateByRelationReturningObjectList"
                 }
               },
               {
@@ -671,63 +734,6 @@
               "type": "schemaReference",
               "definition": {
                 "relativePath": "extractorOrCombinerTemplate"
-              }
-            }
-          },
-          "extractorOrCombinerRoot": {
-            "type": "object",
-            "definition": {
-              "label": {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Label",
-                    "display": { "editable": false }
-                  }
-                }
-              },
-              "applicationSection": {
-                "type": "schemaReference",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "SelfApplication Section",
-                    "display": { "editable": false }
-                  }
-                },
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "parentName": {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 3,
-                    "canBeTemplate": true,
-                    "defaultLabel": "Parent Name",
-                    "display": { "editable": false }
-                  }
-                }
-              },
-              "parentUuid": {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 4,
-                    "display": { "editable": false },
-                    "canBeTemplate": true,
-                    "defaultLabel": "Parent Uuid",
-                    "foreignKeyParams": {
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                    }
-                  }
-                }
               }
             }
           },
@@ -927,61 +933,6 @@
                 }
               }
             ]
-          },
-          "combinerByRelationReturningObjectList": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "extractorOrCombinerRoot"
-              }
-            },
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false,
-                    "display": { "editable": false },
-                    "defaultLabel": "Extractor Or Combiner Type"
-                  }
-                },
-                "definition": "combinerByRelationReturningObjectList"
-              },
-              "orderBy": {
-                "type": "object",
-                "optional": true,
-                "definition": {
-                  "attributeName": {
-                    "type": "string"
-                  },
-                  "direction": {
-                    "type": "enum",
-                    "optional": true,
-                    "definition": ["ASC", "DESC"]
-                  }
-                }
-              },
-              "objectReference": {
-                "type": "string"
-              },
-              "objectReferenceAttribute": {
-                "type": "string",
-                "optional": true
-              },
-              "AttributeOfListObjectToCompareToReferenceUuid": {
-                "type": "string"
-              },
-              "applyTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntime"
-                }
-              }
-            }
           },
           "combinerByManyToManyRelationReturningObjectList": {
             "type": "object",
