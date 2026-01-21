@@ -20,6 +20,19 @@
             "label": "lendBook",
             "runner": "cc853632-f158-43fa-b9ed-437c9c25f539"
           }
+        },
+        {
+          "type": "storedReportDisplay",
+          "definition": {
+            "transformerType": "returnValue",
+            "value": {
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "applicationSection": "data",
+              "reportUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68",
+              "instanceUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68"
+            }
+          }
         }
       ]
     }

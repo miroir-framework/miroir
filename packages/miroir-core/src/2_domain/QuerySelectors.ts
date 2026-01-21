@@ -194,7 +194,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       const filterValueTest: (value: string | undefined) => boolean = localQuery.filter
         ? localQuery.filter.undefined
           ? (value: string | undefined) => value === undefined
-          : new RegExp(localQuery.filter.value ?? "", "i").test as any // TODO: check for correct type
+          : (value: string | undefined) =>
+              value !== undefined && (new RegExp(localQuery?.filter?.value ?? "", "i").test as any) // TODO: check for correct type
         : (value: string | undefined) => true;
 
       const filterTest: (value: string | undefined) => boolean = localQuery.filter?.not

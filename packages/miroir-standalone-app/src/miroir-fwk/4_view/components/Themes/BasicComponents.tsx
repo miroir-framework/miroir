@@ -114,6 +114,83 @@ export const ThemedFoldableContainer: React.FC<ThemedComponentProps & {
   );
 };
 
+// Progressive Accordion component with clickable summary
+export const ThemedProgressiveAccordion: React.FC<ThemedComponentProps & {
+  summary: string | React.ReactNode;
+  initiallyExpanded?: boolean;
+}> = ({ 
+  children, 
+  summary,
+  className, 
+  style,
+  initiallyExpanded = false
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  const [isExpanded, setIsExpanded] = React.useState(initiallyExpanded);
+  
+  const accordionContainerStyles = css({
+    backgroundColor: currentTheme.colors.surface,
+    border: `1px solid ${currentTheme.colors.border}`,
+    borderRadius: currentTheme.borderRadius.md,
+    marginBottom: currentTheme.spacing.md,
+    overflow: 'hidden',
+  });
+
+  const summaryStyles = css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: currentTheme.spacing.sm,
+    padding: currentTheme.spacing.md,
+    cursor: 'pointer',
+    userSelect: 'none',
+    backgroundColor: currentTheme.colors.surface,
+    transition: 'background-color 0.2s ease',
+    '&:hover': {
+      backgroundColor: currentTheme.colors.background,
+    },
+  });
+
+  const iconStyles = css({
+    fontSize: currentTheme.typography.fontSize.md,
+    color: currentTheme.colors.textSecondary,
+    transition: 'transform 0.2s ease',
+    transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+    display: 'inline-block',
+    flexShrink: 0,
+  });
+
+  const summaryContentStyles = css({
+    flex: 1,
+    color: currentTheme.colors.text,
+    fontFamily: currentTheme.typography.fontFamily,
+    fontSize: currentTheme.typography.fontSize.md,
+    fontWeight: currentTheme.typography.fontWeight.normal,
+  });
+
+  const detailsStyles = css({
+    padding: `0 ${currentTheme.spacing.md} ${currentTheme.spacing.md} ${currentTheme.spacing.md}`,
+    backgroundColor: currentTheme.colors.surface,
+  });
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div css={accordionContainerStyles} className={className} style={style}>
+      <div css={summaryStyles} onClick={handleToggle}>
+        <span css={iconStyles}>▶</span>
+        <div css={summaryContentStyles}>{summary}</div>
+      </div>
+      {isExpanded && (
+        <div css={detailsStyles}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Simple button component that uses the theme
 export const ThemedButton: React.FC<ThemedComponentProps & {
   onClick?: () => void;

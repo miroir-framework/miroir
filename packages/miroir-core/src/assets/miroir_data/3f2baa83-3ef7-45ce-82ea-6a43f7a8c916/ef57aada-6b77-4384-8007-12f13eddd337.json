@@ -52,7 +52,7 @@
                 },
                 "reportUuid": {
                   "transformerType": "getFromParameters",
-                  "referencePath": ["pageParams", "reportUuid"]
+                  "referencePath": ["pageParams", "instanceUuid"]
                 },
                 "instanceUuid": {
                   "transformerType": "getFromParameters",

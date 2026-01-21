@@ -34,7 +34,7 @@ import { ReportDisplay } from '../../routes/ReportDisplay';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
+import { ThemedOnScreenDebug, ThemedProgressiveAccordion } from '../Themes/BasicComponents';
 import { ExpandMoreIcon } from '../Themes/MaterialSymbolWrappers';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
@@ -367,8 +367,21 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {/* {props.reportSectionDEFUNCT.type == "objectListReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "accordionReportSection" && (
+          // <></>
           <ThemedBox>
-            <Accordion style={{ marginBottom: 12 }}>
+            <ThemedProgressiveAccordion
+             style={{ marginBottom: 12 }}
+             summary={reportSectionDefinitionFromFormik?.label}
+             >
+                {
+                  <ReportSectionViewWithEditor
+                    {...props}
+                    reportSectionDEFUNCT={reportSectionDefinitionFromFormik?.definition}
+                    reportSectionPath={[...(props.reportSectionPath ?? []), "definition"]}
+                  />
+                }
+            </ThemedProgressiveAccordion>
+            {/* <Accordion style={{ marginBottom: 12 }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <div>{reportSectionDefinitionFromFormik?.label}</div>
               </AccordionSummary>
@@ -381,7 +394,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                   />
                 }
               </AccordionDetails>
-            </Accordion>
+            </Accordion> */}
           </ThemedBox>
         )}
         {reportSectionDefinitionFromFormik?.type == "objectListReportSection" && (

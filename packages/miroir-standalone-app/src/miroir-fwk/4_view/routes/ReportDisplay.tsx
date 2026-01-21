@@ -197,9 +197,12 @@ export const ReportDisplay: React.FC<{
         !currentStoredQueryData ? (
           <>
             <ThemedSpan style={{ color: theme.currentTheme.colors.error }}>
-              ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
-              applicationSection=
-              {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
+              ReportDisplay: no report to display,
+              reportUuid={pageParams.reportUuid},
+              instanceUuid={pageParams.instanceUuid},
+              deploymentUuid={pageParams.deploymentUuid},
+              application={pageParams.application},
+              applicationSection={pageParams.applicationSection}, 
             </ThemedSpan>
           </>
         ) : (
