@@ -82,7 +82,7 @@ export const runQueryTemplateFromDomainState: SyncQueryTemplateRunner<
 // ################################################################################################
 export function getSelectorMapForTemplate(): SyncBoxedExtractorOrQueryRunnerMap<DomainState> {
   return {
-    extractorType: "sync",
+    extractorOrCombinerType: "sync",
     extractState: (domainState: DomainState, params: any) => domainState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstanceList: selectEntityInstanceListFromDomainState,

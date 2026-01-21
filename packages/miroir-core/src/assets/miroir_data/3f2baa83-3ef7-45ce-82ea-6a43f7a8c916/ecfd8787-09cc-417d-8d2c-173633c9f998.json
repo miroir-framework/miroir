@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "menus": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "Menu",
         "parentUuid": {
           "transformerType": "returnValue",

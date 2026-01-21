@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "viewParams": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "ViewParams",
         "parentUuid": {
           "transformerType": "returnValue",

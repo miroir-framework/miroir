@@ -45,7 +45,7 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
   ) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     this.selectorMap = {
-      extractorType: "async",
+      extractorOrCombinerType: "async",
       extractEntityInstanceUuidIndex: this.fileSystemExtractorRunner.extractEntityInstanceUuidIndex,
       extractEntityInstanceList: this.fileSystemExtractorRunner.extractEntityInstanceList,
       extractEntityInstance: this.fileSystemExtractorRunner.extractEntityInstance,

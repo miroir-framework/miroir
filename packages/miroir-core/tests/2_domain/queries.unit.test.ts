@@ -180,7 +180,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -234,7 +234,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -287,7 +287,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -340,7 +340,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     //   queryParams: {},
     //   extractorTemplates: {
     //     book: {
-    //       extractorTemplateType: "extractorForObjectByDirectReference",
+    //       extractorOrCombinerType: "extractorForObjectByDirectReference",
     //       parentName: "Book",
     //       parentUuid: {
     //         transformerType: "constantUuid",
@@ -418,7 +418,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
       extractorTemplates: {
         book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -472,7 +472,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -490,7 +490,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       combinerTemplates: {
         publisher: {
-          extractorTemplateType: "combinerForObjectByRelation",
+          extractorOrCombinerType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
             transformerType: "returnValue",
@@ -555,7 +555,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         queryParams: {},
         extractorTemplates: {
           book: {
-            extractorTemplateType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "returnValue",
@@ -573,7 +573,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
         combinerTemplates: {
           publisher: {
-            extractorTemplateType: "combinerForObjectByRelation",
+            extractorOrCombinerType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "returnValue",
@@ -680,7 +680,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         queryParams: {},
         extractorTemplates: {
           author: {
-            extractorTemplateType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
             parentName: "Author",
             parentUuid: {
               transformerType: "returnValue",
@@ -698,7 +698,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
         combinerTemplates: {
           booksOfAuthor: {
-            extractorTemplateType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
               transformerType: "returnValue",
@@ -714,7 +714,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             AttributeOfListObjectToCompareToReferenceUuid: "author",
           },
           publishersOfBooks: {
-            extractorTemplateType: "combinerByManyToManyRelationReturningObjectList",
+            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: {
               transformerType: "returnValue",
@@ -833,7 +833,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         authors: {
-          extractorTemplateType: "extractorTemplateForObjectListByEntity",
+          extractorOrCombinerType: "extractorForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
             transformerType: "returnValue",
@@ -910,7 +910,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         authors: {
-          extractorTemplateType: "extractorTemplateForObjectListByEntity",
+          extractorOrCombinerType: "extractorForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
             transformerType: "returnValue",
@@ -985,7 +985,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -1003,7 +1003,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       combinerTemplates: {
         publisher: {
-          extractorTemplateType: "combinerForObjectByRelation",
+          extractorOrCombinerType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
             transformerType: "returnValue",
@@ -1020,7 +1020,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
         booksOfPublisher: {
           //join with only returnValue references
-          extractorTemplateType: "combinerByRelationReturningObjectList",
+          extractorOrCombinerType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -1107,7 +1107,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -1125,7 +1125,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       combinerTemplates: {
         publisher: {
-          extractorTemplateType: "combinerForObjectByRelation",
+          extractorOrCombinerType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
             transformerType: "returnValue",
@@ -1141,7 +1141,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           AttributeOfObjectToCompareToReferenceUuid: "publisher",
         },
         booksOfPublisher: {
-          extractorTemplateType: "combinerByRelationReturningObjectList",
+          extractorOrCombinerType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -1157,7 +1157,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           AttributeOfListObjectToCompareToReferenceUuid: "publisher",
         },
         result1: {
-          extractorTemplateType: "extractorTemplateByExtractorWrapperReturningObject",
+          extractorOrCombinerType: "extractorTemplateByExtractorWrapperReturningObject",
           definition: {
             "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
               transformerType: "getFromContext",
@@ -1167,7 +1167,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           },
         },
         result2: {
-          extractorTemplateType: "extractorTemplateByExtractorWrapperReturningList",
+          extractorOrCombinerType: "extractorTemplateByExtractorWrapperReturningList",
           definition: [
             {
               transformerType: "getFromContext",
@@ -1306,7 +1306,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         author: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
+          extractorOrCombinerType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -1320,7 +1320,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
       combinerTemplates: {
         books: {
-          extractorTemplateType: "combinerByRelationReturningObjectList",
+          extractorOrCombinerType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",
@@ -1409,7 +1409,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         queryParams: {},
         extractorTemplates: {
           author: {
-            extractorTemplateType: "extractorForObjectByDirectReference",
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
               transformerType: "returnValue",
@@ -1423,7 +1423,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
         combinerTemplates: {
           books: {
-            extractorTemplateType: "combinerByRelationReturningObjectList",
+            extractorOrCombinerType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
               transformerType: "returnValue",
@@ -1568,7 +1568,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         queryParams: {},
         extractorTemplates: {
           entities: {
-            extractorTemplateType: "extractorTemplateForObjectListByEntity",
+            extractorOrCombinerType: "extractorForObjectListByEntity",
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
@@ -1581,12 +1581,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         },
         combinerTemplates: {
           instancesOfEntities: {
-            extractorTemplateType:
+            extractorOrCombinerType:
               "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList", // heteronomous many-to-many join, not possible with SQL
             rootExtractorOrReference: "entities",
             subQueryTemplate: {
               query: {
-                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                extractorOrCombinerType: "extractorForObjectListByEntity",
                 parentUuid: {
                   transformerType: "getFromParameters",
                   interpolation: "build",
@@ -1630,7 +1630,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             rootExtractorOrReference: "entities",
             subQueryTemplate: {
               query: {
-                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                extractorOrCombinerType: "extractorForObjectListByEntity",
                 parentUuid: {
                   transformerType: "getFromParameters",
                   interpolation: "build",
@@ -1675,7 +1675,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryParams: {},
       extractorTemplates: {
         books: {
-          extractorTemplateType: "extractorTemplateForObjectListByEntity",
+          extractorOrCombinerType: "extractorForObjectListByEntity",
           parentName: "Book",
           parentUuid: {
             transformerType: "returnValue",

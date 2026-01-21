@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "applications": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "Application",
         "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b"
       }

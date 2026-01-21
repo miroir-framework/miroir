@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "user": {
-        "extractorTemplateType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "User",
         "parentUuid": {
           "transformerType": "returnValue",

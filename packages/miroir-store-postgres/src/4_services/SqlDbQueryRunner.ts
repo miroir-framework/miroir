@@ -94,7 +94,7 @@ export class SqlDbQueryRunner {
       this
     );
     this.inMemoryImplementationExtractorRunnerMap = {
-      extractorType: "async",
+      extractorOrCombinerType: "async",
       // elementary extractors are implemented in sql
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstanceList: this.extractEntityInstanceList.bind(this),
@@ -112,7 +112,7 @@ export class SqlDbQueryRunner {
     };
     // const dbImplementationExtractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap = {
     this.dbImplementationExtractorRunnerMap = {
-      extractorType: "async",
+      extractorOrCombinerType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex.bind(this),
       extractEntityInstanceList: this.extractEntityInstanceList.bind(this),
       extractEntityInstance: this.extractEntityInstance.bind(this),

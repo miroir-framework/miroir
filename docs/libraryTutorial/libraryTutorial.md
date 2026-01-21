@@ -244,7 +244,7 @@ Add a new query by using the **"+"** icon on the Queries List. Fill it out with 
   "definition": {
     "extractorTemplates": {
       "books": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

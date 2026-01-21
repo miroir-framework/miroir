@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "storeBasedConfigurations": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "StoreBasedConfiguration",
         "parentUuid": {
           "transformerType": "returnValue",

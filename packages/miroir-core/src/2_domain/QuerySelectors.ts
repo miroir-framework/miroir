@@ -60,7 +60,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 const emptySelectorMap:SyncBoxedExtractorOrQueryRunnerMap<any> = {
-  extractorType: "sync",
+  extractorOrCombinerType: "sync",
   extractState: (state: any, params: any) => state,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
@@ -74,7 +74,7 @@ const emptySelectorMap:SyncBoxedExtractorOrQueryRunnerMap<any> = {
 }
 
 const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
-  extractorType: "async",
+  extractorOrCombinerType: "async",
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
   extractEntityInstance: undefined as any,

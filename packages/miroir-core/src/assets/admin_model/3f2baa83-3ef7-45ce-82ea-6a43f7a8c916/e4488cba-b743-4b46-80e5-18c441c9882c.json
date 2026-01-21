@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates":{
       "ApplicationDeployments": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "Deployment",
         "parentUuid": {
           "transformerType": "returnValue",

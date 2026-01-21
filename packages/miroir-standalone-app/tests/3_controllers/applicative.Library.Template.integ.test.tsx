@@ -404,7 +404,7 @@ const newEntityDetailsReport = {
   definition: {
     extractorTemplates: {
       elementToDisplay: {
-        extractorTemplateType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorForObjectByDirectReference",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
@@ -607,7 +607,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
       //         transformerType: "returnValue",
       //         interpolation: "runtime",
       //         value: {
-      //           extractorTemplateType: "extractorForObjectByDirectReference",
+      //           extractorOrCombinerType: "extractorForObjectByDirectReference",
       //           parentName: {
       //             transformerType: "getFromContext",
       //             interpolation: "runtime",
@@ -984,7 +984,7 @@ const createReportsCompositeActionTemplate: BuildPlusRuntimeDomainAction =
                         transformerType: "returnValue",
                         interpolation: "runtime",
                         value: {
-                          extractorTemplateType: "extractorForObjectByDirectReference",
+                          extractorOrCombinerType: "extractorForObjectByDirectReference",
                           parentName: {
                             transformerType: "getFromContext",
                             interpolation: "runtime",
@@ -1335,7 +1335,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {
@@ -1468,7 +1468,7 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {

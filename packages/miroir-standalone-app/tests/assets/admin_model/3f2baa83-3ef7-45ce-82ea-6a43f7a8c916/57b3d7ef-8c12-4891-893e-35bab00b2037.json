@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "viewParams": {
-        "extractorTemplateType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "Deployment",
         "parentUuid": {
           "transformerType": "returnValue",

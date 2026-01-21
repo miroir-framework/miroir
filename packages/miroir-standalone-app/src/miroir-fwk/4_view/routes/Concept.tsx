@@ -506,7 +506,7 @@ export const ConceptPage: React.FC<any> = (
         //       definition: {
         //         extractorTemplates: {
         //           elementToDisplay: {
-        //             extractorTemplateType: "extractorForObjectByDirectReference",
+        //             extractorOrCombinerType: "extractorForObjectByDirectReference",
         //             parentName: {
         //               transformerType: "getFromParameters",
         //               referenceName: "createEntity_newEntityName",

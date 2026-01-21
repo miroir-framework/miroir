@@ -321,10 +321,10 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
   modelEnvironment: MiroirModelEnvironment
 ): JzodObject | undefined => {
   if (
-    foreignKeyParams.query.select.extractorTemplateType=="literal" ||
-    foreignKeyParams.query.select.extractorTemplateType=="extractorTemplateByExtractorWrapperReturningObject" ||
-    foreignKeyParams.query.select.extractorTemplateType=="extractorTemplateByExtractorWrapperReturningList" ||
-    foreignKeyParams.query.select.extractorTemplateType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
+    foreignKeyParams.query.select.extractorOrCombinerType=="literal" ||
+    foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningObject" ||
+    foreignKeyParams.query.select.extractorOrCombinerType=="extractorByExtractorWrapperReturningList" ||
+    foreignKeyParams.query.select.extractorOrCombinerType=="extractorCombinerByHeteronomousManyToManyReturningListOfObjectList" 
   ) {
     throw new Error(
       "extractzodSchemaForSingleSelectQuery can not deal with context reference: query=" +
@@ -339,7 +339,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
       : transformer_extended_apply(
           "build",
           [], // transformerPath
-          foreignKeyParams.query.select.label??foreignKeyParams.query.select.extractorTemplateType,
+          foreignKeyParams.query.select.label??foreignKeyParams.query.select.extractorOrCombinerType,
           foreignKeyParams.query.select.parentUuid,
           "value",
           // {...modelEnvironment, ...foreignKeyParams.query.queryParams},

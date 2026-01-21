@@ -649,7 +649,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     // zodSchema: extractorTemplateReturningObjectOrObjectList,
     zodSchema: extractorOrCombinerTemplate,
     action: {
-      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+      extractorOrCombinerType: "extractorForObjectListByEntity",
       parentUuid: {
         transformerType: "getFromParameters",
         interpolation: "build",
@@ -662,7 +662,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
   "combinerByRelationReturningObjectList is parsable": {
     zodSchema: extractorOrCombinerTemplate,
     action: {
-      extractorTemplateType: "combinerByRelationReturningObjectList",
+      extractorOrCombinerType: "combinerByRelationReturningObjectList",
       parentUuid: {
         transformerType: "getFromParameters",
         interpolation: "build",
@@ -691,7 +691,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       queryParams: {},
       extractorTemplates: {
         authors: {
-          extractorTemplateType: "extractorTemplateForObjectListByEntity",
+          extractorOrCombinerType: "extractorForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
             transformerType: "returnValue",

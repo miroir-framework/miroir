@@ -7,10 +7,10 @@
   "description": "This query produces a bundle for a given selfApplication.",
   "definition": {
     "select": {
-      "extractorTemplateType": "extractorWrapperReturningObject",
+      "extractorOrCombinerType": "extractorWrapperReturningObject",
       "definition": {
         "type": {
-          "extractorTemplateType": "literal",
+          "extractorOrCombinerType": "literal",
           "definition": "runtime"
         },
         "applicationVersion": {

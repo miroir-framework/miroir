@@ -172,7 +172,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //   extractorTemplates: {
   //     deployments: {
   //       label: "deployments of the application",
-  //       extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //       extractorOrCombinerType: "extractorForObjectListByEntity",
   //       parentUuid: entityDeployment.uuid,
   //       parentName: entityDeployment.name,
   //       applicationSection: "data",

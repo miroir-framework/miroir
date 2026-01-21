@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "blob": {
-        "extractorTemplateType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "applicationSection": "data",
         "parentName": "Blob",
         "parentUuid": {

@@ -37,17 +37,17 @@ export function resolveExtractorTemplate(
   contextResults: Record<string, any>
 ): ExtractorOrCombiner | QueryFailed {
   const cleanQueryTemplate: any = { ...extractorOrCombinerTemplate }
-  delete cleanQueryTemplate.extractorTemplateType;
+  delete cleanQueryTemplate.extractorOrCombinerType;
 
   
-  switch (extractorOrCombinerTemplate.extractorTemplateType) {
+  switch (extractorOrCombinerTemplate.extractorOrCombinerType) {
     case "literal": {
       return {
         extractorOrCombinerType: "literal",
         definition: extractorOrCombinerTemplate.definition,
       };
     }
-    case "extractorTemplateForObjectListByEntity": {
+    case "extractorForObjectListByEntity": {
       if (extractorOrCombinerTemplate.filter) {
         // const filterValue = transformer_extended_apply_wrapper(
         const filterValue = transformer_extended_apply(
@@ -71,7 +71,7 @@ export function resolveExtractorTemplate(
               : transformer_extended_apply(
                   "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
                   [], // transformerPath
-                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
+                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   modelEnvironment,
@@ -95,7 +95,7 @@ export function resolveExtractorTemplate(
               : transformer_extended_apply(
                   "build",
                   [], // transformerPath
-                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
+                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   modelEnvironment,
@@ -117,7 +117,7 @@ export function resolveExtractorTemplate(
             : transformer_extended_apply(
                 "build",
                 [], // transformerPath
-                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 modelEnvironment,
@@ -128,7 +128,7 @@ export function resolveExtractorTemplate(
         instanceUuid: transformer_extended_apply(
           "build",
           [], // transformerPath
-          extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
+          extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
           extractorOrCombinerTemplate.instanceUuid,
           "value",
           modelEnvironment,
@@ -138,7 +138,7 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "extractorTemplateByExtractorWrapperReturningObject": {
+    case "extractorByExtractorWrapperReturningObject": {
       return {
         extractorOrCombinerType: "extractorWrapperReturningObject",
         ...cleanQueryTemplate,
@@ -156,7 +156,7 @@ export function resolveExtractorTemplate(
       };
       break;
     }
-    case "extractorTemplateByExtractorWrapperReturningList": {
+    case "extractorByExtractorWrapperReturningList": {
       return {
         extractorOrCombinerType: "extractorWrapperReturningList",
         ...cleanQueryTemplate,
@@ -172,7 +172,7 @@ export function resolveExtractorTemplate(
     }
     case "combinerByRelationReturningObjectList": {
       return {
-        extractorOrCombinerType: extractorOrCombinerTemplate.extractorTemplateType,
+        extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
@@ -181,7 +181,7 @@ export function resolveExtractorTemplate(
                 "build",
                 [], // transformerPath
                 extractorOrCombinerTemplate.label ??
-                  extractorOrCombinerTemplate.extractorTemplateType,
+                  extractorOrCombinerTemplate.extractorOrCombinerType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 modelEnvironment,
@@ -200,7 +200,7 @@ export function resolveExtractorTemplate(
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       return {
-        extractorOrCombinerType: extractorOrCombinerTemplate.extractorTemplateType,
+        extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
@@ -209,7 +209,7 @@ export function resolveExtractorTemplate(
             : transformer_extended_apply(
                 "build",
                 [], // transformerPath
-                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 modelEnvironment,
@@ -226,7 +226,7 @@ export function resolveExtractorTemplate(
     }
     case "combinerForObjectByRelation": {
       return {
-        extractorOrCombinerType: extractorOrCombinerTemplate.extractorTemplateType,
+        extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
@@ -235,7 +235,7 @@ export function resolveExtractorTemplate(
             : transformer_extended_apply(
                 "build",
                 [], // transformerPath
-                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorOrCombinerType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 modelEnvironment,
@@ -252,7 +252,7 @@ export function resolveExtractorTemplate(
     }
     case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
       return {
-        extractorOrCombinerType: extractorOrCombinerTemplate.extractorTemplateType,
+        extractorOrCombinerType: extractorOrCombinerTemplate.extractorOrCombinerType,
         ...cleanQueryTemplate,
         rootExtractorOrReference:
           typeof extractorOrCombinerTemplate.rootExtractorOrReference == "string"

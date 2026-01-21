@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "blobs": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentUuid": {
           "transformerType": "returnValue",
           "value": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2"

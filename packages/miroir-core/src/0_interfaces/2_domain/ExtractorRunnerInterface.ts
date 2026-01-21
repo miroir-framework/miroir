@@ -237,7 +237,7 @@ export type ExtractorOrQueryRunnerMap<StateType> =
 // ################################################################################################
 // MAPS  ##########################################################################################
 export type AsyncBoxedExtractorOrQueryRunnerMap = {
-  extractorType: "async";
+  extractorOrCombinerType: "async";
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList;
   runQuery: AsyncQueryRunner<Domain2QueryReturnType<any>>;
   extractEntityInstance: AsyncBoxedExtractorRunner<
@@ -282,7 +282,7 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
 
 
 export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
-  extractorType: "sync";
+  extractorOrCombinerType: "sync";
   // extractState: (state: StateType, params: any) => StateType;
   extractState: (
     state: StateType,

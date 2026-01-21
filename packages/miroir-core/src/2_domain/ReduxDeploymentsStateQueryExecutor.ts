@@ -60,7 +60,7 @@ MiroirLoggerFactory.registerLoggerToStart(
  */
 export function createReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
-    extractorType: "sync",
+    extractorOrCombinerType: "sync",
     extractState: (deploymentEntityState: ReduxDeploymentsState, params: any) => deploymentEntityState,
     extractEntityInstance: selectEntityInstanceFromReduxDeploymentsState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromReduxDeploymentsState,

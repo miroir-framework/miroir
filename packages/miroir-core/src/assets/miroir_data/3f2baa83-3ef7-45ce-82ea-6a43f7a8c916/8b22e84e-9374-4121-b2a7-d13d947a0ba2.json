@@ -9,7 +9,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "jzodSchemas": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "MlSchema",
         "parentUuid": {
           "transformerType": "returnValue",

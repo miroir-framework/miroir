@@ -47,7 +47,7 @@ const miroirModelEnvironmentSelectorParams = (
 
 export function getMemoizedReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
-    extractorType: "sync",
+    extractorOrCombinerType: "sync",
     extractState: createSelector(
       [
         deploymentEntityStateSelector,

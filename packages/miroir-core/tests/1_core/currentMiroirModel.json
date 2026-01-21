@@ -963,7 +963,7 @@
                   }
                 },
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "combinerForObjectByRelation"
                   },
@@ -989,7 +989,7 @@
                   }
                 },
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "extractorForObjectByDirectReference"
                   },
@@ -1030,7 +1030,7 @@
                   }
                 },
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "extractorTemplateForObjectListByEntity"
                   },
@@ -1076,7 +1076,7 @@
                   }
                 },
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "combinerByRelationReturningObjectList"
                   },
@@ -1120,7 +1120,7 @@
                   }
                 },
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "combinerByManyToManyRelationReturningObjectList"
                   },
@@ -1200,7 +1200,7 @@
               "extractorTemplateByExtractorCombiner": {
                 "type": "object",
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
                   },
@@ -1243,7 +1243,7 @@
               "extractorTemplateByExtractorWrapperReturningObject": {
                 "type": "object",
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "extractorTemplateByExtractorWrapperReturningObject"
                   },
@@ -1261,7 +1261,7 @@
               "extractorTemplateByExtractorWrapperReturningList": {
                 "type": "object",
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "extractorTemplateByExtractorWrapperReturningList"
                   },
@@ -1343,7 +1343,7 @@
                   {
                     "type": "object",
                     "definition": {
-                      "extractorTemplateType": {
+                      "extractorOrCombinerType": {
                         "type": "literal",
                         "definition": "literal"
                       },
@@ -6034,7 +6034,7 @@
       "definition": {
         "extractorTemplates": {
           "entity": {
-            "extractorTemplateType": "extractorForObjectByDirectReference",
+            "extractorOrCombinerType": "extractorForObjectByDirectReference",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -6074,7 +6074,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "applicationVersions": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "ApplicationVersion",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6105,7 +6105,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "applications": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentUuid": {
               "transformerType": "constantUuid",
               "value": "a659d350-dd97-4da9-91de-524fa01745dc"
@@ -6136,7 +6136,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "reports": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "Report",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6167,7 +6167,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "storeBasedConfigurations": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "StoreBasedConfiguration",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6198,7 +6198,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "applicationModelBranches": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "ApplicationModelBranch",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6257,7 +6257,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "commits": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "Commit",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6288,7 +6288,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "queries": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "Query",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6319,7 +6319,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "jzodSchemas": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "MlSchema",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6350,7 +6350,7 @@
       "definition": {
         "extractorTemplates": {
           "entityDefinition": {
-            "extractorTemplateType": "extractorForObjectByDirectReference",
+            "extractorOrCombinerType": "extractorForObjectByDirectReference",
             "applicationSection": "model",
             "parentName": "EntityDefinition",
             "parentUuid": {
@@ -6389,7 +6389,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "endpoints": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "Endpoint",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6421,7 +6421,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "entities": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "applicationSection": "model",
             "parentName": "Entity",
             "parentUuid": {
@@ -6453,7 +6453,7 @@
       "definition": {
         "extractorTemplates": {
           "elementToDisplay": {
-            "extractorTemplateType": "extractorForObjectByDirectReference",
+            "extractorOrCombinerType": "extractorForObjectByDirectReference",
             "parentName": "Test",
             "parentUuid": {
               "transformerType": "constantString",
@@ -6491,7 +6491,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "ApplicationDeployments": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "Deployment",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6523,7 +6523,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "menus": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "parentName": "Menu",
             "parentUuid": {
               "transformerType": "constantUuid",
@@ -6554,7 +6554,7 @@
       "definition": {
         "extractorTemplates": {
           "report": {
-            "extractorTemplateType": "extractorForObjectByDirectReference",
+            "extractorOrCombinerType": "extractorForObjectByDirectReference",
             "applicationSection": "model",
             "parentName": "Report",
             "parentUuid": {
@@ -6593,7 +6593,7 @@
         "reportParameters": {},
         "extractorTemplates": {
           "entityDefinitions": {
-            "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+            "extractorOrCombinerType": "extractorForObjectListByEntity",
             "applicationSection": "model",
             "parentName": "Entity Definition",
             "parentUuid": {

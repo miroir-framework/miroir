@@ -639,7 +639,7 @@ export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodS
 
 export function getDomainStateExtractorRunnerMap(): SyncBoxedExtractorOrQueryRunnerMap<DomainState> {
   return {
-    extractorType: "sync",
+    extractorOrCombinerType: "sync",
     extractState: (domainState: DomainState, params: any) => domainState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstanceList: selectEntityInstanceListFromDomainState,

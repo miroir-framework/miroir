@@ -53,7 +53,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   ) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
     this.selectorMap = {
-      extractorType: "async",
+      extractorOrCombinerType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstanceList: this.extractEntityInstanceList,
       extractEntityInstance: this.extractEntityInstance,

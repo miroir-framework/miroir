@@ -56,7 +56,7 @@ export const runQueryTemplateFromReduxDeploymentsState: SyncQueryTemplateRunner<
 // ################################################################################################
 export function getReduxDeploymentsStateSelectorTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
-    extractorType: "sync",
+    extractorOrCombinerType: "sync",
     extractState: (deploymentEntityState: ReduxDeploymentsState, params: any) => deploymentEntityState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromReduxDeploymentsState,
     extractEntityInstanceList: selectEntityInstanceListFromReduxDeploymentsState,

@@ -205,8 +205,7 @@ export function useDeploymentUuidFromApplicationUuid2(
           extractorTemplates: {
             deployments: {
               label: "deployments of the application",
-              // extractorOrCombinerType: "extractorByEntityReturningObjectList",
-              extractorTemplateType: "extractorTemplateForObjectListByEntity",
+              extractorOrCombinerType: "extractorForObjectListByEntity",
               parentUuid: entityDeployment.uuid,
               parentName: entityDeployment.name,
               applicationSection: "data",
@@ -270,7 +269,7 @@ export function useDeploymentUuidFromApplicationUuid(
             extractorTemplates: {
               deployments: {
                 label: "deployments of the application",
-                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                extractorOrCombinerType: "extractorForObjectListByEntity",
                 parentUuid: entityDeployment.uuid,
                 parentName: entityDeployment.name,
                 applicationSection: "data",
@@ -346,7 +345,7 @@ export function useTransformer(
             extractorTemplates: {
               transformers: {
                 label: "transformers of the given application",
-                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                extractorOrCombinerType: "extractorForObjectListByEntity",
                 parentUuid: entityTransformerDefinition.uuid,
                 parentName: entityTransformerDefinition.name,
                 applicationSection: transformerDefinitionApplicationSection,
@@ -421,7 +420,7 @@ export function useRunner(
             extractorTemplates: {
               runners: {
                 label: "runners of the given application",
-                extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                extractorOrCombinerType: "extractorForObjectListByEntity",
                 parentUuid: entityRunner.uuid,
                 parentName: entityRunner.name,
                 applicationSection: runnerApplicationSection,

@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "menu": {
-        "extractorTemplateType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "Menu",
         "parentUuid": {
           "transformerType": "returnValue",

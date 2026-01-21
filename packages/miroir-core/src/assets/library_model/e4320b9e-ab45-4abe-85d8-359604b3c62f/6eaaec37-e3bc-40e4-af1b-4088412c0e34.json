@@ -8,7 +8,7 @@
   "definition": {
     "extractorTemplates": {
       "countries": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "applicationSection": "data",
         "parentName": "Country",
         "parentUuid": {
@@ -19,7 +19,7 @@
     },
     "combinerTemplates": {
       "AuthorWithCountry": {
-        "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
         "applicationSection": "data",
         "parentName": "Author",
         "parentUuid": {

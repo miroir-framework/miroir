@@ -8,7 +8,7 @@
   "definition": {
     "extractorTemplates": {
       "books": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": {
@@ -17,7 +17,7 @@
         }
       },
       "authors": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "applicationSection": "data",
         "parentName": "Author",
         "parentUuid": {
@@ -28,7 +28,7 @@
     },
     "combinerTemplates": {
       "BooksWithAuthor": {
-        "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": {

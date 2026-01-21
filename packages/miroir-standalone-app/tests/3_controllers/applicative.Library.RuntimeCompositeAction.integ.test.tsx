@@ -569,7 +569,7 @@ const createEntityCompositeAction: CompositeActionSequence = {
       //         transformerType: "returnValue",
       //         interpolation: "runtime",
       //         value: {
-      //           extractorTemplateType: "extractorForObjectByDirectReference",
+      //           extractorOrCombinerType: "extractorForObjectByDirectReference",
       //           parentName: {
       //             transformerType: "getFromContext",
       //             interpolation: "runtime",
@@ -815,7 +815,7 @@ const newEntityDetailsReport = {
   definition: {
     extractorTemplates: {
       elementToDisplay: {
-        extractorTemplateType: "extractorForObjectByDirectReference",
+        extractorOrCombinerType: "extractorForObjectByDirectReference",
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
@@ -913,7 +913,7 @@ const createReportsCompositeAction: DomainAction = {
               //   definition: {
               //     extractorTemplates: {
               //       elementToDisplay: {
-              //         extractorTemplateType: "extractorForObjectByDirectReference",
+              //         extractorOrCombinerType: "extractorForObjectByDirectReference",
               //         parentName: newEntityName,
               //         parentUuid: newEntityUuid,
               //         instanceUuid: {
@@ -1012,7 +1012,7 @@ const createReportsCompositeActionAssertions: CompositeRunTestAssertion[] = [
             definition: {
               extractorTemplates: {
                 elementToDisplay: {
-                  extractorTemplateType: "extractorForObjectByDirectReference",
+                  extractorOrCombinerType: "extractorForObjectByDirectReference",
                   parentName: newEntityName,
                   parentUuid: newEntityUuid,
                   // instanceUuid: {
@@ -1465,7 +1465,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {
@@ -1598,7 +1598,7 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         //             contextResults: {},
         //             extractorTemplates: {
         //               menuList: {
-        //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
+        //                 extractorOrCombinerType: "extractorForObjectListByEntity",
         //                 applicationSection: "model",
         //                 parentName: "Menu",
         //                 parentUuid: {

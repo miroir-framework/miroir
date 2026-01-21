@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "entities": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "applicationSection": "model",
         "parentName": "Entity",
         "parentUuid": {

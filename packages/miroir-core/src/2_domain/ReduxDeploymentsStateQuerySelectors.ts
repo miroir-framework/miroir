@@ -465,7 +465,7 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
 // ################################################################################################
 export function getReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
-    extractorType: "sync",
+    extractorOrCombinerType: "sync",
     extractState: (deploymentEntityState: ReduxDeploymentsState, params: any) => deploymentEntityState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromReduxDeploymentsState,
     extractEntityInstanceList: selectEntityInstanceListFromReduxDeploymentsState,

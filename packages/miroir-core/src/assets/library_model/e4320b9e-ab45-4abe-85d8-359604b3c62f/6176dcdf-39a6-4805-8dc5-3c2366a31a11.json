@@ -8,7 +8,7 @@
   "definition": {
     "extractorTemplates": {
       "publishers": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "applicationSection": "data",
         "parentName": "Publisher",
         "parentUuid": {
@@ -19,7 +19,7 @@
     },
     "combinerTemplates": {
       "BookWithPublisher": {
-        "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
+        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
         "label": "BookCountByPublisher_BookWithPublisher",
         "applicationSection": "data",
         "parentName": "Book",

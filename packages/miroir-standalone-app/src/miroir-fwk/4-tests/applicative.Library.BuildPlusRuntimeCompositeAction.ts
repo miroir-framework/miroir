@@ -387,7 +387,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //           transformerType: "returnValue",
                 //           interpolation: "build",
                 //           value: {
-                //             extractorTemplateType: "extractorForObjectByDirectReference",
+                //             extractorOrCombinerType: "extractorForObjectByDirectReference",
                 //             parentName: {
                 //               transformerType: "getFromContext",
                 //               interpolation: "build",

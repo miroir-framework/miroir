@@ -125,7 +125,7 @@ export function fetchMiroirAndAppConfigurations(
         contextResults: {},
         extractorTemplates: {
           [subQueryName]: {
-            extractorTemplateType: "extractorTemplateForObjectListByEntity",
+            extractorOrCombinerType: "extractorForObjectListByEntity",
             applicationSection: "data",
             parentName: "Deployment",
             parentUuid: {

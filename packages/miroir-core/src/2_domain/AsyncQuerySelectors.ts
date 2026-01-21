@@ -42,7 +42,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {
-  extractorType: "async",
+  extractorOrCombinerType: "async",
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: undefined as any, 
   runQuery: undefined as any, 
   extractEntityInstance: undefined as any,

@@ -372,7 +372,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           context: {},
         },
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "extractorForObjectByDirectReference",
           },
@@ -399,7 +399,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           context: {},
         },
         definition: {
-          extractorTemplateType: { type: "literal", definition: "combinerForObjectByRelation" },
+          extractorOrCombinerType: { type: "literal", definition: "combinerForObjectByRelation" },
           objectReference: {
             type: "schemaReference",
             definition: {
@@ -424,7 +424,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           context: {},
         },
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "combinerByRelationReturningObjectList",
           },
@@ -461,7 +461,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           context: {},
         },
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "combinerByManyToManyRelationReturningObjectList",
           },
@@ -492,7 +492,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       {
         type: "object",
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList",
           },
@@ -538,7 +538,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       {
         type: "object",
         definition: {
-          extractorTemplateType: { type: "literal", definition: "literal" },
+          extractorOrCombinerType: { type: "literal", definition: "literal" },
           definition: { type: "string" },
         },
       },
@@ -546,7 +546,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       {
         type: "object",
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "extractorTemplateByExtractorWrapperReturningObject",
           },
@@ -567,7 +567,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       {
         type: "object",
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "extractorTemplateByExtractorWrapperReturningList",
           },
@@ -597,7 +597,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           context: {},
         },
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "extractorTemplateForObjectListByEntity",
           },
@@ -639,7 +639,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //     context: {},
       //   },
       //   definition: {
-      //     extractorTemplateType: {
+      //     extractorOrCombinerType: {
       //       type: "literal",
       //       definition: "combinerByRelationReturningObjectList",
       //     },
@@ -676,7 +676,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       //     context: {},
       //   },
       //   definition: {
-      //     extractorTemplateType: {
+      //     extractorOrCombinerType: {
       //       type: "literal",
       //       definition: "combinerByManyToManyRelationReturningObjectList",
       //     },
@@ -706,7 +706,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
     ];
 
     const valueObject = {
-      extractorTemplateType: "combinerByRelationReturningObjectList",
+      extractorOrCombinerType: "combinerByRelationReturningObjectList",
       parentName: "Book",
       parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
       objectReference: {
@@ -719,7 +719,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
 
     const result = selectUnionBranchFromDiscriminator(
       unionObjectChoices,
-      ["extractorTemplateType"],
+      ["extractorOrCombinerType"],
       valueObject,
       [], // valueObjectPath
       [], // typePath
@@ -797,7 +797,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
               },
             ],
           },
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "combinerByRelationReturningObjectList",
           },
@@ -1204,7 +1204,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       {
         type: "object",
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "branchWithoutDiscriminator",
           },
@@ -1214,7 +1214,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       {
         type: "object",
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "branchWithDiscriminator",
           },
@@ -1243,7 +1243,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       expect(result.currentDiscriminatedObjectJzodSchema).toEqual({
         type: "object",
         definition: {
-          extractorTemplateType: {
+          extractorOrCombinerType: {
             type: "literal",
             definition: "branchWithoutDiscriminator",
           },

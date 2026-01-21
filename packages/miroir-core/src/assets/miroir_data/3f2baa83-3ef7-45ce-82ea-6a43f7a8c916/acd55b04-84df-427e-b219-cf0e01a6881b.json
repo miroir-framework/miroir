@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "entityDefinition": {
-        "extractorTemplateType": "extractorForObjectByDirectReference",
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "applicationSection": "model",
         "parentName": "EntityDefinition",
         "parentUuid": {

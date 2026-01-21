@@ -13314,7 +13314,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Label"
               }
             }
@@ -13324,7 +13323,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 2,
                 "defaultLabel": "SelfApplication Section"
               }
             },
@@ -13339,17 +13337,14 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 3,
                 "defaultLabel": "Parent Name"
               }
             }
           },
           "parentUuid": {
             "type": "uuid",
-            "discriminator": "transformerType",
             "tag": {
               "value": {
-                "id": 4,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
                   "targetEntityApplicationSection": "model",
@@ -13373,7 +13368,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
             "definition": "combinerForObjectByRelation"
           },
@@ -13411,7 +13406,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
             "definition": "extractorForObjectByDirectReference"
           },
@@ -13443,7 +13438,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorTemplateReturningObject": {
         "type": "union",
-        "discriminator": "extractorTemplateType",
+        "discriminator": "extractorOrCombinerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -13475,9 +13470,9 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "extractorTemplateForObjectListByEntity"
+            "definition": "extractorForObjectListByEntity"
           },
           "orderBy": {
             "type": "object",
@@ -13536,7 +13531,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
             "definition": "combinerByRelationReturningObjectList"
           },
@@ -13595,7 +13590,7 @@ export const miroirFundamentalJzodSchema = {
           "context": {}
         },
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
             "definition": "combinerByManyToManyRelationReturningObjectList"
           },
@@ -13645,7 +13640,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorTemplateReturningObjectList": {
         "type": "union",
-        "discriminator": "extractorTemplateType",
+        "discriminator": "extractorOrCombinerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -13698,7 +13693,7 @@ export const miroirFundamentalJzodSchema = {
       "extractorTemplateByExtractorCombiner": {
         "type": "object",
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
             "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
           },
@@ -13745,9 +13740,9 @@ export const miroirFundamentalJzodSchema = {
       "extractorTemplateByExtractorWrapperReturningObject": {
         "type": "object",
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "extractorTemplateByExtractorWrapperReturningObject"
+            "definition": "extractorByExtractorWrapperReturningObject"
           },
           "definition": {
             "type": "record",
@@ -13765,9 +13760,9 @@ export const miroirFundamentalJzodSchema = {
       "extractorTemplateByExtractorWrapperReturningList": {
         "type": "object",
         "definition": {
-          "extractorTemplateType": {
+          "extractorOrCombinerType": {
             "type": "literal",
-            "definition": "extractorTemplateByExtractorWrapperReturningList"
+            "definition": "extractorByExtractorWrapperReturningList"
           },
           "definition": {
             "type": "array",
@@ -13784,7 +13779,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorTemplateByExtractorWrapper": {
         "type": "union",
-        "discriminator": "extractorTemplateType",
+        "discriminator": "extractorOrCombinerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -13806,7 +13801,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "extractorOrCombinerTemplate": {
         "type": "union",
-        "discriminator": "extractorTemplateType",
+        "discriminator": "extractorOrCombinerType",
         "definition": [
           {
             "type": "schemaReference",
@@ -13851,7 +13846,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "literal"
               },
@@ -24837,7 +24832,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Label",
                 "isTemplate": true
               }
@@ -24849,7 +24843,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Label"
                   }
                 }
@@ -24868,7 +24861,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
-                "id": 2,
                 "defaultLabel": "SelfApplication Section",
                 "isTemplate": true
               }
@@ -24885,7 +24877,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 2,
                     "defaultLabel": "SelfApplication Section",
                     "isTemplate": true
                   }
@@ -24910,7 +24901,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 3,
                 "defaultLabel": "Parent Name",
                 "isTemplate": true
               }
@@ -24922,7 +24912,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 3,
                     "defaultLabel": "Parent Name"
                   }
                 }
@@ -24938,10 +24927,8 @@ export const miroirFundamentalJzodSchema = {
           },
           "parentUuid": {
             "type": "union",
-            "discriminator": "transformerType",
             "tag": {
               "value": {
-                "id": 4,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
                   "targetEntityApplicationSection": "model",
@@ -24951,13 +24938,12 @@ export const miroirFundamentalJzodSchema = {
                 "isTemplate": true
               }
             },
+            "discriminator": "transformerType",
             "definition": [
               {
                 "type": "uuid",
-                "discriminator": "transformerType",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
                       "targetEntityApplicationSection": "model",
@@ -37107,7 +37093,7 @@ export const miroirFundamentalJzodSchema = {
           "discriminator": [
             [
               "transformerType",
-              "extractorTemplateType",
+              "extractorOrCombinerType",
               "transformerType"
             ]
           ],
@@ -37460,7 +37446,7 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": [
           [
-            "extractorTemplateType",
+            "extractorOrCombinerType",
             "transformerType"
           ]
         ],
@@ -37503,7 +37489,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "literal"
               },
@@ -38943,7 +38929,7 @@ export const miroirFundamentalJzodSchema = {
                         "discriminator": [
                           [
                             "transformerType",
-                            "extractorTemplateType",
+                            "extractorOrCombinerType",
                             "transformerType"
                           ]
                         ],
@@ -39243,7 +39229,7 @@ export const miroirFundamentalJzodSchema = {
                         "discriminator": [
                           [
                             "transformerType",
-                            "extractorTemplateType",
+                            "extractorOrCombinerType",
                             "transformerType"
                           ]
                         ],
@@ -39828,7 +39814,7 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": [
           [
-            "extractorTemplateType",
+            "extractorOrCombinerType",
             "transformerType"
           ]
         ],
@@ -39880,7 +39866,7 @@ export const miroirFundamentalJzodSchema = {
               }
             ],
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorForObjectByDirectReference"
               },
@@ -39943,7 +39929,7 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": [
           [
-            "extractorTemplateType",
+            "extractorOrCombinerType",
             "transformerType"
           ]
         ],
@@ -40002,7 +39988,7 @@ export const miroirFundamentalJzodSchema = {
               }
             ],
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerForObjectByRelation"
               },
@@ -40057,7 +40043,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
               },
@@ -40441,7 +40427,7 @@ export const miroirFundamentalJzodSchema = {
                         "discriminator": [
                           [
                             "transformerType",
-                            "extractorTemplateType",
+                            "extractorOrCombinerType",
                             "transformerType"
                           ]
                         ],
@@ -40501,7 +40487,7 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": [
           [
-            "extractorTemplateType",
+            "extractorOrCombinerType",
             "transformerType"
           ]
         ],
@@ -40582,9 +40568,9 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorTemplateByExtractorWrapperReturningObject"
+                "definition": "extractorByExtractorWrapperReturningObject"
               },
               "definition": {
                 "type": "record",
@@ -40615,9 +40601,9 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorTemplateByExtractorWrapperReturningList"
+                "definition": "extractorByExtractorWrapperReturningList"
               },
               "definition": {
                 "type": "union",
@@ -40666,7 +40652,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Label",
                     "isTemplate": true
                   }
@@ -40678,7 +40663,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 1,
                         "defaultLabel": "Label"
                       }
                     }
@@ -40697,7 +40681,6 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 2,
                     "defaultLabel": "SelfApplication Section",
                     "isTemplate": true
                   }
@@ -40714,7 +40697,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 2,
                         "defaultLabel": "SelfApplication Section",
                         "isTemplate": true
                       }
@@ -40739,7 +40721,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 3,
                     "defaultLabel": "Parent Name",
                     "isTemplate": true
                   }
@@ -40751,7 +40732,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 3,
                         "defaultLabel": "Parent Name"
                       }
                     }
@@ -40767,10 +40747,8 @@ export const miroirFundamentalJzodSchema = {
               },
               "parentUuid": {
                 "type": "union",
-                "discriminator": "transformerType",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
                       "targetEntityApplicationSection": "model",
@@ -40780,13 +40758,12 @@ export const miroirFundamentalJzodSchema = {
                     "isTemplate": true
                   }
                 },
+                "discriminator": "transformerType",
                 "definition": [
                   {
                     "type": "uuid",
-                    "discriminator": "transformerType",
                     "tag": {
                       "value": {
-                        "id": 4,
                         "defaultLabel": "Parent Uuid",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
@@ -40833,9 +40810,9 @@ export const miroirFundamentalJzodSchema = {
               }
             ],
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorTemplateForObjectListByEntity"
+                "definition": "extractorForObjectListByEntity"
               },
               "orderBy": {
                 "optional": true,
@@ -41002,7 +40979,7 @@ export const miroirFundamentalJzodSchema = {
               }
             ],
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerByRelationReturningObjectList"
               },
@@ -41142,7 +41119,7 @@ export const miroirFundamentalJzodSchema = {
               }
             ],
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerByManyToManyRelationReturningObjectList"
               },
@@ -44225,7 +44202,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Label"
               }
             }
@@ -44235,7 +44211,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 2,
                 "defaultLabel": "SelfApplication Section",
                 "isTemplate": true
               }
@@ -44250,17 +44225,14 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 3,
                 "defaultLabel": "Parent Name"
               }
             }
           },
           "parentUuid": {
             "type": "uuid",
-            "discriminator": "transformerType",
             "tag": {
               "value": {
-                "id": 4,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
                   "targetEntityApplicationSection": "model",
@@ -53760,7 +53732,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 1,
                 "defaultLabel": "Label"
               }
             }
@@ -53770,7 +53741,6 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 2,
                 "defaultLabel": "SelfApplication Section",
                 "isTemplate": true
               }
@@ -53785,17 +53755,14 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 3,
                 "defaultLabel": "Parent Name"
               }
             }
           },
           "parentUuid": {
             "type": "uuid",
-            "discriminator": "transformerType",
             "tag": {
               "value": {
-                "id": 4,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
                   "targetEntityApplicationSection": "model",

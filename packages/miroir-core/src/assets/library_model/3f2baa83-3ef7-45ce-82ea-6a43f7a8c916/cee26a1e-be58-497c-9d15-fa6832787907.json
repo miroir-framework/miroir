@@ -10,7 +10,7 @@
     "reportParameters": {},
     "extractorTemplates": {
       "lendingHistoryItems": {
-        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "LendingHistoryItem",
         "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149"
       }

@@ -186,7 +186,6 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 1,
                     "defaultLabel": "Label"
                   }
                 }
@@ -196,7 +195,6 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 2,
                     "defaultLabel": "SelfApplication Section"
                   }
                 },
@@ -210,17 +208,14 @@
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 3,
                     "defaultLabel": "Parent Name"
                   }
                 }
               },
               "parentUuid": {
                 "type": "uuid",
-                "discriminator": "transformerType",
                 "tag": {
                   "value": {
-                    "id": 4,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
                       "targetEntityApplicationSection": "model",
@@ -242,7 +237,7 @@
               }
             },
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerForObjectByRelation"
               },
@@ -276,7 +271,7 @@
               }
             },
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorForObjectByDirectReference"
               },
@@ -306,7 +301,7 @@
           },
           "extractorTemplateReturningObject": {
             "type": "union",
-            "discriminator": "extractorTemplateType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -332,9 +327,9 @@
               }
             },
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorTemplateForObjectListByEntity"
+                "definition": "extractorForObjectListByEntity"
               },
               "orderBy": {
                 "type": "object",
@@ -387,7 +382,7 @@
               }
             },
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerByRelationReturningObjectList"
               },
@@ -439,7 +434,7 @@
               }
             },
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "combinerByManyToManyRelationReturningObjectList"
               },
@@ -484,7 +479,7 @@
           },
           "extractorTemplateReturningObjectList": {
             "type": "union",
-            "discriminator": "extractorTemplateType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -527,7 +522,7 @@
           "extractorTemplateByExtractorCombiner": {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
                 "definition": "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"
               },
@@ -571,9 +566,9 @@
           "extractorTemplateByExtractorWrapperReturningObject": {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorTemplateByExtractorWrapperReturningObject"
+                "definition": "extractorByExtractorWrapperReturningObject"
               },
               "definition": {
                 "type": "record",
@@ -589,9 +584,9 @@
           "extractorTemplateByExtractorWrapperReturningList": {
             "type": "object",
             "definition": {
-              "extractorTemplateType": {
+              "extractorOrCombinerType": {
                 "type": "literal",
-                "definition": "extractorTemplateByExtractorWrapperReturningList"
+                "definition": "extractorByExtractorWrapperReturningList"
               },
               "definition": {
                 "type": "array",
@@ -606,7 +601,7 @@
           },
           "extractorTemplateByExtractorWrapper": {
             "type": "union",
-            "discriminator": "extractorTemplateType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -624,7 +619,7 @@
           },
           "extractorOrCombinerTemplate": {
             "type": "union",
-            "discriminator": "extractorTemplateType",
+            "discriminator": "extractorOrCombinerType",
             "definition": [
               {
                 "type": "schemaReference",
@@ -659,7 +654,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "extractorTemplateType": {
+                  "extractorOrCombinerType": {
                     "type": "literal",
                     "definition": "literal"
                   },

@@ -360,7 +360,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   select: {
-                    extractorTemplateType: "extractorForObjectByDirectReference",
+                    extractorOrCombinerType: "extractorForObjectByDirectReference",
                     applicationSection: "model",
                     parentName: "Entity",
                     parentUuid: {
@@ -435,7 +435,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     entities: {
-                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: entityEntity.name,
                       parentUuid: {
@@ -492,7 +492,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     entities: {
-                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Entity",
                       parentUuid: {
@@ -562,7 +562,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     books: {
-                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
                       parentUuid: {
@@ -634,7 +634,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     books: {
-                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
                       parentUuid: {
@@ -698,7 +698,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     books: {
-                      extractorTemplateType: "extractorTemplateForObjectListByEntity",
+                      extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
                       parentUuid: {
@@ -786,7 +786,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
   //           extractorTemplates: {
   //             books: {
-  //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //               extractorOrCombinerType: "extractorForObjectListByEntity",
   //               applicationSection: applicationSection,
   //               parentName: "Book",
   //               parentUuid: {
@@ -896,7 +896,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   extractorTemplates: {
                     book: {
-                      extractorTemplateType: "extractorForObjectByDirectReference",
+                      extractorOrCombinerType: "extractorForObjectByDirectReference",
                       parentName: "Book",
                       parentUuid: {
                         transformerType: "returnValue",
@@ -912,7 +912,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   },
                   combinerTemplates: {
                     author: {
-                      extractorTemplateType: "combinerForObjectByRelation",
+                      extractorOrCombinerType: "combinerForObjectByRelation",
                       parentName: "Author",
                       parentUuid: {
                         transformerType: "returnValue",
@@ -928,7 +928,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       AttributeOfObjectToCompareToReferenceUuid: "author",
                     },
                     booksOfAuthor: {
-                      extractorTemplateType: "combinerByRelationReturningObjectList",
+                      extractorOrCombinerType: "combinerByRelationReturningObjectList",
                       parentName: "Book",
                       parentUuid: {
                         transformerType: "returnValue",

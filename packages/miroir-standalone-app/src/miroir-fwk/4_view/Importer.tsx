@@ -484,7 +484,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       definition: {
   //   //         extractorTemplates: {
   //   //           elementToDisplay: {
-  //   //             extractorTemplateType: "extractorForObjectByDirectReference",
+  //   //             extractorOrCombinerType: "extractorForObjectByDirectReference",
   //   //             parentName: {
   //   //               transformerType: "getFromParameters",
   //   //               referenceName: "createEntity_newEntityName",
@@ -633,7 +633,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //           contextResults: {},
   //   //           extractorTemplates: {
   //   //             menuList: {
-  //   //               extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //   //               extractorOrCombinerType: "extractorForObjectListByEntity",
   //   //               applicationSection: "model",
   //   //               parentName: "Menu",
   //   //               parentUuid: {
@@ -1005,7 +1005,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         definition: {
   //           extractorTemplates: {
   //             elementToDisplay: {
-  //               extractorTemplateType: "extractorForObjectByDirectReference",
+  //               extractorOrCombinerType: "extractorForObjectByDirectReference",
   //               parentName: {
   //                 transformerType: "getFromParameters",
   //                 referenceName: "splitEntity_newEntityName",
@@ -1037,7 +1037,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               },
   //             },
   //             fountainsOfMunicipality: {
-  //               extractorTemplateType: "combinerByRelationReturningObjectList",
+  //               extractorOrCombinerType: "combinerByRelationReturningObjectList",
   //               parentName: "Fountain",
   //               parentUuid: {
   //                 transformerType: "getFromParameters",
@@ -1295,7 +1295,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             contextResults: {},
   //             extractorTemplates: {
   //               menuUuidIndex: {
-  //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //                 extractorOrCombinerType: "extractorForObjectListByEntity",
   //                 applicationSection: "model",
   //                 parentName: "Menu",
   //                 parentUuid: {
@@ -1476,7 +1476,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //             extractorTemplates: {
   //               splittedEntityUuidIndex: {
   //                 // [splittedEntityName + "UuidIndex"]: {
-  //                 extractorTemplateType: "extractorTemplateForObjectListByEntity",
+  //                 extractorOrCombinerType: "extractorForObjectListByEntity",
   //                 applicationSection: "data",
   //                 parentName: {
   //                   transformerType: "getFromParameters",

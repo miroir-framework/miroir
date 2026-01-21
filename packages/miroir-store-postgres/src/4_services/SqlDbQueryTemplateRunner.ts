@@ -48,7 +48,7 @@ export class SqlDbExtractTemplateRunner {
   ) {
     this.logHeader = "SqlDbExtractTemplateRunner " + persistenceStoreController.getStoreName();
     const InMemoryImplementationExtractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap = {
-      extractorType: "async",
+      extractorOrCombinerType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(
         this.sqlDbExtractorRunner
       ),
@@ -69,7 +69,7 @@ export class SqlDbExtractTemplateRunner {
       runQueryTemplateWithExtractorCombinerTransformer: undefined as any,
     };
     const dbImplementationExtractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap = {
-      extractorType: "async",
+      extractorOrCombinerType: "async",
       extractEntityInstanceUuidIndex: this.sqlDbExtractorRunner.extractEntityInstanceUuidIndex.bind(
         this.sqlDbExtractorRunner
       ),
