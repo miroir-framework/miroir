@@ -19,7 +19,7 @@ import {
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
-import { ThemedOnScreenHelper } from '../Themes/BasicComponents.js';
+import { ThemedOnScreenHelper, ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -71,18 +71,21 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
         backgroundColor: "#f5f5f5",
       }}
     >
-      <div style={{ marginBottom: 12, fontWeight: 600, fontSize: "16px", color: "#1976d2" }}>
+      {/* <div style={{ marginBottom: 12, fontWeight: 600, fontSize: "16px", color: "#1976d2" }}>
         Report Editor
-      </div>
+      </div> */}
 
       {/* {reportDefinition.definition && ( */}
       {
         formikReportDefinition?.uuid !== defaultReport.uuid && (
-          <Accordion style={{ marginBottom: 12 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <ThemedProgressiveAccordion 
+            // style={{ marginBottom: 12 }
+            summary={`Report Editor`}
+          >
+            {/* <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <div style={{ fontWeight: 500 }}>Runtime Environment (Read-Only)</div>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails> */}
               {/* <ThemedOnScreenHelper
                 label={"InlineReportEditor: reportDefinitionDEFUNCT"}
                 data={reportDefinitionDEFUNCT}
@@ -121,8 +124,8 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 formikAlreadyAvailable={formikAlreadyAvailable}
                 initialInstanceValueDEFUNCT={formikReportDefinition} // DEFUNCT when formikAlreadyAvailable=true
               />
-            </AccordionDetails>
-          </Accordion>
+            {/* </AccordionDetails> */}
+          </ThemedProgressiveAccordion>
         )
       }
       {formikReportDefinition?.uuid === defaultReport.uuid && (
