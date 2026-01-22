@@ -174,7 +174,7 @@ export const defaultTransformers = { // TODO: should it be exported? Should'nt i
   transformerForBuild_list_listMapperToList_apply,
   transformer_dynamicObjectAccess_apply,
   // ##############################
-  handleTransformer_menu_AddItem: handleTransformer_menu_AddItem,
+  handleTransformer_menu_AddItem,
   // ##############################
   handleTransformer_getActiveDeployment,
 };
@@ -209,7 +209,9 @@ export function getDefaultValueForJzodSchemaWithResolution(
     transformerParams,
     contextResults,
     reduxDeploymentsState,
-    deploymentUuid,
+    // application,
+    // applicationDeploymentMap,
+    // deploymentUuid,
     "defaultValue" // Specify this is for default value generation
   );
 

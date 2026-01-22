@@ -1,30 +1,26 @@
-import { useMemo } from "react";
 
 
 import {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   type MiroirModelEnvironment
 } from "miroir-core";
 
-import { JzodElement, MlSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { JzodElement } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
-import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMeasure";
+import { useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
 import { JzodElementEditor } from "./JzodElementEditor";
-import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { ThemedOnScreenHelper } from "../Themes";
-import { useCurrentModelEnvironment } from "../../ReduxHooks";
+import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -104,6 +100,12 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   return (
     <div key={rootLessListKey}>
       {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
+      <ThemedOnScreenDebug
+        label={`JzodAnyEditor Render Count for ${rootLessListKey} ${JzodAnyEditorRenderCount}`}
+        data={(typeCheckKeyMap??{})[rootLessListKey]}
+        initiallyUnfolded={false}
+        useCodeBlock={true}
+      />
       <div>
         <ChangeValueTypeSelect
           onChange={(type: JzodElement) => {
@@ -147,7 +149,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           currentApplicationSection={currentApplicationSection}
           resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
           typeCheckKeyMap={typeCheckKeyMap}
-          labelElement={<></>}
+          labelElement={<>{name}</>}
           foreignKeyObjects={foreignKeyObjects}
           insideAny={true}
           indentLevel={0}

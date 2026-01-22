@@ -70,6 +70,13 @@
             "menuItemScope": "model"
           },
           {
+            "label": "Library Runners",
+            "section": "model",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
+            "icon": "directions_run"
+          },
+          {
             "label": "Library Books",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",

@@ -11,11 +11,6 @@
         "actionParameters": {
           "actionType": {
             "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
             "definition": "lendDocument"
           },
           "actionLabel": {
@@ -103,7 +98,7 @@
             "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "payload": {
-              "application": "NOT_USED_HERE",
+              "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
               "definition": [
                 {
                   "actionType": "createInstance",

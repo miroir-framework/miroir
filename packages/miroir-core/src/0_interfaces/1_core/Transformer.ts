@@ -1,3 +1,4 @@
+import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
 import type { Step, ResolveBuildTransformersTo } from "../../2_domain/Transformers";
 import type { Domain2QueryReturnType } from "../2_domain/DomainElement";
 import type { ReduxDeploymentsState } from "../2_domain/ReduxDeploymentsStateInterface";
@@ -36,6 +37,8 @@ export type ITransformerHandler<
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  application?: Uuid,
+  applicationDeploymentMap?: ApplicationDeploymentMap,
   deploymentUuid?: Uuid,
 ) => Domain2QueryReturnType<any>;
 

@@ -250,17 +250,17 @@ export const ConceptPage: React.FC<any> = (
         uuid: {
           type: "string",
           validations: [{ type: "uuid" }],
-          tag: { value: { id: 1, defaultLabel: "Uuid", editable: false} },
+          tag: { value: { id: 1, defaultLabel: "Uuid", display: { editable: false } } },
         },
         parentName: {
           type: "string",
           optional: true,
-          tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+          tag: { value: { id: 1, defaultLabel: "Uuid", display: { editable: false } } },
         },
         parentUuid: {
           type: "string",
           validations: [{ type: "uuid" }],
-          tag: { value: { id: 1, defaultLabel: "parentUuid", editable: false } },
+          tag: { value: { id: 1, defaultLabel: "parentUuid", display: { editable: false } } },
         },
       },
       // ...(
@@ -292,11 +292,6 @@ export const ConceptPage: React.FC<any> = (
           [], // currentValuePath
           [], // currentTypePath
           currentMiroirModelEnvironment,
-          // {
-          //   miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-          //   currentModel,
-          //   miroirMetaModel: currentMiroirModel,
-          // },
           emptyObject
         );
 

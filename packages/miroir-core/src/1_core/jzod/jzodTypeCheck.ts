@@ -40,6 +40,7 @@ import { getObjectUnionDiscriminatorValuesFromResolvedSchema } from "./getObject
 import { jzodObjectFlatten } from "./jzodObjectFlatten";
 import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
 import { TransformerFailure } from "../../0_interfaces/2_domain/DomainElement";
+import type { ApplicationDeploymentMap } from "../Deployment";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -775,8 +776,7 @@ export function jzodTypeCheck(
   let effectiveSchemaOrError: JzodElement | ResolveConditionalSchemaError =
     currentDefaultValue &&
     currentValuePath &&
-    reduxDeploymentsState &&
-    deploymentUuid ?
+    reduxDeploymentsState?
       resolveConditionalSchema(
         "build", // TODO: can typeCheck be used in "runtime"? What does it mean in this context?
         [], // transformerPath
@@ -787,16 +787,15 @@ export function jzodTypeCheck(
         {}, // queryParams
         {}, // contextResults
         reduxDeploymentsState,
-        deploymentUuid,
         'typeCheck' // Specify this is for type checking
       ) : mlSchema;
 
-  // log.info(
-  //   "jzodTypeCheck",
-  //   currentValuePath.join("."),
-  //   "effectiveSchemaOrError",
-  //   effectiveSchemaOrError,
-  // );
+  log.info(
+    "jzodTypeCheck",
+    currentValuePath.join("."),
+    "effectiveSchemaOrError",
+    effectiveSchemaOrError,
+  );
   if ('error' in effectiveSchemaOrError) {
     return {
       status: "error",
@@ -929,6 +928,21 @@ export function jzodTypeCheck(
           );
           return [e[0], resultSchemaTmp];
         } else {
+          if (effectiveRawSchema.nonStrict === true) {
+            return [
+              e[0],
+              {
+                status: "ok",
+                valuePath: [...currentValuePath, e[0]],
+                typePath: currentTypePath,
+                rawSchema: effectiveRawSchema,
+                resolvedSchema: {
+                  type: "any",
+                } as JzodElement,
+                // resolvedSchema: valueToJzod(e[1]) as JzodElement,
+              },
+            ];
+          }
           return [
             e[0],
             {
@@ -2100,9 +2114,6 @@ export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
     valueObject,
     currentValuePath,
     currentTypePath,
-    // miroirFundamentalJzodSchema,
-    // currentModel,
-    // miroirMetaModel,
     defaultMiroirModelEnvironment, // TODO: use proper model environment
     relativeReferenceJzodContext,
     currentDefaultValue,

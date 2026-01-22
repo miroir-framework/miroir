@@ -20,6 +20,8 @@ import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transform
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../../2_domain/TransformersForRuntime";
 import { transformer } from "zod";
 import type { MiroirActivityTrackerInterface } from "../../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import type { ApplicationDeploymentMap } from "../Deployment";
+import { jzodElement } from "@miroir-framework/jzod-ts";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -49,7 +51,9 @@ export function resolveConditionalSchemaTransformer(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
-  deploymentUuid?: Uuid,
+  // application?: Uuid,
+  // applicationDeploymentMap?: ApplicationDeploymentMap,
+  // deploymentUuid?: Uuid,
 ): ResolveConditionalSchemaResult {
   return resolveConditionalSchema(
     // activityTracker,
@@ -62,7 +66,9 @@ export function resolveConditionalSchemaTransformer(
     queryParams,
     contextResults, 
     contextResults?.reduxDeploymentsState, //transformer?.reduxDeploymentsState, // Use reduxDeploymentsState from contextResults
-    transformer?.deploymentUuid, // Use deploymentUuid from contextResults
+    // application,
+    // applicationDeploymentMap,
+    // transformer?.deploymentUuid, // Use deploymentUuid from contextResults
     transformer.context
   );
 }
@@ -78,7 +84,9 @@ export function resolveConditionalSchema(
   queryParams: Record<string, any>, // includes queryParams
   contextResults?: Record<string, any>,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
-  deploymentUuid: Uuid | undefined = undefined,
+  // application: Uuid | undefined = undefined,
+  // applicationDeploymentMap: ApplicationDeploymentMap | undefined = undefined,
+  // deploymentUuid: Uuid | undefined = undefined,
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
 ): ResolveConditionalSchemaResult {
   let effectiveSchema: JzodElement = mlSchema;
@@ -113,9 +121,10 @@ export function resolveConditionalSchema(
         return { error: 'NO_REDUX_DEPLOYMENTS_STATE' };
       }
 
-      if (!deploymentUuid) {
-        return { error: 'NO_DEPLOYMENT_UUID' };
-      }
+      // const currentDeploymentUuid = deploymentUuid || (applicationDeploymentMap && applicationDeploymentMap[application || '']);
+      // if (!currentDeploymentUuid) {
+      //   return { error: 'NO_DEPLOYMENT_UUID' };
+      // }
       // Support both legacy single path and new dual path configurations
       let pathToUse: string;
       // Type assertion to handle dual path configuration extensions
@@ -196,10 +205,16 @@ export function resolveConditionalSchema(
       if (!parentEntityDefinition) {
         return {
           error: 'PARENT_NOT_FOUND',
-          details: `No entity definition found for parentUuid ${parentUuidStr} in deployment ${deploymentUuid}`
+          details: `No entity definition found for parentUuid ${parentUuidStr} in deployment ${modelEnvironment.deploymentUuid}`
         };
       }
       effectiveSchema = parentEntityDefinition.mlSchema;
+    }
+    if (ifThenElseConfig.mmlsReference) {
+      effectiveSchema  = {
+        type: 'schemaReference',
+        definition: ifThenElseConfig.mmlsReference
+      };
     }
     log.info(
       "resolveConditionalSchema return effectiveSchema",
