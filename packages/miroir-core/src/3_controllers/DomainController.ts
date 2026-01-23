@@ -1666,7 +1666,8 @@ export class DomainController implements DomainControllerInterface {
       domainAction.actionType,
       (domainAction as any).actionLabel,
       (async () => {
-        if ((domainAction as any)?.endpoint == libraryEndpointUuid) {
+        // if ((domainAction as any)?.endpoint == libraryEndpointUuid) {
+        if ((domainAction as any)?.application == selfApplicationLibrary.uuid) {
           return this.handleApplicationAction(
             domainAction,
             applicationDeploymentMap,

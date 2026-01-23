@@ -56,30 +56,30 @@ const pageLabel = "Admin";
 // ################################################################################################
 // Runner configurations
 const runnerConfigs = [
+  // // {
+  // //   title: "Endpoint Action Caller",
+  // //   component: EndpointActionCaller,
+  // // },
   // {
-  //   title: "Endpoint Action Caller",
-  //   component: EndpointActionCaller,
+  //   title: "Create Entity",
+  //   component: CreateEntityRunner,
   // },
-  {
-    title: "Create Entity",
-    component: CreateEntityRunner,
-  },
-  {
-    title: "Drop Entity",
-    component: DeleteEntityRunner,
-  },
-  {
-    title: "Create Application & Deployment",
-    component: CreateApplicationRunner,
-  },
-  {
-    title: "Drop Application & Deployment",
-    component: DropApplicationRunner,
-  },
   // {
-  //   title: "Import Entity From Spreadsheet",
-  //   component: ImportEntityFromSpreadsheetRunner,
+  //   title: "Drop Entity",
+  //   component: DeleteEntityRunner,
   // },
+  // {
+  //   title: "Create Application & Deployment",
+  //   component: CreateApplicationRunner,
+  // },
+  // {
+  //   title: "Drop Application & Deployment",
+  //   component: DropApplicationRunner,
+  // },
+  // // {
+  // //   title: "Import Entity From Spreadsheet",
+  // //   component: ImportEntityFromSpreadsheetRunner,
+  // // },
   {
     title: "Lend Document",
     component: LibraryRunner_LendDocument,
@@ -112,8 +112,8 @@ export const RunnersPage: React.FC<any> = (
   });
   
   // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
-  const applicationUuid = selfApplicationLibrary.uuid;
-  const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+  // const applicationUuid = selfApplicationLibrary.uuid;
+  // const deploymentUuid = adminConfigurationDeploymentLibrary.uuid;
   const context = useMiroirContextService();
   const applicationDeploymentMap = context.applicationDeploymentMap;
 

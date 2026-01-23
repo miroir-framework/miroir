@@ -50,7 +50,10 @@
                       "transformerType": "getFromParameters",
                       "interpolation": "build",
                       "safe": true,
-                      "referencePath": ["dropEntity", "application"]
+                      "referencePath": [
+                        "dropEntity",
+                        "application"
+                      ]
                     },
                     "right": {
                       "transformerType": "returnValue",
@@ -61,7 +64,10 @@
                       "transformerType": "getFromParameters",
                       "interpolation": "build",
                       "safe": true,
-                      "referencePath": ["dropEntity", "application"]
+                      "referencePath": [
+                        "dropEntity",
+                        "application"
+                      ]
                     },
                     "else": {
                       "transformerType": "returnValue",
@@ -85,6 +91,7 @@
       "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       "payload": {
+        "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
         "definition": [
           {
             "actionType": "compositeRunBoxedExtractorOrQueryAction",
@@ -136,7 +143,10 @@
                 "application": {
                   "transformerType": "getFromContext",
                   "interpolation": "runtime",
-                  "referencePath": ["dropEntity", "application"]
+                  "referencePath": [
+                    "dropEntity",
+                    "application"
+                  ]
                 },
                 "applicationSection": "model",
                 "query": {
@@ -144,7 +154,10 @@
                   "application": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["dropEntity", "application"]
+                    "referencePath": [
+                      "dropEntity",
+                      "application"
+                    ]
                   },
                   "pageParams": {},
                   "queryParams": {},
@@ -179,17 +192,28 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["dropEntity", "application"]
+                "referencePath": [
+                  "dropEntity",
+                  "application"
+                ]
               },
               "entityUuid": {
                 "transformerType": "getFromParameters",
                 "interpolation": "build",
-                "referencePath": ["dropEntity", "entity"]
+                "referencePath": [
+                  "dropEntity",
+                  "entity"
+                ]
               },
               "entityDefinitionUuid": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["entityDefinitionInfo", "entityDefinitions", "0", "uuid"]
+                "referencePath": [
+                  "entityDefinitionInfo",
+                  "entityDefinitions",
+                  "0",
+                  "uuid"
+                ]
               }
             }
           },
@@ -202,7 +226,10 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["dropEntity", "application"]
+                "referencePath": [
+                  "dropEntity",
+                  "application"
+                ]
               }
             }
           }

@@ -790,12 +790,12 @@ export function jzodTypeCheck(
         'typeCheck' // Specify this is for type checking
       ) : mlSchema;
 
-  log.info(
-    "jzodTypeCheck",
-    currentValuePath.join("."),
-    "effectiveSchemaOrError",
-    effectiveSchemaOrError,
-  );
+  // log.info(
+  //   "jzodTypeCheck",
+  //   currentValuePath.join("."),
+  //   "effectiveSchemaOrError",
+  //   effectiveSchemaOrError,
+  // );
   if ('error' in effectiveSchemaOrError) {
     return {
       status: "error",
@@ -1141,6 +1141,7 @@ export function jzodTypeCheck(
           // TODO: the following line may introduce some non-determinism, in the case many records actually match the "find" predicate! BAD!
           const resultJzodSchema = recursivelyUnfoldedUnionSchema.result.find(
             (a) =>
+              a.type == "any" ||
               a.type == "string" ||
               a.type == "uuid" ||
               (a.type == "literal" && a.definition == valueObject) ||

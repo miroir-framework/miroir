@@ -167,10 +167,10 @@ export function useQueryTemplateResults(
       [deploymentEntityStateSelectorMap, reportDataQuery]
     );
 
-  // log.info(
-  //   "useQueryTemplateResults deploymentEntityStateFetchQueryParams",
-  //   deploymentEntityStateFetchQueryParams
-  // );
+  log.info(
+    "useQueryTemplateResults deploymentEntityStateFetchQueryParams",
+    deploymentEntityStateFetchQueryParams
+  );
 
   // log.info("reportDataQuery", reportDataQuery);
   const reportData: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> =
@@ -179,7 +179,7 @@ export function useQueryTemplateResults(
       deploymentEntityStateFetchQueryParams,
       applicationDeploymentMap
     );
-  // log.info("useQueryTemplateResults reportData", reportData);
+  log.info("useQueryTemplateResults reportData", reportData);
   return {reportData, resolvedQuery: reportDataQuery};
 };
 
@@ -404,37 +404,30 @@ export function useRunner(
 
   const runnerQuery:
     | BoxedQueryWithExtractorCombinerTransformer
-    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    // | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
       deploymentUuid && deploymentUuid !== noValue.uuid
         ? ({
-            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
             application,
-            applicationDeploymentMap,
-            deploymentUuid: deploymentUuid,
             pageParams: {},
             queryParams: {},
             contextResults: {},
-            extractorTemplates: {
+            extractors: {
               runners: {
                 label: "runners of the given application",
-                extractorOrCombinerType: "extractorForObjectListByEntity",
+                extractorOrCombinerType: "extractorForObjectByDirectReference",
                 parentUuid: entityRunner.uuid,
                 parentName: entityRunner.name,
                 applicationSection: runnerApplicationSection,
-                filter: {
-                  attributeName: "uuid",
-                  value: runnerUuid
-                },
+                instanceUuid: runnerUuid
               },
             },
-          } as BoxedQueryTemplateWithExtractorCombinerTransformer)
+          } as BoxedQueryWithExtractorCombinerTransformer)
         : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: "",
-            applicationDeploymentMap: {},
-            deploymentUuid: "",
             pageParams: {},
             queryParams: {},
             contextResults: {},
@@ -443,18 +436,21 @@ export function useRunner(
     [deploymentUuid, runnerApplicationSection, runnerUuid]
   );
 
+  log.info("useRunner runnerQuery", runnerQuery);
   const runnerQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useQueryTemplateResults({} as any, applicationDeploymentMap, runnerQuery);
 
+  log.info("useRunner runnerQueryResults", runnerQueryResults);
   if (runnerQueryResults instanceof Domain2ElementFailed) {
     return runnerQueryResults;
   }
   const currentFetchedRunner: Runner | undefined = useMemo(() => {
-    return runnerQueryResults?.reportData?.runners &&
-      runnerQueryResults?.reportData?.runners.length == 1
-      ? runnerQueryResults?.reportData?.runners[0]
-      : undefined;
+    return runnerQueryResults?.reportData?.runners;
+    //  &&
+    //   runnerQueryResults?.reportData?.runners.length == 1
+    //   ? runnerQueryResults?.reportData?.runners[0]
+    //   : undefined;
   }, [runnerQueryResults]);
 
   return currentFetchedRunner;

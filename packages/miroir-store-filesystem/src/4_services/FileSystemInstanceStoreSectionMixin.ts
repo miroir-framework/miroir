@@ -20,7 +20,8 @@ import {
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   Action2EntityInstanceReturnType,
   Action2Error,
-  defaultMetaModelEnvironment
+  defaultMetaModelEnvironment,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -46,7 +47,10 @@ export function extractName(fullName: string) {
 export const MixedFileSystemInstanceStoreSection = FileSystemInstanceStoreSectionMixin(FileSystemStoreSection);
 
 export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
-  return class MixedIndexedDbInstanceStoreSection extends Base implements PersistenceStoreInstanceSectionAbstractInterface {
+  return class MixedIndexedDbInstanceStoreSection
+    extends Base
+    implements PersistenceStoreInstanceSectionAbstractInterface
+  {
     public extractorTemplateRunner: ExtractorTemplateRunnerInMemory;
     public extractorRunner: ExtractorRunnerInMemory;
 
@@ -61,94 +65,143 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     ) {
       super(...args);
       this.extractorRunner = new ExtractorRunnerInMemory(this);
-      this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(this,this.extractorRunner); // TODO: extractorRunner has its own extractorTemplateRunner, this means 2 instances of ExtractorTemplateRunnerInMemory are created here
+      this.extractorTemplateRunner = new ExtractorTemplateRunnerInMemory(
+        this,
+        this.extractorRunner,
+      ); // TODO: extractorRunner has its own extractorTemplateRunner, this means 2 instances of ExtractorTemplateRunnerInMemory are created here
     }
 
     // #############################################################################################
-    async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
-      log.info(this.logHeader,'handleBoxedExtractorAction', 'query',query);
-      
+    async handleBoxedExtractorAction(
+      query: RunBoxedExtractorAction,
+      applicationDeploymentMap: ApplicationDeploymentMap,
+    ): Promise<Action2ReturnType> {
+      log.info(this.logHeader, "handleBoxedExtractorAction", "query", query);
+
       const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(
         query,
-        query.payload.query.applicationDeploymentMap,
-        defaultMetaModelEnvironment
+        applicationDeploymentMap,
+        defaultMetaModelEnvironment,
       );
 
-      log.info(this.logHeader,'handleBoxedExtractorAction DONE','query',query, "result", result);
+      log.info(this.logHeader, "handleBoxedExtractorAction DONE", "query", query, "result", result);
       return result;
     }
-    
+
     // #############################################################################################
-    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
-      log.info(this.logHeader,'handleBoxedQueryAction', 'query',query);
-      
+    async handleBoxedQueryAction(
+      query: RunBoxedQueryAction,
+      applicationDeploymentMap: ApplicationDeploymentMap,
+    ): Promise<Action2ReturnType> {
+      log.info(this.logHeader, "handleBoxedQueryAction", "query", query);
+
       const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(
         query,
-        query.payload.query.applicationDeploymentMap,
-        defaultMetaModelEnvironment
+        applicationDeploymentMap,
+        defaultMetaModelEnvironment,
       );
 
-      log.info(this.logHeader,'handleBoxedQueryAction DONE','query',query, "result", result);
+      log.info(this.logHeader, "handleBoxedQueryAction DONE", "query", query, "result", result);
       return result;
     }
-    
+
     // #############################################################################################
-    async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
-      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
-      
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(
-        query,
-        query.payload.query.applicationDeploymentMap,
-        defaultMetaModelEnvironment
-      );
+    async handleQueryTemplateActionForServerONLY(
+      query: RunBoxedQueryTemplateAction,
+      applicationDeploymentMap: ApplicationDeploymentMap,
+    ): Promise<Action2ReturnType> {
+      log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", query);
 
-      log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
+      const result: Action2ReturnType =
+        await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(
+          query,
+          applicationDeploymentMap,
+          defaultMetaModelEnvironment,
+        );
+
+      log.info(
+        this.logHeader,
+        "handleQueryTemplateActionForServerONLY",
+        "query",
+        query,
+        "result",
+        result,
+      );
       return result;
     }
-    
+
     // #############################################################################################
-    async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
-      log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY', 'query',query);
-      
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(
-        query,
-        query.payload.query.applicationDeploymentMap,
-        defaultMetaModelEnvironment
-      );
+    async handleBoxedExtractorTemplateActionForServerONLY(
+      query: RunBoxedExtractorTemplateAction,
+      applicationDeploymentMap: ApplicationDeploymentMap,
+    ): Promise<Action2ReturnType> {
+      log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", query);
 
-      log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
+      const result: Action2ReturnType =
+        await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(
+          query,
+          applicationDeploymentMap,
+          defaultMetaModelEnvironment,
+        );
+
+      log.info(
+        this.logHeader,
+        "handleBoxedExtractorTemplateActionForServerONLY",
+        "query",
+        query,
+        "result",
+        result,
+      );
       return result;
     }
-    
+
     // #############################################################################################
-    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
-      log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY', 'query',query);
-      
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+      query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+      applicationDeploymentMap: ApplicationDeploymentMap,
+    ): Promise<Action2ReturnType> {
+      log.info(
+        this.logHeader,
+        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
+        "query",
         query,
-        query.payload.query.applicationDeploymentMap,
-        defaultMetaModelEnvironment
       );
 
-      log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
+      const result: Action2ReturnType =
+        await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+          query,
+          applicationDeploymentMap,
+          defaultMetaModelEnvironment,
+        );
+
+      log.info(
+        this.logHeader,
+        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
+        "query",
+        query,
+        "result",
+        result,
+      );
       return result;
     }
-    
+
     // #############################################################################################
     getInstance(entityUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType> {
       const entityInstancePath = path.join(this.directory, entityUuid, fullName(uuid));
       try {
-        const fileContents = fs.readFileSync(entityInstancePath, { encoding: "utf-8"}).toString();
+        const fileContents = fs.readFileSync(entityInstancePath, { encoding: "utf-8" }).toString();
         return Promise.resolve({
           status: "ok",
           // returnedDomainElement: { elementType: "instance", elementValue: JSON.parse(fileContents) },
           returnedDomainElement: JSON.parse(fileContents),
         });
       } catch (error) {
-        return Promise.resolve(new Action2Error(
-          "FailedToGetInstance",
-          `failed to get instance ${uuid} of entity ${entityUuid}`
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToGetInstance",
+            `failed to get instance ${uuid} of entity ${entityUuid}`,
+          ),
+        );
       }
     }
 
@@ -162,7 +215,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         "applicationSection",
         this.applicationSection,
         "directory",
-        this.directory
+        this.directory,
       );
 
       const entityInstancesPath = path.join(this.directory, entityUuid);
@@ -175,12 +228,14 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           "applicationSection",
           this.applicationSection,
           "could not find path",
-          entityInstancesPath
+          entityInstancesPath,
         );
-        return Promise.resolve(new Action2Error(
-          "FailedToGetInstances",
-          `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToGetInstances",
+            `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`,
+          ),
+        );
       }
 
       try {
@@ -195,13 +250,15 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           "directory",
           this.directory,
           "found entity instances",
-          entityInstancesUuid
+          entityInstancesUuid,
         );
         const entityInstances: EntityInstanceCollection = {
           parentUuid: entityUuid,
           applicationSection: this.applicationSection,
           instances: entityInstancesUuid.map((e) =>
-            JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e),{encoding: "utf-8"}).toString())
+            JSON.parse(
+              fs.readFileSync(path.join(entityInstancesPath, e), { encoding: "utf-8" }).toString(),
+            ),
           ),
         };
         log.debug(
@@ -214,17 +271,19 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           "directory",
           this.directory,
           "found entity instances",
-          entityInstances
+          entityInstances,
         );
         return Promise.resolve({
           status: "ok",
-          returnedDomainElement: entityInstances
+          returnedDomainElement: entityInstances,
         });
       } catch (error) {
-        return Promise.resolve(new Action2Error(
-          "FailedToGetInstances",
-          `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToGetInstances",
+            `FileSystemInstanceStore getInstances entityUuid ${entityUuid} failed to read directory ${entityInstancesPath}`,
+          ),
+        );
       }
     }
     // #########################################################################################
@@ -234,9 +293,12 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         log.info(
           this.logHeader,
           "upsertInstance called",
-          "entityUuid", entityUuid,
-          "instance", instance,
-          "filePath", filePath
+          "entityUuid",
+          entityUuid,
+          "instance",
+          instance,
+          "filePath",
+          filePath,
         );
         fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2), { encoding: "utf-8" });
         return Promise.resolve(ACTION_OK);
@@ -244,19 +306,27 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         log.error(
           this.logHeader,
           "upsertInstance failed",
-          "entityUuid", entityUuid,
-          "instance", instance,
-          "error", error
+          "entityUuid",
+          entityUuid,
+          "instance",
+          instance,
+          "error",
+          error,
         );
-        return Promise.resolve(new Action2Error(
-          "FailedToUpdateInstance",
-          `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToUpdateInstance",
+            `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`,
+          ),
+        );
       }
     }
 
     // #############################################################################################
-    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<Action2VoidReturnType> {
+    async deleteInstances(
+      parentUuid: string,
+      instances: EntityInstance[],
+    ): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       // TODO: delete in parallel, not sequentially
       for (const o of instances) {
@@ -282,25 +352,29 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
             "entityUuid",
             entityUuid,
             "instance",
-            instance
+            instance,
           );
           const entityPath = path.join(this.directory, entityUuid);
           if (!fs.existsSync(filePath)) {
-            return Promise.resolve(new Action2Error(
-              "FailedToDeleteInstance",
-              // `could not find file to delete: ${filePath} entityUuid ${entityUuid} instance ${instance}`
-              `could not find entity ${entityUuid}`
-            ));
+            return Promise.resolve(
+              new Action2Error(
+                "FailedToDeleteInstance",
+                // `could not find file to delete: ${filePath} entityUuid ${entityUuid} instance ${instance}`
+                `could not find entity ${entityUuid}`,
+              ),
+            );
           }
         }
         return Promise.resolve(ACTION_OK);
       } catch (error) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeleteInstance",
-          `failed to delete instance ${instance.uuid} of entity ${entityUuid}`
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeleteInstance",
+            `failed to delete instance ${instance.uuid} of entity ${entityUuid}`,
+          ),
+        );
       }
     }
-  // };
+    // };
   };
 }

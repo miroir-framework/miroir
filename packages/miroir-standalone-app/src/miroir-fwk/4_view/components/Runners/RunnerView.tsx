@@ -65,6 +65,10 @@ export function StoredRunnerView(props: {
     runnerDeploymentUuid,
     props.runnerUuid
   );
+  log.info(
+    "StoredRunnerView runnerDefinitionFromLocalCache",
+    runnerDefinitionFromLocalCache
+  );
   // const runnerLabel: string = `Stored Runner ${props.runnerUuid} for Application ${props.applicationUuid}`;
   const storedRunner: Runner | undefined =
     runnerDefinitionFromLocalCache instanceof Domain2ElementFailed? undefined : runnerDefinitionFromLocalCache;

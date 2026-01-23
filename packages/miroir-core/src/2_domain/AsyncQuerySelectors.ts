@@ -457,43 +457,72 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
  * 
  * 
  * @param state: StateType
- * @param foreignKeyParams 
+ * @param query 
  * @returns 
  */
 
 export const asyncRunQuery = async (
-  foreignKeyParams: AsyncQueryRunnerParams,
+  query: AsyncQueryRunnerParams,
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Domain2QueryReturnType<any>> => {
 
-  // log.info("########## asyncRunQuery begin, query", foreignKeyParams);
+  // log.info(
+  //   "########## asyncRunQuery begin, query",
+  //   JSON.stringify(query, null, 2),
+  //   "applicationDeploymentMap",
+  //   JSON.stringify(applicationDeploymentMap, null, 2),
+  // );
 
-  const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
+  if (!query?.extractor) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureMessage: "No extractor found on query",
+      query: JSON.stringify(query),
+    });
+  }
+  if (!query?.extractor?.application) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureMessage: "No application found on query.extractor",
+      query: JSON.stringify(query),
+    });
+  }
+  if (!applicationDeploymentMap[query.extractor.application]) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      failureMessage:
+        "No deployment found for application " + query.extractor.application +
+        " in applicationDeploymentMap " +
+        JSON.stringify(applicationDeploymentMap),
+      query: JSON.stringify(query),
+    });
+  }
+  // const deploymentUuid = applicationDeploymentMap[query.extractor.application];
 
   const context: Record<string, any> = {
-    ...foreignKeyParams.extractor.contextResults,
+    ...query.extractor.contextResults,
   };
   // log.info("########## DomainSelector asyncRunQuery will use context", context);
   const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap =
-    foreignKeyParams?.extractorRunnerMap ?? emptyAsyncSelectorMap;
+    query?.extractorRunnerMap ?? emptyAsyncSelectorMap;
 
   // Sequentially execute each extractor and update the context
-  for (const [key, extractor] of Object.entries(foreignKeyParams.extractor.extractors ?? {})) {
+  for (const [key, extractor] of Object.entries(query.extractor.extractors ?? {})) {
     const result = await asyncInnerSelectElementFromQuery(
       context,
-      foreignKeyParams.extractor.pageParams,
+      query.extractor.pageParams,
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...foreignKeyParams.extractor.pageParams,
-        ...foreignKeyParams.extractor.queryParams,
+        ...query.extractor.pageParams,
+        ...query.extractor.queryParams,
       },
       localSelectorMap as any,
-      foreignKeyParams.extractor.application,
+      query.extractor.application,
       applicationDeploymentMap,
       // deploymentUuid,
-      foreignKeyParams.extractor.extractors ?? {} as any,
+      query.extractor.extractors ?? {} as any,
       extractor
     );
     log.info("asyncRunQuery for extractor", key, "result", JSON.stringify(result, null, 2));
@@ -509,21 +538,21 @@ export const asyncRunQuery = async (
       errorStack: extractorFailure as any,
     });
   }
-  for (const [key, combiner] of Object.entries(foreignKeyParams.extractor.combiners ?? {})) {
+  for (const [key, combiner] of Object.entries(query.extractor.combiners ?? {})) {
     const result = await asyncInnerSelectElementFromQuery(
       context,
-      foreignKeyParams.extractor.pageParams,
+      query.extractor.pageParams,
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...foreignKeyParams.extractor.pageParams,
-        ...foreignKeyParams.extractor.queryParams,
+        ...query.extractor.pageParams,
+        ...query.extractor.queryParams,
       },
       localSelectorMap as any,
-      foreignKeyParams.extractor.application,
+      query.extractor.application,
       applicationDeploymentMap,
       // deploymentUuid,
-      foreignKeyParams.extractor.extractors ?? ({} as any),
+      query.extractor.extractors ?? ({} as any),
       combiner
     );
     log.info("asyncRunQuery for combiner", key, "result", JSON.stringify(result, null, 2));
@@ -531,17 +560,17 @@ export const asyncRunQuery = async (
   }
 
 
-  for (const transformer of Object.entries(foreignKeyParams.extractor.runtimeTransformers ?? {})) {
+  for (const transformer of Object.entries(query.extractor.runtimeTransformers ?? {})) {
     const result = await localSelectorMap
       .applyExtractorTransformer(
         transformer[1],
         modelEnvironment,
         {
-          ...foreignKeyParams.extractor.pageParams,
-          ...foreignKeyParams.extractor.queryParams,
+          ...query.extractor.pageParams,
+          ...query.extractor.queryParams,
         },
         context,
-        foreignKeyParams.extractor.extractors ?? ({} as any)
+        query.extractor.extractors ?? ({} as any)
       )
       .then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
         return [transformer[0], result]; // TODO: check for failure!

@@ -151,7 +151,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleBoxedQueryAction called with RunBoxedQueryAction", JSON.stringify(action, null, 2));
+    log.info(
+      this.logHeader,
+      "handleBoxedQueryAction called with RunBoxedQueryAction",
+      JSON.stringify(action, null, 2),
+      // "applicationDeploymentMap",
+      // JSON.stringify(applicationDeploymentMap, null, 2),
+    );
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
 

@@ -723,7 +723,10 @@ export async function handleBoxedQueryAction(
     origin,
     "start",
     "runBoxedQueryAction",
-    JSON.stringify(runBoxedQueryAction, null, 2)
+    JSON.stringify(runBoxedQueryAction, null, 2),
+    // "applicationDeploymentMap",
+    // JSON.stringify(applicationDeploymentMap, null, 2),
+
   );
   let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
   queryResult = await selectorMap.runQuery(

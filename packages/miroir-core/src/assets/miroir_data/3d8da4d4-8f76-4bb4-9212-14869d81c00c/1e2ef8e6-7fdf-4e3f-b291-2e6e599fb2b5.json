@@ -89,7 +89,7 @@
                 "type": "uuid",
                 "tag": {
                   "value": {
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",

@@ -181,12 +181,12 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
     const result: string[][] = discriminator.map((disc: string | string[]) => {
       let effectiveDiscriminator: string = "UNKNOWN_DISCRIMINATOR";
       if (Array.isArray(disc)) {
-        log.info(
-          "getObjectUniondiscriminatorValuesFromResolvedSchema processing array sub-discriminator",
-          currentValuePathString,
-          disc,
-          resolveUnionResult
-        );
+        // log.info(
+        //   "getObjectUniondiscriminatorValuesFromResolvedSchema processing array sub-discriminator",
+        //   currentValuePathString,
+        //   disc,
+        //   resolveUnionResult
+        // );
         effectiveDiscriminator = resolveUnionResult?.chosenDiscriminator
           ? (resolveUnionResult?.chosenDiscriminator[0] as any)?.discriminator
           : undefined;
@@ -214,15 +214,15 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
             })
             .flatMap((branch: any /** JzodObject */, index) => {
               // if (index == 1) log.info("getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing disc", disc, "on branch", branch);
-              log.info(
-                "getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing",
-                currentValuePathString,
-                "effectiveDiscriminator",
-                effectiveDiscriminator,
-                "on branch with matching key",
-                branch.definition[effectiveDiscriminator],
-                Object.keys(branch.definition),
-              );
+              // log.info(
+              //   "getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing",
+              //   currentValuePathString,
+              //   "effectiveDiscriminator",
+              //   effectiveDiscriminator,
+              //   "on branch with matching key",
+              //   branch.definition[effectiveDiscriminator],
+              //   Object.keys(branch.definition),
+              // );
               if (!branch || !branch.definition || !branch.definition[effectiveDiscriminator]) {
                 // ATTENTION:
                 // there can be one object branch without discriminator, the one that will be chosen
@@ -313,21 +313,21 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
       ];
     });
     // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
-    log.info(
-      "getObjectUniondiscriminatorValuesFromResolvedSchema processing array discriminator DONE on path",
-      currentValuePathString,
-      "for discriminator",
-      discriminator,
-      "unionObjectChoices",
-      unionObjectChoices.length,
-      "unfoldedRawSchema:",
-      unfoldedRawSchema,
-      // "recursivelyUnfoldedRawSchemaList:",
-      // recursivelyUnfoldedRawSchemaList,
-      "unionObjectChoices",
-      unionObjectChoices,
-      "result:", result
-    );
+    // log.info(
+    //   "getObjectUniondiscriminatorValuesFromResolvedSchema processing array discriminator DONE on path",
+    //   currentValuePathString,
+    //   "for discriminator",
+    //   discriminator,
+    //   "unionObjectChoices",
+    //   unionObjectChoices.length,
+    //   "unfoldedRawSchema:",
+    //   unfoldedRawSchema,
+    //   // "recursivelyUnfoldedRawSchemaList:",
+    //   // recursivelyUnfoldedRawSchemaList,
+    //   "unionObjectChoices",
+    //   unionObjectChoices,
+    //   "result:", result
+    // );
 
     return result;
   }

@@ -22,6 +22,14 @@
           }
         },
         {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "updateISBN",
+            "runner": "5c707fe4-359a-4211-8653-8565a8af0c55"
+          }
+        },
+        {
           "type": "storedReportDisplay",
           "definition": {
             "transformerType": "returnValue",

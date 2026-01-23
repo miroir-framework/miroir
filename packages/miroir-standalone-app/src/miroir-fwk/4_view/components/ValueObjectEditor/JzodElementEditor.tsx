@@ -301,33 +301,11 @@ let count = 0;
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const renderStartTime = performance.now();
   // const context = useMiroirContextService();
-  
   count++;
 
   const existingObject = props.existingObject ?? true;
   // Create a getUniqueValues key for this component instance
   const componentKey = `JzodElementEditor-${props.rootLessListKey || 'ROOT'}`;
-
-  // Memoize the onChangeVector callback for this field to avoid repeated lookups
-  const onChangeCallback = useMemo(
-    () => {
-      const callback = props.onChangeVector?.[props.rootLessListKey];
-      if (props.rootLessListKey && props.rootLessListKey.includes("application")) {
-        log.info(
-          "JzodElementEditor onChangeCallback lookup",
-          "rootLessListKey:", props.rootLessListKey,
-          "onChangeVector keys:", props.onChangeVector ? Object.keys(props.onChangeVector) : "undefined",
-          "callback found:", !!callback,
-          "callback type:", typeof callback,
-          "direct lookup test:", props.onChangeVector?.["applicationSelector.application"],
-          "hasOwnProperty test:", props.onChangeVector?.hasOwnProperty(props.rootLessListKey),
-          "onChangeVector ref:", props.onChangeVector
-        );
-      }
-      return callback;
-    },
-    [props.onChangeVector, props.rootLessListKey]
-  );
 
   const currentKeyMap = props.typeCheckKeyMap?.[props.rootLessListKey];
   const {
@@ -361,6 +339,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     "JzodElementEditor"
   );
 
+
   // const formikRootLessListKey =
   //   props.reportSectionPathAsString + (props.rootLessListKey ? `.${props.rootLessListKey}` : "");
 
@@ -370,14 +349,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   //   count,
   //   "Rendering JzodElementEditor for listKey",
   //   props.rootLessListKey,
-  //   "rootLessListKeyArray",
-  //   props.rootLessListKeyArray,
-  //   "formikRootLessListKey",
-  //   JSON.stringify(formikRootLessListKey),
-  //   "localResolvedElementJzodSchemaBasedOnValue",
-  //   localResolvedElementJzodSchemaBasedOnValue,
-  //   "props.typeCheckKeyMap", props.typeCheckKeyMap,
-  //   "currentKeyMap", currentKeyMap,
+  //   // "rootLessListKeyArray",
+  //   // props.rootLessListKeyArray,
+  //   // "formikRootLessListKey",
+  //   // JSON.stringify(formikRootLessListKey),
+  //   // "localResolvedElementJzodSchemaBasedOnValue",
+  //   // localResolvedElementJzodSchemaBasedOnValue,
+  //   // "props.typeCheckKeyMap", props.typeCheckKeyMap,
+  //   // "currentKeyMap", currentKeyMap,
   // );
 
   // Extract hiddenFormItems and setHiddenFormItems from props
@@ -401,6 +380,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
           // if (props.rootLessListKey && props.rootLessListKey.length > 0) {
             // Invoke onChangeVector callback if registered for this field
+            const onChangeCallback = props.onChangeVector?.[props.rootLessListKey];
             if (onChangeCallback) {
               onChangeCallback(parsedCodeMirrorValue, props.rootLessListKey);
             }
@@ -470,8 +450,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     !currentKeyMap ||
     !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement
+    ||
+    localResolvedElementJzodSchemaBasedOnValue?.type == "any"
     // ||
-    // currentKeyMap?.rawSchema?.type == "any"
+    // (currentKeyMap?.rawSchema?.type !== "any" && localResolvedElementJzodSchemaBasedOnValue?.type == "any")
     // ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type)
   ;
 
@@ -481,6 +463,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     [props.hidden, props.insideAny, displayAsCodeEditor]
   );
 
+  // log.info(
+  //   "JzodElementEditor",
+  //   count,
+  //   "Rendering JzodElementEditor for listKey",
+  //   props.rootLessListKey,
+  //   currentKeyMap?.rawSchema?.type,
+  //   localResolvedElementJzodSchemaBasedOnValue?.type,
+  //   displayAsCodeEditor ? "Displaying as Code Editor" : "Displaying as Structured Element",
+  //   // "localResolvedElementJzodSchemaBasedOnValue",
+  //   // localResolvedElementJzodSchemaBasedOnValue,
+  //   // "props.typeCheckKeyMap", props.typeCheckKeyMap,
+  //   // "currentKeyMap", currentKeyMap,
+  // );
 
   // log.info("JzodElementEditor",
   //   count,
@@ -650,40 +645,44 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           return null;
         }
       }
-      // Handle "any" type
-      if (
-        currentKeyMap?.rawSchema?.type === "any" &&
-        localResolvedElementJzodSchemaBasedOnValue.type === "any" &&
-        !props.insideAny
-      ) {
-        return (
-          <>
-            <ThemedOnScreenDebug
-              label={`Rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || "ROOT"}`}
-              data={props.rootLessListKey}
-            />
-            <JzodAnyEditor
-              valueObjectEditMode={props.valueObjectEditMode}
-              name={props.name}
-              labelElement={props.labelElement}
-              listKey={props.listKey}
-              rootLessListKey={props.rootLessListKey}
-              rootLessListKeyArray={props.rootLessListKeyArray}
-              reportSectionPathAsString={props.reportSectionPathAsString}
-              currentApplication={props.currentApplication}
-              applicationDeploymentMap={props.applicationDeploymentMap}
-              currentDeploymentUuid={props.currentDeploymentUuid}
-              currentApplicationSection={props.currentApplicationSection}
-              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
-              typeCheckKeyMap={props.typeCheckKeyMap}
-              foreignKeyObjects={props.foreignKeyObjects}
-              readOnly={props.readOnly}
-              displayError={props.displayError}
-              onChangeVector={props.onChangeVector}
-            />
-          </>
-        );
+      // // Handle "any" type
+      // if (
+      //   currentKeyMap?.rawSchema?.type === "any" &&
+      //   localResolvedElementJzodSchemaBasedOnValue.type === "any" &&
+      //   !props.insideAny
+      // ) {
+      //   return (
+      //     <>
+      //       <ThemedOnScreenDebug
+      //         label={`Rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || "ROOT"}`}
+      //         data={props.rootLessListKey}
+      //       />
+      //       <JzodAnyEditor
+      //         valueObjectEditMode={props.valueObjectEditMode}
+      //         name={props.name}
+      //         labelElement={props.labelElement}
+      //         listKey={props.listKey}
+      //         rootLessListKey={props.rootLessListKey}
+      //         rootLessListKeyArray={props.rootLessListKeyArray}
+      //         reportSectionPathAsString={props.reportSectionPathAsString}
+      //         currentApplication={props.currentApplication}
+      //         applicationDeploymentMap={props.applicationDeploymentMap}
+      //         currentDeploymentUuid={props.currentDeploymentUuid}
+      //         currentApplicationSection={props.currentApplicationSection}
+      //         resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
+      //         typeCheckKeyMap={props.typeCheckKeyMap}
+      //         foreignKeyObjects={props.foreignKeyObjects}
+      //         readOnly={props.readOnly}
+      //         displayError={props.displayError}
+      //         onChangeVector={props.onChangeVector}
+      //       />
+      //     </>
+      //   );
+      // }
+      if (displayAsCodeEditor) {
+        return <div>displaying code editor for {props.rootLessListKey || "ROOT"}</div>;
       }
+
       const localReadOnly =
         props.readOnly ||
         localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable === false ||
@@ -787,8 +786,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     checked={currentValueObjectAtKey} // TODO: get other fieldProps: name, checked, onChange, onBlur
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       // Invoke onChangeVector callback if registered for this field
-                      if (onChangeCallback) {
-                        onChangeCallback(e.target.checked, props.rootLessListKey);
+                      const callback = props.onChangeVector?.[props.rootLessListKey];
+                      if (callback) {
+                        callback(e.target.checked, props.rootLessListKey);
                       }
                       formik.setFieldValue(formikRootLessListKey, e.target.checked);
                     }}
@@ -848,8 +848,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       const value = e.target.value;
                       const newValue = value ? BigInt(value) : BigInt(0);
                       // Invoke onChangeVector callback if registered for this field
-                      if (onChangeCallback) {
-                        onChangeCallback(newValue, props.rootLessListKey);
+                      const callback = props.onChangeVector?.[props.rootLessListKey];
+                      if (callback) {
+                        callback(newValue, props.rootLessListKey);
                       }
                       formik.setFieldValue(formikRootLessListKey, newValue);
                     }}
@@ -943,14 +944,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   //   formikRootLessListKey,
                   //   "newValue",
                   //   newValue,
-                  //   "onChangeCallback",
-                  //   !!onChangeCallback,
+                  //   "callback",
+                  //   !!callback,
                   //   "props.onChangeVector",
                   //   JSON.stringify(Object.keys(props.onChangeVector || {}))
                   // );
                   // Invoke onChangeVector callback if registered for this field
-                  if (onChangeCallback) {
-                    onChangeCallback(newValue, props.rootLessListKey);
+                  const callback = props.onChangeVector?.[props.rootLessListKey];
+                  if (callback) {
+                    callback(newValue, props.rootLessListKey);
                   }
                   formik.setFieldValue(formikRootLessListKey, newValue);
                 }}
@@ -975,14 +977,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   //   formikRootLessListKey,
                   //   "newValue",
                   //   newValue,
-                  //   "onChangeCallback",
-                  //   !!onChangeCallback,
+                  //   "callback",
+                  //   !!callback,
                   //   "props.onChangeVector",
                   //   JSON.stringify(Object.keys(props.onChangeVector || {}))
                   // );
                   // Invoke onChangeVector callback if registered for this field
-                  if (onChangeCallback) {
-                    onChangeCallback(newValue, props.rootLessListKey);
+                  const callback = props.onChangeVector?.[props.rootLessListKey];
+                  if (callback) {
+                    callback(newValue, props.rootLessListKey);
                   }
                   formik.setFieldValue(formikRootLessListKey, newValue);
                 }}
@@ -1209,8 +1212,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       const newValue = value ? new Date(value).toISOString() : undefined;
                       
                       // Invoke onChangeVector callback if registered for this field
-                      if (onChangeCallback) {
-                        onChangeCallback(newValue, props.rootLessListKey);
+                      const callback = props.onChangeVector?.[props.rootLessListKey];
+                      if (callback) {
+                        callback(newValue, props.rootLessListKey);
                       }
                       formik.setFieldValue(formikRootLessListKey, newValue);
                     }}
@@ -1289,19 +1293,50 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       );
     }
   }, [
-    props,
+    // Individual primitive props only
+    props.returnsEmptyElement,
+    props.hidden,
+    props.rootLessListKey,
+    props.reportSectionPathAsString,
+    props.insideAny,
+    props.valueObjectEditMode,
+    props.name,
+    props.labelElement,
+    props.listKey,
+    // props.rootLessListKeyArray - array, unstable reference, passed to children
+    props.currentApplication,
+    props.applicationDeploymentMap,
+    props.currentDeploymentUuid,
+    props.currentApplicationSection,
     props.typeCheckKeyMap,
+    props.foreignKeyObjects,
+    props.readOnly,
+    props.displayError,
+    // props.onChangeVector - removed, passed to children but doesn't affect mainElement render logic
+    props.isTopLevel,
+    props.indentLevel,
+    props.deleteButtonElement,
+    props.maxRenderDepth,
+    props.extraToolsButtons,
+    // Computed values that affect rendering (all properly memoized)
     localResolvedElementJzodSchemaBasedOnValue, 
-    formik, 
     currentValueObjectAtKey, 
-    foreignKeyObjects,
     hideSubJzodEditor,
-    displayAsStructuredElementSwitch,
-    reportContext.foldedObjectAttributeOrArrayItems,
     itemsOrder,
     stringSelectList,
     enhancedLabelElement,
-    onChangeCallback
+    // Removed potentially unstable object/array references that don't affect render:
+    // - formik (only used for getFieldProps/setFieldValue in event handlers)
+    // - foreignKeyObjects (from props - used in hook to compute stringSelectList)
+    // - displayAsStructuredElementSwitch (JSX element, doesn't affect logic)
+    // - reportContext.foldedObjectAttributeOrArrayItems (map object, unstable reference)
+    // - context.miroirContext.miroirActivityTracker (unstable reference, only used in transform calls)
+    // - typeCheckKeyMap (from props - used in hook to compute localResolvedElementJzodSchemaBasedOnValue)
+    // - applicationDeploymentMap (from props - passed to children)
+    // - rootLessListKeyArray (array - passed to children)
+    // - displayError (object - used to compute enhancedLabelElement)
+    // - deleteButtonElement (JSX element - passed to children)
+    // - extraToolsButtons (array - passed to children)
   ]);
   // ##############################################################################################
   // ##############################################################################################

@@ -1629,7 +1629,10 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
     });
   }
   log.info(
-    "transformer_mergeIntoObject resolvedApplyTo",
+    "transformer_mergeIntoObject",
+    "step",
+    step,
+    "resolvedApplyTo",
     resolvedApplyTo,
     "overrideObject",
     overrideObject

@@ -815,7 +815,13 @@
                 "definition": "extractorForObjectByDirectReference"
               },
               "instanceUuid": {
-                "type": "uuid"
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Instance Uuid"
+                  }
+                }
               },
               "foreignKeysForTransformer": {
                 "type": "array",

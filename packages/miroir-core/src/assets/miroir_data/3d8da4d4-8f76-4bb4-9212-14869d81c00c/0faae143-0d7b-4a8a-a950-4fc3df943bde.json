@@ -33,14 +33,14 @@
                 "tag": {
                   "value": {
                     "id": 1,
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -106,14 +106,14 @@
                 "tag": {
                   "value": {
                     "id": 1,
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -185,14 +185,14 @@
                 "tag": {
                   "value": {
                     "id": 1,
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -244,14 +244,14 @@
                 "tag": {
                   "value": {
                     "id": 1,
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -304,14 +304,14 @@
                 "tag": {
                   "value": {
                     "id": 1,
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },
@@ -369,14 +369,14 @@
                 "tag": {
                   "value": {
                     "id": 1,
-                    "canBeTemplate": false,
+                    "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": { "editable": false }
                   }
                 }
               },

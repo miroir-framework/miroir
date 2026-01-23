@@ -21,6 +21,7 @@ import { JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
+import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMirror";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -156,6 +157,20 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           returnsEmptyElement={resolvedElementJzodSchema?.type === "undefined" ? true : false}
           readOnly={props.readOnly}
         />
+        {/* <JzodElementEditorReactCodeMirror
+          formikRootLessListKey={formikRootLessListKey}
+          initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
+          codeMirrorValue={codeMirrorValue}
+          setCodeMirrorValue={setCodeMirrorValue}
+          codeMirrorIsValidJson={codeMirrorIsValidJson}
+          setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+          rootLessListKey={props.rootLessListKey}
+          rootLessListKeyArray={props.rootLessListKeyArray}
+          hidden={!displayAsCodeEditor}
+          insideAny={props.insideAny}
+          isUnderTest={isUnderTest}
+          displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+        /> */}
       </div>
     </div>
   );

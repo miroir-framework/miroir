@@ -191,15 +191,19 @@ export function useJzodElementEditorHooks(
   // ################################################################################################
   // ################################################################################################
   // value schema
-    const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
+  // Memoize to prevent infinite re-renders when used in useMemo dependencies
+  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
+    () =>
       typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
         ? typeCheckKeyMap[rootLessListKey]?.resolvedSchema
-        : undefined;
-    // for objects, records
-    const itemsOrder: any[] = useMemo(
-      () => getItemsOrder(currentValueObjectAtKey, localResolvedElementJzodSchemaBasedOnValue),
-      [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]
-    );
+        : undefined,
+    [typeCheckKeyMap, rootLessListKey]
+  );
+  // for objects, records
+  const itemsOrder: any[] = useMemo(
+    () => getItemsOrder(currentValueObjectAtKey, localResolvedElementJzodSchemaBasedOnValue),
+    [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]
+  );
     
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
