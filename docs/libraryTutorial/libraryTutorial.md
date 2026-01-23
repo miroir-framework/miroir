@@ -330,16 +330,194 @@ Congrats, you've finished part 3!
 
 ## Part 4: Working with Endpoints, Actions and Runners
 
+We are now going to create an **updateISBN** Action and an **updateISBN** Runner for that Action, that will provide a dedicated interface to add missing ISBNs to our Books.
 
-### Actions: Modifying Data
+As a formal introduction, suffice to say that **Actions** provide a programmatic interface (API) to perform operations that change state:
 
-**Actions** perform operations that change state:
-- Create/update/delete Entity instances
-- Modify the Model itself (add new Entities)
+- CRUD operations on data instances,
+- CRUD operations on model elements such as Entities, Reports, Queries, Actions, etc.
 
-Actions are declared in **Endpoints** and executed by the framework.
+Actions can execute Queries to access the existing state. Actions can be composed freely into sequences of actions, a sequence of action being itself an Action.
 
-### Transformers: Pure Functions
+Actions are declared in **Endpoints** and run on the Miroir framework.
+
+**Runners** provide a visual interface (UI) to run Actions (including sequences of Actions).
+
+### Creating the **Books** Endpoint and **updateISBN** Action
+
+Add the `Books` endpoint by clicking on the **+** sign on the `EndpointList` Report:
+
+<img src="./library-model-Endpoint_list-ADD.png" alt="The Library Endpoint" width="70%"/>
+
+Use the following definition or seize its equivalent in the UI.
+
+```json
+{
+  "uuid": "9884c1a4-5122-488a-85db-a99fbc02e678",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "name": "Books",
+  "version": "1",
+  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "definition": "updateISBN"
+          },
+          "application": {
+            "type": "literal",
+            "definition": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "9884c1a4-5122-488a-85db-a99fbc02e678"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "book": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "foreignKeyParams": {
+                      "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                    }
+                  }
+                }
+              },
+              "ISBN": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "compositeActionTemplate",
+          "definition": {
+            "actionType": "compositeActionSequence",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "payload": {
+              "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+              "definition": [
+                {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "actionLabel": "getTargetBook",
+                  "nameGivenToResult": "targetBook",
+                  "queryTemplate": {
+                    "actionType": "runBoxedQueryAction",
+                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "applicationSection": "data",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "pageParams": {},
+                        "queryParams": {},
+                        "contextResults": {},
+                        "extractors": {
+                          "targetBook": {
+                            "label": "deployments of the application",
+                            "extractorOrCombinerType": "extractorForObjectByDirectReference",
+                            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "parentName": "Deployment",
+                            "applicationSection": "data",
+                            "instanceUuid": {
+                              "transformerType": "mustacheStringTemplate",
+                              "interpolation": "build",
+                              "definition": "{{payload.book}}"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "actionType": "updateInstance",
+                  "actionLabel": "updateTargetBook",
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                  "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "objects": [
+                      {
+                        "parentUuid": "Book",
+                        "applicationSection": "data",
+                        "instances": [
+                          {
+                            "transformerType": "mergeIntoObject",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "targetBook",
+                                "targetBook"
+                              ]
+                            },
+                            "definition": {
+                              "transformerType": "createObject",
+                              "definition": {
+                                "ISBN": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "ISBN"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+### Walking through the **Books** Endpoint
+
+The Books endpoint defines only 1 Action, the **updateISBN** action:
+
+<img src="./library-model-Endpoint_Books.png" alt="The **Books** Endpoint" width="70%"/>
+
+Each Action defines an interface `actionParameters` and an implementation `actionImplementation`:
+
+<img src="./library-model-Endpoint_Books-updateISBN.png" alt="The **Books** Endpoint" width="70%"/>
+
+The interface has an envelope, which necessarily contain the unique `actionType` for the Action, the `application` and `Endpoint` to which it belongs. It also has a `payload` where the interesting things are: each **updateISBN** call must have a `book` and an `ISBN` attributes.
+
+<img src="./library-model-Endpoint_Books-updateISBN-interface.png" alt="The **updateISBN** Action Interface" width="70%"/>
+
+The implementation is a `compositeActionTemplate`, meaning that it is a composition of Actions, which undergo a step of parameter resolution, the formal parameters used in the composition being replaced by value arguments upon execution. This mechanism allows to access values upon execution, such as the ones defined in the interface of the Action, in our case the `book` to be modified, and the value to set its `ISBN` attribute to.
+
+<img src="./library-model-Endpoint_Books-updateISBN-implementation.png" alt="The **updateISBN** Action Implementation" width="70%"/>
+
+The `compositeActionSequence` contains only 2 Actions:
+
+- the **getTargetBook** runs a query that fetches the details of the Book instance pointed to by the `book` parameter
+- the **updateTargetBook** runs an **updateInstance** Action that replaces the old Book details with the modified version with the added `ISBN`.
+
+<!-- ### Transformers: Pure Functions
 
 **Transformers** are pure data transformation functions. They can:
 - Filter collections
@@ -347,11 +525,11 @@ Actions are declared in **Endpoints** and executed by the framework.
 - Aggregate data
 - Compose into pipelines
 
-The same Transformer can run client-side, server-side, or be converted to SQL - Miroir handles the translation.
+The same Transformer can run client-side, server-side, or be converted to SQL - Miroir handles the translation. -->
 
-## Part 5: Batch Updates
+<!-- ## Part 5: Batch Updates
 
-Showing how to use Queries to perform batch updates of data and building tools in your application beyond the simple CRUD operations.
+Showing how to use Queries to perform batch updates of data and building tools in your application beyond the simple CRUD operations. -->
 
 ## What's Next?
 
@@ -360,6 +538,7 @@ You've seen how Miroir applications work from the outside and understand the cor
 - Examine the Library EntityDefinitions in `library_model/`
 - Study the Report definitions
 - Explore how Queries and Actions are declared
+- Learn about the Transformers that we used in the Action implementation
 - Try creating your own Entity
 
 The power of Miroir lies in making applications declarative, introspective, and data-driven. Furthermore, one can edit an application while running it, without re-buiding and re-packaging this application (just like Smalltalk, but for the web).
