@@ -517,6 +517,57 @@ The `compositeActionSequence` contains only 2 Actions:
 - the **getTargetBook** runs a query that fetches the details of the Book instance pointed to by the `book` parameter
 - the **updateTargetBook** runs an **updateInstance** Action that replaces the old Book details with the modified version with the added `ISBN`.
 
+### Creating the *updateISBN* Runner
+
+<img src="./library-model-Runner_list-ADD.png" alt="Adding a Runner to the Library" width="70%"/>
+
+Create the Runner according to the following definition:
+
+```json
+{
+  "uuid": "5c707fe4-359a-4211-8653-8565a8af0c55",
+  "application": "b5eebf00-8b11-453d-a667-7c337188162a",
+  "parentName": "Runner",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "name": "UpdateISBN",
+  "defaultLabel": "UpdateISBN",
+  "definition": {
+    "runnerType": "actionRunner",
+    "endpoint": "9884c1a4-5122-488a-85db-a99fbc02e678",
+    "action": "updateISBN"
+  }
+}
+```
+
+Add the Runner to the homepage using the Report editor, it should look like this:
+
+<img src="./library_homepage-EDIT-ADD-RUNNER.png" alt="The **updateISBN** Runner added to the Homepage" width="70%"/>
+
+
+the definition for the Report section displaying the **updateISBN** Runner is:
+
+```json
+  {
+    "type": "runnerReportSection",
+    "definition": {
+      "runnerReportSectionType": "storedRunner",
+      "label": "updateISBN",
+      "runner": "5c707fe4-359a-4211-8653-8565a8af0c55"
+    }
+  }
+```
+
+You may then use the Runner to add ISBN numbers to existing books with a simplified interface:
+
+<img src="./library_homepage-with-additional-runner.png" alt="The **updateISBN** Runner in the Homepage" width="70%"/>
+
+Go and check the result in the `Book Details` Report for the chosen Book:
+
+<img src="./library_data-Runner-updateISBN-result.png" alt="The Result of the **updateISBN** Runner" width="40%"/>
+
+Congrats, you've finished part 4!
+
+
 <!-- ### Transformers: Pure Functions
 
 **Transformers** are pure data transformation functions. They can:
