@@ -45,7 +45,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -64,7 +66,6 @@
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": true,
                     "foreignKeyParams": {
                       "targetEntityApplicationSection": "model",
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -78,8 +79,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances (objects) to create",
-                    "editable": true
+                    "defaultLabel": "Entity Instances (objects) to create"
                   }
                 },
                 "definition": {
@@ -92,7 +92,9 @@
                         "value": {
                           "id": 1,
                           "defaultLabel": "Parent Name",
-                          "editable": false,
+                          "display": {
+                            "editable": false
+                          },
                           "canBeTemplate": true
                         }
                       }
@@ -103,7 +105,9 @@
                         "value": {
                           "id": 2,
                           "defaultLabel": "Parent Uuid",
-                          "editable": false,
+                          "display": {
+                            "editable": false
+                          },
                           "canBeTemplate": true,
                           "foreignKeyParams": {
                             "targetEntityApplicationSection": "model",
@@ -115,7 +119,11 @@
                             "transformer": {
                               "transformerType": "getFromParameters",
                               "interpolation": "build",
-                              "referencePath": ["rootObject", "payload", "parentUuid"]
+                              "referencePath": [
+                                "rootObject",
+                                "payload",
+                                "parentUuid"
+                              ]
                             }
                           }
                         }
@@ -198,7 +206,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -218,8 +228,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
+                    "defaultLabel": "Entity Instances to delete"
                   }
                 },
                 "definition": {
@@ -276,7 +285,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -296,8 +307,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances to delete",
-                    "editable": true
+                    "defaultLabel": "Entity Instances to delete"
                   }
                 },
                 "definition": {
@@ -354,7 +364,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -376,7 +388,6 @@
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": true,
                     "foreignKeyParams": {
                       "targetEntityApplicationSection": "model",
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -390,8 +401,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances to update",
-                    "editable": true
+                    "defaultLabel": "Entity Instances to update"
                   }
                 },
                 "definition": {
@@ -453,7 +463,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -462,8 +474,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances to place in the local cache",
-                    "editable": true
+                    "defaultLabel": "Entity Instances to place in the local cache"
                   }
                 },
                 "definition": {
@@ -520,7 +531,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -537,7 +550,9 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -547,7 +562,9 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               }
@@ -596,7 +613,9 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -613,7 +632,9 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               }
