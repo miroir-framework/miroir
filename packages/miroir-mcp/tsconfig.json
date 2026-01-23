@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "baseUrl": "./"
+  },
+  "exclude": [
+    "./node_modules/**",
+    "./dist/**",
+    "./src/**/*.spec.ts",
+    "./tests/**/*.test.ts"
+  ],
+  "include": [
+    "./src/**/*.json",
+    "./src/**/*.ts",
+    "./tests/**/*.ts"
+  ]
+}

@@ -198,7 +198,6 @@ export const RootComponent = (props: RootComponentProps) => {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: adminSelfApplication.uuid,
                 // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
