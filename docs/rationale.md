@@ -9,42 +9,42 @@ Today's Integrated Development Environments (IDEs) used for software development
 
 Any software development project participants thus encounter the forever repeated dilemma of tool selection, use and integration, to address the various needs they are faced with.
 
-Each of the tools they come to use generally features at least one very distinct [Domain Specific Language](https://en.wikipedia.org/wiki/Domain-specific_language), and there is very little inter-operability among these languages, even sometimes among ones featured by the same tool.
+Each of the tools they come to use generally features at least one very distinct [Domain Specific Language](https://en.wikipedia.org/wiki/Domain-specific_language) (DSL), and there is very little inter-operability among these languages, even sometimes among DSLs appearing in the same tool.
 
-As benefit of staying blindsighted to such needs, mainstream IDEs can certainly boast about being independent from any [software Design Method](https://en.wikipedia.org/wiki/Software_development_process) in general, which in a way certainly fosters their wide acceptance (being un-opinionated leads to better acceptance).
+As a benefit for staying blindsighted to such needs, mainstream IDEs can certainly boast about being independent from any [software Design Method](https://en.wikipedia.org/wiki/Software_development_process) in general, which in a way certainly fosters their wide acceptance (being un-opinionated leads to better acceptance).
 
-However, using different tools and methods at conception / development time and at run-time makes overviewing the whole lifecycle of a software system considerably more difficult. We argue that software development is then paradoxically considered separate from the functions and run-time workings of the system itself, barring any holistic approach from a [Systems Engineering](https://en.wikipedia.org/wiki/Systems_engineering) point-of-view. We view this as a major hindrance to the improvement of software development activities themselves.
+However, using different tools and methods at conception / development time and at run-time makes encompassing the whole lifecycle of a software system considerably more difficult. We argue that software development is then paradoxically considered separate from the functions and run-time workings of the system itself, barring any holistic approach from a [Systems Engineering](https://en.wikipedia.org/wiki/Systems_engineering) point-of-view. We view this as a major hindrance to the improvement of software development activities themselves.
 
-This tendency has however been somewhat squelched in recent years, thanks to the development of Continuous Integration / Continuous Delivery ([CI/CD](https://en.wikipedia.org/wiki/CI/CD)) methodologies. We assess that this tendency can be brought much further, with much benefits to be reaped in the transformation.
+This tendency has however been somewhat alleviated in recent years, thanks to the development of Continuous Integration / Continuous Delivery ([CI/CD](https://en.wikipedia.org/wiki/CI/CD)) methodologies. We assess that this tendency can be greatly amplified, with considerable benefits to be reaped in the transformation.
 
 Only the tools we use still lag in features to address those practices.
 
 # Proposal
 
-Looking in the past for inspiration, some development environments have indeed pioneered this radically different and interactive approach to software development, integrating software development activities and software execution: [Smalltalk](https://en.wikipedia.org/wiki/Smalltalk) being the prime example for this. In Smalltalk, development-time activities and run-time activities are done in the same environment: on the small scale, development, testing and deployment become essentially the same activity. Having perfect, run-time-precise, immediate feedback during development amounts to many developpers to being in a proverbial "ideal world", a paradise lost which many have endeavoured to reach again. Indeed, accelerating feedback is now largely viewed as a primary means to increase software quality and developer productivity (see [Accelerate](https://en.wikipedia.org/wiki/Accelerate_(book))).
+Looking in the past for inspiration, some development environments have pioneered radically different, interactive approaches to software development, by integration of software development activities and software execution: [Smalltalk](https://en.wikipedia.org/wiki/Smalltalk) is the prime example for this. In Smalltalk, development-time activities and run-time activities are done in the same environment: on the small scale, development, testing and deployment become essentially the same activity. Having perfect, run-time-precise, immediate feedback during development amounts to many developpers to being in a proverbial "ideal world", a paradise lost which many have endeavoured to reach again. Indeed, accelerating feedback is now largely viewed as a primary means to increase software quality and developer productivity (see [Accelerate](https://en.wikipedia.org/wiki/Accelerate_(book))).
 
 Limitations to Smalltalk were yet important, as many issues were outside of the scope that any development environment could reach at the time: no support for version control or any delivery process, no direct support for automated testing, no support for refactoring, no support for software or database model design, etc.
 
-Then comes [online IDEs](https://en.wikipedia.org/wiki/Online_integrated_development_environment) on the scene. Starting from the late 2000's-mid 2010's, tools like [Stackblitz](https://stackblitz.com/), have offered the "usual" functionalities of well-known IDEs but running within the web browser, accessed through the cloud. One then develops a web selfApplication, from within another web selfApplication (the online IDE), without any synergy between the two.
+Then come [online IDEs](https://en.wikipedia.org/wiki/Online_integrated_development_environment) on the scene. Starting from the late 2000's-mid 2010's, tools like [Stackblitz](https://stackblitz.com/), have offered the "usual" functionalities of well-known IDEs but running within the web browser, accessed through the cloud. One then develops a web application, from within another web application (the online IDE), without any synergy between the two (except automatic refresh of the developped application).
 
-As a parenthesis, this appears to us that they received, and still receive, a welcoming similar to the one the automobile received immediately after its inception: automobiles were seen, not without reasons, as horse-carriages with motors instead of horses. Yet, in the end automobiles enabled so much more than what could have been dreamt of by the mere impovement of horse carriages.
+This appears to us that such environments can be viewed like early automobiles: the first automobiles, especially the ones using a steam engine for traction, were first inspired and compared to horse-carriages, their main competitors at the time. They merely had a motor instead of horses. Yet, in the end, automobiles evolved and reached so much more uses than what could have been dreamt of by the simple improvement of horse carriages.
 
-The Miroir Framework aims at exploiting the synergies between web applications and their development environments: by first and foremost integrating the development and run-time environments, or at least providing access to a perfect mirror image of the run-time environment during the development phase, thus speeding the software quality improvement process, Miroir should enable to concentrate on the essential hardships of software development (adequacy to used needs, and software design).
+The Miroir Framework aims at exploiting the synergies between web applications and their development environments: by first and foremost integrating the development and run-time environments, or by (at least) providing access to a perfect mirror image of the run-time environment during the development phase. This shall speed up the software quality improvement process (a.k.a. debugging), this way enabling the developper to concentrate on the essential hardships of software development (adequacy to used needs, and software design).
 
 Miroir shall provide support for:
 
 - model / database design and evolution,
-- selfApplication of "relevant" software development processes and notations,
+- adoption of "relevant" software development processes and notations,
 - interactive "positive" feedback loops,
 - version control, continuous integration and continuous delivery (or even continuous deployment),
 
 # Method & Means
 
-Allow to seamlessly create, integrate and benefit from DSLs at run-time. Enrich an selfApplication step-by-step, capturing new world models in DSLs, and connecting those DSLs as deemed fit.
+Allow to seamlessly create, integrate and benefit from DSLs at run-time. Enrich an application step-by-step, capturing new world models in DSLs, and connecting those DSLs as deemed fit.
 
 Model-based Software Engineering,
 
-Now web-applications more and more look like any general-purpose selfApplication [React Native](https://reactnative.dev/), [Electron](https://www.electronjs.org/).
+Now web-applications more and more look like any general-purpose application [React Native](https://reactnative.dev/), [Electron](https://www.electronjs.org/).
 
 In the worst case Miroir could end up as yet another software demonstator of somwhat ludicrous, way above their head ideas, or maybe in the best case as another Smalltalk.
 
@@ -64,7 +64,9 @@ Miroir aims at letting applicative software developers concentrate their efforts
 - concurrent versioning and transactions for the above-defined concepts,
 - transparent access to Databases (Relational, NoSQL) and files,
 
-## For your next-door neighboor
+## For your next-door neighbor
+
+TBW
 
 ## Model-Based Software Engineering (MBSoE)
 
@@ -103,4 +105,4 @@ Some existing platform limitate the scope, horizontally or vertically:
 ### What you get
 
 - a back-end web server (nodejs) able to execute your DSL Actions and return the required data 
-- a web selfApplication, that can be executed through a "plain" desktop-based selfApplication, or be deployed within the server and accessed through the browser
+- a web application, that can be executed through a "plain" desktop-based application, or be deployed within the server and accessed through the browser
