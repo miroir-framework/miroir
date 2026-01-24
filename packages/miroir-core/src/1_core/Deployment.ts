@@ -269,7 +269,6 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // deploymentUuid: deploymentUuid,
           },
         },
         {
@@ -279,13 +278,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // deploymentUuid: deploymentUuid,
             params: initApplicationParameters,
-            //  this is not a template, no transformer interpolation occurs before runtime
-            // transformerType: "returnValue",
-            // label: "initParametersForTest",
-            // interpolation: "runtime",
-            // value: {params: initApplicationParameters},
           },
         },
         {
@@ -295,7 +288,6 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // deploymentUuid: deploymentUuid,
           },
         },
         {
@@ -305,7 +297,6 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // deploymentUuid: deploymentUuid,
             entities: appEntitesAndInstances,
           },
         },
@@ -316,7 +307,6 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // deploymentUuid: deploymentUuid,
           },
         },
         {
@@ -326,7 +316,6 @@ export function resetAndinitializeDeploymentCompositeAction(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: applicationUuid,
-            // deploymentUuid: deploymentUuid,
             applicationSection: "data",
             objects: appEntitesAndInstances.map((e) => {
               return {

@@ -25,15 +25,15 @@
       "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
         "admin": {
           "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/miroir_admin"
+          "directory": "./tests/assets/miroir_admin"
         },
         "model": {
           "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/admin_model"
+          "directory": "./tests/assets/admin_model"
         },
         "data": {
           "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/admin_data"
+          "directory": "./tests/assets/admin_data"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {

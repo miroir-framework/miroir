@@ -28,6 +28,34 @@ import {
   defaultLevels,
   type SpecificLoggerOptionsMap,
   type MiroirConfigClient,
+  adminConfigurationDeploymentLibrary,
+  defaultMiroirMetaModel,
+  resetAndinitializeDeploymentCompositeAction,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
+  defaultMiroirModelEnvironment,
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book4,
+  book5,
+  book6,
+  entityAuthor,
+  entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
+  entityPublisher,
+  publisher1,
+  publisher2,
+  publisher3,
+  type ApplicationEntitiesAndInstances,
+  type EntityDefinition,
+  type EntityInstance,
+  type MetaEntity,
 } from "miroir-core";
 
 import { setupMiroirDomainController } from "miroir-localcache-redux";
@@ -37,6 +65,7 @@ import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
 import { setupMiroirPlatform } from '../../src/startup/setup.js';
+import { selfApplicationDeploymentLibrary } from 'miroir-core';
 
 const packageName = "miroir-mcp";
 const fileName = "mcpTools.test";
@@ -63,6 +92,32 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+
+export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityAuthor as MetaEntity,
+    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    instances: [author1, author2, author3 as EntityInstance],
+  },
+  {
+    entity: entityBook as MetaEntity,
+    entityDefinition: entityDefinitionBook as EntityDefinition,
+    instances: [
+      book1 as EntityInstance,
+      book2 as EntityInstance,
+      // // book3 as EntityInstance,
+      book4 as EntityInstance,
+      book5 as EntityInstance,
+      book6 as EntityInstance,
+    ],
+  },
+  {
+    entity: entityPublisher as MetaEntity,
+    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
+  },
+];
 
 // Test configuration
 let miroirConfig: MiroirMcpConfig;
@@ -180,6 +235,50 @@ describe("MCP Tools Integration Tests", () => {
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
       selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
     ]);
+
+    const createLibraryAction = resetAndinitializeDeploymentCompositeAction(
+      selfApplicationLibrary.uuid,
+      adminConfigurationDeploymentLibrary.uuid,
+      {
+        dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+        metaModel: defaultMiroirMetaModel,
+        selfApplication: selfApplicationLibrary,
+        applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+        applicationVersion: selfApplicationVersionLibraryInitialVersion,
+      },
+      libraryEntitiesAndInstancesWithoutBook3,
+    );
+    const beforeAllResult = await domainController.handleCompositeAction(
+      createLibraryAction,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+      {},
+    );
+    if (beforeAllResult.status !== "ok") {
+      throw new Error(`Failed to execute beforeEach composite action: ${JSON.stringify(beforeAllResult)}`);
+    }
+
+    const refreshLibrary = await domainController.handleAction(
+      {
+        actionType: "rollback",
+        actionLabel: "Refresh Library Local Cache",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        payload: {
+          application: selfApplicationLibrary.uuid,
+        },
+      },
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+
+    if (refreshLibrary.status !== "ok") {
+      throw new Error(
+        `Failed to open stores for application ${selfApplicationLibrary.uuid}: ${JSON.stringify(refreshLibrary)}`
+      );
+    }
+
+
   });
 
   // // ################################################################################################
@@ -225,9 +324,10 @@ describe("MCP Tools Integration Tests", () => {
 
   // ################################################################################################
   describe("MCP Tool Handlers - InstanceActions", () => {
-    const testEntityUuid = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"; // Book entity
-    const testApplicationUuid = "5af03c98-fe5e-490b-b08f-e1230971c57f"; // Library
-    const testDeploymentUuid = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"; // Library deployment
+    // const testEntityUuid = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"; // Book entity
+    const testEntityUuid = entityBook.uuid; // Book entity
+    const testApplicationUuid = selfApplicationLibrary.uuid; // Library
+    // const testDeploymentUuid = selfApplicationDeploymentLibrary.uuid; // Library deployment
 
     it(
       "should execute createInstance action",
@@ -249,6 +349,7 @@ describe("MCP Tools Integration Tests", () => {
                 instances: [
                   {
                     uuid: testInstanceUuid,
+                    parentUuid: testEntityUuid,
                     name: "Test Book from MCP",
                     author: "Test Author",
                     isbn: "TEST-123",
@@ -269,8 +370,7 @@ describe("MCP Tools Integration Tests", () => {
         // but verify the MCP layer processed the action correctly
         expect(result).toBeDefined();
         expect(result.status).toBeDefined();
-        // Should be "error" because Book entity doesn't exist yet
-        expect(result.status).toBe("error");
+        expect(result.status).toBe("ok");
       },
       globalTimeOut
     );
