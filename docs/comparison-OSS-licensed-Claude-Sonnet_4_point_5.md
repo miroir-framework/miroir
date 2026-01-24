@@ -833,3 +833,19 @@ The table reveals that **no single platform combines all of Miroir's characteris
 6. **DSL creation** as core design goal
 
 Miroir occupies a unique position attempting to bridge academic research (meta-programming, bootstrapped systems) with practical low-code/model-driven development, while remaining fully open source and self-hostable.
+
+## Annex 1: How this document was produced
+
+This document was mostly generated on 2026/01/24, by Claude Sonnet 4.5 in agent mode, using the following prompts:
+
+`
+give me a list of open source projects and a list of non-open-source projects, which resemble the Miroir Framework. For each item in the lists, give a brief description of similarities and a brief description of differences
+`
+
+`
+add a synoptic table as an annex at the end of the document
+`
+
+`
+update the document so that the section titles and entries in the first columns of the comparison tables become clickable links to a reference web page for the mentioned product
+`
