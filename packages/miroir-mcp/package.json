@@ -11,7 +11,7 @@
     "copy-files": "copyfiles -u 1 src/**/*.json dist/src",
     "build": "npm run copy-files && tsup --target=node20 --format esm src/index.ts",
     "dev": "npm run build && node ./dist/index.js",
-    "test": "cross-env NODE_ENV=test vitest",
+    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "repository": {

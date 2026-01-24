@@ -246,13 +246,13 @@ const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQue
   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   payload: {
     application: adminSelfApplication.uuid,
-    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+    // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
     applicationSection: "data",
     queryExecutionStrategy: "storage",
     query: {
       application: adminSelfApplication.uuid,
       // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+      // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       pageParams: {},
       queryParams: {},

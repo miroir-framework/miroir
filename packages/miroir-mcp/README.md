@@ -287,11 +287,49 @@ The MCP server follows Miroir's layered architecture:
 
 All actions are executed through `DomainController.handleAction()`, ensuring consistency with the rest of the Miroir framework.
 
+## Testing
+
+The MCP server supports test mode with emulated server configuration, matching the pattern used in Miroir's integration tests.
+
+### Test Mode Configuration
+
+When `testMode` or `emulateServer` is enabled, the MCP server creates a dual-controller setup:
+
+- **Client-side controller**: Uses remote persistence (through RestClientStub)
+- **Server-side controller**: Uses local persistence (direct store access)
+
+This enables testing of rollback and other operations that require the full client-server architecture without network overhead.
+
+Example test configuration (`tests/miroirConfig.test-emulatedServer.json`):
+
+```json
+{
+  "testMode": true,
+  "emulateServer": true,
+  "rootApiUrl": "http://localhost:3080",
+  "applicationDeploymentMap": { ... },
+  "storeSectionConfiguration": { ... }
+}
+```
+
+### Running Integration Tests
+
+```bash
+# Run all tests (uses test configuration from vitest.config.ts)
+npm test
+
+# Run specific test file
+npm run testByFile -- mcpTools.test
+```
+
+The test configuration is automatically loaded via the `MIROIR_MCP_CONFIG_PATH` environment variable set in `vitest.config.ts`.
+
 ## Troubleshooting
 
 ### "Failed to initialize filesystem store"
 
 Ensure `miroir-store-filesystem` is installed:
+
 ```bash
 npm install miroir-store-filesystem
 ```
@@ -303,6 +341,7 @@ The server creates directories automatically, but ensure the parent path exists 
 ### Configuration validation errors
 
 Validate your configuration against the schema. Common issues:
+
 - Missing required fields (`applicationSection`, `deploymentUuid`, etc.)
 - Invalid UUIDs
 - Incorrect storage type names

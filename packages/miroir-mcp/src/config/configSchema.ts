@@ -43,13 +43,20 @@ const LoggerConfigSchema = z.object({
 });
 
 // Main MCP configuration schema
+// TODO: should be identical to MiroirConfigClient
 export const MiroirMcpConfigSchema = z.object({
-  applicationDeploymentMap: z.record(z.string(), z.string()),
-  storeSectionConfiguration: z.record(z.string(), StoreUnitConfigurationSchema),
-  logConfig: LoggerConfigSchema.optional(),
+  // testMode: z.boolean().optional().default(false),
+  client: z.object({
+    emulateServer: z.boolean().optional().default(false),
+    rootApiUrl: z.string().optional().default("http://localhost:3080"),
+    applicationDeploymentMap: z.record(z.string(), z.string()),
+    // storeSectionConfiguration: z.record(z.string(), StoreUnitConfigurationSchema),
+    deploymentStorageConfig: z.record(z.string(), StoreUnitConfigurationSchema),
+    logConfig: LoggerConfigSchema.optional(),
+  }),
 });
 
-export type MiroirMcpConfig = z.infer<typeof MiroirMcpConfigSchema>;
+export type MiroirMcpConfig = z.infer<typeof MiroirMcpConfigSchema>; // TODO: should be identical to MiroirConfigClient
 export type StoreSectionConfiguration = z.infer<typeof StoreSectionConfigurationSchema>;
 export type StoreUnitConfiguration = z.infer<typeof StoreUnitConfigurationSchema>;
 export type LoggerConfig = z.infer<typeof LoggerConfigSchema>;

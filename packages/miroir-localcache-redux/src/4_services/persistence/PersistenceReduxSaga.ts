@@ -674,7 +674,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "RestPersistenceAction_delete":
       default: {
         throw new Error(
-          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not handle action " +
+          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore no handler found for action " +
             JSON.stringify(action)
         );
       }

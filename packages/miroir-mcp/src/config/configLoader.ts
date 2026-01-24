@@ -56,7 +56,7 @@ export function loadMiroirMcpConfig(): MiroirMcpConfig {
 export function getRequiredStorageTypes(config: MiroirMcpConfig): Set<string> {
   const storageTypes = new Set<string>();
   
-  for (const storeUnitConfig of Object.values(config.storeSectionConfiguration)) {
+  for (const storeUnitConfig of Object.values(config.client.deploymentStorageConfig)) {
     storageTypes.add(storeUnitConfig.admin.emulatedServerType);
     storageTypes.add(storeUnitConfig.model.emulatedServerType);
     storageTypes.add(storeUnitConfig.data.emulatedServerType);

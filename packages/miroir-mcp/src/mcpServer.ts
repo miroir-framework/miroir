@@ -23,9 +23,12 @@ import {
   ApplicationDeploymentMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
+  RestClientInterface,
+  RestClientStub,
+  type MiroirConfigClient,
 } from "miroir-core";
 
-import { setupMiroirDomainController } from "miroir-localcache-redux";
+import { setupMiroirDomainController, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
 
 import { MiroirMcpConfig } from "./config/configSchema.js";
 import { loadMiroirMcpConfig } from "./config/configLoader.js";
@@ -40,6 +43,7 @@ import {
   handleDeleteInstanceWithCascade,
   handleLoadNewInstancesInLocalCache,
 } from "./tools/toolHandlers.js";
+import { setupMiroirPlatform } from "./startup/setup.js";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -50,12 +54,17 @@ let log: LoggerInterface = console as any as LoggerInterface;
  */
 export class MiroirMcpServer {
   private server: Server;
-  private config: MiroirMcpConfig;
+  private config: MiroirMcpConfig; // TODO: should be identical to MiroirConfigClient
   private domainController!: DomainControllerInterface;
   private localCache!: LocalCacheInterface;
   private miroirContext!: MiroirContextInterface;
   private persistenceStoreControllerManager!: PersistenceStoreControllerManagerInterface;
   private applicationDeploymentMap!: ApplicationDeploymentMap;
+  
+  // Additional components for emulated server mode (test mode)
+  private persistenceStoreControllerManagerForServer?: PersistenceStoreControllerManagerInterface;
+  private domainControllerForServer?: DomainControllerInterface;
+  private restClient?: RestClientInterface;
 
   constructor() {
     this.server = new Server(
@@ -93,30 +102,83 @@ export class MiroirMcpServer {
       // Setup logging
       await this.setupLogging();
 
-      // Setup MiroirContext
+      // // Setup MiroirContext
       const miroirActivityTracker = new MiroirActivityTracker();
       const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
-      this.miroirContext = new MiroirContext(
-        miroirActivityTracker,
-        miroirEventService,
-        { miroirConfigType: "server" } as any
-      );
+      const {
+        // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+        domainController: localdomainController,
+        // localCache: locallocalCache,
+        // miroirContext: localmiroirContext,
+      } = await setupMiroirPlatform(this.config as any as MiroirConfigClient, miroirActivityTracker, miroirEventService);
 
-      // Setup persistence store controller manager
-      this.persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-        ConfigurationService.adminStoreFactoryRegister,
-        ConfigurationService.StoreSectionFactoryRegister
-      );
+      // this.miroirContext = new MiroirContext(
+      //   miroirActivityTracker,
+      //   miroirEventService,
+      //   { miroirConfigType: "server" } as any
+      // );
 
-      // Setup domain controller
-      this.domainController = await setupMiroirDomainController(this.miroirContext, {
-        persistenceStoreAccessMode: "local",
-        localPersistenceStoreControllerManager: this.persistenceStoreControllerManager,
-      });
+      // // Setup persistence store controller manager
+      // this.persistenceStoreControllerManager = new PersistenceStoreControllerManager(
+      //   ConfigurationService.adminStoreFactoryRegister,
+      //   ConfigurationService.StoreSectionFactoryRegister
+      // );
+
+      // // Setup domain controller based on mode (test/emulated vs production)
+      // if (this.config.emulateServer || this.config.testMode) {
+      //   // Test mode: create dual-controller setup similar to integration tests
+      //   log.info("Setting up emulated server mode (test configuration)...");
+        
+      //   // Create RestClientStub
+      //   this.restClient = new RestClientStub(
+      //     this.config.rootApiUrl || "http://localhost:3080"
+      //   );
+        
+      //   const remotePersistenceStoreRestClient = new RestPersistenceClientAndRestClient(
+      //     this.config.rootApiUrl || "http://localhost:3080",
+      //     this.restClient
+      //   );
+
+      //   // Create client-side domain controller (uses remote persistence)
+      //   this.domainController = await setupMiroirDomainController(this.miroirContext, {
+      //     persistenceStoreAccessMode: "remote",
+      //     localPersistenceStoreControllerManager: this.persistenceStoreControllerManager,
+      //     remotePersistenceStoreRestClient,
+      //   });
+
+      //   // Create server-side persistence store controller manager
+      //   this.persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
+      //     ConfigurationService.adminStoreFactoryRegister,
+      //     ConfigurationService.StoreSectionFactoryRegister
+      //   );
+
+      //   // Create server-side domain controller (uses local persistence)
+      //   this.domainControllerForServer = await setupMiroirDomainController(
+      //     this.miroirContext,
+      //     {
+      //       persistenceStoreAccessMode: "local",
+      //       localPersistenceStoreControllerManager: this.persistenceStoreControllerManagerForServer,
+      //     }
+      //   );
+
+      //   // Wire RestClientStub to server components
+      //   (this.restClient as RestClientStub).setServerDomainController(this.domainControllerForServer);
+      //   (this.restClient as RestClientStub).setPersistenceStoreControllerManager(
+      //     this.persistenceStoreControllerManagerForServer
+      //   );
+
+      //   log.info("Emulated server mode setup complete");
+      // } else {
+      //   // Production mode: single local domain controller
+      //   this.domainController = await setupMiroirDomainController(this.miroirContext, {
+      //     persistenceStoreAccessMode: "local",
+      //     localPersistenceStoreControllerManager: this.persistenceStoreControllerManager,
+      //   });
+      // }
 
       this.localCache = this.domainController.getLocalCache();
-      this.applicationDeploymentMap = this.config.applicationDeploymentMap;
+      this.applicationDeploymentMap = this.config.client.applicationDeploymentMap;
 
       // Open stores for all configured deployments
       await this.openStores();
@@ -135,7 +197,7 @@ export class MiroirMcpServer {
     const loglevel = (await import("loglevelnext")).default;
     const loglevelnext = loglevel as any as LoggerFactoryInterface;
 
-    const logConfig: LoggerOptions = (this.config.logConfig || {
+    const logConfig: LoggerOptions = (this.config.client.logConfig || {
       defaultLevel: "INFO",
       defaultTemplate: "[{{time}}] {{level}} {{name}} ### ",
       specificLoggerOptions: {},
@@ -164,7 +226,7 @@ export class MiroirMcpServer {
    */
   private async openStores(): Promise<void> {
     for (const [deploymentUuid, storeConfig] of Object.entries(
-      this.config.storeSectionConfiguration
+      this.config.client.deploymentStorageConfig
     )) {
       log.info(`Opening stores for deployment ${deploymentUuid}`);
 
@@ -320,7 +382,7 @@ export class MiroirMcpServer {
     log.info("Shutting down Miroir MCP Server...");
 
     // Close all stores
-    for (const deploymentUuid of Object.keys(this.config.storeSectionConfiguration)) {
+    for (const deploymentUuid of Object.keys(this.config.client.deploymentStorageConfig)) {
       const closeStoreAction: StoreOrBundleAction = {
         actionType: "storeManagementAction_closeStore",
         actionLabel: `Close stores for ${deploymentUuid}`,

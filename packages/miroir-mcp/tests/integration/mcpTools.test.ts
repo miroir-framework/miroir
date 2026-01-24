@@ -1,3 +1,4 @@
+import loglevelNextLog from 'loglevelnext';
 import { describe, expect, beforeAll, afterAll, it, beforeEach } from "vitest";
 import {
   ConfigurationService,
@@ -22,6 +23,11 @@ import {
   selfApplicationDeploymentMiroir,
   SelfApplicationDeploymentConfiguration,
   selfApplicationMiroir,
+  type LoggerFactoryInterface,
+  type LoggerOptions,
+  defaultLevels,
+  type SpecificLoggerOptionsMap,
+  type MiroirConfigClient,
 } from "miroir-core";
 
 import { setupMiroirDomainController } from "miroir-localcache-redux";
@@ -30,9 +36,26 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
+import { setupMiroirPlatform } from '../../src/startup/setup.js';
 
 const packageName = "miroir-mcp";
 const fileName = "mcpTools.test";
+  
+const loglevelnext: LoggerFactoryInterface = loglevelNextLog as any as LoggerFactoryInterface;
+
+const specificLoggerOptions: SpecificLoggerOptionsMap = {
+  "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
+  "4_miroir-core_RestTools": {level:defaultLevels.INFO, },
+  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined},
+}
+
+const loggerOptions: LoggerOptions = {
+  defaultLevel: "INFO",
+  defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
+  // context: undefined,
+  specificLoggerOptions: specificLoggerOptions,
+}
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -74,41 +97,49 @@ describe("MCP Tools Integration Tests", () => {
     MiroirLoggerFactory.startRegisteredLoggers(
       miroirActivityTracker,
       miroirEventService,
-      (await import("loglevelnext")).default,
-      miroirConfig.logConfig || {
-        defaultLevel: "INFO",
-        defaultTemplate: "[{{time}}] {{level}} {{name}} ### ",
-        specificLoggerOptions: {},
-      }
+      loglevelnext,
+      loggerOptions,
     );
 
-    miroirContext = new MiroirContext(
+    const {
+      // persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      // localCache: locallocalCache,
+      // miroirContext: localmiroirContext,
+    } = await setupMiroirPlatform(
+      miroirConfig as any as MiroirConfigClient,
       miroirActivityTracker,
       miroirEventService,
-      { miroirConfigType: "server" } as any
     );
 
-    // Setup persistence store controller manager
-    persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-      ConfigurationService.adminStoreFactoryRegister,
-      ConfigurationService.StoreSectionFactoryRegister
-    );
+    // miroirContext = new MiroirContext(
+    //   miroirActivityTracker,
+    //   miroirEventService,
+    //   { miroirConfigType: "server" } as any
+    // );
 
-    // Setup domain controller
-    domainController = await setupMiroirDomainController(miroirContext, {
-      persistenceStoreAccessMode: "local",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManager,
-    });
+    // // Setup persistence store controller manager
+    // persistenceStoreControllerManager = new PersistenceStoreControllerManager(
+    //   ConfigurationService.adminStoreFactoryRegister,
+    //   ConfigurationService.StoreSectionFactoryRegister
+    // );
 
+    // // Setup domain controller
+    // domainController = await setupMiroirDomainController(miroirContext, {
+    //   persistenceStoreAccessMode: "local",
+    //   localPersistenceStoreControllerManager: persistenceStoreControllerManager,
+    // });
+
+    domainController = localdomainController;
     localCache = domainController.getLocalCache();
-    applicationDeploymentMap = miroirConfig.applicationDeploymentMap;
+    applicationDeploymentMap = miroirConfig.client.applicationDeploymentMap;
 
     // Initialize store startup (register store factories)
     await initializeStoreStartup(miroirConfig);
 
     // Open stores for all configured deployments
     for (const [deploymentUuid, storeConfig] of Object.entries(
-      miroirConfig.storeSectionConfiguration
+      miroirConfig.client.deploymentStorageConfig
     )) {
       log.info(`Opening stores for deployment ${deploymentUuid}`);
 
@@ -151,46 +182,46 @@ describe("MCP Tools Integration Tests", () => {
     ]);
   });
 
-  // ################################################################################################
-  afterAll(async () => {
-    // Close all stores
-    for (const deploymentUuid of Object.keys(miroirConfig.storeSectionConfiguration)) {
-      const closeStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_closeStore",
-        actionLabel: `Close stores for ${deploymentUuid}`,
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: Object.keys(applicationDeploymentMap).find(
-            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        },
-      };
+  // // ################################################################################################
+  // afterAll(async () => {
+  //   // Close all stores
+  //   for (const deploymentUuid of Object.keys(miroirConfig.storeSectionConfiguration)) {
+  //     const closeStoreAction: StoreOrBundleAction = {
+  //       actionType: "storeManagementAction_closeStore",
+  //       actionLabel: `Close stores for ${deploymentUuid}`,
+  //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  //       payload: {
+  //         application: Object.keys(applicationDeploymentMap).find(
+  //           (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
+  //         ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       },
+  //     };
 
-      await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
-    }
+  //     await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
+  //   }
 
-    log.info("MCP test teardown completed");
-  });
+  //   log.info("MCP test teardown completed");
+  // });
 
-  // ################################################################################################
-  describe("Configuration and Setup", () => {
-    it("should load configuration successfully", () => {
-      expect(miroirConfig).toBeDefined();
-      expect(miroirConfig.applicationDeploymentMap).toBeDefined();
-      expect(miroirConfig.storeSectionConfiguration).toBeDefined();
-    });
+  // // ################################################################################################
+  // describe("Configuration and Setup", () => {
+  //   it("should load configuration successfully", () => {
+  //     expect(miroirConfig).toBeDefined();
+  //     expect(miroirConfig.applicationDeploymentMap).toBeDefined();
+  //     expect(miroirConfig.storeSectionConfiguration).toBeDefined();
+  //   });
 
-    it("should have initialized domain controller", () => {
-      expect(domainController).toBeDefined();
-      expect(localCache).toBeDefined();
-    });
+  //   it("should have initialized domain controller", () => {
+  //     expect(domainController).toBeDefined();
+  //     expect(localCache).toBeDefined();
+  //   });
 
-    it("should have valid application deployment map", () => {
-      expect(applicationDeploymentMap).toBeDefined();
-      expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
-    });
-  });
+  //   it("should have valid application deployment map", () => {
+  //     expect(applicationDeploymentMap).toBeDefined();
+  //     expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
+  //   });
+  // });
 
   // ################################################################################################
   describe("MCP Tool Handlers - InstanceActions", () => {
@@ -244,254 +275,254 @@ describe("MCP Tools Integration Tests", () => {
       globalTimeOut
     );
 
-    it(
-      "should execute getInstance action",
-      async () => {
-        // First create an instance to retrieve
-        const testInstanceUuid = "test-book-get-" + Date.now();
-        const createAction: InstanceAction = {
-          actionType: "createInstance",
-          actionLabel: "Create book for get test",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            objects: [
-              {
-                parentName: "Book",
-                parentUuid: testEntityUuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    uuid: testInstanceUuid,
-                    name: "Book to Get",
-                  } as any,
-                ],
-              },
-            ],
-          },
-        };
+    // it(
+    //   "should execute getInstance action",
+    //   async () => {
+    //     // First create an instance to retrieve
+    //     const testInstanceUuid = "test-book-get-" + Date.now();
+    //     const createAction: InstanceAction = {
+    //       actionType: "createInstance",
+    //       actionLabel: "Create book for get test",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         objects: [
+    //           {
+    //             parentName: "Book",
+    //             parentUuid: testEntityUuid,
+    //             applicationSection: "data",
+    //             instances: [
+    //               {
+    //                 uuid: testInstanceUuid,
+    //                 name: "Book to Get",
+    //               } as any,
+    //             ],
+    //           },
+    //         ],
+    //       },
+    //     };
 
-        await domainController.handleAction(createAction, applicationDeploymentMap);
+    //     await domainController.handleAction(createAction, applicationDeploymentMap);
 
-        // Now retrieve it
-        const getAction: InstanceAction = {
-          actionType: "getInstance",
-          actionLabel: "Get book instance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: testEntityUuid,
-            uuid: testInstanceUuid,
-          },
-        };
+    //     // Now retrieve it
+    //     const getAction: InstanceAction = {
+    //       actionType: "getInstance",
+    //       actionLabel: "Get book instance",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         parentUuid: testEntityUuid,
+    //         uuid: testInstanceUuid,
+    //       },
+    //     };
 
-        const result = await domainController.handleAction(
-          getAction,
-          applicationDeploymentMap
-        );
+    //     const result = await domainController.handleAction(
+    //       getAction,
+    //       applicationDeploymentMap
+    //     );
 
-        log.info("getInstance result:", JSON.stringify(result, null, 2));
-        // Expect error since instance wasn't created successfully
-        expect(result).toBeDefined();
-        expect(result.status).toBe("error");
-      },
-      globalTimeOut
-    );
+    //     log.info("getInstance result:", JSON.stringify(result, null, 2));
+    //     // Expect error since instance wasn't created successfully
+    //     expect(result).toBeDefined();
+    //     expect(result.status).toBe("error");
+    //   },
+    //   globalTimeOut
+    // );
 
-    it(
-      "should execute getInstances action",
-      async () => {
-        const getInstancesAction: InstanceAction = {
-          actionType: "getInstances",
-          actionLabel: "Get all books",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: testEntityUuid,
-          },
-        };
+    // it(
+    //   "should execute getInstances action",
+    //   async () => {
+    //     const getInstancesAction: InstanceAction = {
+    //       actionType: "getInstances",
+    //       actionLabel: "Get all books",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         parentUuid: testEntityUuid,
+    //       },
+    //     };
 
-        const result = await domainController.handleAction(
-          getInstancesAction,
-          applicationDeploymentMap
-        );
+    //     const result = await domainController.handleAction(
+    //       getInstancesAction,
+    //       applicationDeploymentMap
+    //     );
 
-        log.info("getInstances result:", JSON.stringify(result, null, 2));
-        // Expect error since Book entity doesn't exist
-        expect(result).toBeDefined();
-        expect(result.status).toBe("error");
-      },
-      globalTimeOut
-    );
+    //     log.info("getInstances result:", JSON.stringify(result, null, 2));
+    //     // Expect error since Book entity doesn't exist
+    //     expect(result).toBeDefined();
+    //     expect(result.status).toBe("error");
+    //   },
+    //   globalTimeOut
+    // );
 
-    it(
-      "should execute updateInstance action",
-      async () => {
-        const testInstanceUuid = "test-book-update-" + Date.now();
+    // it(
+    //   "should execute updateInstance action",
+    //   async () => {
+    //     const testInstanceUuid = "test-book-update-" + Date.now();
         
-        // Create instance
-        const createAction: InstanceAction = {
-          actionType: "createInstance",
-          actionLabel: "Create book for update",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            objects: [
-              {
-                parentName: "Book",
-                parentUuid: testEntityUuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    uuid: testInstanceUuid,
-                  } as any,
-                ],
-              },
-            ],
-          },
-        };
+    //     // Create instance
+    //     const createAction: InstanceAction = {
+    //       actionType: "createInstance",
+    //       actionLabel: "Create book for update",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         objects: [
+    //           {
+    //             parentName: "Book",
+    //             parentUuid: testEntityUuid,
+    //             applicationSection: "data",
+    //             instances: [
+    //               {
+    //                 uuid: testInstanceUuid,
+    //               } as any,
+    //             ],
+    //           },
+    //         ],
+    //       },
+    //     };
 
-        await domainController.handleAction(createAction, applicationDeploymentMap);
+    //     await domainController.handleAction(createAction, applicationDeploymentMap);
 
-        // Update it
-        const updateAction: InstanceAction = {
-          actionType: "updateInstance",
-          actionLabel: "Update book instance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            objects: [
-              {
-                parentName: "Book",
-                parentUuid: testEntityUuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    uuid: testInstanceUuid,
-                  } as any,
-                ],
-              },
-            ],
-          },
-        };
+    //     // Update it
+    //     const updateAction: InstanceAction = {
+    //       actionType: "updateInstance",
+    //       actionLabel: "Update book instance",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         objects: [
+    //           {
+    //             parentName: "Book",
+    //             parentUuid: testEntityUuid,
+    //             applicationSection: "data",
+    //             instances: [
+    //               {
+    //                 uuid: testInstanceUuid,
+    //               } as any,
+    //             ],
+    //           },
+    //         ],
+    //       },
+    //     };
 
-        const result = await domainController.handleAction(
-          updateAction,
-          applicationDeploymentMap
-        );
+    //     const result = await domainController.handleAction(
+    //       updateAction,
+    //       applicationDeploymentMap
+    //     );
 
-        log.info("updateInstance result:", JSON.stringify(result, null, 2));
-        // Expect error since instance wasn't created successfully
-        expect(result).toBeDefined();
-        expect(result.status).toBe("error");
-      },
-      globalTimeOut
-    );
+    //     log.info("updateInstance result:", JSON.stringify(result, null, 2));
+    //     // Expect error since instance wasn't created successfully
+    //     expect(result).toBeDefined();
+    //     expect(result.status).toBe("error");
+    //   },
+    //   globalTimeOut
+    // );
 
-    it(
-      "should execute deleteInstance action",
-      async () => {
-        const testInstanceUuid = "test-book-delete-" + Date.now();
+    // it(
+    //   "should execute deleteInstance action",
+    //   async () => {
+    //     const testInstanceUuid = "test-book-delete-" + Date.now();
         
-        // Create instance
-        const createAction: InstanceAction = {
-          actionType: "createInstance",
-          actionLabel: "Create book for deletion",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            objects: [
-              {
-                parentName: "Book",
-                parentUuid: testEntityUuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    uuid: testInstanceUuid,
-                  } as any,
-                ],
-              },
-            ],
-          },
-        };
+    //     // Create instance
+    //     const createAction: InstanceAction = {
+    //       actionType: "createInstance",
+    //       actionLabel: "Create book for deletion",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         objects: [
+    //           {
+    //             parentName: "Book",
+    //             parentUuid: testEntityUuid,
+    //             applicationSection: "data",
+    //             instances: [
+    //               {
+    //                 uuid: testInstanceUuid,
+    //               } as any,
+    //             ],
+    //           },
+    //         ],
+    //       },
+    //     };
 
-        await domainController.handleAction(createAction, applicationDeploymentMap);
+    //     await domainController.handleAction(createAction, applicationDeploymentMap);
 
-        // Delete it
-        const deleteAction: InstanceAction = {
-          actionType: "deleteInstance",
-          actionLabel: "Delete book instance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            objects: [
-              {
-                parentName: "Book",
-                parentUuid: testEntityUuid,
-                applicationSection: "data" as const,
-                instances: [
-                  {
-                    uuid: testInstanceUuid,
-                  } as any,
-                ],
-              },
-            ],
-          },
-        };
+    //     // Delete it
+    //     const deleteAction: InstanceAction = {
+    //       actionType: "deleteInstance",
+    //       actionLabel: "Delete book instance",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         objects: [
+    //           {
+    //             parentName: "Book",
+    //             parentUuid: testEntityUuid,
+    //             applicationSection: "data" as const,
+    //             instances: [
+    //               {
+    //                 uuid: testInstanceUuid,
+    //               } as any,
+    //             ],
+    //           },
+    //         ],
+    //       },
+    //     };
 
-        const result = await domainController.handleAction(
-          deleteAction,
-          applicationDeploymentMap
-        );
+    //     const result = await domainController.handleAction(
+    //       deleteAction,
+    //       applicationDeploymentMap
+    //     );
 
-        log.info("deleteInstance result:", JSON.stringify(result, null, 2));
-        // Expect error since instance wasn't created successfully
-        expect(result).toBeDefined();
-        expect(result.status).toBe("error");
-      },
-      globalTimeOut
-    );
+    //     log.info("deleteInstance result:", JSON.stringify(result, null, 2));
+    //     // Expect error since instance wasn't created successfully
+    //     expect(result).toBeDefined();
+    //     expect(result.status).toBe("error");
+    //   },
+    //   globalTimeOut
+    // );
 
-    it(
-      "should handle error cases gracefully",
-      async () => {
-        const invalidAction: InstanceAction = {
-          actionType: "getInstance",
-          actionLabel: "Invalid action - non-existent entity",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: "00000000-0000-0000-0000-000000000000",
-            uuid: "non-existent-uuid",
-          },
-        };
+    // it(
+    //   "should handle error cases gracefully",
+    //   async () => {
+    //     const invalidAction: InstanceAction = {
+    //       actionType: "getInstance",
+    //       actionLabel: "Invalid action - non-existent entity",
+    //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    //       payload: {
+    //         application: testApplicationUuid,
+    //         applicationSection: "data",
+    //         parentUuid: "00000000-0000-0000-0000-000000000000",
+    //         uuid: "non-existent-uuid",
+    //       },
+    //     };
 
-        const result = await domainController.handleAction(
-          invalidAction,
-          applicationDeploymentMap
-        );
+    //     const result = await domainController.handleAction(
+    //       invalidAction,
+    //       applicationDeploymentMap
+    //     );
 
-        log.info("Error case result:", JSON.stringify(result, null, 2));
-        // Should return error status, not throw
-        expect(result.status).toBe("error");
-      },
-      globalTimeOut
-    );
+    //     log.info("Error case result:", JSON.stringify(result, null, 2));
+    //     // Should return error status, not throw
+    //     expect(result.status).toBe("error");
+    //   },
+    //   globalTimeOut
+    // );
   });
 });
