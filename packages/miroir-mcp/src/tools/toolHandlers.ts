@@ -17,6 +17,7 @@ import {
   LoadNewInstancesInLocalCacheToolSchema,
 } from "./instanceActions.js";
 import type { ZodTypeAny } from "zod";
+import { env } from "process";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -131,14 +132,70 @@ async function handleInstanceAction(
   }
 }
 
-const toolNameToSchemaMap: { [toolName: string]: ZodTypeAny } = {
-  miroir_createInstance: CreateInstanceToolSchema,
-  miroir_getInstance: GetInstanceToolSchema,
-  miroir_getInstances: GetInstancesToolSchema,
-  miroir_updateInstance: UpdateInstanceToolSchema,
-  miroir_deleteInstance: DeleteInstanceToolSchema,
-  miroir_deleteInstanceWithCascade: DeleteInstanceWithCascadeToolSchema,
-  miroir_loadNewInstancesInLocalCache: LoadNewInstancesInLocalCacheToolSchema,
+const toolNameToSchemaMap: { [toolName: string]: {
+  schema: ZodTypeAny,
+  envelope: {
+    actionType: string;
+    actionLabel: string;
+    application: string;
+    endpoint: string;
+  }
+} } = {
+  miroir_createInstance: {schema: CreateInstanceToolSchema,
+    envelope: {
+      actionType: "createInstance",
+      actionLabel: "MCP: Create instances",
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    }
+  },
+  miroir_getInstance: {schema: GetInstanceToolSchema, 
+    envelope: {
+      actionType: "getInstance",
+      actionLabel: "MCP: Get instance",
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    }
+  },
+  miroir_getInstances: {schema: GetInstancesToolSchema, envelope: {
+      actionType: "getInstances",
+      actionLabel: "MCP: Get instances",
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    }
+  },
+  miroir_updateInstance: {schema: UpdateInstanceToolSchema,
+    envelope: {
+      actionType: "updateInstance",
+      actionLabel: "MCP: Update instances",
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    }
+  },
+  miroir_deleteInstance: {schema: DeleteInstanceToolSchema, 
+    envelope: {
+      actionType: "deleteInstance",
+      actionLabel: "MCP: Delete instance",
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    }
+  },
+  miroir_deleteInstanceWithCascade: {schema: DeleteInstanceWithCascadeToolSchema,
+    envelope: {
+      actionType: "deleteInstanceWithCascade",
+      actionLabel: "MCP: Delete instance with cascade",
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    }
+  },
+  miroir_loadNewInstancesInLocalCache: {schema: LoadNewInstancesInLocalCacheToolSchema,
+    envelope: {
+      actionType: "loadNewInstancesInLocalCache",
+      actionLabel: "MCP: Load instances in cache",
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    }
+  },
 };
 // ################################################################################################
 // Individual tool handlers
@@ -155,7 +212,7 @@ export async function handleCreateInstance(
   return handleInstanceAction(
     "miroir_createInstance",
     params,
-    toolNameToSchemaMap["miroir_createInstance"],
+    toolNameToSchemaMap["miroir_createInstance"].schema,
     (p) => ({
       actionType: "createInstance",
       actionLabel: "MCP: Create instances",
@@ -212,7 +269,7 @@ export async function handleGetInstances(
   return handleInstanceAction(
     "miroir_getInstances",
     params,
-    toolNameToSchemaMap["miroir_getInstances"],
+    toolNameToSchemaMap["miroir_getInstances"].schema,
     (p) => ({
       actionType: "getInstances",
       actionLabel: "MCP: Get instances",
@@ -241,7 +298,7 @@ export async function handleUpdateInstance(
   return handleInstanceAction(
     "miroir_updateInstance",
     params,
-    toolNameToSchemaMap["miroir_updateInstance"],
+    toolNameToSchemaMap["miroir_updateInstance"].schema,
     (p) => ({
       actionType: "updateInstance",
       actionLabel: "MCP: Update instances",
@@ -269,7 +326,7 @@ export async function handleDeleteInstance(
   return handleInstanceAction(
     "miroir_deleteInstance",
     params,
-    toolNameToSchemaMap["miroir_deleteInstance"],
+    toolNameToSchemaMap["miroir_deleteInstance"].schema,
     (p) => ({
       actionType: "deleteInstance",
       actionLabel: "MCP: Delete instance",
@@ -304,7 +361,7 @@ export async function handleDeleteInstanceWithCascade(
   return handleInstanceAction(
     "miroir_deleteInstanceWithCascade",
     params,
-    toolNameToSchemaMap["miroir_deleteInstanceWithCascade"],
+    toolNameToSchemaMap["miroir_deleteInstanceWithCascade"].schema,
     (p) => ({
       actionType: "deleteInstanceWithCascade",
       actionLabel: "MCP: Delete instance with cascade",
@@ -339,7 +396,7 @@ export async function handleLoadNewInstancesInLocalCache(
   return handleInstanceAction(
     "miroir_loadNewInstancesInLocalCache",
     params,
-    toolNameToSchemaMap["miroir_loadNewInstancesInLocalCache"],
+    toolNameToSchemaMap["miroir_loadNewInstancesInLocalCache"].schema,
     (p) => ({
       actionType: "loadNewInstancesInLocalCache",
       actionLabel: "MCP: Load instances in cache",

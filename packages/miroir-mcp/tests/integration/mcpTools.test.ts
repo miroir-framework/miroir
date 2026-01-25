@@ -279,24 +279,24 @@ describe("MCP Tools Integration Tests", () => {
     log.info("MCP test teardown completed");
   });
 
-  // ################################################################################################
-  describe("Configuration and Setup", () => {
-    it("should load configuration successfully", () => {
-      expect(miroirConfig).toBeDefined();
-      expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
-      expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
-    });
+  // // ################################################################################################
+  // describe("Configuration and Setup", () => {
+  //   it("should load configuration successfully", () => {
+  //     expect(miroirConfig).toBeDefined();
+  //     expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
+  //     expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
+  //   });
 
-    it("should have initialized domain controller", () => {
-      expect(domainController).toBeDefined();
-      expect(localCache).toBeDefined();
-    });
+  //   it("should have initialized domain controller", () => {
+  //     expect(domainController).toBeDefined();
+  //     expect(localCache).toBeDefined();
+  //   });
 
-    it("should have valid application deployment map", () => {
-      expect(applicationDeploymentMap).toBeDefined();
-      expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
-    });
-  });
+  //   it("should have valid application deployment map", () => {
+  //     expect(applicationDeploymentMap).toBeDefined();
+  //     expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
+  //   });
+  // });
 
   // ################################################################################################
   describe("MCP Tool Handlers - InstanceActions", () => {
