@@ -13,6 +13,7 @@ import {
   ApplicationSectionSchema,
   EntityInstanceSchema
 } from "./instanceActions.js";
+import type { M } from "vitest/dist/chunks/environment.d.cL3nLXbE.js";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -137,10 +138,32 @@ export async function handleInstanceAction(
 // ################################################################################################
 // Tool to schema and action mapping
 // ################################################################################################
-export const mcpRequestHandlers: Record<
-  string,
-  {
-    payloadZodSchema: ZodTypeAny;
+export type mcpToolDescription = {
+  name: string;
+  description: string;
+  inputSchema: {
+    type: "object";
+    properties: {
+      application: {
+        type: "string";
+        description: string;
+      };
+      applicationSection: {
+        type: "string";
+        enum: string[];
+        description: string;
+      };
+      parentUuid: {
+        type: "string";
+        description: string;
+      };
+    };
+    required: string[];
+  };
+};
+export type McpRequestHandler<T extends mcpToolDescription> = {
+  mcpToolDescription: T;
+  payloadZodSchema: ZodTypeAny;
     actionEnvelope: {
       actionType: string;
       actionLabel: string;
@@ -148,9 +171,48 @@ export const mcpRequestHandlers: Record<
       endpoint: string;
     };
     actionHandler: ToolHandler;
-  }
-> = {
+
+}
+export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
+export const mcpRequestHandlers: McpRequestHandlers = {
   miroir_createInstance: {
+    mcpToolDescription: {
+      name: "miroir_createInstance",
+      description:
+        "Create new entity instances in Miroir. Creates one or more instances of a specific entity type in the specified application deployment.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section where instances will be created (model or data)",
+          },
+          application: {
+            type: "string",
+            description: "Application UUID where instances will be created",
+          },
+          parentUuid: {
+            type: "string",
+            description: "Entity UUID (parent entity of the instances to create)",
+          },
+          instances: {
+            type: "array",
+            description: "Array of entity instances to create. Each must have uuid and parentUuid.",
+            items: {
+              type: "object",
+              properties: {
+                uuid: { type: "string", description: "Instance UUID" },
+                parentUuid: { type: "string", description: "Parent entity UUID" },
+              },
+              required: ["uuid", "parentUuid"],
+              additionalProperties: true,
+            },
+          },
+        },
+        required: ["applicationSection", "deploymentUuid", "parentUuid", "instances"],
+      },
+    },
     payloadZodSchema: z.object({
       application: UuidSchema,
       applicationSection: ApplicationSectionSchema,
@@ -170,6 +232,34 @@ export const mcpRequestHandlers: Record<
     })),
   },
   miroir_getInstance: {
+    mcpToolDescription: {
+      name: "miroir_getInstance",
+      description:
+        "Retrieve a single entity instance by UUID. Returns the complete instance data for the specified entity instance.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          application: {
+            type: "string",
+            description: "UUID of Application to query",
+          },
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section to query (model or data)",
+          },
+          parentUuid: {
+            type: "string",
+            description: "UUID of Entity (parent entity)",
+          },
+          uuid: {
+            type: "string",
+            description: "UUID of Instance to retrieve",
+          },
+        },
+        required: ["application", "applicationSection", "parentUuid", "uuid"],
+      },
+    },
     payloadZodSchema: z.object({
       application: UuidSchema,
       applicationSection: ApplicationSectionSchema,
@@ -190,6 +280,30 @@ export const mcpRequestHandlers: Record<
     })),
   },
   miroir_getInstances: {
+    mcpToolDescription: {
+      name: "miroir_getInstances",
+      description:
+        "Retrieve all instances of a specific entity type. Returns an array of all instances for the given entity.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          application: {
+            type: "string",
+            description: "Application UUID to query",
+          },
+          parentUuid: {
+            type: "string",
+            description: "Entity UUID to get all instances for",
+          },
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section to query (model or data)",
+          },
+        },
+        required: ["application", "applicationSection", "parentUuid"],
+      },
+    },
     payloadZodSchema: z.object({
       application: UuidSchema,
       applicationSection: ApplicationSectionSchema,
@@ -208,6 +322,39 @@ export const mcpRequestHandlers: Record<
     })),
   },
   miroir_updateInstance: {
+    mcpToolDescription: {
+      name: "miroir_updateInstance",
+      description:
+        "Update existing entity instances. Updates one or more instances with new data. Instances are identified by their uuid and parentUuid.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section where instances will be updated",
+          },
+          deploymentUuid: {
+            type: "string",
+            description: "Deployment UUID",
+          },
+          instances: {
+            type: "array",
+            description: "Array of entity instances with updated data",
+            items: {
+              type: "object",
+              properties: {
+                uuid: { type: "string", description: "Instance UUID" },
+                parentUuid: { type: "string", description: "Parent entity UUID" },
+              },
+              required: ["uuid", "parentUuid"],
+              additionalProperties: true,
+            },
+          },
+        },
+        required: ["applicationSection", "deploymentUuid", "instances"],
+      },
+    },
     payloadZodSchema: z.object({
       applicationSection: ApplicationSectionSchema,
       deploymentUuid: UuidSchema,
@@ -226,6 +373,34 @@ export const mcpRequestHandlers: Record<
     })),
   },
   miroir_deleteInstance: {
+    mcpToolDescription: {
+      name: "miroir_deleteInstance",
+      description:
+        "Delete a single entity instance by UUID. Removes the instance from the specified deployment.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section containing the instance",
+          },
+          deploymentUuid: {
+            type: "string",
+            description: "Deployment UUID",
+          },
+          parentUuid: {
+            type: "string",
+            description: "Entity UUID (parent entity)",
+          },
+          uuid: {
+            type: "string",
+            description: "Instance UUID to delete",
+          },
+        },
+        required: ["applicationSection", "deploymentUuid", "parentUuid", "uuid"],
+      },
+    },
     payloadZodSchema: z.object({
       applicationSection: ApplicationSectionSchema,
       deploymentUuid: UuidSchema,
@@ -252,6 +427,34 @@ export const mcpRequestHandlers: Record<
     })),
   },
   miroir_deleteInstanceWithCascade: {
+    mcpToolDescription: {
+      name: "miroir_deleteInstanceWithCascade",
+      description:
+        "Delete an entity instance and all its dependent instances (cascade delete). Removes the instance and any related instances that reference it.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section containing the instance",
+          },
+          deploymentUuid: {
+            type: "string",
+            description: "Deployment UUID",
+          },
+          parentUuid: {
+            type: "string",
+            description: "Entity UUID (parent entity)",
+          },
+          uuid: {
+            type: "string",
+            description: "Instance UUID to delete with cascade",
+          },
+        },
+        required: ["applicationSection", "deploymentUuid", "parentUuid", "uuid"],
+      },
+    },
     payloadZodSchema: z.object({
       applicationSection: ApplicationSectionSchema,
       deploymentUuid: UuidSchema,
@@ -278,6 +481,43 @@ export const mcpRequestHandlers: Record<
     })),
   },
   miroir_loadNewInstancesInLocalCache: {
+    mcpToolDescription: {
+      name: "miroir_loadNewInstancesInLocalCache",
+      description:
+        "Load new instances into the local cache without persisting them. Useful for temporary data or previewing changes before committing.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section for cache loading",
+          },
+          deploymentUuid: {
+            type: "string",
+            description: "Deployment UUID",
+          },
+          parentUuid: {
+            type: "string",
+            description: "Entity UUID (parent entity)",
+          },
+          instances: {
+            type: "array",
+            description: "Array of instances to load in local cache",
+            items: {
+              type: "object",
+              properties: {
+                uuid: { type: "string", description: "Instance UUID" },
+                parentUuid: { type: "string", description: "Parent entity UUID" },
+              },
+              required: ["uuid", "parentUuid"],
+              additionalProperties: true,
+            },
+          },
+        },
+        required: ["applicationSection", "deploymentUuid", "parentUuid", "instances"],
+      },
+    },
     payloadZodSchema: z.object({
       applicationSection: ApplicationSectionSchema,
       deploymentUuid: UuidSchema,
@@ -333,3 +573,4 @@ export function createHandler(
   };
 }
 
+export const allInstanceActionTools = Object.values(mcpRequestHandlers).map((t) => t.mcpToolDescription);
