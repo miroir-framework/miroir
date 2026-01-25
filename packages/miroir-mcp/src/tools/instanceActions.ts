@@ -65,8 +65,8 @@ export const createInstanceTool = {
 // Tool: miroir_getInstance
 // ################################################################################################
 export const GetInstanceToolSchema = z.object({
+  application: UuidSchema,
   applicationSection: ApplicationSectionSchema,
-  deploymentUuid: UuidSchema,
   parentUuid: UuidSchema.describe("Entity UUID"),
   uuid: UuidSchema.describe("Instance UUID to retrieve"),
 });
@@ -78,25 +78,25 @@ export const getInstanceTool = {
   inputSchema: {
     type: "object",
     properties: {
+      application: {
+        type: "string",
+        description: "UUID of Application to query",
+      },
       applicationSection: {
         type: "string",
         enum: ["model", "data"],
         description: "Section to query (model or data)",
       },
-      deploymentUuid: {
-        type: "string",
-        description: "Deployment UUID to query",
-      },
       parentUuid: {
         type: "string",
-        description: "Entity UUID (parent entity)",
+        description: "UUID of Entity (parent entity)",
       },
       uuid: {
         type: "string",
-        description: "Instance UUID to retrieve",
+        description: "UUID of Instance to retrieve",
       },
     },
-    required: ["applicationSection", "deploymentUuid", "parentUuid", "uuid"],
+    required: ["application", "applicationSection", "parentUuid", "uuid"],
   },
 };
 
@@ -104,8 +104,8 @@ export const getInstanceTool = {
 // Tool: miroir_getInstances
 // ################################################################################################
 export const GetInstancesToolSchema = z.object({
+  application: UuidSchema,
   applicationSection: ApplicationSectionSchema,
-  deploymentUuid: UuidSchema,
   parentUuid: UuidSchema.describe("Entity UUID"),
 });
 
@@ -116,21 +116,21 @@ export const getInstancesTool = {
   inputSchema: {
     type: "object",
     properties: {
-      applicationSection: {
+      application: {
         type: "string",
-        enum: ["model", "data"],
-        description: "Section to query (model or data)",
-      },
-      deploymentUuid: {
-        type: "string",
-        description: "Deployment UUID to query",
+        description: "Application UUID to query",
       },
       parentUuid: {
         type: "string",
         description: "Entity UUID to get all instances for",
       },
+      applicationSection: {
+        type: "string",
+        enum: ["model", "data"],
+        description: "Section to query (model or data)",
+      },
     },
-    required: ["applicationSection", "deploymentUuid", "parentUuid"],
+    required: [ "application", "applicationSection","parentUuid"],
   },
 };
 

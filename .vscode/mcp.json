@@ -1,0 +1,8 @@
+{
+	"servers": {
+        "miroir-mcp-server": {
+      "url": "http://localhost:3080/sse",
+      "description": "Local Miroir MCP Server"
+    }
+  }
+}

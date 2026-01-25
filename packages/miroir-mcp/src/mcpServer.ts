@@ -1,9 +1,10 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import express from "express";
 
 import {
   ConfigurationService,
@@ -60,6 +61,10 @@ export class MiroirMcpServer {
   private miroirContext!: MiroirContextInterface;
   private persistenceStoreControllerManager!: PersistenceStoreControllerManagerInterface;
   private applicationDeploymentMap!: ApplicationDeploymentMap;
+  private httpServer?: any;
+  private port: number = 3080;
+  private sessions: Map<string, { server: Server; transport: SSEServerTransport }> = new Map();
+  private isShuttingDown: boolean = false;
   
   // Additional components for emulated server mode (test mode)
   // private persistenceStoreControllerManagerForServer?: PersistenceStoreControllerManagerInterface;
@@ -209,13 +214,26 @@ export class MiroirMcpServer {
     }
   }
 
+private mcpRequestHandlers: Record<string, (
+  params: unknown,
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap
+) => Promise<{ content: Array<{ type: string; text: string }> }>> = {
+  "miroir_createInstance": handleCreateInstance,
+  "miroir_getInstance": handleGetInstance,
+  "miroir_getInstances": handleGetInstances,
+  "miroir_updateInstance": handleUpdateInstance,
+  "miroir_deleteInstance": handleDeleteInstance,
+  "miroir_deleteInstanceWithCascade": handleDeleteInstanceWithCascade,
+  // "miroir_loadNewInstancesInLocalCache": handleLoadNewInstancesInLocalCache,
+};
   // ##############################################################################################
   /**
-   * Setup MCP request handlers
+   * Setup MCP request handlers for a server instance
    */
-  private setupHandlers(): void {
+  private setupHandlersForServer(server: Server): void {
     // List available tools
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+    server.setRequestHandler(ListToolsRequestSchema, async () => {
       log.info("Received list_tools request");
       return {
         tools: allInstanceActionTools,
@@ -223,78 +241,33 @@ export class MiroirMcpServer {
     });
 
     // Handle tool calls
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    server.setRequestHandler(CallToolRequestSchema, async (request) => {
       log.info(`Received call_tool request: ${request.params.name}`);
 
       const { name, arguments: args } = request.params;
 
       try {
-        switch (name) {
-          case "miroir_createInstance":
-            return await handleCreateInstance(
-              args,
-              this.domainController,
-              this.applicationDeploymentMap
-            );
-
-          case "miroir_getInstance":
-            return await handleGetInstance(
-              args,
-              this.domainController,
-              this.applicationDeploymentMap
-            );
-
-          case "miroir_getInstances":
-            return await handleGetInstances(
-              args,
-              this.domainController,
-              this.applicationDeploymentMap
-            );
-
-          case "miroir_updateInstance":
-            return await handleUpdateInstance(
-              args,
-              this.domainController,
-              this.applicationDeploymentMap
-            );
-
-          case "miroir_deleteInstance":
-            return await handleDeleteInstance(
-              args,
-              this.domainController,
-              this.applicationDeploymentMap
-            );
-
-          case "miroir_deleteInstanceWithCascade":
-            return await handleDeleteInstanceWithCascade(
-              args,
-              this.domainController,
-              this.applicationDeploymentMap
-            );
-
-          // case "miroir_loadNewInstancesInLocalCache":
-          //   return await handleLoadNewInstancesInLocalCache(
-          //     args,
-          //     this.domainController,
-          //     this.applicationDeploymentMap
-          //   );
-
-          default:
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify({
-                    status: "error",
-                    error: {
-                      type: "unknown_tool",
-                      message: `Unknown tool: ${name}`,
-                    },
-                  }),
-                },
-              ],
-            };
+        if (!(name in this.mcpRequestHandlers)) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  status: "error",
+                  error: {
+                    type: "unknown_tool",
+                    message: `Unknown tool: ${name}`,
+                  },
+                }),
+              },
+            ],
+          };
         }
+        return await this.mcpRequestHandlers[name](
+          args,
+          this.domainController,
+          this.applicationDeploymentMap
+        );
       } catch (error) {
         log.error(`Error handling tool call ${name}:`, error);
         return {
@@ -314,6 +287,13 @@ export class MiroirMcpServer {
       }
     });
   }
+
+  /**
+   * Setup MCP request handlers
+   */
+  private setupHandlers(): void {
+    this.setupHandlersForServer(this.server);
+  }
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -321,41 +301,169 @@ export class MiroirMcpServer {
   // ##############################################################################################
   // ##############################################################################################
   /**
-   * Start the MCP server with stdio transport
+   * Start the MCP server with HTTP transport
    */
   async run(): Promise<void> {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    log.info("Miroir MCP Server running on stdio");
+    const app = express();
+    app.use(express.json());
+
+    // SSE endpoint for MCP protocol - establishes the event stream
+    app.get("/sse", async (req, res) => {
+      log.info("New SSE connection request");
+
+      // Set headers to keep the connection alive
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+
+      // Create a new Server instance for this connection
+      const clientServer = new Server(
+        {
+          name: "miroir-mcp-server",
+          version: "1.0.0",
+        },
+        {
+          capabilities: {
+            tools: {},
+          },
+        }
+      );
+
+      // Setup handlers for this client server (same as main server)
+      this.setupHandlersForServer(clientServer);
+
+      // Create transport for this session
+      const transport = new SSEServerTransport("/message", res);
+
+      // Connect will call transport.start() which sends the endpoint event with sessionId
+      await clientServer.connect(transport);
+
+      // Extract the session ID that was generated by the transport
+      const sessionId = (transport as any)._sessionId;
+      
+      log.info(`Session ID extracted from transport: ${sessionId}, type: ${typeof sessionId}`);
+
+      // Store both server and transport for this session
+      this.sessions.set(sessionId, { server: clientServer, transport });
+
+      log.info(`SSE connection established with session ${sessionId}, total sessions: ${this.sessions.size}`);
+
+      // Send periodic heartbeat to keep the connection alive
+      const heartbeatInterval = setInterval(() => {
+        res.write(`event: ping\ndata: heartbeat\n\n`);
+      }, 25000); // Send heartbeat every 25 seconds
+
+      // Clean up when connection closes
+      req.on("close", () => {
+        clearInterval(heartbeatInterval); // Clear the heartbeat interval
+        this.sessions.delete(sessionId);
+        log.info(`SSE connection closed for session ${sessionId}, ${this.sessions.size} sessions remaining`);
+      });
+    });
+
+    // POST endpoint for receiving messages from client
+    app.post("/message", async (req, res) => {
+      const sessionId = req.query.sessionId as string;
+      log.info(`Received message on /message endpoint for session ${sessionId}, type: ${typeof sessionId}`);
+      log.info(`Available sessions: ${Array.from(this.sessions.keys()).join(", ")}`);
+      
+      if (!sessionId) {
+        log.error("No sessionId provided in POST request");
+        res.status(400).send("Missing sessionId");
+        return;
+      }
+      
+      const session = this.sessions.get(sessionId);
+      if (!session) {
+        log.error(`No session found for sessionId ${sessionId}`);
+        log.error(`All sessions: ${JSON.stringify(Array.from(this.sessions.keys()))}`);
+        res.status(404).send("Session not found");
+        return;
+      }
+      
+      // Let the transport handle the POST message
+      try {
+        await session.transport.handlePostMessage(req, res, req.body);
+      } catch (error) {
+        log.error(`Error handling POST message:`, error);
+        if (!res.headersSent) {
+          res.status(500).send("Internal server error");
+        }
+      }
+    });
+
+    // Health check endpoint
+    app.get("/health", (req, res) => {
+      res.json({ status: "ok", name: "miroir-mcp-server", version: "1.0.0" });
+    });
+
+    this.httpServer = app.listen(this.port, () => {
+      log.info(`Miroir MCP Server running on http://localhost:${this.port}`);
+      log.info(`SSE endpoint: http://localhost:${this.port}/sse`);
+    });
   }
 
   /**
    * Cleanup on shutdown
    */
   async shutdown(): Promise<void> {
+    if (this.isShuttingDown) {
+      log.info("Shutdown already in progress, ignoring...");
+      return;
+    }
+    
+    this.isShuttingDown = true;
     log.info("Shutting down Miroir MCP Server...");
 
-    // Close all stores
-    for (const deploymentUuid of Object.keys(this.config.client.deploymentStorageConfig)) {
-      const closeStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_closeStore",
-        actionLabel: `Close stores for ${deploymentUuid}`,
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: Object.keys(this.applicationDeploymentMap).find(
-            (appUuid) => this.applicationDeploymentMap[appUuid] === deploymentUuid
-          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        },
-      };
+    // Close all MCP sessions
+    log.info(`Closing ${this.sessions.size} active sessions...`);
+    for (const [sessionId, session] of this.sessions.entries()) {
+      try {
+        await session.server.close();
+        log.info(`Closed session ${sessionId}`);
+      } catch (error) {
+        log.error(`Error closing session ${sessionId}:`, error);
+      }
+    }
+    this.sessions.clear();
 
-      await this.domainController.handleAction(
-        closeStoreAction,
-        this.applicationDeploymentMap
-      );
+    // Close HTTP server
+    if (this.httpServer) {
+      log.info("Closing HTTP server...");
+      await new Promise<void>((resolve, reject) => {
+        this.httpServer.close((err: any) => {
+          if (err) {
+            log.error("Error closing HTTP server:", err);
+            reject(err);
+          } else {
+            log.info("HTTP server closed");
+            resolve();
+          }
+        });
+      });
     }
 
-    log.info("All stores closed successfully");
+    // // Close all stores
+    // for (const deploymentUuid of Object.keys(this.config.client.deploymentStorageConfig)) {
+    //   const closeStoreAction: StoreOrBundleAction = {
+    //     actionType: "storeManagementAction_closeStore",
+    //     actionLabel: `Close stores for ${deploymentUuid}`,
+    //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+    //     payload: {
+    //       application: Object.keys(this.applicationDeploymentMap).find(
+    //         (appUuid) => this.applicationDeploymentMap[appUuid] === deploymentUuid
+    //       ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    //     },
+    //   };
+
+    //   await this.domainController.handleAction(
+    //     closeStoreAction,
+    //     this.applicationDeploymentMap
+    //   );
+    // }
+
+    // log.info("All stores closed successfully");
   }
 }
 
@@ -366,5 +474,38 @@ export async function startMcpServer(): Promise<MiroirMcpServer> {
   const server = new MiroirMcpServer();
   await server.initialize();
   await server.run();
+
+  // Signal handling for graceful shutdown
+  let shutdownInProgress = false;
+  const shutdownHandler = async (signal: string) => {
+    if (shutdownInProgress) {
+      log.info(`Shutdown already in progress, ignoring ${signal}`);
+      return;
+    }
+    shutdownInProgress = true;
+    
+    log.info(`[miroir-mcp] Received ${signal}, shutting down...`);
+    
+    // Remove signal handlers to prevent re-entry
+    process.removeAllListeners("SIGINT");
+    process.removeAllListeners("SIGTERM");
+    
+    try {
+      await server.shutdown();
+      log.info("Shutdown complete. Exiting process.");
+      process.exit(0);
+    } catch (err) {
+      log.error("Error during shutdown:", err);
+      process.exit(1);
+    }
+  };
+
+  process.on("SIGINT", () => shutdownHandler("SIGINT"));
+  process.on("SIGTERM", () => shutdownHandler("SIGTERM"));
+  process.on("uncaughtException", async (err) => {
+    log.error("Uncaught exception:", err);
+    await shutdownHandler("uncaughtException");
+  });
+
   return server;
 }

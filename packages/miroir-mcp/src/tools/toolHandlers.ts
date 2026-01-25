@@ -16,6 +16,7 @@ import {
   DeleteInstanceWithCascadeToolSchema,
   LoadNewInstancesInLocalCacheToolSchema,
 } from "./instanceActions.js";
+import type { ZodTypeAny } from "zod";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -46,6 +47,8 @@ async function handleInstanceAction(
   applicationDeploymentMap: ApplicationDeploymentMap
 ): Promise<{ content: Array<{ type: string; text: string }> }> {
   try {
+    log.info(`${toolName} - received params:`, params);
+    
     // Validate parameters
     const validatedParams = schema.parse(params);
     log.info(`${toolName} - validated params:`, validatedParams);
@@ -128,6 +131,15 @@ async function handleInstanceAction(
   }
 }
 
+const toolNameToSchemaMap: { [toolName: string]: ZodTypeAny } = {
+  miroir_createInstance: CreateInstanceToolSchema,
+  miroir_getInstance: GetInstanceToolSchema,
+  miroir_getInstances: GetInstancesToolSchema,
+  miroir_updateInstance: UpdateInstanceToolSchema,
+  miroir_deleteInstance: DeleteInstanceToolSchema,
+  miroir_deleteInstanceWithCascade: DeleteInstanceWithCascadeToolSchema,
+  miroir_loadNewInstancesInLocalCache: LoadNewInstancesInLocalCacheToolSchema,
+};
 // ################################################################################################
 // Individual tool handlers
 // ################################################################################################
@@ -137,10 +149,13 @@ export async function handleCreateInstance(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
+  if (!toolNameToSchemaMap["miroir_createInstance"]) {
+    throw new Error("Schema for miroir_createInstance not found");
+  }
   return handleInstanceAction(
     "miroir_createInstance",
     params,
-    CreateInstanceToolSchema,
+    toolNameToSchemaMap["miroir_createInstance"],
     (p) => ({
       actionType: "createInstance",
       actionLabel: "MCP: Create instances",
@@ -162,17 +177,20 @@ export async function handleGetInstance(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
+  if (!toolNameToSchemaMap["miroir_getInstance"]) {
+    throw new Error("Schema for miroir_getInstance not found");
+  }
   return handleInstanceAction(
     "miroir_getInstance",
     params,
-    GetInstanceToolSchema,
+    toolNameToSchemaMap["miroir_getInstance"],
     (p) => ({
       actionType: "getInstance",
       actionLabel: "MCP: Get instance",
       application: MIROIR_APP_UUID,
       endpoint: INSTANCE_ENDPOINT_UUID,
       payload: {
-        application: p.applicationUuid,
+        application: p.application,
         applicationSection: p.applicationSection,
         parentUuid: p.parentUuid,
         uuid: p.uuid,
@@ -188,17 +206,21 @@ export async function handleGetInstances(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
+  if (!toolNameToSchemaMap["miroir_getInstances"]) {
+    throw new Error("Schema for miroir_getInstances not found");
+  }
   return handleInstanceAction(
     "miroir_getInstances",
     params,
-    GetInstancesToolSchema,
+    toolNameToSchemaMap["miroir_getInstances"],
     (p) => ({
       actionType: "getInstances",
       actionLabel: "MCP: Get instances",
       application: MIROIR_APP_UUID,
       endpoint: INSTANCE_ENDPOINT_UUID,
-      payload: {
-        application: p.applicationUuid,
+      payload: //p
+      {
+        application: p.application,
         applicationSection: p.applicationSection,
         parentUuid: p.parentUuid,
       },
@@ -213,17 +235,20 @@ export async function handleUpdateInstance(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
+  if (!toolNameToSchemaMap["miroir_updateInstance"]) {
+    throw new Error("Schema for miroir_updateInstance not found");
+  }
   return handleInstanceAction(
     "miroir_updateInstance",
     params,
-    UpdateInstanceToolSchema,
+    toolNameToSchemaMap["miroir_updateInstance"],
     (p) => ({
       actionType: "updateInstance",
       actionLabel: "MCP: Update instances",
       application: MIROIR_APP_UUID,
       endpoint: INSTANCE_ENDPOINT_UUID,
       payload: {
-        application: p.applicationUuid,
+        application: p.application,
         applicationSection: p.applicationSection,
         objects: p.instances,
       },
@@ -238,10 +263,13 @@ export async function handleDeleteInstance(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
+  if (!toolNameToSchemaMap["miroir_deleteInstance"]) {
+    throw new Error("Schema for miroir_deleteInstance not found");
+  }
   return handleInstanceAction(
     "miroir_deleteInstance",
     params,
-    DeleteInstanceToolSchema,
+    toolNameToSchemaMap["miroir_deleteInstance"],
     (p) => ({
       actionType: "deleteInstance",
       actionLabel: "MCP: Delete instance",
@@ -270,10 +298,13 @@ export async function handleDeleteInstanceWithCascade(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
+  if (!toolNameToSchemaMap["miroir_deleteInstanceWithCascade"]) {
+    throw new Error("Schema for miroir_deleteInstanceWithCascade not found");
+  }
   return handleInstanceAction(
     "miroir_deleteInstanceWithCascade",
     params,
-    DeleteInstanceWithCascadeToolSchema,
+    toolNameToSchemaMap["miroir_deleteInstanceWithCascade"],
     (p) => ({
       actionType: "deleteInstanceWithCascade",
       actionLabel: "MCP: Delete instance with cascade",
@@ -302,10 +333,13 @@ export async function handleLoadNewInstancesInLocalCache(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
+  if (!toolNameToSchemaMap["miroir_loadNewInstancesInLocalCache"]) {
+    throw new Error("Schema for miroir_loadNewInstancesInLocalCache not found");
+  }
   return handleInstanceAction(
     "miroir_loadNewInstancesInLocalCache",
     params,
-    LoadNewInstancesInLocalCacheToolSchema,
+    toolNameToSchemaMap["miroir_loadNewInstancesInLocalCache"],
     (p) => ({
       actionType: "loadNewInstancesInLocalCache",
       actionLabel: "MCP: Load instances in cache",

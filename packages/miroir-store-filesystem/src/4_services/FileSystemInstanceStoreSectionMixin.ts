@@ -341,6 +341,33 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
 
     // #############################################################################################
     deleteInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
+      log.info(
+        "FileSystemInstanceStore deleteInstance called",
+        "directory",
+        this.directory,
+        "entityUuid",
+        entityUuid,
+        "fullName(instance.uuid)",
+        fullName(instance.uuid),
+        "instance",
+        instance,
+      );
+      if (!entityUuid) {
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeleteInstance",
+            `deleteInstance called with empty entityUuid for instance ${JSON.stringify(instance)}`,
+          ),
+        );
+      }
+      if (!instance || !instance.uuid) {
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeleteInstance",
+            `deleteInstance called with empty instance or instance.uuid for entity ${entityUuid}`,
+          ),
+        );
+      }
       const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
       try {
         if (fs.existsSync(filePath)) {
