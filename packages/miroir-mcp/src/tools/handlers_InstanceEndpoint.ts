@@ -7,13 +7,9 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   UuidSchema,
+  instanceEndpointV1
 } from "miroir-core";
 
-import {
-  ApplicationSectionSchema,
-  EntityInstanceSchema
-} from "./instanceActions.js";
-import type { M } from "vitest/dist/chunks/environment.d.cL3nLXbE.js";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -22,6 +18,13 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+// export const UuidSchema = z.string().uuid();
+export const ApplicationSectionSchema = z.enum(["model", "data"]);
+export const EntityInstanceSchema = z.object({
+  uuid: UuidSchema,
+  parentUuid: UuidSchema,
+}).passthrough(); // Allow additional properties
 
 export type ToolHandler = (
   params: unknown,
@@ -143,21 +146,7 @@ export type mcpToolDescription = {
   description: string;
   inputSchema: {
     type: "object";
-    properties: {
-      application: {
-        type: "string";
-        description: string;
-      };
-      applicationSection: {
-        type: "string";
-        enum: string[];
-        description: string;
-      };
-      parentUuid: {
-        type: "string";
-        description: string;
-      };
-    };
+    properties: Record<string, any>;
     required: string[];
   };
 };
@@ -210,7 +199,7 @@ export const mcpRequestHandlers: McpRequestHandlers = {
             },
           },
         },
-        required: ["applicationSection", "deploymentUuid", "parentUuid", "instances"],
+        required: ["applicationSection", "application", "parentUuid", "instances"],
       },
     },
     payloadZodSchema: z.object({

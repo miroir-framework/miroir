@@ -7,12 +7,6 @@ import { mcpRequestHandlers } from "./handlers_InstanceEndpoint.js";
  */
 
 // Common schemas
-export const UuidSchema = z.string().uuid();
-export const ApplicationSectionSchema = z.enum(["model", "data"]);
-export const EntityInstanceSchema = z.object({
-  uuid: UuidSchema,
-  parentUuid: UuidSchema,
-}).passthrough(); // Allow additional properties
 
 // // ################################################################################################
 // // Tool: miroir_createInstance

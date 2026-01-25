@@ -40,6 +40,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
+                    "description": "Application UUID where instances will be created",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
@@ -53,7 +54,11 @@
               },
               "applicationSection": {
                 "type": "schemaReference",
-                "optional": true,
+                "tag": {
+                  "value": {
+                    "description": "Section where instances will be created (model or data)"
+                  }
+                },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -61,11 +66,11 @@
               },
               "parentUuid": {
                 "type": "uuid",
-                "optional": true,
                 "tag": {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
+                    "description": "Entity UUID (parent entity of the instances to create)",
                     "foreignKeyParams": {
                       "targetEntityApplicationSection": "model",
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -79,7 +84,8 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances (objects) to create"
+                    "defaultLabel": "Entity Instances (objects) to create",
+                    "description": "Array of entity instances to create. Each must have uuid and parentUuid."
                   }
                 },
                 "definition": {
@@ -526,6 +532,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
+                    "description": "UUID of Application to query",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
@@ -539,6 +546,11 @@
               },
               "applicationSection": {
                 "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "description": "Section to query (model or data)"
+                  }
+                },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -550,6 +562,7 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
+                    "description": "UUID of Entity (parent entity)",
                     "display": {
                       "editable": false
                     }
@@ -562,6 +575,7 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
+                    "description": "UUID of Instance to retrieve",
                     "display": {
                       "editable": false
                     }
