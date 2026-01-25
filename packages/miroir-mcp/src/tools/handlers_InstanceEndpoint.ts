@@ -141,16 +141,36 @@ export async function handleInstanceAction(
 // ################################################################################################
 // Tool to schema and action mapping
 // ################################################################################################
-export type mcpToolDescription = {
-  name: string;
-  description: string;
-  inputSchema: {
-    type: "object";
-    properties: Record<string, any>;
-    required: string[];
-  };
+export type McpToolDescriptionPropertyObject = {
+  type: "object";
+  description?: string;
+  properties: Record<string, McpToolDescriptionProperty>;
+  required: string[];
+  additionalProperties?: boolean;
 };
-export type McpRequestHandler<T extends mcpToolDescription> = {
+
+export type McpToolDescriptionPropertyArray = {
+  type: "array";
+  description?: string;
+  items: McpToolDescriptionProperty;
+};
+export type McpToolDescriptionPropertyString = {
+      type: "string";
+      description: string;
+      enum?: string[];
+    }
+export type McpToolDescriptionProperty =
+  | McpToolDescriptionPropertyString
+  | McpToolDescriptionPropertyObject
+  | McpToolDescriptionPropertyArray;
+
+  export type McpToolDescription = {
+  name: string;
+  description?: string;
+  inputSchema: McpToolDescriptionPropertyObject;
+};
+
+export type McpRequestHandler<T extends McpToolDescription> = {
   mcpToolDescription: T;
   payloadZodSchema: ZodTypeAny;
     actionEnvelope: {

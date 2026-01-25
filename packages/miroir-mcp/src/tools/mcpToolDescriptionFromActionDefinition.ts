@@ -1,5 +1,6 @@
 import { EndpointDefinition } from "miroir-core";
-import type { mcpToolDescription } from "./handlers_InstanceEndpoint.js";
+import type { McpToolDescription } from "./handlers_InstanceEndpoint.js";
+import { mcpToolDescriptionFromJzodElement } from "./mcpToolDescriptionFromJzodElement.js";
 
 /**
  * Generates an MCP tool description from an action definition in an endpoint.
@@ -11,7 +12,7 @@ import type { mcpToolDescription } from "./handlers_InstanceEndpoint.js";
 export function mcpToolDescriptionFromActionDefinition(
   toolName: string,
   endpoint: EndpointDefinition
-): mcpToolDescription {
+): McpToolDescription {
   // Extract the action type from the tool name (e.g., "miroir_createInstance" -> "createInstance")
   const actionType = toolName.replace('miroir_', '');
   
@@ -53,68 +54,48 @@ export function mcpToolDescriptionFromActionDefinition(
     // Get the mapped property name or use the original
     const mappedKey = propertyNameMapping[key] || key;
 
-    // Determine if this field is required (not optional and not nullable)
-    const isRequired = !propDef.optional && !propDef.nullable;
-
-    // Build the property schema based on its type
-    if (propDef.type === 'uuid' || propDef.type === 'string' || propDef.type === 'boolean') {
-      properties[mappedKey] = {
-        type: 'string',
-        description: propDef.tag?.value?.description || propDef.tag?.value?.defaultLabel || '',
-      };
-      if (isRequired) {
-        required.push(mappedKey);
-      }
-    } else if (propDef.type === 'schemaReference') {
-      // Handle applicationSection specifically
-      if (key === 'applicationSection') {
-        properties[mappedKey] = {
-          type: 'string',
-          enum: ['model', 'data'],
-          description: propDef.tag?.value?.description || '',
-        };
-        if (isRequired) {
-          required.push(mappedKey);
-        }
-      }
-    } else if (propDef.type === 'array') {
-      // Handle arrays (like objects/instances)
+    // Special handling for objects array with nested instances
+    if (key === 'objects' && propDef.type === 'array') {
       const arrayItemDef = propDef.definition;
-      
-      if (arrayItemDef?.type === 'object') {
-        // Build items schema for object arrays
-        const itemProperties: Record<string, any> = {};
-        const itemRequired: string[] = [];
+      if (arrayItemDef?.type === 'object' && arrayItemDef.definition?.instances?.definition) {
+        // This is the objects array with nested instances
+        // For entityInstance schema references, we use standard descriptions
+        const itemProperties = {
+          uuid: { type: 'string', description: 'Instance UUID' },
+          parentUuid: { type: 'string', description: 'Parent entity UUID' }
+        };
+        const itemRequired = ['uuid', 'parentUuid'];
         
-        if (arrayItemDef.definition?.instances?.definition) {
-          // This is the objects array with nested instances
-          itemProperties.uuid = { type: 'string', description: 'Instance UUID' };
-          itemProperties.parentUuid = { type: 'string', description: 'Parent entity UUID' };
-          itemRequired.push('uuid', 'parentUuid');
-          
-          properties[mappedKey] = {
-            type: 'array',
-            description: propDef.tag?.value?.description || '',
-            items: {
-              type: 'object',
-              properties: itemProperties,
-              required: itemRequired,
-              additionalProperties: true,
-            },
-          };
-          if (isRequired) {
-            required.push(mappedKey);
-          }
-        }
-      } else if (arrayItemDef?.type === 'schemaReference') {
-        // Handle schema reference arrays (like entityInstanceCollection)
         properties[mappedKey] = {
           type: 'array',
           description: propDef.tag?.value?.description || '',
+          items: {
+            type: 'object',
+            properties: itemProperties,
+            required: itemRequired,
+            additionalProperties: true,
+          },
         };
+        
+        // Determine if this field is required
+        const isRequired = !propDef.optional && !propDef.nullable;
         if (isRequired) {
           required.push(mappedKey);
         }
+        continue;
+      }
+    }
+
+    // Use the recursive function for all other cases
+    const propertySchema = mcpToolDescriptionFromJzodElement(propDef, key);
+    
+    if (propertySchema !== undefined) {
+      properties[mappedKey] = propertySchema;
+      
+      // Determine if this field is required (not optional and not nullable)
+      const isRequired = !propDef.optional && !propDef.nullable;
+      if (isRequired) {
+        required.push(mappedKey);
       }
     }
   }
