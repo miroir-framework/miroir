@@ -5,7 +5,6 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import express from "express";
-import type { ZodTypeAny } from "zod";
 
 import {
   ApplicationDeploymentMap,
@@ -21,8 +20,6 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   StoreOrBundleAction,
-  type Action2VoidReturnType,
-  type InstanceAction,
   type MiroirConfigClient
 } from "miroir-core";
 
@@ -31,287 +28,13 @@ import { loadMiroirMcpConfig } from "./config/configLoader.js";
 import { MiroirMcpConfig } from "./config/configSchema.js";
 import { setupMiroirPlatform } from "./startup/setup.js";
 import { initializeStoreStartup } from "./startup/storeStartup.js";
-import { allInstanceActionTools, CreateInstanceToolSchema, DeleteInstanceToolSchema, DeleteInstanceWithCascadeToolSchema, GetInstancesToolSchema, GetInstanceToolSchema, UpdateInstanceToolSchema } from "./tools/instanceActions.js";
+import {
+  allInstanceActionTools
+} from "./tools/instanceActions.js";
+import { mcpRequestHandlers } from "./tools/handlers_InstanceEndpoint.js";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
-
-export type ToolHandler = (
-  params: unknown,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap
-) => Promise<{ content: Array<{ type: string; text: string }> }>
-
-// Constants for InstanceEndpoint
-const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
-const MIROIR_APP_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
-const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
-
-/**
- * Base handler that wraps tool invocation with common logic:
- * - Parameter validation
- * - Action construction
- * - DomainController invocation
- * - Response formatting
- */
-async function handleInstanceAction(
-  toolName: string,
-  params: unknown,
-  schema: any,
-  actionBuilder: (validatedParams: any) => InstanceAction,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap
-): Promise<{ content: Array<{ type: string; text: string }> }> {
-  try {
-    log.info(`${toolName} - received params:`, params);
-    
-    // Validate parameters
-    const validatedParams = schema.parse(params);
-    log.info(`${toolName} - validated params:`, validatedParams);
-
-    // Build the action
-    const action = actionBuilder(validatedParams);
-    log.info(`${toolName} - constructed action:`, JSON.stringify(action, null, 2));
-
-    // Execute via DomainController
-    const result: Action2VoidReturnType = await domainController.handleAction(
-      action,
-      applicationDeploymentMap
-    );
-
-    log.info(`${toolName} - result:`, JSON.stringify(result, null, 2));
-
-    // Format response for MCP
-    if (result.status === "ok") {
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                status: "success",
-                action: toolName,
-                result: "returnedDomainElement" in result ? result.returnedDomainElement : undefined,
-              },
-              null,
-              2
-            ),
-          },
-        ],
-      };
-    } else {
-      // Error response
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                status: "error",
-                action: toolName,
-                error: {
-                  type: "errorType" in result ? result.errorType : "unknown",
-                  message: "errorMessage" in result ? result.errorMessage : "Action failed",
-                  stack: "errorStack" in result ? result.errorStack : undefined,
-                  context: "errorContext" in result ? result.errorContext : undefined,
-                },
-              },
-              null,
-              2
-            ),
-          },
-        ],
-      };
-    }
-  } catch (error) {
-    log.error(`${toolName} - exception:`, error);
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(
-            {
-              status: "error",
-              action: toolName,
-              error: {
-                type: "validation_error",
-                message: error instanceof Error ? error.message : String(error),
-              },
-            },
-            null,
-            2
-          ),
-        },
-      ],
-    };
-  }
-}
-
-// ################################################################################################
-// Tool to schema and action mapping
-// ################################################################################################
-const mcpRequestHandlers: Record<
-  string,
-  {
-    schema: ZodTypeAny;
-    actionEnvelope: {
-      actionType: string;
-      actionLabel: string;
-      application: string;
-      endpoint: string;
-    };
-    actionHandler: ToolHandler;
-  }
-> = {
-  miroir_createInstance: {
-    schema: CreateInstanceToolSchema,
-    actionEnvelope: {
-      actionType: "createInstance",
-      actionLabel: "MCP: Create instances",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_createInstance", (p) => ({
-      application: p.applicationUuid,
-      applicationSection: p.applicationSection,
-      objects: p.instances,
-    })),
-  },
-  miroir_getInstance: {
-    schema: GetInstanceToolSchema,
-    actionEnvelope: {
-      actionType: "getInstance",
-      actionLabel: "MCP: Get instance",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_getInstance", (p) => ({
-      application: p.application,
-      applicationSection: p.applicationSection,
-      parentUuid: p.parentUuid,
-      uuid: p.uuid,
-    })),
-  },
-  miroir_getInstances: {
-    schema: GetInstancesToolSchema,
-    actionEnvelope: {
-      actionType: "getInstances",
-      actionLabel: "MCP: Get instances",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_getInstances", (p) => ({
-      application: p.application,
-      applicationSection: p.applicationSection,
-      parentUuid: p.parentUuid,
-    })),
-  },
-  miroir_updateInstance: {
-    schema: UpdateInstanceToolSchema,
-    actionEnvelope: {
-      actionType: "updateInstance",
-      actionLabel: "MCP: Update instances",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_updateInstance", (p) => ({
-      application: p.application,
-      applicationSection: p.applicationSection,
-      objects: p.instances,
-    })),
-  },
-  miroir_deleteInstance: {
-    schema: DeleteInstanceToolSchema,
-    actionEnvelope: {
-      actionType: "deleteInstance",
-      actionLabel: "MCP: Delete instance",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_deleteInstance", (p) => ({
-      application: p.applicationUuid,
-      applicationSection: p.applicationSection,
-      objects: [
-        {
-          parentName: p.parentName,
-          parentUuid: p.parentUuid,
-          applicationSection: p.applicationSection,
-          instances: [{ uuid: p.uuid, parentUuid: p.parentUuid }],
-        },
-      ],
-    })),
-  },
-  miroir_deleteInstanceWithCascade: {
-    schema: DeleteInstanceWithCascadeToolSchema,
-    actionEnvelope: {
-      actionType: "deleteInstanceWithCascade",
-      actionLabel: "MCP: Delete instance with cascade",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_deleteInstanceWithCascade", (p) => ({
-      application: p.applicationUuid,
-      applicationSection: p.applicationSection,
-      objects: [
-        {
-          parentName: p.parentName,
-          parentUuid: p.parentUuid,
-          applicationSection: p.applicationSection,
-          instances: [{ uuid: p.uuid, parentUuid: p.parentUuid }],
-        },
-      ],
-    })),
-  },
-  // miroir_loadNewInstancesInLocalCache: {
-  //   schema: LoadNewInstancesInLocalCacheToolSchema,
-  //   actionEnvelope: {
-  //     actionType: "loadNewInstancesInLocalCache",
-  //     actionLabel: "MCP: Load new instances in local cache",
-  //     application: MIROIR_APP_UUID,
-  //     endpoint: INSTANCE_ENDPOINT_UUID,
-  //   },
-  //   actionHandler: createHandler("miroir_loadNewInstancesInLocalCache", (p) => ({
-  //     application: p.applicationUuid,
-  //     applicationSection: p.applicationSection,
-  //     objects: p.instances,
-  //   })),
-  // },
-};
-
-  // ################################################################################################
-// Generic handler factory
-// ################################################################################################
-/**
- * Creates a handler function for a given tool name with custom payload building logic
- */
-export function createHandler(
-  toolName: string,
-  payloadBuilder: (validatedParams: any) => any
-): (
-  params: unknown,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap
-) => Promise<{ content: Array<{ type: string; text: string }> }> {
-  return async (
-    params: unknown,
-    domainController: DomainControllerInterface,
-    applicationDeploymentMap: ApplicationDeploymentMap
-  ) => {
-    const config = mcpRequestHandlers[toolName];
-    return handleInstanceAction(
-      toolName,
-      params,
-      config.schema,
-      (p) =>
-        ({
-          ...config.actionEnvelope,
-          payload: payloadBuilder(p),
-        }) as InstanceAction,
-      domainController,
-      applicationDeploymentMap,
-    );
-  };
-}
 
 // ################################################################################################
 /**
@@ -322,9 +45,7 @@ export class MiroirMcpServer {
   private server: Server;
   private config: MiroirMcpConfig; // TODO: should be identical to MiroirConfigClient
   private domainController!: DomainControllerInterface;
-  private localCache!: LocalCacheInterface;
   private miroirContext!: MiroirContextInterface;
-  private persistenceStoreControllerManager!: PersistenceStoreControllerManagerInterface;
   private applicationDeploymentMap!: ApplicationDeploymentMap;
   private httpServer?: any;
   private port: number = 3080;
@@ -390,11 +111,9 @@ export class MiroirMcpServer {
 
       this.domainController = localdomainController;
       this.miroirContext = localmiroirContext;
-      this.persistenceStoreControllerManager = localpersistenceStoreControllerManager;
       // Setup logging
       await this.setupLogging();
 
-      this.localCache = this.domainController.getLocalCache();
       this.applicationDeploymentMap = this.config.client.applicationDeploymentMap;
 
       // Open stores for all configured deployments

@@ -6,22 +6,22 @@ import { z } from "zod";
  */
 
 // Common schemas
-const UuidSchema = z.string().uuid();
-const ApplicationSectionSchema = z.enum(["model", "data"]);
-const EntityInstanceSchema = z.object({
+export const UuidSchema = z.string().uuid();
+export const ApplicationSectionSchema = z.enum(["model", "data"]);
+export const EntityInstanceSchema = z.object({
   uuid: UuidSchema,
   parentUuid: UuidSchema,
 }).passthrough(); // Allow additional properties
 
-// ################################################################################################
-// Tool: miroir_createInstance
-// ################################################################################################
-export const CreateInstanceToolSchema = z.object({
-  applicationSection: ApplicationSectionSchema,
-  deploymentUuid: UuidSchema,
-  parentUuid: UuidSchema.describe("Entity UUID (parent of instances to create)"),
-  instances: z.array(EntityInstanceSchema).describe("Array of entity instances to create"),
-});
+// // ################################################################################################
+// // Tool: miroir_createInstance
+// // ################################################################################################
+// export const CreateInstanceToolSchema = z.object({
+//   applicationSection: ApplicationSectionSchema,
+//   deploymentUuid: UuidSchema,
+//   parentUuid: UuidSchema.describe("Entity UUID (parent of instances to create)"),
+//   instances: z.array(EntityInstanceSchema).describe("Array of entity instances to create"),
+// });
 
 export const createInstanceTool = {
   name: "miroir_createInstance",
@@ -64,12 +64,12 @@ export const createInstanceTool = {
 // ################################################################################################
 // Tool: miroir_getInstance
 // ################################################################################################
-export const GetInstanceToolSchema = z.object({
-  application: UuidSchema,
-  applicationSection: ApplicationSectionSchema,
-  parentUuid: UuidSchema.describe("Entity UUID"),
-  uuid: UuidSchema.describe("Instance UUID to retrieve"),
-});
+// export const GetInstanceToolSchema = z.object({
+//   application: UuidSchema,
+//   applicationSection: ApplicationSectionSchema,
+//   parentUuid: UuidSchema.describe("Entity UUID"),
+//   uuid: UuidSchema.describe("Instance UUID to retrieve"),
+// });
 
 export const getInstanceTool = {
   name: "miroir_getInstance",
@@ -103,11 +103,11 @@ export const getInstanceTool = {
 // ################################################################################################
 // Tool: miroir_getInstances
 // ################################################################################################
-export const GetInstancesToolSchema = z.object({
-  application: UuidSchema,
-  applicationSection: ApplicationSectionSchema,
-  parentUuid: UuidSchema.describe("Entity UUID"),
-});
+// export const GetInstancesToolSchema = z.object({
+//   application: UuidSchema,
+//   applicationSection: ApplicationSectionSchema,
+//   parentUuid: UuidSchema.describe("Entity UUID"),
+// });
 
 export const getInstancesTool = {
   name: "miroir_getInstances",
@@ -137,11 +137,11 @@ export const getInstancesTool = {
 // ################################################################################################
 // Tool: miroir_updateInstance
 // ################################################################################################
-export const UpdateInstanceToolSchema = z.object({
-  applicationSection: ApplicationSectionSchema,
-  deploymentUuid: UuidSchema,
-  instances: z.array(EntityInstanceSchema).describe("Array of entity instances to update"),
-});
+// export const UpdateInstanceToolSchema = z.object({
+//   applicationSection: ApplicationSectionSchema,
+//   deploymentUuid: UuidSchema,
+//   instances: z.array(EntityInstanceSchema).describe("Array of entity instances to update"),
+// });
 
 export const updateInstanceTool = {
   name: "miroir_updateInstance",
@@ -180,12 +180,12 @@ export const updateInstanceTool = {
 // ################################################################################################
 // Tool: miroir_deleteInstance
 // ################################################################################################
-export const DeleteInstanceToolSchema = z.object({
-  applicationSection: ApplicationSectionSchema,
-  deploymentUuid: UuidSchema,
-  parentUuid: UuidSchema.describe("Entity UUID"),
-  uuid: UuidSchema.describe("Instance UUID to delete"),
-});
+// export const DeleteInstanceToolSchema = z.object({
+//   applicationSection: ApplicationSectionSchema,
+//   deploymentUuid: UuidSchema,
+//   parentUuid: UuidSchema.describe("Entity UUID"),
+//   uuid: UuidSchema.describe("Instance UUID to delete"),
+// });
 
 export const deleteInstanceTool = {
   name: "miroir_deleteInstance",
@@ -219,12 +219,12 @@ export const deleteInstanceTool = {
 // ################################################################################################
 // Tool: miroir_deleteInstanceWithCascade
 // ################################################################################################
-export const DeleteInstanceWithCascadeToolSchema = z.object({
-  applicationSection: ApplicationSectionSchema,
-  deploymentUuid: UuidSchema,
-  parentUuid: UuidSchema.describe("Entity UUID"),
-  uuid: UuidSchema.describe("Instance UUID to delete"),
-});
+// export const DeleteInstanceWithCascadeToolSchema = z.object({
+//   applicationSection: ApplicationSectionSchema,
+//   deploymentUuid: UuidSchema,
+//   parentUuid: UuidSchema.describe("Entity UUID"),
+//   uuid: UuidSchema.describe("Instance UUID to delete"),
+// });
 
 export const deleteInstanceWithCascadeTool = {
   name: "miroir_deleteInstanceWithCascade",
@@ -258,12 +258,12 @@ export const deleteInstanceWithCascadeTool = {
 // ################################################################################################
 // Tool: miroir_loadNewInstancesInLocalCache
 // ################################################################################################
-export const LoadNewInstancesInLocalCacheToolSchema = z.object({
-  applicationSection: ApplicationSectionSchema,
-  deploymentUuid: UuidSchema,
-  parentUuid: UuidSchema.describe("Entity UUID"),
-  instances: z.array(EntityInstanceSchema).describe("Array of instances to load in cache"),
-});
+// export const LoadNewInstancesInLocalCacheToolSchema = z.object({
+//   applicationSection: ApplicationSectionSchema,
+//   deploymentUuid: UuidSchema,
+//   parentUuid: UuidSchema.describe("Entity UUID"),
+//   instances: z.array(EntityInstanceSchema).describe("Array of instances to load in cache"),
+// });
 
 export const loadNewInstancesInLocalCacheTool = {
   name: "miroir_loadNewInstancesInLocalCache",
