@@ -365,6 +365,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
+                    "description": "Application UUID",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
@@ -378,6 +379,11 @@
               },
               "applicationSection": {
                 "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "description": "Section where instances will be updated"
+                  }
+                },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -385,7 +391,12 @@
               },
               "includeInTransaction": {
                 "type": "boolean",
-                "optional": true
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "description": "Set to true to include update in a transaction"
+                  }
+                }
               },
               "parentUuid": {
                 "type": "uuid",
@@ -407,7 +418,8 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances to update"
+                    "defaultLabel": "Entity Instances to update",
+                    "description": "Array of entity instances with updated data"
                   }
                 },
                 "definition": {
@@ -622,6 +634,7 @@
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
+                    "description": "Application UUID to query",
                     "foreignKeyParams": {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
@@ -635,6 +648,11 @@
               },
               "applicationSection": {
                 "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "description": "Section to query (model or data)"
+                  }
+                },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -646,6 +664,7 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
+                    "description": "Entity UUID to get all instances for",
                     "display": {
                       "editable": false
                     }

@@ -45,6 +45,11 @@ export function mcpToolDescriptionFromActionDefinition(
   for (const [key, value] of Object.entries(payloadDef)) {
     const propDef = value as any;
     
+    // Skip optional fields that don't have a description (internal-only fields)
+    if (propDef.optional && !propDef.tag?.value?.description) {
+      continue;
+    }
+    
     // Get the mapped property name or use the original
     const mappedKey = propertyNameMapping[key] || key;
 
@@ -52,7 +57,7 @@ export function mcpToolDescriptionFromActionDefinition(
     const isRequired = !propDef.optional && !propDef.nullable;
 
     // Build the property schema based on its type
-    if (propDef.type === 'uuid' || propDef.type === 'string') {
+    if (propDef.type === 'uuid' || propDef.type === 'string' || propDef.type === 'boolean') {
       properties[mappedKey] = {
         type: 'string',
         description: propDef.tag?.value?.description || propDef.tag?.value?.defaultLabel || '',
@@ -100,6 +105,15 @@ export function mcpToolDescriptionFromActionDefinition(
           if (isRequired) {
             required.push(mappedKey);
           }
+        }
+      } else if (arrayItemDef?.type === 'schemaReference') {
+        // Handle schema reference arrays (like entityInstanceCollection)
+        properties[mappedKey] = {
+          type: 'array',
+          description: propDef.tag?.value?.description || '',
+        };
+        if (isRequired) {
+          required.push(mappedKey);
         }
       }
     }

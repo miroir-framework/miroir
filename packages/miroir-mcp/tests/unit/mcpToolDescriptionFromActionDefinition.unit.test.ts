@@ -87,4 +87,76 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
 
     expect(result).toEqual(expected);
   });
+
+  it('should generate mcpToolDescription for getInstances action', () => {
+    const result = mcpToolDescriptionFromActionDefinition(
+      'miroir_getInstances',
+      instanceEndpointV1 as any
+    );
+
+    const expected = {
+      name: "miroir_getInstances",
+      description:
+        "Retrieve all instances of a specific entity type. Returns an array of all instances for the given entity.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          application: {
+            type: "string",
+            description: "Application UUID to query",
+          },
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section to query (model or data)",
+          },
+          parentUuid: {
+            type: "string",
+            description: "Entity UUID to get all instances for",
+          },
+        },
+        required: ["application", "applicationSection", "parentUuid"],
+      },
+    };
+
+    expect(result).toEqual(expected);
+  });
+
+  it('should generate mcpToolDescription for updateInstance action', () => {
+    const result = mcpToolDescriptionFromActionDefinition(
+      'miroir_updateInstance',
+      instanceEndpointV1 as any
+    );
+
+    const expected = {
+      name: "miroir_updateInstance",
+      description:
+        "Update existing entity instances. Updates one or more instances with new data. Instances are identified by their uuid and parentUuid.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          application: {
+            type: "string",
+            description: "Application UUID",
+          },
+          applicationSection: {
+            type: "string",
+            enum: ["model", "data"],
+            description: "Section where instances will be updated",
+          },
+          includeInTransaction: {
+            type: "string",
+            description: "Set to true to include update in a transaction",
+          },
+          instances: {
+            type: "array",
+            description: "Array of entity instances with updated data",
+          },
+        },
+        required: ["application", "applicationSection", "instances"],
+      },
+    };
+
+    expect(result).toEqual(expected);
+  });
 });

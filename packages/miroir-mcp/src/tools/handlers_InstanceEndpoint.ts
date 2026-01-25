@@ -327,6 +327,10 @@ export const mcpRequestHandlers: McpRequestHandlers = {
             type: "string",
             description: "Deployment UUID",
           },
+          includeInTransaction: {
+            type: "string",
+            description: "Set to true to include update in a transaction",
+          },
           instances: {
             type: "array",
             description: "Array of entity instances with updated data",
