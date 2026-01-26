@@ -386,4 +386,210 @@ describe('mcpToolDescriptionFromJzodElement', () => {
     expect(result.properties.data.items.properties).toHaveProperty('uuid');
   });
 
+  // TDD: New type conversions
+  it('should convert number type to number', () => {
+    const jzodElement = {
+      type: 'number',
+      tag: {
+        value: {
+          description: 'Age in years',
+        },
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'number',
+      description: 'Age in years',
+    });
+  });
+
+  it('should convert date type to string with date-time format', () => {
+    const jzodElement = {
+      type: 'date',
+      tag: {
+        value: {
+          description: 'Created timestamp',
+        },
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'string',
+      format: 'date-time',
+      description: 'Created timestamp',
+    });
+  });
+
+  it('should convert literal type to const', () => {
+    const jzodElement = {
+      type: 'literal',
+      definition: 'active',
+      tag: {
+        value: {
+          description: 'Status value',
+        },
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'string',
+      const: 'active',
+      description: 'Status value',
+    });
+  });
+
+  it('should convert literal type with number value', () => {
+    const jzodElement = {
+      type: 'literal',
+      definition: 42,
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'number',
+      const: 42,
+      description: '',
+    });
+  });
+
+  it('should convert record type to object with additionalProperties', () => {
+    const jzodElement = {
+      type: 'record',
+      tag: {
+        value: {
+          description: 'Key-value pairs',
+        },
+      },
+      definition: {
+        type: 'string',
+        tag: {
+          value: {
+            description: 'Value description',
+          },
+        },
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'object',
+      description: 'Key-value pairs',
+      additionalProperties: {
+        type: 'string',
+        description: 'Value description',
+      },
+    });
+  });
+
+  it('should convert tuple type to array with prefixItems', () => {
+    const jzodElement = {
+      type: 'tuple',
+      tag: {
+        value: {
+          description: 'Coordinate pair',
+        },
+      },
+      definition: [
+        {
+          type: 'number',
+          tag: {
+            value: {
+              description: 'X coordinate',
+            },
+          },
+        },
+        {
+          type: 'number',
+          tag: {
+            value: {
+              description: 'Y coordinate',
+            },
+          },
+        },
+      ],
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'array',
+      description: 'Coordinate pair',
+      prefixItems: [
+        {
+          type: 'number',
+          description: 'X coordinate',
+        },
+        {
+          type: 'number',
+          description: 'Y coordinate',
+        },
+      ],
+      minItems: 2,
+      maxItems: 2,
+    });
+  });
+
+  it('should convert tuple with mixed types', () => {
+    const jzodElement = {
+      type: 'tuple',
+      definition: [
+        {
+          type: 'string',
+          tag: {
+            value: {
+              description: 'Name',
+            },
+          },
+        },
+        {
+          type: 'number',
+          tag: {
+            value: {
+              description: 'Age',
+            },
+          },
+        },
+        {
+          type: 'boolean',
+          tag: {
+            value: {
+              description: 'Active',
+            },
+          },
+        },
+      ],
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'array',
+      description: '',
+      prefixItems: [
+        {
+          type: 'string',
+          description: 'Name',
+        },
+        {
+          type: 'number',
+          description: 'Age',
+        },
+        {
+          type: 'string',
+          description: 'Active',
+        },
+      ],
+      minItems: 3,
+      maxItems: 3,
+    });
+  });
+
 });

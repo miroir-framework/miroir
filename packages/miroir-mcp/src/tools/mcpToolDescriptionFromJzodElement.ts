@@ -82,14 +82,60 @@ export function mcpToolDescriptionFromJzodElement(
         items: mcpToolDescriptionFromJzodElement(jzodElement.definition, undefined, propertyNameMapping),
       };
     }
-    case "enum": {
+    case 'enum': {
       return {
         type: 'string',
         description,
         enum: jzodElement.definition,
       };
     }
-    case "number":
+    case "number": {
+      return {
+        type: 'number',
+        description,
+      };
+    }
+    case "date": {
+      return {
+        type: 'string',
+        format: 'date-time',
+        description,
+      };
+    }
+    case "literal": {
+      const literalValue = jzodElement.definition;
+      const literalType = typeof literalValue === 'number' ? 'number' : 'string';
+      return {
+        type: literalType,
+        const: literalValue,
+        description,
+      };
+    }
+    case "record": {
+      if (!jzodElement.definition) {
+        throw new Error('Record definition missing value type');
+      }
+      return {
+        type: 'object',
+        description,
+        additionalProperties: mcpToolDescriptionFromJzodElement(jzodElement.definition, undefined, propertyNameMapping),
+      };
+    }
+    case "tuple": {
+      if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
+        throw new Error('Tuple definition missing or invalid');
+      }
+      const prefixItems = jzodElement.definition.map(item => 
+        mcpToolDescriptionFromJzodElement(item as any, undefined, propertyNameMapping)
+      );
+      return {
+        type: 'array',
+        description,
+        prefixItems,
+        minItems: prefixItems.length,
+        maxItems: prefixItems.length,
+      };
+    }
     case "bigint":
     case "undefined":
     case "function":
@@ -97,15 +143,11 @@ export function mcpToolDescriptionFromJzodElement(
     case "never":
     case "unknown":
     case "void":
-    case "date":
     case "lazy":
-    case "literal":
     case "intersection":
     case "map":
     case "promise":
-    case "record":
     case "set":
-    case "tuple":
     case "union": {
       throw new Error(`Unsupported Jzod type for MCP tool description: ${jzodElement.type}`);
     }
