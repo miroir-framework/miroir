@@ -214,7 +214,7 @@ export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
-  // currentModel: defaultMiroirMetaModel,
+  currentModel: defaultMiroirMetaModel,
   // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {

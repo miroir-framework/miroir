@@ -47,14 +47,14 @@ const reports = [
   "details",
 ]
 
-const libraryAppEntityDefinitions = {
+const libraryAppEntityDefinitionsByName = {
   author: entityDefinitionAuthor,
   book: entityDefinitionBook,
   country: entityDefinitionCountry,
   publisher: entityDefinitionPublisher,
   user: entityDefinitionUser,
 };
-const libraryAppEntities = {
+const libraryAppEntitiesByName = {
   author: entityAuthor,
   book: entityBook,
   country: entityCountry,
@@ -62,7 +62,7 @@ const libraryAppEntities = {
   user: entityUser,
 };
 
-const libraryAppReports = {
+const libraryAppReportsByEntityName = {
   author: [reportAuthorList, reportAuthorDetails],
   book: [
     reportBookList, 
@@ -75,7 +75,7 @@ const libraryAppReports = {
 // TODO: check menus, check actions / services, check tests
 describe('check library entities', () => {
   describe("check library entities definitions", () => {
-    it.each(Object.entries(libraryAppEntityDefinitions))(
+    it.each(Object.entries(libraryAppEntityDefinitionsByName))(
       "should parse entity %s using entityDefinition schema",
       (entityName, entityDef) => {
         expect(() => entityDefinition.parse(entityDef)).not.toThrow();
@@ -84,7 +84,7 @@ describe('check library entities', () => {
     );
   });
   describe("check library entities", () => {
-    it.each(Object.entries(libraryAppEntities))(
+    it.each(Object.entries(libraryAppEntitiesByName))(
       "should parse entity %s using entity schema",
       (entityToTestName, entityToTest) => {
         expect(() => entity.parse(entityToTest)).not.toThrow();
@@ -134,7 +134,7 @@ describe('check library entities', () => {
     });
   });
 
-  it.each(Object.entries(libraryAppReports))(
+  it.each(Object.entries(libraryAppReportsByEntityName))(
     "should parse report %s using report schema",
     (reportName, reportList) => {
       reportList.forEach((reportToTest) => {

@@ -76,6 +76,8 @@ import { selfApplicationMiroir } from "miroir-core";
 import type { ApplicationDeploymentMap } from "miroir-core";
 import type { Deployment } from "miroir-core";
 import { adminConfigurationDeploymentAdmin } from "miroir-core";
+import { emptyMetaModel } from "miroir-core";
+import { defaultLibraryModelEnvironment } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 
@@ -257,12 +259,10 @@ afterAll(async () => {
 const testActions: Record<string, TestCompositeActionParams> = {
   "DomainController.integ.Data.CRUD": {
     testActionType: "testCompositeActionSuite",
-    // deploymentUuid: testApplicationDeploymentUuid,
     testActionLabel: "DomainController.integ.Data.CRUD",
     application: testApplicationUuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
-      // testType: "testCompositeAction",
       testLabel: "DomainController.integ.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
         "library",
@@ -281,7 +281,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
-        libraryEntitiesAndInstancesWithoutBook3
+        libraryEntitiesAndInstancesWithoutBook3,
+        defaultLibraryModelEnvironment.currentModel,
+        [entityAuthor.uuid, entityBook.uuid, entityPublisher.uuid], 
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
       afterAll: testOnLibrary_deleteLibraryDeployment(

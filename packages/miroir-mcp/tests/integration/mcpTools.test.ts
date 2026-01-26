@@ -57,7 +57,14 @@ import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { setupMiroirPlatform } from '../../src/startup/setup.js';
 import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
-import { mcpRequestHandlers_EntityEndpoint } from "../../src/tools/handlers_InstanceEndpoint.js";
+import { mcpRequestHandlers_EntityEndpoint, mcpRequestHandlers_Library_lendingEndpoint } from "../../src/tools/handlers_InstanceEndpoint.js";
+import { defaultLibraryAppModel } from 'miroir-core';
+import { entityUser } from 'miroir-core';
+import { entityDefinitionUser } from 'miroir-core';
+import { user1 } from 'miroir-core';
+import { user2 } from 'miroir-core';
+import { user3 } from 'miroir-core';
+import { start } from 'repl';
 
 const packageName = "miroir-mcp";
 const fileName = "mcpTools.test";
@@ -86,7 +93,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 
-export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
+const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as MetaEntity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
@@ -109,6 +116,15 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
+  {
+    entity: entityUser as MetaEntity,
+    entityDefinition: entityDefinitionUser as EntityDefinition,
+    instances: [
+      user1 as EntityInstance,
+      user2 as EntityInstance,
+      user3 as EntityInstance,
+    ],
+  }
 ];
 
 // Test configuration
@@ -127,6 +143,17 @@ describe("MCP Tools Integration Tests", () => {
     // Load configuration (test can override with env var MIROIR_MCP_CONFIG_PATH)
     miroirConfig = loadMiroirMcpConfig();
     
+    if (!miroirConfig) {
+      throw new Error("Failed to load MiroirMCP configuration");
+    }
+
+    if (!miroirConfig.client.applicationDeploymentMap) {
+      throw new Error("MiroirMCP configuration missing client.applicationDeploymentMap");
+    }
+
+    if (!miroirConfig.client.deploymentStorageConfig) {
+      throw new Error("MiroirMCP configuration missing client.deploymentStorageConfig");
+    }
     // Initialize framework
     miroirCoreStartup();
     
@@ -163,6 +190,20 @@ describe("MCP Tools Integration Tests", () => {
     domainController = localdomainController;
     localCache = domainController.getLocalCache();
     applicationDeploymentMap = miroirConfig.client.applicationDeploymentMap;
+
+    if (!domainController) {
+      throw new Error("Failed to initialize DomainController");
+    }
+    if (!localCache) {
+      throw new Error("Failed to initialize LocalCache");
+    }
+
+    if (!applicationDeploymentMap) {
+      throw new Error("Failed to initialize ApplicationDeploymentMap");
+    }
+    if (Object.keys(applicationDeploymentMap).length === 0) {
+      throw new Error("ApplicationDeploymentMap is empty");
+    }
 
     // Initialize store startup (register store factories)
     await initializeStoreStartup(miroirConfig);
@@ -222,15 +263,16 @@ describe("MCP Tools Integration Tests", () => {
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
       libraryEntitiesAndInstancesWithoutBook3,
+      defaultLibraryAppModel,
     );
-    const beforeAllResult = await domainController.handleCompositeAction(
+    const beforeEachResult = await domainController.handleCompositeAction(
       createLibraryAction,
       applicationDeploymentMap,
       defaultMiroirModelEnvironment,
       {},
     );
-    if (beforeAllResult.status !== "ok") {
-      throw new Error(`Failed to execute beforeEach composite action: ${JSON.stringify(beforeAllResult)}`);
+    if (beforeEachResult.status !== "ok") {
+      throw new Error(`Failed to execute beforeEach composite action: ${JSON.stringify(beforeEachResult)}`);
     }
 
     const refreshLibrary = await domainController.handleAction(
@@ -252,8 +294,6 @@ describe("MCP Tools Integration Tests", () => {
         `Failed to open stores for application ${selfApplicationLibrary.uuid}: ${JSON.stringify(refreshLibrary)}`
       );
     }
-
-
   });
 
   // ################################################################################################
@@ -278,24 +318,6 @@ describe("MCP Tools Integration Tests", () => {
     log.info("MCP test teardown completed");
   });
 
-  // ################################################################################################
-  describe("Configuration and Setup", () => {
-    it("should load configuration successfully", () => {
-      expect(miroirConfig).toBeDefined();
-      expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
-      expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
-    });
-
-    it("should have initialized domain controller", () => {
-      expect(domainController).toBeDefined();
-      expect(localCache).toBeDefined();
-    });
-
-    it("should have valid application deployment map", () => {
-      expect(applicationDeploymentMap).toBeDefined();
-      expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
-    });
-  });
 
   // ################################################################################################
   describe("MCP Tool Handlers - InstanceActions", () => {
@@ -306,8 +328,7 @@ describe("MCP Tools Integration Tests", () => {
     const testInstance = book1; // Book1 instance
     const testInstanceUuid = book1.uuid; // Book1 instance
 
-    it(
-      "should execute createInstance action",
+    it("should execute createInstance action",
       async () => {
         const testInstanceUuid = "test-book-" + Date.now();
         const params = {
@@ -348,8 +369,7 @@ describe("MCP Tools Integration Tests", () => {
       globalTimeOut
     );
 
-    it(
-      "should execute getInstance action",
+    it("should execute getInstance action",
       async () => {
         const params = {
           application: testApplicationUuid,
@@ -373,8 +393,7 @@ describe("MCP Tools Integration Tests", () => {
       globalTimeOut
     );
 
-    it(
-      "should execute getInstances action",
+    it("should execute getInstances action",
       async () => {
         const params = {
           application: testApplicationUuid,
@@ -397,8 +416,7 @@ describe("MCP Tools Integration Tests", () => {
       globalTimeOut
     );
 
-    it(
-      "should execute updateInstance action",
+    it("should execute updateInstance action",
       async () => {
         const params = {
           application: testApplicationUuid,
@@ -434,8 +452,7 @@ describe("MCP Tools Integration Tests", () => {
       globalTimeOut
     );
 
-    it(
-      "should execute deleteInstance action",
+    it("should execute deleteInstance action",
       async () => {
         const params = {
           application: testApplicationUuid,
@@ -459,8 +476,7 @@ describe("MCP Tools Integration Tests", () => {
       globalTimeOut
     );
 
-    it(
-      "should handle error cases gracefully",
+    it("should handle error cases gracefully",
       async () => {
         const params = {
           application: testApplicationUuid,
@@ -483,6 +499,37 @@ describe("MCP Tools Integration Tests", () => {
         // Error should be in the text content
         const contentText = result.content[0].text;
         expect(contentText).toContain("error");
+      },
+      globalTimeOut
+    );
+  });
+
+  describe("MCP Tool Handlers - Custom Library Lending Action", () => {
+    it("should execute lendDocument action",
+      async () => {
+        // const testApplicationUuid = selfApplicationLibrary.uuid; // Library
+        // const testEntityUuid = entityBook.uuid; // Book entity
+        // const testInstanceUuid = book2.uuid; // Book2 instance
+
+        const params = {
+          book: book1.uuid,
+          user: user1.uuid,
+          startDate: new Date().toISOString(),
+        };
+
+        const result = await mcpRequestHandlers_Library_lendingEndpoint.miroir_lendDocument.actionHandler(
+          params,
+          domainController,
+          applicationDeploymentMap
+        );
+
+        log.info("lendDocument result:", JSON.stringify(result, null, 2));
+        // Verify the MCP layer processed the action correctly
+        expect(result).toBeDefined();
+        expect(result.content).toBeDefined();
+        expect(result.content.length).toBeGreaterThan(0);
+        expect(result.content[0].type).toBe("text");
+        expect(result.content[0].text).toMatch("success");
       },
       globalTimeOut
     );

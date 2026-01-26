@@ -76,6 +76,7 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
+import { emptyMetaModel } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -1054,7 +1055,6 @@ const testSuites: Record<string, TestCompositeActionParams> = {
   [testSuiteName]: {
     // testActionType: "testRuntimeCompositeActionSuite",
     testActionType: "testBuildPlusRuntimeCompositeActionSuite",
-    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     testActionLabel: testSuiteName,
     testParams: {},
     testCompositeAction: {
@@ -1072,7 +1072,8 @@ const testSuites: Record<string, TestCompositeActionParams> = {
         testSelfApplicationUuid,
         testAdminConfigurationDeploymentUuid,
         initParametersForTest,
-        []
+        [],
+        emptyMetaModel
       ),
       testParams: {},
       // afterEach: testOnLibrary_resetLibraryDeployment(

@@ -3,8 +3,10 @@ import type {
   AdminApplication,
   CompositeActionSequence,
   Deployment,
+  Entity,
   EntityDefinition,
   EntityInstance,
+  MetaModel,
   MiroirConfigClient,
   SelfApplication,
   StoreUnitConfiguration,
@@ -226,24 +228,72 @@ export function createDeploymentCompositeAction(
 }
 
 // ################################################################################################
-export type ApplicationEntitiesAndInstances = {
-  entity: MetaEntity;
+export interface EntityDefinitionCouple {
+  // entity: MetaEntity;
+  entity: Entity;
   entityDefinition: EntityDefinition;
+}
+export type ApplicationEntitiesDefinitionAndInstances = {
   instances: EntityInstance[];
-}[];
+} & EntityDefinitionCouple;
 
+export type ApplicationEntitiesAndInstances = ApplicationEntitiesDefinitionAndInstances[];
+
+export const emptyMetaModel: MetaModel = {
+  entities: [],
+  entityDefinitions: [],
+  applicationVersionCrossEntityDefinition: {} as any,
+  applicationVersions: [],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  reports: [],
+  storedQueries: [],
+}
+// ################################################################################################
+export function metaModelFilterEntities(
+  metaModel: MetaModel,
+  entityUuidsToKeep?: Uuid[]
+): MetaModel {
+  const filteredEntities = entityUuidsToKeep ? metaModel.entities.filter((entity) =>
+    entityUuidsToKeep.includes(entity.uuid)
+  ) : metaModel.entities;
+  const filteredEntityDefinitions = entityUuidsToKeep ? metaModel.entityDefinitions.filter((entityDefinition) =>
+    entityUuidsToKeep.includes(entityDefinition.entityUuid)
+  ) : metaModel.entityDefinitions;
+  return {
+    ...metaModel,
+    entities: filteredEntities,
+    entityDefinitions: filteredEntityDefinitions,
+  };
+}
 // ################################################################################################
 export function resetAndinitializeDeploymentCompositeAction(
   applicationUuid: Uuid,
   deploymentUuid: Uuid,
   initApplicationParameters: InitApplicationParameters,
-  appEntitesAndInstances: ApplicationEntitiesAndInstances
+  appEntitesAndInstances: ApplicationEntitiesDefinitionAndInstances[],
+  defaultLibraryAppModel: MetaModel,
+  filterEntities?: Uuid[],
 ): CompositeActionSequence {
-  // const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
 
-  // const deploymentUuid = initApplicationParameters.selfApplicationDeploymentConfiguration.uuid;
-  // const applicationUuid = adminAdminApplication.uuid;
-  // const deploymentUuid = deploymentUuid;
+  const entities: EntityDefinitionCouple[] = metaModelFilterEntities(
+    defaultLibraryAppModel,
+    filterEntities,
+  ).entities.map((entity) => {
+    const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
+      (ed) => ed.entityUuid === entity.uuid,
+    );
+    if (!entityDefinition) {
+      throw new Error(
+        `Entity definition not found for entity uuid: ${entity.uuid} (${entity.name})`,
+      );
+    }
+    return {
+      entity,
+      entityDefinition,
+    };
+  });
 
   log.info(
     "createDeploymentCompositeAction deploymentConfiguration",
@@ -259,7 +309,7 @@ export function resetAndinitializeDeploymentCompositeAction(
       definition: [
         {
           actionType: "resetModel",
-          actionLabel: "resetApplicationStore",
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_resetModel",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
@@ -268,7 +318,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         },
         {
           actionType: "initModel",
-          actionLabel: "initStore",
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_InitModel",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
@@ -278,7 +328,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         },
         {
           actionType: "rollback",
-          actionLabel: "refreshLocalCacheForApplication",
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_Rollback",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
@@ -287,17 +337,17 @@ export function resetAndinitializeDeploymentCompositeAction(
         },
         {
           actionType: "createEntity",
-          actionLabel: "CreateApplicationStoreEntities",
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_createEntities",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            entities: appEntitesAndInstances,
+            entities: entities,
           },
         },
         {
           actionType: "commit",
-          actionLabel: "CommitApplicationStoreEntities",
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_commitEntities",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
@@ -306,7 +356,7 @@ export function resetAndinitializeDeploymentCompositeAction(
         },
         {
           actionType: "createInstance",
-          actionLabel: "CreateApplicationStoreInstances",
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_createInstances",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {

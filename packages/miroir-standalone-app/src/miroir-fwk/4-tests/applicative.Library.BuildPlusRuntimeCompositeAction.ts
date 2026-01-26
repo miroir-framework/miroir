@@ -10,6 +10,7 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentParis,
   createDeploymentCompositeAction,
+  emptyMetaModel,
   entityEntity,
   entityEntityDefinition,
   entityMenu,
@@ -163,7 +164,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
     [testSuiteNameForBuildPlusRuntimeCompositeAction]: {
       testActionType: "testBuildPlusRuntimeCompositeActionSuite",
       application: selfApplicationLibrary.uuid, // NOT USED
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       testActionLabel: testSuiteNameForBuildPlusRuntimeCompositeAction,
       testParams: {
         createEntity_newEntityDescription,
@@ -197,7 +198,8 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
           testSelfApplicationUuid,
           testDeploymentUuid,
           initParametersForTest,
-          []
+          [],
+          emptyMetaModel,
         ),
         // afterEach: testOnLibrary_resetLibraryDeployment(
         //   testDeploymentConfiguration,

@@ -288,7 +288,8 @@ beforeEach(
           // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
-        libraryEntitiesAndInstances
+        libraryEntitiesAndInstances,
+        defaultLibraryModelEnvironment.currentModel,
       ),
       applicationDeploymentMap,
       // testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstances),

@@ -7,7 +7,9 @@ import {
   AdminApplicationDeploymentConfiguration,
   // adminConfigurationDeploymentLibrary,
   // adminConfigurationDeploymentMiroir,
-  ConfigurationService, defaultMiroirMetaModel,
+  ConfigurationService,
+  defaultLibraryModelEnvironment,
+  defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
   Entity,
@@ -79,6 +81,7 @@ import { selfApplicationMiroir } from "miroir-core";
 import { adminConfigurationDeploymentAdmin } from "miroir-core";
 import type { Deployment } from "miroir-core";
 import type { ApplicationDeploymentMap } from "miroir-core";
+import { entityBook } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -354,7 +357,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
               publisher3 as EntityInstance,
             ],
           },
-        ]
+        ],
+        defaultLibraryModelEnvironment.currentModel,
+        [entityPublisher.uuid], 
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
       afterAll: testOnLibrary_deleteLibraryDeployment(
@@ -475,36 +480,30 @@ const testActions: Record<string, TestCompositeActionParams> = {
               application: "NOT_USED_HERE",
               definition: [
                 {
-                  // actionType: "modelAction",
                   actionType: "rollback",
                   actionLabel: "refreshMiroirLocalCache",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                   },
                 },
                 {
                   actionType: "rollback",
-                  // actionType: "modelAction",
                   actionLabel: "refreshLibraryLocalCache",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
-                  // actionType: "modelAction",
                   actionType: "createEntity",
                   actionLabel: "addEntityAuthor",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                     entities: [
                       {
                         entity: entityAuthor as Entity,
@@ -515,13 +514,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 },
                 {
                   actionType: "commit",
-                  // actionType: "modelAction",
                   actionLabel: "commitLibraryLocalCache",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
-                    // deploymentUuid: testApplicationDeploymentUuid,
                   },
                 },
                 {
@@ -536,12 +533,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     payload: {
                       application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
-                      // deploymentUuid: testApplicationDeploymentUuid,
                       query: {
                         queryType: "boxedQueryWithExtractorCombinerTransformer",
                         application: testApplicationUuid,
-                        // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-                        // deploymentUuid: testApplicationDeploymentUuid,
                         pageParams: {
                           currentDeploymentUuid: testApplicationDeploymentUuid,
                         },

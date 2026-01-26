@@ -4,6 +4,7 @@ import {
   resolveJzodSchemaReferenceInContext,
   type JzodReference,
   type MlSchema,
+  defaultMiroirModelEnvironment,
 } from "miroir-core";
 import type { McpToolDescriptionProperty } from "./handlers_InstanceEndpoint.js";
 
@@ -44,10 +45,11 @@ export function jzodElementToJsonSchema(
       const resolvedSchema = resolveJzodSchemaReferenceInContext(
         jzodElement as JzodReference,
         (jzodElement as JzodReference).context || {},
-        { 
-          miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-          endpointsByUuid: {}
-        }
+        defaultMiroirModelEnvironment
+        // { 
+        //   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+        //   endpointsByUuid: {}
+        // }
       );
       
       // Recursively convert the resolved schema

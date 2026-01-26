@@ -11,6 +11,10 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MlSchema,
+  defaultLibraryAppModel,
+  defaultLibraryModelEnvironment,
+  defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   instanceEndpointV1,
   miroirFundamentalJzodSchema,
   resolveJzodSchemaReferenceInContext,
@@ -50,7 +54,12 @@ function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
   const resolvedJzodSchema = resolveAllReferences(jzodPayload);
   
   // Convert the resolved Jzod schema to Zod
-  const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(resolvedJzodSchema as any);
+  const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
+    resolvedJzodSchema as any,
+    () => ({}), // getSchemaEagerReferences
+    () => ({}), // getLazyReferences
+    {datesAsString: true} // options
+  );
   return zodTextAndSchema.zodSchema as any;
 }
 
@@ -71,7 +80,8 @@ function resolveAllReferences(element: JzodElement): JzodElement {
       element.context || {},
       {
         miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-        endpointsByUuid: {}
+        endpointsByUuid: {},
+        currentModel: defaultMiroirMetaModel,
       }
     );
     // Recursively resolve the resolved schema (it might contain more references)
@@ -148,7 +158,8 @@ export async function handleInstanceAction(
     // Execute via DomainController
     const result: Action2VoidReturnType = await domainController.handleAction(
       action,
-      applicationDeploymentMap
+      applicationDeploymentMap,
+      defaultLibraryModelEnvironment, // defaultMiroirModelEnvironment,
     );
 
     log.info(`${toolName} - result:`, JSON.stringify(result, null, 2));
@@ -254,14 +265,13 @@ export type McpToolDescriptionProperty =
 export type McpRequestHandler<T extends McpToolDescription> = {
   mcpToolDescription: T;
   payloadZodSchema: ZodTypeAny;
-    actionEnvelope: {
-      actionType: string;
-      actionLabel: string;
-      application: string;
-      endpoint: string;
-    };
-    actionHandler: ToolHandler;
-
+  actionEnvelope: {
+    actionType: string;
+    actionLabel: string;
+    application: string;
+    endpoint: string;
+  };
+  actionHandler: ToolHandler;
 }
 export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
 
@@ -274,7 +284,6 @@ export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
  */
 export function createHandler(
   toolName: string,
-  // payloadBuilder: (validatedParams: any) => any
 ): (
   payload: unknown,
   domainController: DomainControllerInterface,
@@ -285,7 +294,7 @@ export function createHandler(
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap
   ) => {
-    const config = mcpRequestHandlers_EntityEndpoint[toolName];
+    const config = mcpRequestHandlers[toolName];
     return handleInstanceAction(
       toolName,
       payload,
@@ -339,14 +348,20 @@ export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
   miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
 };
 
-// export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = {
-//   // miroir_createInstance: mcpToolEntry(instanceEndpointV1, "createInstance"),
-//   // miroir_getInstance: mcpToolEntry(instanceEndpointV1, "getInstance"),
-//   // miroir_getInstances: mcpToolEntry(instanceEndpointV1, "getInstances"),
-//   // miroir_updateInstance: mcpToolEntry(instanceEndpointV1, "updateInstance"),
-//   // miroir_deleteInstance: mcpToolEntry(instanceEndpointV1, "deleteInstance"),
-//   // miroir_deleteInstanceWithCascade: mcpToolEntry(instanceEndpointV1, "deleteInstanceWithCascade"),
-//   // miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
-// };
+export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModel.endpoints
+  .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
+  .reduce((acc, endpoint) => {
+    const createInstanceHandler = mcpToolEntry(endpoint, "lendDocument");
+    acc["miroir_" + createInstanceHandler.actionEnvelope.actionType] = createInstanceHandler;
+    return acc;
+  }, {} as McpRequestHandlers);
 
-export const allInstanceActionTools = Object.values(mcpRequestHandlers_EntityEndpoint).map((t) => t.mcpToolDescription);
+// ################################################################################################
+// aggregate all instance action tools
+// ################################################################################################
+const mcpRequestHandlers: McpRequestHandlers = {
+  ...mcpRequestHandlers_EntityEndpoint,
+  ...mcpRequestHandlers_Library_lendingEndpoint,
+};
+
+export const allInstanceActionTools = Object.values(mcpRequestHandlers).map((t) => t.mcpToolDescription);

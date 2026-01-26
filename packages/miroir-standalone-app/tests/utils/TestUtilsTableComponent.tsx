@@ -75,7 +75,7 @@ export const TestUtilsTableComponent = (
   }
 
   log.info("TestUtilsTableComponent display instances of entity named",props.entityName, 'uuid', props.entityUuid);
-  log.info("TestUtilsTableComponent libraryAppEntities",entitiesOfDataSection, "deploymentReports", deploymentReports);
+  log.info("TestUtilsTableComponent libraryAppEntitiesByName",entitiesOfDataSection, "deploymentReports", deploymentReports);
 
   // const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
   let instancesToDisplay:EntityInstance[];
