@@ -29,6 +29,7 @@
   "dependencies": {
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
+    "@miroir-framework/jzod": "*",
     "@modelcontextprotocol/sdk": "^1.0.4",
     "express": "^4.18.2",
     "zod": "^3.21.4",

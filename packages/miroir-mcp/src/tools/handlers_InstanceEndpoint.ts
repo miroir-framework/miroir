@@ -1,3 +1,4 @@
+import { type ZodTypeAny } from "zod";
 import {
   Action2VoidReturnType,
   ApplicationDeploymentMap,
@@ -6,9 +7,15 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   UuidSchema,
-  instanceEndpointV1
+  instanceEndpointV1,
+  miroirFundamentalJzodSchema,
+  resolveJzodSchemaReferenceInContext,
+  JzodElement,
+  JzodReference,
+  MlSchema,
+  type JzodObject,
 } from "miroir-core";
-import { z, type ZodTypeAny } from "zod";
+import { jzodToZodTextAndZodSchema, type ZodTextAndZodSchema } from "@miroir-framework/jzod";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 
 
@@ -19,13 +26,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
-
-// export const UuidSchema = z.string().uuid();
-export const ApplicationSectionSchema = z.enum(["model", "data"]);
-export const EntityInstanceSchema = z.object({
-  uuid: UuidSchema,
-  parentUuid: UuidSchema,
-}).passthrough(); // Allow additional properties
 
 export type ToolHandler = (
   params: unknown,
@@ -38,6 +38,86 @@ export type ToolHandler = (
 const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MIROIR_APP_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
+
+/**
+ * Helper function to convert a Jzod payload schema to a Zod schema
+ * Recursively resolves all schema references before conversion to avoid reference resolution errors
+ * @param jzodPayload - The Jzod schema definition from actionParameters.payload
+ * @returns The Zod schema for validation
+ */
+function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
+  // Recursively resolve all schema references in the Jzod schema
+  // const resolvedJzodSchema = resolveAllReferences(jzodPayload);
+  
+  // Convert the resolved Jzod schema to Zod
+  const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(jzodPayload as any);
+  return zodTextAndSchema.zodSchema as any;
+}
+
+/**
+ * Recursively resolves all schema references in a Jzod schema element
+ * @param element - The Jzod element to resolve
+ * @returns A Jzod element with all references resolved
+ */
+function resolveAllReferences(element: JzodElement): JzodElement {
+  if (!element || typeof element !== 'object') {
+    return element;
+  }
+
+  // Handle schema references
+  if (element.type === 'schemaReference') {
+    const resolvedSchema = resolveJzodSchemaReferenceInContext(
+      element as JzodReference,
+      element.context || {},
+      {
+        miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+        endpointsByUuid: {}
+      }
+    );
+    // Recursively resolve the resolved schema (it might contain more references)
+    return resolveAllReferences(resolvedSchema);
+  }
+
+  // Handle objects - recursively resolve all properties
+  if (element.type === 'object' && element.definition) {
+    return {
+      ...element,
+      definition: Object.fromEntries(
+        Object.entries(element.definition).map(([key, value]) => [
+          key,
+          resolveAllReferences(value as any)
+        ])
+      )
+    };
+  }
+
+  // Handle arrays - recursively resolve the item schema
+  if (element.type === 'array' && element.definition) {
+    return {
+      ...element,
+      definition: resolveAllReferences(element.definition)
+    };
+  }
+
+  // Handle unions - recursively resolve all union members
+  if (element.type === 'union' && element.definition && Array.isArray(element.definition)) {
+    return {
+      ...element,
+      definition: element.definition.map((member: any) => resolveAllReferences(member))
+    };
+  }
+
+  // Handle records - recursively resolve the value schema
+  if (element.type === 'record' && element.definition) {
+    return {
+      ...element,
+      definition: resolveAllReferences(element.definition)
+    };
+  }
+
+  // For other types, return as is
+  return element;
+}
 
 /**
  * Base handler that wraps tool invocation with common logic:
@@ -191,12 +271,11 @@ export const mcpRequestHandlers: McpRequestHandlers = {
         (action: any) => action.actionParameters.actionType.definition === "createInstance"
       ).actionParameters.payload,
     ) as McpToolDescription,
-    payloadZodSchema: z.object({
-      application: UuidSchema,
-      applicationSection: ApplicationSectionSchema,
-      parentUuid: UuidSchema.describe("Entity UUID"),
-      uuid: UuidSchema.describe("Instance UUID to retrieve"),
-    }),
+    payloadZodSchema: jzodPayloadToZodSchema(
+      instanceEndpointV1.definition.actions.find(
+        (action: any) => action.actionParameters.actionType.definition === "createInstance"
+      ).actionParameters.payload
+    ),
     actionEnvelope: {
       actionType: "createInstance",
       actionLabel: "MCP: Create instances",
@@ -215,12 +294,11 @@ export const mcpRequestHandlers: McpRequestHandlers = {
         (action: any) => action.actionParameters.actionType.definition === "getInstance"
       ).actionParameters.payload,
     ) as McpToolDescription,
-    payloadZodSchema: z.object({
-      application: UuidSchema,
-      applicationSection: ApplicationSectionSchema,
-      parentUuid: UuidSchema.describe("Entity UUID"),
-      uuid: UuidSchema.describe("Instance UUID to retrieve"),
-    }),
+    payloadZodSchema: jzodPayloadToZodSchema(
+      instanceEndpointV1.definition.actions.find(
+        (action: any) => action.actionParameters.actionType.definition === "getInstance"
+      ).actionParameters.payload
+    ),
     actionEnvelope: {
       actionType: "getInstance",
       actionLabel: "MCP: Get instance",
@@ -240,11 +318,11 @@ export const mcpRequestHandlers: McpRequestHandlers = {
         (action: any) => action.actionParameters.actionType.definition === "getInstances"
       ).actionParameters.payload,
     ) as McpToolDescription,
-    payloadZodSchema: z.object({
-      application: UuidSchema,
-      applicationSection: ApplicationSectionSchema,
-      parentUuid: UuidSchema.describe("Entity UUID"),
-    }),
+    payloadZodSchema: jzodPayloadToZodSchema(
+      instanceEndpointV1.definition.actions.find(
+        (action: any) => action.actionParameters.actionType.definition === "getInstances"
+      ).actionParameters.payload
+    ),
     actionEnvelope: {
       actionType: "getInstances",
       actionLabel: "MCP: Get instances",
@@ -263,11 +341,11 @@ export const mcpRequestHandlers: McpRequestHandlers = {
         (action: any) => action.actionParameters.actionType.definition === "updateInstance"
       ).actionParameters.payload,
     ) as McpToolDescription,
-    payloadZodSchema: z.object({
-      applicationSection: ApplicationSectionSchema,
-      deploymentUuid: UuidSchema,
-      instances: z.array(EntityInstanceSchema).describe("Array of entity instances to update"),
-    }),
+    payloadZodSchema: jzodPayloadToZodSchema(
+      instanceEndpointV1.definition.actions.find(
+        (action: any) => action.actionParameters.actionType.definition === "updateInstance"
+      ).actionParameters.payload
+    ),
     actionEnvelope: {
       actionType: "updateInstance",
       actionLabel: "MCP: Update instances",
@@ -286,12 +364,11 @@ export const mcpRequestHandlers: McpRequestHandlers = {
         (action: any) => action.actionParameters.actionType.definition === "deleteInstance"
       ).actionParameters.payload,
     ) as McpToolDescription,
-    payloadZodSchema: z.object({
-      applicationSection: ApplicationSectionSchema,
-      deploymentUuid: UuidSchema,
-      parentUuid: UuidSchema.describe("Entity UUID"),
-      uuid: UuidSchema.describe("Instance UUID to delete"),
-    }),
+    payloadZodSchema: jzodPayloadToZodSchema(
+      instanceEndpointV1.definition.actions.find(
+        (action: any) => action.actionParameters.actionType.definition === "deleteInstance"
+      ).actionParameters.payload
+    ),
     actionEnvelope: {
       actionType: "deleteInstance",
       actionLabel: "MCP: Delete instance",
@@ -317,12 +394,11 @@ export const mcpRequestHandlers: McpRequestHandlers = {
         (action: any) => action.actionParameters.actionType.definition === "deleteInstanceWithCascade"
       ).actionParameters.payload,
     ) as McpToolDescription,
-    payloadZodSchema: z.object({
-      applicationSection: ApplicationSectionSchema,
-      deploymentUuid: UuidSchema,
-      parentUuid: UuidSchema.describe("Entity UUID"),
-      uuid: UuidSchema.describe("Instance UUID to delete"),
-    }),
+    payloadZodSchema: jzodPayloadToZodSchema(
+      instanceEndpointV1.definition.actions.find(
+        (action: any) => action.actionParameters.actionType.definition === "deleteInstanceWithCascade"
+      ).actionParameters.payload
+    ),
     actionEnvelope: {
       actionType: "deleteInstanceWithCascade",
       actionLabel: "MCP: Delete instance with cascade",
@@ -348,12 +424,11 @@ export const mcpRequestHandlers: McpRequestHandlers = {
         (action: any) => action.actionParameters.actionType.definition === "loadNewInstancesInLocalCache"
       ).actionParameters.payload,
     ) as McpToolDescription,
-    payloadZodSchema: z.object({
-      applicationSection: ApplicationSectionSchema,
-      deploymentUuid: UuidSchema,
-      parentUuid: UuidSchema.describe("Entity UUID"),
-      instances: z.array(EntityInstanceSchema).describe("Array of instances to load in cache"),
-    }),
+    payloadZodSchema: jzodPayloadToZodSchema(
+      instanceEndpointV1.definition.actions.find(
+        (action: any) => action.actionParameters.actionType.definition === "loadNewInstancesInLocalCache"
+      ).actionParameters.payload
+    ),
     actionEnvelope: {
       actionType: "loadNewInstancesInLocalCache",
       actionLabel: "MCP: Load new instances in local cache",
