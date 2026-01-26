@@ -15,7 +15,7 @@ import type { McpToolDescriptionProperty } from "./handlers_InstanceEndpoint.js"
  * @param propertyNameMapping - Optional mapping of property names for renaming
  * @returns An MCP tool description property
  */
-export function mcpToolDescriptionFromJzodElement(
+export function jzodElementToJsonSchema(
   jzodElement: JzodElement,
   propertyName?: string,
   propertyNameMapping?: Record<string, string>
@@ -51,7 +51,7 @@ export function mcpToolDescriptionFromJzodElement(
       );
       
       // Recursively convert the resolved schema
-      return mcpToolDescriptionFromJzodElement(resolvedSchema, propertyName, propertyNameMapping);
+      return jzodElementToJsonSchema(resolvedSchema, propertyName, propertyNameMapping);
     }
 
     case 'object': {
@@ -60,7 +60,7 @@ export function mcpToolDescriptionFromJzodElement(
 
       if (jzodElement.definition) {
         for (const [key, value] of Object.entries(jzodElement.definition)) {
-          properties[key] = mcpToolDescriptionFromJzodElement(value as any, key, propertyNameMapping);
+          properties[key] = jzodElementToJsonSchema(value as any, key, propertyNameMapping);
           if (!(value as any).optional && !(value as any).nullable) {
             required.push(key);
           }
@@ -84,7 +84,7 @@ export function mcpToolDescriptionFromJzodElement(
       return {
         type: 'array',
         description,
-        items: mcpToolDescriptionFromJzodElement(jzodElement.definition, undefined, propertyNameMapping),
+        items: jzodElementToJsonSchema(jzodElement.definition, undefined, propertyNameMapping),
       };
     }
     case 'enum': {
@@ -123,7 +123,7 @@ export function mcpToolDescriptionFromJzodElement(
       return {
         type: 'object',
         description,
-        additionalProperties: mcpToolDescriptionFromJzodElement(jzodElement.definition, undefined, propertyNameMapping),
+        additionalProperties: jzodElementToJsonSchema(jzodElement.definition, undefined, propertyNameMapping),
       };
     }
     case "tuple": {
@@ -131,7 +131,7 @@ export function mcpToolDescriptionFromJzodElement(
         throw new Error('Tuple definition missing or invalid');
       }
       const prefixItems = jzodElement.definition.map(item => 
-        mcpToolDescriptionFromJzodElement(item as any, undefined, propertyNameMapping)
+        jzodElementToJsonSchema(item as any, undefined, propertyNameMapping)
       );
       return {
         type: 'array',
@@ -148,7 +148,7 @@ export function mcpToolDescriptionFromJzodElement(
       
       // Convert all union members recursively
       const convertedMembers = jzodElement.definition.map(member => 
-        mcpToolDescriptionFromJzodElement(member as any, undefined, propertyNameMapping)
+        jzodElementToJsonSchema(member as any, undefined, propertyNameMapping)
       );
       
       // Check if this is a discriminated union

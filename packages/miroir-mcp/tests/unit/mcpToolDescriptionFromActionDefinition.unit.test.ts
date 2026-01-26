@@ -3,6 +3,7 @@ import instanceEndpointV1 from '../../../miroir-core/src/assets/miroir_data/3d8d
 // import instanceEndpointV1 from 'miroir-core';
 import { mcpToolDescriptionFromActionDefinition } from '../../src/tools/mcpToolDescriptionFromActionDefinition';
 import type { application } from 'express';
+import { conceptLevel } from 'miroir-core';
 
 // console.log('instanceEndpointV1:', JSON.stringify(instanceEndpointV1, null, 2));
 describe('mcpToolDescriptionFromActionDefinition', () => {
@@ -58,8 +59,14 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
                   items: {
                     type: "object",
                     properties: {
-                      uuid: { type: "string", description: "Instance UUID" },
-                      parentUuid: { type: "string", description: "Parent entity UUID" },
+                      uuid: { type: "string", description: "Uuid" },
+                      parentName: { type: "string", description: "Entity Name" },
+                      parentUuid: { type: "string", description: "Entity Uuid" },
+                      conceptLevel: {
+                        type: "string",
+                        enum: ["MetaModel", "Model", "Data"],
+                        description: "Concept Level",
+                      },
                     },
                     required: ["uuid", "parentUuid"],
                     additionalProperties: true,
@@ -172,11 +179,11 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
           },
           applicationSection: {
             type: "string",
-            enum: ["model", "data"],
             description: "A section of the application (model or data)",
+            enum: ["model", "data"],
           },
           includeInTransaction: {
-            type: "string",
+            type: "boolean",
             description: "Set to true to include update in a transaction",
           },
           parentUuid: {
@@ -191,30 +198,39 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
               properties: {
                 parentName: {
                   type: "string",
-                  description: "Parent entity name",
+                  description: "Parent Name",
                 },
                 parentUuid: {
                   type: "string",
-                  description: "Parent entity UUID",
+                  description: "Parent Name",
                 },
                 applicationSection: {
                   type: "string",
-                  enum: ["model", "data"],
                   description: "A section of the application (model or data)",
+                  enum: ["model", "data"],
                 },
                 instances: {
                   type: "array",
-                  description: "Array of entity instances",
+                  description: "",
                   items: {
                     type: "object",
                     properties: {
                       uuid: {
                         type: "string",
-                        description: "Instance UUID",
+                        description: "Uuid",
+                      },
+                      parentName: {
+                        type: "string",
+                        description: "Entity Name",
                       },
                       parentUuid: {
                         type: "string",
-                        description: "Parent entity UUID",
+                        description: "Entity Uuid",
+                      },
+                      conceptLevel: {
+                        type: "string",
+                        description: "Concept Level",
+                        enum: ["MetaModel", "Model", "Data"],
                       },
                     },
                     required: ["uuid", "parentUuid"],

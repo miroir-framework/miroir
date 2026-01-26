@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { mcpToolDescriptionFromJzodElement } from '../../src/tools/mcpToolDescriptionFromJzodElement';
+import { jzodElementToJsonSchema } from '../../src/tools/jzodElementToJsonSchema';
 
-describe('mcpToolDescriptionFromJzodElement', () => {
+describe('jzodElementToJsonSchema', () => {
   it('should convert uuid type to string', () => {
     const jzodElement = {
       type: 'uuid',
@@ -12,7 +12,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -30,7 +30,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -48,7 +48,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'boolean',
@@ -66,7 +66,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -88,13 +88,13 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any, 'applicationSection');
+    const result = jzodElementToJsonSchema(jzodElement as any, 'applicationSection');
 
     expect(result).toEqual(
         {
         type: 'string',
         enum: ['model', 'data'],
-        description: 'Application Section',
+        description: 'A section of the application (model or data)',
       }
     );
   });
@@ -122,7 +122,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -165,7 +165,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -215,7 +215,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -255,7 +255,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     // The resolved entityInstance should be an object with uuid, parentName, parentUuid, and other fields
     expect(result.type).toBe('array');
@@ -284,7 +284,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -314,13 +314,13 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result.type).toBe('object');
     expect(result.properties.section).toEqual({
       type: 'string',
       enum: ['model', 'data'],
-      description: 'Application Section',
+      description: 'A section of the application (model or data)',
     });
     expect(result.properties.name).toEqual({
       type: 'string',
@@ -337,7 +337,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result.type).toBe('object');
     expect(result.properties).toHaveProperty('parentUuid');
@@ -377,7 +377,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result.type).toBe('object');
     expect(result.properties.deployment.type).toBe('string');
@@ -397,7 +397,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'number',
@@ -415,7 +415,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -435,7 +435,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -450,7 +450,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       definition: 42,
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'number',
@@ -477,7 +477,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       },
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -517,7 +517,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       ],
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -568,7 +568,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       ],
     };
 
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+    const result = jzodElementToJsonSchema(jzodElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -612,7 +612,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         ],
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -660,7 +660,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         ],
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -700,7 +700,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         ],
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -779,7 +779,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         discriminator: 'type',
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result).toEqual({
         oneOf: [
@@ -858,7 +858,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         },
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result.type).toBe('object');
       expect(result.properties.id.type).toBe('string');
@@ -893,7 +893,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         ],
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -935,7 +935,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         ],
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -978,7 +978,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         ],
       };
 
-      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+      const result = jzodElementToJsonSchema(jzodElement as any);
 
       expect(result.anyOf).toHaveLength(2);
       expect(result.anyOf[0]).toEqual({
@@ -988,7 +988,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
       expect(result.anyOf[1]).toEqual({
         type: 'string',
         enum: ['model', 'data'],
-        description: 'Application Section',
+        description: 'A section of the application (model or data)',
       });
     });
   });

@@ -6829,6 +6829,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
+            "description": "A section of the application (model or data)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -17890,18 +17891,25 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
-                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)"
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -17909,12 +17917,11 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "Entity UUID (parent entity of the instances to create)",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -17929,7 +17936,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid."
                       }
                     },
                     "definition": {
@@ -17942,7 +17949,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 1,
                               "defaultLabel": "Parent Name",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true
                             }
                           }
@@ -17953,7 +17962,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 2,
                               "defaultLabel": "Parent Uuid",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "foreignKeyParams": {
                                 "targetEntityApplicationSection": "model",
@@ -17985,6 +17996,12 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "instances": {
                           "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created"
+                            }
+                          },
                           "definition": {
                             "type": "schemaReference",
                             "tag": {
@@ -18056,7 +18073,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -18076,8 +18095,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "defaultLabel": "Entity Instances to delete"
                       }
                     },
                     "definition": {
@@ -18133,17 +18151,25 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated"
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -18151,16 +18177,20 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "includeInTransaction": {
                     "type": "boolean",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "The Entity UUID of which instances will be updated",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -18175,7 +18205,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "description": "Array of entity instances to be updated"
                       }
                     },
                     "definition": {
@@ -18242,18 +18272,25 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
-                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)"
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -18261,12 +18298,11 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "Entity UUID (parent entity of the instances to create)",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -18281,7 +18317,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid."
                       }
                     },
                     "definition": {
@@ -18294,7 +18330,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 1,
                               "defaultLabel": "Parent Name",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true
                             }
                           }
@@ -18305,7 +18343,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 2,
                               "defaultLabel": "Parent Uuid",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "foreignKeyParams": {
                                 "targetEntityApplicationSection": "model",
@@ -18337,6 +18377,12 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "instances": {
                           "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created"
+                            }
+                          },
                           "definition": {
                             "type": "schemaReference",
                             "tag": {
@@ -18408,7 +18454,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -18428,8 +18476,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "defaultLabel": "Entity Instances to delete"
                       }
                     },
                     "definition": {
@@ -18490,7 +18537,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -18510,8 +18559,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "defaultLabel": "Entity Instances to delete"
                       }
                     },
                     "definition": {
@@ -18567,17 +18615,25 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated"
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -18585,16 +18641,20 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "includeInTransaction": {
                     "type": "boolean",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "The Entity UUID of which instances will be updated",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -18609,7 +18669,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "description": "Array of entity instances to be updated"
                       }
                     },
                     "definition": {
@@ -18675,7 +18735,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -18684,8 +18746,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 2,
-                        "defaultLabel": "Entity Instances to place in the local cache",
-                        "editable": true
+                        "defaultLabel": "Entity Instances to place in the local cache"
                       }
                     },
                     "definition": {
@@ -18741,17 +18802,25 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "UUID of Application to query",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)"
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -18763,7 +18832,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "UUID of Entity (parent entity)",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -18773,7 +18845,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "UUID of Instance to retrieve",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   }
@@ -18821,17 +18896,25 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID to query",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)"
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -18843,7 +18926,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "Entity UUID to get all instances for",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   }
@@ -40870,6 +40956,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
+            "description": "A section of the application (model or data)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -40883,6 +40970,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Application Section",
+                "description": "A section of the application (model or data)",
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": "data"
@@ -44336,6 +44424,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
+            "description": "A section of the application (model or data)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -46428,18 +46517,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
-                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -46447,12 +46544,11 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "Entity UUID (parent entity of the instances to create)",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -46467,7 +46563,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true,
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
                         "isTemplate": true
                       }
                     },
@@ -46481,7 +46577,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 1,
                               "defaultLabel": "Parent Name",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "isTemplate": true
                             }
@@ -46498,7 +46596,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "Parent Name",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true
                                 }
                               }
@@ -46518,7 +46618,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 2,
                               "defaultLabel": "Parent Uuid",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "foreignKeyParams": {
                                 "targetEntityApplicationSection": "model",
@@ -46551,7 +46653,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 2,
                                   "defaultLabel": "Parent Uuid",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true,
                                   "foreignKeyParams": {
                                     "targetEntityApplicationSection": "model",
@@ -46592,6 +46696,13 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "instances": {
                           "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created",
+                              "isTemplate": true
+                            }
+                          },
                           "definition": {
                             "type": "union",
                             "tag": {
@@ -46694,7 +46805,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -46715,7 +46828,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -46778,7 +46890,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -46799,7 +46913,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -46857,17 +46970,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -46875,16 +46997,20 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "includeInTransaction": {
                     "type": "boolean",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "The Entity UUID of which instances will be updated",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -46899,7 +47025,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true,
+                        "description": "Array of entity instances to be updated",
                         "isTemplate": true
                       }
                     },
@@ -46992,7 +47118,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -47002,7 +47130,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to place in the local cache",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -47060,17 +47187,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "UUID of Application to query",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -47082,7 +47218,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "UUID of Entity (parent entity)",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -47092,7 +47231,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "UUID of Instance to retrieve",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   }
@@ -47141,17 +47283,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID to query",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -47163,7 +47314,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "Entity UUID to get all instances for",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   }
@@ -47218,18 +47372,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
-                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -47237,12 +47399,11 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "Entity UUID (parent entity of the instances to create)",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -47257,7 +47418,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true,
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
                         "isTemplate": true
                       }
                     },
@@ -47271,7 +47432,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 1,
                               "defaultLabel": "Parent Name",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "isTemplate": true
                             }
@@ -47288,7 +47451,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "Parent Name",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true
                                 }
                               }
@@ -47308,7 +47473,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 2,
                               "defaultLabel": "Parent Uuid",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "foreignKeyParams": {
                                 "targetEntityApplicationSection": "model",
@@ -47341,7 +47508,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 2,
                                   "defaultLabel": "Parent Uuid",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true,
                                   "foreignKeyParams": {
                                     "targetEntityApplicationSection": "model",
@@ -47382,6 +47551,13 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "instances": {
                           "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created",
+                              "isTemplate": true
+                            }
+                          },
                           "definition": {
                             "type": "union",
                             "tag": {
@@ -47484,7 +47660,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -47505,7 +47683,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -47563,17 +47740,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -47581,16 +47767,20 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "includeInTransaction": {
                     "type": "boolean",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "The Entity UUID of which instances will be updated",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -47605,7 +47795,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true,
+                        "description": "Array of entity instances to be updated",
                         "isTemplate": true
                       }
                     },
@@ -55169,6 +55359,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
+            "description": "A section of the application (model or data)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -57261,18 +57452,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
-                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -57280,12 +57479,11 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "Entity UUID (parent entity of the instances to create)",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -57300,7 +57498,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true,
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
                         "isTemplate": true
                       }
                     },
@@ -57314,7 +57512,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 1,
                               "defaultLabel": "Parent Name",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "isTemplate": true
                             }
@@ -57331,7 +57531,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "Parent Name",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true
                                 }
                               }
@@ -57351,7 +57553,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 2,
                               "defaultLabel": "Parent Uuid",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "foreignKeyParams": {
                                 "targetEntityApplicationSection": "model",
@@ -57384,7 +57588,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 2,
                                   "defaultLabel": "Parent Uuid",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true,
                                   "foreignKeyParams": {
                                     "targetEntityApplicationSection": "model",
@@ -57425,6 +57631,13 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "instances": {
                           "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created",
+                              "isTemplate": true
+                            }
+                          },
                           "definition": {
                             "type": "union",
                             "tag": {
@@ -57527,7 +57740,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -57548,7 +57763,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -57611,7 +57825,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -57632,7 +57848,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -57690,17 +57905,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -57708,16 +57932,20 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "includeInTransaction": {
                     "type": "boolean",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "The Entity UUID of which instances will be updated",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -57732,7 +57960,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true,
+                        "description": "Array of entity instances to be updated",
                         "isTemplate": true
                       }
                     },
@@ -57825,7 +58053,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -57835,7 +58065,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to place in the local cache",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -57893,17 +58122,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "UUID of Application to query",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -57915,7 +58153,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "UUID of Entity (parent entity)",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -57925,7 +58166,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "UUID of Instance to retrieve",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   }
@@ -57974,17 +58218,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID to query",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -57996,7 +58249,10 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 1,
                         "defaultLabel": "Uuid",
-                        "editable": false
+                        "description": "Entity UUID to get all instances for",
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   }
@@ -58051,18 +58307,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
-                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -58070,12 +58334,11 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "Entity UUID (parent entity of the instances to create)",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -58090,7 +58353,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true,
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
                         "isTemplate": true
                       }
                     },
@@ -58104,7 +58367,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 1,
                               "defaultLabel": "Parent Name",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "isTemplate": true
                             }
@@ -58121,7 +58386,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "Parent Name",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true
                                 }
                               }
@@ -58141,7 +58408,9 @@ export const miroirFundamentalJzodSchema = {
                             "value": {
                               "id": 2,
                               "defaultLabel": "Parent Uuid",
-                              "editable": false,
+                              "display": {
+                                "editable": false
+                              },
                               "canBeTemplate": true,
                               "foreignKeyParams": {
                                 "targetEntityApplicationSection": "model",
@@ -58174,7 +58443,9 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 2,
                                   "defaultLabel": "Parent Uuid",
-                                  "editable": false,
+                                  "display": {
+                                    "editable": false
+                                  },
                                   "canBeTemplate": true,
                                   "foreignKeyParams": {
                                     "targetEntityApplicationSection": "model",
@@ -58215,6 +58486,13 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "instances": {
                           "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created",
+                              "isTemplate": true
+                            }
+                          },
                           "definition": {
                             "type": "union",
                             "tag": {
@@ -58317,7 +58595,9 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
@@ -58338,7 +58618,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true,
                         "isTemplate": true
                       }
                     },
@@ -58396,17 +58675,26 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
+                        "description": "Application UUID",
                         "foreignKeyParams": {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
-                        "editable": false
+                        "display": {
+                          "editable": false
+                        }
                       }
                     }
                   },
                   "applicationSection": {
                     "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated",
+                        "isTemplate": true
+                      }
+                    },
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -58414,16 +58702,20 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "includeInTransaction": {
                     "type": "boolean",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
                   },
                   "parentUuid": {
                     "type": "uuid",
-                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Entity Uuid",
-                        "editable": true,
+                        "description": "The Entity UUID of which instances will be updated",
                         "foreignKeyParams": {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -58438,7 +58730,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true,
+                        "description": "Array of entity instances to be updated",
                         "isTemplate": true
                       }
                     },
