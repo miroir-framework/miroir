@@ -14,9 +14,11 @@ import {
   JzodReference,
   MlSchema,
   type JzodObject,
+  type EndpointDefinition,
 } from "miroir-core";
 import { jzodToZodTextAndZodSchema, type ZodTextAndZodSchema } from "@miroir-framework/jzod";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
+import type { E } from "vitest/dist/chunks/environment.d.cL3nLXbE.js";
 
 
 const packageName = "miroir-mcp";
@@ -47,10 +49,14 @@ const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
  */
 function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
   // Recursively resolve all schema references in the Jzod schema
-  // const resolvedJzodSchema = resolveAllReferences(jzodPayload);
+  // schemaReferences in jzodToZodTextAndZodSchema are not closures, they depend on the resolved schema names
+  // that are found in miroirFundamentalType.ts.
+  // with eager resolution here, we avoid issues with unresolved references during conversion
+  // this leads to problems with recursive references, but those are not used in MCP tool payloads currently.
+  const resolvedJzodSchema = resolveAllReferences(jzodPayload);
   
   // Convert the resolved Jzod schema to Zod
-  const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(jzodPayload as any);
+  const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(resolvedJzodSchema as any);
   return zodTextAndSchema.zodSchema as any;
 }
 
@@ -264,186 +270,9 @@ export type McpRequestHandler<T extends McpToolDescription> = {
 
 }
 export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
-export const mcpRequestHandlers: McpRequestHandlers = {
-  miroir_createInstance: {
-    mcpToolDescription: jzodElementToJsonSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "createInstance"
-      ).actionParameters.payload,
-    ) as McpToolDescription,
-    payloadZodSchema: jzodPayloadToZodSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "createInstance"
-      ).actionParameters.payload
-    ),
-    actionEnvelope: {
-      actionType: "createInstance",
-      actionLabel: "MCP: Create instances",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_createInstance", (p) => ({
-      application: p.applicationUuid,
-      applicationSection: p.applicationSection,
-      objects: p.instances,
-    })),
-  },
-  miroir_getInstance: {
-    mcpToolDescription: jzodElementToJsonSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "getInstance"
-      ).actionParameters.payload,
-    ) as McpToolDescription,
-    payloadZodSchema: jzodPayloadToZodSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "getInstance"
-      ).actionParameters.payload
-    ),
-    actionEnvelope: {
-      actionType: "getInstance",
-      actionLabel: "MCP: Get instance",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_getInstance", (p) => ({
-      application: p.application,
-      applicationSection: p.applicationSection,
-      parentUuid: p.parentUuid,
-      uuid: p.uuid,
-    })),
-  },
-  miroir_getInstances: {
-    mcpToolDescription: jzodElementToJsonSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "getInstances"
-      ).actionParameters.payload,
-    ) as McpToolDescription,
-    payloadZodSchema: jzodPayloadToZodSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "getInstances"
-      ).actionParameters.payload
-    ),
-    actionEnvelope: {
-      actionType: "getInstances",
-      actionLabel: "MCP: Get instances",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_getInstances", (p) => ({
-      application: p.application,
-      applicationSection: p.applicationSection,
-      parentUuid: p.parentUuid,
-    })),
-  },
-  miroir_updateInstance: {
-    mcpToolDescription: jzodElementToJsonSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "updateInstance"
-      ).actionParameters.payload,
-    ) as McpToolDescription,
-    payloadZodSchema: jzodPayloadToZodSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "updateInstance"
-      ).actionParameters.payload
-    ),
-    actionEnvelope: {
-      actionType: "updateInstance",
-      actionLabel: "MCP: Update instances",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_updateInstance", (p) => ({
-      application: p.application,
-      applicationSection: p.applicationSection,
-      objects: p.instances,
-    })),
-  },
-  miroir_deleteInstance: {
-    mcpToolDescription: jzodElementToJsonSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "deleteInstance"
-      ).actionParameters.payload,
-    ) as McpToolDescription,
-    payloadZodSchema: jzodPayloadToZodSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "deleteInstance"
-      ).actionParameters.payload
-    ),
-    actionEnvelope: {
-      actionType: "deleteInstance",
-      actionLabel: "MCP: Delete instance",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_deleteInstance", (p) => ({
-      application: p.applicationUuid,
-      applicationSection: p.applicationSection,
-      objects: [
-        {
-          parentName: p.parentName,
-          parentUuid: p.parentUuid,
-          applicationSection: p.applicationSection,
-          instances: [{ uuid: p.uuid, parentUuid: p.parentUuid }],
-        },
-      ],
-    })),
-  },
-  miroir_deleteInstanceWithCascade: {
-    mcpToolDescription: jzodElementToJsonSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "deleteInstanceWithCascade"
-      ).actionParameters.payload,
-    ) as McpToolDescription,
-    payloadZodSchema: jzodPayloadToZodSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "deleteInstanceWithCascade"
-      ).actionParameters.payload
-    ),
-    actionEnvelope: {
-      actionType: "deleteInstanceWithCascade",
-      actionLabel: "MCP: Delete instance with cascade",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_deleteInstanceWithCascade", (p) => ({
-      application: p.applicationUuid,
-      applicationSection: p.applicationSection,
-      objects: [
-        {
-          parentName: p.parentName,
-          parentUuid: p.parentUuid,
-          applicationSection: p.applicationSection,
-          instances: [{ uuid: p.uuid, parentUuid: p.parentUuid }],
-        },
-      ],
-    })),
-  },
-  miroir_loadNewInstancesInLocalCache: {
-    mcpToolDescription: jzodElementToJsonSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "loadNewInstancesInLocalCache"
-      ).actionParameters.payload,
-    ) as McpToolDescription,
-    payloadZodSchema: jzodPayloadToZodSchema(
-      instanceEndpointV1.definition.actions.find(
-        (action: any) => action.actionParameters.actionType.definition === "loadNewInstancesInLocalCache"
-      ).actionParameters.payload
-    ),
-    actionEnvelope: {
-      actionType: "loadNewInstancesInLocalCache",
-      actionLabel: "MCP: Load new instances in local cache",
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
-    },
-    actionHandler: createHandler("miroir_loadNewInstancesInLocalCache", (p) => ({
-      application: p.applicationUuid,
-      applicationSection: p.applicationSection,
-      objects: p.instances,
-    })),
-  },
-};
 
-  // ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // Generic handler factory
 // ################################################################################################
 /**
@@ -477,5 +306,88 @@ export function createHandler(
     );
   };
 }
+
+// ################################################################################################
+function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequestHandler<any> {
+  const actionDef = endpoint.definition.actions.find(
+    (action: any) => action.actionParameters.actionType.definition === actionType
+  );
+  if (!actionDef) {
+    throw new Error(`Action definition not found for action type: ${actionType}`);
+  }
+  if (!actionDef.actionParameters.payload) {
+    throw new Error(`Payload definition not found for action type: ${actionType}`);
+  }
+  const jzodPayload = actionDef.actionParameters.payload;
+  return {
+    mcpToolDescription: jzodElementToJsonSchema(
+      jzodPayload,
+    ) as McpToolDescription,
+    payloadZodSchema: jzodPayloadToZodSchema(
+      jzodPayload
+    ),
+    actionEnvelope: {
+      actionType: actionType,
+      actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
+      application: MIROIR_APP_UUID,
+      endpoint: INSTANCE_ENDPOINT_UUID,
+    },
+    actionHandler: createHandler(`miroir_${actionType}`, (p) => {
+      switch (actionType) {
+        case "createInstance":
+        case "updateInstance":
+          return {
+            application: p.applicationUuid,
+            applicationSection: p.applicationSection,
+            objects: p.instances,
+          };
+        case "getInstance":
+          return {
+            application: p.application,
+            applicationSection: p.applicationSection,
+            parentUuid: p.parentUuid,
+            uuid: p.uuid,
+          };
+        case "getInstances":
+          return {
+            application: p.application,
+            applicationSection: p.applicationSection,
+            parentUuid: p.parentUuid,
+          };
+        case "deleteInstance":
+        case "deleteInstanceWithCascade":
+          return {
+            application: p.applicationUuid,
+            applicationSection: p.applicationSection,
+            objects: [
+              {
+                parentName: p.parentName,
+                parentUuid: p.parentUuid,
+                applicationSection: p.applicationSection,
+                instances: [{ uuid: p.uuid, parentUuid: p.parentUuid }],
+              },
+            ],
+          };
+        case "loadNewInstancesInLocalCache":
+          return {
+            application: p.applicationUuid,
+            applicationSection: p.applicationSection,
+            objects: p.instances,
+          };
+        default:
+          throw new Error(`Unhandled action type: ${actionType}`);
+      }
+    }),
+  };
+}
+export const mcpRequestHandlers: McpRequestHandlers = {
+  miroir_createInstance: mcpToolEntry(instanceEndpointV1, "createInstance"),
+  miroir_getInstance: mcpToolEntry(instanceEndpointV1, "getInstance"),
+  miroir_getInstances: mcpToolEntry(instanceEndpointV1, "getInstances"),
+  miroir_updateInstance: mcpToolEntry(instanceEndpointV1, "updateInstance"),
+  miroir_deleteInstance: mcpToolEntry(instanceEndpointV1, "deleteInstance"),
+  miroir_deleteInstanceWithCascade: mcpToolEntry(instanceEndpointV1, "deleteInstanceWithCascade"),
+  miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
+};
 
 export const allInstanceActionTools = Object.values(mcpRequestHandlers).map((t) => t.mcpToolDescription);

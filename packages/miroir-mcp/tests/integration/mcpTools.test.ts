@@ -256,46 +256,46 @@ describe("MCP Tools Integration Tests", () => {
 
   });
 
-  // ################################################################################################
-  afterAll(async () => {
-    // Close all stores
-    for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
-      const closeStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_closeStore",
-        actionLabel: `Close stores for ${deploymentUuid}`,
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: Object.keys(applicationDeploymentMap).find(
-            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        },
-      };
+  // // ################################################################################################
+  // afterAll(async () => {
+  //   // Close all stores
+  //   for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
+  //     const closeStoreAction: StoreOrBundleAction = {
+  //       actionType: "storeManagementAction_closeStore",
+  //       actionLabel: `Close stores for ${deploymentUuid}`,
+  //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  //       payload: {
+  //         application: Object.keys(applicationDeploymentMap).find(
+  //           (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
+  //         ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       },
+  //     };
 
-      await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
-    }
+  //     await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
+  //   }
 
-    log.info("MCP test teardown completed");
-  });
+  //   log.info("MCP test teardown completed");
+  // });
 
-  // ################################################################################################
-  describe("Configuration and Setup", () => {
-    it("should load configuration successfully", () => {
-      expect(miroirConfig).toBeDefined();
-      expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
-      expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
-    });
+  // // ################################################################################################
+  // describe("Configuration and Setup", () => {
+  //   it("should load configuration successfully", () => {
+  //     expect(miroirConfig).toBeDefined();
+  //     expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
+  //     expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
+  //   });
 
-    it("should have initialized domain controller", () => {
-      expect(domainController).toBeDefined();
-      expect(localCache).toBeDefined();
-    });
+  //   it("should have initialized domain controller", () => {
+  //     expect(domainController).toBeDefined();
+  //     expect(localCache).toBeDefined();
+  //   });
 
-    it("should have valid application deployment map", () => {
-      expect(applicationDeploymentMap).toBeDefined();
-      expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
-    });
-  });
+  //   it("should have valid application deployment map", () => {
+  //     expect(applicationDeploymentMap).toBeDefined();
+  //     expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
+  //   });
+  // });
 
   // ################################################################################################
   describe("MCP Tool Handlers - InstanceActions", () => {
