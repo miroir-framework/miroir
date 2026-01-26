@@ -154,6 +154,7 @@ export class ModelEntityActionTransformer{
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               payload: {
                 application: modelAction.payload.application,
+                parentUuid: entityEntity.uuid,
                 // deploymentUuid: modelAction.payload.deploymentUuid,
                 applicationSection: "model",
                 objects
@@ -217,6 +218,7 @@ export class ModelEntityActionTransformer{
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               payload: {
                 application: modelAction.payload.application,
+                parentUuid: entityEntityDefinition.uuid,
                 // deploymentUuid: modelAction.payload.deploymentUuid,
                 applicationSection: "model",
                 objects

@@ -35,6 +35,7 @@ import adminMiroirApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade
 import adminLibraryApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 
 import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+import { noValue } from "./Instance";
 // import selfApplicationDeploymentLibrary from "../assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
 export const defaultApplications: SelfApplication[] = [
@@ -98,9 +99,9 @@ export function createApplicationCompositeAction(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           payload: {
-            // deploymentUuid: deploymentUuid,
             application: newSelfApplicationUuid,
             applicationSection: "data",
+            parentUuid: entityApplicationForAdmin.uuid,
             objects: [
               {
                 parentName: entityApplicationForAdmin.name,
@@ -202,7 +203,7 @@ export function createDeploymentCompositeAction(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: adminSelfApplication.uuid,
-            // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            parentUuid: entityDeployment.uuid,
             applicationSection: "data",
             objects: [
               {
@@ -317,6 +318,7 @@ export function resetAndinitializeDeploymentCompositeAction(
           payload: {
             application: applicationUuid,
             applicationSection: "data",
+            parentUuid: appEntitesAndInstances.length > 0? appEntitesAndInstances[0].entity.uuid : noValue.uuid,
             objects: appEntitesAndInstances.map((e) => {
               return {
                 parentName: e.entity.name,

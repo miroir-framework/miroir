@@ -279,24 +279,24 @@ describe("MCP Tools Integration Tests", () => {
     log.info("MCP test teardown completed");
   });
 
-  // // ################################################################################################
-  // describe("Configuration and Setup", () => {
-  //   it("should load configuration successfully", () => {
-  //     expect(miroirConfig).toBeDefined();
-  //     expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
-  //     expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
-  //   });
+  // ################################################################################################
+  describe("Configuration and Setup", () => {
+    it("should load configuration successfully", () => {
+      expect(miroirConfig).toBeDefined();
+      expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
+      expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
+    });
 
-  //   it("should have initialized domain controller", () => {
-  //     expect(domainController).toBeDefined();
-  //     expect(localCache).toBeDefined();
-  //   });
+    it("should have initialized domain controller", () => {
+      expect(domainController).toBeDefined();
+      expect(localCache).toBeDefined();
+    });
 
-  //   it("should have valid application deployment map", () => {
-  //     expect(applicationDeploymentMap).toBeDefined();
-  //     expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
-  //   });
-  // });
+    it("should have valid application deployment map", () => {
+      expect(applicationDeploymentMap).toBeDefined();
+      expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
+    });
+  });
 
   // ################################################################################################
   describe("MCP Tool Handlers - InstanceActions", () => {
@@ -306,7 +306,6 @@ describe("MCP Tools Integration Tests", () => {
     const testApplicationUuid = selfApplicationLibrary.uuid; // Library
     const testInstance = book1; // Book1 instance
     const testInstanceUuid = book1.uuid; // Book1 instance
-    // const testDeploymentUuid = selfApplicationDeploymentLibrary.uuid; // Library deployment
 
     it(
       "should execute createInstance action",
@@ -320,6 +319,7 @@ describe("MCP Tools Integration Tests", () => {
           payload: {
             application: testApplicationUuid,
             applicationSection: "data",
+            parentUuid: testEntityUuid,
             objects: [
               {
                 parentName: "Book",
@@ -424,6 +424,7 @@ describe("MCP Tools Integration Tests", () => {
           payload: {
             application: testApplicationUuid,
             applicationSection: "data",
+            parentUuid: testEntityUuid,
             objects: [
               {
                 parentName: testEntity.name,
@@ -456,34 +457,6 @@ describe("MCP Tools Integration Tests", () => {
     it(
       "should execute deleteInstance action",
       async () => {
-        // const testInstanceUuid = "test-book-delete-" + Date.now();
-        
-        // // Create instance
-        // const createAction: InstanceAction = {
-        //   actionType: "createInstance",
-        //   actionLabel: "Create book for deletion",
-        //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        //   payload: {
-        //     application: testApplicationUuid,
-        //     applicationSection: "data",
-        //     objects: [
-        //       {
-        //         parentName: testEntity.name,
-        //         parentUuid: testEntity.uuid,
-        //         applicationSection: "data",
-        //         instances: [
-        //           {
-        //             uuid: testInstanceUuid,
-        //           } as any,
-        //         ],
-        //       },
-        //     ],
-        //   },
-        // };
-
-        // await domainController.handleAction(createAction, applicationDeploymentMap);
-
         // Delete it
         const deleteAction: InstanceAction = {
           actionType: "deleteInstance",
