@@ -74,7 +74,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
     });
   });
 
-  it('should convert schemaReference for applicationSection with enum', () => {
+  it('should resolve schemaReference for applicationSection with enum', () => {
     const jzodElement = {
       type: 'schemaReference',
       tag: {
@@ -94,7 +94,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
         {
         type: 'string',
         enum: ['model', 'data'],
-        description: 'A section of the application (model or data)',
+        description: 'Application Section',
       }
     );
   });
@@ -238,7 +238,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
     });
   });
 
-  it('should convert array type with schemaReference items', () => {
+  it('should resolve array type with schemaReference items', () => {
     const jzodElement = {
       type: 'array',
       tag: {
@@ -257,19 +257,133 @@ describe('mcpToolDescriptionFromJzodElement', () => {
 
     const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
 
-    expect(result).toEqual({
-      type: 'array',
-      description: 'Array of entity instances',
-      items: {
-        type: "object",
-        properties: {
-          uuid: { type: "string", description: "Instance UUID" },
-          parentUuid: { type: "string", description: "Parent entity UUID" },
+    // The resolved entityInstance should be an object with uuid, parentName, parentUuid, and other fields
+    expect(result.type).toBe('array');
+    expect(result.description).toBe('Array of entity instances');
+    expect(result.items.type).toBe('object');
+    // entityInstance contains uuid and parentUuid at minimum
+    expect(result.items.properties).toHaveProperty('uuid');
+    expect(result.items.properties).toHaveProperty('parentUuid');
+  });
+
+  it('should resolve schemaReference with context (relative reference)', () => {
+    const jzodElement = {
+      type: 'schemaReference',
+      context: {
+        myString: {
+          type: 'string',
+          tag: {
+            value: {
+              description: 'A custom string type',
+            },
+          },
         },
-        required: ["uuid", "parentUuid"],
-        additionalProperties: true,
       },
+      definition: {
+        relativePath: 'myString',
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result).toEqual({
+      type: 'string',
+      description: 'A custom string type',
     });
+  });
+
+  it('should resolve nested schemaReference in object properties', () => {
+    const jzodElement = {
+      type: 'object',
+      definition: {
+        section: {
+          type: 'schemaReference',
+          definition: {
+            absolutePath: 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739',
+            relativePath: 'applicationSection',
+          },
+        },
+        name: {
+          type: 'string',
+          tag: {
+            value: {
+              description: 'Name field',
+            },
+          },
+        },
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result.type).toBe('object');
+    expect(result.properties.section).toEqual({
+      type: 'string',
+      enum: ['model', 'data'],
+      description: 'Application Section',
+    });
+    expect(result.properties.name).toEqual({
+      type: 'string',
+      description: 'Name field',
+    });
+  });
+
+  it('should resolve schemaReference for entityInstanceCollection', () => {
+    const jzodElement = {
+      type: 'schemaReference',
+      definition: {
+        absolutePath: 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739',
+        relativePath: 'entityInstanceCollection',
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result.type).toBe('object');
+    expect(result.properties).toHaveProperty('parentUuid');
+    expect(result.properties).toHaveProperty('applicationSection');
+    expect(result.properties).toHaveProperty('instances');
+    // Check that instances is an array type
+    expect(result.properties.instances.type).toBe('array');
+  });
+
+  it('should handle complex nested schemaReference resolution', () => {
+    const jzodElement = {
+      type: 'object',
+      definition: {
+        deployment: {
+          type: 'uuid',
+          tag: {
+            value: {
+              description: 'Deployment UUID',
+            },
+          },
+        },
+        data: {
+          type: 'array',
+          tag: {
+            value: {
+              description: 'Collection of instances',
+            },
+          },
+          definition: {
+            type: 'schemaReference',
+            definition: {
+              absolutePath: 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739',
+              relativePath: 'entityInstance',
+            },
+          },
+        },
+      },
+    };
+
+    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+    expect(result.type).toBe('object');
+    expect(result.properties.deployment.type).toBe('string');
+    expect(result.properties.data.type).toBe('array');
+    expect(result.properties.data.items.type).toBe('object');
+    expect(result.properties.data.items.properties).toHaveProperty('uuid');
   });
 
 });

@@ -1,4 +1,10 @@
-import type { JzodElement } from "miroir-core";
+import { 
+  miroirFundamentalJzodSchema, 
+  type JzodElement,
+  resolveJzodSchemaReferenceInContext,
+  type JzodReference,
+  type MlSchema,
+} from "miroir-core";
 import type { McpToolDescriptionProperty } from "./handlers_InstanceEndpoint.js";
 
 /**
@@ -29,58 +35,18 @@ export function mcpToolDescriptionFromJzodElement(
       };
 
     case 'schemaReference': {
-      switch (jzodElement.definition.relativePath) {
-        case 'entityInstance': {
-          return {
-            type: "object",
-            properties: {
-              uuid: { type: "string", description: "Instance UUID" },
-              parentUuid: { type: "string", description: "Parent entity UUID" },
-            },
-            required: ["uuid", "parentUuid"],
-            additionalProperties: true,
-          };
+      // Resolve the schema reference using the miroir context
+      const resolvedSchema = resolveJzodSchemaReferenceInContext(
+        jzodElement as JzodReference,
+        (jzodElement as JzodReference).context || {},
+        { 
+          miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+          endpointsByUuid: {}
         }
-        case 'applicationSection': {
-          return {
-            type: 'string',
-            enum: ['model', 'data'],
-            description: "A section of the application (model or data)",
-          };
-        }
-        case 'entityInstanceCollection': {
-          return {
-            type: "object",
-            properties: {
-              parentName: { type: "string", description: "Parent entity name" },
-              parentUuid: { type: "string", description: "Parent entity UUID" },
-              applicationSection: {
-                type: "string",
-                enum: ["model", "data"],
-                description: "A section of the application (model or data)",
-              },
-              instances: {
-                type: "array",
-                description: "Array of entity instances",
-                items: {
-                  type: "object",
-                  properties: {
-                    uuid: { type: "string", description: "Instance UUID" },
-                    parentUuid: { type: "string", description: "Parent entity UUID" },
-                  },
-                  required: ["uuid", "parentUuid"],
-                  additionalProperties: true,
-                },
-              },
-            },
-            required: ["parentUuid", "applicationSection", "instances" ],
-            additionalProperties: true,
-          };
-        }
-        default: {
-          throw new Error(`Unsupported schema reference for MCP tool description: ${jzodElement.definition.relativePath}`);
-        }
-      }
+      );
+      
+      // Recursively convert the resolved schema
+      return mcpToolDescriptionFromJzodElement(resolvedSchema, propertyName, propertyNameMapping);
     }
 
     case 'object': {
