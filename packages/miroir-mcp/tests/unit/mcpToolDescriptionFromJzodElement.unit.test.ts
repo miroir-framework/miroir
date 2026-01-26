@@ -38,7 +38,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
     });
   });
 
-  it('should convert boolean type to string', () => {
+  it('should convert boolean type to boolean', () => {
     const jzodElement = {
       type: 'boolean',
       tag: {
@@ -51,7 +51,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
     const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
 
     expect(result).toEqual({
-      type: 'string',
+      type: 'boolean',
       description: 'Set to true to include in transaction',
     });
   });
@@ -583,7 +583,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
           description: 'Age',
         },
         {
-          type: 'string',
+          type: 'boolean',
           description: 'Active',
         },
       ],
@@ -673,7 +673,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
             description: 'Numeric value',
           },
           {
-            type: 'string',
+            type: 'boolean',
             description: 'Boolean value',
           },
         ],
@@ -950,7 +950,7 @@ describe('mcpToolDescriptionFromJzodElement', () => {
                 description: '',
               },
               {
-                type: 'string',
+                type: 'boolean',
                 description: '',
               },
             ],

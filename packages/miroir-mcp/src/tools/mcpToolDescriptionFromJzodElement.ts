@@ -28,9 +28,14 @@ export function mcpToolDescriptionFromJzodElement(
   switch (jzodElement.type) {
     case 'uuid':
     case 'string':
-    case 'boolean':
       return {
         type: 'string',
+        description,
+      };
+
+    case 'boolean':
+      return {
+        type: 'boolean',
         description,
       };
 
