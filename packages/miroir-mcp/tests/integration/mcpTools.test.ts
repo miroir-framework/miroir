@@ -1,6 +1,5 @@
 import loglevelNextLog from 'loglevelnext';
 import {
-  Action2VoidReturnType,
   adminConfigurationDeploymentLibrary,
   ApplicationDeploymentMap,
   author1,
@@ -22,7 +21,6 @@ import {
   entityDefinitionBook,
   entityDefinitionPublisher,
   entityPublisher,
-  InstanceAction,
   LocalCacheInterface,
   LoggerInterface,
   MiroirActivityTracker,
@@ -59,6 +57,7 @@ import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { setupMiroirPlatform } from '../../src/startup/setup.js';
 import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
+import { mcpRequestHandlers } from "../../src/tools/handlers_InstanceEndpoint.js";
 
 const packageName = "miroir-mcp";
 const fileName = "mcpTools.test";
@@ -311,45 +310,40 @@ describe("MCP Tools Integration Tests", () => {
       "should execute createInstance action",
       async () => {
         const testInstanceUuid = "test-book-" + Date.now();
-        const createAction: InstanceAction = {
-          actionType: "createInstance",
-          actionLabel: "Create test book instance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: testEntityUuid,
-            objects: [
-              {
-                parentName: "Book",
-                parentUuid: testEntityUuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    uuid: testInstanceUuid,
-                    parentUuid: testEntityUuid,
-                    name: "Test Book from MCP",
-                    author: "Test Author",
-                    isbn: "TEST-123",
-                  } as any,
-                ],
-              },
-            ],
-          },
+        const params = {
+          application: testApplicationUuid,
+          applicationSection: "data" as const,
+          parentUuid: testEntityUuid,
+          instances: [
+            {
+              parentName: "Book",
+              parentUuid: testEntityUuid,
+              applicationSection: "data" as const,
+              instances: [
+                {
+                  uuid: testInstanceUuid,
+                  parentUuid: testEntityUuid,
+                  name: "Test Book from MCP",
+                  author: "Test Author",
+                  isbn: "TEST-123",
+                } as any,
+              ],
+            },
+          ],
         };
 
-        const result: Action2VoidReturnType = await domainController.handleAction(
-          createAction,
+        const result = await mcpRequestHandlers.miroir_createInstance.actionHandler(
+          params,
+          domainController,
           applicationDeploymentMap
         );
 
         log.info("createInstance result:", JSON.stringify(result, null, 2));
-        // Since we haven't deployed the Book entity, expect error  
-        // but verify the MCP layer processed the action correctly
+        // Verify the MCP layer processed the action correctly
         expect(result).toBeDefined();
-        expect(result.status).toBeDefined();
-        expect(result.status).toBe("ok");
+        expect(result.content).toBeDefined();
+        expect(result.content.length).toBeGreaterThan(0);
+        expect(result.content[0].type).toBe("text");
       },
       globalTimeOut
     );
@@ -357,29 +351,24 @@ describe("MCP Tools Integration Tests", () => {
     it(
       "should execute getInstance action",
       async () => {
-        // Now retrieve it
-        const getAction: InstanceAction = {
-          actionType: "getInstance",
-          actionLabel: "Get book instance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: testEntityUuid,
-            uuid: testInstanceUuid,
-          },
+        const params = {
+          application: testApplicationUuid,
+          applicationSection: "data" as const,
+          parentUuid: testEntityUuid,
+          uuid: testInstanceUuid,
         };
 
-        const result = await domainController.handleAction(
-          getAction,
+        const result = await mcpRequestHandlers.miroir_getInstance.actionHandler(
+          params,
+          domainController,
           applicationDeploymentMap
         );
 
         log.info("getInstance result:", JSON.stringify(result, null, 2));
-        // Expect error since instance wasn't created successfully
         expect(result).toBeDefined();
-        expect(result.status).toBe("ok");
+        expect(result.content).toBeDefined();
+        expect(result.content.length).toBeGreaterThan(0);
+        expect(result.content[0].type).toBe("text");
       },
       globalTimeOut
     );
@@ -387,27 +376,23 @@ describe("MCP Tools Integration Tests", () => {
     it(
       "should execute getInstances action",
       async () => {
-        const getInstancesAction: InstanceAction = {
-          actionType: "getInstances",
-          actionLabel: "Get all books",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: testEntityUuid,
-          },
+        const params = {
+          application: testApplicationUuid,
+          applicationSection: "data" as const,
+          parentUuid: testEntityUuid,
         };
 
-        const result = await domainController.handleAction(
-          getInstancesAction,
+        const result = await mcpRequestHandlers.miroir_getInstances.actionHandler(
+          params,
+          domainController,
           applicationDeploymentMap
         );
 
         log.info("getInstances result:", JSON.stringify(result, null, 2));
-        // Expect error since Book entity doesn't exist
         expect(result).toBeDefined();
-        expect(result.status).toBe("ok");
+        expect(result.content).toBeDefined();
+        expect(result.content.length).toBeGreaterThan(0);
+        expect(result.content[0].type).toBe("text");
       },
       globalTimeOut
     );
@@ -415,41 +400,36 @@ describe("MCP Tools Integration Tests", () => {
     it(
       "should execute updateInstance action",
       async () => {
-        // Update it
-        const updateAction: InstanceAction = {
-          actionType: "updateInstance",
-          actionLabel: "Update book instance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: testEntityUuid,
-            objects: [
-              {
-                parentName: testEntity.name,
-                parentUuid: testEntity.uuid,
-                applicationSection: "data",
-                instances: [
-                  {
-                    ...testInstance,
-                    "name": "Updated Book Name from MCP",
-                  } as any,
-                ],
-              },
-            ],
-          },
+        const params = {
+          application: testApplicationUuid,
+          applicationSection: "data" as const,
+          parentUuid: testEntityUuid,
+          instances: [
+            {
+              parentName: testEntity.name,
+              parentUuid: testEntity.uuid,
+              applicationSection: "data" as const,
+              instances: [
+                {
+                  ...testInstance,
+                  "name": "Updated Book Name from MCP",
+                } as any,
+              ],
+            },
+          ],
         };
 
-        const result = await domainController.handleAction(
-          updateAction,
+        const result = await mcpRequestHandlers.miroir_updateInstance.actionHandler(
+          params,
+          domainController,
           applicationDeploymentMap
         );
 
         log.info("updateInstance result:", JSON.stringify(result, null, 2));
-        // Expect error since instance wasn't created successfully
         expect(result).toBeDefined();
-        expect(result.status).toBe("ok");
+        expect(result.content).toBeDefined();
+        expect(result.content.length).toBeGreaterThan(0);
+        expect(result.content[0].type).toBe("text");
       },
       globalTimeOut
     );
@@ -457,40 +437,24 @@ describe("MCP Tools Integration Tests", () => {
     it(
       "should execute deleteInstance action",
       async () => {
-        // Delete it
-        const deleteAction: InstanceAction = {
-          actionType: "deleteInstance",
-          actionLabel: "Delete book instance",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            objects: [
-              {
-                parentName: testEntity.name,
-                parentUuid: testEntity.uuid,
-                applicationSection: "data" as const,
-                instances: [
-                  testInstance as any,
-                  // {
-                  //   uuid: testInstanceUuid,
-                  // } as any,
-                ],
-              },
-            ],
-          },
+        const params = {
+          application: testApplicationUuid,
+          applicationSection: "data" as const,
+          parentUuid: testEntity.uuid,
+          uuid: testInstanceUuid,
         };
 
-        const result = await domainController.handleAction(
-          deleteAction,
+        const result = await mcpRequestHandlers.miroir_deleteInstance.actionHandler(
+          params,
+          domainController,
           applicationDeploymentMap
         );
 
         log.info("deleteInstance result:", JSON.stringify(result, null, 2));
-        // Expect error since instance wasn't created successfully
         expect(result).toBeDefined();
-        expect(result.status).toBe("ok");
+        expect(result.content).toBeDefined();
+        expect(result.content.length).toBeGreaterThan(0);
+        expect(result.content[0].type).toBe("text");
       },
       globalTimeOut
     );
@@ -498,27 +462,27 @@ describe("MCP Tools Integration Tests", () => {
     it(
       "should handle error cases gracefully",
       async () => {
-        const invalidAction: InstanceAction = {
-          actionType: "getInstance",
-          actionLabel: "Invalid action - non-existent entity",
-          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application: testApplicationUuid,
-            applicationSection: "data",
-            parentUuid: "00000000-0000-0000-0000-000000000000",
-            uuid: "non-existent-uuid",
-          },
+        const params = {
+          application: testApplicationUuid,
+          applicationSection: "data" as const,
+          parentUuid: "00000000-0000-0000-0000-000000000000",
+          uuid: "non-existent-uuid",
         };
 
-        const result = await domainController.handleAction(
-          invalidAction,
+        const result = await mcpRequestHandlers.miroir_getInstance.actionHandler(
+          params,
+          domainController,
           applicationDeploymentMap
         );
 
         log.info("Error case result:", JSON.stringify(result, null, 2));
-        // Should return error status, not throw
-        expect(result.status).toBe("error");
+        // Should return error in content, not throw
+        expect(result).toBeDefined();
+        expect(result.content).toBeDefined();
+        expect(result.content.length).toBeGreaterThan(0);
+        // Error should be in the text content
+        const contentText = result.content[0].text;
+        expect(contentText).toContain("error");
       },
       globalTimeOut
     );
