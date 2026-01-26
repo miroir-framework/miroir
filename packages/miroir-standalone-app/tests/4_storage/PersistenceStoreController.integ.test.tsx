@@ -31,7 +31,6 @@ import {
   author1,
   book1,
   defaultLevels,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   entityAuthor,
   entityDefinitionAuthor,
@@ -46,13 +45,12 @@ import {
 } from "miroir-core";
 
 
-import { LocalCacheInterface, MiroirContext } from 'miroir-core';
+import { LocalCacheInterface, MiroirContext, createDeploymentCompositeAction, defaultMiroirModelEnvironment, selfApplicationLibrary } from 'miroir-core';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { miroirAppStartup } from '../../src/startup.js';
 import {
   adminApplicationDeploymentConfigurations,
   // createDeploymentCompositeAction,
@@ -61,11 +59,8 @@ import {
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
-import { createDeploymentCompositeAction } from 'miroir-core';
-import { adminLibraryApplication } from 'miroir-core';
-import { defaultMiroirModelEnvironment } from 'miroir-core';
-import { selfApplicationLibrary } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;

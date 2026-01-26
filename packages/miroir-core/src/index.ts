@@ -691,12 +691,15 @@ export {
   defaultLibraryModelEnvironment
 } from "./1_core/Library";
 export {
-  applicationModelEntities, defaultMetaModelEnvironment, defaultMiroirMetaModel, defaultMiroirModelEnvironment,
+  applicationModelEntities,
+  defaultMetaModelEnvironment,
+  defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
   getApplicationSection,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
-  miroirModelEntities
+  miroirModelEntities,
 } from "./1_core/Model.js";
 export { defaultReport } from "./1_core/Report.js";
 export {
@@ -1144,6 +1147,7 @@ const entityPublisher = require("./assets/library_model/16dbfe28-e1d7-4f20-9ba4-
 const entityAuthor = require("./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json");
 const entityBook = require("./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json");
 const entityCountry = require("./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json");
+const entityLendingHistoryItem = require("./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e81078f3-2de7-4301-bd79-d3a156aec149.json");
 
 const reportAuthorList = require("./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/66a09068-52c3-48bc-b8dd-76575bbc8e72.json");
 const reportBookList = require("./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json");
@@ -1154,12 +1158,16 @@ const entityDefinitionBook = require("./assets/library_model/54b9c72f-d4f3-4db9-
 const entityDefinitionPublisher = require("./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json");
 const entityDefinitionAuthor = require("./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json");
 const entityDefinitionCountry = require("./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json");
+const entityDefinitionLendingHistoryItem = require("./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505.json");
 
 const menuDefaultLibrary = require("./assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json");
 
 const reportAuthorDetails = require("./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/6d9faa54-643c-4aec-87c3-32635ad95902.json");
 const reportBookDetails = require("./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json");
 const reportCountryList = require("./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json");
+
+const lendingEndpoint = require("./assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/212f2784-5b68-43b2-8ee0-89b1c6fdd0de.json");
+const bookEndpoint = require("./assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9884c1a4-5122-488a-85db-a99fbc02e678.json");
 
 const folio = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json");
 const penguin = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json");
@@ -1184,21 +1192,6 @@ const publisher3 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618b
 
 export {
   // reportTestList,
-  adminApplicationLibrary, author1,
-  author2,
-  author3,
-  author4,
-  book1,
-  book2,
-  book3,
-  book4,
-  book5,
-  book6,
-  // test1,
-  Country1,
-  Country2,
-  Country3,
-  Country4,
   entityAuthor,
   entityBook,
   entityCountry,
@@ -1208,28 +1201,50 @@ export {
   entityDefinitionCountry,
   entityDefinitionPublisher,
   entityPublisher,
-  //
-  folio,
-  // entityDefinitionTest,
-  menuDefaultLibrary,
-  penguin,
-  publisher1,
-  publisher2,
-  publisher3,
-  reportAuthorDetails,
-  //
+  adminApplicationLibrary,
+  // reports
   reportAuthorList,
   reportBookDetails,
   reportBookInstance,
   reportBookList,
   reportCountryList,
   reportPublisherList,
-  //
-  selfApplicationDeploymentLibrary, selfApplicationLibrary,
+  // application
+  selfApplicationDeploymentLibrary,
+  selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationStoreBasedConfigurationLibrary,
   selfApplicationVersionLibraryInitialVersion,
-  springer
+  // endpoints
+  lendingEndpoint,
+  bookEndpoint,
+  // menu
+  menuDefaultLibrary,
+  // authors
+  author1,
+  author2,
+  author3,
+  author4,
+  // books
+  book1,
+  book2,
+  book3,
+  book4,
+  book5,
+  book6,
+  // countries
+  Country1,
+  Country2,
+  Country3,
+  Country4,
+  // publishers
+  folio,
+  springer,
+  penguin,
+  publisher1,
+  publisher2,
+  publisher3,
+  reportAuthorDetails,
 };
 
 const adminAdminApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };

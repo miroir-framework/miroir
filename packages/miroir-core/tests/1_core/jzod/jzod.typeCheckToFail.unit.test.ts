@@ -4,10 +4,9 @@ import {
   MlSchema
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
-import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
 import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
+import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
 import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
@@ -42,11 +41,6 @@ function testResolve(
     [], // currentValuePath
     [], // currentTypePath
     defaultMiroirModelEnvironment,
-    // {
-    //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-    //   currentModel: defaultMiroirMetaModel,
-    //   miroirMetaModel: defaultMiroirMetaModel,
-    // }, // context
     {} // relativeReferenceJzodContext
   );
 

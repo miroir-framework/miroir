@@ -164,11 +164,6 @@ export function createDeploymentCompositeAction(
               [adminDeploymentConfiguration.uuid]:
                 adminDeploymentConfiguration.configuration as StoreUnitConfiguration,
             },
-            // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-            // configuration: {
-            //   [adminConfigurationDeploymentAdmin.uuid]:
-            //     adminConfigurationDeploymentAdmin.configuration as StoreUnitConfiguration,
-            // },
           },
         },
         {
@@ -185,7 +180,6 @@ export function createDeploymentCompositeAction(
           },
         },
         {
-          // actionType: "storeManagementAction",
           actionType: "storeManagementAction_createStore",
           actionLabel: "storeManagementAction_createStore for " + applicationName,
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

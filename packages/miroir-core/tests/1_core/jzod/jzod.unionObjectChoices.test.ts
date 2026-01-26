@@ -1,22 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type {
-  JzodElement,
   JzodObject,
   JzodReference,
-  MlSchema,
   JzodUnion,
-  MetaModel,
+  MlSchema
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 // } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 // import { unionChoices } from "./JzodUnfoldSchemaForValue";
-import currentModel from "../currentModel.json";
-import currentMiroirModel from "../currentMiroirModel.json";
+import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import {
   unionObjectChoices,
 } from "../../../src/1_core/jzod/jzodTypeCheck";
-import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
-import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
 
 // Minimal mocks for MetaModel and MlSchema
 // const mockMetaModel: MetaModel = {} as MetaModel;

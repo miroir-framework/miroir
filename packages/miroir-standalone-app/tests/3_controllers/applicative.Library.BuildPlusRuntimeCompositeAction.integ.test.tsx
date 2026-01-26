@@ -8,7 +8,6 @@ import {
   AdminApplicationDeploymentConfiguration,
   adminConfigurationDeploymentMiroir,
   ConfigurationService,
-  defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
   LocalCacheInterface,
@@ -30,6 +29,8 @@ import {
 
 // import { packageName } from 'miroir-core';
 // import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
+import type { Uuid } from 'miroir-core';
+import { createDeploymentCompositeAction, defaultMiroirModelEnvironment } from 'miroir-core';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -45,9 +46,6 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
-import { defaultMiroirModelEnvironment } from 'miroir-core';
-import { createDeploymentCompositeAction } from 'miroir-core';
-import type { Uuid } from 'miroir-core';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

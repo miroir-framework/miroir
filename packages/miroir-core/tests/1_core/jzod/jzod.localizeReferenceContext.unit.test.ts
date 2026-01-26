@@ -61,66 +61,6 @@ import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/pr
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 import { defaultMiroirMetaModel } from '../../../src/1_core/Model';
 
-// export const defaultMiroirMetaModel: MetaModel = {
-//   // configuration: [instanceConfigurationReference],
-//   entities: [
-//     entitySelfApplication as Entity,
-//     entitySelfApplicationDeploymentConfiguration as Entity,
-//     entitySelfApplicationModelBranch as Entity,
-//     entitySelfApplicationVersion as Entity,
-//     entityEntity as Entity,
-//     entityEntityDefinition as Entity,
-//     entityJzodSchema as Entity,
-//     entityMenu as Entity,
-//     entityReport as Entity,
-//     entityStoreBasedConfiguration as Entity,
-//     entitySelfApplicationVersion as Entity,
-//   ],
-//   entityDefinitions: [
-//     entityDefinitionSelfApplication as EntityDefinition,
-//     entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-//     entityDefinitionSelfApplicationModelBranch as EntityDefinition,
-//     entityDefinitionSelfApplicationVersion as EntityDefinition,
-//     entityDefinitionEntity as EntityDefinition,
-//     entityDefinitionEntityDefinition as EntityDefinition,
-//     entityDefinitionJzodSchema as EntityDefinition,
-//     entityDefinitionMenu as EntityDefinition,
-//     entityDefinitionReport as EntityDefinition,
-//     entityDefinitionStoreBasedConfiguration as EntityDefinition,
-//   ],
-//   jzodSchemas: [
-//     jzodSchemajzodMiroirBootstrapSchema as MlSchema,
-//   ],
-//   menus: [
-//     menuDefaultMiroir as Menu,
-//   ],
-//   applicationVersions:[
-//     selfApplicationVersionInitialMiroirVersion
-//   ],
-//   reports: [
-//     reportApplicationDeploymentConfigurationList as Report,
-//     reportApplicationList as Report,
-//     reportApplicationModelBranchList as Report,
-//     reportApplicationVersionList as Report,
-//     reportConfigurationList as Report,
-//     reportEntityDefinitionList as Report,
-//     reportEntityList as Report,
-//     reportJzodSchemaList as Report,
-//     reportMenuList as Report,
-//     reportReportList as Report,
-//   ],
-//   applicationVersionCrossEntityDefinition: [
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
-//     applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
-//   ]
-// }
-
-
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -139,7 +79,6 @@ function testLocalizeReferenceContext(
   const testResult = localizeJzodSchemaReferenceContext(
     miroirFundamentalJzodSchema,
     testSchema,
-    // testValueObject,
     defaultMiroirMetaModel,
     defaultMiroirMetaModel,
     (testSchema as any)["context"]??{},
@@ -169,39 +108,6 @@ describe(
     it(
       'miroir entity definition object format',
       () => {
-        // const miroirFundamentalJzodSchema: MlSchema = getMiroirFundamentalJzodSchema(
-        // const miroirFundamentalJzodSchema: any = getMiroirFundamentalJzodSchema(
-        //   entityDefinitionBundleV1 as EntityDefinition,
-        //   entityDefinitionCommit as EntityDefinition,
-        //   modelEndpointV1,
-        //   storeManagementEndpoint,
-        //   instanceEndpointVersionV1,
-        //   undoRedoEndpointVersionV1,
-        //   localCacheEndpointVersionV1,
-        //   domainEndpointVersionV1,
-        //   queryEndpointVersionV1,
-        //   persistenceEndpointVersionV1,
-        //   testEndpointVersionV1,
-        //   jzodSchemajzodMiroirBootstrapSchema as MlSchema,
-        //   transformerJzodSchema as MlSchema, 
-        //   [transformerMenuV1], 
-        //   entityDefinitionAdminApplication as EntityDefinition,
-        //   entityDefinitionSelfApplication as EntityDefinition,
-        //   entityDefinitionSelfApplicationVersion as EntityDefinition,
-        //   entityDefinitionDeployment as EntityDefinition,
-        //   entityDefinitionEntity as EntityDefinition,
-        //   entityDefinitionEntityDefinition as EntityDefinition,
-        //   entityDefinitionJzodSchema as EntityDefinition,
-        //   entityDefinitionMenu  as EntityDefinition,
-        //   entityDefinitionQueryVersionV1 as EntityDefinition,
-        //   entityDefinitionReport as EntityDefinition,
-        //   entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-        //   entityDefinitionTest as EntityDefinition,
-        //   entityDefinitionTransformerTest as EntityDefinition,
-        //   entityDefinitionTransformerDefinition as EntityDefinition,
-        //   entityDefinitionEndpoint as EntityDefinition,
-        //   // jzodSchemajzodMiroirBootstrapSchema as any,
-        // );
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
     
         const tests: { [k: string]: testFormat } = {

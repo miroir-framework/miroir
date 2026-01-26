@@ -1,24 +1,23 @@
 import { type ZodTypeAny } from "zod";
+
+import { jzodToZodTextAndZodSchema, type ZodTextAndZodSchema } from "@miroir-framework/jzod";
 import {
   Action2VoidReturnType,
   ApplicationDeploymentMap,
   DomainControllerInterface,
   InstanceAction,
+  JzodElement,
+  JzodReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  UuidSchema,
+  MlSchema,
   instanceEndpointV1,
   miroirFundamentalJzodSchema,
   resolveJzodSchemaReferenceInContext,
-  JzodElement,
-  JzodReference,
-  MlSchema,
-  type JzodObject,
   type EndpointDefinition,
+  type JzodObject
 } from "miroir-core";
-import { jzodToZodTextAndZodSchema, type ZodTextAndZodSchema } from "@miroir-framework/jzod";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
-import type { E } from "vitest/dist/chunks/environment.d.cL3nLXbE.js";
 
 
 const packageName = "miroir-mcp";
@@ -35,11 +34,6 @@ export type ToolHandler = (
   applicationDeploymentMap: ApplicationDeploymentMap
 ) => Promise<{ content: Array<{ type: string; text: string }> }>
 
-
-// Constants for InstanceEndpoint
-const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
-const MIROIR_APP_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
-const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 
 /**
  * Helper function to convert a Jzod payload schema to a Zod schema
@@ -280,26 +274,26 @@ export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
  */
 export function createHandler(
   toolName: string,
-  payloadBuilder: (validatedParams: any) => any
+  // payloadBuilder: (validatedParams: any) => any
 ): (
-  params: unknown,
+  payload: unknown,
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
 ) => Promise<{ content: Array<{ type: string; text: string }> }> {
   return async (
-    params: unknown,
+    payload: unknown,
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap
   ) => {
-    const config = mcpRequestHandlers[toolName];
+    const config = mcpRequestHandlers_EntityEndpoint[toolName];
     return handleInstanceAction(
       toolName,
-      params,
+      payload,
       config.payloadZodSchema,
-      (p) =>
+      (payload) =>
         ({
           ...config.actionEnvelope,
-          payload: payloadBuilder(p),
+          payload,
         }) as InstanceAction,
       domainController,
       applicationDeploymentMap,
@@ -329,58 +323,13 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
     actionEnvelope: {
       actionType: actionType,
       actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
-      application: MIROIR_APP_UUID,
-      endpoint: INSTANCE_ENDPOINT_UUID,
+      application: endpoint.application,
+      endpoint: endpoint.uuid,
     },
-    actionHandler: createHandler(`miroir_${actionType}`, (p) => {
-      switch (actionType) {
-        case "createInstance":
-        case "updateInstance":
-          return {
-            application: p.applicationUuid,
-            applicationSection: p.applicationSection,
-            objects: p.instances,
-          };
-        case "getInstance":
-          return {
-            application: p.application,
-            applicationSection: p.applicationSection,
-            parentUuid: p.parentUuid,
-            uuid: p.uuid,
-          };
-        case "getInstances":
-          return {
-            application: p.application,
-            applicationSection: p.applicationSection,
-            parentUuid: p.parentUuid,
-          };
-        case "deleteInstance":
-        case "deleteInstanceWithCascade":
-          return {
-            application: p.applicationUuid,
-            applicationSection: p.applicationSection,
-            objects: [
-              {
-                parentName: p.parentName,
-                parentUuid: p.parentUuid,
-                applicationSection: p.applicationSection,
-                instances: [{ uuid: p.uuid, parentUuid: p.parentUuid }],
-              },
-            ],
-          };
-        case "loadNewInstancesInLocalCache":
-          return {
-            application: p.applicationUuid,
-            applicationSection: p.applicationSection,
-            objects: p.instances,
-          };
-        default:
-          throw new Error(`Unhandled action type: ${actionType}`);
-      }
-    }),
+    actionHandler: createHandler(`miroir_${actionType}`),
   };
 }
-export const mcpRequestHandlers: McpRequestHandlers = {
+export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
   miroir_createInstance: mcpToolEntry(instanceEndpointV1, "createInstance"),
   miroir_getInstance: mcpToolEntry(instanceEndpointV1, "getInstance"),
   miroir_getInstances: mcpToolEntry(instanceEndpointV1, "getInstances"),
@@ -390,4 +339,14 @@ export const mcpRequestHandlers: McpRequestHandlers = {
   miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
 };
 
-export const allInstanceActionTools = Object.values(mcpRequestHandlers).map((t) => t.mcpToolDescription);
+// export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = {
+//   // miroir_createInstance: mcpToolEntry(instanceEndpointV1, "createInstance"),
+//   // miroir_getInstance: mcpToolEntry(instanceEndpointV1, "getInstance"),
+//   // miroir_getInstances: mcpToolEntry(instanceEndpointV1, "getInstances"),
+//   // miroir_updateInstance: mcpToolEntry(instanceEndpointV1, "updateInstance"),
+//   // miroir_deleteInstance: mcpToolEntry(instanceEndpointV1, "deleteInstance"),
+//   // miroir_deleteInstanceWithCascade: mcpToolEntry(instanceEndpointV1, "deleteInstanceWithCascade"),
+//   // miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
+// };
+
+export const allInstanceActionTools = Object.values(mcpRequestHandlers_EntityEndpoint).map((t) => t.mcpToolDescription);

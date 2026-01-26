@@ -1,17 +1,13 @@
-import { unionArrayChoices } from '../../../src/1_core/jzod/jzodTypeCheck';
 import {
-  JzodElement,
   JzodArray,
+  JzodElement,
   JzodTuple,
   JzodUnion,
-  MlSchema,
-  MetaModel,
-// } from "../src/1_core/jzod/types";
+  MlSchema
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { unionArrayChoices } from '../../../src/1_core/jzod/jzodTypeCheck';
 
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
-import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
 import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
@@ -56,9 +52,6 @@ describe('unionArrayChoices', () => {
     const result = unionArrayChoices(
       mockConcreteUnrolledJzodSchemas,
       defaultMetaModelEnvironment,
-      // castMiroirFundamentalJzodSchema,
-      // defaultMiroirMetaModel,
-      // defaultMiroirMetaModel,
       mockRelativeReferenceJzodContext
     );
 
@@ -88,9 +81,6 @@ describe('unionArrayChoices', () => {
     const result = unionArrayChoices(
       mockConcreteUnrolledJzodSchemasWithReference,
       defaultMetaModelEnvironment,
-      // castMiroirFundamentalJzodSchema,
-      // defaultMiroirMetaModel,
-      // defaultMiroirMetaModel,
       mockRelativeReferenceJzodContext
     );
 

@@ -28,7 +28,7 @@ import { loadMiroirMcpConfig } from "./config/configLoader.js";
 import { MiroirMcpConfig } from "./config/configSchema.js";
 import { setupMiroirPlatform } from "./startup/setup.js";
 import { initializeStoreStartup } from "./startup/storeStartup.js";
-import { allInstanceActionTools, mcpRequestHandlers } from "./tools/handlers_InstanceEndpoint.js";
+import { allInstanceActionTools, mcpRequestHandlers_EntityEndpoint } from "./tools/handlers_InstanceEndpoint.js";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -217,7 +217,7 @@ export class MiroirMcpServer {
       const { name, arguments: args } = request.params;
 
       try {
-        if (!(name in mcpRequestHandlers)) {
+        if (!(name in mcpRequestHandlers_EntityEndpoint)) {
           return {
             content: [
               {
@@ -233,7 +233,7 @@ export class MiroirMcpServer {
             ],
           };
         }
-        return await mcpRequestHandlers[name].actionHandler(
+        return await mcpRequestHandlers_EntityEndpoint[name].actionHandler(
           args,
           this.domainController,
           this.applicationDeploymentMap,

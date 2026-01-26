@@ -1,23 +1,17 @@
 import {
-  ModelAction,
-  ModelActionInitModel,
-  ModelActionInitModelParams,
   StoreOrBundleAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
 
-import { defaultMiroirMetaModel } from "../1_core/Model";
-import { ACTION_OK } from "../1_core/constants";
 import { Action2Error, Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { act } from "react";
+import { defaultMiroirMetaModel } from "../1_core/Model";
+import { ACTION_OK } from "../1_core/constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

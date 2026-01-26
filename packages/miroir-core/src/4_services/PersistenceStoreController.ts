@@ -474,14 +474,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (params.dataStoreType == "miroir") {
       // TODO: improve, test is dirty
       await this.initApplication(
-        // defaultMiroirMetaModel,
         params.metaModel,
         params.dataStoreType,
         params.selfApplication,
-        // params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
         params.applicationVersion
-        // params.applicationStoreBasedConfiguration
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore miroir model/initModel contents",
@@ -493,10 +490,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         params.metaModel,
         "app",
         params.selfApplication,
-        // params.selfApplicationDeploymentConfiguration,
         params.applicationModelBranch,
         params.applicationVersion
-        // params.applicationStoreBasedConfiguration
       );
       log.info(
         "ActionRunner.ts initApplicationDeploymentStore app model/initModel contents",

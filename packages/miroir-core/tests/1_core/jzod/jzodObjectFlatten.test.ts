@@ -2,15 +2,16 @@ import { describe, it, expect } from "vitest";
 import { jzodObjectFlatten } from "../../../src/1_core/jzod/jzodObjectFlatten";
 import { JzodObject, JzodReference, MlSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { defaultMiroirMetaModel } from "../../test_assets/defaultMiroirMetaModel";
+// import { defaultMiroirMetaModel } from "../../../src/1_core/Model";
+import { defaultMiroirModelEnvironment } from "../../../src/1_core/Model";
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;
 
-const defaultModelEnvironment = {
-  miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-  currentModel: defaultMiroirMetaModel,
-  miroirMetaModel: defaultMiroirMetaModel
-} as const satisfies { miroirFundamentalJzodSchema: MlSchema; currentModel: any; miroirMetaModel: any; };
+// const defaultModelEnvironment = {
+//   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+//   currentModel: defaultMiroirMetaModel,
+//   miroirMetaModel: defaultMiroirMetaModel
+// } as const satisfies { miroirFundamentalJzodSchema: MlSchema; currentModel: any; miroirMetaModel: any; };
 
 describe("jzodObjectFlatten", () => {
   // ##############################################################################################
@@ -24,7 +25,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
       )
     ).toEqual(obj);
   });
@@ -43,20 +44,20 @@ describe("jzodObjectFlatten", () => {
       extend: parent,
       definition: {
         b: { type: "boolean" }, // overrides parent
-        c: { type: "null" }
+        c: { type: "bigint" }
       }
     };
     expect(
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
       )
     ).toEqual({
       type: "object",
       definition: {
         a: { type: "string" },
         b: { type: "boolean" },
-        c: { type: "null" }
+        c: { type: "bigint" }
       }
     });
   });
@@ -86,7 +87,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
       )
     ).toEqual({
       type: "object",
@@ -122,7 +123,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
       )
     ).toEqual({
       type: "object",
@@ -156,7 +157,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
         { SomeRef: { type: "object", definition: { a: { type: "number" } } } }
       )
     ).toEqual({
@@ -189,7 +190,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
       )
     ).toEqual({
       type: "object",
@@ -238,7 +239,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
         context
       )
     ).toEqual({
@@ -278,7 +279,7 @@ describe("jzodObjectFlatten", () => {
     expect(() =>
       jzodObjectFlatten(
         obj,
-        defaultModelEnvironment,
+        defaultMiroirModelEnvironment,
         context
       )
     ).toThrow(/Circular reference detected/);

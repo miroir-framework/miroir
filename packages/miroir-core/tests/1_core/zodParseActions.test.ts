@@ -5,7 +5,6 @@ import { z, ZodTypeAny } from "zod";
 
 import {
   ActionError,
-  buildPlusRuntimeCompositeAction,
   BuildPlusRuntimeCompositeAction,
   CompositeActionSequence,
   domainAction,
@@ -14,8 +13,6 @@ import {
   EntityDefinition,
   EntityInstance,
   ExtractorOrCombinerTemplate,
-  extractorTemplateReturningObjectOrObjectList,
-  ExtractorTemplateReturningObjectOrObjectList,
   MiroirQueryTemplate,
   miroirQueryTemplate,
   persistenceAction,
@@ -23,33 +20,27 @@ import {
   storeManagementAction,
   testBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
-  testBuildPlusRuntimeCompositeActionSuite,
-  TestCompositeAction,
   TestCompositeActionParams,
-  testCompositeActionParams,
   ZodParseError
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
-import entityEntity from "../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
-import entityDefinitionEntity from "../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json";
-import entityMenu from "../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json";
-import menuDefaultMiroir from "../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
 import adminConfigurationDeploymentMiroir from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import selfApplicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 import selfApplicationMiroir from "../../src/assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
+import menuDefaultMiroir from "../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
+import entityEntity from "../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
+import entityMenu from "../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json";
+import entityDefinitionEntity from "../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json";
 
 
 
 import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
-import { defaultMiroirMetaModel } from '../test_assets/defaultMiroirMetaModel';
 
+import { getTestSuitesForBuildPlusRuntimeCompositeAction } from 'miroir-standalone-app/src/miroir-fwk/4-tests/applicative.Library.BuildPlusRuntimeCompositeAction';
+import { extractorOrCombinerTemplate, StoreUnitConfiguration } from '../../dist';
 import { Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
 import { getBasicApplicationConfiguration } from '../../src/2_domain/Deployment.js';
-import { extractorOrCombiner, extractorOrCombinerTemplate, menu, StoreUnitConfiguration } from '../../dist';
-import { deployments } from 'miroir-standalone-app/src/constants';
-import { Type } from 'typescript';
-import { getTestSuitesForBuildPlusRuntimeCompositeAction } from 'miroir-standalone-app/src/miroir-fwk/4-tests/applicative.Library.BuildPlusRuntimeCompositeAction';
 
 const testSuiteName = "transformers.integ.test";
 
@@ -121,7 +112,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       },
     },
   },
@@ -133,7 +123,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -145,7 +134,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         params: {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           // metaModel: defaultMiroirMetaModel,
@@ -176,7 +164,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -188,7 +175,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -200,7 +186,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
         entityName: "newEntity",
         entityUuid: "00000000-0000-0000-0000-000000000002",
@@ -225,7 +210,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
         entityName: "newEntity",
         entityUuid: "00000000-0000-0000-0000-000000000002",
@@ -241,7 +225,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entities: [
           {
             entity: entityEntity as Entity,
@@ -259,7 +242,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         entityDefinitionUuid: "00000000-0000-0000-0000-000000000001",
         entityUuid: "00000000-0000-0000-0000-000000000002",
       },
@@ -275,7 +257,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         parentUuid: entityMenu.uuid,
         objects: [
@@ -297,7 +278,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
           {
@@ -318,7 +298,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
           {
@@ -339,7 +318,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         objects: [
           {
@@ -360,7 +338,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         parentUuid: entityMenu.uuid,
       },
@@ -374,7 +351,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         parentUuid: entityMenu.uuid,
         applicationSection: "data",
         uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
@@ -391,7 +367,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         objects: [
           {
             parentName: entityMenu.name,
@@ -411,7 +386,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -423,7 +397,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       }
     },
   },
@@ -436,14 +409,12 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         instanceAction: {
           actionType: "createInstance",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             applicationSection: "data",
             parentUuid: entityMenu.uuid,
             objects: [
@@ -468,7 +439,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         section: "data",
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         parentName: entityMenu.name,
@@ -515,7 +485,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         deployments: [
           {
             uuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
@@ -576,7 +545,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       },
     },
   },
@@ -591,12 +559,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         query: {
           queryType: "boxedExtractorOrCombinerReturningObject",
           application: selfApplicationLibrary.uuid,
-          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
           pageParams: {},
           queryParams: {},
           contextResults: {},
@@ -619,12 +585,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         applicationSection: "data",
         query: {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: selfApplicationMiroir.uuid,
-          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
           pageParams: {},
           queryParams: {},
           contextResults: {},
@@ -683,7 +647,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
     action: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationMiroir.uuid,
-      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -735,7 +698,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               applicationSection: "data",
               parentUuid: entityMenu.uuid,
               objects: [

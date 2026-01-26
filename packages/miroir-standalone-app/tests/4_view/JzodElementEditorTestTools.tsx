@@ -626,7 +626,6 @@ export function getWrapperLoadingLocalCache(
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: selfApplicationMiroir.uuid,
-      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       objects: [
         {
           parentName: entityEntity.name,
@@ -687,7 +686,6 @@ export function getWrapperLoadingLocalCache(
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationMiroir.uuid,
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
       },
     },
     applicationDeploymentMap,
@@ -698,7 +696,6 @@ export function getWrapperLoadingLocalCache(
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: selfApplicationLibrary.uuid,
-      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       objects: [
         {
           parentName: entityEntity.name,
@@ -767,12 +764,10 @@ export function getWrapperLoadingLocalCache(
     // needed so that "loading" instances become "current"
     {
       actionType: "rollback",
-      // actionType: "commit",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
-        deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       },
     }, applicationDeploymentMap
   );
@@ -783,7 +778,6 @@ export function getWrapperLoadingLocalCache(
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: selfApplicationLibrary.uuid,
-      deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       objects: libraryApplicationInstances,
     }
   }, applicationDeploymentMap);
@@ -801,7 +795,6 @@ export function getWrapperLoadingLocalCache(
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
-        deploymentUuid: selfApplicationDeploymentLibrary.uuid,
       },
     }, applicationDeploymentMap
   );

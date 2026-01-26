@@ -17,7 +17,6 @@ import {
   book5,
   book6,
   ConfigurationService,
-  defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -55,40 +54,31 @@ import {
 // import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 import {
   AdminApplicationDeploymentConfiguration,
+  CompositeActionTemplate,
+  createDeploymentCompositeAction,
+  defaultMiroirModelEnvironment,
+  displayTestSuiteResultsDetails,
+  entityMenu,
+  entityReport,
   InitApplicationParameters,
   LocalCacheInterface,
   LoggerOptions,
+  TestCompositeActionParams,
 } from "miroir-core";
+import {
+  type BuildPlusRuntimeDomainAction
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { miroirAppStartup } from '../../src/startup.js';
 import {
-  deleteAndCloseApplicationDeployments,
   runTestOrTestSuite,
-  setupMiroirTest,
+  setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
-import { cleanLevel, packageName } from './constants.js';
-import {
-  testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment,
-} from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
-import { CompositeActionTemplate } from 'miroir-core';
-import { TransactionalInstanceAction } from 'miroir-core';
-import {
-  // MlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction,
-  transformer,
-  type BuildPlusRuntimeDomainAction,
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { entityReport } from 'miroir-core';
-import { displayTestSuiteResultsDetails } from 'miroir-core';
-import { runTransformerTestSuite } from 'miroir-core';
-import { entityMenu } from 'miroir-core';
+import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
-import { TestCompositeActionParams } from 'miroir-core';
-import { createDeploymentCompositeAction } from 'miroir-core';
-import { defaultMiroirModelEnvironment } from 'miroir-core';
+import { cleanLevel, packageName } from './constants.js';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

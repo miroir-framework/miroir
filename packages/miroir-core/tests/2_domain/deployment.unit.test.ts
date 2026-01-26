@@ -21,7 +21,7 @@ import selfApplicationModelBranchLibraryMasterBranch from "../../src/assets/libr
 
 import selfApplicationDeploymentLibrary from "../../src/assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
-import { defaultMiroirMetaModel } from "../test_assets/defaultMiroirMetaModel";
+import { defaultMiroirMetaModel } from "../../src/1_core/Model";
 import { AdminApplicationDeploymentConfiguration } from "../../src/0_interfaces/1_core/StorageConfiguration";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);

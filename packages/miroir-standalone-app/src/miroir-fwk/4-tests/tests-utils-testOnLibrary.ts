@@ -1,6 +1,5 @@
 import {
   adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
   author1,
   author2,
   author3,
@@ -10,7 +9,6 @@ import {
   book5,
   book6,
   CompositeActionSequence,
-  defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -25,16 +23,8 @@ import {
   publisher2,
   publisher3,
   selfApplicationDeploymentLibrary,
-  selfApplicationLibrary,
-  selfApplicationMiroir,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationStoreBasedConfigurationLibrary,
-  selfApplicationStoreBasedConfigurationMiroir,
-  selfApplicationVersionInitialMiroirVersion,
-  selfApplicationVersionLibraryInitialVersion,
   Uuid,
-  type ApplicationEntitiesAndInstances,
+  type ApplicationEntitiesAndInstances
 } from "miroir-core";
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [

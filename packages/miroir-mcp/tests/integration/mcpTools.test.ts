@@ -57,7 +57,7 @@ import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { setupMiroirPlatform } from '../../src/startup/setup.js';
 import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
-import { mcpRequestHandlers } from "../../src/tools/handlers_InstanceEndpoint.js";
+import { mcpRequestHandlers_EntityEndpoint } from "../../src/tools/handlers_InstanceEndpoint.js";
 
 const packageName = "miroir-mcp";
 const fileName = "mcpTools.test";
@@ -115,8 +115,8 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
 let miroirConfig: MiroirMcpConfig;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
-let miroirContext: MiroirContextInterface;
-let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
+// let miroirContext: MiroirContextInterface;
+// let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
 
 const globalTimeOut = 30000;
@@ -256,46 +256,46 @@ describe("MCP Tools Integration Tests", () => {
 
   });
 
-  // // ################################################################################################
-  // afterAll(async () => {
-  //   // Close all stores
-  //   for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
-  //     const closeStoreAction: StoreOrBundleAction = {
-  //       actionType: "storeManagementAction_closeStore",
-  //       actionLabel: `Close stores for ${deploymentUuid}`,
-  //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-  //       payload: {
-  //         application: Object.keys(applicationDeploymentMap).find(
-  //           (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-  //         ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  //       },
-  //     };
+  // ################################################################################################
+  afterAll(async () => {
+    // Close all stores
+    for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
+      const closeStoreAction: StoreOrBundleAction = {
+        actionType: "storeManagementAction_closeStore",
+        actionLabel: `Close stores for ${deploymentUuid}`,
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        payload: {
+          application: Object.keys(applicationDeploymentMap).find(
+            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
+          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        },
+      };
 
-  //     await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
-  //   }
+      await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
+    }
 
-  //   log.info("MCP test teardown completed");
-  // });
+    log.info("MCP test teardown completed");
+  });
 
-  // // ################################################################################################
-  // describe("Configuration and Setup", () => {
-  //   it("should load configuration successfully", () => {
-  //     expect(miroirConfig).toBeDefined();
-  //     expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
-  //     expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
-  //   });
+  // ################################################################################################
+  describe("Configuration and Setup", () => {
+    it("should load configuration successfully", () => {
+      expect(miroirConfig).toBeDefined();
+      expect(miroirConfig.client.applicationDeploymentMap).toBeDefined();
+      expect(miroirConfig.client.deploymentStorageConfig).toBeDefined();
+    });
 
-  //   it("should have initialized domain controller", () => {
-  //     expect(domainController).toBeDefined();
-  //     expect(localCache).toBeDefined();
-  //   });
+    it("should have initialized domain controller", () => {
+      expect(domainController).toBeDefined();
+      expect(localCache).toBeDefined();
+    });
 
-  //   it("should have valid application deployment map", () => {
-  //     expect(applicationDeploymentMap).toBeDefined();
-  //     expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
-  //   });
-  // });
+    it("should have valid application deployment map", () => {
+      expect(applicationDeploymentMap).toBeDefined();
+      expect(Object.keys(applicationDeploymentMap).length).toBeGreaterThan(0);
+    });
+  });
 
   // ################################################################################################
   describe("MCP Tool Handlers - InstanceActions", () => {
@@ -332,7 +332,7 @@ describe("MCP Tools Integration Tests", () => {
           ],
         };
 
-        const result = await mcpRequestHandlers.miroir_createInstance.actionHandler(
+        const result = await mcpRequestHandlers_EntityEndpoint.miroir_createInstance.actionHandler(
           params,
           domainController,
           applicationDeploymentMap
@@ -358,7 +358,7 @@ describe("MCP Tools Integration Tests", () => {
           uuid: testInstanceUuid,
         };
 
-        const result = await mcpRequestHandlers.miroir_getInstance.actionHandler(
+        const result = await mcpRequestHandlers_EntityEndpoint.miroir_getInstance.actionHandler(
           params,
           domainController,
           applicationDeploymentMap
@@ -382,7 +382,7 @@ describe("MCP Tools Integration Tests", () => {
           parentUuid: testEntityUuid,
         };
 
-        const result = await mcpRequestHandlers.miroir_getInstances.actionHandler(
+        const result = await mcpRequestHandlers_EntityEndpoint.miroir_getInstances.actionHandler(
           params,
           domainController,
           applicationDeploymentMap
@@ -419,7 +419,7 @@ describe("MCP Tools Integration Tests", () => {
           ],
         };
 
-        const result = await mcpRequestHandlers.miroir_updateInstance.actionHandler(
+        const result = await mcpRequestHandlers_EntityEndpoint.miroir_updateInstance.actionHandler(
           params,
           domainController,
           applicationDeploymentMap
@@ -444,7 +444,7 @@ describe("MCP Tools Integration Tests", () => {
           uuid: testInstanceUuid,
         };
 
-        const result = await mcpRequestHandlers.miroir_deleteInstance.actionHandler(
+        const result = await mcpRequestHandlers_EntityEndpoint.miroir_deleteInstance.actionHandler(
           params,
           domainController,
           applicationDeploymentMap
@@ -469,7 +469,7 @@ describe("MCP Tools Integration Tests", () => {
           uuid: "non-existent-uuid",
         };
 
-        const result = await mcpRequestHandlers.miroir_getInstance.actionHandler(
+        const result = await mcpRequestHandlers_EntityEndpoint.miroir_getInstance.actionHandler(
           params,
           domainController,
           applicationDeploymentMap

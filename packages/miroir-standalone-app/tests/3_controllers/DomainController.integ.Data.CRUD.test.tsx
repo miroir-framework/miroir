@@ -1009,6 +1009,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
+                    parentUuid: entityBook.uuid,
                     // deploymentUuid: testApplicationDeploymentUuid,
                     applicationSection: "data",
                     objects: [

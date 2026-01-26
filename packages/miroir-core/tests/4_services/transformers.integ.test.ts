@@ -175,7 +175,7 @@ const beforeAll = async () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: paramSelfApplicationUuid,
-        deploymentUuid: paramAdminConfigurationDeploymentUuid,
+        // deploymentUuid: paramAdminConfigurationDeploymentUuid,
       },
     });
     await persistenceStoreController.handleAction({
@@ -184,7 +184,7 @@ const beforeAll = async () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: paramSelfApplicationUuid,
-        deploymentUuid: paramAdminConfigurationDeploymentUuid,
+        // deploymentUuid: paramAdminConfigurationDeploymentUuid,
         params: {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
@@ -203,7 +203,7 @@ const beforeAll = async () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: paramSelfApplicationUuid,
-        deploymentUuid: paramAdminConfigurationDeploymentUuid,
+        // deploymentUuid: paramAdminConfigurationDeploymentUuid,
         entities: libraryEntitesAndInstances,
       }
     });
@@ -214,8 +214,9 @@ const beforeAll = async () => {
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: paramSelfApplicationUuid,
-        deploymentUuid: paramAdminConfigurationDeploymentUuid,
+        // deploymentUuid: paramAdminConfigurationDeploymentUuid,
         applicationSection: "data",
+        parentUuid: entityAuthor.uuid, // IRRELEVANT, will be overridden
         // parentUuid: libraryEntitesAndInstances[].entity.uuid,
         objects: libraryEntitesAndInstances.map((e) => {
           return {

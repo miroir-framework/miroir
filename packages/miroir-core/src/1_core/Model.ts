@@ -257,18 +257,6 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
   metaModel: MetaModel,
   appModel: MetaModel
 ): DeploymentUuidToReportsEntitiesDefinitions
-// {
-//   model: {
-//     availableReports: Report[];
-//     entities: Entity[];
-//     entityDefinitions: EntityDefinition[];
-//   };
-//   data: {
-//     availableReports: Report[];
-//     entities: Entity[];
-//     entityDefinitions: EntityDefinition[];
-//   };
-// } 
 {
   if (deploymentUuid == adminConfigurationDeploymentMiroir.uuid) {
     return {
