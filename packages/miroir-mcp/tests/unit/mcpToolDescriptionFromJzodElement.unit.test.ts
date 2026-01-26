@@ -592,4 +592,405 @@ describe('mcpToolDescriptionFromJzodElement', () => {
     });
   });
 
+  // TDD: Union type conversions
+  describe('union types', () => {
+    it('should convert simple union of primitives using anyOf', () => {
+      const jzodElement = {
+        type: 'union',
+        tag: {
+          value: {
+            description: 'String or number value',
+          },
+        },
+        definition: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+        ],
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result).toEqual({
+        anyOf: [
+          {
+            type: 'string',
+            description: '',
+          },
+          {
+            type: 'number',
+            description: '',
+          },
+        ],
+        description: 'String or number value',
+      });
+    });
+
+    it('should convert union of multiple primitives', () => {
+      const jzodElement = {
+        type: 'union',
+        definition: [
+          {
+            type: 'string',
+            tag: {
+              value: {
+                description: 'Text value',
+              },
+            },
+          },
+          {
+            type: 'number',
+            tag: {
+              value: {
+                description: 'Numeric value',
+              },
+            },
+          },
+          {
+            type: 'boolean',
+            tag: {
+              value: {
+                description: 'Boolean value',
+              },
+            },
+          },
+        ],
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result).toEqual({
+        anyOf: [
+          {
+            type: 'string',
+            description: 'Text value',
+          },
+          {
+            type: 'number',
+            description: 'Numeric value',
+          },
+          {
+            type: 'string',
+            description: 'Boolean value',
+          },
+        ],
+        description: '',
+      });
+    });
+
+    it('should convert union with literal types using anyOf', () => {
+      const jzodElement = {
+        type: 'union',
+        definition: [
+          {
+            type: 'literal',
+            definition: 'active',
+          },
+          {
+            type: 'literal',
+            definition: 'inactive',
+          },
+          {
+            type: 'literal',
+            definition: 'pending',
+          },
+        ],
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result).toEqual({
+        anyOf: [
+          {
+            type: 'string',
+            const: 'active',
+            description: '',
+          },
+          {
+            type: 'string',
+            const: 'inactive',
+            description: '',
+          },
+          {
+            type: 'string',
+            const: 'pending',
+            description: '',
+          },
+        ],
+        description: '',
+      });
+    });
+
+    it('should convert discriminated union using oneOf', () => {
+      const jzodElement = {
+        type: 'union',
+        tag: {
+          value: {
+            description: 'Shape types',
+          },
+        },
+        definition: [
+          {
+            type: 'object',
+            definition: {
+              type: {
+                type: 'literal',
+                definition: 'circle',
+              },
+              radius: {
+                type: 'number',
+                tag: {
+                  value: {
+                    description: 'Circle radius',
+                  },
+                },
+              },
+            },
+          },
+          {
+            type: 'object',
+            definition: {
+              type: {
+                type: 'literal',
+                definition: 'rectangle',
+              },
+              width: {
+                type: 'number',
+                tag: {
+                  value: {
+                    description: 'Rectangle width',
+                  },
+                },
+              },
+              height: {
+                type: 'number',
+                tag: {
+                  value: {
+                    description: 'Rectangle height',
+                  },
+                },
+              },
+            },
+          },
+        ],
+        discriminator: 'type',
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result).toEqual({
+        oneOf: [
+          {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                const: 'circle',
+                description: '',
+              },
+              radius: {
+                type: 'number',
+                description: 'Circle radius',
+              },
+            },
+            required: ['type', 'radius'],
+            additionalProperties: true,
+          },
+          {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                const: 'rectangle',
+                description: '',
+              },
+              width: {
+                type: 'number',
+                description: 'Rectangle width',
+              },
+              height: {
+                type: 'number',
+                description: 'Rectangle height',
+              },
+            },
+            required: ['type', 'width', 'height'],
+            additionalProperties: true,
+          },
+        ],
+        discriminator: {
+          propertyName: 'type',
+        },
+        description: 'Shape types',
+      });
+    });
+
+    it('should convert union in object property', () => {
+      const jzodElement = {
+        type: 'object',
+        definition: {
+          id: {
+            type: 'uuid',
+            tag: {
+              value: {
+                description: 'Identifier',
+              },
+            },
+          },
+          value: {
+            type: 'union',
+            tag: {
+              value: {
+                description: 'Flexible value field',
+              },
+            },
+            definition: [
+              {
+                type: 'string',
+              },
+              {
+                type: 'number',
+              },
+            ],
+          },
+        },
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result.type).toBe('object');
+      expect(result.properties.id.type).toBe('string');
+      expect(result.properties.value).toEqual({
+        anyOf: [
+          {
+            type: 'string',
+            description: '',
+          },
+          {
+            type: 'number',
+            description: '',
+          },
+        ],
+        description: 'Flexible value field',
+      });
+    });
+
+    it('should convert union with array types', () => {
+      const jzodElement = {
+        type: 'union',
+        definition: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'array',
+            definition: {
+              type: 'string',
+            },
+          },
+        ],
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result).toEqual({
+        anyOf: [
+          {
+            type: 'string',
+            description: '',
+          },
+          {
+            type: 'array',
+            description: '',
+            items: {
+              type: 'string',
+              description: '',
+            },
+          },
+        ],
+        description: '',
+      });
+    });
+
+    it('should handle nested unions', () => {
+      const jzodElement = {
+        type: 'union',
+        definition: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'union',
+            definition: [
+              {
+                type: 'number',
+              },
+              {
+                type: 'boolean',
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result).toEqual({
+        anyOf: [
+          {
+            type: 'string',
+            description: '',
+          },
+          {
+            anyOf: [
+              {
+                type: 'number',
+                description: '',
+              },
+              {
+                type: 'string',
+                description: '',
+              },
+            ],
+            description: '',
+          },
+        ],
+        description: '',
+      });
+    });
+
+    it('should convert union with schemaReference', () => {
+      const jzodElement = {
+        type: 'union',
+        definition: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'schemaReference',
+            definition: {
+              absolutePath: 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739',
+              relativePath: 'applicationSection',
+            },
+          },
+        ],
+      };
+
+      const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
+
+      expect(result.anyOf).toHaveLength(2);
+      expect(result.anyOf[0]).toEqual({
+        type: 'string',
+        description: '',
+      });
+      expect(result.anyOf[1]).toEqual({
+        type: 'string',
+        enum: ['model', 'data'],
+        description: 'Application Section',
+      });
+    });
+  });
+
 });

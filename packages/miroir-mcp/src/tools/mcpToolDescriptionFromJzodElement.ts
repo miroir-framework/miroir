@@ -136,6 +136,36 @@ export function mcpToolDescriptionFromJzodElement(
         maxItems: prefixItems.length,
       };
     }
+    case "union": {
+      if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
+        throw new Error('Union definition missing or invalid');
+      }
+      
+      // Convert all union members recursively
+      const convertedMembers = jzodElement.definition.map(member => 
+        mcpToolDescriptionFromJzodElement(member as any, undefined, propertyNameMapping)
+      );
+      
+      // Check if this is a discriminated union
+      const isDiscriminated = !!(jzodElement as any).discriminator;
+      
+      if (isDiscriminated) {
+        // Use oneOf for discriminated unions with discriminator info
+        return {
+          oneOf: convertedMembers,
+          discriminator: {
+            propertyName: (jzodElement as any).discriminator,
+          },
+          description,
+        };
+      } else {
+        // Use anyOf for general unions
+        return {
+          anyOf: convertedMembers,
+          description,
+        };
+      }
+    }
     case "bigint":
     case "undefined":
     case "function":
@@ -147,8 +177,7 @@ export function mcpToolDescriptionFromJzodElement(
     case "intersection":
     case "map":
     case "promise":
-    case "set":
-    case "union": {
+    case "set": {
       throw new Error(`Unsupported Jzod type for MCP tool description: ${jzodElement.type}`);
     }
 
