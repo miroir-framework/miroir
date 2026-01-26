@@ -622,6 +622,7 @@ export function getMiroirFundamentalJzodSchema(
           tag: {
             value: {
               defaultLabel: "Application Section",
+              description: "A section of the application (model or data)",
               initializeTo: { initializeToType: "value", value: "data" },
             },
           },

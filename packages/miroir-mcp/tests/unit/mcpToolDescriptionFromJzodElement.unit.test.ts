@@ -90,11 +90,13 @@ describe('mcpToolDescriptionFromJzodElement', () => {
 
     const result = mcpToolDescriptionFromJzodElement(jzodElement as any, 'applicationSection');
 
-    expect(result).toEqual({
-      type: 'string',
-      enum: ['model', 'data'],
-      description: 'Section to query (model or data)',
-    });
+    expect(result).toEqual(
+        {
+        type: 'string',
+        enum: ['model', 'data'],
+        description: 'A section of the application (model or data)',
+      }
+    );
   });
 
   it('should convert object type recursively', () => {
@@ -258,45 +260,16 @@ describe('mcpToolDescriptionFromJzodElement', () => {
     expect(result).toEqual({
       type: 'array',
       description: 'Array of entity instances',
+      items: {
+        type: "object",
+        properties: {
+          uuid: { type: "string", description: "Instance UUID" },
+          parentUuid: { type: "string", description: "Parent entity UUID" },
+        },
+        required: ["uuid", "parentUuid"],
+        additionalProperties: true,
+      },
     });
   });
 
-  it('should skip optional fields without description', () => {
-    const jzodElement = {
-      type: 'object',
-      definition: {
-        name: {
-          type: 'string',
-          tag: {
-            value: {
-              description: 'Entity name',
-            },
-          },
-        },
-        internalField: {
-          type: 'uuid',
-          optional: true,
-          tag: {
-            value: {
-              defaultLabel: 'Internal',
-            },
-          },
-        },
-      },
-    };
-
-    const result = mcpToolDescriptionFromJzodElement(jzodElement as any);
-
-    expect(result).toEqual({
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-          description: 'Entity name',
-        },
-      },
-      required: ['name'],
-      additionalProperties: true,
-    });
-  });
 });

@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import instanceEndpointV1 from '../../../miroir-core/src/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json';
+// import instanceEndpointV1 from 'miroir-core';
 import { mcpToolDescriptionFromActionDefinition } from '../../src/tools/mcpToolDescriptionFromActionDefinition';
+import type { application } from 'express';
 
+// console.log('instanceEndpointV1:', JSON.stringify(instanceEndpointV1, null, 2));
 describe('mcpToolDescriptionFromActionDefinition', () => {
   it('should generate mcpToolDescription for createInstance action', () => {
     const result = mcpToolDescriptionFromActionDefinition(
@@ -15,6 +18,7 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
         "Create new entity instances in Miroir. Creates one or more instances of a specific entity type in the specified application deployment.",
       inputSchema: {
         type: "object",
+        additionalProperties: true,
         properties: {
           application: {
             type: "string",
@@ -23,27 +27,51 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
           applicationSection: {
             type: "string",
             enum: ["model", "data"],
-            description: "Section where instances will be created (model or data)",
+            description: "A section of the application (model or data)",
           },
           parentUuid: {
             type: "string",
             description: "Entity UUID (parent entity of the instances to create)",
           },
-          instances: {
+          objects: {
             type: "array",
             description: "Array of entity instances to create. Each must have uuid and parentUuid.",
             items: {
               type: "object",
               properties: {
-                uuid: { type: "string", description: "Instance UUID" },
-                parentUuid: { type: "string", description: "Parent entity UUID" },
+                parentName: {
+                  type: "string",
+                  description: "Parent Name",
+                },
+                parentUuid: {
+                  type: "string",
+                  description: "Parent Uuid",
+                },
+                applicationSection: {
+                  type: "string",
+                  enum: ["model", "data"],
+                  description: "A section of the application (model or data)",
+                },
+                instances: {
+                  type: "array",
+                  description: "instances to be created",
+                  items: {
+                    type: "object",
+                    properties: {
+                      uuid: { type: "string", description: "Instance UUID" },
+                      parentUuid: { type: "string", description: "Parent entity UUID" },
+                    },
+                    required: ["uuid", "parentUuid"],
+                    additionalProperties: true,
+                  }
+                }
               },
-              required: ["uuid", "parentUuid"],
+              required: ["parentUuid", "applicationSection", "instances"],
               additionalProperties: true,
             },
           },
         },
-        required: ["application", "applicationSection", "parentUuid", "instances"],
+        required: ["application", "applicationSection", "parentUuid", "objects"],
       },
     };
 
@@ -62,6 +90,7 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
         "Retrieve a single entity instance by UUID. Returns the complete instance data for the specified entity instance.",
       inputSchema: {
         type: "object",
+        additionalProperties: true,
         properties: {
           application: {
             type: "string",
@@ -70,7 +99,7 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
           applicationSection: {
             type: "string",
             enum: ["model", "data"],
-            description: "Section to query (model or data)",
+            description: "A section of the application (model or data)",
           },
           parentUuid: {
             type: "string",
@@ -100,6 +129,7 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
         "Retrieve all instances of a specific entity type. Returns an array of all instances for the given entity.",
       inputSchema: {
         type: "object",
+        additionalProperties: true,
         properties: {
           application: {
             type: "string",
@@ -108,7 +138,7 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
           applicationSection: {
             type: "string",
             enum: ["model", "data"],
-            description: "Section to query (model or data)",
+            description: "A section of the application (model or data)",
           },
           parentUuid: {
             type: "string",
@@ -128,6 +158,7 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
       instanceEndpointV1 as any
     );
 
+    console.log('result:', JSON.stringify(result, null, 2));
     const expected = {
       name: "miroir_updateInstance",
       description:
@@ -142,18 +173,62 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
           applicationSection: {
             type: "string",
             enum: ["model", "data"],
-            description: "Section where instances will be updated",
+            description: "A section of the application (model or data)",
           },
           includeInTransaction: {
             type: "string",
             description: "Set to true to include update in a transaction",
           },
-          instances: {
+          parentUuid: {
+            type: "string",
+            description: "The Entity UUID of which instances will be updated",
+          },
+          objects: {
             type: "array",
-            description: "Array of entity instances with updated data",
+            description: "Array of entity instances to be updated",
+            items: {
+              type: "object",
+              properties: {
+                parentName: {
+                  type: "string",
+                  description: "Parent entity name",
+                },
+                parentUuid: {
+                  type: "string",
+                  description: "Parent entity UUID",
+                },
+                applicationSection: {
+                  type: "string",
+                  enum: ["model", "data"],
+                  description: "A section of the application (model or data)",
+                },
+                instances: {
+                  type: "array",
+                  description: "Array of entity instances",
+                  items: {
+                    type: "object",
+                    properties: {
+                      uuid: {
+                        type: "string",
+                        description: "Instance UUID",
+                      },
+                      parentUuid: {
+                        type: "string",
+                        description: "Parent entity UUID",
+                      },
+                    },
+                    required: ["uuid", "parentUuid"],
+                    additionalProperties: true,
+                  },
+                },
+              },
+              required: ["parentUuid", "applicationSection", "instances"],
+              additionalProperties: true,
+            },
           },
         },
-        required: ["application", "applicationSection", "instances"],
+        required: ["application", "applicationSection", "parentUuid", "objects"],
+        additionalProperties: true,
       },
     };
 

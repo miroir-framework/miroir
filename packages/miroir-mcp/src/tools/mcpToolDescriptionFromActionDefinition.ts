@@ -1,4 +1,4 @@
-import { EndpointDefinition } from "miroir-core";
+import { type EndpointDefinition } from "miroir-core";
 import type { McpToolDescription } from "./handlers_InstanceEndpoint.js";
 import { mcpToolDescriptionFromJzodElement } from "./mcpToolDescriptionFromJzodElement.js";
 
@@ -29,76 +29,20 @@ export function mcpToolDescriptionFromActionDefinition(
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
 
-  // Get the payload definition
-  const payloadDef = actionDef.actionParameters.payload.definition;
+  // Get the payload definition as a JzodObject
+  const payload = actionDef.actionParameters.payload;
   
   // Map of internal property names to MCP tool property names
   const propertyNameMapping: Record<string, string> = {
-    objects: 'instances', // Map 'objects' to 'instances' for MCP tools
+    // objects: 'objects', // Map 'objects' to 'instances' for MCP tools
   };
 
-  // Build the inputSchema properties and required array from the payload definition
-  // Preserving the order from the endpoint definition
-  const properties: Record<string, any> = {};
-  const required: string[] = [];
-
-  // Process each property in the payload definition (order is preserved)
-  for (const [key, value] of Object.entries(payloadDef)) {
-    const propDef = value as any;
-    
-    // Skip optional fields that don't have a description (internal-only fields)
-    if (propDef.optional && !propDef.tag?.value?.description) {
-      continue;
-    }
-    
-    // Get the mapped property name or use the original
-    const mappedKey = propertyNameMapping[key] || key;
-
-    // Special handling for objects array with nested instances
-    if (key === 'objects' && propDef.type === 'array') {
-      const arrayItemDef = propDef.definition;
-      if (arrayItemDef?.type === 'object' && arrayItemDef.definition?.instances?.definition) {
-        // This is the objects array with nested instances
-        // For entityInstance schema references, we use standard descriptions
-        const itemProperties = {
-          uuid: { type: 'string', description: 'Instance UUID' },
-          parentUuid: { type: 'string', description: 'Parent entity UUID' }
-        };
-        const itemRequired = ['uuid', 'parentUuid'];
-        
-        properties[mappedKey] = {
-          type: 'array',
-          description: propDef.tag?.value?.description || '',
-          items: {
-            type: 'object',
-            properties: itemProperties,
-            required: itemRequired,
-            additionalProperties: true,
-          },
-        };
-        
-        // Determine if this field is required
-        const isRequired = !propDef.optional && !propDef.nullable;
-        if (isRequired) {
-          required.push(mappedKey);
-        }
-        continue;
-      }
-    }
-
-    // Use the recursive function for all other cases
-    const propertySchema = mcpToolDescriptionFromJzodElement(propDef, key);
-    
-    if (propertySchema !== undefined) {
-      properties[mappedKey] = propertySchema;
-      
-      // Determine if this field is required (not optional and not nullable)
-      const isRequired = !propDef.optional && !propDef.nullable;
-      if (isRequired) {
-        required.push(mappedKey);
-      }
-    }
-  }
+  // Convert the entire payload object using the recursive function
+  const inputSchema = mcpToolDescriptionFromJzodElement(
+    payload,
+    undefined,
+    propertyNameMapping
+  ) as any;
 
   // Build the complete description
   const description = getActionDescription(actionType);
@@ -106,11 +50,7 @@ export function mcpToolDescriptionFromActionDefinition(
   return {
     name: toolName,
     description,
-    inputSchema: {
-      type: 'object',
-      properties,
-      required,
-    },
+    inputSchema,
   };
 }
 
