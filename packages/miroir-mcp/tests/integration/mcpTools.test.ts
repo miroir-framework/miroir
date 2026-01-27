@@ -57,7 +57,10 @@ import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { setupMiroirPlatform } from '../../src/startup/setup.js';
 import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
-import { mcpRequestHandlers_EntityEndpoint, mcpRequestHandlers_Library_lendingEndpoint } from "../../src/tools/handlers_InstanceEndpoint.js";
+import {
+  mcpRequestHandlers_EntityEndpoint,
+  mcpRequestHandlers_Library_lendingEndpoint,
+} from "../../src/tools/handlersForEndpoint.js";
 import { defaultLibraryAppModel } from 'miroir-core';
 import { entityUser } from 'miroir-core';
 import { entityDefinitionUser } from 'miroir-core';
@@ -507,9 +510,6 @@ describe("MCP Tools Integration Tests", () => {
   describe("MCP Tool Handlers - Custom Library Lending Action", () => {
     it("should execute lendDocument action",
       async () => {
-        // const testApplicationUuid = selfApplicationLibrary.uuid; // Library
-        // const testEntityUuid = entityBook.uuid; // Book entity
-        // const testInstanceUuid = book2.uuid; // Book2 instance
 
         const params = {
           book: book1.uuid,

@@ -282,7 +282,7 @@ export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
 /**
  * Creates a handler function for a given tool name with custom payload building logic
  */
-export function createHandler(
+export function mcpToolHandler(
   toolName: string,
 ): (
   payload: unknown,
@@ -335,7 +335,7 @@ function mcpToolEntry(endpoint: EndpointDefinition, actionType: string): McpRequ
       application: endpoint.application,
       endpoint: endpoint.uuid,
     },
-    actionHandler: createHandler(`miroir_${actionType}`),
+    actionHandler: mcpToolHandler(`miroir_${actionType}`),
   };
 }
 export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {

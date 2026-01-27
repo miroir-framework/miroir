@@ -7,6 +7,11 @@
  */
 
 import { startMcpServer, MiroirMcpServer } from "./mcpServer.js";
+import express from "express";
+import {Express} from "express";
+import { loadMiroirMcpConfig } from "./config/configLoader.js";
+import { MiroirActivityTracker, miroirCoreStartup, MiroirEventService, type MiroirConfigClient } from "miroir-core";
+import { setupMiroirPlatform } from "./startup/setup.js";
 
 let server: MiroirMcpServer | null = null;
 
@@ -16,8 +21,34 @@ let server: MiroirMcpServer | null = null;
 async function main() {
   try {
     console.error("[miroir-mcp] Starting Miroir MCP Server...");
-    
-    server = await startMcpServer();
+
+    // Initialize Miroir core
+    miroirCoreStartup();
+
+    const app:Express = express();
+  
+    const config = loadMiroirMcpConfig();
+
+    const miroirActivityTracker = new MiroirActivityTracker();
+    if (!miroirActivityTracker) {
+      throw new Error("MiroirActivityTracker initialization failed");
+    }
+    const miroirEventService = new MiroirEventService(miroirActivityTracker);
+
+    const {
+      persistenceStoreControllerManagerForClient: localpersistenceStoreControllerManager,
+      domainController: localdomainController,
+      miroirContext: localmiroirContext,
+    } = await setupMiroirPlatform(
+      config as any as MiroirConfigClient,
+      miroirActivityTracker,
+      miroirEventService,
+    );
+
+      // this.domainController = localdomainController;
+      // this.miroirContext = localmiroirContext;
+
+    server = await startMcpServer(app, config, localdomainController, localmiroirContext);
     
     console.error("[miroir-mcp] Server started successfully");
   } catch (error) {
@@ -65,4 +96,3 @@ main();
 export { startMcpServer, MiroirMcpServer };
 export * from "./config/configSchema.js";
 export * from "./config/configLoader.js";
-export * from "./tools/instanceActions.js";
