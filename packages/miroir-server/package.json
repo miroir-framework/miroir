@@ -42,6 +42,7 @@
     "isomorphic-git": "^1.23.0",
     "loglevelnext": "^6.0.0",
     "miroir-core": "*",
+    "miroir-mcp": "*",
     "miroir-localcache-redux": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",

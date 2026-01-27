@@ -27,7 +27,8 @@ import {
   type MetaModel,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap
+  type SyncBoxedExtractorOrQueryRunnerMap,
+  noValue
 } from 'miroir-core';
 
 
@@ -53,7 +54,6 @@ import {
   ThemedOnScreenHelper,
   ThemedTitle
 } from "../Themes/index";
-import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
 import {
   formikPath_TransformerEditorInputModeSelector,

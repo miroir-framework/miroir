@@ -37,6 +37,7 @@ import {
   miroirCoreStartup,
   restServerDefaultHandlers
 } from "miroir-core";
+import { mcpRequestHandlers, setupMcpServer } from "miroir-mcp";
 
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -164,20 +165,6 @@ miroirPostgresStoreSectionStartup();
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
-// const serverModelEnvironments: Record<string, MiroirModelEnvironment> = {
-//   [adminConfigurationDeploymentMiroir.uuid]: {
-//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-//     miroirMetaModel: defaultMiroirMetaModel,
-//     currentModel: defaultMiroirMetaModel,
-//     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-//   },
-//   [adminConfigurationDeploymentLibrary.uuid]: {
-//     miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-//     miroirMetaModel: defaultMiroirMetaModel,
-//     currentModel: defaultLibraryAppModel,
-//     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-//   }
-// };
 await MiroirLoggerFactory.startRegisteredLoggers(
   miroirActivityTracker,
   miroirEventService,
@@ -229,30 +216,17 @@ for (const c of Object.entries(configurations)) {
   );
 }
 
-// const fetchDeploymentsAction: InstanceAction = {
-//   actionType: "getInstances",
-//   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-//   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-//   payload: {
-//     applicationSection: "data",
-//     parentUuid: entityDeployment.uuid,
-//   }
-// }
 
-// const deployments = await domainController.handleAction(fetchDeploymentsAction);
 const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
   actionType: "runBoxedExtractorOrQueryAction",
   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   payload: {
     application: adminSelfApplication.uuid,
-    // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
     applicationSection: "data",
     queryExecutionStrategy: "storage",
     query: {
       application: adminSelfApplication.uuid,
-      // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-      // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       pageParams: {},
       queryParams: {},
@@ -392,6 +366,14 @@ for (const op of restServerDefaultHandlers) {
     operationHandler,
   );
 }
+
+myLogger.info(`SETTING UP MCP SERVER NOW...`, JSON.stringify(Object.keys(mcpRequestHandlers), null, 2));
+const server = await setupMcpServer(
+  app,
+  applicationDeploymentMap,
+  mcpRequestHandlers,
+  domainController,
+);
 
 // ##############################################################################################
 app.get('/', (req: any,res: any) => {

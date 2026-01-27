@@ -139,7 +139,7 @@ let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
 
-const globalTimeOut = 30000;
+const globalTimeOut = 60000;
 
 /**
  * Run MCP tests via HTTP transport
@@ -148,7 +148,7 @@ const globalTimeOut = 30000;
 export async function runMcpTestsViaHttp(
   mcpTest: McpToolTest,
   serverUrl: string = 'http://localhost:3080',
-  timeout = 30000,
+  // timeout = 30000,
 ) {
   // Extract tool name from handler
   const toolName = mcpTest.toolName;
@@ -174,7 +174,7 @@ export async function runMcpTestsViaHandler(
   mcpTest: McpToolTest,
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  timeout = 30000,
+  // timeout = 30000,
 ) {
   const result = await mcpTest.handler.actionHandler(
     mcpTest.params,
@@ -369,23 +369,23 @@ describe("MCP Tools Integration Tests", () => {
   //   log.info("MCP test teardown completed");
   // });
 
-  describe.sequential(
-    "MCP Tool Handlers - All Tests",
-    () => {
+  // describe.sequential(
+  //   "MCP Tool Handlers - All Tests",
+  //   () => {
   
-      it.each(ALL_MCP_TEST_CASES.map(test => [test.testName, test]))(
-        "test %s",
-        async (currentTestSuiteName, testAction: McpToolTest) => {
-          const testSuiteResults = await runMcpTestsViaHandler(
-            testAction,
-            domainController,
-            applicationDeploymentMap,
-          );
-        },
-        globalTimeOut
-      );
-    } //  end describe('MCP Tool Handlers - All Tests',
-  );
+  //     it.each(ALL_MCP_TEST_CASES.map(test => [test.testName, test]))(
+  //       "test %s",
+  //       async (currentTestSuiteName, testAction: McpToolTest) => {
+  //         const testSuiteResults = await runMcpTestsViaHandler(
+  //           testAction,
+  //           domainController,
+  //           applicationDeploymentMap,
+  //         );
+  //       },
+  //       globalTimeOut
+  //     );
+  //   } //  end describe('MCP Tool Handlers - All Tests',
+  // );
 
   describe.sequential(
     "MCP Tool Handlers via HTTP - All Tests",

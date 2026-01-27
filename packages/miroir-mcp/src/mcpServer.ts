@@ -5,6 +5,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import express, { Express } from "express";
+import * as logger from 'loglevelnext';
 
 import {
   ApplicationDeploymentMap,
@@ -20,7 +21,6 @@ import {
 
 
 import { MiroirMcpConfig } from "./config/configSchema.js";
-import { initializeStoreStartup } from "./startup/storeStartup.js";
 import { type McpRequestHandlers } from "./tools/handlersForEndpoint.js";
 
 const packageName = "miroir-mcp";
@@ -41,16 +41,17 @@ let log: LoggerInterface = console as any as LoggerInterface;
 export class MiroirMcpServer {
   private server: Server;
   private httpServer?: any;
-  private port: number = 3080;
+  // private port: number = 3080;
   private sessions: Map<string, { server: Server; transport: SSEServerTransport }> = new Map();
   private isShuttingDown: boolean = false;
   // private applicationDeploymentMap: ApplicationDeploymentMap;
-  
+
   constructor(
-    private config: MiroirMcpConfig, // TODO: should be identical to MiroirConfigClient
+    private app: Express,
+    private applicationDeploymentMap: ApplicationDeploymentMap,
+    // private config: MiroirMcpConfig, // TODO: should be identical to MiroirConfigClient
     private domainController: DomainControllerInterface,
     private mcpRequestHandlers: McpRequestHandlers,
-    // private miroirContext: MiroirContextInterface,
   ) {
     this.server = new Server(
       {
@@ -64,25 +65,23 @@ export class MiroirMcpServer {
       },
     );
 
-    // this.applicationDeploymentMap = this.config.client.applicationDeploymentMap;
-
     setupHandlersForServer(
       this.server,
       this.mcpRequestHandlers,
       domainController,
-      config.client.applicationDeploymentMap,
+      this.applicationDeploymentMap,
     );
   }
 
   // ##############################################################################################
   /**
-   * Start the MCP server with HTTP transport
+   * Setup Express routes for MCP server
    */
-  async run(app: Express): Promise<void> {
-    app.use(express.json());
+  async setup(): Promise<void> {
+    this.app.use(express.json());
 
     // SSE endpoint for MCP protocol - establishes the event stream
-    app.get("/sse", async (req, res) => {
+    this.app.get("/sse", async (req, res) => {
       log.info("New SSE connection request");
 
       // Set headers to keep the connection alive
@@ -95,7 +94,7 @@ export class MiroirMcpServer {
         this.server,
         this.mcpRequestHandlers,
         this.domainController,
-        this.config.client.applicationDeploymentMap,
+        this.applicationDeploymentMap,
       );
 
       // Create transport for this session
@@ -132,7 +131,7 @@ export class MiroirMcpServer {
     });
 
     // POST endpoint for receiving messages from client
-    app.post("/message", async (req, res) => {
+    this.app.post("/message", async (req, res) => {
       const sessionId = req.query.sessionId as string;
       log.info(
         `Received message on /message endpoint for session ${sessionId}, type: ${typeof sessionId}`,
@@ -165,13 +164,18 @@ export class MiroirMcpServer {
     });
 
     // Health check endpoint
-    app.get("/health", (req, res) => {
+    this.app.get("/health", (req, res) => {
       res.json({ status: "ok", name: "miroir-mcp-server", version: "1.0.0" });
     });
-
-    this.httpServer = app.listen(this.port, () => {
-      log.info(`Miroir MCP Server running on http://localhost:${this.port}`);
-      log.info(`SSE endpoint: http://localhost:${this.port}/sse`);
+  }
+  // ##############################################################################################
+  /**
+   * Start the MCP server with HTTP transport
+   */
+  async run(port: number): Promise<void> {
+    this.httpServer = this.app.listen(port, () => {
+      log.info(`Miroir MCP Server running on http://localhost:${port}`);
+      log.info(`SSE endpoint: http://localhost:${port}/sse`);
     });
   }
 
@@ -252,11 +256,11 @@ export class MiroirMcpServer {
   /**
    * Setup MiroirLoggerFactory with configuration
    */
-  async function setupLogging(
+  export async function setupLogging(
     config: MiroirMcpConfig,
     miroirContext: MiroirContextInterface,
   ): Promise<void> {
-    const loglevel = (await import("loglevelnext")).default;
+    const loglevel = logger.default;
     const loglevelnext = loglevel as any as LoggerFactoryInterface;
 
     const logConfig: LoggerOptions = (config.client.logConfig || {
@@ -288,7 +292,7 @@ export class MiroirMcpServer {
   /**
    * Open stores for all configured deployments
    */
-  async function openStores(
+  export async function openStores(
     config: MiroirMcpConfig,
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap,
@@ -333,7 +337,7 @@ export class MiroirMcpServer {
   /**
    * Setup MCP request handlers for a server instance
    */
-  function setupHandlersForServer(
+  export function setupHandlersForServer(
     server: Server,
     mcpRequestHandlers: McpRequestHandlers,
     domainController: DomainControllerInterface,
@@ -402,29 +406,17 @@ export class MiroirMcpServer {
 /**
  * Factory function to create and start MCP server
  */
-export async function startMcpServer(
+export async function setupMcpServer(
   app: Express,
-  config: MiroirMcpConfig,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  // config: MiroirMcpConfig,
   mcpRequestHandlers: McpRequestHandlers,
   domainController: DomainControllerInterface,
-  miroirContext: MiroirContextInterface,
 ): Promise<MiroirMcpServer> {
 
-  const server = new MiroirMcpServer(config, domainController, mcpRequestHandlers);
+  const server = new MiroirMcpServer(app, applicationDeploymentMap, domainController, mcpRequestHandlers);
 
-  // Initialize store backends based on configuration
-  await initializeStoreStartup(config);
-
-  await setupLogging(config, miroirContext);
-
-  // Open stores for all configured deployments
-  await openStores(
-    config,
-    domainController,
-    config.client.applicationDeploymentMap,
-  );
-
-  await server.run(app);
+  await server.setup();
 
   // Signal handling for graceful shutdown
   let shutdownInProgress = false;
