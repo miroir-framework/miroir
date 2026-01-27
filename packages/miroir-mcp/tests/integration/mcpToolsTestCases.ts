@@ -1,10 +1,9 @@
 import {
   book1,
   entityBook,
+  noValue,
   selfApplicationLibrary,
   user1,
-  type ApplicationDeploymentMap,
-  type DomainControllerInterface
 } from "miroir-core";
 
 
@@ -22,7 +21,6 @@ import {
   type LoggerOptions,
   type SpecificLoggerOptionsMap
 } from "miroir-core";
-import { expect, it } from "vitest";
 
 
 const packageName = "miroir-mcp";
@@ -54,7 +52,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export interface McpToolTest {
-  name: string;
+  testName: string;
+  toolName: string;
   handler: any;
   params: any;
   tests: (expect: any, result: any) => void;
@@ -66,23 +65,25 @@ const testEntityUuid = entityBook.uuid; // Book entity
 const testApplicationUuid = selfApplicationLibrary.uuid; // Library
 const testInstance = book1; // Book1 instance
 const testInstanceUuid = book1.uuid; // Book1 instance
-
+const testBookUuid = noValue.uuid; // A book UUID to be used in tests
 export const mcpInstanceActionTests: McpToolTest[] = [
   {
-    name: "should execute createInstance action",
+    testName: "should execute createInstance action",
+    toolName: "miroir_createInstance",
     handler: mcpRequestHandlers_EntityEndpoint.miroir_createInstance,
     params: {
       application: selfApplicationLibrary.uuid,
       applicationSection: "data" as const,
       parentUuid: entityBook.uuid,
-      instances: [
+      objects: [
         {
           parentName: "Book",
           parentUuid: entityBook.uuid,
           applicationSection: "data" as const,
           instances: [
             {
-              uuid: "test-book-" + Date.now(),
+              // uuid: "test-book-" + Date.now(),
+              uuid: testBookUuid,
               parentUuid: entityBook.uuid,
               name: "Test Book from MCP",
               author: "Test Author",
@@ -97,10 +98,12 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       expect(result.content).toBeDefined();
       expect(result.content.length).toBeGreaterThan(0);
       expect(result.content[0].type).toBe("text");
+      expect(result.content[0].parsed?.status).toBe("success");
     },
   },
   {
-    name: "should execute getInstance action",
+    testName: "should execute getInstance action",
+    toolName: "miroir_getInstance",
     handler: mcpRequestHandlers_EntityEndpoint.miroir_getInstance,
     params: {
       application: testApplicationUuid,
@@ -113,10 +116,12 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       expect(result.content).toBeDefined();
       expect(result.content.length).toBeGreaterThan(0);
       expect(result.content[0].type).toBe("text");
+      expect(result.content[0].parsed?.status).toBe("success");
     },
   },
   {
-    name: "should execute getInstances action",
+    testName: "should execute getInstances action",
+    toolName: "miroir_getInstances",
     handler: mcpRequestHandlers_EntityEndpoint.miroir_getInstances,
     params: {
       application: testApplicationUuid,
@@ -128,16 +133,18 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       expect(result.content).toBeDefined();
       expect(result.content.length).toBeGreaterThan(0);
       expect(result.content[0].type).toBe("text");
+      expect(result.content[0].parsed?.status).toBe("success");
     },
   },
   {
-    name: "should execute updateInstance action",
+    testName: "should execute updateInstance action",
+    toolName: "miroir_updateInstance",
     handler: mcpRequestHandlers_EntityEndpoint.miroir_updateInstance,
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
       parentUuid: testEntityUuid,
-      instances: [
+      objects: [
         {
           parentName: testEntity.name,
           parentUuid: testEntity.uuid,
@@ -156,26 +163,38 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       expect(result.content).toBeDefined();
       expect(result.content.length).toBeGreaterThan(0);
       expect(result.content[0].type).toBe("text");
+      expect(result.content[0].parsed?.status).toBe("success");
     },
   },
   {
-    name: "should execute deleteInstance action",
+    testName: "should execute deleteInstance action",
+    toolName: "miroir_deleteInstance",
     handler: mcpRequestHandlers_EntityEndpoint.miroir_deleteInstance,
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
-      parentUuid: testEntityUuid,
-      uuid: testInstanceUuid,
+      objects: [
+        {
+          parentName: testEntity.name,
+          parentUuid: testEntity.uuid,
+          applicationSection: "data" as const,
+          instances: [
+            testInstance
+          ],
+        },
+      ],
     },
     tests: (expect: any, result: any) => {
       expect(result).toBeDefined();
       expect(result.content).toBeDefined();
       expect(result.content.length).toBeGreaterThan(0);
       expect(result.content[0].type).toBe("text");
+      expect(result.content[0].parsed?.status).toBe("success");
     },
   },
   {
-    name: "calling deleteInstance action on non-existing instance should return error in content",
+    testName: "calling deleteInstance action on non-existing instance should return error in content",
+    toolName: "miroir_deleteInstance",
     handler: mcpRequestHandlers_EntityEndpoint.miroir_deleteInstance,
     params: {
       application: testApplicationUuid,
@@ -188,13 +207,12 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       expect(result.content).toBeDefined();
       expect(result.content.length).toBeGreaterThan(0);
       expect(result.content[0].type).toBe("text");
-      // Error should be in the text content
-      const contentText = result.content[0].text;
-      expect(contentText).toContain("error");
+      expect(result.content[0].parsed?.status).toBe("error");
     },
   },
   {
-    name: "calling getInstance action on non-existing instance should return error in content",
+    testName: "calling getInstance action on non-existing instance should return error in content",
+    toolName: "miroir_getInstance",
     handler: mcpRequestHandlers_EntityEndpoint.miroir_getInstance,
     params: {
       application: testApplicationUuid,
@@ -206,9 +224,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       expect(result).toBeDefined();
       expect(result.content).toBeDefined();
       expect(result.content.length).toBeGreaterThan(0);
-      // Error should be in the text content
-      const contentText = result.content[0].text;
-      expect(contentText).toContain("error");
+      expect(result.content[0].parsed?.status).toBe("error");
     },
   },
 ];
@@ -216,7 +232,8 @@ export const mcpInstanceActionTests: McpToolTest[] = [
 // ################################################################################################
 export const mcpLibraryEndpointTests: McpToolTest[] = [
   {
-    name: "should execute lendDocument action",
+    testName: "should execute lendDocument action",
+    toolName: "miroir_lendDocument",
     handler: mcpRequestHandlers_Library_lendingEndpoint.miroir_lendDocument,
     params: {
       book: book1.uuid,
@@ -233,26 +250,7 @@ export const mcpLibraryEndpointTests: McpToolTest[] = [
   },
 ];
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-export async function runMcpTests(
-  // mcpTests: McpToolTest[],
-  mcpTest: McpToolTest,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  timeout = 30000,
-) {
-        const result = await mcpTest.handler.actionHandler(
-          mcpTest.params,
-          domainController,
-          applicationDeploymentMap,
-        );
-        log.info(`${mcpTest.name} result:`, JSON.stringify(result, null, 2));
-        // Verify the MCP layer processed the action correctly
-        mcpTest.tests(expect, result);
-        return result;
-}
+export const ALL_MCP_TEST_CASES: McpToolTest[] = [
+  ...mcpInstanceActionTests,
+  ...mcpLibraryEndpointTests,
+];

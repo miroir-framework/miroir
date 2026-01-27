@@ -11,7 +11,6 @@ import {
   book5,
   book6,
   ConfigurationService,
-  defaultLevels,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
@@ -24,11 +23,9 @@ import {
   LocalCacheInterface,
   LoggerInterface,
   MiroirActivityTracker,
-  MiroirContextInterface,
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  PersistenceStoreControllerManagerInterface,
   publisher1,
   publisher2,
   publisher3,
@@ -50,24 +47,30 @@ import {
   type MiroirConfigClient,
   type SpecificLoggerOptionsMap
 } from "miroir-core";
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 
+import {
+  defaultLibraryAppModel,
+  entityDefinitionUser,
+  entityUser,
+  user1,
+  user2,
+  user3,
+} from "miroir-core";
 import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { setupMiroirPlatform } from '../../src/startup/setup.js';
 import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
 import {
-  mcpRequestHandlers_EntityEndpoint,
-  mcpRequestHandlers_Library_lendingEndpoint,
-} from "../../src/tools/handlersForEndpoint.js";
-import { defaultLibraryAppModel } from 'miroir-core';
-import { entityUser } from 'miroir-core';
-import { entityDefinitionUser } from 'miroir-core';
-import { user1 } from 'miroir-core';
-import { user2 } from 'miroir-core';
-import { user3 } from 'miroir-core';
-import { mcpInstanceActionTests, mcpLibraryEndpointTests, runMcpTests, type McpToolTest } from './mcpToolsTestCases.js';
+  ALL_MCP_TEST_CASES,
+  type McpToolTest
+} from "./mcpToolsTestCases.js";
+
+
+import { callMcpToolViaHttp } from './mcpClient.js';
+
+// import { runMcpTestsViaHttp } from './mcpClient.js';
 
 const packageName = "miroir-mcp";
 const fileName = "mcpTools.test";
@@ -75,10 +78,10 @@ const fileName = "mcpTools.test";
 const loglevelnext: LoggerFactoryInterface = loglevelNextLog as any as LoggerFactoryInterface;
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
-  "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
-  "4_miroir-core_RestTools": {level:defaultLevels.INFO, },
-  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
-  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined},
+  // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
+  // "4_miroir-core_RestTools": {level:defaultLevels.INFO, },
+  // // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+  // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined},
 }
 
 const loggerOptions: LoggerOptions = {
@@ -137,6 +140,52 @@ let localCache: LocalCacheInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
 
 const globalTimeOut = 30000;
+
+/**
+ * Run MCP tests via HTTP transport
+ * Calls the actual MCP server running on the specified URL
+ */
+export async function runMcpTestsViaHttp(
+  mcpTest: McpToolTest,
+  serverUrl: string = 'http://localhost:3080',
+  timeout = 30000,
+) {
+  // Extract tool name from handler
+  const toolName = mcpTest.toolName;
+
+  if (!toolName) {
+    throw new Error(`runMcpTestsViaHttp Could not find tool name for handler in test: ${mcpTest.testName}`);
+  }
+  log.info(`runMcpTestsViaHttp "${mcpTest.testName}" (HTTP) calling with:`, JSON.stringify(mcpTest.params, null, 2));
+
+  const result = await callMcpToolViaHttp(serverUrl, toolName, mcpTest.params);
+  
+  log.info(`runMcpTestsViaHttp "${mcpTest.testName}" (HTTP) result:`, JSON.stringify(result, null, 2));
+  
+  // Verify the MCP layer processed the action correctly
+  mcpTest.tests(expect, result);
+  log.info(`Test suite '${mcpTest.testName}' results: ${JSON.stringify(result, null, 2)}`);
+  // expect(JSON.stringify(result.content[0]?.parsed?.status)).toContain("success");
+  
+  return result;
+}
+
+export async function runMcpTestsViaHandler(
+  mcpTest: McpToolTest,
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  timeout = 30000,
+) {
+  const result = await mcpTest.handler.actionHandler(
+    mcpTest.params,
+    domainController,
+    applicationDeploymentMap,
+  );
+  log.info(`${mcpTest.testName} result:`, JSON.stringify(result, null, 2));
+  // Verify the MCP layer processed the action correctly
+  mcpTest.tests(expect, result);
+  return result;
+}
 
 
 describe("MCP Tools Integration Tests", () => {
@@ -324,13 +373,10 @@ describe("MCP Tools Integration Tests", () => {
     "MCP Tool Handlers - All Tests",
     () => {
   
-      it.each([
-        ...mcpInstanceActionTests,
-        ...mcpLibraryEndpointTests
-      ].map(test => [test.name, test]))(
+      it.each(ALL_MCP_TEST_CASES.map(test => [test.testName, test]))(
         "test %s",
         async (currentTestSuiteName, testAction: McpToolTest) => {
-          const testSuiteResults = await runMcpTests(
+          const testSuiteResults = await runMcpTestsViaHandler(
             testAction,
             domainController,
             applicationDeploymentMap,
@@ -338,7 +384,23 @@ describe("MCP Tools Integration Tests", () => {
         },
         globalTimeOut
       );
-    } //  end describe('DomainController.Data.CRUD.React',
+    } //  end describe('MCP Tool Handlers - All Tests',
+  );
+
+  describe.sequential(
+    "MCP Tool Handlers via HTTP - All Tests",
+    () => {
+      it.each(ALL_MCP_TEST_CASES.map(test => [test.testName, test]))(
+        "test %s (via HTTP)",
+        async (currentTestSuiteName, testAction: McpToolTest) => {
+          const testSuiteResults = await runMcpTestsViaHttp(
+            testAction,
+            'http://localhost:3080',
+          );
+        },
+        globalTimeOut
+      );
+    } //  end describe('MCP Tool Handlers via HTTP - All Tests',
   );
   
 });

@@ -12,6 +12,7 @@ import {Express} from "express";
 import { loadMiroirMcpConfig } from "./config/configLoader.js";
 import { MiroirActivityTracker, miroirCoreStartup, MiroirEventService, type MiroirConfigClient } from "miroir-core";
 import { setupMiroirPlatform } from "./startup/setup.js";
+import { mcpRequestHandlers } from "./tools/handlersForEndpoint.js";
 
 let server: MiroirMcpServer | null = null;
 
@@ -45,10 +46,13 @@ async function main() {
       miroirEventService,
     );
 
-      // this.domainController = localdomainController;
-      // this.miroirContext = localmiroirContext;
-
-    server = await startMcpServer(app, config, localdomainController, localmiroirContext);
+    server = await startMcpServer(
+      app,
+      config,
+      mcpRequestHandlers,
+      localdomainController,
+      localmiroirContext,
+    );
     
     console.error("[miroir-mcp] Server started successfully");
   } catch (error) {

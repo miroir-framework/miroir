@@ -36,7 +36,7 @@ export type ToolHandler = (
   params: unknown,
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
-) => Promise<{ content: Array<{ type: string; text: string }> }>
+) => Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }>
 
 
 /**
@@ -142,14 +142,14 @@ export async function handleInstanceAction(
   schema: any,
   actionBuilder: (validatedParams: any) => InstanceAction,
   domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap
-): Promise<{ content: Array<{ type: string; text: string }> }> {
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<{ content: Array<{ type: string; text: string; parsed: Record<string, any> }> }> {
   try {
     log.info(`${toolName} - received params:`, params);
 
-    log.info(`${toolName} - received domainController:`, domainController);
+    // log.info(`${toolName} - received domainController:`, domainController);
     log.info(`${toolName} - received applicationDeploymentMap:`, applicationDeploymentMap);
-    
+
     // Validate parameters
     const validatedParams = schema.parse(params);
     log.info(`${toolName} - validated params:`, validatedParams);
@@ -169,64 +169,58 @@ export async function handleInstanceAction(
 
     // Format response for MCP
     if (result.status === "ok") {
+      const subObject = {
+        status: "success",
+        action: toolName,
+        result: "returnedDomainElement" in result ? result.returnedDomainElement : undefined,
+      };
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(
-              {
-                status: "success",
-                action: toolName,
-                result: "returnedDomainElement" in result ? result.returnedDomainElement : undefined,
-              },
-              null,
-              2
-            ),
+            parsed: subObject,
+            text: JSON.stringify(subObject, null, 2),
           },
         ],
       };
     } else {
       // Error response
+      const subObject = {
+        status: "error",
+        action: toolName,
+        error: {
+          type: "errorType" in result ? result.errorType : "unknown",
+          message: "errorMessage" in result ? result.errorMessage : "Action failed",
+          stack: "errorStack" in result ? result.errorStack : undefined,
+          context: "errorContext" in result ? result.errorContext : undefined,
+        },
+      };
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(
-              {
-                status: "error",
-                action: toolName,
-                error: {
-                  type: "errorType" in result ? result.errorType : "unknown",
-                  message: "errorMessage" in result ? result.errorMessage : "Action failed",
-                  stack: "errorStack" in result ? result.errorStack : undefined,
-                  context: "errorContext" in result ? result.errorContext : undefined,
-                },
-              },
-              null,
-              2
-            ),
+            parsed: subObject,
+            text: JSON.stringify(subObject, null, 2),
           },
         ],
       };
     }
   } catch (error) {
     log.error(`${toolName} - exception:`, error);
+    const subObject = {
+      status: "error",
+      action: toolName,
+      error: {
+        type: "validation_error",
+        message: error instanceof Error ? error.message : String(error),
+      },
+    };
     return {
       content: [
         {
           type: "text",
-          text: JSON.stringify(
-            {
-              status: "error",
-              action: toolName,
-              error: {
-                type: "validation_error",
-                message: error instanceof Error ? error.message : String(error),
-              },
-            },
-            null,
-            2
-          ),
+          parsed: subObject,
+          text: JSON.stringify(subObject, null, 2),
         },
       ],
     };
@@ -291,17 +285,18 @@ export function mcpToolHandler(
   payload: unknown,
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap
-) => Promise<{ content: Array<{ type: string; text: string }> }> {
+) => Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }> {
   return async (
     payload: unknown,
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap
   ) => {
     const config = mcpRequestHandlers[toolName];
-    log.info(`mcpToolHandler - invoking tool: ${toolName}, config:`, config);
+    log.info(`mcpToolHandler - invoking tool: ${toolName}`);
     log.info(
-      `mcpToolHandler - invoking tool: ${toolName}, domainController:`,
-      domainController,
+      `mcpToolHandler - invoking tool: ${toolName},
+      //  domainController:`,
+      // domainController,
       "applicationDeploymentMap",
       applicationDeploymentMap,
     );
@@ -369,9 +364,7 @@ export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = de
 // ################################################################################################
 // aggregate all instance action tools
 // ################################################################################################
-const mcpRequestHandlers: McpRequestHandlers = {
+export const mcpRequestHandlers: McpRequestHandlers = {
   ...mcpRequestHandlers_EntityEndpoint,
   ...mcpRequestHandlers_Library_lendingEndpoint,
 };
-
-export const allInstanceActionTools = Object.values(mcpRequestHandlers).map((t) => t.mcpToolDescription);
