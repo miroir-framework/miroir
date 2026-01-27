@@ -67,7 +67,7 @@ import { entityDefinitionUser } from 'miroir-core';
 import { user1 } from 'miroir-core';
 import { user2 } from 'miroir-core';
 import { user3 } from 'miroir-core';
-import { start } from 'repl';
+import { mcpInstanceActionTests, mcpLibraryEndpointTests, runMcpTests, type McpToolTest } from './mcpToolsTestCases.js';
 
 const packageName = "miroir-mcp";
 const fileName = "mcpTools.test";
@@ -134,14 +134,13 @@ const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances =
 let miroirConfig: MiroirMcpConfig;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
-// let miroirContext: MiroirContextInterface;
-// let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
 
 const globalTimeOut = 30000;
 
+
 describe("MCP Tools Integration Tests", () => {
-  // ################################################################################################
+  // ##############################################################################################
   beforeAll(async () => {
     // Load configuration (test can override with env var MIROIR_MCP_CONFIG_PATH)
     miroirConfig = loadMiroirMcpConfig();
@@ -248,7 +247,7 @@ describe("MCP Tools Integration Tests", () => {
     log.info("MCP test setup completed");
   }, globalTimeOut);
 
-  // ################################################################################################
+  // ##############################################################################################
   beforeEach(async () => {
     // Reset Miroir deployment to clean state before each test
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
@@ -299,239 +298,47 @@ describe("MCP Tools Integration Tests", () => {
     }
   });
 
-  // ################################################################################################
-  afterAll(async () => {
-    // Close all stores
-    for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
-      const closeStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_closeStore",
-        actionLabel: `Close stores for ${deploymentUuid}`,
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: Object.keys(applicationDeploymentMap).find(
-            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  // // ##############################################################################################
+  // afterAll(async () => {
+  //   // Close all stores
+  //   for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
+  //     const closeStoreAction: StoreOrBundleAction = {
+  //       actionType: "storeManagementAction_closeStore",
+  //       actionLabel: `Close stores for ${deploymentUuid}`,
+  //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  //       payload: {
+  //         application: Object.keys(applicationDeploymentMap).find(
+  //           (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
+  //         ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       },
+  //     };
+
+  //     await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
+  //   }
+
+  //   log.info("MCP test teardown completed");
+  // });
+
+  describe.sequential(
+    "MCP Tool Handlers - All Tests",
+    () => {
+  
+      it.each([
+        ...mcpInstanceActionTests,
+        ...mcpLibraryEndpointTests
+      ].map(test => [test.name, test]))(
+        "test %s",
+        async (currentTestSuiteName, testAction: McpToolTest) => {
+          const testSuiteResults = await runMcpTests(
+            testAction,
+            domainController,
+            applicationDeploymentMap,
+          );
         },
-      };
-
-      await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
-    }
-
-    log.info("MCP test teardown completed");
-  });
-
-
-  // ################################################################################################
-  describe("MCP Tool Handlers - InstanceActions", () => {
-    // const testEntityUuid = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"; // Book entity
-    const testEntity = entityBook; // Book entity
-    const testEntityUuid = entityBook.uuid; // Book entity
-    const testApplicationUuid = selfApplicationLibrary.uuid; // Library
-    const testInstance = book1; // Book1 instance
-    const testInstanceUuid = book1.uuid; // Book1 instance
-
-    it("should execute createInstance action",
-      async () => {
-        const testInstanceUuid = "test-book-" + Date.now();
-        const params = {
-          application: testApplicationUuid,
-          applicationSection: "data" as const,
-          parentUuid: testEntityUuid,
-          instances: [
-            {
-              parentName: "Book",
-              parentUuid: testEntityUuid,
-              applicationSection: "data" as const,
-              instances: [
-                {
-                  uuid: testInstanceUuid,
-                  parentUuid: testEntityUuid,
-                  name: "Test Book from MCP",
-                  author: "Test Author",
-                  isbn: "TEST-123",
-                } as any,
-              ],
-            },
-          ],
-        };
-
-        const result = await mcpRequestHandlers_EntityEndpoint.miroir_createInstance.actionHandler(
-          params,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        log.info("createInstance result:", JSON.stringify(result, null, 2));
-        // Verify the MCP layer processed the action correctly
-        expect(result).toBeDefined();
-        expect(result.content).toBeDefined();
-        expect(result.content.length).toBeGreaterThan(0);
-        expect(result.content[0].type).toBe("text");
-      },
-      globalTimeOut
-    );
-
-    it("should execute getInstance action",
-      async () => {
-        const params = {
-          application: testApplicationUuid,
-          applicationSection: "data" as const,
-          parentUuid: testEntityUuid,
-          uuid: testInstanceUuid,
-        };
-
-        const result = await mcpRequestHandlers_EntityEndpoint.miroir_getInstance.actionHandler(
-          params,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        log.info("getInstance result:", JSON.stringify(result, null, 2));
-        expect(result).toBeDefined();
-        expect(result.content).toBeDefined();
-        expect(result.content.length).toBeGreaterThan(0);
-        expect(result.content[0].type).toBe("text");
-      },
-      globalTimeOut
-    );
-
-    it("should execute getInstances action",
-      async () => {
-        const params = {
-          application: testApplicationUuid,
-          applicationSection: "data" as const,
-          parentUuid: testEntityUuid,
-        };
-
-        const result = await mcpRequestHandlers_EntityEndpoint.miroir_getInstances.actionHandler(
-          params,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        log.info("getInstances result:", JSON.stringify(result, null, 2));
-        expect(result).toBeDefined();
-        expect(result.content).toBeDefined();
-        expect(result.content.length).toBeGreaterThan(0);
-        expect(result.content[0].type).toBe("text");
-      },
-      globalTimeOut
-    );
-
-    it("should execute updateInstance action",
-      async () => {
-        const params = {
-          application: testApplicationUuid,
-          applicationSection: "data" as const,
-          parentUuid: testEntityUuid,
-          instances: [
-            {
-              parentName: testEntity.name,
-              parentUuid: testEntity.uuid,
-              applicationSection: "data" as const,
-              instances: [
-                {
-                  ...testInstance,
-                  "name": "Updated Book Name from MCP",
-                } as any,
-              ],
-            },
-          ],
-        };
-
-        const result = await mcpRequestHandlers_EntityEndpoint.miroir_updateInstance.actionHandler(
-          params,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        log.info("updateInstance result:", JSON.stringify(result, null, 2));
-        expect(result).toBeDefined();
-        expect(result.content).toBeDefined();
-        expect(result.content.length).toBeGreaterThan(0);
-        expect(result.content[0].type).toBe("text");
-      },
-      globalTimeOut
-    );
-
-    it("should execute deleteInstance action",
-      async () => {
-        const params = {
-          application: testApplicationUuid,
-          applicationSection: "data" as const,
-          parentUuid: testEntity.uuid,
-          uuid: testInstanceUuid,
-        };
-
-        const result = await mcpRequestHandlers_EntityEndpoint.miroir_deleteInstance.actionHandler(
-          params,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        log.info("deleteInstance result:", JSON.stringify(result, null, 2));
-        expect(result).toBeDefined();
-        expect(result.content).toBeDefined();
-        expect(result.content.length).toBeGreaterThan(0);
-        expect(result.content[0].type).toBe("text");
-      },
-      globalTimeOut
-    );
-
-    it("should handle error cases gracefully",
-      async () => {
-        const params = {
-          application: testApplicationUuid,
-          applicationSection: "data" as const,
-          parentUuid: "00000000-0000-0000-0000-000000000000",
-          uuid: "non-existent-uuid",
-        };
-
-        const result = await mcpRequestHandlers_EntityEndpoint.miroir_getInstance.actionHandler(
-          params,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        log.info("Error case result:", JSON.stringify(result, null, 2));
-        // Should return error in content, not throw
-        expect(result).toBeDefined();
-        expect(result.content).toBeDefined();
-        expect(result.content.length).toBeGreaterThan(0);
-        // Error should be in the text content
-        const contentText = result.content[0].text;
-        expect(contentText).toContain("error");
-      },
-      globalTimeOut
-    );
-  });
-
-  describe("MCP Tool Handlers - Custom Library Lending Action", () => {
-    it("should execute lendDocument action",
-      async () => {
-
-        const params = {
-          book: book1.uuid,
-          user: user1.uuid,
-          startDate: new Date().toISOString(),
-        };
-
-        const result = await mcpRequestHandlers_Library_lendingEndpoint.miroir_lendDocument.actionHandler(
-          params,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        log.info("lendDocument result:", JSON.stringify(result, null, 2));
-        // Verify the MCP layer processed the action correctly
-        expect(result).toBeDefined();
-        expect(result.content).toBeDefined();
-        expect(result.content.length).toBeGreaterThan(0);
-        expect(result.content[0].type).toBe("text");
-        expect(result.content[0].text).toMatch("success");
-      },
-      globalTimeOut
-    );
-  });
+        globalTimeOut
+      );
+    } //  end describe('DomainController.Data.CRUD.React',
+  );
+  
 });

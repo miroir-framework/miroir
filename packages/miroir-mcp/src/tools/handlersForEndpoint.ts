@@ -146,6 +146,9 @@ export async function handleInstanceAction(
 ): Promise<{ content: Array<{ type: string; text: string }> }> {
   try {
     log.info(`${toolName} - received params:`, params);
+
+    log.info(`${toolName} - received domainController:`, domainController);
+    log.info(`${toolName} - received applicationDeploymentMap:`, applicationDeploymentMap);
     
     // Validate parameters
     const validatedParams = schema.parse(params);
@@ -295,6 +298,13 @@ export function mcpToolHandler(
     applicationDeploymentMap: ApplicationDeploymentMap
   ) => {
     const config = mcpRequestHandlers[toolName];
+    log.info(`mcpToolHandler - invoking tool: ${toolName}, config:`, config);
+    log.info(
+      `mcpToolHandler - invoking tool: ${toolName}, domainController:`,
+      domainController,
+      "applicationDeploymentMap",
+      applicationDeploymentMap,
+    );
     return handleInstanceAction(
       toolName,
       payload,
