@@ -28,7 +28,7 @@ import { loadMiroirMcpConfig } from "./config/configLoader.js";
 import { MiroirMcpConfig } from "./config/configSchema.js";
 import { setupMiroirPlatform } from "./startup/setup.js";
 import { initializeStoreStartup } from "./startup/storeStartup.js";
-import { allInstanceActionTools, mcpRequestHandlers_EntityEndpoint } from "./tools/handlers_InstanceEndpoint.js";
+import { allInstanceActionTools, mcpRequestHandlers_EntityEndpoint } from "./tools/handlersForEndpoint.js";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;

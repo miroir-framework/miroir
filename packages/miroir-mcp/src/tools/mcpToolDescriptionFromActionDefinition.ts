@@ -1,5 +1,5 @@
 import { type EndpointDefinition } from "miroir-core";
-import type { McpToolDescription } from "./handlers_InstanceEndpoint.js";
+import type { McpToolDescription } from "./handlersForEndpoint.js";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 
 /**

@@ -6,7 +6,7 @@ import {
   type MlSchema,
   defaultMiroirModelEnvironment,
 } from "miroir-core";
-import type { McpToolDescriptionProperty } from "./handlers_InstanceEndpoint.js";
+import type { McpToolDescriptionProperty } from "./handlersForEndpoint.js";
 
 /**
  * Recursively converts a JzodElement to an MCP tool description property.

@@ -4,6 +4,8 @@ This tutorial introduces the Miroir Framework through a concrete example: a Libr
 
 We assume you have a working Miroir Framework instance. If not, follow the setup documentation [here TBW](//https://github.com/miroir-framework/miroir).
 
+estimated reading time: 20 minutes (according to ChatGPT 4.1).
+
 ## Getting Started
 
 ### Deploy the Library Application
@@ -567,7 +569,6 @@ Go and check the result in the `Book Details` Report for the chosen Book:
 
 Congrats, you've finished part 4!
 
-
 <!-- ### Transformers: Pure Functions
 
 **Transformers** are pure data transformation functions. They can:
@@ -581,6 +582,14 @@ The same Transformer can run client-side, server-side, or be converted to SQL - 
 <!-- ## Part 5: Batch Updates
 
 Showing how to use Queries to perform batch updates of data and building tools in your application beyond the simple CRUD operations. -->
+
+## Part 5: The Natural Language Interface (NLI)
+
+The Miroir Framework can turn your Endpoints into Model Context Protocol (MCP) Tools, that can be used in your favorite Large Language Model or Agentic interface. Any Action that you create in your application can then automatically be made available as part of a Natural Language Interface, yielding an all-encompassing Domain Specific Language for your business domain.
+
+## Part 6: The Command Line Interface (CLI)
+
+TO BE PROVIDED
 
 ## What's Next?
 
