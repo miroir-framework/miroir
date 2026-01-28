@@ -69,7 +69,7 @@ docs-new/
 │
 ├── getting-started/                 # Entry point for new users
 │   ├── what-is-miroir.md           # Non-technical introduction
-│   ├── quickstart.md               # 15-minute hands-on guide ✅
+│   ├── quickstart.md               # 15-minute hands-on guide ⚠️
 │   ├── installation.md             # Detailed setup instructions
 │   └── first-app.md                # Create your first application
 │
@@ -124,13 +124,13 @@ docs-new/
 │   ├── logging.md                  # Logging configuration
 │   │
 │   └── api/                        # API reference (auto-generated from Jzod)
-│       ├── index.md                # API overview ✅
-│       ├── entity.md               # Entity & EntityDefinition ✅
-│       ├── query.md                # Query API ✅
-│       ├── transformers.md         # Transformer API ✅
-│       ├── actions.md              # Action API ✅
-│       ├── reports.md              # Report API ✅
-│       └── endpoints.md            # Endpoint API ✅
+│       ├── index.md                # API overview ⚠️
+│       ├── entity.md               # Entity & EntityDefinition ⚠️
+│       ├── query.md                # Query API ⚠️
+│       ├── transformers.md         # Transformer API ⚠️
+│       ├── actions.md              # Action API ⚠️
+│       ├── reports.md              # Report API ⚠️
+│       └── endpoints.md            # Endpoint API ⚠️
 │
 └── contributing/                    # Contribution guidelines
     ├── index.md                    # Contributing overview
@@ -142,6 +142,7 @@ docs-new/
 
 **Legend:**
 - ✅ = Created
+- ⚠️ = sloppy, needs further improvements.
 - No marker = Planned but not yet created
 
 ---
@@ -348,9 +349,9 @@ Level 4: Reference & Deep Dive
 - Auto-generated API documentation from Jzod schemas
 
 ### 📄 Existing to Integrate
-- [docs/libraryTutorial/libraryTutorial.md](../../docs/libraryTutorial/libraryTutorial.md) → tutorials/library-tutorial.md
-- [docs/comparison-OSS-licensed-Claude-Sonnet_4_point_5.md](../../docs/comparison-OSS-licensed-Claude-Sonnet_4_point_5.md) → Referenced from guides/comparison.md
-- [docs/transformers/mapperListToList.md](../../docs/transformers/mapperListToList.md) → Referenced from reference/api/transformers.md
+- [docs/libraryTutorial/libraryTutorial.md](../../docs-OLD/libraryTutorial/libraryTutorial.md) → tutorials/library-tutorial.md
+- [docs/comparison-OSS-licensed-Claude-Sonnet_4_point_5.md](../../docs-OLD/comparison-OSS-licensed-Claude-Sonnet_4_point_5.md) → Referenced from guides/comparison.md
+- [docs/transformers/mapperListToList.md](../../docs-OLD/transformers/mapperListToList.md) → Referenced from reference/api/transformers.md
 
 ---
 

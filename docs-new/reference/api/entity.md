@@ -1,4 +1,4 @@
-# Entity & EntityDefinition API Reference
+# Entity & EntityDefinition API Reference (⚠️SLOPPY⚠️)
 
 **Status: 🚧 Sketch - To be auto-generated from Jzod schemas**
 

@@ -90,7 +90,7 @@ npm run dev -w miroir-standalone-app
 
 Open http://localhost:5173 in your browser and explore the Library example application!
 
-**📖 [Complete Getting Started Guide →](docs-new/getting-started/quickstart.md)**
+**📖 [Complete Getting Started Guide →](docs/getting-started/quickstart.md)**
 
 ---
 
@@ -98,24 +98,24 @@ Open http://localhost:5173 in your browser and explore the Library example appli
 
 ### 🎓 For Beginners
 
-1. **[Quickstart Guide](docs-new/getting-started/quickstart.md)** - 15-minute introduction
-2. **[Library Tutorial](docs-new/tutorials/library-tutorial.md)** - Hands-on walkthrough (20 min)
-3. **[Core Concepts](docs-new/guides/core-concepts.md)** - Understanding Entity, Query, Transformer, Action, Report
+1. **[Quickstart Guide](docs/getting-started/quickstart.md)** - 15-minute introduction
+2. **[Library Tutorial](docs/tutorials/library-tutorial.md)** - Hands-on walkthrough (20 min)
+3. **[Core Concepts](docs/guides/core-concepts.md)** - Understanding Entity, Query, Transformer, Action, Report
 
 ### 💻 For Developers
 
-1. **[Creating Your First Application](docs-new/guides/developer/creating-applications.md)** - Build from scratch
-2. **[Developer Guides](docs-new/guides/developer/)** - In-depth development topics
-3. **[API Reference](docs-new/reference/api/)** - Complete API documentation
+1. **[Creating Your First Application](docs/guides/developer/creating-applications.md)** - Build from scratch
+2. **[Developer Guides](docs/guides/developer/)** - In-depth development topics
+3. **[API Reference](docs/reference/api/)** - Complete API documentation
 
 ### 🤖 For AI Integration
 
-1. **[MCP Integration Guide](docs-new/guides/mcp-integration.md)** - Connect with Claude, ChatGPT, and other AI agents
-2. **[Natural Language Development](docs-new/tutorials/natural-language-interface.md)** - **Coming Soon**
+1. **[MCP Integration Guide](docs/guides/mcp-integration.md)** - Connect with Claude, ChatGPT, and other AI agents
+2. **[Natural Language Development](docs/tutorials/natural-language-interface.md)** - **Coming Soon**
 
 ### 📚 Full Documentation
 
-**[Complete Documentation Index →](docs-new/index.md)**
+**[Complete Documentation Index →](docs/index.md)**
 
 Documentation organized by role: Executives, Project Managers, Architects, Developers, End Users, AI Integrators, Contributors
 
@@ -143,17 +143,17 @@ Miroir integrates development-time and runtime activities in a single environmen
 - **Experimental Development** - Rapid prototyping with instant verification
 - **Progressive Enhancement** - Start simple, add complexity as needed
 
-**[Read the full rationale →](docs-new/guides/why-miroir.md)**
+**[Read the full rationale →](docs/guides/why-miroir.md)**
 
-**[Compare with alternatives →](docs-new/guides/comparison.md)** (Hasura, Supabase, Retool, OutSystems, and 30+ others)
+**[Compare with alternatives →](docs/guides/comparison.md)** (Hasura, Supabase, Retool, OutSystems, and 30+ others)
 
 ---
 
-## Example: Building a Book Library App (Simplified)
+## Example: Building a Book Library App (Idealized)
 
-This section gives a slightly simplified syntax for better understanding of the main features that constitute a Library Miroir application. More details []()
+This section gives a slightly simplified syntax for better understanding of the main features that constitute a Library Miroir application. See it for real in **[the Library Tutorial →](docs/tutorials/library-tutorial.md)**
 
-### Define The Book Entity (schema)
+### Define The Book Entity Model Schema
 
 ```json
 {
@@ -177,7 +177,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 }
 ```
 
-### Transform Data (Portable Logic)
+### Extract The Book Titles Only: Transform Data (Portable Logic)
 
 ```json
 {
@@ -188,7 +188,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 }
 ```
 
-### Define UI (Report)
+### Display Books in the UI: The BookList Report
 
 ```json
 {
@@ -200,9 +200,9 @@ This section gives a slightly simplified syntax for better understanding of the 
 }
 ```
 
-**Result**: A fully functional CRUD application with sorting, filtering, and relationships - no React code required!
+**Result**: A declarative, fully functional CRUD application with sorting, filtering, and relationships - no "code" required!
 
-**[Try the Library Tutorial →](docs-new/tutorials/library-tutorial.md)**
+**[Try the Library Tutorial →](docs/tutorials/library-tutorial.md)**
 
 ---
 
@@ -237,7 +237,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 - 📅 Git/GitHub integration
 - 📅 Code generation ("freeze to JavaScript/Rust")
 
-**[Full Roadmap →](docs-new/guides/roadmap.md)**
+**[Full Roadmap →](docs/guides/roadmap.md)**
 
 ---
 
@@ -268,7 +268,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 - **miroir-standalone-app** - Web application
 - **miroir-mcp** - Model Context Protocol server
 
-**[Architecture Deep Dive →](docs-new/guides/architecture.md)**
+**[Architecture Deep Dive →](docs/guides/architecture.md)**
 
 ---
 
@@ -276,7 +276,7 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ### 🤝 Get Involved
 
-- **[Contributing Guide](docs-new/contributing/)** - Development setup and workflow
+- **[Contributing Guide](docs/contributing/)** - Development setup and workflow
 - **[GitHub Discussions](https://github.com/miroir-framework/miroir/discussions)** - Coming Soon
 - **[Issue Tracker](https://github.com/miroir-framework/miroir/issues)** - Report bugs or request features
 
@@ -295,7 +295,7 @@ Inspired by:
 
 ## Links
 
-- **Documentation**: [docs-new/index.md](docs-new/index.md)
+- **Documentation**: [docs-new/index.md](docs/index.md)
 - **GitHub**: https://github.com/miroir-framework/miroir
 - **NPM**: https://www.npmjs.com/org/miroir-framework
 - **Issues**: https://github.com/miroir-framework/miroir/issues
@@ -304,4 +304,4 @@ Inspired by:
 
 **Start building your next application with Miroir today!**
 
-**[📖 Read the Docs](docs-new/index.md)** | **[🚀 Quickstart](docs-new/getting-started/quickstart.md)** | **[💬 Discuss](https://github.com/miroir-framework/miroir/discussions)**
+**[📖 Read the Docs](docs/index.md)** | **[🚀 Quickstart](docs/getting-started/quickstart.md)** | **[💬 Discuss](https://github.com/miroir-framework/miroir/discussions)**

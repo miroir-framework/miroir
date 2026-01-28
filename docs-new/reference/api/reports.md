@@ -1,4 +1,4 @@
-# Report API Reference
+# Report API Reference (⚠️SLOPPY⚠️)
 
 **Status: 🚧 Sketch - To be auto-generated from Jzod schemas**
 

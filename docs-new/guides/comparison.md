@@ -354,7 +354,7 @@ Choose Miroir when you need:
 
 For complete details on how Miroir compares to 30+ alternatives, see:
 
-**[Full Comparison Document →](../../docs/comparison-OSS-licensed-Claude-Sonnet_4_point_5.md)**
+**[Full Comparison Document →](../../docs-OLD/comparison-OSS-licensed-Claude-Sonnet_4_point_5.md)**
 
 Includes detailed analysis of:
 - 17 open-source platforms

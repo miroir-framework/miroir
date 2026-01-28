@@ -1,4 +1,4 @@
-# Endpoint API Reference
+# Endpoint API Reference (⚠️SLOPPY⚠️)
 
 **Status: 🚧 Sketch - To be auto-generated from Jzod schemas**
 

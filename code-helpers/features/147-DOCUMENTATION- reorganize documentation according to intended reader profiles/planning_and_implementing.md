@@ -114,7 +114,7 @@ Created [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/docs-new/tut
 
 Created [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/docs-new/contributing)
 
-Starting: *Create Documentation Index (docs-new/index.md)* (2/12)
+Starting: *Create Documentation Index (docs/index.md)* (2/12)
 
 Now I'll create the central documentation index: 
 

@@ -1,4 +1,4 @@
-# Transformer API Reference
+# Transformer API Reference (⚠️SLOPPY⚠️)
 
 **Status: 🚧 Sketch - To be auto-generated from Jzod schemas**
 
@@ -40,7 +40,7 @@ Transform each item in a list.
 }
 ```
 
-**[Complete documentation →](../../../docs/transformers/mapperListToList.md)**
+**[Complete documentation →](../../../docs-OLD/transformers/mapperListToList.md)**
 
 ### 2. mapperListToObject
 

@@ -1,4 +1,4 @@
-# API Reference
+# API Reference (⚠️SLOPPY⚠️)
 
 **Status: 🚧 In Progress - Auto-generated from Jzod schemas**
 
