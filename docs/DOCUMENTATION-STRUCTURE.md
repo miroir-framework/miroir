@@ -69,34 +69,34 @@ docs-new/
 │
 ├── getting-started/                 # Entry point for new users
 │   ├── what-is-miroir.md           # Non-technical introduction
-│   ├── quickstart.md               # 15-minute hands-on guide ⚠️
+│   ├── quickstart.md               # 15-minute hands-on guide ⚠️⚠️
 │   ├── installation.md             # Detailed setup instructions
 │   └── first-app.md                # Create your first application
 │
 ├── guides/                          # Topic-based learning guides
 │   ├── core-concepts.md            # Entity, Query, Transformer, Action, Report ✅
-│   ├── why-miroir.md               # Philosophy and rationale ✅
+│   ├── why-miroir.md               # Philosophy and rationale ⚠️⚠️
 │   ├── comparison.md               # Competitive analysis ✅
-│   ├── architecture.md             # Layered architecture overview
+│   ├── architecture.md             # Layered architecture overview ⚠️⚠️⚠️
 │   ├── meta-model.md               # Understanding Jzod and bootstrapping
 │   ├── model-vs-data.md            # Application structure
 │   ├── use-cases.md                # Real-world scenarios
-│   ├── roadmap.md                  # Future development plans
+│   ├── roadmap.md                  # Future development plans ⚠️⚠️⚠️
 │   ├── faq.md                      # Frequently asked questions
 │   ├── deployment.md               # Production deployment
 │   ├── desktop-app.md              # Electron-based deployment
-│   ├── mcp-integration.md          # Model Context Protocol for AI
+│   ├── mcp-integration.md          # Model Context Protocol for AI ⚠️⚠️⚠️
 │   │
 │   ├── developer/                  # Developer-focused guides
-│   │   ├── creating-applications.md
-│   │   ├── defining-entities.md
-│   │   ├── writing-queries.md
-│   │   ├── writing-transformers.md
-│   │   ├── creating-actions.md
-│   │   ├── designing-reports.md
-│   │   ├── testing.md
-│   │   ├── integration.md
-│   │   └── migrations.md
+│   │   ├── creating-applications.md ⚠️⚠️⚠️
+│   │   ├── defining-entities.md ⚠️⚠️⚠️
+│   │   ├── writing-queries.md ⚠️⚠️⚠️
+│   │   ├── writing-transformers.md ⚠️⚠️⚠️
+│   │   ├── creating-actions.md ⚠️⚠️⚠️
+│   │   ├── designing-reports.md ⚠️⚠️⚠️
+│   │   ├── testing.md ⚠️⚠️⚠️
+│   │   ├── integration.md ⚠️⚠️⚠️
+│   │   └── migrations.md ⚠️⚠️⚠️
 │   │
 │   ├── user/                       # End-user guides
 │   │   ├── index.md
@@ -111,10 +111,10 @@ docs-new/
 │       └── security.md
 │
 ├── tutorials/                       # Hands-on tutorials
-│   ├── library-tutorial.md         # Complete walkthrough (from existing docs)
+│   ├── library-tutorial.md         # Complete walkthrough (from existing docs) ⚠️⚠️⚠️
 │   ├── blog-app.md                 # Coming Soon
 │   ├── task-manager.md             # Coming Soon
-│   ├── natural-language-interface.md  # Coming Soon
+│   ├── natural-language-interface.md  # Coming Soon ⚠️⚠️⚠️
 │   └── cli-tutorial.md             # Coming Soon
 │
 ├── reference/                       # Technical reference documentation
@@ -124,25 +124,27 @@ docs-new/
 │   ├── logging.md                  # Logging configuration
 │   │
 │   └── api/                        # API reference (auto-generated from Jzod)
-│       ├── index.md                # API overview ⚠️
-│       ├── entity.md               # Entity & EntityDefinition ⚠️
-│       ├── query.md                # Query API ⚠️
-│       ├── transformers.md         # Transformer API ⚠️
-│       ├── actions.md              # Action API ⚠️
-│       ├── reports.md              # Report API ⚠️
-│       └── endpoints.md            # Endpoint API ⚠️
+│       ├── index.md                # API overview ⚠️⚠️⚠️
+│       ├── entity.md               # Entity & EntityDefinition ⚠️⚠️⚠️
+│       ├── query.md                # Query API ⚠️⚠️⚠️
+│       ├── transformers.md         # Transformer API ⚠️⚠️⚠️
+│       ├── actions.md              # Action API ⚠️⚠️⚠️
+│       ├── reports.md              # Report API ⚠️⚠️⚠️
+│       └── endpoints.md            # Endpoint API ⚠️⚠️⚠️
 │
 └── contributing/                    # Contribution guidelines
-    ├── index.md                    # Contributing overview
-    ├── development-setup.md        # Developer environment
-    ├── testing.md                  # Running and writing tests
-    ├── code-style.md               # Coding conventions
-    └── release-process.md          # Coming Soon
+    ├── index.md                    # Contributing overview ⚠️⚠️⚠️
+    ├── development-setup.md        # Developer environment ⚠️⚠️⚠️
+    ├── testing.md                  # Running and writing tests ⚠️⚠️⚠️
+    ├── code-style.md               # Coding conventions ⚠️⚠️⚠️
+    └── release-process.md          # Coming Soon ⚠️⚠️⚠️
 ```
 
 **Legend:**
 - ✅ = Created
-- ⚠️ = sloppy, needs further improvements.
+- ⚠️⚠️⚠️ = empty or wholly inadequate
+- ⚠️⚠️ = could benefit from restructuration, rewriting
+- ⚠️ = still sloppy, needs further improvements.
 - No marker = Planned but not yet created
 
 ---

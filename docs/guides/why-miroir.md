@@ -4,6 +4,7 @@
 
 This document explains the motivation behind the Miroir Framework, the problems it aims to solve, and the philosophy guiding its design.
 
+⚠️This document lacks consistency, especially in the second part. Better focus can be brought, probably later chapters put elsewhere, or just appear as links to other documents which have reused parts of this document. ⚠️
 ---
 
 ## Table of Contents

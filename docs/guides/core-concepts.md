@@ -45,19 +45,19 @@ This approach enables:
 
 ```
 ┌─────────────────────────────────────────┐
-│          META-MODEL                      │  Defines structure of Models
+│          META-MODEL                     │  Defines structure of Models
 │  (Entity, EntityDefinition, Query...)   │  Bootstrap: describes itself
 │  Located: miroir_model/                 │
 └─────────────────────────────────────────┘
                   ↓ instances of
 ┌─────────────────────────────────────────┐
-│          MODEL (Application)             │  Defines structure of your app
+│          MODEL (Application)            │  Defines structure of your app
 │  (Book, Author, Publisher entities...)  │  Your domain model
 │  Located: library_model/                │
 └─────────────────────────────────────────┘
                   ↓ instances of
 ┌─────────────────────────────────────────┐
-│          DATA (Instances)                │  Actual data in your app
+│          DATA (Instances)               │  Actual data in your app
 │  (Specific books, authors, publishers)  │  Your application data
 │  Located: library_data/                 │
 └─────────────────────────────────────────┘
@@ -810,7 +810,7 @@ Every application has three sections:
    └─> Add Runners to Reports for user interactions
 ```
 
-### Example: Complete Book Feature
+### Example: Complete Book Feature (⚠️DUPLICATE OF HOME PAGE, USED JSON SCHEMA-LIKE SYNTAX ⚠️)
 
 **1. Entity Definition**
 ```json
