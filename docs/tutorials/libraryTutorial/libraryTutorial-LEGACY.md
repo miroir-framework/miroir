@@ -20,7 +20,7 @@ TBW
 
 ### The Home Page
 
-<img src="./libraryTutorial/library_homepage.png" alt="The Library Application Homepage" width="95%"/>
+<img src="./library_homepage.png" alt="The Library Application Homepage" width="95%"/>
 
 The interface has three main areas:
 
@@ -30,7 +30,7 @@ The interface has three main areas:
 
 ### Browsing Data Through Entities
 
-<img src="./libraryTutorial/library_homepage_menu.jpg" alt="The Library Catalogue Menu" width="30%"/>
+<img src="./library_homepage_menu.jpg" alt="The Library Catalogue Menu" width="30%"/>
 
 The Library organizes its data into **Entities** - collections of related instances with a common structure:
 
@@ -47,33 +47,33 @@ Each menu item enables the display of instances for one Entity.
 
 Click "Library Users" in the catalogue menu to see the Users' list Report:
 
-<img src="./libraryTutorial/library_users.png" alt="The Users" width="90%"/>
+<img src="./library_users.png" alt="The Users" width="90%"/>
 
 #### Viewing User Details
 
 Click on the name a user in the list to see the report displaying its full information, with the form:
 
-<img src="./libraryTutorial/library_user_details.png" alt="An example User" width="80%"/>
+<img src="./library_user_details.png" alt="An example User" width="80%"/>
 
 Miroir manipulates data in the [JSON](https://en.wikipedia.org/wiki/JSON) format. The JSON format for the displayed user can be shown using the above-highlighted switch on the top-right corner.
 
-<img src="./libraryTutorial/library_user_details_JSON.png" alt="An example User in JSON format" width="80%"/>
+<img src="./library_user_details_JSON.png" alt="An example User in JSON format" width="80%"/>
 
 #### Modifying a User
 
 Modification on data is possible directly in the details Report, in the form or in the JSON display. Validate your changes by clicking on the blue button on top:
 
-<img src="./libraryTutorial/library_user_details_EDIT.png" alt="Edit an example User" width="80%"/>
+<img src="./library_user_details_EDIT.png" alt="Edit an example User" width="80%"/>
 
 A confirmation is displayed, and the value modified persistently.
 
-<img src="./libraryTutorial/library_user_details_EDIT_SUCCESS.png" alt="Edit an example User - Success" width="80%"/>
+<img src="./library_user_details_EDIT_SUCCESS.png" alt="Edit an example User - Success" width="80%"/>
 
 #### Creating a New User
 
 Use the "New User" button:
 
-<img src="./libraryTutorial/library_user_ADD.png" alt="Display new User Form" width="75%"/>
+<img src="./library_user_ADD.png" alt="Display new User Form" width="75%"/>
 
 You get a new user creation form, that you can fill out to add a new user. If you copy / paste the following JSON:
 
@@ -95,23 +95,23 @@ You get a new user creation form, that you can fill out to add a new user. If yo
 
 you will get the following screen:
 
-<img src="./libraryTutorial/library_user_ADD_form_filled.png" alt="Add a new User" width="80%"/>
+<img src="./library_user_ADD_form_filled.png" alt="Add a new User" width="80%"/>
 
 Upon validation, a success notification is displayed, and the added User can be seen in the Users' list.
 
-<img src="./libraryTutorial/library_user_ADD_SUCCESS.png" alt="Add a new User Succeeded" width="60%"/>
+<img src="./library_user_ADD_SUCCESS.png" alt="Add a new User Succeeded" width="60%"/>
 
 #### Deleting a User
 
 In the `UserList` report, find the `Delete` icon for the user you just added.
 
-<img src="./libraryTutorial/library_user_DROP.png" alt="Drop a User" width="85%"/>
+<img src="./library_user_DROP.png" alt="Drop a User" width="85%"/>
 
 Confirm the Drop:
 
 <!-- ![Drop a User: confirm](./library_user_DROP_confirm.png) -->
 
-<img src="./libraryTutorial/library_user_DROP_confirm.png" width="80%"/>
+<img src="./library_user_DROP_confirm.png" width="80%"/>
 
 A success message is displayed, and the user disappears from the Users' list.
 
@@ -142,11 +142,11 @@ We will show how to add an `ISBN` optional attribute to the `Book` Entity.
 
 Click on the pencil icon on the right of the app bar to enable `Design Mode`. The design mode enables altering the application itself, not only the data the application manipulates.
 
-<img src="./libraryTutorial/miroir-enabling_design_mode.png" alt="Enable Design Mode" width="70%"/>
+<img src="./miroir-enabling_design_mode.png" alt="Enable Design Mode" width="70%"/>
 
 The 'report editor' is now shown on the top of the current view and the 'model' menu items are now shown on the left.
 
-<img src="./libraryTutorial/miroir-design_mode.png" alt="In Design Mode" width="95%"/>
+<img src="./miroir-design_mode.png" alt="In Design Mode" width="95%"/>
 
 click on the `Library Entity Definitions` menu item.
 
@@ -160,15 +160,15 @@ Adding the ISBN will thus alter the definition of the `Book` entity, without alt
 
 Click on the `Book` Entity Definition:
 
-<img src="./libraryTutorial/library-entityDefinitions_select_Book.png" alt="Select Book Entity Definition" width="85%"/>
+<img src="./library-entityDefinitions_select_Book.png" alt="Select Book Entity Definition" width="85%"/>
 
 This displays the definition, in which the attributes of the Entity are shown:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition.png" alt="The Book Entity Definition" width="85%"/>
+<img src="./library-model-Book_entity_definition.png" alt="The Book Entity Definition" width="85%"/>
 
 Of special interest is the `mlSchema` attribute, that describes the structure of a `Book`:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema.png" alt="The Book Entity Definition Attributes" width="85%"/>
+<img src="./library-model-Book_entity_definition_mlSchema.png" alt="The Book Entity Definition Attributes" width="85%"/>
 
 
 A `Book` has the following attributes:
@@ -184,29 +184,29 @@ A `Book` has the following attributes:
 
 The `name` is a simple `string`, that will be shown as `Book Title` in forms:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Definition Attribute: 'name'" width="85%"/>
+<img src="./library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Definition Attribute: 'name'" width="85%"/>
 
 The `author` is a `uuid`, that is a reference to an instance of the `Author` Entity, a relationship commonly called a [Foreign Key](https://en.wikipedia.org/wiki/Foreign_key) in database systems:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_author.png" alt="The Book Entity Definition Attribute: 'author'" width="85%"/>
+<img src="./library-model-Book_entity_definition_mlSchema_author.png" alt="The Book Entity Definition Attribute: 'author'" width="85%"/>
 
 The `foreignKeyParams` attribute in the `tag` informs the Miroir platform of the intended interpretation for the Foreign Key: in this case the given `uuid` shall be found as primary identifier for a `Book` instance. When selecting a book in the UI, the displayed list of books shall be sorted by the `name` attribute.
 
 To add an attribute, click on the blue **+** icon:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_ADD_attribute.png" alt="Adding an Attribute to the Book Entity" width="85%"/>
+<img src="./library-model-Book_entity_definition_mlSchema_ADD_attribute.png" alt="Adding an Attribute to the Book Entity" width="85%"/>
 
 Edit the attribute's definition to declare it a simple, **optional** string. **remember to declare it optional, because the existing Books do not have a value for it yet, and the structure check for them would otherwise fail!**
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_ADD_attribute_ISBN.png" alt="Adding ISBN to the Book Entity" width="80%"/>
+<img src="./library-model-Book_entity_definition_mlSchema_ADD_attribute_ISBN.png" alt="Adding ISBN to the Book Entity" width="80%"/>
 
 Validate when ready!
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_VALIDATE.png" alt="Validate the Book Entity update!" width="50%"/>
+<img src="./library-model-Book_entity_definition_mlSchema_VALIDATE.png" alt="Validate the Book Entity update!" width="50%"/>
 
 Now when displaying the Book details Report for a given book, an optional `ISBN` attribute can be added:
 
-<img src="./libraryTutorial/library-data-book_add_ISBN.png" alt="Add an ISBN value to a Book" width="50%"/>
+<img src="./library-data-book_add_ISBN.png" alt="Add an ISBN value to a Book" width="50%"/>
 
 Try a value like `123456789` and you're done with Part 2! Congrats!
 
@@ -231,7 +231,7 @@ Stored Queries are instances of the **Query** Entity, and have an **uuid** like 
 
 The existing Queries for the Library Application can be displayed by using the menu when the **Design Mode** is active (using the pencil icon in the app bar).
 
-<img src="./libraryTutorial/library-model-Query_list.png" alt="The List of Library Queries" width="70%"/>
+<img src="./library-model-Query_list.png" alt="The List of Library Queries" width="70%"/>
 
 ### Adding the *Book_Without_ISBN* Query
 
@@ -266,12 +266,12 @@ Add a new query by using the **"+"** icon on the Queries List. Fill it out with 
 
 Which looks like:
 
-<img src="./libraryTutorial/library-model-Query-Book_without_ISBN.png" alt="The Library Query: Books Without ISBN" width="70%"/>
+<img src="./library-model-Query-Book_without_ISBN.png" alt="The Library Query: Books Without ISBN" width="70%"/>
 
 
 You can check the result of the Query by opening the `Query Results` section:
 
-<img src="./libraryTutorial/library-model-Query-Book_without_ISBN-Results.png" alt="The Library Query Results: Books Without ISBN" width="70%"/>
+<img src="./library-model-Query-Book_without_ISBN-Results.png" alt="The Library Query Results: Books Without ISBN" width="70%"/>
 
 In our case, the book which we added an ISBN to is missing from the list, which validates our Query.
 
@@ -279,7 +279,7 @@ In our case, the book which we added an ISBN to is missing from the list, which 
 
 Add a new Report by using the **"+"** icon on the Report List:
 
-<img src="./libraryTutorial/library-model-Report_list-ADD.png" alt="The Library Reports: adding a Report" width="70%"/>
+<img src="./library-model-Report_list-ADD.png" alt="The Library Reports: adding a Report" width="70%"/>
 
 
  Fill it out with the following definition:
@@ -318,15 +318,15 @@ Add a new Report by using the **"+"** icon on the Report List:
 
 Which looks like:
 
-<img src="./libraryTutorial/library-model-Report_Book_without_ISBN.png" alt="The Library Report: Book Without ISBN" width="70%"/>
+<img src="./library-model-Report_Book_without_ISBN.png" alt="The Library Report: Book Without ISBN" width="70%"/>
 
 To check that the Report Works, use the **Stored Report Display** at the bottom of the page:
 
-<img src="./libraryTutorial/library-model-Report_Book_without_ISBN-test.png" alt=" Testing The Library Report: Book Without ISBN" width="70%"/>
+<img src="./library-model-Report_Book_without_ISBN-test.png" alt=" Testing The Library Report: Book Without ISBN" width="70%"/>
 
 In our case, the Book(s) to which you have added an ISBN must be missing from the list.
 
-<img src="./libraryTutorial/library-model-Report_Book_without_ISBN-result.png" alt="The Library Report Results: Book Without ISBN" width="70%"/>
+<img src="./library-model-Report_Book_without_ISBN-result.png" alt="The Library Report Results: Book Without ISBN" width="70%"/>
 
 Congrats, you've finished part 3!
 
@@ -349,7 +349,7 @@ Actions are declared in **Endpoints** and run on the Miroir framework.
 
 Add the `Books` endpoint by clicking on the **+** sign on the `EndpointList` Report:
 
-<img src="./libraryTutorial/library-model-Endpoint_list-ADD.png" alt="The Library Endpoint" width="70%"/>
+<img src="./library-model-Endpoint_list-ADD.png" alt="The Library Endpoint" width="70%"/>
 
 Use the following definition or seize its equivalent in the UI.
 
@@ -500,19 +500,19 @@ Use the following definition or seize its equivalent in the UI.
 
 The Books endpoint defines only 1 Action, the **updateISBN** action:
 
-<img src="./libraryTutorial/library-model-Endpoint_Books.png" alt="The **Books** Endpoint" width="70%"/>
+<img src="./library-model-Endpoint_Books.png" alt="The **Books** Endpoint" width="70%"/>
 
 Each Action defines an interface `actionParameters` and an implementation `actionImplementation`:
 
-<img src="./libraryTutorial/library-model-Endpoint_Books-updateISBN.png" alt="The **Books** Endpoint" width="70%"/>
+<img src="./library-model-Endpoint_Books-updateISBN.png" alt="The **Books** Endpoint" width="70%"/>
 
 The interface has an envelope, which necessarily contain the unique `actionType` for the Action, the `application` and `Endpoint` to which it belongs. It also has a `payload` where the interesting things are: each **updateISBN** call must have a `book` and an `ISBN` attributes.
 
-<img src="./libraryTutorial/library-model-Endpoint_Books-updateISBN-interface.png" alt="The **updateISBN** Action Interface" width="70%"/>
+<img src="./library-model-Endpoint_Books-updateISBN-interface.png" alt="The **updateISBN** Action Interface" width="70%"/>
 
 The implementation is a `compositeActionTemplate`, meaning that it is a composition of Actions, which undergo a step of parameter resolution, the formal parameters used in the composition being replaced by value arguments upon execution. This mechanism allows to access values upon execution, such as the ones defined in the interface of the Action, in our case the `book` to be modified, and the value to set its `ISBN` attribute to.
 
-<img src="./libraryTutorial/library-model-Endpoint_Books-updateISBN-implementation.png" alt="The **updateISBN** Action Implementation" width="70%"/>
+<img src="./library-model-Endpoint_Books-updateISBN-implementation.png" alt="The **updateISBN** Action Implementation" width="70%"/>
 
 The `compositeActionSequence` contains only 2 Actions:
 
@@ -521,7 +521,7 @@ The `compositeActionSequence` contains only 2 Actions:
 
 ### Creating the *updateISBN* Runner
 
-<img src="./libraryTutorial/library-model-Runner_list-ADD.png" alt="Adding a Runner to the Library" width="70%"/>
+<img src="./library-model-Runner_list-ADD.png" alt="Adding a Runner to the Library" width="70%"/>
 
 Create the Runner according to the following definition:
 
@@ -543,7 +543,7 @@ Create the Runner according to the following definition:
 
 Add the Runner to the homepage using the Report editor, it should look like this:
 
-<img src="./libraryTutorial/library_homepage-EDIT-ADD-RUNNER.png" alt="The **updateISBN** Runner added to the Homepage" width="70%"/>
+<img src="./library_homepage-EDIT-ADD-RUNNER.png" alt="The **updateISBN** Runner added to the Homepage" width="70%"/>
 
 
 the definition for the Report section displaying the **updateISBN** Runner is:
@@ -561,11 +561,11 @@ the definition for the Report section displaying the **updateISBN** Runner is:
 
 You may then use the Runner to add ISBN numbers to existing books with a simplified interface:
 
-<img src="./libraryTutorial/library_homepage-with-additional-runner.png" alt="The **updateISBN** Runner in the Homepage" width="70%"/>
+<img src="./library_homepage-with-additional-runner.png" alt="The **updateISBN** Runner in the Homepage" width="70%"/>
 
 Go and check the result in the `Book Details` Report for the chosen Book:
 
-<img src="./libraryTutorial/library_data-Runner-updateISBN-result.png" alt="The Result of the **updateISBN** Runner" width="40%"/>
+<img src="./library_data-Runner-updateISBN-result.png" alt="The Result of the **updateISBN** Runner" width="40%"/>
 
 Congrats, you've finished part 4!
 
