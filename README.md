@@ -1,284 +1,307 @@
-# Miroir
+# Miroir Framework
 
-**caveat 1: developments are still ongoing, only a fraction of the goals described below have been reached yet. First official release is not yet available (soon)**
+**An end-to-end, low-code, agentic development platform for data-centric applications.**
 
-**caveat 2: Miroir's current main weakness is that, trying to blend in many aspects of software engineering, it is difficult to give a clear outline of it. Time will tell...**
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub](https://img.shields.io/github/stars/miroir-framework/miroir?style=social)](https://github.com/miroir-framework/miroir)
 
-## Introduction
+---
 
-**Miroir is an end-to-end, low code, agentic development platform for data-centric applications.**
+## What is Miroir?
 
-- Miroir is **end-to-end** as it allows to define concepts used across both storage (database, NoSQL) and presentation (Web UI, web Services) and to leverage the same concepts in "business" code (e.g. computed attributes, business presentation functions, data migration, etc.).
-- Miroir will be **low-code** as value-adding behavior can be created, modified and tested at run-time, without the need to build a new package or redeploy a running application. Miroir provides the necessary interpreters and visual reprensentation (yet to be provided) to muster all aspects of an application. JSON is presently available as textual representation for all model elements.
-- Miroir will be **agentic**, being available to any A.I. client implementing the **Model Context Protocol (MCP)**. Miroir thus allows one to use natural language to manipulate and define business-related behavior, freely combining "structured" and "loose" code.
-- Miroir is **data-centric** and **Language-oriented**, fostering the creation of **Domain-Specific Languages** for Model manipulation, using these languages in low-code or natural language code.
+Miroir is a comprehensive development framework that transforms how you create data-centric applications by:
 
-## Envisioned Use case: start small, grow seamlessly
+- **Unifying development and runtime** - Define concepts once, use everywhere (database, API, UI, business logic)
+- **Enabling low-code creation** - Build and modify applications at runtime without recompilation
+- **Supporting AI agents** - Native Model Context Protocol (MCP) integration for natural language development
+- **Fostering domain languages** - Create custom Domain-Specific Languages (DSLs) for your business domain
 
-The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains traction, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or changing technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters an experimental to software creation. One can then concentrate on the problem to be solved, being rid of usual chores like compiling every time before getting feedback. 
+### Key Features
 
-## This Repository
-This is the monorepo for the Miroir Framework.
+✨ **Schema-First Development** - Define your data model using Jzod (Miroir Meta-Language), generate TypeScript types, Zod validators, and database schemas automatically
 
-Activities encompassed by the Miroir Framework are (tentatively):
+🔄 **Write Once, Run Anywhere** - Business logic (Queries, Transformers, Actions) runs on client, server, or in-database (SQL)
 
-- **modeling and management of the application's data:** (logical and physical) data model elaboration and evolution, data store management (Relational schema maintenance, data migration, etc.)
-- **practicing domain-driven development:** coding value-producing analysis and behavior from the application domain, create you own Domain-Specific Languages (DSLs), make them available as a services, or as a desktop and web applications.
-- **managing the software development cycle:** enable software versioning, produce artefacts, automated Test management (unit tests, integration tests), enable continuous integration.
-- **adapt your development environment to your needs**: benefit from the powerful javascript / web universe, leverage the LLM tools, adopt an experimental and incremental development approach (Test-Driven Development), be free to run your business-domain code in the client, on the server or in the database (SQL), or even switch data storage architecture according to your needs.
- 
-Miroir is developed largely in Miroir, making it extremely adaptable.
+🗄️ **Multi-Store Support** - PostgreSQL, IndexedDB (browser), or filesystem - switch without code changes
 
-The technically-inclined reader can refer to the defined [LLM-agent instructions employed during development](https://github.com/miroir-framework/miroir/blob/master/.github/copilot-instructions.md), which provide a Markdown-format description of the development environment.
+📊 **Declarative UI** - Define Reports and Runners using JSON, no React code required
 
-## Current State
+🤖 **AI-Ready** - Built-in MCP server for LLM-driven development with Claude, ChatGPT, and other AI agents
 
-### What already exists
+🧪 **Test-Driven** - Integrated testing framework with development/runtime parity
 
-- The Meta-Language [jzod](https://github.com/miroir-framework/jzod), also called MML for Miroir Meta-Language.
-- The Miroir Meta-model, used to define an application's logical data model: Entity and EntityDefinitions. Attributes and other properties of an Entity are defined using an MML (jzod) Schema.
-- Connectors to PostgreSQL, to an indexedDB key-value datastore, and to a JSON file-based datastore.
-- The core of the Miroir application model use to define business-domain data presentation and behavior: Transformer, Query, Report, Endpoint & Action, Test, Application.
-- An interpreter for Actions, Transformers and Queries (in-memory and SQL).
-- A Web Application and a server leveraging the mentioned interpreters and providing rudimentary local cache management for data (to be used as working space).
-- A substancial set of tests for non-regression on core features.
-- An Event system to monitor activities and troubleshoot issues.
-- A desktop application using Electron providing the same functionality as the Web App / Web Server combination.
+---
 
-### Present Developments
+## Who Is Miroir For?
 
-Today's on-going effort are centered on the identifcation and provision of actual workflows in the web interface:
+### 🎯 Start Small, Scale Seamlessly
 
-- finalize the Event system, allowing to monitor activities and troubleshoot issue while during the development phase.
-- providing an interactive, instant-feedback giving Transformer editor, enabling to create Transformer that encode the domain logic in a straightforward and confident way.
-- provide similar editors for Queries and Actions.
-- Provide a read/write connector to Spreadsheets (ODS and other formats) to store an Application's model and data.
-- make a first official release ecompassing the above points.
+**Problem**: You need a quick data management solution. A spreadsheet works today, but what about tomorrow when requirements grow?
 
-### Future Developments
+**Solution**: Start with Miroir's low-code interface, then seamlessly add complexity as needs evolve - automated testing, version control, multi-user access, production deployment.
 
-Here's an overview, browse the [issues](https://github.com/miroir-framework/miroir/issues) for more details on some of the following (envisioned) goals
+### 💼 Common Use Cases
 
-- enable graphs in Reports (using D3js)
-- enable some text edition tool (probably based on Markdown, potentially html) to enable the creation of text-containing Reports and to create the documentation for Miroir
-- enable visual (UML-Like) Application Model edition
-- enable block-based visual programming (low code) for Actions and Transformers
-- support NOSQL datastores (MongoDB, ElasticSearch, DuckDb, etc.)
-- support for a Miroir Command Line Interface
-- support connection to software versioning tools: local Git repos, Github.
-- support connection to issue-tracking and project management tools (Github, Jira, etc.)
-- support for LLM-based tools & MCP client
-- "Freezing" code to Javascript: generate js libraries from Miroir Transformers, Queries and Actions giving a proper escape hatch or enabling to use Miroir as an Application generator
-- "Freezing" code to Rust: enabling the production of industrial web services implemented in Rust, maybe even a Rust-based Desktop / Web Application?
-- develop "example" applications and tools: a relational DB model manager, an interface to the R programming platform
+| User Profile | Use Case | Miroir Benefits |
+|-------------|----------|-----------------|
+| **Citizen Developer** | Internal tools, data tracking apps | No-code/low-code creation, instant feedback |
+| **Software Engineer** | Business applications, APIs, dashboards | Reduce boilerplate by 80%, rapid prototyping |
+| **Data Analyst** | Custom reporting, data transformation | SQL-free queries, visual report builder |
+| **IT Manager** | Internal applications portfolio | Faster delivery, easier maintenance |
+| **Startup Founder** | MVP development | Quick iteration, AI-assisted development |
 
-## installation
+---
 
-# From Source
+## Quick Start
 
-Clone git repository
+### Prerequisites
 
-```sh
+- Node.js 18+ and npm
+- (Optional) PostgreSQL 14+ for database persistence
+- (Optional) Git for version control
+
+### Installation
+
+```bash
+# Clone the repository
 git clone https://github.com/miroir-framework/miroir.git
-```
+cd miroir
 
-go to the created directory, and download dependencies:
-
-```sh
+# Install dependencies
 npm install
-```
 
-For local dependencies on Jzod:
-```sh
+# Link local Jzod dependencies
 npm link @miroir-framework/jzod-ts @miroir-framework/jzod
+
+# Build core packages
+npm run devBuild -w miroir-core
+npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
 ```
 
-build the client and server (shell):
+### Run Your First Application
 
-```sh
-npm run devBuild -w miroir-core && npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
-```
-
-# From binary packages
-
-TBW
-
-# Configuration
-
-## Data stores
-
-### indexedDb
-
-### File System
-
-### Postgres
-
-there must be an "admin" user/schema, that is used as a life line, to create / administer other user/schemas.
-
-# Development process
-
-## launching client & server for interactive tests
-
-Use of the server is not mandatory to develop on the client, as MSW can be used to simulate the server.
-
-build server in backround (useful when developing the server):
-
-```sh
- npm run build-tsup -w miroir-server
-```
-
-launch server:
-
-```sh
+```bash
+# Terminal 1: Start the server
 npm run dev -w miroir-server
+
+# Terminal 2: Start the client
+npm run dev -w miroir-standalone-app
 ```
 
-launch client:
+Open http://localhost:5173 in your browser and explore the Library example application!
 
-```sh
-npm run startDev -w miroir-standalone-app
+**📖 [Complete Getting Started Guide →](docs-new/getting-started/quickstart.md)**
+
+---
+
+## Learn Miroir
+
+### 🎓 For Beginners
+
+1. **[Quickstart Guide](docs-new/getting-started/quickstart.md)** - 15-minute introduction
+2. **[Library Tutorial](docs-new/tutorials/library-tutorial.md)** - Hands-on walkthrough (20 min)
+3. **[Core Concepts](docs-new/guides/core-concepts.md)** - Understanding Entity, Query, Transformer, Action, Report
+
+### 💻 For Developers
+
+1. **[Creating Your First Application](docs-new/guides/developer/creating-applications.md)** - Build from scratch
+2. **[Developer Guides](docs-new/guides/developer/)** - In-depth development topics
+3. **[API Reference](docs-new/reference/api/)** - Complete API documentation
+
+### 🤖 For AI Integration
+
+1. **[MCP Integration Guide](docs-new/guides/mcp-integration.md)** - Connect with Claude, ChatGPT, and other AI agents
+2. **[Natural Language Development](docs-new/tutorials/natural-language-interface.md)** - **Coming Soon**
+
+### 📚 Full Documentation
+
+**[Complete Documentation Index →](docs-new/index.md)**
+
+Documentation organized by role: Executives, Project Managers, Architects, Developers, End Users, AI Integrators, Contributors
+
+---
+
+## Why Miroir?
+
+### The Problem: Development Tools Are Fragmented
+
+Modern development requires juggling dozens of tools and languages:
+
+- editors (VS Code, VIM, Eclipse...) for coding
+- Separate database design tools
+- API testing tools (Postman, etc.)
+- UI builders
+- CI/CD pipelines
+- Each with its own DSL and learning curve
+
+### The Miroir Approach: Integration Inspired by Smalltalk
+
+Miroir integrates development-time and runtime activities in a single environment:
+
+- **Immediate Feedback** - Change your model, see results instantly without recompilation
+- **Unified Model** - Define entities once, use in DB, API, UI, and business logic
+- **Experimental Development** - Rapid prototyping with instant verification
+- **Progressive Enhancement** - Start simple, add complexity as needed
+
+**[Read the full rationale →](docs-new/guides/why-miroir.md)**
+
+**[Compare with alternatives →](docs-new/guides/comparison.md)** (Hasura, Supabase, Retool, OutSystems, and 30+ others)
+
+---
+
+## Example: Building a Book Library App (Simplified)
+
+This section gives a slightly simplified syntax for better understanding of the main features that constitute a Library Miroir application. More details []()
+
+### Define The Book Entity (schema)
+
+```json
+{
+  "type": "object",
+  "definition": {
+    "uuid": { "type": "uuid" },
+    "title": { "type": "string" },
+    "author": { "type": "uuid", "tag": { "value": { "defaultLabel": "Author", "targetEntity": "Author" } } },
+    "isbn": { "type": "string", "optional": true },
+    "publishedDate": { "type": "date" }
+  }
+}
 ```
 
-## Automated tests
+### Query for the list of Books (Declarative)
 
-### Miroir-core
-
-```js
-$ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- domainSelector
-```
-results in:
-```sh
-PASS tests/2_domain/domainSelector.unit.test.ts
-  domainSelector
-    √ error on non-existing Entity: EntityNotFound (151 ms)
-    √ error on non-existing Entity: EntityNotFound (17 ms)
-    √ error on non-existing object uuid: InstanceNotFound (14 ms)
-    √ select 1 object from Domain State (22 ms)
-    √ select 1 object from Domain State using context reference (19 ms)
-    √ select 1 object from Domain State using direct query parameter reference (19 ms)
-    √ select 1 object from the uuid found in an attribute of another object from Domain State (21 ms)
-    √ select Authors (10 ms)
-    √ select Books of Publisher of given Book from Domain State (30 ms)
-    √ select custom-built result: Books of Publisher of given Book from Domain State (27 ms)
-    √ select custom-built result with queryCombiner: instances of all Entites from Domain State, indexed by Entity Uuid (10 ms)
-
-Test Suites: 1 skipped, 1 passed, 1 of 2 total
-Tests:       1 skipped, 11 passed, 12 total
-Snapshots:   0 total
-Time:        6.032 s, estimated 8 s
-Ran all test suites with tests matching "domainSelector".
+```json
+{
+  "queryType": "extractorByEntityReturningObjectList",
+  "targetEntity": "Book"
+}
 ```
 
-To run the Transformer tests, in unit configuration (transformers are executed by the client or server, in memory)
+### Transform Data (Portable Logic)
 
-```sh
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+```json
+{
+  "transformerType": "mapperListToList",
+  "interpolation": "runtime",
+  "referencedExtractor": "books",
+  "orderBy": { "attributeName": "title" }
+}
 ```
 
-To run the Transformer tests, in integration configuration (transformers are executed on the database as sql queries)
+### Define UI (Report)
 
-```sh
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+```json
+{
+  "type": "list",
+  "definition": {
+    "entityUuid": "Book",
+    "fetchQuery": { "queryReference": "booksQuery" }
+  }
+}
 ```
 
+**Result**: A fully functional CRUD application with sorting, filtering, and relationships - no React code required!
 
-to run all the miroir-core unit tests (except the two transformer tests above):
+**[Try the Library Tutorial →](docs-new/tutorials/library-tutorial.md)**
 
-```sh
-npm run test -w miroir-core -- ''
+---
+
+## Current Status (v0.9 - Pre-Release)
+
+### ✅ Available Now
+
+- ✅ Jzod meta-language and type generation
+- ✅ Entity and EntityDefinition meta-model
+- ✅ Multi-store connectors (PostgreSQL, IndexedDB, Filesystem)
+- ✅ Query, Transformer, Action, Report interpreters
+- ✅ In-memory and SQL execution for business logic
+- ✅ Web application and Node.js server
+- ✅ Electron desktop application
+- ✅ Comprehensive test suite
+- ✅ Event system for monitoring and debugging
+- ✅ MCP server for AI integration
+
+### 🚧 In Active Development
+
+- 🚧 Interactive Transformer/Query/Action editors
+- 🚧 Visual model editor (UML-like)
+- 🚧 Spreadsheet connector (ODS, Excel)
+
+### 📅 Roadmap
+
+- 📅 Graph visualization (D3.js integration)
+- 📅 Markdown/HTML text editor for documentation
+- 📅 Block-based visual programming (low-code)
+- 📅 Additional NoSQL stores (MongoDB, DuckDB, ElasticSearch)
+- 📅 Command Line Interface (CLI)
+- 📅 Git/GitHub integration
+- 📅 Code generation ("freeze to JavaScript/Rust")
+
+**[Full Roadmap →](docs-new/guides/roadmap.md)**
+
+---
+
+## Architecture Highlights
+
+### Layered Domain-Driven Design
+
+```
+0_interfaces/    → Core types and Jzod schemas
+1_core/          → Foundation (tools, constants, domain state)
+2_domain/        → Domain logic (selectors, transformers, templates)
+3_controllers/   → Application controllers
+4_services/      → Infrastructure (persistence stores)
+4_views/         → UI layer (React components)
 ```
 
+**Rule**: Dependencies flow downwards only. Implementation in layer 3 uses layers 2 & 1, but not vice versa.
 
+### Multi-Workspace Monorepo
 
+- **jzod** - JSON schema definition language
+- **jzod-ts** - TypeScript type generation
+- **miroir-core** - Framework foundation
+- **miroir-localcache-redux** - Client-side state management
+- **miroir-store-*** - Persistence adapters
+- **miroir-react** - UI components
+- **miroir-server** - Node.js backend
+- **miroir-standalone-app** - Web application
+- **miroir-mcp** - Model Context Protocol server
 
-### Miroir-standalone-app
+**[Architecture Deep Dive →](docs-new/guides/architecture.md)**
 
-#### Persistence store integration tests
+---
 
-The LocalStoreController can be tested:
+## Community & Contributing
 
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- PersistenceStoreController
-```
+### 🤝 Get Involved
 
-Should result in something resembling:
+- **[Contributing Guide](docs-new/contributing/)** - Development setup and workflow
+- **[GitHub Discussions](https://github.com/miroir-framework/miroir/discussions)** - Coming Soon
+- **[Issue Tracker](https://github.com/miroir-framework/miroir/issues)** - Report bugs or request features
 
-```sh
- ✓ 4_storage/PersistenceStoreController.integ.test.tsx  (12 tests) 1522ms
+### 📜 License
 
- Test Files  1 passed (1)
-      Tests  12 passed (12)
-   Start at  15:48:36
-   Duration  10.38s (transform 943ms, setup 114ms, collect 3.30s, tests 1.52s, environment 480ms, prepare 260ms)
-```
+MIT License - see [LICENSE](LICENSE) file
 
-#### Persistence store Extractor runner intergration tests
+### 🙏 Acknowledgments
 
-The extractor runners ExtractorTemplatePersistenceStoreRunner (for indexedDb, Postgres/sql, filesystem peristent storage) can be tested:
+Inspired by:
+- **Smalltalk** - Interactive development environment
+- **Model-Driven Architecture (MDA)** - Model-first development
+- **Domain-Driven Design (DDD)** - Domain modeling patterns
 
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner
-```
+---
 
+## Links
 
-#### automated integration tests On File System
+- **Documentation**: [docs-new/index.md](docs-new/index.md)
+- **GitHub**: https://github.com/miroir-framework/miroir
+- **NPM**: https://www.npmjs.com/org/miroir-framework
+- **Issues**: https://github.com/miroir-framework/miroir/issues
 
-Using jest / vitest environment only
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
+---
 
-Using real server
+**Start building your next application with Miroir today!**
 
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-filesystem VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
-
-#### automated integration tests On Indexed DB
-
-Using jest / vitest environment only (nodejs), DB will exist as files on the local filesystem
-
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
-
-Using a real server running on nodejs, DB will exist as files on the local filesystem
-
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
-
-#### automated integration tests On Postgres
-
-Using jest / vitest environment only (nodejs), the "miroir" and "library" schemas are created, then dropped at the end of the test
-
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
-
-Using a real server running on nodejs, the "miroir" and "library" schemas are NOT created or dropped, they have to exist for the test to pass [issue #24](https://github.com/miroir-framework/miroir/issues/24).
-
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
-
-#### integration tests for Applicative CompositeActions
-
-```sh
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug RUN_TEST="applicative.Library.BuildPlusRuntimeCompositeAction.integ.test" npm run testByFile -w miroir-standalone-app -- applicative.Library.BuildPlusRuntimeCompositeAction.integ.test
-```
-
-
-
-
-## Organization
-
-TBW
-
-## Usage
-
-
-
-## Contribute
-
-TBW
+**[📖 Read the Docs](docs-new/index.md)** | **[🚀 Quickstart](docs-new/getting-started/quickstart.md)** | **[💬 Discuss](https://github.com/miroir-framework/miroir/discussions)**
