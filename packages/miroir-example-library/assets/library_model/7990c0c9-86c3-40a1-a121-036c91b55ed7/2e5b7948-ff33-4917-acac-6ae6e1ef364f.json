@@ -1,0 +1,8 @@
+{
+  "uuid": "2e5b7948-ff33-4917-acac-6ae6e1ef364f",
+  "parentName":"Configuration",
+  "parentUuid":"7990c0c9-86c3-40a1-a121-036c91b55ed7",
+  "name":"Reference",
+  "defaultLabel": "The reference configuration for the Library selfApplication storage",
+  "definition": {"currentApplicationVersion":"TBD"}
+}

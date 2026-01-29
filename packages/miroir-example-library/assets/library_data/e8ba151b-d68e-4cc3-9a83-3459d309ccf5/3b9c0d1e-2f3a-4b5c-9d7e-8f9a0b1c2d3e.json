@@ -1,0 +1,10 @@
+{
+  "uuid": "3b9c0d1e-2f3a-4b5c-9d7e-8f9a0b1c2d3e",
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "conceptLevel": "Data",
+  "name": "White Jazz",
+  "author": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
+  "publisher": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
+  "year": 1992
+}

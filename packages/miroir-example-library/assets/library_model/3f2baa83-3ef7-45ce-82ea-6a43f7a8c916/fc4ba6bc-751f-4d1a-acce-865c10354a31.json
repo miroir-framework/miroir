@@ -1,0 +1,108 @@
+{
+  "uuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"CountryDetails",
+  "defaultLabel": "Detailed information about a Country",
+  "definition": {
+    "extractorTemplates": {
+      "country": {
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
+        "parentName": "Country",
+        "parentUuid": {
+          "transformerType": "returnValue",
+          "value": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+        },
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "combinerTemplates": {
+      "publishersOfCountry": {
+        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "parentName": "Publisher",
+        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+        "objectReference": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "country"
+        },
+        "AttributeOfListObjectToCompareToReferenceUuid": "country"
+      },
+      "authorsOfCountry": {
+        "extractorOrCombinerType": "combinerByRelationReturningObjectList",
+        "parentName": "Author",
+        "parentUuid": {
+          "transformerType": "returnValue",
+          "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+        },
+        "objectReference": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "country"
+        },
+        "AttributeOfListObjectToCompareToReferenceUuid": "country"
+      },
+      "booksOfAuthors": {
+        "extractorOrCombinerType": "combinerByManyToManyRelationReturningObjectList",
+        "parentName": "Book",
+        "parentUuid": {
+          "transformerType": "returnValue",
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        },
+        "objectListReference": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "authorsOfCountry"
+        },
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "author"
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type":"objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+            "fetchedDataReference": "country"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Country's (${country.name}) Publishers",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "fetchedDataReference": "publishersOfCountry",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Country's (${country.name}) Authors",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "fetchedDataReference": "authorsOfCountry",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Books from Country's (${country.name}) Authors",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "fetchedDataReference": "booksOfAuthors",
+            "sortByAttribute": "name"
+          }
+        }
+      ]
+    }
+  }
+}

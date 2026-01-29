@@ -1,0 +1,38 @@
+{
+  "name": "miroir-example-library",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Example library application assets for the Miroir Framework",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "LICENSE.md",
+    "package.json",
+    "index.d.ts",
+    "dist/index.js",
+    "dist/index.js.map",
+    "dist/index.cjs",
+    "dist/index.cjs.map",
+    "dist/assets/**/*.json"
+  ],
+  "scripts": {
+    "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
+    "build": "npm run copy-files && tsup"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
+  }
+}

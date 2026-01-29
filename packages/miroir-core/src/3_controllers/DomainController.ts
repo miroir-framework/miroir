@@ -25,8 +25,7 @@ const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1
 const adminSelfApplication = require("../assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
 const adminConfigurationDeploymentAdmin = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
 
-const selfApplicationLibrary = require("../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
-const selfApplicationDeploymentLibrary = require("../assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json");
+import { selfApplicationLibrary, selfApplicationDeploymentLibrary } from "miroir-example-library";
 
 import {
   ApplicationSection,

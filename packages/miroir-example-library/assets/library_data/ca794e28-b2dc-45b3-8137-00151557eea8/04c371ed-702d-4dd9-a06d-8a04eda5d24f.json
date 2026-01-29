@@ -1,0 +1,14 @@
+{
+  "uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+  "parentName": "User",
+  "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+  "conceptLevel": "Model",
+  "name": "Jeanne Dielman",
+  "firstName": "Jeanne",
+  "lastName": "Dielman",
+  "street": "23 quai du Commerce",
+  "postalCode": "1080",
+  "city": "bruxelles",
+  "state": "",
+  "country": "962e4064-bf6c-42e6-9929-6fb318efc7ec"
+}

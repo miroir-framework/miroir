@@ -1,0 +1,41 @@
+{
+  "uuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "AuthorList",
+  "defaultLabel": "List of Authors",
+  "definition": {
+    "reportParameters": {},
+    "extractors": {
+      "authors": {
+        "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+        "parentName": "Author",
+        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "markdownReportSection",
+          "definition": {
+            "label": "Toto",
+            "content": "# List of Authors\n\nThis report displays a list of all authors in the system.s"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "label": "Authors",
+            "fetchedDataReference": "authors",
+            "sortByAttribute": "name"
+          }
+        }
+      ]
+    }
+  }
+}

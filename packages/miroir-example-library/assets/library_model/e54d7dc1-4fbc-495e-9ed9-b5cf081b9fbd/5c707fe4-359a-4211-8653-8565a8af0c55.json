@@ -1,0 +1,13 @@
+{
+  "uuid": "5c707fe4-359a-4211-8653-8565a8af0c55",
+  "application": "b5eebf00-8b11-453d-a667-7c337188162a",
+  "parentName": "Runner",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "name": "UpdateISBN",
+  "defaultLabel": "UpdateISBN",
+  "definition": {
+    "runnerType": "actionRunner",
+    "endpoint": "9884c1a4-5122-488a-85db-a99fbc02e678",
+    "action": "updateISBN"
+  }
+}

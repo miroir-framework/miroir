@@ -13,11 +13,11 @@
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"../miroir-core/src/assets/library_model"
+      "directory":"../miroir-example-library/assets/library_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory":"../miroir-core/src/assets/library_data"
+      "directory":"../miroir-example-library/assets/library_data"
     }
   }
 }

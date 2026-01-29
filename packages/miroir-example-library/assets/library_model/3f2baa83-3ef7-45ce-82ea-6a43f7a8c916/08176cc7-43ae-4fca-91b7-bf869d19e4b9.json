@@ -1,0 +1,61 @@
+{
+  "uuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "CountryList",
+  "defaultLabel": "List of Countries",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "countries": {
+        "extractorOrCombinerType": "extractorForObjectListByEntity",
+        "parentName": "Country",
+        "parentUuid": {
+          "transformerType": "returnValue",
+          "value": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+        }
+      }
+    },
+    "runStoredQueries": [
+      {
+        "label": "AuthorsByCountryCount",
+        "storedQuery": "6eaaec37-e3bc-40e4-af1b-4088412c0e34"
+      }
+    ],
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Countries",
+            "parentName": "Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+            "fetchedDataReference": "countries",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Author Count by Country",
+            "fetchedDataReference": "00_AuthorCountByCountry",
+            "graphType": "bar",
+            "dataMapping": {
+              "labelField": "countryName",
+              "valueField": "aggregate"
+            },
+            "config": {
+              "width": 600,
+              "height": 400,
+              "showTooltips": true,
+              "showLegend": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}
