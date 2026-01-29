@@ -4,6 +4,7 @@
     "target": "ESNext",
     "outDir": "dist/out-tsc",
     "declaration": true,
+    "declarationMap": true,
     "declarationDir": "dist/out-tsc/dts",
     "rootDir": "./",
     "baseUrl": "./",

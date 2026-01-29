@@ -11,6 +11,7 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
@@ -19,8 +20,11 @@
     "LICENSE.md",
     "package.json",
     "dist/index.js",
+    "dist/index.js.map",
     "dist/index.cjs",
+    "dist/index.cjs.map",
     "dist/index.d.ts",
+    "dist/index.d.cts",
     "dist/src/worker.js"
   ],
   "scripts": {
@@ -43,7 +47,7 @@
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.2.4",
-    "@miroir-framework/jzod": "*",
+    "@miroir-framework/jzod": "0.8.2",
     "chalk": "^5.4.1",
     "diff": "^7.0.0",
     "fast-deep-equal": "^3.1.3",
@@ -57,7 +61,7 @@
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "^7.23.3",
     "@babel/preset-typescript": "^7.25.7",
-    "@miroir-framework/jzod-ts": "*",
+    "@miroir-framework/jzod-ts": "0.8.2",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@types/diff": "^7.0.2",
     "@types/jest": "^29.5.14",

@@ -1,4 +1,11 @@
 {
+  "typescript.tsserver.maxTsServerMemory": 8192,
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true
+  },
   "accessibility.signals.lineHasError": {
     "sound": "off"
   },

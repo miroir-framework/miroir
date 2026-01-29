@@ -6,6 +6,7 @@
 		"noEmit": true,
     "outDir": "dist/out-tsc",
     "declaration": true,
+    "declarationMap": true,
     "rootDir": "./",
     "baseUrl": "./",
     "types": ["node", "jest"],

@@ -17,7 +17,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.25.7",
     "@jest/globals": "^29.3.1",
-    "@miroir-framework/jzod-ts": "*",
+    "@miroir-framework/jzod-ts": "0.8.2",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
