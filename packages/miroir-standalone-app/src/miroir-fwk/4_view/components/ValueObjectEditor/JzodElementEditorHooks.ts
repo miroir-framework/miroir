@@ -3,9 +3,6 @@ import { useMemo, useState } from "react";
 
 
 import {
-  ReduxDeploymentsState,
-  Domain2QueryReturnType,
-  DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
   JzodElement,
@@ -13,33 +10,34 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
-  adminConfigurationDeploymentMiroir,
+  TransformerFailure,
+  defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
+  noValue,
   resolvePathOnObject,
-  type Uuid,
-  type MiroirModelEnvironment,
-  miroirFundamentalJzodSchema,
-  type MlSchema,
-  defaultMiroirModelEnvironment,
-  transformer_extended_apply_wrapper,
-  type TransformerReturnType,
-  TransformerFailure,
-  type ApplicationDeploymentMap,
   selfApplicationMiroir,
-  defaultSelfApplicationDeploymentMap
+  transformer_extended_apply_wrapper,
+  type ApplicationDeploymentMap,
+  type MiroirModelEnvironment,
+  type TransformerReturnType,
+  type Uuid
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { MiroirReactContext, useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel, useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
-import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
+import {
+  useCurrentModel,
+  useCurrentModelEnvironment,
+  useReduxDeploymentsStateQuerySelectorForCleanedResult,
+} from "../../ReduxHooks";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

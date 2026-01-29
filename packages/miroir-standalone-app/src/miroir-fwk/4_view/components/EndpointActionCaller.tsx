@@ -23,6 +23,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  noValue,
   ReduxDeploymentsState,
   resolvePathOnObject,
   selfApplicationLibrary,
@@ -43,7 +44,6 @@ import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
 import { ThemedPaper } from './Themes/index.js';
-import { noValue } from './ValueObjectEditor/JzodElementEditorInterface.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

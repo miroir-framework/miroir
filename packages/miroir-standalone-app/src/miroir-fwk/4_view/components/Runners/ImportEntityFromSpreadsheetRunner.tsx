@@ -3,8 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import * as XLSX from 'xlsx';
 
 import type {
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
-  BoxedQueryWithExtractorCombinerTransformer,
   CompositeActionTemplate,
   DomainControllerInterface,
   Entity,
@@ -20,15 +18,15 @@ import {
   defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   entityDeployment,
-  MiroirLoggerFactory
+  MiroirLoggerFactory,
+  noValue
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { RunnerView } from "./RunnerView.js";
 import type { FormMLSchema } from "./RunnerInterface.js";
+import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -343,12 +341,10 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: adminSelfApplication.uuid,
-                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 applicationSection: "data",
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: adminSelfApplication.uuid,
-                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
@@ -403,11 +399,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                 interpolation: "runtime",
                 referencePath: ["importEntityFromSpreadsheet", "application"],
               } as any,
-              deploymentUuid: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-              } as any,
             },
           },
           {
@@ -420,11 +411,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                 interpolation: "runtime",
                 referencePath: ["importEntityFromSpreadsheet", "application"],
               } as any,
-              deploymentUuid: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
-              } as any,
+              parentUuid: newEntityUuid,
               applicationSection: "data",
               objects: [
                 {
@@ -595,7 +582,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       found row A:{JSON.stringify(fileData ? fileData[0] : "")}
       <RunnerView
         runnerName={runnerName}
-        deploymentUuid={deploymentUuid}
         applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
         // deploymentUuidQuery={deploymentUuidQuery}
         formMLSchema={formMLSchema}

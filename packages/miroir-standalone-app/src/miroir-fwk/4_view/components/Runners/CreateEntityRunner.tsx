@@ -4,32 +4,23 @@ import { v4 as uuidv4 } from "uuid";
 import type {
   ApplicationDeploymentMap,
   CompositeActionTemplate,
-  DomainControllerInterface,
   Entity,
   EntityDefinition,
   JzodObject,
-  LoggerInterface,
-  MiroirModelEnvironment,
-  Uuid,
+  LoggerInterface
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
   adminSelfApplication,
-  defaultSelfApplicationDeploymentMap,
-  entityApplicationForAdmin,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
   entityDeployment,
   MiroirLoggerFactory,
+  noValue
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useDomainControllerService } from "../../MiroirContextReactProvider.js";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { InnerRunnerView } from "./InnerRunnerView.js";
-import { RunnerView } from "./RunnerView.js";
 import type { FormMLSchema } from "./RunnerInterface.js";
+import { RunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -70,12 +61,10 @@ export function getCreateEntityActionTemplate(
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: adminSelfApplication.uuid,
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: adminSelfApplication.uuid,
-                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
@@ -140,11 +129,6 @@ export function getCreateEntityActionTemplate(
               transformerType: "mustacheStringTemplate",
               // interpolation: "runtime",
               definition: "{{createEntity.application}}",
-            } as any,
-            deploymentUuid: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "runtime",
-              definition: "{{deploymentInfo.deployments.0.uuid}}",
             } as any,
           },
         },

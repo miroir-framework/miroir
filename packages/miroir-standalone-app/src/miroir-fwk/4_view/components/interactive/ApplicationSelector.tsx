@@ -6,10 +6,10 @@ import {
   adminSelfApplication,
   defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
+  noValue,
 } from "miroir-core";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
-import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";

@@ -21,6 +21,7 @@ import {
   getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MiroirLoggerFactory,
+  noValue,
   ReduxDeploymentsState,
   resolveQueryTemplateWithExtractorCombinerTransformer,
   SyncBoxedExtractorOrQueryRunnerMap,
@@ -41,7 +42,6 @@ import {
 } from "miroir-localcache-redux";
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
 
 // Entity constants
 

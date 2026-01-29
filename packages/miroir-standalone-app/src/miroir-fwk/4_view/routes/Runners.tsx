@@ -3,32 +3,17 @@ import { ExpandMoreIcon } from '../components/Themes/MaterialSymbolWrappers';
 
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import {
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentParis,
   defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory,
-  resolvePathOnObject,
-  selfApplicationDeploymentLibrary,
-  selfApplicationLibrary,
-  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
   type LoggerInterface
 } from "miroir-core";
 import { packageName } from "../../../constants.js";
-import { CreateApplicationRunner } from '../components/Runners/CreateApplicationRunner.js';
-import { CreateEntityRunner } from '../components/Runners/CreateEntityRunner.js';
-import { DropApplicationRunner } from '../components/Runners/DropApplicationRunner.js';
-import { DeleteEntityRunner } from '../components/Runners/DeleteEntityRunner.js';
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
-import { cleanLevel } from "../constants.js";
-import { usePageConfiguration } from "../services/index.js";
-import { ImportEntityFromSpreadsheetRunner } from '../components/Runners/ImportEntityFromSpreadsheetRunner.js';
-import { useState } from 'react';
-import { noValue } from '../components/ValueObjectEditor/JzodElementEditorInterface.js';
-import { ApplicationSelector } from '../components/interactive/ApplicationSelector.js';
-import { EndpointActionCaller } from '../components/EndpointActionCaller.js';
 import { LibraryRunner_LendDocument } from '../components/Runners/LibraryRunner_LendDocument.js';
-import { useMiroirContext, useMiroirContextService } from '../MiroirContextReactProvider';
+import { cleanLevel } from "../constants.js";
+import { useMiroirContextService } from '../MiroirContextReactProvider';
+import { usePageConfiguration } from "../services/index.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -14,6 +14,7 @@ import {
   defaultTransformers,
   entityApplicationForAdmin,
   getEntityInstancesUuidIndexNonHook,
+  noValue,
   type ApplicationDeploymentMap,
   type Entity,
   type EntityDefinition,
@@ -25,7 +26,10 @@ import {
 
 
 import { useFormikContext } from 'formik';
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  type ReduxStateWithUndoRedo,
+} from "miroir-localcache-redux";
 import { useSelector } from 'react-redux';
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
@@ -40,7 +44,6 @@ import {
   ThemedHeaderSection,
   ThemedTitle
 } from "../Themes/index";
-import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface';
 import {
   formikPath_EntityInstanceSelectorPanel,
   formikPath_TransformerEditorInputModeSelector,

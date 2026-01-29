@@ -17,11 +17,10 @@ import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
 import { useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
+import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
 import { JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
-import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
-import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMirror";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

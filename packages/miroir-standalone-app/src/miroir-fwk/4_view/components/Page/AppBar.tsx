@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
+import { defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem, noValue } from 'miroir-core';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
@@ -21,7 +21,6 @@ import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../../MiroirContextReactProvider.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
-import { noValue } from '../ValueObjectEditor/JzodElementEditorInterface.js';
 import { ActionButtonWithSnackbar } from './ActionButtonWithSnackbar.js';
 import { SidebarWidth } from './SidebarSection.js';
 
