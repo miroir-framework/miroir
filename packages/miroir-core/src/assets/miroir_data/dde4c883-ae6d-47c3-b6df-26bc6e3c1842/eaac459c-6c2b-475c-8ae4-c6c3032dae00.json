@@ -31,21 +31,21 @@
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-            "icon": "newspaper"
+            "icon": "dashboard"
           },
           {
             "label": "Miroir Menus",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
-            "icon": "list"
+            "icon": "menu"
           },
           {
             "label": "Miroir Endpoints",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
-            "icon": "list"
+            "icon": "api"
           },
           {
             "label": "Miroir Runners",
@@ -66,7 +66,7 @@
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "d62a1730-8b05-42f5-9725-b0115b234627",
-            "icon": "list"
+            "icon": "transform"
           },
           {
             "label": "Miroir Transformer Tests",
@@ -83,21 +83,21 @@
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "683ba925-835e-4f9d-845b-7fae500316ad",
-            "icon": "list"
+            "icon": "fact_check"
           },
           {
             "label": "Miroir Blobs",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "be61481c-644a-4f09-8c4f-581044e98956",
-            "icon": "list"
+            "icon": "image"
           },
           {
             "label": "Miroir Documentation",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "9cdc1af9-13d6-4477-8482-8af43e3c161e",
-            "icon": "list"
+            "icon": "description"
           }
         ]
       }

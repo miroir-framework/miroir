@@ -31,35 +31,35 @@
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
             "reportUuid": "951d74b2-a3e9-4e07-8850-1d7d12909f11",
-            "icon": "list"
+            "icon": "web_asset"
           },
           {
             "label": "Admin Reports",
             "section": "model",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
             "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-            "icon": "list"
+            "icon": "dashboard"
           },
           {
             "label": "Deployments",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
             "reportUuid": "e4488cba-b743-4b46-80e5-18c441c9882c",
-            "icon": "space_dashboard"
+            "icon": "rocket_launch"
           },
           {
             "label": "Bundles",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
             "reportUuid": "2d690e4f-16f6-4332-be6c-45d5179b3981",
-            "icon": "folder"
+            "icon": "inventory_2"
           },
           {
             "label": "ViewParams",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
             "reportUuid": "a0503a52-befd-4dcd-90c8-3c96c90f805d",
-            "icon": "folder"
+            "icon": "settings"
           }
         ]
       }

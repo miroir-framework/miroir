@@ -70,6 +70,7 @@ const localCacheEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76
 const queryEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0faae143-0d7b-4a8a-a950-4fc3df943bde.json"); //assert { type: "json" };
 const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json"); //assert { type: "json" };
 
+import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
@@ -86,6 +87,7 @@ import {
   type EndpointDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { Endpoint } from "../3_controllers/Endpoint";
 
 /**
  * TODO: REMOVE THIS, IDEALLY!!! (WAIT, NO, THIS IS OK AS LONG AS IT ALLOWS TO MANAGE DISCREPANCIES BETWEEN 
@@ -290,3 +292,35 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
     };
   }
 }
+
+
+const modelIcons: Record<string, string> = {
+  Miroir: "hive",
+  assistant: "wand_stars", //"smart_toy", //"psychology",
+  viewSettings: "instant_mix",
+  documentation: "description", //"explore", // "menu_book", "description", "article",
+  // 
+  Application: "web_asset", // "account_tree", "apps", "bolt"
+  ApplicationVersion: "web_asset",
+  Deployment: "rocket_launch",// "space_dashboard", "folder", "inventory", "cloud_done",
+  Endpoint: "api",//"webhook", //"settings_ethernet", //"api",
+  EndpointDefinition: "webhook", //"settings_ethernet", //"api",
+  Entity: "category",
+  EntityDefinition: "category",
+  Menu: "menu", // "menu_book", "list",
+  QueryVersion: "query-version",
+  Report: "dashboard", //"newspaper", "article", "clarify", 
+  Runner: "saved_search",
+  Test: "fact_check", //"science", //"bug_report",
+  Transformer: "transform",//"function", //"functions", "sync_alt", "transform", "build_circle", "transform", "construction",
+  // 
+  // 
+  // 
+  // ApplicationModelBranch: "application-model-branch",
+  EndpointVersion: "endpoint-version",
+  JzodSchema: "jzod-schema",
+  SelfApplication: "self-application",
+  SelfApplicationVersion: "self-application-version",
+  SelfApplicationModelBranch: "self-application-model-branch",
+  // StoreBasedConfiguration: "store-based-configuration",
+};
