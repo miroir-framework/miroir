@@ -24,15 +24,18 @@
     "dist/index.js.map",
     "dist/index.cjs",
     "dist/index.cjs.map",
-    "dist/assets/**/*.json"
+    "dist/assets/**/*.json",
+    "dist/library-metamodel.json"
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
-    "build": "npm run copy-files && tsup"
+    "build": "npm run copy-files && tsup",
+    "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
     "tsup": "^8.3.5",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3"
   }
 }
