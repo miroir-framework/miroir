@@ -1,28 +1,31 @@
-import type { MlSchema, MetaModel, Entity, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  entityPublisher,
+  bookEndpoint,
   entityAuthor,
   entityBook,
   entityCountry,
-  entityUser,
-  entityLendingHistoryItem,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   entityDefinitionAuthor,
+  entityDefinitionBook,
   entityDefinitionCountry,
-  entityDefinitionUser,
   entityDefinitionLendingHistoryItem,
-  reportAuthorList,
-  reportBookList,
-  reportBookInstance,
-  reportPublisherList,
-  reportAuthorDetails,
-  reportBookDetails,
-  reportCountryList,
+  entityDefinitionPublisher,
+  entityDefinitionUser,
+  entityLendingHistoryItem,
+  entityPublisher,
+  entityUser,
   lendingEndpoint,
-  bookEndpoint,
-  menuDefaultLibrary,
+  reportAuthorDetails,
+  reportAuthorList,
+  reportBookDetails,
+  reportBookList,
+  reportCountryList,
+  reportPublisherList
 } from "miroir-example-library";
+import type {
+  Entity,
+  EntityDefinition,
+  MetaModel,
+  MlSchema,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // import adminConfigurationDeploymentLibrary = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
 const adminConfigurationDeploymentLibrary = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
@@ -31,8 +34,8 @@ const endpointDocument = require("../assets/library_model/3d8da4d4-8f76-4bb4-921
 
 
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { defaultMiroirMetaModel } from "./Model";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { defaultMiroirMetaModel } from "./Model";
 
 export type EntityDefinitionCouple = {
   entity: Entity,

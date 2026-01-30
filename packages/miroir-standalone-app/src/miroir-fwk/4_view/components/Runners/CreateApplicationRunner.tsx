@@ -255,8 +255,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: adminSelfApplication.uuid,
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
+              parentUuid: entityApplicationForAdmin.uuid,
               objects: [
                 {
                   parentName: entityApplicationForAdmin.name,
@@ -332,9 +332,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: adminSelfApplication.uuid,
-              // application: testSelfApplicationUuid,
-              deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
               applicationSection: "data",
+              parentUuid: entityDeployment.uuid,
               objects: [
                 {
                   parentName: "Deployment",
@@ -397,7 +396,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             payload: {
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
-              // params: initParametersForTest
               params: {
                 transformerType: "returnValue",
                 label: "initParametersForTest",
@@ -489,15 +487,12 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     <RunnerView
       runnerName={runnerName}
       applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
-      // applicationDeploymentMap={applicationDeploymentMap}
-      // deploymentUuid={deploymentUuid}
       formMLSchema={formMLSchema}
       initialFormValue={initialFormValue}
       action={{
         actionType: "compositeActionTemplate",
         compositeActionTemplate: createApplicationActionTemplate,
       }}
-      // labelElement={<h2>Application Creator</h2>}
       formikValuePathAsString="createApplicationAndDeployment"
       formLabel="Create Application & Deployment"
       displaySubmitButton="onFirstLine"

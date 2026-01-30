@@ -273,15 +273,15 @@ export function resetAndinitializeDeploymentCompositeAction(
   deploymentUuid: Uuid,
   initApplicationParameters: InitApplicationParameters,
   appEntitesAndInstances: ApplicationEntitiesDefinitionAndInstances[],
-  defaultLibraryAppModel: MetaModel,
+  appMetaModel: MetaModel,
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
 
   const entities: EntityDefinitionCouple[] = metaModelFilterEntities(
-    defaultLibraryAppModel,
+    appMetaModel,
     filterEntities,
   ).entities.map((entity) => {
-    const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
+    const entityDefinition = appMetaModel.entityDefinitions.find(
       (ed) => ed.entityUuid === entity.uuid,
     );
     if (!entityDefinition) {

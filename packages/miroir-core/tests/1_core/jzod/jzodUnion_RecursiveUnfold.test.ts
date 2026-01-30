@@ -3,26 +3,17 @@ import { describe, expect, it } from "vitest";
 
 import { miroirFundamentalJzodSchema } from '../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema';
 // import entityDefinitionEntityDefinition from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
-import entityDefinitionEntityDefinition from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
-import { entityDefinitionBook } from "miroir-example-library";
 
 import {
   JzodElement,
-  JzodReference,
-  MlSchema,
   JzodUnion,
-  MetaModel,
+  MlSchema,
   type JzodUnion_RecursivelyUnfold_ReturnTypeError,
   type JzodUnion_RecursivelyUnfold_ReturnTypeOK
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   jzodUnion_recursivelyUnfold,
 } from "../../../src/1_core/jzod/jzodUnion_RecursivelyUnfold";
-import currentMiroirModel from "../currentMiroirModel.json";
-import currentModel from "../currentModel.json";
-import { unfoldJzodSchemaOnce } from "../../../src/1_core/jzod/JzodUnfoldSchemaOnce";
-import { entity } from "../../../dist";
-import { defaultMiroirMetaModel } from "../../test_assets/defaultMiroirMetaModel";
 import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as MlSchema;

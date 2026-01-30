@@ -97,7 +97,6 @@ export function getCreateEntityActionTemplate(
           payload: {
             application: {
               transformerType: "mustacheStringTemplate",
-              // interpolation: "runtime",
               definition: "{{createEntity.application}}",
             } as any,
             deploymentUuid: {
@@ -127,7 +126,6 @@ export function getCreateEntityActionTemplate(
           payload: {
             application: {
               transformerType: "mustacheStringTemplate",
-              // interpolation: "runtime",
               definition: "{{createEntity.application}}",
             } as any,
           },
@@ -140,7 +138,6 @@ export function getCreateEntityActionTemplate(
 
 // ################################################################################################
 export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
-  // application,
   applicationDeploymentMap,
 }) => {
   const runnerName: string = "createEntity";
@@ -165,10 +162,6 @@ export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
                       targetApplicationUuid: "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b",
                       targetEntityOrderInstancesBy: "name",
-                      // targetApplicationUuid: adminSelfApplication.uuid,
-                      // // targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                      // targetEntity: entityApplicationForAdmin.uuid,
-                      // targetEntityOrderInstancesBy: "name",
                     },
                   },
                 },

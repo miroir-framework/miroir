@@ -14,6 +14,10 @@ import { LibraryRunner_LendDocument } from '../components/Runners/LibraryRunner_
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { usePageConfiguration } from "../services/index.js";
+import { CreateApplicationRunner } from '../components/Runners/CreateApplicationRunner';
+import { CreateEntityRunner } from '../components/Runners/CreateEntityRunner';
+import { DeleteEntityRunner } from '../components/Runners/DeleteEntityRunner';
+import { DropApplicationRunner } from '../components/Runners/DropApplicationRunner';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -45,22 +49,22 @@ const runnerConfigs = [
   // //   title: "Endpoint Action Caller",
   // //   component: EndpointActionCaller,
   // // },
-  // {
-  //   title: "Create Entity",
-  //   component: CreateEntityRunner,
-  // },
-  // {
-  //   title: "Drop Entity",
-  //   component: DeleteEntityRunner,
-  // },
-  // {
-  //   title: "Create Application & Deployment",
-  //   component: CreateApplicationRunner,
-  // },
-  // {
-  //   title: "Drop Application & Deployment",
-  //   component: DropApplicationRunner,
-  // },
+  {
+    title: "Create Entity",
+    component: CreateEntityRunner,
+  },
+  {
+    title: "Drop Entity",
+    component: DeleteEntityRunner,
+  },
+  {
+    title: "Create Application & Deployment",
+    component: CreateApplicationRunner,
+  },
+  {
+    title: "Drop Application & Deployment",
+    component: DropApplicationRunner,
+  },
   // // {
   // //   title: "Import Entity From Spreadsheet",
   // //   component: ImportEntityFromSpreadsheetRunner,

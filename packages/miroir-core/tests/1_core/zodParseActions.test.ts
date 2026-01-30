@@ -279,6 +279,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         applicationSection: "data",
+        parentUuid: entityMenu.uuid,
         objects: [
           {
             parentName: entityMenu.name,
