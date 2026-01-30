@@ -137,7 +137,6 @@ export async function resetAndInitApplicationDeployment(
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfAdminConfigurationDeployment.selfApplication,
-          // deploymentUuid: selfAdminConfigurationDeployment.uuid,
         },
       },
       applicationDeploymentMap,

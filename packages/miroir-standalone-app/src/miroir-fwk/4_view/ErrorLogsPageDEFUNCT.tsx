@@ -34,8 +34,8 @@ import {
   Badge,
 } from '@mui/material';
 import {
-  ExpandMore as ExpandMoreIcon,
-  Error as ErrorIcon,
+  ExpandMoreIcon,
+  ErrorIcon,
   Warning as WarningIcon,
   Info as InfoIcon,
   CheckCircle as CheckCircleIcon,
@@ -43,9 +43,9 @@ import {
   Clear as ClearIcon,
   Download as DownloadIcon,
   Visibility as VisibilityIcon,
-  Delete as DeleteIcon,
+  DeleteIcon,
   FilterList as FilterListIcon,
-} from '@mui/icons-material';
+} from './components/Themes/MaterialSymbolWrappers';
 
 import { useErrorLogService } from './MiroirContextReactProvider.js';
 import { ErrorLogEntry } from './services/ErrorLogService.js';

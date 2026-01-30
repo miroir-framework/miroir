@@ -278,6 +278,20 @@
                     }
                   }
                 }
+              },
+              "model": {
+                "type": "schemaReference",
+                "optional": true,
+                "tag":{
+                  "value": {
+                    "defaultLabel": "Model",
+                    "description": "The model of the application"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "metaModel"
+                }
               }
             }
           }

@@ -16569,6 +16569,20 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 }
+              },
+              "model": {
+                "type": "schemaReference",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Model",
+                    "description": "The model of the application"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "metaModel"
+                }
               }
             }
           }
@@ -17307,6 +17321,20 @@ export const miroirFundamentalJzodSchema = {
                           "editable": false
                         }
                       }
+                    }
+                  },
+                  "model": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Model",
+                        "description": "The model of the application"
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "metaModel"
                     }
                   }
                 }
@@ -45793,6 +45821,21 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "model": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Model",
+                        "description": "The model of the application",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel"
+                    }
                   }
                 }
               }
@@ -56728,6 +56771,21 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "model": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Model",
+                        "description": "The model of the application",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel"
+                    }
                   }
                 }
               }

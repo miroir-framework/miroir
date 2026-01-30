@@ -623,8 +623,8 @@ function handleModelAction(
       // for (const localInstanceAction of localInstanceActions) {
       //   handleInstanceAction(state, localInstanceAction);
       // }
-      const handleInstanceActionsResult = localInstanceActions.map((ia) =>
-        handleInstanceAction(state, ia, applicationDeploymentMap)
+      const handleInstanceActionsResult = localInstanceActions.map((instanceAction) =>
+        handleInstanceAction(state, instanceAction, applicationDeploymentMap),
       );
       const errors = handleInstanceActionsResult.filter((r) => r instanceof Action2Error);
       if (errors.length > 0) {
