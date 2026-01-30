@@ -306,19 +306,19 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
     if (Array.isArray(d)) {
       const valuesForThisDiscriminatorArray = d.map((subD) => valueObject[subD]);
       const nonNullValues = valuesForThisDiscriminatorArray.filter(v => v !== null && v !== undefined);
-      log.info(
-        "selectUnionBranchFromDiscriminator called for union-type value object with multi-part discriminator",
-        "valueObjectPath",
-        valueObjectPath.join("."),
-        "discriminator(s)=",
-        d,
-        "valuesForThisDiscriminatorArray",
-        valuesForThisDiscriminatorArray,
-        "nonNullValues",
-        nonNullValues,
-        "valueObject=",
-        valueObject,
-      );
+      // log.info(
+      //   "selectUnionBranchFromDiscriminator called for union-type value object with multi-part discriminator",
+      //   "valueObjectPath",
+      //   valueObjectPath.join("."),
+      //   "discriminator(s)=",
+      //   d,
+      //   "valuesForThisDiscriminatorArray",
+      //   valuesForThisDiscriminatorArray,
+      //   "nonNullValues",
+      //   nonNullValues,
+      //   "valueObject=",
+      //   valueObject,
+      // );
       if (nonNullValues.length > 1) {
         return {
           status: "error",
@@ -338,26 +338,26 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 
   // Extract successful results
   const flattenedUnionChoices:JzodObject[] = flatteningResults.map(r => (r as any).result) as JzodObject[];
-  log.info(
-    "selectUnionBranchFromDiscriminator called",
-    "valueObjectPath",
-    valueObjectPath.join("."),
-    "discriminator(s)=",
-    discriminators,
-    "discriminatorValues",
-    discriminatorValues,
-    "valueObject=",
-    valueObject,
-    "valueObject[discriminator]=",
-    discriminators??[].map(d => valueObject[d]),
-    "relativeReferenceJzodContext=",
-    // JSON.stringify(relativeReferenceJzodContext, null, 2),
-    relativeReferenceJzodContext,
-    "flattenedUnionChoices=",
-    // JSON.stringify(flattenedUnionChoices, null, 2),
-    flattenedUnionChoices
-    // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
-  );
+  // log.info(
+  //   "selectUnionBranchFromDiscriminator called",
+  //   "valueObjectPath",
+  //   valueObjectPath.join("."),
+  //   "discriminator(s)=",
+  //   discriminators,
+  //   "discriminatorValues",
+  //   discriminatorValues,
+  //   "valueObject=",
+  //   valueObject,
+  //   "valueObject[discriminator]=",
+  //   discriminators??[].map(d => valueObject[d]),
+  //   "relativeReferenceJzodContext=",
+  //   // JSON.stringify(relativeReferenceJzodContext, null, 2),
+  //   relativeReferenceJzodContext,
+  //   "flattenedUnionChoices=",
+  //   // JSON.stringify(flattenedUnionChoices, null, 2),
+  //   flattenedUnionChoices
+  //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
+  // );
   const flatDiscriminators: string [] = discriminators.flatMap(d => d);
   let i = 0;
   let chosenDiscriminator = [];

@@ -34,10 +34,13 @@ import {
   CompositeActionSequence,
   CompositeActionTemplate,
   DomainAction,
+  Entity,
+  EntityDefinition,
   EntityInstance,
   InstanceAction,
   MetaModel,
   ModelAction,
+  ModelActionResetModel,
   RestPersistenceAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedExtractorTemplateAction,
@@ -1098,7 +1101,10 @@ export class DomainController implements DomainControllerInterface {
       deploymentUuid,
       // modelAction.payload["deploymentUuid"],
       "action",
-      modelAction.actionType != "initModel" ? JSON.stringify(modelAction, null, 2) : modelAction,
+      ![
+        "initModel", 
+        // "resetModel"
+      ].includes(modelAction.actionType) ? JSON.stringify(modelAction, null, 2) : modelAction,
       // modelAction,
     );
     try {
@@ -1179,7 +1185,102 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
-        case "resetModel":
+        case "resetModel": {
+          const modelActionResetModel = modelAction as ModelActionResetModel;
+          
+          // First, call persistence action to clear the model
+          await this.callUtil.callPersistenceAction(
+            {}, // context
+            {}, // continuation
+            applicationDeploymentMap,
+            modelAction,
+          );
+          
+          // If a model is provided, create entities from it
+          if (modelActionResetModel.payload.model) {
+            const model = modelActionResetModel.payload.model;
+            log.info("handleModelAction resetModel creating entities from provided model", {
+              entitiesCount: model.entities?.length || 0,
+              entityDefinitionsCount: model.entityDefinitions?.length || 0
+            });
+            
+            // Combine entities with their definitions
+            const entitiesToCreate: { entity: Entity; entityDefinition: EntityDefinition }[] = [];
+            
+            // Create a map of entityDefinitions by entityUuid for quick lookup
+            const entityDefinitionMap = new Map<string, EntityDefinition>();
+            if (model.entityDefinitions) {
+              for (const entityDef of model.entityDefinitions) {
+                entityDefinitionMap.set(entityDef.entityUuid, entityDef);
+              }
+            }
+            
+            // Match entities with their definitions
+            if (model.entities) {
+              for (const entity of model.entities) {
+                const entityDefinition = entityDefinitionMap.get(entity.uuid);
+                if (entityDefinition) {
+                  entitiesToCreate.push({ entity, entityDefinition });
+                } else {
+                  log.warn(
+                    "handleModelAction resetModel: no entityDefinition found for entity",
+                    entity.uuid,
+                    entity.name
+                  );
+                }
+              }
+            }
+            
+            if (entitiesToCreate.length > 0) {
+              log.info(
+                "handleModelAction resetModel creating",
+                entitiesToCreate.length,
+                "entities",
+                entitiesToCreate,
+              );
+              
+              // Create entities via persistence action for each entity
+              for (const { entity, entityDefinition } of entitiesToCreate) {
+                const createEntityAction: ModelAction = {
+                  actionType: "createEntity",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: {
+                    application: modelActionResetModel.payload.application,
+                    entities: [{ entity, entityDefinition }]
+                  }
+                };
+                
+                // const createResult = await this.callUtil.callPersistenceAction(
+                  const createResult = await this.handleModelAction(
+                  createEntityAction,
+                  applicationDeploymentMap,
+                  currentModelEnvironment,
+                  // {}, // context
+                  // {}, // continuation
+                );
+                
+                if (createResult instanceof Action2Error) {
+                  log.error(
+                    "handleModelAction resetModel failed to create entity",
+                    entity.uuid,
+                    entity.name,
+                    createResult
+                  );
+                  return new Action2Error(
+                    "FailedToHandleAction",
+                    "handleModelAction resetModel failed to create entity from model",
+                    [],
+                    createResult,
+                  );
+                }
+              }
+              
+              log.info("handleModelAction resetModel successfully created all entities");
+            }
+          }
+          break;
+        }
         case "resetData":
         case "initModel": {
           await this.callUtil.callPersistenceAction(

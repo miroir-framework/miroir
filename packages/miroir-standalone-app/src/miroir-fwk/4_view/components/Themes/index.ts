@@ -17,6 +17,10 @@ export {
   ThemedOnScreenHelper,
 } from './BasicComponents';
 
+// File selector component
+export { FileSelector } from './FileSelector';
+export type { FileSelectorProps } from './FileSelector';
+
 // Form components
 export {
   ThemedLabeledEditor,

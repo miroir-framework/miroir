@@ -113,7 +113,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
 
-  log.info("actionsWithDeploymentInPayload", actionsWithDeploymentInPayload);
+  // log.info("actionsWithDeploymentInPayload", actionsWithDeploymentInPayload);
 
   // Use snackbar from context
   const {

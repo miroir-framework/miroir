@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
@@ -8,6 +8,7 @@ import type {
   Deployment,
   InitApplicationParameters,
   LoggerInterface,
+  MetaModel,
   TransformerForBuildPlusRuntime,
   Uuid
 } from "miroir-core";
@@ -19,6 +20,7 @@ import {
   entityApplicationForAdmin,
   entityDeployment,
   MiroirLoggerFactory,
+  noValue,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion
@@ -28,6 +30,7 @@ import {
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
+import { FileSelector } from '../Themes/FileSelector';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 
@@ -58,6 +61,68 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
   applicationDeploymentMap,
 }) => {
   const runnerName: string = "createApplicationAndDeployment";
+
+  // State for MetaModel file upload
+  const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // File selection handler
+  const handleFileSelect = useCallback((file: File) => {
+    if (!file.name.endsWith('.json')) {
+      setFileError('Please select a valid JSON file');
+      setSelectedMetaModel(null);
+      setSelectedFileName(null);
+      setSuccessMessage(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const parsedData = JSON.parse(content);
+        
+        // Basic validation that it looks like a MetaModel
+        if (!parsedData.entities || !parsedData.entityDefinitions) {
+          setFileError('Invalid MetaModel format: missing required properties (entities, entityDefinitions)');
+          setSelectedMetaModel(null);
+          setSelectedFileName(null);
+          setSuccessMessage(null);
+          return;
+        }
+
+        setSelectedMetaModel(parsedData as MetaModel);
+        setSelectedFileName(file.name);
+        setFileError(null);
+        setSuccessMessage(
+          `MetaModel loaded successfully with ${parsedData.entities?.length || 0} entities and ${parsedData.entityDefinitions?.length || 0} entity definitions.`
+        );
+        log.info('MetaModel loaded successfully from file:', file.name);
+      } catch (error) {
+        setFileError(`Error parsing JSON file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        setSelectedMetaModel(null);
+        setSelectedFileName(null);
+        setSuccessMessage(null);
+      }
+    };
+    reader.onerror = () => {
+      setFileError('Error reading file');
+      setSelectedMetaModel(null);
+      setSelectedFileName(null);
+      setSuccessMessage(null);
+    };
+    reader.readAsText(file);
+  }, []);
+
+  // Clear selected file
+  const handleFileClear = useCallback(() => {
+    setSelectedMetaModel(null);
+    setSelectedFileName(null);
+    setFileError(null);
+    setSuccessMessage(null);
+  }, []);
 
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
@@ -372,12 +437,13 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     };
 
     const appEntitesAndInstances: any[] = [];
-    const localResetAndinitializeDeploymentCompositeActionTemplate = {
+    const localResetAndinitializeDeploymentCompositeActionTemplate: CompositeActionSequence = {
       actionType: "compositeActionSequence",
       actionLabel: "resetAndInitializeDeployment",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
+        application: "NOT_USED_IN_compositeActionSequence",
         definition: [
           {
             actionType: "resetModel",
@@ -385,7 +451,15 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
-              deploymentUuid: testDeploymentUuid,
+              application: testSelfApplicationUuid,
+              ...(selectedMetaModel ? {
+                model: {
+                  transformerType: "returnValue",
+                  label: "customMetaModel",
+                  interpolation: "runtime",
+                  value: selectedMetaModel,
+                } as any // TODO: fix type
+              } : {}),
             },
           },
           {
@@ -395,13 +469,21 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
-              deploymentUuid: testDeploymentUuid,
               params: {
                 transformerType: "returnValue",
                 label: "initParametersForTest",
                 interpolation: "runtime",
                 value: initParametersForTest,
-              },
+              } as any, // TODO: fix type
+            },
+          },
+          {
+            actionType: "commit", // in the case where initModel has a model attribute
+            actionLabel: "refreshLocalCacheForApplication",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: testSelfApplicationUuid,
             },
           },
           {
@@ -411,7 +493,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
-              deploymentUuid: testDeploymentUuid,
             },
           },
           {
@@ -421,7 +502,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
-              deploymentUuid: testDeploymentUuid,
               entities: appEntitesAndInstances,
             },
           },
@@ -429,10 +509,9 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             actionType: "commit",
             actionLabel: "CommitApplicationStoreEntities",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
-              deploymentUuid: testDeploymentUuid,
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             },
           },
           {
@@ -442,8 +521,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: testSelfApplicationUuid,
-              deploymentUuid: testDeploymentUuid,
               applicationSection: "data",
+              parentUuid: appEntitesAndInstances.length > 0 ? appEntitesAndInstances[0].entity.uuid : noValue.uuid,
               objects: appEntitesAndInstances.map((e) => {
                 return {
                   parentName: e.entity.name,
@@ -481,22 +560,38 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     testDeploymentUuid,
     testSelfApplicationUuid,
     testApplicationVersionUuid,
+    selectedMetaModel,
   ]);
 
   return (
-    <RunnerView
-      runnerName={runnerName}
-      applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
-      formMLSchema={formMLSchema}
-      initialFormValue={initialFormValue}
-      action={{
-        actionType: "compositeActionTemplate",
-        compositeActionTemplate: createApplicationActionTemplate,
-      }}
-      formikValuePathAsString="createApplicationAndDeployment"
-      formLabel="Create Application & Deployment"
-      displaySubmitButton="onFirstLine"
-      useActionButton={false}
-    />
+    <>
+      {/* Model File Upload Section */}
+      <FileSelector
+        title="Optional: Load Custom Model"
+        description="Upload a JSON file containing an Application Model to install. If no file is selected, the Model will be empty."
+        buttonLabel="Select Model JSON"
+        accept=".json"
+        onFileSelect={handleFileSelect}
+        onFileClear={handleFileClear}
+        selectedFileName={selectedFileName}
+        error={fileError}
+        successMessage={successMessage}
+      />
+
+      <RunnerView
+        runnerName={runnerName}
+        applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
+        formMLSchema={formMLSchema}
+        initialFormValue={initialFormValue}
+        action={{
+          actionType: "compositeActionTemplate",
+          compositeActionTemplate: createApplicationActionTemplate,
+        }}
+        formikValuePathAsString="createApplicationAndDeployment"
+        formLabel="Create Application & Deployment"
+        displaySubmitButton="onFirstLine"
+        useActionButton={false}
+      />
+    </>
   );
 };
