@@ -28,6 +28,7 @@ packages/miroir-store-indexedDb/dist*/
 packages/miroir-store-indexedDb/node_modules*/
 packages/miroir-store-mongodb/dist*/
 packages/miroir-store-mongodb/node_modules*/
+packages/miroir-store-mongodb/tmp*/
 packages/miroir-store-postgres/node_modules*/
 packages/miroir-store-postgres/dist*/
 packages/miroir-localcache-redux/dist*/
