@@ -40,6 +40,7 @@ import {
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
@@ -55,7 +56,18 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances, Deployment } from "miroir-core";
 import { adminConfigurationDeploymentAdmin, adminMiroirApplication, createDeploymentCompositeAction, defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, resetAndinitializeDeploymentCompositeAction, selfApplicationMiroir } from "miroir-core";
-import { entityAuthor, entityDefinitionAuthor, entityDefinitionPublisher, entityPublisher, publisher1, publisher2, publisher3, selfApplicationLibrary, selfApplicationModelBranchLibraryMasterBranch, selfApplicationVersionLibraryInitialVersion } from "miroir-example-library";
+import {
+  entityAuthor,
+  entityDefinitionAuthor,
+  entityDefinitionPublisher,
+  entityPublisher,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
+} from "miroir-example-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 // import { entityBook } from "miroir-core";
@@ -80,6 +92,7 @@ miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
+miroirMongoDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 ConfigurationService.registerTestImplementation({ expect: expect as any });
 

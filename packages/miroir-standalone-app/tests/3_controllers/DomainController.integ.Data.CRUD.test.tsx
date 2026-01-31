@@ -54,9 +54,9 @@ import {
   entityDefinitionBook,
   entityDefinitionPublisher,
   entityPublisher,
-  publisher1,
-  publisher2,
-  publisher3,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
@@ -68,6 +68,7 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
+import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 
 const env: any = (import.meta as any).env;
 
@@ -90,6 +91,7 @@ miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
+miroirMongoDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 ConfigurationService.registerTestImplementation({ expect: expect as any });
 

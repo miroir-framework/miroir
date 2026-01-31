@@ -704,6 +704,15 @@ var MongoDb = class {
         await this.client.connect();
         this.db = this.client.db(this.databaseName);
         log7.info("openObjectStore created and connected to db", this.databaseName);
+        const existingCollections = await this.db.listCollections().toArray();
+        for (const collInfo of existingCollections) {
+          if (!this.collections.has(collInfo.name)) {
+            const collection = this.db.collection(collInfo.name);
+            this.collections.set(collInfo.name, collection);
+            log7.debug(this.logHeader, "loaded existing collection:", collInfo.name);
+          }
+        }
+        log7.info(this.logHeader, "openObjectStore loaded existing collections:", this.getCollections());
       }
       log7.info("openObjectStore done for", this.databaseName);
     } catch (error) {
