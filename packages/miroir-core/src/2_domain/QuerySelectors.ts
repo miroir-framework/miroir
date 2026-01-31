@@ -747,7 +747,7 @@ export async function handleBoxedQueryAction(
     log.info(
       "handleBoxedQueryAction for",
       origin,
-      "runBoxedExtractorOrQueryAction",
+      "runBoxedQueryAction",
       runBoxedQueryAction,
       "result",
       JSON.stringify(result, null, 2)

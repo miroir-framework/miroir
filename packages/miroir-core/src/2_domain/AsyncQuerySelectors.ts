@@ -151,7 +151,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
   extractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap,
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  // deploymentUuid: Uuid | undefined,
   extractors: Record<
     string,
     | BoxedExtractorOrCombinerReturningObjectList

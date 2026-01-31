@@ -18,15 +18,8 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
 import selfApplicationMiroir from '../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
-// import selfApplicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
-// import selfApplicationModelBranchMiroirMasterBranch from '../assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
-// import selfApplicationVersionInitialMiroirVersion from '../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
-// import selfApplicationStoreBasedConfigurationMiroir from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/21840247-b5b1-4344-baec-f818f4797d92.json';
 import adminConfigurationDeploymentLibrary from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
-// import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
-// import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-// import entitySelfApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import adminSelfApplication from "../assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json";
 import adminConfigurationDeploymentAdmin from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json";
 import entityApplicationForAdmin from "../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json";
@@ -36,14 +29,17 @@ import adminAdminApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-
 import adminMiroirApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import adminLibraryApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 
-import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+import {selfApplicationLibrary} from "miroir-example-library";
+
+const localSelfApplicationLibrary: SelfApplication = selfApplicationLibrary as any as SelfApplication; // TODO: fix type in library package
+
 import { noValue } from "./Instance";
 // import selfApplicationDeploymentLibrary from "../assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
 export const defaultApplications: SelfApplication[] = [
   selfApplicationMiroir as SelfApplication,
   adminSelfApplication as SelfApplication,
-  selfApplicationLibrary as SelfApplication,
+  localSelfApplicationLibrary,
 ];
 
 export const defaultApplicationUuids = defaultApplications.map(application => application.uuid);
@@ -62,7 +58,7 @@ export interface ApplicationDeploymentMap {
 export const defaultSelfApplicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
   [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
-  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [localSelfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
 export const defaultAdminApplicationDeploymentMapNOTGOOD: ApplicationDeploymentMap = {

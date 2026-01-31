@@ -1097,6 +1097,14 @@ export function getMiroirFundamentalJzodSchema(
             schema: { type: "string" },
           },
         },
+        mongoDbStoreSectionConfiguration: {
+          type: "object",
+          definition: {
+            emulatedServerType: { type: "literal", definition: "mongodb" },
+            connectionString: { type: "string" },
+            database: { type: "string" },
+          },
+        },
         storeSectionConfiguration: {
           type: "union",
           discriminator: "emulatedServerType",
@@ -1120,6 +1128,13 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "sqlDbStoreSectionConfiguration",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "mongoDbStoreSectionConfiguration",
               },
             },
           ],

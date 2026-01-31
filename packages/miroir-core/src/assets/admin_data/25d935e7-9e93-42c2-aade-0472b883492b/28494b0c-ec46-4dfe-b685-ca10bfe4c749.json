@@ -1,0 +1,9 @@
+{
+  "uuid": "28494b0c-ec46-4dfe-b685-ca10bfe4c749",
+  "parentName": "AdminApplication",
+  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+  "name": "test_application_20260131_103129",
+  "defaultLabel": "The test_application_20260131_103129 Admin Application.",
+  "description": "This Admin Application contains the test_application_20260131_103129 model and data.",
+  "selfApplication": "28494b0c-ec46-4dfe-b685-ca10bfe4c749"
+}

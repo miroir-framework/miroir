@@ -13027,6 +13027,21 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "mongoDbStoreSectionConfiguration": {
+        "type": "object",
+        "definition": {
+          "emulatedServerType": {
+            "type": "literal",
+            "definition": "mongodb"
+          },
+          "connectionString": {
+            "type": "string"
+          },
+          "database": {
+            "type": "string"
+          }
+        }
+      },
       "storeSectionConfiguration": {
         "type": "union",
         "discriminator": "emulatedServerType",
@@ -13050,6 +13065,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "sqlDbStoreSectionConfiguration"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mongoDbStoreSectionConfiguration"
             }
           }
         ]
@@ -51616,6 +51638,13 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "sqlDbStoreSectionConfiguration"
         }
       },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mongoDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "mongoDbStoreSectionConfiguration"
+        }
+      },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_action": {
         "type": "schemaReference",
         "definition": {
@@ -62564,6 +62593,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "sqlDbStoreSectionConfiguration"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mongoDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "mongoDbStoreSectionConfiguration"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_action": {

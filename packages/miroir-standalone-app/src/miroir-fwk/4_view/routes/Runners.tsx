@@ -50,20 +50,20 @@ const runnerConfigs = [
   // //   component: EndpointActionCaller,
   // // },
   {
-    title: "Create Entity",
-    component: CreateEntityRunner,
-  },
-  {
-    title: "Drop Entity",
-    component: DeleteEntityRunner,
-  },
-  {
     title: "Create Application & Deployment",
     component: CreateApplicationRunner,
   },
   {
     title: "Drop Application & Deployment",
     component: DropApplicationRunner,
+  },
+  {
+    title: "Create Entity",
+    component: CreateEntityRunner,
+  },
+  {
+    title: "Drop Entity",
+    component: DeleteEntityRunner,
   },
   // // {
   // //   title: "Import Entity From Spreadsheet",

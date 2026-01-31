@@ -1,12 +1,43 @@
 import { describe } from 'vitest';
 
-// import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
-  Action2ReturnType,
+  type Action2ReturnType,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
+  DomainControllerInterface,
+  EntityDefinition,
+  entityEndpointVersion,
+  entityEntity,
+  entityEntityDefinition,
+  EntityInstance,
+  entityMenu,
+  ignorePostgresExtraAttributesOnObject,
+  LoggerInterface,
+  MetaEntity,
+  MiroirActivityTracker,
+  MiroirConfigClient,
+  MiroirEventService,
+  MiroirLoggerFactory,
+  PersistenceStoreControllerInterface,
+  resetAndInitApplicationDeployment,
+  // selfApplicationLibrary,
+  StoreUnitConfiguration
+} from "miroir-core";
+
+import {
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
+  entityAuthor,
+  entityBook,
+  entityCountry,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
+  entityLendingHistoryItem,
+  entityPublisher,
+  entityUser,
   author1,
   author2,
   author3,
@@ -16,56 +47,31 @@ import {
   book4,
   book5,
   book6,
-  DomainControllerInterface,
-  entityAuthor,
-  entityBook,
-  EntityDefinition,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
-  entityEndpointVersion,
-  entityEntity,
-  entityEntityDefinition,
-  EntityInstance,
-  entityMenu,
-  entityPublisher,
-  ignorePostgresExtraAttributes,
-  ignorePostgresExtraAttributesOnObject,
-  LoggerInterface,
-  MetaEntity,
-  MiroirActivityTracker,
-  MiroirConfigClient,
-  MiroirEventService,
-  MiroirLoggerFactory,
-  PersistenceStoreControllerInterface,
-  publisher1,
-  publisher2,
-  publisher3,
-  resetAndInitApplicationDeployment,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
   selfApplicationLibrary,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
-  StoreUnitConfiguration
-} from "miroir-core";
-
+} from "miroir-example-library";
 
 import {
+  AdminApplicationDeploymentConfiguration,
   ConfigurationService,
   defaultMiroirMetaModel,
   ignorePostgresExtraAttributesOnList,
+  LocalCacheInterface,
+  LoggerOptions,
   MiroirContext,
+  miroirCoreStartup,
   PersistenceStoreControllerManagerInterface
 } from "miroir-core";
-import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
-import { LoggerOptions } from 'miroir-core/src/0_interfaces/4-services/LoggerInterface.js';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
+import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 // import { miroirCoreStartup } from 'miroir-core/src/startup.js';
-import { LocalCacheInterface, miroirCoreStartup } from 'miroir-core';
+import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances, Deployment, Entity } from 'miroir-core';
+import { createDeploymentCompositeAction, defaultLibraryModelEnvironment, defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, resetAndinitializeDeploymentCompositeAction, selfApplicationMiroir } from 'miroir-core';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { miroirAppStartup } from '../../src/startup.js';
-import { cleanLevel, packageName } from '../3_controllers/constants.js';
 import {
   createMiroirDeploymentGetPersistenceStoreController,
   deleteAndCloseApplicationDeployments,
@@ -74,19 +80,10 @@ import {
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
-import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
-import { storageAccess } from 'miroir-core';
-import { defaultMiroirModelEnvironment } from 'miroir-core';
-import { defaultLibraryModelEnvironment } from 'miroir-core';
-import type { ApplicationEntitiesAndInstances, Deployment } from 'miroir-core';
-import { adminLibraryApplication } from 'miroir-core';
-import { createDeploymentCompositeAction } from 'miroir-core';
-import { resetAndinitializeDeploymentCompositeAction } from 'miroir-core';
-import { selfApplicationMiroir } from 'miroir-core';
-import type { ApplicationDeploymentMap } from 'miroir-core';
-import { defaultSelfApplicationDeploymentMap } from 'miroir-core';
-import { A } from 'miroir-core/dist/chunk-AEQIV3HG.js';
+import { miroirAppStartup } from '../../src/startup.js';
+import { cleanLevel, packageName } from '../3_controllers/constants.js';
+import { loadTestConfigFiles } from '../utils/fileTools.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -122,6 +119,7 @@ miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
+miroirMongoDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 ConfigurationService.registerTestImplementation({expect: expect as any});
 
@@ -170,7 +168,7 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
-export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances  = [
+export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as MetaEntity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
@@ -191,7 +189,11 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances  = [
   {
     entity: entityPublisher as MetaEntity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
-    instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ],
   },
 ];
 
@@ -304,33 +306,33 @@ beforeEach(
   }
 )
 
-// ################################################################################################
-afterEach(
-  async () => {
-    await resetApplicationDeployments(
-      deploymentConfigurations,
-      applicationDeploymentMap,
-      domainController,
-      localCache,
-    );
-  }
-)
+// // ################################################################################################
+// afterEach(
+//   async () => {
+//     await resetApplicationDeployments(
+//       deploymentConfigurations,
+//       applicationDeploymentMap,
+//       domainController,
+//       localCache,
+//     );
+//   }
+// )
 
-// ################################################################################################
-afterAll(
-  async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-    await deleteAndCloseApplicationDeployments(
-      miroirConfig,
-      domainController,
-      applicationDeploymentMap,
-      [
-        adminConfigurationDeploymentMiroir as AdminApplicationDeploymentConfiguration,
-      ]
-    );
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-  }
-)
+// // ################################################################################################
+// afterAll(
+//   async () => {
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+//     await deleteAndCloseApplicationDeployments(
+//       miroirConfig,
+//       domainController,
+//       applicationDeploymentMap,
+//       [
+//         adminConfigurationDeploymentMiroir as AdminApplicationDeploymentConfiguration,
+//       ]
+//     );
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+//   }
+// )
 
 
 // ##############################################################################################
@@ -596,12 +598,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationLibrary.uuid,
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   runAsSql,
                   pageParams: {},
                   queryParams: {},
@@ -617,21 +617,31 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 },
               },
             },
-            applicationDeploymentMap
+            applicationDeploymentMap,
           );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult; // == "ok" ? queryResult : {status: "error", error: queryResult.error};
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
-          ["author", "storageAccess"]
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) =>
+            a.name.localeCompare(b.name),
+          ),
+          // ["author", "storageAccess"],
+          ["author", "storageAccess", "conceptLevel"],
         ),
       // (a) => (a as any).returnedDomainElement.entities,
       // undefined, // expected result transformation
       undefined, // name to give to result
       undefined,
-      [entityAuthor, entityBook, entityPublisher].sort((a, b) => a.name.localeCompare(b.name))
+      ignorePostgresExtraAttributesOnList([
+        entityAuthor as Entity,
+        entityBook as Entity,
+        entityCountry as Entity,
+        entityLendingHistoryItem as Entity,
+        entityPublisher as Entity,
+        entityUser as Entity,
+      ], ["author", "storageAccess", "conceptLevel"]).sort((a, b) => a.name.localeCompare(b.name)),
     );
   });
   
@@ -760,6 +770,13 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     menuItemScope: "model",
                   },
                   {
+                    label: "Library Runners",
+                    section: "model",
+                    selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    reportUuid: "3c26c31e-c988-40b2-af47-d7380e35ba80",
+                    icon: "directions_run",
+                  },
+                  {
                     label: "Library Books",
                     section: "data",
                     selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -826,7 +843,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
               application: selfApplicationLibrary.uuid,
-              // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
               applicationSection: applicationSection,
               query: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -835,7 +851,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 extractors: {
                   entities: {
                     extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -844,7 +859,6 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     filter: {
                       attributeName: "name",
-                      // value: "or",
                       value: "en",
                     },
                   },
@@ -852,21 +866,23 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               },
             },
           },
-          applicationDeploymentMap
+          applicationDeploymentMap,
         );
         console.log("queryResult", JSON.stringify(queryResult, null, 2));
         return queryResult;
       },
       (a) =>
         ignorePostgresExtraAttributesOnList(
-          (a as any).returnedDomainElement.entities.sort((a: any, b: any) => a.name.localeCompare(b.name)),
-          ["author", "storageAccess"]
+          (a as any).returnedDomainElement.entities.sort((a: any, b: any) =>
+            a.name.localeCompare(b.name),
+          ),
+          ["author", "storageAccess"],
         ),
       undefined, // name to give to result
       undefined,
       [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
-        a.name.localeCompare(b.name)
-      )
+        a.name.localeCompare(b.name),
+      ),
     );
   });
   

@@ -1,9 +1,0 @@
-{
-  "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
-  "parentName": "Book",
-  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "conceptLevel": "Data",
-  "name": "Le Pain et le Cirque",
-  "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
-  "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
-}

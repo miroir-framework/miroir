@@ -5,46 +5,23 @@ import { describe, expect } from "vitest";
 import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  author1,
-  author2,
-  author3,
-  book1,
-  book2,
-  book3,
-  book4,
-  book5,
-  book6,
   createDeploymentCompositeAction,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
-  entityAuthor,
-  entityBook,
   EntityDefinition,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   EntityInstance,
-  entityPublisher,
   LoggerInterface,
   MetaEntity,
   MiroirActivityTracker,
-  MiroirContextInterface,
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  PersistenceStoreControllerManagerInterface,
-  publisher1,
-  publisher2,
-  publisher3,
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
-  selfApplicationLibrary,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
-  type ApplicationEntitiesAndInstances,
+  type ApplicationEntitiesAndInstances
 } from "miroir-core";
 
 import {
@@ -58,10 +35,32 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 
-import { ConfigurationService, defaultMiroirMetaModel, LocalCacheInterface, TestCompositeActionParams } from "miroir-core";
-import { TestSuiteResult } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration.js";
+import type { ApplicationDeploymentMap, Deployment } from "miroir-core";
+import { adminConfigurationDeploymentAdmin, adminMiroirApplication, ConfigurationService, defaultLibraryModelEnvironment, defaultMiroirMetaModel, defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, selfApplicationMiroir, TestCompositeActionParams } from "miroir-core";
 import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
+import {
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book3,
+  book4,
+  book5,
+  book6,
+  entityAuthor,
+  entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
+  entityPublisher,
+  publisher1,
+  publisher2,
+  publisher3,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
+} from "miroir-example-library";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   testOnLibrary_deleteLibraryDeployment,
@@ -69,15 +68,6 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
-import { defaultMiroirModelEnvironment } from "miroir-core";
-import { adminMiroirApplication } from "miroir-core";
-import { defaultSelfApplicationDeploymentMap } from "miroir-core";
-import { selfApplicationMiroir } from "miroir-core";
-import type { ApplicationDeploymentMap } from "miroir-core";
-import type { Deployment } from "miroir-core";
-import { adminConfigurationDeploymentAdmin } from "miroir-core";
-import { emptyMetaModel } from "miroir-core";
-import { defaultLibraryModelEnvironment } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 

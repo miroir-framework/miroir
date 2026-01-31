@@ -43,14 +43,19 @@ import {
   adminConfigurationDeploymentMiroir,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
-  selfApplicationDeploymentLibrary,
+  noValue,
   selfApplicationDeploymentMiroir,
-  selfApplicationLibrary,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment,
   type MiroirActivityTrackerInterface
 } from "miroir-core";
+
+import {
+  selfApplicationDeploymentLibrary,
+  selfApplicationLibrary,
+} from "miroir-example-library";
+
 import {
   TestCompositeActionParams
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -270,7 +275,7 @@ export async function addEntitiesAndInstancesForRealServer(
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     payload: {
-      application: selfApplicationDeploymentLibrary.application,
+      application: selfApplicationDeploymentLibrary.selfApplication,
       // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       entities: entities
     }
@@ -293,7 +298,7 @@ export async function addEntitiesAndInstancesForRealServer(
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
-            application: selfApplicationDeploymentLibrary.application,
+            application: selfApplicationDeploymentLibrary.selfApplication,
             // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
           },
         },
@@ -321,7 +326,7 @@ export async function addEntitiesAndInstancesForRealServer(
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
-          application: selfApplicationDeploymentLibrary.application,
+          application: selfApplicationDeploymentLibrary.selfApplication,
           // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         },
       },
@@ -340,9 +345,9 @@ export async function addEntitiesAndInstancesForRealServer(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
-      application: selfApplicationDeploymentLibrary.application,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      application: selfApplicationDeploymentLibrary.selfApplication,
       applicationSection: "data",
+      parentUuid: entities.length > 0 ? entities[0].entity.uuid : noValue.uuid,
       objects: entities.map((e) => {
         return {
           parentName: e.entity.name,

@@ -11,9 +11,7 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -29,7 +27,7 @@
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
-    "build": "npm run copy-files && tsup",
+    "build": "tsup",
     "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts"
   },
   "devDependencies": {
