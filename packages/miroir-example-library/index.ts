@@ -31,8 +31,7 @@ export { default as bookEndpoint } from "./assets/library_model/3d8da4d4-8f76-4b
 export { default as menuDefaultLibrary } from "./assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json" assert { type: "json" };
 
 // Library Model - Application metadata
-const selfApplicationLibrary = require("./assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
-export { selfApplicationLibrary };
+export { default as selfApplicationLibrary } from "./assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json" assert { type: "json" };
 export { default as selfApplicationStoreBasedConfigurationLibrary } from "./assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json" assert { type: "json" };
 export { default as selfApplicationVersionLibraryInitialVersion } from "./assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json" assert { type: "json" };
 export { default as selfApplicationModelBranchLibraryMasterBranch } from "./assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json" assert { type: "json" };

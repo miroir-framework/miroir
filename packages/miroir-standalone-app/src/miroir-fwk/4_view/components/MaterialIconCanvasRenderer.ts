@@ -1,62 +1,29 @@
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
-import { CreateIcon, ContentCopyIcon, DeleteIcon } from './Themes/MaterialSymbolWrappers';
+/**
+ * Material Icon Canvas Renderer
+ * 
+ * Renders Material Design icons directly to canvas using pre-defined SVG paths.
+ * These paths are from the official Material Design Icons library (24x24 viewBox).
+ */
 
-// Material Design icon components
-const MATERIAL_ICON_COMPONENTS = {
-  Create: CreateIcon,
-  ContentCopy: ContentCopyIcon,
-  Delete: DeleteIcon
+// Pre-defined SVG paths for Material Design icons (from official Material Design Icons)
+// These are the exact paths from @mui/icons-material
+const MATERIAL_ICON_PATHS: Record<string, string> = {
+  // Create/Edit icon (pencil)
+  Create: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+  // ContentCopy icon (two rectangles)
+  ContentCopy: 'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z',
+  // Delete icon (trash can)
+  Delete: 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
 } as const;
 
-// Cache for extracted SVG paths
-const MATERIAL_ICON_PATHS_CACHE = new Map<string, string>();
+export type MaterialIconName = keyof typeof MATERIAL_ICON_PATHS;
 
 /**
- * Extracts SVG path data from a Material-UI icon component at runtime
+ * Gets the SVG path for a Material icon
  */
-function extractIconPath(IconComponent: React.ComponentType): string | null {
-  try {
-    // Render the icon to HTML
-    const element = React.createElement(IconComponent);
-    const html = ReactDOMServer.renderToStaticMarkup(element);
-    
-    // Extract the path data using regex
-    const pathMatch = html.match(/<path[^>]+d="([^"]+)"/);
-    return pathMatch ? pathMatch[1] : null;
-  } catch (error) {
-    console.warn('Failed to extract icon path:', error);
-    return null;
-  }
+export function getMaterialIconPath(iconName: MaterialIconName): string | null {
+  return MATERIAL_ICON_PATHS[iconName] || null;
 }
-
-/**
- * Gets the SVG path for a Material icon, extracting it at runtime if needed
- */
-export function getMaterialIconPath(iconName: keyof typeof MATERIAL_ICON_COMPONENTS): string | null {
-  // Check cache first
-  if (MATERIAL_ICON_PATHS_CACHE.has(iconName)) {
-    return MATERIAL_ICON_PATHS_CACHE.get(iconName)!;
-  }
-  
-  // Extract path from component
-  const IconComponent = MATERIAL_ICON_COMPONENTS[iconName];
-  if (!IconComponent) {
-    console.warn(`Material icon component "${iconName}" not found`);
-    return null;
-  }
-  
-  const path = extractIconPath(IconComponent);
-  
-  // Cache the result
-  if (path) {
-    MATERIAL_ICON_PATHS_CACHE.set(iconName, path);
-  }
-  
-  return path;
-}
-
-export type MaterialIconName = keyof typeof MATERIAL_ICON_COMPONENTS;
 
 export interface MaterialIconCanvasOptions {
   size?: number;
@@ -131,13 +98,13 @@ function renderFallbackIcon(
   ctx.textBaseline = 'middle';
   
   // Simple fallback characters
-  const fallbackChars: Record<MaterialIconName, string> = {
+  const fallbackChars: Record<string, string> = {
     Create: '✎',
     ContentCopy: '⧉', 
     Delete: '🗑'
   };
   
-  ctx.fillText(fallbackChars[iconName], x, y);
+  ctx.fillText(fallbackChars[iconName] || '?', x, y);
   ctx.restore();
 }
 

@@ -512,13 +512,34 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     return columns;
   }, [
     columnDefs,
-    tableComponentRows,
-    type,
-    currentEntityDefinition,
     toolsColumnDefinition,
     sortState,
     filterState,
+    containerWidth,
   ]);
+
+  // Memoized handlers for tools cell actions - these are stable references
+  // that can be safely used in getCellContent without causing re-renders
+  const handleToolsEdit = useCallback((row: TableComponentRow, event?: any) => {
+    log.info("GlideDataGrid: Edit button clicked", { row, event });
+    if (onRowEdit) {
+      onRowEdit(row, event);
+    }
+  }, [onRowEdit]);
+
+  const handleToolsDuplicate = useCallback((row: TableComponentRow, event?: any) => {
+    log.info("GlideDataGrid: Duplicate button clicked", { row, event });
+    if (onRowDuplicate) {
+      onRowDuplicate(row, event);
+    }
+  }, [onRowDuplicate]);
+
+  const handleToolsDelete = useCallback((row: TableComponentRow, event?: any) => {
+    log.info("GlideDataGrid: Delete button clicked", { row, event });
+    if (onRowDelete) {
+      onRowDelete(row, event);
+    }
+  }, [onRowDelete]);
 
   // Get cell content
   const getCellContent = useCallback(
@@ -537,27 +558,13 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 
       // Special handling for tools column
       if (colData.id === (toolsColumnDefinition.field || "tools")) {
+        // Use the memoized handlers instead of creating new functions each time
         const toolsCellData = {
           kind: "tools-cell",
           row: rowData,
-          onEdit: (row: TableComponentRow, event?: any) => {
-            log.info("GlideDataGrid: Edit button clicked", { row, event });
-            if (onRowEdit) {
-              onRowEdit(row, event);
-            }
-          },
-          onDuplicate: (row: TableComponentRow, event?: any) => {
-            log.info("GlideDataGrid: Duplicate button clicked", { row, event });
-            if (onRowDuplicate) {
-              onRowDuplicate(row, event);
-            }
-          },
-          onDelete: (row: TableComponentRow, event?: any) => {
-            log.info("GlideDataGrid: Delete button clicked", { row, event });
-            if (onRowDelete) {
-              onRowDelete(row, event);
-            }
-          },
+          onEdit: handleToolsEdit,
+          onDuplicate: handleToolsDuplicate,
+          onDelete: handleToolsDelete,
         } as ToolsCellData;
 
         return {
@@ -640,7 +647,15 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         };
       }
     },
-    [sortedAndFilteredTableRows, glideColumns, columnDefs, onRowEdit, onRowDuplicate, onRowDelete, toolsColumnDefinition]
+    [
+      sortedAndFilteredTableRows,
+      glideColumns,
+      columnDefs,
+      handleToolsEdit,
+      handleToolsDuplicate,
+      handleToolsDelete,
+      toolsColumnDefinition,
+    ],
   );
 
   // Handle cell clicks
@@ -679,6 +694,43 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     },
     [onCellEdited]
   );
+
+  // Memoize the fallback theme for DataEditor to prevent unnecessary re-renders
+  const dataEditorTheme = useMemo(() => {
+    if (glideTheme) return glideTheme;
+    
+    return {
+      accentColor: theme?.colors?.primary || "#1976d2",
+      accentFg: "#ffffff",
+      accentLight: "rgba(25, 118, 210, 0.1)",
+      textDark: theme?.colors?.text || "#1a1a1a",
+      textMedium: theme?.colors?.textSecondary || "#333333",
+      textLight: theme?.colors?.textSecondary || "#666666",
+      textBubble: theme?.colors?.text || "#1a1a1a",
+      bgIconHeader: "#444444",
+      fgIconHeader: "#ffffff",
+      textHeader: theme?.colors?.text || "#1a1a1a",
+      textHeaderSelected: "#000000",
+      bgCell: theme?.colors?.background || "#ffffff",
+      bgCellMedium: theme?.colors?.surface || "#f8f8f8",
+      bgHeader: theme?.components?.header?.background || "#f0f0f0",
+      bgHeaderHasFocus: theme?.colors?.hover || "#e0e0e0",
+      bgHeaderHovered: theme?.colors?.hover || "#e8e8e8",
+      bgBubble: theme?.colors?.background || "#ffffff",
+      bgBubbleSelected: theme?.colors?.background || "#ffffff",
+      bgSearchResult: "#fff9c4",
+      borderColor: theme?.colors?.border || "rgba(0, 0, 0, 0.2)",
+      drilldownBorder: "rgba(0, 0, 0, 0)",
+      linkColor: theme?.colors?.primary || "#1976d2",
+      headerFontStyle: `${theme?.components?.header?.fontWeight || 600} ${
+        theme?.components?.header?.fontSize || "13px"
+      }`,
+      baseFontStyle: theme?.typography?.fontSize || "13px",
+      fontFamily:
+        theme?.typography?.fontFamily ||
+        "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
+    };
+  }, [glideTheme, theme]);
 
   return (
     <div
@@ -756,15 +808,6 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         // overflow: "hidden",
         // boxSizing: "border-box",
       >
-        <span>
-          {/* width: {width}, internalContainerHeight: {internalContainerHeight},  */}
-          GlideDataGridComponent containerWidth: {containerWidth},
-          {/* propContainerHeight: {propContainerHeight} */}
-        </span>
-        <span>
-          GlideDataGridComponent height: {height}, internalContainerHeight: {internalContainerHeight}, containerHeight: {containerHeight},
-          propContainerHeight: {propContainerHeight}
-        </span>
         <DataEditor
           columns={glideColumns}
           width="100%"
@@ -787,39 +830,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             selectRow: false,
             selectColumn: false,
           }}
-          theme={
-            glideTheme || {
-              accentColor: theme?.colors?.primary || "#1976d2",
-              accentFg: "#ffffff",
-              accentLight: "rgba(25, 118, 210, 0.1)",
-              textDark: theme?.colors?.text || "#1a1a1a",
-              textMedium: theme?.colors?.textSecondary || "#333333",
-              textLight: theme?.colors?.textSecondary || "#666666",
-              textBubble: theme?.colors?.text || "#1a1a1a",
-              bgIconHeader: "#444444",
-              fgIconHeader: "#ffffff",
-              textHeader: theme?.colors?.text || "#1a1a1a",
-              textHeaderSelected: "#000000",
-              bgCell: theme?.colors?.background || "#ffffff",
-              bgCellMedium: theme?.colors?.surface || "#f8f8f8",
-              bgHeader: theme?.components?.header?.background || "#f0f0f0",
-              bgHeaderHasFocus: theme?.colors?.hover || "#e0e0e0",
-              bgHeaderHovered: theme?.colors?.hover || "#e8e8e8",
-              bgBubble: theme?.colors?.background || "#ffffff",
-              bgBubbleSelected: theme?.colors?.background || "#ffffff",
-              bgSearchResult: "#fff9c4",
-              borderColor: theme?.colors?.border || "rgba(0, 0, 0, 0.2)",
-              drilldownBorder: "rgba(0, 0, 0, 0)",
-              linkColor: theme?.colors?.primary || "#1976d2",
-              headerFontStyle: `${theme?.components?.header?.fontWeight || 600} ${
-                theme?.components?.header?.fontSize || "13px"
-              }`,
-              baseFontStyle: theme?.typography?.fontSize || "13px",
-              fontFamily:
-                theme?.typography?.fontFamily ||
-                "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
-            }
-          }
+          theme={dataEditorTheme}
         />
       </div>
     </div>
