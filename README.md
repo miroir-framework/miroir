@@ -61,6 +61,14 @@ Miroir is a comprehensive development framework that transforms how you create d
 - (Optional) Git for version control
 
 ### Installation
+### Installing Node.js
+
+If Node.js is not already installed, download the LTS version (18 or higher) from:
+https://nodejs.org
+
+After installation, verify it by running:
+node -v
+npm -v
 
 ```bash
 # Clone the repository
