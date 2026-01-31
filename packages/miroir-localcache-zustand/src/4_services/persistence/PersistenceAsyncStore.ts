@@ -170,11 +170,90 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
     }
 
     try {
-      const result = await this.params.remotePersistenceStoreRestClient.handlePersistenceAction(
+      const clientResult = await this.params.remotePersistenceStoreRestClient.handleNetworkPersistenceAction(
         action,
         applicationDeploymentMap
       );
-      return result;
+
+      if (clientResult instanceof Action2Error) {
+        return clientResult;
+      }
+
+      log.info("handlePersistenceActionForRemoteStore received clientResult", clientResult);
+
+      // Check for HTTP error statuses
+      if (clientResult && [400, 401, 403, 404, 409, 422, 500, 502, 503].includes(clientResult.status as number)) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          "remote persistence store returned error status " + clientResult.status,
+        );
+      }
+
+      // Check for error in data
+      if (clientResult.data.status === "error" || clientResult.data instanceof Action2Error) {
+        return clientResult.data;
+      }
+
+      // Process result based on action type
+      switch (action.actionType) {
+        case "RestPersistenceAction_create":
+        case "RestPersistenceAction_read":
+        case "RestPersistenceAction_update":
+        case "RestPersistenceAction_delete": {
+          const result: Action2ReturnType = {
+            status: "ok",
+            returnedDomainElement: {
+              parentUuid: action.payload.parentUuid ?? "",
+              applicationSection: action.payload.section,
+              instances: clientResult.data.instances,
+            },
+          };
+          log.debug("handlePersistenceActionForRemoteStore received result", result.status);
+          return result;
+        }
+        case "runBoxedExtractorOrQueryAction":
+        case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction":
+        case "runBoxedExtractorAction":
+        case "runBoxedQueryAction":
+        case "runBoxedQueryTemplateAction":
+        case "runBoxedExtractorTemplateAction": {
+          log.info("handlePersistenceActionForRemoteStore received query result", clientResult);
+          return clientResult.data;
+        }
+        case "getInstance":
+        case "getInstances":
+        case "createInstance":
+        case "deleteInstance":
+        case "deleteInstanceWithCascade":
+        case "updateInstance": {
+          return clientResult.data as Action2ReturnType;
+        }
+        case "bundleAction":
+        case "loadNewInstancesInLocalCache":
+        case "initModel":
+        case "commit":
+        case "rollback":
+        case "remoteLocalCacheRollback":
+        case "resetModel":
+        case "resetData":
+        case "alterEntityAttribute":
+        case "renameEntity":
+        case "createEntity":
+        case "dropEntity":
+        case "storeManagementAction_createStore":
+        case "storeManagementAction_deleteStore":
+        case "storeManagementAction_resetAndInitApplicationDeployment":
+        case "storeManagementAction_openStore":
+        case "storeManagementAction_closeStore":
+        case "LocalPersistenceAction_create":
+        case "LocalPersistenceAction_read":
+        case "LocalPersistenceAction_update":
+        case "LocalPersistenceAction_delete":
+        default: {
+          log.debug("handlePersistenceActionForRemoteStore received result", clientResult.status);
+          return ACTION_OK;
+        }
+      }
     } catch (error: any) {
       log.error("handlePersistenceActionForRemoteStore error:", error);
       return new Action2Error("FailedToHandlePersistenceAction", error.message, error.stack);

@@ -97,7 +97,7 @@ export function fetchMiroirAndAppConfigurations(
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: adminSelfApplication.uuid,
-          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         },
       },
       defaultSelfApplicationDeploymentMap,
@@ -118,8 +118,8 @@ export function fetchMiroirAndAppConfigurations(
       const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         application: adminSelfApplication.uuid,
-        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+        // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
         pageParams: {},
         queryParams: {},
         contextResults: {},
@@ -133,7 +133,7 @@ export function fetchMiroirAndAppConfigurations(
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: entityDeployment.uuid,
-            },
+            } as any,
           },
         },
       };
@@ -146,7 +146,7 @@ export function fetchMiroirAndAppConfigurations(
           payload: {
             application: adminSelfApplication.uuid,
             // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
             applicationSection: "data",
             query: adminDeploymentsQuery,
           },
@@ -276,7 +276,7 @@ export function fetchMiroirAndAppConfigurations(
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
               payload: {
                 application: deployment.adminApplication,
-                deploymentUuid: deployment.uuid,
+                // deploymentUuid: deployment.uuid,
               },
             },
             applicationDeploymentMapForLoading,

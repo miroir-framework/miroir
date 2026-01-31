@@ -78,10 +78,92 @@ export function createLocalCacheStore(): StoreApi<LocalCacheStore> {
     // Handle local cache action with undo/redo tracking
     handleAction: (action: LocalCacheAction, applicationDeploymentMap: ApplicationDeploymentMap) => {
       const currentState = get();
+      const actionType = (action as any).actionType;
+      
+      log.info("UndoRedoStore handleAction called with actionType:", actionType);
+      
+      // Handle special actions that control transaction state
+      switch (actionType) {
+        case "rollback": {
+          // Rollback: apply action to state, then clear transaction history
+          let changes: Patch[] = [];
+          let inverseChanges: Patch[] = [];
+          
+          const newPresentModelSnapshot = produce(
+            currentState.presentModelSnapshot,
+            (draftState: LocalCacheSliceState) => {
+              handleLocalCacheAction(draftState, action, applicationDeploymentMap);
+            },
+            (patches: Patch[], inversePatches: Patch[]) => {
+              changes = patches;
+              inverseChanges = inversePatches;
+            }
+          );
+          
+          set({
+            ...currentState,
+            presentModelSnapshot: newPresentModelSnapshot,
+            pastModelPatches: [], // Clear transaction on rollback
+            futureModelPatches: [],
+            queriesResultsCache: {},
+          });
+          return;
+        }
+        
+        case "commit": {
+          // Commit: clear transaction history, set previousModelSnapshot
+          set({
+            ...currentState,
+            previousModelSnapshot: currentState.presentModelSnapshot,
+            pastModelPatches: [], // Clear transaction on commit
+            futureModelPatches: [],
+            queriesResultsCache: {},
+          });
+          return;
+        }
+        
+        case "initModel":
+        case "resetModel":
+        case "resetData": {
+          // Non-transactional actions: just apply, don't track
+          const newPresentModelSnapshot = produce(
+            currentState.presentModelSnapshot,
+            (draftState: LocalCacheSliceState) => {
+              handleLocalCacheAction(draftState, action, applicationDeploymentMap);
+            }
+          );
+          
+          set({
+            ...currentState,
+            presentModelSnapshot: newPresentModelSnapshot,
+            queriesResultsCache: {},
+          });
+          return;
+        }
+        
+        case "loadNewInstancesInLocalCache": {
+          // Loading instances: apply but keep existing transaction
+          const newPresentModelSnapshot = produce(
+            currentState.presentModelSnapshot,
+            (draftState: LocalCacheSliceState) => {
+              handleLocalCacheAction(draftState, action, applicationDeploymentMap);
+            }
+          );
+          
+          set({
+            ...currentState,
+            presentModelSnapshot: newPresentModelSnapshot,
+            // Keep pastModelPatches and futureModelPatches unchanged
+            queriesResultsCache: {},
+          });
+          return;
+        }
+      }
+      
+      // For potentially transactional actions, track patches
       let changes: Patch[] = [];
       let inverseChanges: Patch[] = [];
 
-      // Use Immer's produce with patch tracking
       const newPresentModelSnapshot = produce(
         currentState.presentModelSnapshot,
         (draftState: LocalCacheSliceState) => {
@@ -93,10 +175,10 @@ export function createLocalCacheStore(): StoreApi<LocalCacheStore> {
         }
       );
 
-      // Check if this is an undoable action
-      const undoable = isActionUndoable(action);
+      // Check if this is a transactional action that should be added to undo history
+      const isTransactional = isActionTransactional(action);
 
-      if (undoable && changes.length > 0) {
+      if (isTransactional && changes.length > 0) {
         // Create state change entry for undo history
         const stateChange: StateChanges = {
           action: action as TransactionalInstanceAction | ModelActionReplayableAction,
@@ -191,31 +273,35 @@ export function createLocalCacheStore(): StoreApi<LocalCacheStore> {
 }
 
 //#########################################################################################
-//# Helper to determine if action is undoable
+//# Helper to determine if action is transactional (should be added to undo history)
 //#########################################################################################
-function isActionUndoable(action: LocalCacheAction): boolean {
+function isActionTransactional(action: LocalCacheAction): boolean {
   if (!action || typeof action !== 'object') {
     return false;
   }
   
   const actionType = (action as any).actionType;
+  const payload = (action as any).payload;
   
-  // These action types support undo/redo
-  const undoableActionTypes = [
-    "transactionalInstanceAction",
-    "initModel",
-    "commit",
-    "rollback",
-    "remoteLocalCacheRollback",
-    "resetModel",
-    "resetData",
+  // TransactionalInstanceAction is always transactional
+  if (actionType === "transactionalInstanceAction") {
+    return true;
+  }
+  
+  // Model actions with transactional flag
+  const transactionalModelActionTypes = [
     "alterEntityAttribute",
     "renameEntity",
     "createEntity",
     "dropEntity",
   ];
+  
+  if (transactionalModelActionTypes.includes(actionType)) {
+    // Check if explicitly marked as transactional (defaults to true if not specified)
+    return payload?.transactional !== false;
+  }
 
-  return undoableActionTypes.includes(actionType);
+  return false;
 }
 
 //#########################################################################################

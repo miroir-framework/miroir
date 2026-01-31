@@ -440,6 +440,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               application: props.pageParams.application ?? "NO_APPLICATION",
               // deploymentUuid: props.deploymentUuid, // ONLY FOR createInstance
               applicationSection: applicationSection,
+              parentUuid: currentInstance.parentUuid,
               objects: [
                 {
                   parentName: currentInstance.name,

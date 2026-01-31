@@ -205,6 +205,16 @@ export function handleLocalCacheAction(
       handleInstanceAction(state, action as InstanceAction, applicationDeploymentMap);
       break;
     }
+    case "transactionalInstanceAction": {
+      // Unwrap the inner instanceAction and process it
+      const innerAction = (action as any).payload?.instanceAction;
+      if (innerAction) {
+        handleInstanceAction(state, innerAction as InstanceAction, applicationDeploymentMap);
+      } else {
+        log.warn("transactionalInstanceAction missing payload.instanceAction", action);
+      }
+      break;
+    }
     case "loadNewInstancesInLocalCache": {
       handleLoadNewInstancesAction(state, action, applicationDeploymentMap);
       break;
@@ -365,7 +375,15 @@ function handleModelAction(
       break;
     }
     case "rollback": {
-      // Rollback is handled at the UndoRedoStore level
+      // Copy from loading to current (same as Redux implementation)
+      state.current = {
+        ...state.current,
+        ...state.loading
+      };
+      state.loading = {};
+      state.status = {
+        initialLoadDone: true
+      };
       break;
     }
     case "createEntity": {
