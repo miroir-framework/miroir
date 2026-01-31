@@ -568,6 +568,19 @@ export {
   ZEntityState,
   zEntityStateSchema as ZEntityStateSchema
 } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
+export type {
+  LocalCacheSliceState,
+  LocalCacheSliceStateZone,
+  QueriesResultsCache,
+  ReduxStateChanges,
+  ReduxStateWithUndoRedo,
+  ReduxStoreWithUndoRedo,
+  StateChanges,
+  StateWithUndoRedo,
+  StoreWithUndoRedo,
+  ZustandStateWithUndoRedo,
+  ZustandStoreWithUndoRedo,
+} from "./0_interfaces/2_domain/LocalCacheInterface.js";
 export {
   DataStoreApplicationType,
   DataStoreApplicationTypeSchema

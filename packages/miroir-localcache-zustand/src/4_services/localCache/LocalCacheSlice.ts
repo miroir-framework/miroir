@@ -2,36 +2,26 @@
  * Local Cache Slice implementation for Zustand.
  * Handles entity instance management and local cache operations.
  */
-import equal from "fast-deep-equal";
 
 import {
-  ACTION_OK,
-  Action2Error,
-  Action2ReturnType,
   ApplicationSection,
   DomainState,
   EntityInstance,
-  EntityInstanceCollection,
   EntityInstancesUuidIndex,
   InstanceAction,
   LocalCacheAction,
   LoggerInterface,
   MiroirLoggerFactory,
   ModelAction,
-  ModelEntityActionTransformer,
-  ReduxDeploymentsState,
-  TransformerFailure,
   Uuid,
-  entityDefinitionEntityDefinition,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
-  type ApplicationDeploymentMap,
-  type EntityInstanceWithName
+  type ApplicationDeploymentMap
 } from "miroir-core";
 
-import { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
+import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
 
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "5_view";

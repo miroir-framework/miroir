@@ -13,6 +13,56 @@
 // ============================================================================
 
 // --- Redux Implementation (default) ---
+// export {
+//   // React hooks and Provider
+//   LocalCacheProvider,
+//   useSelector,
+  
+//   // LocalCache
+//   LocalCache,
+  
+//   // Persistence
+//   PersistenceReduxSaga,
+//   RestPersistenceClientAndRestClient,
+  
+//   // Setup
+//   setupMiroirDomainController,
+  
+//   // Types
+//   type ReduxStateWithUndoRedo,
+//   type ReduxStoreWithUndoRedo,
+//   type ReduxStateChanges,
+//   type LocalCacheSliceState,
+//   type LocalCacheSliceStateZone,
+  
+//   // Initial state
+//   reduxStoreWithUndoRedoGetInitialState,
+  
+//   // Selectors - Basic
+//   selectCurrentTransaction,
+//   selectInstanceArrayForDeploymentSectionEntity,
+//   selectEntityInstanceUuidIndexFromLocalCache,
+//   selectModelForDeploymentFromReduxState,
+  
+//   // Selectors - Query/Template apply functions
+//   applyDomainStateJzodSchemaSelector,
+//   applyDomainStateQuerySelectorForCleanedResult,
+//   applyDomainStateQueryTemplateSelector,
+//   applyReduxDeploymentsStateJzodSchemaSelector,
+//   applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
+//   applyReduxDeploymentsStateQuerySelector,
+//   applyReduxDeploymentsStateQuerySelectorForCleanedResult,
+//   applyReduxDeploymentsStateQueryTemplateSelector,
+//   applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult,
+  
+//   // Memoized selector factories
+//   getMemoizedReduxDeploymentsStateSelectorMap,
+//   getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
+//   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
+//   getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+// } from "miroir-localcache-redux";
+
+// --- Zustand Implementation (alternative) ---
 export {
   // React hooks and Provider
   LocalCacheProvider,
@@ -21,14 +71,14 @@ export {
   // LocalCache
   LocalCache,
   
-  // Persistence
+  // Persistence (PersistenceReduxSaga is aliased to PersistenceAsyncStore in zustand)
   PersistenceReduxSaga,
   RestPersistenceClientAndRestClient,
   
   // Setup
   setupMiroirDomainController,
   
-  // Types
+  // Types (aliased to match Redux naming)
   type ReduxStateWithUndoRedo,
   type ReduxStoreWithUndoRedo,
   type ReduxStateChanges,
@@ -60,54 +110,4 @@ export {
   getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
   getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
-} from "miroir-localcache-redux";
-
-// --- Zustand Implementation (alternative) ---
-// export {
-//   // React hooks and Provider
-//   LocalCacheProvider,
-//   useSelector,
-//   
-//   // LocalCache
-//   LocalCache,
-//   
-//   // Persistence (PersistenceReduxSaga is aliased to PersistenceAsyncStore in zustand)
-//   PersistenceReduxSaga,
-//   RestPersistenceClientAndRestClient,
-//   
-//   // Setup
-//   setupMiroirDomainController,
-//   
-//   // Types (aliased to match Redux naming)
-//   type ReduxStateWithUndoRedo,
-//   type ReduxStoreWithUndoRedo,
-//   type ReduxStateChanges,
-//   type LocalCacheSliceState,
-//   type LocalCacheSliceStateZone,
-//   
-//   // Initial state
-//   reduxStoreWithUndoRedoGetInitialState,
-//   
-//   // Selectors - Basic
-//   selectCurrentTransaction,
-//   selectInstanceArrayForDeploymentSectionEntity,
-//   selectEntityInstanceUuidIndexFromLocalCache,
-//   selectModelForDeploymentFromReduxState,
-//   
-//   // Selectors - Query/Template apply functions
-//   applyDomainStateJzodSchemaSelector,
-//   applyDomainStateQuerySelectorForCleanedResult,
-//   applyDomainStateQueryTemplateSelector,
-//   applyReduxDeploymentsStateJzodSchemaSelector,
-//   applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
-//   applyReduxDeploymentsStateQuerySelector,
-//   applyReduxDeploymentsStateQuerySelectorForCleanedResult,
-//   applyReduxDeploymentsStateQueryTemplateSelector,
-//   applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult,
-//   
-//   // Memoized selector factories
-//   getMemoizedReduxDeploymentsStateSelectorMap,
-//   getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
-//   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
-//   getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
-// } from "miroir-localcache-zustand";
+} from "miroir-localcache-zustand";

@@ -6,7 +6,13 @@
  */
 
 // Re-export React hooks for abstraction - allows miroir-standalone-app to not depend directly on react-redux
-export { useSelector, LocalCacheProvider, Provider, useLocalCacheStore, TypedUseSelectorHook } from "./react/hooks.js";
+export {
+  useSelector,
+  LocalCacheProvider,
+  Provider,
+  useLocalCacheStore,
+  TypedUseSelectorHook,
+} from "./react/hooks.js";
 
 // Core LocalCache
 export { LocalCache } from "./4_services/LocalCache.js";
@@ -67,14 +73,17 @@ export {
   createLocalCacheStore,
 } from "./4_services/localCache/UndoRedoStore.js";
 
-// Type exports - compatible with Redux version
+// Type exports - compatible with Redux version (re-exported from miroir-core via localCacheZustandInterface)
 export {
   LocalCacheSliceState,
   LocalCacheSliceStateZone,
-  StateChanges as ReduxStateChanges,
-  ZustandStateWithUndoRedo as ReduxStateWithUndoRedo,
-  ZustandStoreWithUndoRedo as ReduxStoreWithUndoRedo,
   QueriesResultsCache,
+  ReduxStateChanges,
+  ReduxStateWithUndoRedo,
+  ReduxStoreWithUndoRedo,
+  StateChanges,
+  ZustandStateWithUndoRedo,
+  ZustandStoreWithUndoRedo,
 } from "./4_services/localCache/localCacheZustandInterface.js";
 
 // Persistence
