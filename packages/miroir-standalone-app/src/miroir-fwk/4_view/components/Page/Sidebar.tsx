@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // import AutoStories from '@mui/icons-material/AutoStories';
 import {
-  adminApplicationLibrary,
+  // adminApplicationLibrary,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -12,10 +12,10 @@ import {
   defaultSelfApplicationDeploymentMap,
   LoggerInterface,
   menuDefaultAdmin,
-  menuDefaultLibrary,
+  // menuDefaultLibrary,
   menuDefaultMiroir,
   MiroirLoggerFactory,
-  selfApplicationLibrary,
+  // selfApplicationLibrary,
   selfApplicationMiroir
 } from "miroir-core";
 import { applicationParis, defaultMenuParisUuid, packageName } from '../../../../constants.js';
@@ -31,6 +31,7 @@ import {
   ThemedScrollableContent
 } from "../Themes/index";
 import { SidebarSection } from './SidebarSection.js';
+import { menuDefaultLibrary, selfApplicationLibrary } from 'miroir-example-library';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -137,7 +138,7 @@ export const Sidebar: FC<{
       // },
       {
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        applicationUuid: adminApplicationLibrary.uuid,
+        applicationUuid: selfApplicationLibrary.uuid,
         menuUuid: menuDefaultLibrary.uuid
       }
     ]

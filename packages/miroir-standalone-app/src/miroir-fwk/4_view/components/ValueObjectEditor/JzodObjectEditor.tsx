@@ -29,8 +29,7 @@ import {
 
 import { BlobEditorField } from "./BlobEditorField";
 
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
-import { useSelector } from "react-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import {

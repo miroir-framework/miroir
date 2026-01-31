@@ -11,7 +11,6 @@ import {
 } from "react";
 import { FoldedStateTree } from "./components/Reports/FoldedStateTreeUtils";
 
-import { useSelector } from "react-redux";
 import { Alert, AlertColor, Snackbar } from "@mui/material";
 
 import {
@@ -35,7 +34,7 @@ import {
   type TransformerForBuildPlusRuntime,
   type ApplicationDeploymentMap,
 } from "miroir-core";
-import { ReduxStateChanges, selectCurrentTransaction } from "miroir-localcache-redux";
+import { ReduxStateChanges, selectCurrentTransaction, useSelector } from "../miroir-localcache-imports.js";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";

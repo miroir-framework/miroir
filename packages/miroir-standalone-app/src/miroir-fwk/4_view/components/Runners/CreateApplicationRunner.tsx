@@ -21,9 +21,9 @@ import {
   entityDeployment,
   MiroirLoggerFactory,
   noValue,
-  selfApplicationLibrary,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion
+  // selfApplicationLibrary,
+  // selfApplicationModelBranchLibraryMasterBranch,
+  // selfApplicationVersionLibraryInitialVersion
 } from "miroir-core";
 import {
   type AdminApplication
@@ -33,6 +33,11 @@ import { cleanLevel } from "../../constants.js";
 import { FileSelector } from '../Themes/FileSelector';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
+import {
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
+} from "miroir-example-library";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

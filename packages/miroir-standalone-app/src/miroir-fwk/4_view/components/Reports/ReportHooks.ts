@@ -39,7 +39,7 @@ import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import type { TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap
-} from "miroir-localcache-redux";
+} from "../../../miroir-localcache-imports.js";
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 

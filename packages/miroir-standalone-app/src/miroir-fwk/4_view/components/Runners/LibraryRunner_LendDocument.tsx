@@ -4,11 +4,11 @@ import {
   defaultSelfApplicationDeploymentMap,
   type LoggerInterface,
   MiroirLoggerFactory,
-  selfApplicationLibrary
 } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

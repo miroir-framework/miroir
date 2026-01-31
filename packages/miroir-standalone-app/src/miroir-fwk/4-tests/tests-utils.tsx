@@ -7,7 +7,6 @@ import { render } from '@testing-library/react';
 // import { SetupServerApi } from 'msw/lib/node';
 import * as React from 'react';
 import { FC, PropsWithChildren, createContext, useState } from 'react';
-import { Provider } from 'react-redux';
 
 // As a basic setup, import your same slice reducers
 import {
@@ -61,10 +60,11 @@ import {
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   LocalCache,
+  LocalCacheProvider,
   ReduxStoreWithUndoRedo,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController
-} from "miroir-localcache-redux";
+} from "../miroir-localcache-imports.js";
 import { packageName } from '../../constants';
 import { MiroirContextReactProvider } from '../4_view/MiroirContextReactProvider';
 import { cleanLevel } from '../4_view/constants';
@@ -182,9 +182,9 @@ export function renderWithProviders(
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return store ? (
-    <Provider store={store}>
+    <LocalCacheProvider store={store}>
       {children}
-      </Provider>
+      </LocalCacheProvider>
     ) : <div>{children}</div>;
   }
 
@@ -203,11 +203,11 @@ export function renderWithProvidersWithContextProvider(
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return store ? (
-      <Provider store={store}> 
+      <LocalCacheProvider store={store}> 
         <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
           {children}
         </MiroirContextReactProvider>
-      </Provider>
+      </LocalCacheProvider>
     ) : <div>{children}</div>;
   }
 

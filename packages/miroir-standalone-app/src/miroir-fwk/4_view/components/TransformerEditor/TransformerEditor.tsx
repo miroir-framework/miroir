@@ -63,8 +63,7 @@ import {
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 import { TransformationResultPanel } from './TransformationResultPanel';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
-import { useSelector } from 'react-redux';
+import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from '../../../miroir-localcache-imports.js';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

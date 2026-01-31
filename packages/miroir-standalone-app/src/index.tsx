@@ -3,7 +3,6 @@ import { blue } from "@mui/material/colors";
 import 'material-symbols/outlined.css';
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
-import { Provider } from "react-redux";
 import {
   createBrowserRouter,
   RouterProvider
@@ -24,7 +23,7 @@ import {
   RestClient,
   SpecificLoggerOptionsMap
 } from "miroir-core";
-import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
+import { LocalCacheProvider, RestPersistenceClientAndRestClient, setupMiroirDomainController } from "./miroir-fwk/miroir-localcache-imports.js";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
@@ -352,12 +351,12 @@ async function startWebApp(root:Root) {
       <StrictMode>
         <ThemeProvider theme={theme}>
           <StyledEngineProvider injectFirst>
-            <Provider store={domainController.getLocalCache().getInnerStore()}>
+            <LocalCacheProvider store={domainController.getLocalCache().getInnerStore()}>
               <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
                 <RouterProvider router={router} />
                 {/* <RootComponent/> */}
               </MiroirContextReactProvider>
-            </Provider>
+            </LocalCacheProvider>
           </StyledEngineProvider>
         </ThemeProvider>
       </StrictMode>

@@ -47,7 +47,7 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
-import { LocalCache } from "miroir-localcache-redux";
+import { LocalCache } from "../../src/miroir-fwk/miroir-localcache-imports.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { cleanLevel, packageName } from "./constants.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";

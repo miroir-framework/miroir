@@ -32,6 +32,7 @@ packages/miroir-store-mongodb/tmp*/
 packages/miroir-store-postgres/node_modules*/
 packages/miroir-store-postgres/dist*/
 packages/miroir-localcache-redux/dist*/
+packages/miroir-localcache-zustand/dist*/
 packages/miroir-standalone-app/dist*/
 packages/miroir-standalone-app/build*/
 packages/miroir-standalone-app/indexedDb*/

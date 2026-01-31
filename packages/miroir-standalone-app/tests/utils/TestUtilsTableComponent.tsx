@@ -19,8 +19,7 @@ import {
   Report,
   Uuid
 } from 'miroir-core';
-import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity } from "miroir-localcache-redux";
-import { useSelector } from "react-redux";
+import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, useSelector } from "../../src/miroir-fwk/miroir-localcache-imports.js";
 
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";

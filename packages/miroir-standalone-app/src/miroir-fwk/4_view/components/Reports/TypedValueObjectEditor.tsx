@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { FormikProps, useFormikContext } from "formik";
 
 import {
@@ -38,8 +37,9 @@ import {
 } from "miroir-core";
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
-  ReduxStateWithUndoRedo
-} from "miroir-localcache-redux";
+  ReduxStateWithUndoRedo,
+  useSelector,
+} from "../../../miroir-localcache-imports.js";
 
 import {
   useMiroirContextService

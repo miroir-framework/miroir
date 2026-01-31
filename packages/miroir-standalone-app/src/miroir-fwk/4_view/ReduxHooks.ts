@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 
-import { useSelector } from "react-redux";
-
 import {
   ApplicationSection,
   Domain2QueryReturnType,
@@ -55,7 +53,8 @@ import {
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeploymentFromReduxState,
-} from "miroir-localcache-redux";
+  useSelector,
+} from "../miroir-localcache-imports.js";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";

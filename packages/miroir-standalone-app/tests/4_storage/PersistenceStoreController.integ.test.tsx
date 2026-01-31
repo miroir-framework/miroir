@@ -13,10 +13,12 @@ import {
   EntityDefinition,
   EntityInstance,
   JzodElement,
+  LocalCacheInterface,
   LoggerInterface,
   MetaEntity,
   MiroirActivityTracker,
   MiroirConfigClient,
+  MiroirContext,
   MiroirEventService,
   MiroirLoggerFactory,
   ModelAction,
@@ -28,12 +30,14 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  author1,
-  book1,
+  createDeploymentCompositeAction,
+  // author1,
+  // book1,
   defaultLevels,
+  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  entityAuthor,
-  entityDefinitionAuthor,
+  // entityAuthor,
+  // entityDefinitionAuthor,
   entityEntity,
   entityEntityDefinition,
   ignorePostgresExtraAttributesOnList,
@@ -43,9 +47,6 @@ import {
   type ApplicationDeploymentMap,
   type Deployment
 } from "miroir-core";
-
-
-import { LocalCacheInterface, MiroirContext, createDeploymentCompositeAction, defaultMiroirModelEnvironment, selfApplicationLibrary } from 'miroir-core';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -61,6 +62,13 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
+import {
+  author1,
+  book1,
+  entityAuthor,
+  entityDefinitionAuthor,
+  selfApplicationLibrary,
+} from "miroir-example-library";
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -483,11 +491,15 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "actualTest_getInstancesAndCheckResult",
       {},
       async () => localAppPersistenceStoreController.getInstances("model", entityEntity.uuid),
-      (a) => ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, ["author", "storageAccess"]),
+      (a) =>
+        ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
+          "author",
+          "storageAccess",
+        ]),
       undefined, // name to give to result
       // "entityInstanceCollection",
       undefined,
-      [entityAuthor]
+      [entityAuthor],
     );
   });
 
@@ -873,7 +885,10 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       undefined, // expected result
     )
 
-    const instanceAdded = (await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance)) as ActionError;
+    const instanceAdded = (await localAppPersistenceStoreController?.upsertInstance(
+      "data",
+      book1 as EntityInstance,
+    )) as ActionError;
     console.log("instanceAdded", instanceAdded)
     expect({errorType: instanceAdded.errorType, errorMessage: instanceAdded.errorMessage}, "failed to add Book instance").toEqual({
       errorType: "FailedToUpsertInstance",

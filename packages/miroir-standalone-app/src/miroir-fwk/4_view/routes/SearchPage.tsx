@@ -4,9 +4,8 @@ import { Params, useParams } from "react-router-dom";
 import {
   LoggerInterface,
   MiroirLoggerFactory,
-  adminApplicationLibrary,
   adminConfigurationDeploymentLibrary,
-  entityBook,
+  defaultSelfApplicationDeploymentMap,
   type Uuid
 } from "miroir-core";
 
@@ -19,6 +18,7 @@ import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
 import { useMiroirContextService } from "../MiroirContextReactProvider";
 import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
+import { entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -52,7 +52,7 @@ export function SearchPage() {
   const initialFormValues = {
     [formikPath_TransformerEditorInputModeSelector]: {
       mode: "instance",
-      application: adminApplicationLibrary.uuid
+      application: selfApplicationLibrary.uuid
     },
     transformerEditor_input: {},
     selectedEntityInstance: undefined,
@@ -73,6 +73,7 @@ export function SearchPage() {
         {/* {(formikContext: FormikProps<any>) => ( */}
         <EntityInstanceSelectorPanel
           deploymentUuid={deploymentUuid}
+          applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
           initialEntityUuid={initialEntityUuid}
           showAllInstances={showAllInstances}
         />

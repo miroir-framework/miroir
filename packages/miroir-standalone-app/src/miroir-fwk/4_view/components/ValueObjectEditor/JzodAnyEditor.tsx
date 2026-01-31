@@ -10,8 +10,7 @@ import {
 } from "miroir-core";
 
 import { JzodElement } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
-import { useSelector } from "react-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";

@@ -70,7 +70,14 @@ import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 // import { miroirCoreStartup } from 'miroir-core/src/startup.js';
 import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances, Deployment, Entity } from 'miroir-core';
-import { createDeploymentCompositeAction, defaultLibraryModelEnvironment, defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, resetAndinitializeDeploymentCompositeAction, selfApplicationMiroir } from 'miroir-core';
+import {
+  createDeploymentCompositeAction,
+  defaultLibraryModelEnvironment,
+  defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
+  resetAndinitializeDeploymentCompositeAction,
+  selfApplicationMiroir,
+} from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   createMiroirDeploymentGetPersistenceStoreController,
@@ -78,7 +85,7 @@ import {
   deploymentConfigurations,
   resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
-  setupMiroirTest
+  setupMiroirTest,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 import { miroirAppStartup } from '../../src/startup.js';
@@ -1472,7 +1479,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       undefined, // name to give to result
       undefined,
       // [
-      ignorePostgresExtraAttributesOnObject(book1, [
+      ignorePostgresExtraAttributesOnObject(book1 as any, [
         "conceptLevel",
         "createdAt",
         "icon",

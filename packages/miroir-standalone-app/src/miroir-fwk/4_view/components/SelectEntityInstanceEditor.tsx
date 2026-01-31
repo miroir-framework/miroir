@@ -18,7 +18,6 @@ import {
   useState
 } from 'react';
 import ReactDOM from 'react-dom';
-import { useSelector } from "react-redux";
 
 import {
   EntityInstanceWithName,
@@ -28,8 +27,9 @@ import {
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
+  useSelector,
   selectInstanceArrayForDeploymentSectionEntity
-} from "miroir-localcache-redux";
+} from "../../miroir-localcache-imports.js";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";

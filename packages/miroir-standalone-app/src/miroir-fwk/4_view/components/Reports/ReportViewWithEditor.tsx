@@ -29,7 +29,7 @@ import {
   type RecordOfJzodObject,
   type ReduxDeploymentsState
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from '../../../miroir-localcache-imports.js';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";

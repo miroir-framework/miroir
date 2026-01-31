@@ -30,8 +30,7 @@ import {
   ThemedSelectWithPortal
 } from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
-import { useSelector } from "react-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

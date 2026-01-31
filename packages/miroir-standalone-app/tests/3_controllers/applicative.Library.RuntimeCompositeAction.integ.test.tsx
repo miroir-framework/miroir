@@ -8,31 +8,31 @@ import {
   AdminApplicationDeploymentConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  author1,
-  author2,
-  author3,
-  book1,
-  book2,
-  book3,
-  book4,
-  book5,
-  book6,
+  // author1,
+  // author2,
+  // author3,
+  // book1,
+  // book2,
+  // book3,
+  // book4,
+  // book5,
+  // book6,
   CompositeActionSequence,
   ConfigurationService,
   displayTestSuiteResultsDetails,
   DomainAction,
   DomainControllerInterface,
-  entityAuthor,
-  entityBook,
+  // entityAuthor,
+  // entityBook,
   EntityDefinition,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
+  // entityDefinitionAuthor,
+  // entityDefinitionBook,
+  // entityDefinitionPublisher,
   entityEntity,
   entityEntityDefinition,
   EntityInstance,
   entityMenu,
-  entityPublisher,
+  // entityPublisher,
   entityReport,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
@@ -49,9 +49,9 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
-  publisher1,
-  publisher2,
-  publisher3,
+  // publisher1,
+  // publisher2,
+  // publisher3,
   Report,
   resetAndInitApplicationDeployment,
   SelfApplicationDeploymentConfiguration,
@@ -63,7 +63,14 @@ import {
 
 // import { packageName } from 'miroir-core';
 // import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
-import { adminConfigurationDeploymentParis, adminMiroirApplication, createDeploymentCompositeAction, defaultMiroirModelEnvironment, resetAndinitializeDeploymentCompositeAction, selfApplicationLibrary, TestCompositeActionParams } from 'miroir-core';
+import {
+  adminConfigurationDeploymentParis,
+  adminMiroirApplication,
+  createDeploymentCompositeAction,
+  defaultMiroirModelEnvironment,
+  resetAndinitializeDeploymentCompositeAction,
+  TestCompositeActionParams,
+} from "miroir-core";
 import { CompositeRunTestAssertion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
@@ -77,6 +84,7 @@ import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
 import { emptyMetaModel } from 'miroir-core';
+import { selfApplicationLibrary } from 'miroir-example-library';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

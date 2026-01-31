@@ -46,8 +46,8 @@ import { useFormikContext } from "formik";
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateWithUndoRedo,
-} from "miroir-localcache-redux";
-import { useSelector } from "react-redux";
+  useSelector,
+} from "../../../miroir-localcache-imports.js";
 import { packageName } from "../../../../constants.js";
 import {
   useDomainControllerService,

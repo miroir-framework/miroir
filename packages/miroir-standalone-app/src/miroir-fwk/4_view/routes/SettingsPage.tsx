@@ -39,7 +39,7 @@ import {
   SyncQueryRunner,
   ViewParamsData,
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
 import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 import { useMemo } from "react";
 import {

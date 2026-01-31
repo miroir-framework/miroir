@@ -43,7 +43,6 @@ import {
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  selfApplicationLibrary,
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
@@ -52,7 +51,7 @@ import {
   type Deployment,
   type SyncQueryRunnerExtractorAndParams
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "../../../miroir-localcache-imports.js";
 
 import {
   useDomainControllerService,
@@ -75,6 +74,7 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
+import { selfApplicationLibrary } from 'miroir-example-library';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -27,9 +27,9 @@ import {
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
   type ReduxStateWithUndoRedo,
-} from "miroir-localcache-redux";
+  useSelector,
+} from "../../../miroir-localcache-imports.js";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";

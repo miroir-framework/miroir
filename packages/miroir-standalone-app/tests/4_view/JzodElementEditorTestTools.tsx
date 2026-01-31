@@ -4,7 +4,6 @@ import { blue } from "@mui/material/colors";
 import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
 import { Profiler, useCallback, useMemo, useState } from "react";
-import { Provider } from "react-redux";
 import { expect, ExpectStatic, vi } from "vitest";
 
 import {
@@ -46,7 +45,7 @@ import {
   selfApplicationDeploymentLibrary,
   type ApplicationDeploymentMap
 } from "miroir-core";
-import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
+import { LocalCache, LocalCacheProvider, PersistenceReduxSaga } from "../../src/miroir-fwk/miroir-localcache-imports.js";
 
 // import { rootLessListKeyMapDEFUNCT } from "miroir-core";
 import { Container } from "react-dom";
@@ -855,7 +854,7 @@ export function getWrapperLoadingLocalCache(
       <Profiler id="App" onRender={onRender}>
         <ThemeProvider theme={theme}>
           <StyledEngineProvider injectFirst>
-            <Provider store={localCache.getInnerStore()}>
+            <LocalCacheProvider store={localCache.getInnerStore()}>
               <MiroirContextReactProvider
                 miroirContext={miroirContext}
                 domainController={domainController}
@@ -869,14 +868,14 @@ export function getWrapperLoadingLocalCache(
                   <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
                 </DocumentOutlineContextProvider>
               </MiroirContextReactProvider>
-            </Provider>
+            </LocalCacheProvider>
           </StyledEngineProvider>
         </ThemeProvider>
       </Profiler>
     ) : (
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
-          <Provider store={localCache.getInnerStore()}>
+          <LocalCacheProvider store={localCache.getInnerStore()}>
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainController}
@@ -890,7 +889,7 @@ export function getWrapperLoadingLocalCache(
                 <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
               </DocumentOutlineContextProvider>
             </MiroirContextReactProvider>
-          </Provider>
+          </LocalCacheProvider>
         </StyledEngineProvider>
       </ThemeProvider>
     );

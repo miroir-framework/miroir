@@ -3,12 +3,8 @@ import {
   Typography
 } from '@mui/material';
 
-import { useSelector } from "react-redux";
-
-
 import { Formik, type FormikProps } from 'formik';
 import {
-  adminApplicationLibrary,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
@@ -26,7 +22,6 @@ import {
   noValue,
   ReduxDeploymentsState,
   resolvePathOnObject,
-  selfApplicationLibrary,
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   transformer_extended_apply_wrapper,
@@ -34,7 +29,7 @@ import {
   type MiroirModelEnvironment,
   type TransformerForBuildPlusRuntime
 } from 'miroir-core';
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from '../../miroir-localcache-imports.js';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
@@ -44,6 +39,7 @@ import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
 import { ThemedPaper } from './Themes/index.js';
+import { selfApplicationLibrary } from 'miroir-example-library';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -94,7 +90,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   // const formikPath_actionDefinition = formikPath_EndpointActionCaller + "actionDefinition";
   const [actionFormInitialValues, setActionFormInitialValues] = useState<Record<string, any>>({
     [formikPath_EndpointActionCaller]: {
-      applicationUuid: adminApplicationLibrary.uuid,
+      applicationUuid: selfApplicationLibrary.uuid,
       endpointUuid: noValue.uuid,
       action: "",
       actionCaller: undefined,

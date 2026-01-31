@@ -1,33 +1,40 @@
-// Re-export react-redux hooks for abstraction - allows miroir-standalone-app to not depend directly on react-redux
-export { useSelector, Provider as LocalCacheProvider } from "react-redux";
-export type { TypedUseSelectorHook } from "react-redux";
+/**
+ * miroir-localcache-zustand
+ * 
+ * Zustand-based implementation of LocalCache for Miroir Framework.
+ * Provides drop-in replacement for miroir-localcache-redux.
+ */
 
+// Re-export React hooks for abstraction - allows miroir-standalone-app to not depend directly on react-redux
+export { useSelector, LocalCacheProvider, Provider, useLocalCacheStore, TypedUseSelectorHook } from "./react/hooks.js";
+
+// Core LocalCache
 export { LocalCache } from "./4_services/LocalCache.js";
+
+// LocalCache Slice utilities
 export {
   getLocalCacheKeysDeploymentSectionEntitiesList,
   getDeploymentUuidListFromLocalCacheKeys,
   getLocalCacheKeysDeploymentSectionList,
   getLocalCacheKeysForDeploymentSection,
   getLocalCacheKeysForDeploymentUuid,
-  getPersistenceActionReduxEventNames,
   localCacheStateToDomainState,
-  LocalCacheSlice,
 } from "./4_services/localCache/LocalCacheSlice.js";
-export {
-  selectModelForDeploymentFromReduxState,
-} from "./4_services/localCache/LocalCacheSliceModelSelector.js";
+
+// Model selectors
+export { selectModelForDeploymentFromReduxState } from "./4_services/localCache/LocalCacheSliceModelSelector.js";
+
+// Selectors
 export {
   applyReduxDeploymentsStateQuerySelector,
   selectReduxDeploymentsStateSelectorParams,
   applyReduxDeploymentsStateQueryTemplateSelector,
   applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult,
   selectCurrentReduxDeploymentsStateFromReduxState,
-  // useReduxState,
   selectReduxDeploymentsStateSelectorForQueryTemplateParams,
   selectDomainStateFromReduxState,
   selectMiroirSelectorQueryParams,
   selectJzodSchemaSelectorParamsForTemplate,
-
   applyDomainStateJzodSchemaSelector,
   applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
   applyReduxDeploymentsStateJzodSchemaSelector,
@@ -41,32 +48,45 @@ export {
   selectInstanceArrayForDeploymentSectionEntity,
   selectMiroirQueryTemplateSelectorParams,
 } from "./4_services/localCache/LocalCacheSliceSelectors.js";
+
+// Memoized selectors
 export {
-  createUndoRedoReducer,
-  reduxStoreWithUndoRedoGetInitialState,
-  selectCurrentTransaction,
-} from "./4_services/localCache/UndoRedoReducer.js";
-export {
-  InnerReducerInterface,
-  ReduxReducerWithUndoRedoInterface,
-  ReduxStateChanges,
-  ReduxStateWithUndoRedo,
-  ReduxStoreWithUndoRedo,
-  LocalCacheSliceState,
-  LocalCacheSliceStateZone,
-} from "./4_services/localCache/localCacheReduxSliceInterface.js";
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
+} from "./4_services/localCache/DomainStateMemoizedSelectors.js";
+
 export {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
   getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
 } from "./4_services/localCache/DomainStateMemoizedSelectorsForTemplate.js";
+
+// Undo/Redo store
 export {
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
-  getMemoizedReduxDeploymentsStateSelectorMap
-} from "./4_services/localCache/DomainStateMemoizedSelectors.js";
+  selectCurrentTransaction,
+  getInitialState as reduxStoreWithUndoRedoGetInitialState,
+  createLocalCacheStore,
+} from "./4_services/localCache/UndoRedoStore.js";
+
+// Type exports - compatible with Redux version
 export {
-  PersistenceReduxSaga,
-  PersistenceSagaGenReturnType,
+  LocalCacheSliceState,
+  LocalCacheSliceStateZone,
+  StateChanges as ReduxStateChanges,
+  ZustandStateWithUndoRedo as ReduxStateWithUndoRedo,
+  ZustandStoreWithUndoRedo as ReduxStoreWithUndoRedo,
+  QueriesResultsCache,
+} from "./4_services/localCache/localCacheZustandInterface.js";
+
+// Persistence
+export {
+  PersistenceAsyncStore,
+  PersistenceAsyncStore as PersistenceReduxSaga, // Compatibility alias
   PersistenceStoreAccessParams,
-} from "./4_services/persistence/PersistenceReduxSaga.js";
+} from "./4_services/persistence/PersistenceAsyncStore.js";
+
+// Setup helper
+export { setupMiroirDomainController } from "./setupTools.js";
+
+// RestPersistenceClientAndRestClient - handles network persistence actions
 export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient.js";
-export { setupMiroirDomainController } from "./sagaTools.js";
+

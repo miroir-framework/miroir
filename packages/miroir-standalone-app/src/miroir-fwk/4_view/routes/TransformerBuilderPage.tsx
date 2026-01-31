@@ -1,5 +1,3 @@
-import { useSelector } from "react-redux";
-
 // import { ReactCodeMirror } from "@uiw/react-codemirror";
 import { PageContainer } from "../components/Page/PageContainer";
 
@@ -15,10 +13,9 @@ import {
   adminConfigurationDeploymentMiroir,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  entityBook,
   entityTransformerTest,
-  selfApplicationDeploymentLibrary,
-  selfApplicationLibrary,
+  // selfApplicationDeploymentLibrary,
+  // selfApplicationLibrary,
   selfApplicationMiroir,
   transformerTest_resolveConditionalSchema,
   type Domain2QueryReturnType,
@@ -26,7 +23,7 @@ import {
   type SyncBoxedExtractorOrQueryRunnerMap
 } from "miroir-core";
 
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from "../../miroir-localcache-imports.js";
 // import {
 //   Entity,
 //   TestSuiteResult
@@ -41,6 +38,7 @@ import { usePageConfiguration } from "../services/index.js";
 
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
+import { entityBook, selfApplicationDeploymentLibrary, selfApplicationLibrary } from "miroir-example-library";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -139,8 +137,6 @@ export const TransformerBuilderPage: React.FC<any> = (
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObject",
               application: selfApplicationMiroir.uuid,
-              // applicationDeploymentMap: currentApplicationDeploymentMap,
-              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
               contextResults: {},
               pageParams: {},
               queryParams: {},

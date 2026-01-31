@@ -36,7 +36,7 @@ import { Toc } from '../Themes/MaterialSymbolWrappers';
 import { useFormikContext } from 'formik';
 import {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap
-} from "miroir-localcache-redux";
+} from "../../../miroir-localcache-imports.js";
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {

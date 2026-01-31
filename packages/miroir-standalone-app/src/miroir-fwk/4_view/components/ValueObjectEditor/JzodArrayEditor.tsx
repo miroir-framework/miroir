@@ -25,10 +25,9 @@ import {
   type MiroirModelEnvironment,
   type Uuid
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import {

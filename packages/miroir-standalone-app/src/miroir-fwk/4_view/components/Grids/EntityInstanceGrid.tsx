@@ -29,7 +29,7 @@ import {
   selfApplicationMiroir
 } from "miroir-core";
 
-import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedReduxDeploymentsStateSelectorMap } from '../../../miroir-localcache-imports.js';
 import { packageName } from '../../../../constants.js';
 import EntityEditor from '../../EntityEditor.js';
 import {

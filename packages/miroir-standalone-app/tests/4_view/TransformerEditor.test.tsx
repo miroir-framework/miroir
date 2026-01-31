@@ -1,31 +1,29 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
 
 import {
-  book1,
-  entityBook,
-  entityDefinitionBook,
   adminConfigurationDeploymentLibrary,
   JzodElement,
   LoggerInterface,
   MiroirLoggerFactory,
   TransformerForBuild,
-  TransformerForRuntime,
-  getReduxDeploymentsStateIndex
+  getReduxDeploymentsStateIndex,
+  type TransformerForBuildPlusRuntime
 } from "miroir-core";
 
 import { 
+  LocalCacheProvider,
   getMemoizedReduxDeploymentsStateSelectorMap,
   ReduxStateWithUndoRedo,
   reduxStoreWithUndoRedoGetInitialState,
   LocalCacheSliceState
-} from "miroir-localcache-redux";
+} from "../../src/miroir-fwk/miroir-localcache-imports.js";
 
 import { TransformerEditor } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
+import { book1, entityBook, entityDefinitionBook } from "miroir-example-library";
 
 // ################################################################################################
 const pageLabel = "TransformerEditor.test";
@@ -49,7 +47,7 @@ const sampleBuildTransformer: TransformerForBuild = {
   value: "Sample Build Value"
 };
 
-const sampleRuntimeTransformer: TransformerForRuntime = {
+const sampleRuntimeTransformer: TransformerForBuildPlusRuntime = {
   interpolation: "runtime",
   transformerType: "returnValue",
   value: "Sample Runtime Value"
@@ -64,14 +62,14 @@ function createMockStore() {
     current: {
       [getReduxDeploymentsStateIndex(mockDeploymentUuid, "model", entityBook.uuid)]: {
         entities: {
-          [entityBook.uuid]: entityBook,
-          [entityDefinitionBook.uuid]: entityDefinitionBook
+          [entityBook.uuid]: entityBook as any,
+          [entityDefinitionBook.uuid]: entityDefinitionBook as any
         },
         ids: [entityBook.uuid, entityDefinitionBook.uuid]
       },
       [getReduxDeploymentsStateIndex(mockDeploymentUuid, "data", entityBook.uuid)]: {
         entities: {
-          [book1.uuid]: book1
+          [book1.uuid]: book1 as any
         },
         ids: [book1.uuid]
       }
@@ -107,9 +105,9 @@ function renderTransformerEditor(props: Partial<React.ComponentProps<typeof Tran
   };
 
   return render(
-    <Provider store={store}>
+    <LocalCacheProvider store={store}>
       <TransformerEditor {...defaultProps} />
-    </Provider>
+    </LocalCacheProvider>
   );
 }
 
