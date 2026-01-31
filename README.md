@@ -78,9 +78,6 @@ cd miroir
 # Install dependencies
 npm install
 
-# Link local Jzod dependencies
-npm link @miroir-framework/jzod-ts @miroir-framework/jzod
-
 # Build core packages
 npm run devBuild -w miroir-core
 npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
