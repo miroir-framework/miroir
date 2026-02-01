@@ -20,7 +20,7 @@ RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transforme
 RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
 
-If tests are failing, inform the user of the baseline state before proceeding.
+Check the log section titled `transformerTestsDisplayResults` and the `TEST EXECUTION SUMMARY` in the logs to see the tests results, not the vitest test results (vitest results show false positives at the moment). If tests are failing, inform the user of the baseline state before proceeding.
 
 ---
 
@@ -375,13 +375,154 @@ Most transformers use `interpolation: "runtime"` for actual data transformation.
 
 ---
 
-## SQL Support
+## SQL Support for Library-Implemented Transformers
 
-For library-implemented transformers that need SQL support:
+Library-implemented transformers require **BOTH** in-memory and SQL implementations when they should support database execution. Integration tests execute transformers in PostgreSQL, so this is mandatory for full test coverage.
 
-1. Add `runnableAsSql: true` to the transformer definition
-2. Implement `sqlImplementationFunctionName` function
-3. SQL functions are in `TransformersForRuntime.ts`
+### SQL Implementation Files
+
+| Purpose | Path |
+|---------|------|
+| SQL Generator | `packages/miroir-store-postgres/src/1_core/SqlGenerator.ts` |
+| Transformer registry | `sqlTransformerImplementations` object in SqlGenerator.ts |
+| Operator mappings | `jsOperatorToSqlOperatorMap` in SqlGenerator.ts |
+
+### SQL Implementation Workflow
+
+#### Step 1: Define SQL Function Name
+In your TransformerDefinition JSON, specify the SQL implementation function:
+```json
+"transformerImplementation": {
+  "transformerImplementationType": "libraryImplementation",
+  "inMemoryImplementationFunctionName": "handleTransformer_<name>",
+  "sqlImplementationFunctionName": "sqlStringFor<Name>Transformer"
+}
+```
+
+#### Step 2: Study Existing SQL Patterns
+Reference existing implementations in `SqlGenerator.ts`:
+- `sqlStringForConditionalTransformer` - for ifThenElse logic
+- `sqlStringForCaseTransformer` - for case/when pattern
+- `sqlStringForMapListTransformer` - for list operations
+
+#### Step 3: Implement the SQL Generator Function
+Add your function to `SqlGenerator.ts` following the `ITransformerHandler` signature:
+
+```typescript
+const sqlStringFor<Name>Transformer: ITransformerHandler = function (
+  actionRuntimeTransformer: any,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  newSqlElementsDefinedByThisTransformer: Record<string, SqlContextEntry>,
+  currentSqlTable: string,
+  queryType: ExtractorRunnerParamsForJzodSchema<...>["queryType"],
+  currentApplicationUuid: string,
+  currentDeploymentUuid: string,
+  emulatedServerConfig: EmulatedServerConfig,
+  persistenceStoreController: PersistenceStoreControllerInterface,
+  schemaTableAccess: PersistenceStoreDataSectionInterface | undefined,
+  logHeader: string
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  // Implementation here
+};
+```
+
+#### Step 4: Register in sqlTransformerImplementations
+Add your function to the registry object at the top of `SqlGenerator.ts`:
+
+```typescript
+export const sqlTransformerImplementations: Record<string, ITransformerHandler> = {
+  // ... existing entries
+  sqlStringFor<Name>Transformer,
+};
+```
+
+#### Step 5: Build and Test
+```bash
+# Build the postgres store package
+npm run build -w miroir-store-postgres
+
+# Run integration tests
+RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+```
+
+### SQL Result Types
+
+SQL generators return `SqlStringForTransformerElementValue` with these types:
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `"scalar"` | Single value (string, number, boolean) | `case when... end` |
+| `"json"` | JSON object | `jsonb_build_object(...)` |
+| `"table"` | Table reference | `FROM table_name` |
+| `"json_array"` | Array of JSON | `jsonb_agg(...)` |
+| `"tableOf1JsonColumn"` | Single-column JSON table | Subqueries |
+
+### SQL Generator Pattern Example
+
+```typescript
+const sqlStringForCaseTransformer: ITransformerHandler = function (
+  actionRuntimeTransformer: {
+    transformerType: "case";
+    discriminator: TransformerForBuildPlusRuntime;
+    whens: Array<{ when: TransformerForBuildPlusRuntime; then: TransformerForBuildPlusRuntime }>;
+    else?: TransformerForBuildPlusRuntime;
+  },
+  preparedStatementParametersCount: number,
+  ...
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  // 1. Evaluate discriminator
+  const discriminatorResult = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.discriminator, ...
+  );
+  
+  // 2. Build WHEN clauses
+  const whenClauses: string[] = [];
+  for (const whenClause of actionRuntimeTransformer.whens) {
+    const whenValueResult = sqlStringForRuntimeTransformer(whenClause.when, ...);
+    const thenResult = sqlStringForRuntimeTransformer(whenClause.then, ...);
+    whenClauses.push(`when ${discriminator} = ${whenValue} then ${thenValue}`);
+  }
+  
+  // 3. Handle optional ELSE clause
+  let elseClause = "";
+  if (actionRuntimeTransformer.else) {
+    const elseResult = sqlStringForRuntimeTransformer(actionRuntimeTransformer.else, ...);
+    elseClause = ` else ${elseValue}`;
+  }
+  
+  // 4. Return SQL CASE expression
+  const caseExpression = `case ${whenClauses.join(" ")}${elseClause} end`;
+  return {
+    elementType: "success",
+    elementValue: {
+      type: "scalar",
+      sqlStringOrObject: { type: "sql", sql: caseExpression },
+      preparedStatementParameters: [...],
+      resultAccessPath: undefined,
+      sqlResultColumnName: "case_result",
+    }
+  };
+};
+```
+
+### SQL Implementation Debugging
+
+If integration tests fail after adding SQL support:
+
+1. **Check the generated SQL**:
+   - Add debug logging with `log.debug("Generated SQL:", sqlExpression)`
+   - Use logger configuration: `VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug`
+
+2. **Verify function registration**:
+   - Ensure `sqlImplementationFunctionName` in TransformerDefinition matches the registered function name
+   - Check `sqlTransformerImplementations` object includes your function
+
+3. **Test SQL directly**:
+   - Copy generated SQL to PostgreSQL client for debugging
+   - Check for syntax errors, type mismatches, NULL handling
 
 ---
 
@@ -440,7 +581,10 @@ Before submitting (library-implemented transformer):
 - [ ] **Schema entries added to `getMiroirFundamentalJzodSchema.ts`** (CRITICAL)
 - [ ] `devBuild` run successfully
 - [ ] Unit tests pass
-- [ ] Integration tests pass (if applicable)
+- [ ] **SQL implementation added to `SqlGenerator.ts`** (for database execution)
+- [ ] **SQL function registered in `sqlTransformerImplementations`**
+- [ ] **miroir-store-postgres built successfully**
+- [ ] Integration tests pass
 
 ---
 

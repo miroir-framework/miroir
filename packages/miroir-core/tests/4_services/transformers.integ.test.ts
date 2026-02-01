@@ -13,10 +13,10 @@ import {
   StoreUnitConfiguration
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import entityBook from "../../src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
-import entityDefinitionBook from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
-import entityDefinitionPublisher from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
-import entityDefinitionAuthor from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
+// import entityBook from "../../src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
+// import entityDefinitionBook from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
+// import entityDefinitionPublisher from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
+// import entityDefinitionAuthor from "../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 
 
 
@@ -30,6 +30,10 @@ import {
   book5,
   book6,
   entityAuthor,
+  entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
   entityPublisher,
   folio as publisher1,
   penguin as publisher2,
@@ -273,50 +277,57 @@ if (shouldSkip) {
     vitest,
     [],
     transformerTestSuite_miroirTransformers,
-    undefined, // filter
-    // {
-    //   testList: {
-    //     miroirCoreTransformers: {
-    //       runtimeTransformerTests: {
-    //         // "aggregate": [
-    //         //   // "count returns number of elements in an object list at runtime",
-    //         //   // "count returns number of elements in an object list with a group at runtime",
-    //         //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
-    //         //   "count returns number of elements in a string list from an extractor at runtime",
-    //         // ],
-    //         "dataflowObject": [
-    //           "dataflowObject with two entries and without target allows to render each entry based on the previous one"
-    //         ],
-    //         // "pickFromList": [
-    //         //   "pickFromList selects wanted element from a returnValue string list before runtime",
-    //         //   "pickFromList selects wanted element from a string list parameter reference before runtime",
-    //         //   "pickFromList selects wanted object from a pre-sorted object list before runtime",
-    //         //   "pickFromList from extractor selects wanted element from string list context reference at runtime",
-    //         //   "pickFromList from extractor selects wanted element from object ordered list at runtime",
-    //         //   "pickFromList returns null when index is out of bounds before runtime",
-    //         // ],
-    //         // ifThenElse: [
-    //         //   "ifThenElse equality true - basic string comparison",
-    //         //   "ifThenElse equality false - basic string comparison",
-    //         //   "ifThenElse not equal true - string comparison",
-    //         //   "ifThenElse not equal false - string comparison",
-    //         //   "ifThenElse less than true - number comparison",
-    //         //   "ifThenElse less than false - number comparison",
-    //         //   "ifThenElse less than or equal true - number comparison",
-    //         //   "ifThenElse less than or equal false - number comparison",
-    //         //   "ifThenElse greater than true - number comparison",
-    //         //   "ifThenElse greater than false - number comparison",
-    //         //   "ifThenElse greater than or equal true - number comparison",
-    //         //   "ifThenElse greater than or equal false - number comparison",
-    //         //   "ifThenElse with parameter reference comparison",
-    //         // ]
-    //         // "object_alter": [
-    //         //   "mergeIntoObject should fail when definition fails to resolve correctly",
-    //         // ]
-    //       },
-    //     },
-    //   },
-    // },
+    // undefined, // filter
+    {
+      testList: {
+        miroirCoreTransformers: {
+          runtimeTransformerTests: {
+            "case": [
+              "case matches first when clause",
+              "case matches second when clause",
+              "case without else returns undefined when no match",
+              "case with number discriminator",
+              "case with complex then transformer",
+            ],
+            // "aggregate": [
+            //   // "count returns number of elements in an object list at runtime",
+            //   // "count returns number of elements in an object list with a group at runtime",
+            //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
+            //   "count returns number of elements in a string list from an extractor at runtime",
+            // ],
+            // "dataflowObject": [
+            //   "dataflowObject with two entries and without target allows to render each entry based on the previous one"
+            // ],
+            // "pickFromList": [
+            //   "pickFromList selects wanted element from a returnValue string list before runtime",
+            //   "pickFromList selects wanted element from a string list parameter reference before runtime",
+            //   "pickFromList selects wanted object from a pre-sorted object list before runtime",
+            //   "pickFromList from extractor selects wanted element from string list context reference at runtime",
+            //   "pickFromList from extractor selects wanted element from object ordered list at runtime",
+            //   "pickFromList returns null when index is out of bounds before runtime",
+            // ],
+            // ifThenElse: [
+            //   "ifThenElse equality true - basic string comparison",
+            //   "ifThenElse equality false - basic string comparison",
+            //   "ifThenElse not equal true - string comparison",
+            //   "ifThenElse not equal false - string comparison",
+            //   "ifThenElse less than true - number comparison",
+            //   "ifThenElse less than false - number comparison",
+            //   "ifThenElse less than or equal true - number comparison",
+            //   "ifThenElse less than or equal false - number comparison",
+            //   "ifThenElse greater than true - number comparison",
+            //   "ifThenElse greater than false - number comparison",
+            //   "ifThenElse greater than or equal true - number comparison",
+            //   "ifThenElse greater than or equal false - number comparison",
+            //   "ifThenElse with parameter reference comparison",
+            // ]
+            // "object_alter": [
+            //   "mergeIntoObject should fail when definition fails to resolve correctly",
+            // ]
+          },
+        },
+      },
+    },
     defaultMetaModelEnvironment,
     miroirActivityTracker,
     undefined, // parentTrackingId,

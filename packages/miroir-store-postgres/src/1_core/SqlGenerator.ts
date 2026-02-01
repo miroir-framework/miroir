@@ -85,6 +85,7 @@ export type ITransformerHandler<T> = (
 ) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+  sqlStringForCaseTransformer,
   sqlStringForConditionalTransformer,
   sqlStringForConstantAnyTransformer,
   sqlStringForConstantTransformer,
@@ -876,6 +877,149 @@ function sqlStringForConditionalTransformer(
       ...(_then.usedContextEntries ?? []),
       ...(_else.usedContextEntries ?? []),
     ],
+  };
+}
+
+// ################################################################################################
+// SQL implementation of the "case" transformer (similar to SQL CASE WHEN expression)
+// Evaluates discriminator and matches against whens, returning corresponding then result
+function sqlStringForCaseTransformer(
+  actionRuntimeTransformer: {
+    transformerType: "case";
+    interpolation?: "build" | "runtime";
+    discriminator: TransformerForBuildPlusRuntime;
+    whens: Array<{ when: TransformerForBuildPlusRuntime; then: TransformerForBuildPlusRuntime }>;
+    else?: TransformerForBuildPlusRuntime;
+  },
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  let preparedStatementParameters: any[] = [];
+  let usedContextEntries: string[] = [];
+
+  // Evaluate the discriminator
+  const discriminator = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.discriminator as TransformerForBuildPlusRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    false, // topLevelTransformer
+    undefined, // withClauseColumnName
+  );
+  if (discriminator instanceof Domain2ElementFailed) {
+    return discriminator;
+  }
+  if (discriminator.preparedStatementParameters) {
+    preparedStatementParameters = [
+      ...preparedStatementParameters,
+      ...discriminator.preparedStatementParameters,
+    ];
+    newPreparedStatementParametersCount += discriminator.preparedStatementParameters.length;
+  }
+  usedContextEntries = [...usedContextEntries, ...(discriminator.usedContextEntries ?? [])];
+
+  // Build WHEN clauses
+  const whenClauses: string[] = [];
+  for (const whenClause of actionRuntimeTransformer.whens) {
+    // Evaluate the "when" value
+    const whenValue = sqlStringForRuntimeTransformer(
+      whenClause.when as TransformerForBuildPlusRuntime,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false,
+      undefined,
+    );
+    if (whenValue instanceof Domain2ElementFailed) {
+      return whenValue;
+    }
+    if (whenValue.preparedStatementParameters) {
+      preparedStatementParameters = [
+        ...preparedStatementParameters,
+        ...whenValue.preparedStatementParameters,
+      ];
+      newPreparedStatementParametersCount += whenValue.preparedStatementParameters.length;
+    }
+    usedContextEntries = [...usedContextEntries, ...(whenValue.usedContextEntries ?? [])];
+
+    // Evaluate the "then" result
+    const thenValue = sqlStringForRuntimeTransformer(
+      whenClause.then as TransformerForBuildPlusRuntime,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false,
+      undefined,
+    );
+    if (thenValue instanceof Domain2ElementFailed) {
+      return thenValue;
+    }
+    if (thenValue.preparedStatementParameters) {
+      preparedStatementParameters = [
+        ...preparedStatementParameters,
+        ...thenValue.preparedStatementParameters,
+      ];
+      newPreparedStatementParametersCount += thenValue.preparedStatementParameters.length;
+    }
+    usedContextEntries = [...usedContextEntries, ...(thenValue.usedContextEntries ?? [])];
+
+    whenClauses.push(`when ${discriminator.sqlStringOrObject} = ${whenValue.sqlStringOrObject} then ${thenValue.sqlStringOrObject}`);
+  }
+
+  // Evaluate the "else" clause if present
+  let elseClause = "";
+  if (actionRuntimeTransformer.else) {
+    const elseValue = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.else as TransformerForBuildPlusRuntime,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false,
+      undefined,
+    );
+    if (elseValue instanceof Domain2ElementFailed) {
+      return elseValue;
+    }
+    if (elseValue.preparedStatementParameters) {
+      preparedStatementParameters = [
+        ...preparedStatementParameters,
+        ...elseValue.preparedStatementParameters,
+      ];
+      newPreparedStatementParametersCount += elseValue.preparedStatementParameters.length;
+    }
+    usedContextEntries = [...usedContextEntries, ...(elseValue.usedContextEntries ?? [])];
+    elseClause = ` else ${elseValue.sqlStringOrObject}`;
+  } else {
+    // When no else clause, SQL CASE returns NULL by default, which maps to undefined/null
+    elseClause = " else null";
+  }
+
+  // Build the complete CASE expression
+  const caseExpression = `case ${whenClauses.join(" ")}${elseClause} end`;
+
+  return {
+    type: "scalar",
+    sqlStringOrObject: (topLevelTransformer ? "select " : "") + caseExpression +
+      (topLevelTransformer ? ` AS "${withClauseColumnName ?? "case"}"` : ""),
+    preparedStatementParameters,
+    resultAccessPath: topLevelTransformer ? [0, withClauseColumnName ?? "case"] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName ?? "case" : undefined,
+    usedContextEntries,
   };
 }
 
