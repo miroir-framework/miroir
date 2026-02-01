@@ -37,7 +37,8 @@
     "build5": "npm run devBuild",
     "devBuild": "npm run generate-ts-types && echo DONE PRE-BUILD && npm run build",
     "generate-ts-types": "tsx ./scripts/generate-ts-types.ts",
-    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose --bail=1",
+    "testByFileBailOut": "vitest run --poolOptions.forks.singleFork --reporter=verbose --bail=1",
+    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose",
     "testByFileWithFullLog": "cross-env DEBUG='vite-node:*' vitest run --poolOptions.forks.singleFork",
     "test": "vitest run --poolOptions.threads.singleThread -t"
   },

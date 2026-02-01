@@ -242,6 +242,7 @@ export class SqlDbQueryRunner {
       log.info("asyncExtractWithQuery preSqlResult", JSON.stringify(preSqlResult));
       if (
         typeof preSqlResult == "object" &&
+        preSqlResult !== null &&
         !Array.isArray(preSqlResult) &&
         preSqlResult.queryFailure
       ) {
@@ -254,7 +255,7 @@ export class SqlDbQueryRunner {
           })
         );
       }
-      const sqlResult = preSqlResult == null ? undefined : preSqlResult;
+      const sqlResult = preSqlResult;
 
       const result: Domain2QueryReturnType<any> = { [endResultName]: sqlResult };
       log.info("asyncExtractWithQuery returning result", JSON.stringify(result));

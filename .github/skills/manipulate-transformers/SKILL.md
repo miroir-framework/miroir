@@ -20,7 +20,9 @@ RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transforme
 RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
 
-Check the log section titled `transformerTestsDisplayResults` and the `TEST EXECUTION SUMMARY` in the logs to see the tests results, not the vitest test results (vitest results show false positives at the moment). If tests are failing, inform the user of the baseline state before proceeding.
+If tests are failing, inform the user of the baseline state before proceeding.
+
+During remaining steps, use the filter passed to the `runTransformerTestSuite` function to execute only relevant test cases. To facilitate later investigations, leave the updated filter commented out at the very end of the session (its default value shall be `undefined`).
 
 ---
 

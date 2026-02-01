@@ -277,57 +277,58 @@ if (shouldSkip) {
     vitest,
     [],
     transformerTestSuite_miroirTransformers,
-    // undefined, // filter
-    {
-      testList: {
-        miroirCoreTransformers: {
-          runtimeTransformerTests: {
-            "case": [
-              "case matches first when clause",
-              "case matches second when clause",
-              "case without else returns undefined when no match",
-              "case with number discriminator",
-              "case with complex then transformer",
-            ],
-            // "aggregate": [
-            //   // "count returns number of elements in an object list at runtime",
-            //   // "count returns number of elements in an object list with a group at runtime",
-            //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
-            //   "count returns number of elements in a string list from an extractor at runtime",
-            // ],
-            // "dataflowObject": [
-            //   "dataflowObject with two entries and without target allows to render each entry based on the previous one"
-            // ],
-            // "pickFromList": [
-            //   "pickFromList selects wanted element from a returnValue string list before runtime",
-            //   "pickFromList selects wanted element from a string list parameter reference before runtime",
-            //   "pickFromList selects wanted object from a pre-sorted object list before runtime",
-            //   "pickFromList from extractor selects wanted element from string list context reference at runtime",
-            //   "pickFromList from extractor selects wanted element from object ordered list at runtime",
-            //   "pickFromList returns null when index is out of bounds before runtime",
-            // ],
-            // ifThenElse: [
-            //   "ifThenElse equality true - basic string comparison",
-            //   "ifThenElse equality false - basic string comparison",
-            //   "ifThenElse not equal true - string comparison",
-            //   "ifThenElse not equal false - string comparison",
-            //   "ifThenElse less than true - number comparison",
-            //   "ifThenElse less than false - number comparison",
-            //   "ifThenElse less than or equal true - number comparison",
-            //   "ifThenElse less than or equal false - number comparison",
-            //   "ifThenElse greater than true - number comparison",
-            //   "ifThenElse greater than false - number comparison",
-            //   "ifThenElse greater than or equal true - number comparison",
-            //   "ifThenElse greater than or equal false - number comparison",
-            //   "ifThenElse with parameter reference comparison",
-            // ]
-            // "object_alter": [
-            //   "mergeIntoObject should fail when definition fails to resolve correctly",
-            // ]
-          },
-        },
-      },
-    },
+    undefined, // filter
+    // {
+    //   testList: {
+    //     miroirCoreTransformers: {
+    //       runtimeTransformerTests: {
+    //         "case": [
+    //           "case matches first when clause",
+    //           "case matches second when clause",
+    //           "case falls through to else clause",
+    //           "case without else returns undefined when no match",
+    //           "case with number discriminator",
+    //           "case with complex then transformer",
+    //         ],
+    //         // "aggregate": [
+    //         //   // "count returns number of elements in an object list at runtime",
+    //         //   // "count returns number of elements in an object list with a group at runtime",
+    //         //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
+    //         //   "count returns number of elements in a string list from an extractor at runtime",
+    //         // ],
+    //         // "dataflowObject": [
+    //         //   "dataflowObject with two entries and without target allows to render each entry based on the previous one"
+    //         // ],
+    //         // "pickFromList": [
+    //         //   "pickFromList selects wanted element from a returnValue string list before runtime",
+    //         //   "pickFromList selects wanted element from a string list parameter reference before runtime",
+    //         //   "pickFromList selects wanted object from a pre-sorted object list before runtime",
+    //         //   "pickFromList from extractor selects wanted element from string list context reference at runtime",
+    //         //   "pickFromList from extractor selects wanted element from object ordered list at runtime",
+    //         //   "pickFromList returns null when index is out of bounds before runtime",
+    //         // ],
+    //         // ifThenElse: [
+    //         //   "ifThenElse equality true - basic string comparison",
+    //         //   "ifThenElse equality false - basic string comparison",
+    //         //   "ifThenElse not equal true - string comparison",
+    //         //   "ifThenElse not equal false - string comparison",
+    //         //   "ifThenElse less than true - number comparison",
+    //         //   "ifThenElse less than false - number comparison",
+    //         //   "ifThenElse less than or equal true - number comparison",
+    //         //   "ifThenElse less than or equal false - number comparison",
+    //         //   "ifThenElse greater than true - number comparison",
+    //         //   "ifThenElse greater than false - number comparison",
+    //         //   "ifThenElse greater than or equal true - number comparison",
+    //         //   "ifThenElse greater than or equal false - number comparison",
+    //         //   "ifThenElse with parameter reference comparison",
+    //         // ]
+    //         // "object_alter": [
+    //         //   "mergeIntoObject should fail when definition fails to resolve correctly",
+    //         // ]
+    //       },
+    //     },
+    //   },
+    // },
     defaultMetaModelEnvironment,
     miroirActivityTracker,
     undefined, // parentTrackingId,

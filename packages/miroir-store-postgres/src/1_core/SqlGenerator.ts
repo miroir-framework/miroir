@@ -903,6 +903,7 @@ function sqlStringForCaseTransformer(
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
   let usedContextEntries: string[] = [];
+  let extraWith: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[] = [];
 
   // Evaluate the discriminator
   const discriminator = sqlStringForRuntimeTransformer(
@@ -926,6 +927,9 @@ function sqlStringForCaseTransformer(
     newPreparedStatementParametersCount += discriminator.preparedStatementParameters.length;
   }
   usedContextEntries = [...usedContextEntries, ...(discriminator.usedContextEntries ?? [])];
+  if (discriminator.extraWith) {
+    extraWith = [...extraWith, ...discriminator.extraWith];
+  }
 
   // Build WHEN clauses
   const whenClauses: string[] = [];
@@ -952,6 +956,9 @@ function sqlStringForCaseTransformer(
       newPreparedStatementParametersCount += whenValue.preparedStatementParameters.length;
     }
     usedContextEntries = [...usedContextEntries, ...(whenValue.usedContextEntries ?? [])];
+    if (whenValue.extraWith) {
+      extraWith = [...extraWith, ...whenValue.extraWith];
+    }
 
     // Evaluate the "then" result
     const thenValue = sqlStringForRuntimeTransformer(
@@ -975,6 +982,9 @@ function sqlStringForCaseTransformer(
       newPreparedStatementParametersCount += thenValue.preparedStatementParameters.length;
     }
     usedContextEntries = [...usedContextEntries, ...(thenValue.usedContextEntries ?? [])];
+    if (thenValue.extraWith) {
+      extraWith = [...extraWith, ...thenValue.extraWith];
+    }
 
     whenClauses.push(`when ${discriminator.sqlStringOrObject} = ${whenValue.sqlStringOrObject} then ${thenValue.sqlStringOrObject}`);
   }
@@ -1003,6 +1013,9 @@ function sqlStringForCaseTransformer(
       newPreparedStatementParametersCount += elseValue.preparedStatementParameters.length;
     }
     usedContextEntries = [...usedContextEntries, ...(elseValue.usedContextEntries ?? [])];
+    if (elseValue.extraWith) {
+      extraWith = [...extraWith, ...elseValue.extraWith];
+    }
     elseClause = ` else ${elseValue.sqlStringOrObject}`;
   } else {
     // When no else clause, SQL CASE returns NULL by default, which maps to undefined/null
@@ -1012,14 +1025,21 @@ function sqlStringForCaseTransformer(
   // Build the complete CASE expression
   const caseExpression = `case ${whenClauses.join(" ")}${elseClause} end`;
 
+  // Build FROM clause if context entries are used
+  const uniqueUsedContextEntries = [...new Set(usedContextEntries)];
+  const fromClause = topLevelTransformer && uniqueUsedContextEntries.length > 0
+    ? ` FROM ${uniqueUsedContextEntries.map(e => `"${e}"`).join(", ")}`
+    : "";
+
   return {
     type: "scalar",
     sqlStringOrObject: (topLevelTransformer ? "select " : "") + caseExpression +
-      (topLevelTransformer ? ` AS "${withClauseColumnName ?? "case"}"` : ""),
+      (topLevelTransformer ? ` AS "${withClauseColumnName ?? "case"}"${fromClause}` : ""),
     preparedStatementParameters,
     resultAccessPath: topLevelTransformer ? [0, withClauseColumnName ?? "case"] : undefined,
     columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName ?? "case" : undefined,
     usedContextEntries,
+    extraWith: extraWith.length > 0 ? extraWith : undefined,
   };
 }
 

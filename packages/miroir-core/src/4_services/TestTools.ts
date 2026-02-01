@@ -425,6 +425,11 @@ export async function runTransformerTestInMemory(
       assertionExpectedValue: transformerTest.expectedValue,
       assertionActualValue: jsonifiedResult,
     };
+    // Set the result before re-throwing so it's tracked
+    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+    log.info("############################ test", assertionName, "END (with error)");
+    // Re-throw the error so vitest marks the test as failed
+    throw error;
   }
   miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
 
@@ -739,6 +744,8 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
           assertionExpectedValue: expectedValue,
           assertionActualValue: resultWithRetain,
         });
+        // Re-throw the error so vitest marks the test as failed
+        throw error;
       }
       return;
     }
@@ -866,6 +873,10 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         assertionExpectedValue: expectedValue,
         assertionActualValue: resultWithRetain,
       };
+      // Set the result before re-throwing so it's tracked
+      miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,testAssertionResult);
+      // Re-throw the error so vitest marks the test as failed
+      throw error;
     }
     miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,testAssertionResult);
   };
