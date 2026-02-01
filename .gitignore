@@ -2,6 +2,9 @@
 node_modules*/
 node_modules/.cache*/
 package-lock.json
+packages/miroir-cli/dist*/
+packages/miroir-cli/tmp*/
+packages/miroir-cli/tests/tmp*/
 packages/miroir-core/node_modules*/
 packages/miroir-core/dist*/
 packages/miroir-core/dist/index.js

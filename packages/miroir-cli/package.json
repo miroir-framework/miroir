@@ -1,0 +1,64 @@
+{
+  "name": "miroir-cli",
+  "version": "1.0.0",
+  "description": "Command Line Interface for Miroir Framework - exposes Endpoint Actions as CLI commands",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "miroir-cli": "./dist/index.js"
+  },
+  "scripts": {
+    "copy-files": "copyfiles -u 1 src/**/*.json dist/src",
+    "build": "npm run copy-files && tsup --target=node20 --format esm src/index.ts",
+    "dev": "npm run build && node ./dist/index.js",
+    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
+    "testByFile": "cross-env NODE_ENV=test vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git"
+  },
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "cli",
+    "miroir",
+    "framework",
+    "command-line"
+  ],
+  "dependencies": {
+    "miroir-core": "*",
+    "miroir-localcache-redux": "*",
+    "@miroir-framework/jzod": "0.8.2",
+    "commander": "^12.1.0",
+    "zod": "^3.21.4",
+    "uuid": "^11.0.0",
+    "loglevelnext": "^6.0.0"
+  },
+  "peerDependencies": {
+    "miroir-store-filesystem": "*",
+    "miroir-store-indexedDb": "*",
+    "miroir-store-postgres": "*"
+  },
+  "peerDependenciesMeta": {
+    "miroir-store-filesystem": {
+      "optional": true
+    },
+    "miroir-store-indexedDb": {
+      "optional": true
+    },
+    "miroir-store-postgres": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/uuid": "^10.0.0",
+    "copyfiles": "^2.4.1",
+    "cross-env": "^7.0.3",
+    "miroir-example-library": "*",
+    "tsup": "^8.0.1",
+    "typescript": "5.8.2",
+    "vitest": "^3.2.4"
+  }
+}
