@@ -421,15 +421,67 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           then: {
             admin: {
               emulatedServerType: "indexedDb",
-              indexedDbName: "{{createApplicationAndDeployment.applicationName}}_admin",
+              // indexedDbName: "{{createApplicationAndDeployment.applicationName}}_admin",
+              indexedDbName: {
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "indexedDbName",
+                    ],
+                  },
+                  "_admin",
+                ],
+              },
             },
             model: {
               emulatedServerType: "indexedDb",
-              indexedDbName: "{{createApplicationAndDeployment.applicationName}}_model",
+              indexedDbName: {
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "indexedDbName",
+                    ],
+                  },
+                  "/",
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                  },
+                  "_model",
+                ],
+              },
+              // indexedDbName: "{{createApplicationAndDeployment.applicationName}}_model",
             },
             data: {
               emulatedServerType: "indexedDb",
-              indexedDbName: "{{createApplicationAndDeployment.applicationName}}_data",
+              indexedDbName: {
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "indexedDbName",
+                    ],
+                  },
+                  "/",
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                  },
+                  "_data",
+                ],
+              },
+              // indexedDbName: "{{createApplicationAndDeployment.applicationName}}_data",
             },
           },
         },
@@ -438,47 +490,63 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           then: {
             admin: {
               emulatedServerType: "filesystem",
-              directory: "./tests/tmp/miroir_admin",
-              // directory: `${serverConfig.rootDirectory}/admin`,
-              // directory: {
-              //   transformerType: "getFromParameters",
-              //   referencePath: [
-              //     "createApplicationAndDeployment",
-              //     "applicationStorage",
-              //     "directory",
-              //   ],
-                //
-                // definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/admin`,
-                // transformerType: "mustacheStringTemplate",
-                // definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/{{createApplicationAndDeployment.applicationName}}_admin`,
-              // },
+              directory: {
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "directory",
+                    ],
+                  },
+                  "/admin",
+                ],
+              },
             },
             model: {
               emulatedServerType: "filesystem",
-              // directory: "./tests/tmp/test1",
               directory: {
-              //   transformerType: "getFromParameters",
-              //   referencePath: [
-              //     "createApplicationAndDeployment",
-              //     "applicationStorage",
-              //     "directory",
-              //   ],
-                transformerType: "mustacheStringTemplate",
-                definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/{{createApplicationAndDeployment.applicationName}}_model`,
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "directory",
+                    ],
+                  },
+                  "/",
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                  },
+                  "_model",
+                ],
               },
             },
             data: {
               emulatedServerType: "filesystem",
-              // directory: "./tests/tmp/test1",
               directory: {
-                // transformerType: "getFromParameters",
-                // referencePath: [
-                //   "createApplicationAndDeployment",
-                //   "applicationStorage",
-                //   "directory",
-                // ],
-                transformerType: "mustacheStringTemplate",
-                definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/{{createApplicationAndDeployment.applicationName}}_data`,
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: [
+                      "createApplicationAndDeployment",
+                      "applicationStorage",
+                      "directory",
+                    ],
+                  },
+                  "/",
+                  {
+                    transformerType: "getFromParameters",
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
+                  },
+                  "_data",
+                ],
               },
             },
           },
@@ -510,18 +578,18 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition: "{{createApplicationAndDeployment.applicationName}}",
-        },
+        } as any,
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition: "The {{createApplicationAndDeployment.applicationName}} selfApplication",
-        },
+        } as any,
         description: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition:
             "The model and data of the {{createApplicationAndDeployment.applicationName}} selfApplication",
-        },
+        } as any,
       },
       // selfApplicationDeploymentConfiguration: {
       //   ...selfApplicationDeploymentLibrary,

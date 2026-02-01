@@ -1336,6 +1336,417 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "plus",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds two numbers",
+                "transformerName": "plusTwoNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 8
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds three numbers",
+                "transformerName": "plusThreeNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 3
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 2
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 10
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with single number returns it",
+                "transformerName": "plusSingleNumber",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 42
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 42
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds two negative numbers",
+                "transformerName": "plusTwoNegativeNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": -10
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": -5
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": -15
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds positive and negative numbers",
+                "transformerName": "plusPositiveAndNegative",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 10
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": -3
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 7
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds decimal numbers",
+                "transformerName": "plusDecimalNumbers",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 1.5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 2.5
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": 4
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus concatenates two strings",
+                "transformerName": "plusConcatStrings",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "Hello, "
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "World!"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "Hello, World!"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus concatenates three strings",
+                "transformerName": "plusConcatThreeStrings",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "Hello"
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": ", "
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "World!"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "Hello, World!"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus concatenates empty strings",
+                "transformerName": "plusConcatEmptyStrings",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": ""
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "test"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "test"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus adds two bigints",
+                "transformerName": "plusTwoBigints",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "bigint" },
+                      "interpolation": "runtime",
+                      "value": "9007199254740992"
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "bigint" },
+                      "interpolation": "runtime",
+                      "value": "1"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": "9007199254740993"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with empty args fails",
+                "transformerName": "plusEmptyArgs",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": []
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with number and string fails",
+                "transformerName": "plusNumberAndStringFails",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "test"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with number and bigint fails",
+                "transformerName": "plusNumberAndBigintFails",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 5
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "bigint" },
+                      "interpolation": "runtime",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with mixed types in middle fails",
+                "transformerName": "plusMixedTypesMiddle",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 1
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 2
+                    },
+                    {
+                      "transformerType": "returnValue",
+                      "mlSchema": { "type": "string" },
+                      "interpolation": "runtime",
+                      "value": "oops"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                },
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "plus with reference values",
+                "transformerName": "plusWithReferenceValues",
+                "transformer": {
+                  "transformerType": "+",
+                  "interpolation": "runtime",
+                  "args": [
+                    {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referenceName": "value1"
+                    },
+                    {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referenceName": "value2"
+                    }
+                  ]
+                },
+                "transformerParams": {
+                  "value1": 100,
+                  "value2": 50
+                },
+                "integrationTestExpectedValue": {
+                  "retainAttributes": ["queryFailure"],
+                  "value": {
+                    "queryFailure": "QueryNotExecutable"
+                  }
+                },
+                "unitTestExpectedValue": 150
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "references",
             "skip": true,
             "transformerTests": [

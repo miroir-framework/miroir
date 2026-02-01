@@ -119,6 +119,7 @@ import {
   transformer_spreadSheetToJzodSchema,
   // 
   transformer_ifThenElse,
+  transformer_plus,
   transformer_case,
   transformer_returnValue,
   transformer_constantAsExtractor,
@@ -744,6 +745,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleListPickElementTransformer,
   handleUniqueTransformer,
   handleTransformer_ifThenElse,
+  handleTransformer_plus,
   handleTransformer_case,
   handleTransformer_constant,
   // handleTransformer_constantArray,
@@ -789,6 +791,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
         .definition as string[]
     ).map((t: string) => [t, transformer_ifThenElse])
   ),
+  "+": transformer_plus,
   case: transformer_case,
   returnValue: transformer_returnValue,
   constantAsExtractor: transformer_constantAsExtractor,
@@ -2849,6 +2852,156 @@ export function handleTransformer_ifThenElse(
   //   : results.some(r => r);
 
   // return { transformerReturnType: "success", returnedValue: finalResult };
+}
+
+// ################################################################################################
+/**
+ * handleTransformer_plus
+ * Implements the + operator for numbers, bigints, and strings.
+ * - Numbers: Addition (5 + 3 + 2 = 10)
+ * - Bigints: Addition (represented as strings in JSON)
+ * - Strings: Concatenation ("Hello" + " " + "World" = "Hello World")
+ * 
+ * Evaluates arguments left-to-right (from index 0 to length-1).
+ * 
+ * Error cases (for SQL compatibility):
+ * - Empty args array returns TransformerFailure
+ * - Single element returns that element
+ * - Mixed types (number + string, number + bigint) return TransformerFailure
+ * - null/undefined operands return TransformerFailure
+ */
+export function handleTransformer_plus(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: {
+    label?: string;
+    interpolation?: "build" | "runtime";
+    transformerType: "+";
+    args: TransformerForBuildPlusRuntime[];
+  },
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  // Check for empty array
+  if (!transformer.args || transformer.args.length === 0) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_plus"],
+      failureMessage: "Cannot apply + to empty args array",
+    });
+  }
+
+  // Evaluate all arguments left-to-right
+  const evaluatedArgs: any[] = [];
+  for (let i = 0; i < transformer.args.length; i++) {
+    const argValue = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "args", i.toString()],
+      transformer.label ? `${transformer.label}_arg${i}` : `arg${i}`,
+      transformer.args[i],
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      transformerParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+
+    // Check if argument evaluation failed
+    if (argValue instanceof TransformerFailure) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_plus"],
+        failureMessage: `Failed to resolve argument at index ${i}`,
+        innerError: argValue,
+      });
+    }
+
+    evaluatedArgs.push(argValue);
+  }
+
+  // Single element - return it directly
+  if (evaluatedArgs.length === 1) {
+    return evaluatedArgs[0];
+  }
+
+  // Apply + operation left-to-right
+  let result = evaluatedArgs[0];
+  let resultType = typeof result;
+  let resultIsBigintSchema = (transformer.args[0] as any)?.mlSchema?.type === "bigint";
+
+  for (let i = 1; i < evaluatedArgs.length; i++) {
+    const nextValue = evaluatedArgs[i];
+    const nextType = typeof nextValue;
+    const nextIsBigintSchema = (transformer.args[i] as any)?.mlSchema?.type === "bigint";
+
+    // Handle null/undefined
+    if (result === null || result === undefined || nextValue === null || nextValue === undefined) {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_plus"],
+        failureMessage: `Cannot apply + to null/undefined at index ${i}: result=${result}, next=${nextValue}`,
+      });
+    }
+
+    // Bigint + Bigint (via mlSchema or native bigint type)
+    if (resultIsBigintSchema && nextIsBigintSchema) {
+      try {
+        result = (BigInt(result) + BigInt(nextValue)).toString();
+        resultType = "string"; // Bigints are stored as strings
+      } catch (e) {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_plus"],
+          failureMessage: `Failed to perform bigint addition at index ${i}: ${e}`,
+        });
+      }
+    }
+    // Native Bigint + Bigint
+    else if (resultType === "bigint" && nextType === "bigint") {
+      result = (result + nextValue).toString();
+      resultType = "string";
+    }
+    // Number + Number
+    else if (resultType === "number" && nextType === "number") {
+      result = result + nextValue;
+    }
+    // String + String (concatenation)
+    else if (resultType === "string" && nextType === "string") {
+      // If one has bigint schema and other doesn't, it's a type mismatch
+      if (resultIsBigintSchema !== nextIsBigintSchema) {
+        return new TransformerFailure({
+          queryFailure: "FailedTransformer",
+          transformerPath,
+          failureOrigin: ["handleTransformer_plus"],
+          failureMessage: `Type mismatch at index ${i}: cannot apply + between bigint and string.`,
+        });
+      }
+      // Regular string concatenation
+      result = result + nextValue;
+    }
+    // Type mismatch
+    else {
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_plus"],
+        failureMessage: `Type mismatch at index ${i}: cannot apply + to ${resultType} and ${nextType}. All operands must be of the same type (number, string, or bigint).`,
+      });
+    }
+
+    // Update resultIsBigintSchema for next iteration
+    resultIsBigintSchema = nextIsBigintSchema;
+  }
+
+  return result;
 }
 
 // ################################################################################################

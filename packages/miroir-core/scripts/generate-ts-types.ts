@@ -153,6 +153,7 @@ export type TransformerForBuild =
   | TransformerForBuild_listReducerToSpreadObject
   | TransformerForBuild_mapList
   | TransformerForBuild_mustacheStringTemplate
+  | TransformerForBuild_plus
   | TransformerForBuild_generateUuid
   | TransformerForBuild_mergeIntoObject
   | TransformerForBuild_accessDynamicPath
@@ -206,6 +207,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_listReducerToSpreadObject,
     transformerForBuild_mapList,
     transformerForBuild_mustacheStringTemplate,
+    transformerForBuild_plus,
     transformerForBuild_generateUuid,
     transformerForBuild_mergeIntoObject,
     transformerForBuild_accessDynamicPath,
@@ -251,6 +253,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_listReducerToSpreadObject
   | TransformerForBuildPlusRuntime_mapList
   | TransformerForBuildPlusRuntime_mustacheStringTemplate
+  | TransformerForBuildPlusRuntime_plus
   | TransformerForBuildPlusRuntime_generateUuid
   | TransformerForBuildPlusRuntime_mergeIntoObject
   | TransformerForBuildPlusRuntime_accessDynamicPath
@@ -305,6 +308,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_listReducerToSpreadObject,
     transformerForBuildPlusRuntime_mapList,
     transformerForBuildPlusRuntime_mustacheStringTemplate,
+    transformerForBuildPlusRuntime_plus,
     transformerForBuildPlusRuntime_generateUuid,
     transformerForBuildPlusRuntime_mergeIntoObject,
     transformerForBuildPlusRuntime_accessDynamicPath,

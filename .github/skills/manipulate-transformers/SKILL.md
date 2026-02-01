@@ -113,11 +113,22 @@ In `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirF
 
 **This step is mandatory for devBuild to generate types correctly!**
 
+#### Step 7: add pre-generated Schema Types
+
+In `packages/miroir-core/scripts/generate-ts-types.ts`:
+- Add `transformerForBuild_<name>` entry in `headerForZodImports` definition
+- Add `transformerForBuild_<name>` entry in `transformerForBuild` definition
+- Add `transformerForBuildPlusRuntime_<name>` entry in `TransformerForBuildPlusRuntime` definition
+- Add `transformerForBuildPlusRuntime_<name>` entry in `transformerForBuildPlusRuntime` definition
+
 #### Step 7: Run devBuild and Tests
 ```bash
-npm run devBuild -w miroir-core
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && && RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
+
+#### Step 8: Create or Update documentation
+
+documentation is in folder `docs-OLD\transformers`
 
 ---
 
@@ -192,7 +203,7 @@ RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transforme
 
 ### Implementation Function Pattern:
 
-```typescript
+```ts
 // In TransformersForRuntime.ts
 export const handleTransformer_<name> = (
   step: Step,
@@ -339,6 +350,9 @@ export const handleTransformer_<name> = (
 - `case` - Switch on multiple discrete values (like SQL CASE WHEN)
 - `dataflowObject` - Sequential/dataflow transformer composition
 - `returnValue` - Return a constant value
+
+### Arithmetic/String Operations
+- `+` (plus) - Addition for numbers/bigints, concatenation for strings
 
 ### String/Data
 - `mustacheStringTemplate` - Mustache template interpolation
@@ -592,7 +606,91 @@ Before submitting (library-implemented transformer):
 
 ## Additional Resources
 
+- [plus.md](file://docs-OLD/transformers/plus.md) for plus transformer (arithmetic/concatenation)
 - [case.md](file://docs-OLD/transformers/case.md) for case transformer (SQL CASE WHEN style)
 - [mapperListToList.md](file://docs-OLD/transformers/mapperListToList.md) for mapList examples
 - See existing transformer definitions for patterns
 - See `spreadSheetToJzodSchema` for a complex composite transformer example
+
+---
+
+## Lessons Learned & Best Practices
+
+### Error Handling Patterns
+
+When implementing handlers, use `instanceof TransformerFailure` to check for operand failures:
+
+```typescript
+// CORRECT: Use instanceof
+if (leftValue instanceof TransformerFailure) {
+  return new TransformerFailure({
+    queryFailure: "FailedTransformer",
+    transformerPath,
+    failureOrigin: ["handleTransformer_<name>"],
+    failureMessage: "Failed to resolve left operand",
+    innerError: leftValue,
+  });
+}
+
+// WRONG: Don't use non-existent functions like isTransformerError()
+```
+
+### TransformerFailure Constructor
+
+The `queryParameters` field in `TransformerFailure` expects `string | undefined`, not an object:
+
+```typescript
+// CORRECT: Use string or omit
+new TransformerFailure({
+  queryFailure: "FailedTransformer",
+  transformerPath,
+  failureOrigin: ["handleTransformer_<name>"],
+  failureMessage: "Error details here",
+  // queryParameters is optional
+});
+
+// WRONG: Don't pass object
+new TransformerFailure({
+  queryParameters: { left: leftValue, right: rightValue }, // ERROR!
+});
+```
+
+### Handling Bigints in JSON
+
+JSON doesn't support native bigint. Bigints are represented as strings with `mlSchema.type === "bigint"`:
+
+```json
+{
+  "transformerType": "returnValue",
+  "mlSchema": { "type": "bigint" },
+  "interpolation": "runtime",
+  "value": "9007199254740992"  // String, not number!
+}
+```
+
+To detect bigints in your handler, check the `mlSchema` from the original transformer:
+
+```typescript
+const leftIsBigintSchema = (transformer.left as any)?.mlSchema?.type === "bigint";
+const rightIsBigintSchema = (transformer.right as any)?.mlSchema?.type === "bigint";
+
+if (leftIsBigintSchema && rightIsBigintSchema) {
+  // Perform bigint operation
+  const result = BigInt(leftValue) + BigInt(rightValue);
+  return result.toString();
+}
+```
+
+### Build Order
+
+When modifying schemas, always use `devBuild` (includes type generation):
+
+```bash
+npm run devBuild -w miroir-core  # Generates types from Jzod schemas
+```
+
+For implementation-only changes, regular `build` is sufficient:
+
+```bash
+npm run build -w miroir-core  # Faster, no type generation
+```

@@ -106,6 +106,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForObjectEntriesTransformer,
   sqlStringForObjectValuesTransformer,
   sqlStringForParameterReferenceTransformer,
+  sqlStringForPlusTransformer,
   sqlStringForUniqueTransformer,
 }
 
@@ -176,11 +177,20 @@ export interface SqlStringForCombinerReturnType {
 // ################################################################################################
 function getSqlTypeForValue(
   value?: any,
+  mlSchema?: { type?: string },
   // actionRuntimeTransformer: { transformerType: "returnValue"; value?: any; interpolation: "runtime"; }, 
   // sqlTargetType: string, label: string
 ) {
   let sqlTargetType: PostgresDataTypes;
   let label: string;
+  
+  // Check mlSchema first for type information (needed for bigints which are strings in JSON)
+  if (mlSchema?.type === "bigint") {
+    sqlTargetType = "bigint";
+    label = "constantBigint";
+    return { sqlTargetType, label };
+  }
+  
   switch (typeof value) {
     case "string": {
       sqlTargetType = "text";
@@ -314,7 +324,7 @@ function sqlStringForConstantTransformer(
       : "scalar";
   // let sqlTargetType: PostgresDataTypes;
   // let label: string;
-  const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value);
+  const { sqlTargetType, label } = getSqlTypeForValue(actionRuntimeTransformer.value, (actionRuntimeTransformer as any).mlSchema);
   return getConstantSql(
     actionRuntimeTransformer,
     preparedStatementParametersCount,
@@ -877,6 +887,173 @@ function sqlStringForConditionalTransformer(
       ...(_then.usedContextEntries ?? []),
       ...(_else.usedContextEntries ?? []),
     ],
+  };
+}
+
+// ################################################################################################
+// SQL implementation of the plus transformer
+// Performs addition on numbers/bigints or concatenation on strings (similar to JS +)
+// Evaluates arguments left-to-right (from index 0 to length-1)
+function sqlStringForPlusTransformer(
+  actionRuntimeTransformer: {
+    transformerType: "+";
+    interpolation?: "build" | "runtime";
+    args: TransformerForBuildPlusRuntime[];
+  },
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  // Check for empty array
+  if (!actionRuntimeTransformer.args || actionRuntimeTransformer.args.length === 0) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForPlusTransformer requires at least one argument",
+    });
+  }
+
+  let preparedStatementParameters: any[] = [];
+
+  // Evaluate all arguments
+  const evaluatedArgs: SqlStringForTransformerElementValue[] = [];
+  for (const arg of actionRuntimeTransformer.args) {
+    const evaluatedArg = sqlStringForRuntimeTransformer(
+      arg,
+      preparedStatementParameters.length + preparedStatementParametersCount,
+      indentLevel + 1,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false // child transformers are not top-level
+    );
+    if (evaluatedArg instanceof Domain2ElementFailed) {
+      return evaluatedArg;
+    } else {
+      if (evaluatedArg.type !== "scalar") {
+        return new Domain2ElementFailed({
+          queryFailure: "QueryNotExecutable",
+          query: actionRuntimeTransformer as any,
+          failureMessage: `sqlStringForPlusTransformer argument is not scalar`,
+        });
+      }
+      evaluatedArgs.push(evaluatedArg);
+      if (evaluatedArg.preparedStatementParameters) {
+        preparedStatementParameters.push(...evaluatedArg.preparedStatementParameters);
+      }
+    }
+  }
+
+  // Determine operation based on first argument's mlSchema type
+  const firstTransformer = actionRuntimeTransformer.args[0] as any;
+  const firstType = firstTransformer?.mlSchema?.type;
+  
+  // Validate all arguments have the same type and determine operator
+  let sqlOperator: string;
+  
+  if (!firstType) {
+    // No mlSchema - can't determine type at SQL generation time
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForPlusTransformer cannot determine operand types (no mlSchema)",
+    });
+  }
+  
+  // Validate all args have the same type
+  for (let i = 1; i < actionRuntimeTransformer.args.length; i++) {
+    const argTransformer = actionRuntimeTransformer.args[i] as any;
+    const argType = argTransformer?.mlSchema?.type;
+    
+    if (!argType) {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: `sqlStringForPlusTransformer cannot determine type for argument at index ${i} (no mlSchema)`,
+      });
+    }
+    
+    if (argType !== firstType) {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: `sqlStringForPlusTransformer type mismatch: argument 0 is ${firstType}, argument ${i} is ${argType}`,
+      });
+    }
+  }
+  
+  // Collect all usedContextEntries
+  const allUsedContextEntries: string[] = [];
+  for (const arg of evaluatedArgs) {
+    if (arg.usedContextEntries) {
+      allUsedContextEntries.push(...arg.usedContextEntries);
+    }
+  }
+
+// Single element - for top-level transformers, wrap in SELECT
+    // For non-top-level, return expression as-is
+    if (evaluatedArgs.length === 1) {
+      const singleElement = evaluatedArgs[0];
+      if (topLevelTransformer) {
+        // Top-level needs a SELECT statement
+        return {
+          type: singleElement.type,
+          sqlStringOrObject: 
+            `select ` +
+            flushAndIndent(indentLevel + 1) +
+            singleElement.sqlStringOrObject +
+            ` AS "${withClauseColumnName ?? "plus"}"`
+          ,
+          preparedStatementParameters,
+          resultAccessPath: [0, withClauseColumnName ?? "plus"],
+          columnNameContainingJsonValue: withClauseColumnName ?? "plus",
+          usedContextEntries: allUsedContextEntries,
+        };
+      } else {
+        // Non-top-level returns expression
+        return {
+          type: singleElement.type,
+          sqlStringOrObject: singleElement.sqlStringOrObject,
+          preparedStatementParameters,
+          resultAccessPath: singleElement.resultAccessPath,
+          columnNameContainingJsonValue: singleElement.columnNameContainingJsonValue,
+          usedContextEntries: allUsedContextEntries,
+        };
+      }
+  }
+
+  // Determine operator based on type
+  if (firstType === "string") {
+    sqlOperator = "||";
+  } else if (firstType === "number" || firstType === "bigint") {
+    sqlOperator = "+";
+  } else {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: `sqlStringForPlusTransformer operand type not supported: ${firstType}`,
+    });
+  }
+
+  // Build SQL expression left-to-right
+  let sqlExpression = evaluatedArgs[0].sqlStringOrObject;
+  for (let i = 1; i < evaluatedArgs.length; i++) {
+    sqlExpression = sqlExpression + " " + sqlOperator + " " + evaluatedArgs[i].sqlStringOrObject;
+  }
+
+  return {
+    type: "scalar",
+    sqlStringOrObject: (topLevelTransformer ? "select " : "") + sqlExpression +
+      (topLevelTransformer ? ` AS "${withClauseColumnName??"plus"}"` : ""),
+    preparedStatementParameters,
+    resultAccessPath: topLevelTransformer ? [0, withClauseColumnName??"plus"] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName??"plus" : undefined,
+    usedContextEntries: allUsedContextEntries,
   };
 }
 
@@ -3673,7 +3850,10 @@ export function sqlStringForQuery(
       newPreparedStatementParameters.length,
       1, // indentLevel,
       foreignKeyParams.extractor.queryParams,
-      paramsAndextractorAndCombinerContextEntries // definedContextEntries
+      paramsAndextractorAndCombinerContextEntries, // definedContextEntries
+      true, // useAccessPathForContextReference
+      true, // topLevelTransformer - these are top-level transformers in WITH clauses
+      key // withClauseColumnName
     );
     if (!(transformerRawQuery instanceof Domain2ElementFailed) && transformerRawQuery.preparedStatementParameters) {
       newPreparedStatementParameters = [...newPreparedStatementParameters, ...transformerRawQuery.preparedStatementParameters];
