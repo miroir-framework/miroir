@@ -18,6 +18,7 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
   size?: 'small' | 'medium' | 'large';
   fullWidth?: boolean;
   disabled?: boolean;
+  loading?: boolean;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   href?: string;
@@ -35,6 +36,7 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
   size = 'medium',
   fullWidth = false,
   disabled = false,
+  loading = false,
   startIcon,
   endIcon,
   href,
@@ -45,9 +47,10 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
   ...props
 }) => {
   const { currentTheme } = useMiroirTheme();
+  const isDisabled = disabled || loading;
   
   const getBackgroundColor = () => {
-    if (disabled) return currentTheme.colors.surfaceVariant || currentTheme.colors.surface;
+    if (isDisabled) return currentTheme.colors.surfaceVariant || currentTheme.colors.surface;
     if (variant === 'outlined' || variant === 'text') return 'transparent';
     
     switch (color) {
@@ -61,7 +64,7 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
   };
 
   const getTextColor = () => {
-    if (disabled) return currentTheme.colors.textSecondary;
+    if (isDisabled) return currentTheme.colors.textSecondary;
     if (variant === 'outlined' || variant === 'text') {
       switch (color) {
         case 'secondary': return currentTheme.colors.secondary;
@@ -105,8 +108,9 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
     fontFamily: currentTheme.typography.fontFamily,
     fontWeight: currentTheme.typography.fontWeight.medium,
     textDecoration: 'none',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.6 : 1,
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    opacity: isDisabled ? 0.6 : 1,
+    pointerEvents: isDisabled ? 'none' : 'auto',
     transition: `all ${currentTheme.transitions.duration.short} ${currentTheme.transitions.easing.easeInOut}`,
     width: fullWidth ? '100%' : 'auto',
     textTransform: 'uppercase',
@@ -114,14 +118,14 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
     minWidth: '64px',
     boxSizing: 'border-box',
     
-    '&:hover': disabled ? {} : {
+    '&:hover': isDisabled ? {} : {
       backgroundColor: variant === 'contained' 
         ? `${getBackgroundColor()}dd` 
         : `${getTextColor()}10`,
       borderColor: variant === 'outlined' ? getBackgroundColor() : undefined,
     },
     
-    '&:active': disabled ? {} : {
+    '&:active': isDisabled ? {} : {
       backgroundColor: variant === 'contained' 
         ? `${getBackgroundColor()}bb` 
         : `${getTextColor()}20`,
@@ -132,8 +136,8 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
     css: buttonStyles,
     className,
     style,
-    onClick: disabled ? undefined : onClick,
-    disabled,
+    onClick: isDisabled ? undefined : onClick,
+    disabled: isDisabled,
     href,
     target,
     rel,
@@ -141,12 +145,37 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
     ...props
   };
 
+  const spinnerStyles = css({
+    '@keyframes spin': {
+      '0%': { transform: 'rotate(0deg)' },
+      '100%': { transform: 'rotate(360deg)' }
+    },
+    display: 'inline-block',
+    width: '0.9em',
+    height: '0.9em',
+    border: `2px solid ${getTextColor()}`,
+    borderTopColor: `${getTextColor()}`,
+    borderRightColor: 'transparent',
+    borderRadius: '50%',
+    animation: 'spin 0.8s cubic-bezier(.4,.0,.2,1) infinite',
+    marginRight: currentTheme.spacing.xs,
+    verticalAlign: 'middle',
+    boxSizing: 'border-box',
+    // subtle inner contrast for crispness
+    filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.08))',
+  });
+
   return (
+    <>
+    {/* {loading ? 'LOADING' : 'NOT LOADING'} */}
     <Component {...buttonProps}>
-      {startIcon && <span>{startIcon}</span>}
+      {loading && <span css={spinnerStyles} />}
+      {!loading && startIcon && <span>{startIcon}</span>}
       {children}
-      {endIcon && <span>{endIcon}</span>}
+      {!loading && endIcon && <span>{endIcon}</span>}
     </Component>
+
+    </>
   );
 };
 

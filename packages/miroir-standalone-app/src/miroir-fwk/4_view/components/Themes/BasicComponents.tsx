@@ -195,14 +195,19 @@ export const ThemedProgressiveAccordion: React.FC<ThemedComponentProps & {
 export const ThemedButton: React.FC<ThemedComponentProps & {
   onClick?: () => void;
   variant?: 'primary' | 'secondary';
+  loading?: boolean;
+  disabled?: boolean;
 }> = ({ 
   children, 
   className, 
   style,
   onClick,
-  variant = 'primary'
+  variant = 'primary',
+  loading = false,
+  disabled = false
 }) => {
   const { currentTheme } = useMiroirTheme();
+  const isDisabled = disabled || loading;
   
   const buttonStyles = css({
     padding: `${currentTheme.spacing.sm} ${currentTheme.spacing.md}`,
@@ -211,17 +216,41 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
     color: currentTheme.colors.surface,
     border: 'none',
     borderRadius: currentTheme.borderRadius.md,
-    cursor: 'pointer',
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
     fontFamily: currentTheme.typography.fontFamily,
     fontSize: currentTheme.typography.fontSize.md,
     fontWeight: currentTheme.typography.fontWeight.normal,
-    '&:hover': {
+    opacity: isDisabled ? 0.6 : 1,
+    pointerEvents: isDisabled ? 'none' : 'auto',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: currentTheme.spacing.xs,
+    '&:hover': isDisabled ? {} : {
       backgroundColor: variant === 'primary' ? currentTheme.colors.primaryDark : currentTheme.colors.secondaryDark,
     },
   });
 
+  const spinnerStyles = css({
+    '@keyframes spin': {
+      '0%': { transform: 'rotate(0deg)' },
+      '100%': { transform: 'rotate(360deg)' }
+    },
+    display: 'inline-block',
+    width: '0.9em',
+    height: '0.9em',
+    border: `2px solid currentColor`,
+    borderTopColor: 'rgba(255,255,255,0.95)',
+    borderRightColor: 'transparent',
+    borderRadius: '50%',
+    animation: 'spin 0.8s cubic-bezier(.4,.0,.2,1) infinite',
+    verticalAlign: 'middle',
+    boxSizing: 'border-box',
+    marginRight: currentTheme.spacing.xs,
+  });
+
   return (
-    <button css={buttonStyles} className={className} style={style} onClick={onClick}>
+    <button css={buttonStyles} className={className} style={style} onClick={isDisabled ? undefined : onClick} disabled={isDisabled}>
+      {loading && <span css={spinnerStyles} />}
       {children}
     </button>
   );

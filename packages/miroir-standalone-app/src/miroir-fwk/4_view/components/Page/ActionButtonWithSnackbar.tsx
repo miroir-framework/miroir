@@ -28,11 +28,7 @@ export const ActionButtonWithSnackbar: React.FC<ActionButtonProps> = ({
   ...buttonProps
 }) => {
   const {
-    // snackbarOpen,
-    // snackbarMessage,
-    // snackbarSeverity,
-    // showSnackbar,
-    // handleSnackbarClose,
+    isActionRunning,
     handleAsyncAction: _handleAsyncAction,
   } = useSnackbar();
   
@@ -40,6 +36,7 @@ export const ActionButtonWithSnackbar: React.FC<ActionButtonProps> = ({
   return (
     <ThemedButton
       onClick={() => actualHandleAsyncAction?actualHandleAsyncAction(onAction, successMessage, actionName):undefined}
+      loading={isActionRunning}
       {...buttonProps}
     >
       {label}

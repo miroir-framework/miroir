@@ -168,6 +168,7 @@ export interface MiroirReactContext {
   snackbarOpen: boolean;
   snackbarMessage: string;
   snackbarSeverity: "success" | "error" | "info";
+  isActionRunning: boolean;
   showSnackbar: (message: string, severity?: "success" | "error" | "info") => void;
   handleSnackbarClose: () => void;
   handleAsyncAction: (
@@ -267,6 +268,7 @@ export function MiroirContextReactProvider(props: {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
+  const [isActionRunning, setIsActionRunning] = useState(false);
 
   const viewParams = useMemo(() => {
     // const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, generalEditMode, showModelTools);
@@ -337,6 +339,7 @@ export function MiroirContextReactProvider(props: {
   const handleAsyncAction = useMemo(
     () => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
       try {
+        setIsActionRunning(true);
         const result = await action();
         log.info(
           `handleAsyncAction done for ${actionName}:`,
@@ -370,6 +373,7 @@ export function MiroirContextReactProvider(props: {
                 "error"
               );
             }
+            setIsActionRunning(false);
           });
         // startTransition(() => {
         //   showSnackbar(result.errorMessage || result.errorType || "Unknown error", "error");
@@ -381,6 +385,7 @@ export function MiroirContextReactProvider(props: {
         // Use startTransition for non-urgent UI updates to allow React 18 batching
         startTransition(() => {
           showSnackbar(successMessage, "success");
+          setIsActionRunning(false);
         });
       } catch (error) {
         log.error(`Error in ${actionName}:`, error);
@@ -429,6 +434,7 @@ export function MiroirContextReactProvider(props: {
               }`,
               "error"
             );
+            setIsActionRunning(false);
           });
         } else {
           startTransition(() => {
@@ -436,6 +442,7 @@ export function MiroirContextReactProvider(props: {
               errorEntry.userMessage || `Error in ${actionName}: ${errorMessage}`,
               errorCategory === "startup" ? "error" : "error" // Use "error" instead of "warning"
             );
+            setIsActionRunning(false);
           });
         }
       }
@@ -539,6 +546,7 @@ export function MiroirContextReactProvider(props: {
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,
+      isActionRunning,
       showSnackbar,
       handleSnackbarClose,
       handleAsyncAction,
@@ -574,6 +582,7 @@ export function MiroirContextReactProvider(props: {
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,
+      isActionRunning,
       toolsPageState,
       updateToolsPageStateDEFUNCT,
       updateTransformerEditorState,
@@ -742,6 +751,7 @@ export function useSnackbar() {
     snackbarOpen: context.snackbarOpen,
     snackbarMessage: context.snackbarMessage,
     snackbarSeverity: context.snackbarSeverity,
+    isActionRunning: context.isActionRunning,
     showSnackbar: context.showSnackbar,
     handleSnackbarClose: context.handleSnackbarClose,
     handleAsyncAction: context.handleAsyncAction,

@@ -42,7 +42,8 @@ import {
 } from "../../../miroir-localcache-imports.js";
 
 import {
-  useMiroirContextService
+  useMiroirContextService,
+  useSnackbar
 } from "../../MiroirContextReactProvider.js";
 
 import { javascript } from '@codemirror/lang-javascript';
@@ -155,6 +156,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
 }) => {
   const renderStartTime = performance.now();
   const context = useMiroirContextService();
+  const { isActionRunning } = useSnackbar();
   const componentKey = `TypedValueObjectEditor-${deploymentUuid}-${applicationSection}`;
   // Access Formik from context (Formik is created in parent component)
   // const formik = useFormikValueObject();
@@ -476,6 +478,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       type="submit"
       variant="contained"
       style={{ maxWidth: "300px" }}
+      loading={isActionRunning}
       onClick={(e) => {
         log.info("TypedValueObjectEditor submit button clicked", e);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
