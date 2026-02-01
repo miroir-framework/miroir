@@ -7,14 +7,15 @@ Auto-generated commands from Endpoints - Using the cliCommandEntry() factory pat
 
 ## 8 Commands Available:
 
-createInstance - Create new entity instances
-getInstance - Get a single instance by UUID
-getInstances - Get all instances of an entity
-updateInstance - Update an existing instance
-deleteInstance - Delete an instance
-deleteInstanceWithCascade - Delete with cascade
-loadNewInstancesInLocalCache - Load instances into cache
-lendDocument - Library-specific lending action
+- createInstance - Create new entity instances
+- getInstance - Get a single instance by UUID
+- getInstances - Get all instances of an entity
+- updateInstance - Update an existing instance
+- deleteInstance - Delete an instance
+- deleteInstanceWithCascade - Delete with cascade
+- loadNewInstancesInLocalCache - Load instances into cache
+- lendDocument - Library-specific lending action
+
 JSON-only I/O - Input via --payload or --file, output as JSON
 
 Config-driven - Uses MIROIR_CLI_CONFIG_PATH environment variable or --config option
