@@ -309,6 +309,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
         transformerForBuild_ifThenElse: miroirTransformersForBuild.transformer_ifThenElse,
+        transformerForBuild_case: miroirTransformersForBuild.transformer_case,
         transformerForBuild_returnValue: miroirTransformersForBuild.transformer_returnValue,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
@@ -385,6 +386,8 @@ export function getMiroirFundamentalJzodSchema(
         //
         transformerForBuildPlusRuntime_ifThenElse:
           miroirTransformersForBuildPlusRuntime.transformer_ifThenElse,
+        transformerForBuildPlusRuntime_case:
+          miroirTransformersForBuildPlusRuntime.transformer_case,
         transformerForBuildPlusRuntime_returnValue:
           miroirTransformersForBuildPlusRuntime.transformer_returnValue,
         transformerForBuildPlusRuntime_constantAsExtractor:
@@ -3653,6 +3656,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_getFromParameters",
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_ifThenElse",
+    "transformerForBuild_case",
     "transformerForBuild_returnValue",
     "transformerForBuild_constantAsExtractor",
     "transformerForBuild_getFromContext",

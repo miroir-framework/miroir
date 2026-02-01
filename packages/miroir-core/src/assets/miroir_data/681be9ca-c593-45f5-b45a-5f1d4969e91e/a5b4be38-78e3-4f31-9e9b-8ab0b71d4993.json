@@ -1061,6 +1061,281 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "case",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case matches first when clause",
+                "transformerName": "caseMatchesFirstWhen",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "status"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "active"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is active"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "inactive"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is inactive"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown status"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "status": "active"
+                },
+                "expectedValue": "User is active"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case matches second when clause",
+                "transformerName": "caseMatchesSecondWhen",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "status"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "active"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is active"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "inactive"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is inactive"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown status"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "status": "inactive"
+                },
+                "expectedValue": "User is inactive"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case falls through to else clause",
+                "transformerName": "caseFallsToElse",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "status"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "active"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is active"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "inactive"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "User is inactive"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown status"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "status": "pending"
+                },
+                "expectedValue": "Unknown status"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case without else returns undefined when no match",
+                "transformerName": "caseWithoutElse",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "value"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "A"
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "matched A"
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "value": "B"
+                },
+                "expectedValue": null
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case with number discriminator",
+                "transformerName": "caseWithNumberDiscriminator",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "level"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": 1
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "beginner"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": 2
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "intermediate"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": 3
+                      },
+                      "then": {
+                        "transformerType": "returnValue",
+                        "value": "advanced"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "unknown level"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "level": 2
+                },
+                "expectedValue": "intermediate"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "case with complex then transformer",
+                "transformerName": "caseWithComplexThen",
+                "transformer": {
+                  "transformerType": "case",
+                  "interpolation": "runtime",
+                  "discriminator": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "type"
+                  },
+                  "whens": [
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "greeting"
+                      },
+                      "then": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "runtime",
+                        "definition": "Hello, {{name}}!"
+                      }
+                    },
+                    {
+                      "when": {
+                        "transformerType": "returnValue",
+                        "value": "farewell"
+                      },
+                      "then": {
+                        "transformerType": "mustacheStringTemplate",
+                        "interpolation": "runtime",
+                        "definition": "Goodbye, {{name}}!"
+                      }
+                    }
+                  ],
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "Unknown message type"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "type": "greeting",
+                  "name": "Alice"
+                },
+                "expectedValue": "Hello, Alice!"
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "references",
             "skip": true,
             "transformerTests": [

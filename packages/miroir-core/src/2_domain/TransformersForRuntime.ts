@@ -119,6 +119,7 @@ import {
   transformer_spreadSheetToJzodSchema,
   // 
   transformer_ifThenElse,
+  transformer_case,
   transformer_returnValue,
   transformer_constantAsExtractor,
   transformer_getFromContext,
@@ -743,6 +744,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleListPickElementTransformer,
   handleUniqueTransformer,
   handleTransformer_ifThenElse,
+  handleTransformer_case,
   handleTransformer_constant,
   // handleTransformer_constantArray,
   handleTransformer_constantAsExtractor,
@@ -787,6 +789,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
         .definition as string[]
     ).map((t: string) => [t, transformer_ifThenElse])
   ),
+  case: transformer_case,
   returnValue: transformer_returnValue,
   constantAsExtractor: transformer_constantAsExtractor,
   getFromContext: transformer_getFromContext,
@@ -2846,6 +2849,95 @@ export function handleTransformer_ifThenElse(
   //   : results.some(r => r);
 
   // return { transformerReturnType: "success", returnedValue: finalResult };
+}
+
+// ################################################################################################
+/**
+ * handleTransformer_case
+ * Implements a CASE WHEN expression, matching a discriminator value against a list of when/then clauses.
+ * Similar to SQL: CASE discriminator WHEN value1 THEN result1 WHEN value2 THEN result2 ELSE default END
+ */
+export function handleTransformer_case(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: {
+    label?: string;
+    interpolation?: "build" | "runtime";
+    transformerType: "case";
+    discriminator: TransformerForBuildPlusRuntime;
+    whens: Array<{
+      when: TransformerForBuildPlusRuntime;
+      then: TransformerForBuildPlusRuntime;
+    }>;
+    else?: TransformerForBuildPlusRuntime;
+  },
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any> {
+  // Evaluate the discriminator value
+  const discriminatorValue = defaultTransformers.transformer_extended_apply(
+    step,
+    [...transformerPath, "discriminator"],
+    transformer.label ? transformer.label + "_discriminator" : "discriminator",
+    transformer.discriminator,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    transformerParams,
+    contextResults,
+    reduxDeploymentsState
+  );
+
+  // Iterate through when/then pairs to find a match
+  for (let i = 0; i < transformer.whens.length; i++) {
+    const whenClause = transformer.whens[i];
+    const whenValue = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "whens", i.toString(), "when"],
+      transformer.label ? transformer.label + `_when_${i}` : `when_${i}`,
+      whenClause.when,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      transformerParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+
+    // If discriminator matches when value, return the then result
+    if (discriminatorValue == whenValue) {
+      return defaultTransformers.transformer_extended_apply(
+        step,
+        [...transformerPath, "whens", i.toString(), "then"],
+        transformer.label ? transformer.label + `_then_${i}` : `then_${i}`,
+        whenClause.then,
+        resolveBuildTransformersTo,
+        modelEnvironment,
+        transformerParams,
+        contextResults,
+        reduxDeploymentsState
+      );
+    }
+  }
+
+  // No match found, return else if provided, otherwise undefined
+  if (transformer.else) {
+    return defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "else"],
+      transformer.label ? transformer.label + "_else" : "else",
+      transformer.else,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      transformerParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+  }
+
+  return undefined;
 }
 
 // ################################################################################################
