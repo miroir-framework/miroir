@@ -9,35 +9,40 @@ import type {
   InitApplicationParameters,
   LoggerInterface,
   MetaModel,
-  TransformerForBuildPlusRuntime,
-  Uuid
+  MiroirModelEnvironment,
+  ReduxDeploymentsState,
+  ReduxStateWithUndoRedo,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
   adminSelfApplication,
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   entityDeployment,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  miroirFundamentalJzodSchemaUuid,
   MiroirLoggerFactory,
   noValue,
-  // selfApplicationLibrary,
-  // selfApplicationModelBranchLibraryMasterBranch,
-  // selfApplicationVersionLibraryInitialVersion
+  selfApplicationMiroir
 } from "miroir-core";
 import {
   type AdminApplication
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { packageName } from "../../../../constants.js";
-import { cleanLevel } from "../../constants.js";
-import { FileSelector } from '../Themes/FileSelector';
-import type { FormMLSchema } from "./RunnerInterface.js";
-import { RunnerView } from "./RunnerView.js";
 import {
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-example-library";
+import { packageName } from "../../../../constants.js";
+import { cleanLevel } from "../../constants.js";
+import { FileSelector } from '../Themes/FileSelector';
+import type { FormMLSchema } from "./RunnerInterface.js";
+import { RunnerView } from "./RunnerView.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
+import { dir } from "console";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -73,6 +78,12 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
   const [fileError, setFileError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // ##############################################################################################
+  const runnerDeploymentUuid = useMemo(() => {
+    // Find deployment UUID from applicationDeploymentMap
+    const deploymentUuid = applicationDeploymentMap[applicationDeploymentMap ? Object.keys(applicationDeploymentMap)[0] : ""];
+    return deploymentUuid || "";
+  }, [applicationDeploymentMap]);
   // File selection handler
   const handleFileSelect = useCallback((file: File) => {
     if (!file.name.endsWith('.json')) {
@@ -129,6 +140,24 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     setSuccessMessage(null);
   }, []);
 
+  // ##############################################################################################
+  const miroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    selfApplicationMiroir.uuid,
+    defaultSelfApplicationDeploymentMap
+  );
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+        getMemoizedReduxDeploymentsStateSelectorMap();
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        defaultSelfApplicationDeploymentMap,
+        () => ({}),
+        miroirModelEnvironment,
+      )
+  );
+
+
   const formMLSchema: FormMLSchema = useMemo(
     () => ({
       formMLSchemaType: "mlSchema",
@@ -138,6 +167,13 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           createApplicationAndDeployment: {
             type: "object",
             definition: {
+              applicationStorage: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "storeSectionConfiguration",
+                }
+              },
               applicationName: {
                 type: "string",
                 tag: {
@@ -157,10 +193,26 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
   const initialFormValue = useMemo(
     () => ({
       createApplicationAndDeployment: {
+        ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+          "build",
+          (formMLSchema as any).mlSchema,
+          undefined, // rootObject
+          "", // rootLessListKey,
+          undefined, // No need to pass currentDefaultValue here
+          [], // currentPath on value is root
+          false, // forceOptional
+          noValue.uuid, // storedRunner.application,
+          defaultSelfApplicationDeploymentMap,
+          runnerDeploymentUuid,
+          miroirModelEnvironment,
+          {}, // transformerParams
+          {}, // contextResults
+          deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
+        ).createApplicationAndDeployment,
         applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
       },
     }),
-    []
+    [],
   );
 
   let applicationDeploymentMapWithNewApplication: ApplicationDeploymentMap = {};
@@ -252,6 +304,202 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
         break;
       }
     }
+    const defaultDirectory = "tmp/miroir_data_storage";
+
+    const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
+      transformerType: "case",
+      discriminator: {
+        transformerType: "getFromParameters",
+        referencePath: [
+          "createApplicationAndDeployment",
+          "applicationStorage",
+          "emulatedServerType",
+        ],
+      },
+      whens: [
+        {
+          when: "mongodb",
+          then: {
+            admin: {
+              emulatedServerType: "mongodb",
+              connectionString: "mongodb://localhost:27017",
+              // connectionString: {
+              //   transformerType: "getFromParameters",
+              //   referencePath: [
+              //     "createApplicationAndDeployment",
+              //     "applicationStorage",
+              //     "connectionString",
+              //   ],
+              // },
+              database: "miroirAdmin",
+            },
+            model: {
+              emulatedServerType: "mongodb",
+              connectionString: "mongodb://localhost:27017",
+              // database: "miroir-app",
+              // connectionString: {
+              //   transformerType: "getFromParameters",
+              //   referencePath: [
+              //     "createApplicationAndDeployment",
+              //     "applicationStorage",
+              //     "connectionString",
+              //   ],
+              // },
+              database: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createApplicationAndDeployment.applicationName}}",
+              },
+            },
+            data: {
+              emulatedServerType: "mongodb",
+              connectionString: "mongodb://localhost:27017",
+              // database: "miroir-app",
+              // connectionString: {
+              //   transformerType: "getFromParameters",
+              //   referencePath: [
+              //     "createApplicationAndDeployment",
+              //     "applicationStorage",
+              //     "connectionString",
+              //   ],
+              // },
+              database: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createApplicationAndDeployment.applicationName}}",
+              },
+            },
+          },
+        },
+        {
+          when: "sql",
+          then: {
+            admin: {
+              emulatedServerType: "sql",
+              connectionString: {
+                transformerType: "getFromParameters",
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
+              },
+              schema: "miroirAdmin",
+            },
+            model: {
+              emulatedServerType: "sql",
+              connectionString: {
+                transformerType: "getFromParameters",
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
+              },
+              schema: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createApplicationAndDeployment.applicationName}}",
+              }, // TODO: separate model and data schemas
+            },
+            data: {
+              emulatedServerType: "sql",
+              connectionString: {
+                transformerType: "getFromParameters",
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
+              },
+              schema: {
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createApplicationAndDeployment.applicationName}}",
+              }, // TODO: separate model and data schemas
+            },
+          },
+        },
+        {
+          when: "indexedDb",
+          then: {
+            admin: {
+              emulatedServerType: "indexedDb",
+              indexedDbName: "{{createApplicationAndDeployment.applicationName}}_admin",
+            },
+            model: {
+              emulatedServerType: "indexedDb",
+              indexedDbName: "{{createApplicationAndDeployment.applicationName}}_model",
+            },
+            data: {
+              emulatedServerType: "indexedDb",
+              indexedDbName: "{{createApplicationAndDeployment.applicationName}}_data",
+            },
+          },
+        },
+        {
+          when: "filesystem",
+          then: {
+            admin: {
+              emulatedServerType: "filesystem",
+              directory: "./tests/tmp/miroir_admin",
+              // directory: `${serverConfig.rootDirectory}/admin`,
+              // directory: {
+              //   transformerType: "getFromParameters",
+              //   referencePath: [
+              //     "createApplicationAndDeployment",
+              //     "applicationStorage",
+              //     "directory",
+              //   ],
+                //
+                // definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/admin`,
+                // transformerType: "mustacheStringTemplate",
+                // definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/{{createApplicationAndDeployment.applicationName}}_admin`,
+              // },
+            },
+            model: {
+              emulatedServerType: "filesystem",
+              // directory: "./tests/tmp/test1",
+              directory: {
+              //   transformerType: "getFromParameters",
+              //   referencePath: [
+              //     "createApplicationAndDeployment",
+              //     "applicationStorage",
+              //     "directory",
+              //   ],
+                transformerType: "mustacheStringTemplate",
+                definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/{{createApplicationAndDeployment.applicationName}}_model`,
+              },
+            },
+            data: {
+              emulatedServerType: "filesystem",
+              // directory: "./tests/tmp/test1",
+              directory: {
+                // transformerType: "getFromParameters",
+                // referencePath: [
+                //   "createApplicationAndDeployment",
+                //   "applicationStorage",
+                //   "directory",
+                // ],
+                transformerType: "mustacheStringTemplate",
+                definition: `{{createApplicationAndDeployment.applicationStorage.directory}}/{{createApplicationAndDeployment.applicationName}}_data`,
+              },
+            },
+          },
+        },
+      ],
+      else: {
+        // default: filesystem
+        admin: {
+          emulatedServerType: "filesystem",
+          directory: defaultDirectory,
+        },
+        model: {
+          emulatedServerType: "filesystem",
+          directory: defaultDirectory,
+        },
+        data: {
+          emulatedServerType: "filesystem",
+          directory: defaultDirectory,
+        },
+      },
+    };
     const initParametersForTest: InitApplicationParameters = {
       dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
       metaModel: defaultMiroirMetaModel,
@@ -380,7 +628,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               configuration: {
-                [testDeploymentUuid]: testDeploymentStorageConfiguration as any,
+                // [testDeploymentUuid]: testDeploymentStorageConfiguration as any,
+                [testDeploymentUuid]: sqltestDeploymentStorageConfigurationTemplate as any,
               },
             },
           },
@@ -392,7 +641,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             payload: {
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
-              configuration: testDeploymentStorageConfiguration as any,
+              // configuration: testDeploymentStorageConfiguration as any,
+              configuration: sqltestDeploymentStorageConfigurationTemplate as any,
             },
           },
           {
@@ -430,7 +680,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
                         definition: `The description of deployment of application {{createApplicationAndDeployment.applicationName}}`,
                       } as any,
                       adminApplication: testSelfApplicationUuid,
-                      configuration: testDeploymentStorageConfiguration,
+                      // configuration: testDeploymentStorageConfiguration,
+                      configuration: sqltestDeploymentStorageConfigurationTemplate as any,
                     } as Deployment,
                   ],
                 },
