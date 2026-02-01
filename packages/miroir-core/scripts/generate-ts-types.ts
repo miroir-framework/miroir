@@ -142,6 +142,7 @@ export type TransformerForBuild =
     )
   | TransformerForBuild_menu_addItem
   | TransformerForBuild_ifThenElse
+  | TransformerForBuild_case
   | TransformerForBuild_returnValue
   | TransformerForBuild_constantAsExtractor
   | TransformerForBuild_aggregate
@@ -194,6 +195,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     recordWithoutTransformerType,
     transformerForBuild_menu_addItem,
     transformerForBuild_ifThenElse,
+    transformerForBuild_case,
     transformerForBuild_returnValue,
     transformerForBuild_constantAsExtractor,
     transformerForBuild_aggregate,
@@ -238,6 +240,7 @@ export type TransformerForBuildPlusRuntime =
   // | TransformerForBuild
   | TransformerForBuildPlusRuntime_menu_addItem
   | TransformerForBuildPlusRuntime_ifThenElse
+  | TransformerForBuildPlusRuntime_case
   | TransformerForBuildPlusRuntime_returnValue
   | TransformerForBuildPlusRuntime_constantAsExtractor
   | TransformerForBuildPlusRuntime_aggregate
@@ -291,7 +294,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     recordWithoutTransformerType,
     // transformerForBuild,
     transformerForBuildPlusRuntime_menu_addItem,
-    transformerForBuildPlusRuntime_ifThenElse,
+    transformerForBuildPlusRuntime_case,
     transformerForBuildPlusRuntime_returnValue,
     transformerForBuildPlusRuntime_constantAsExtractor,
     transformerForBuildPlusRuntime_aggregate,

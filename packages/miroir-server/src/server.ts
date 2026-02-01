@@ -43,6 +43,7 @@ import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -160,6 +161,7 @@ app.use(
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
+miroirMongoDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 const miroirActivityTracker = new MiroirActivityTracker();

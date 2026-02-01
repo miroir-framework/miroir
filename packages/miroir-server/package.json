@@ -46,6 +46,7 @@
     "miroir-localcache-redux": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
+    "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*"
   },
   "devDependencies": {

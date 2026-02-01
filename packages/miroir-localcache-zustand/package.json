@@ -42,8 +42,8 @@
     "immer": "^10.0.3",
     "lodash": "^4.17.21",
     "miroir-core": "*",
-    "zustand": "^4.5.0",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
