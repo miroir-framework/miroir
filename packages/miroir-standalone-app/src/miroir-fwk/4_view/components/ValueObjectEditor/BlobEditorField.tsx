@@ -37,6 +37,7 @@ import {
   ThemedBlobMetadata,
   ThemedBlobPreview,
 } from "../Themes/index";
+import getSpinnerStyles from '../Themes/spinner';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -743,14 +744,12 @@ export const BlobEditorField: FC<BlobEditorFieldProps> = ({
     borderRadius: currentTheme.borderRadius.sm,
   });
 
-  const spinnerStyles = css({
-    animation: 'spin 1s linear infinite',
-    fontSize: '48px',
+  // centralized spinner styles (large)
+  const spinnerStyles = getSpinnerStyles(currentTheme, {
+    sizePx: 48,
     color: currentTheme.colors.primary,
-    '@keyframes spin': {
-      from: { transform: 'rotate(0deg)' },
-      to: { transform: 'rotate(360deg)' },
-    },
+    topColor: currentTheme.colors.primary,
+    borderWidth: 4,
   });
 
   // Task 6.8: Error display styles

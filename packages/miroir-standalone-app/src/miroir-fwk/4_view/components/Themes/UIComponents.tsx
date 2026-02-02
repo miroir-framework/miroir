@@ -4,6 +4,7 @@ import React from 'react';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import { getSpinnerStyles } from './spinner';
 
 // ################################################################################################
 // UI Components
@@ -145,24 +146,11 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
     ...props
   };
 
-  const spinnerStyles = css({
-    '@keyframes spin': {
-      '0%': { transform: 'rotate(0deg)' },
-      '100%': { transform: 'rotate(360deg)' }
-    },
-    display: 'inline-block',
-    width: '0.9em',
-    height: '0.9em',
-    border: `2px solid ${getTextColor()}`,
-    borderTopColor: `${getTextColor()}`,
-    borderRightColor: 'transparent',
-    borderRadius: '50%',
-    animation: 'spin 0.8s cubic-bezier(.4,.0,.2,1) infinite',
+  const spinnerStyles = getSpinnerStyles(currentTheme, {
+    color: getTextColor(),
+    topColor: getTextColor(),
+    sizeEm: 0.9,
     marginRight: currentTheme.spacing.xs,
-    verticalAlign: 'middle',
-    boxSizing: 'border-box',
-    // subtle inner contrast for crispness
-    filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.08))',
   });
 
   return (
