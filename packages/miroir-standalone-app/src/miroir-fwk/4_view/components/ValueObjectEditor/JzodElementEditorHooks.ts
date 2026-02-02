@@ -291,6 +291,11 @@ export function useJzodElementEditorHooks(
                   parentName: "",
                   parentUuid:
                     currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity,
+                  ...(
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntityFilterInstancesBy? {
+                      filter: currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntityFilterInstancesBy
+                    }: {}
+                  ),
                   orderBy: {
                     attributeName:
                       currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams
@@ -324,18 +329,18 @@ export function useJzodElementEditorHooks(
       applicationDeploymentMap,
   ) || {};
 
-  // log.info(
-  //   "useJzodElementEditorHooks",
-  //   "rootLessListKey:",
-  //   rootLessListKey,
-  //   "currentDeploymentUuid:",
-  //   currentDeploymentUuid,
-  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
-  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
-  //   "foreignKeyObjectsFetchQueryParams",
-  //   foreignKeyObjectsFetchQueryParams,
-  //   "foreignKeyObjects", foreignKeyObjects,
-  // );
+  log.info(
+    "useJzodElementEditorHooks",
+    "rootLessListKey:",
+    rootLessListKey,
+    "currentDeploymentUuid:",
+    currentDeploymentUuid,
+    "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
+    currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
+    "foreignKeyObjectsFetchQueryParams",
+    foreignKeyObjectsFetchQueryParams,
+    "foreignKeyObjects", foreignKeyObjects,
+  );
 
   // log.info(
   //   "useJzodElementEditorHooks",

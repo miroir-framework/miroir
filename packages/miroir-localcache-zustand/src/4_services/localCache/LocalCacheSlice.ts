@@ -4,6 +4,8 @@
  */
 
 import {
+  ACTION_OK,
+  Action2Error,
   ApplicationSection,
   DomainState,
   EntityInstance,
@@ -13,15 +15,19 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ModelAction,
+  ModelEntityActionTransformer,
+  TransformerFailure,
   Uuid,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
+  type Action2VoidReturnType,
   type ApplicationDeploymentMap
 } from "miroir-core";
 
 import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
+import { currentModel } from "./Model.js";
 
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "5_view";
@@ -353,9 +359,46 @@ function handleModelAction(
   state: LocalCacheSliceState,
   modelAction: ModelAction,
   applicationDeploymentMap: ApplicationDeploymentMap
-): void {
+): Action2VoidReturnType {
   const deploymentUuid = applicationDeploymentMap[modelAction.payload.application];
   
+  if (modelAction.actionType !== "rollback") {
+    const localInstanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
+      deploymentUuid,
+      modelAction,
+      currentModel(modelAction.payload.application, applicationDeploymentMap, state),
+    );
+    log.info(
+      "localCacheSliceObject handleModelAction generated instanceActions",
+      "localInstanceActions instanceof TransformerFailure=",
+      localInstanceActions instanceof TransformerFailure,
+      "localInstanceActions=",
+      JSON.stringify(localInstanceActions, undefined, 2),
+    );
+    if (localInstanceActions instanceof TransformerFailure) {
+      return new Action2Error(
+        "FailedToHandleAction",
+        "localCacheSliceObject handleModelAction could not transform model action to instance actions",
+        ["handleModelAction"],
+        localInstanceActions as any,
+        { modelAction },
+      );
+    }
+    const handleInstanceActionsResult = localInstanceActions.map((instanceAction) =>
+      handleInstanceAction(state, instanceAction, applicationDeploymentMap),
+    );
+    // const errors = handleInstanceActionsResult.filter((r) => r instanceof Action2Error);
+    const errors = handleInstanceActionsResult.filter((r:any) => Array.isArray(r) || !r || (r as any)["status"] !== "error");
+    if (errors.length > 0) {
+      return new Action2Error(
+        "FailedToHandleAction",
+        "localCacheSliceObject handleModelAction could not handle some instance actions generated from model action",
+        ["handleModelAction"],
+        errors as any,
+        { modelAction },
+      );
+    }
+  }
   switch (modelAction.actionType) {
     case "initModel": {
       // Copy from loading to current
@@ -423,4 +466,5 @@ function handleModelAction(
       log.debug("handleModelAction unhandled action type", modelAction.actionType);
     }
   }
+  return ACTION_OK;
 }

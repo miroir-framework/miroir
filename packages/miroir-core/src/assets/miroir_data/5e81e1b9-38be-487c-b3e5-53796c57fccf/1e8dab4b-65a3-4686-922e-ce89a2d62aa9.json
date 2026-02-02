@@ -179,6 +179,52 @@
                         }
                       }
                     },
+                    "targetEntityFilterInstancesBy": {
+                      "type": "object",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Filter Foreign Key Instances by attribute",
+                          "description": "The attribute name to filter instances by."
+                        }
+                      },
+                      "definition": {
+                        "attributeName": {
+                          "type": "string"
+                        },
+                        "not": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "undefined": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "value": {
+                          "type": "any",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true,
+                              "defaultLabel": "Value"
+                            }
+                          }
+                        },
+                        "values": {
+                          "type": "array",
+                          "optional": true,
+                          "definition": {
+                            "type": "any"
+                          },
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true,
+                              "defaultLabel": "Values"
+                            }
+                          }
+                        }
+                      }
+                    },
                     "targetEntityOrderInstancesBy": {
                       "type": "string",
                       "optional": true,
@@ -499,6 +545,52 @@
                               "targetEntityApplicationSection": "model",
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
+                            }
+                          }
+                        }
+                      },
+                      "targetEntityFilterInstancesBy": {
+                        "type": "object",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Filter Foreign Key Instances by attribute",
+                            "description": "The attribute name to filter instances by."
+                          }
+                        },
+                        "definition": {
+                          "attributeName": {
+                            "type": "string"
+                          },
+                          "not": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "undefined": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "value": {
+                            "type": "any",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "defaultLabel": "Value"
+                              }
+                            }
+                          },
+                          "values": {
+                            "type": "array",
+                            "optional": true,
+                            "definition": {
+                              "type": "any"
+                            },
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "defaultLabel": "Values"
+                              }
                             }
                           }
                         }

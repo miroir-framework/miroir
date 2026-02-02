@@ -8,7 +8,7 @@ import {
   TestCompositeActionParams,
   Uuid,
   adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
   createDeploymentCompositeAction,
   emptyMetaModel,
   entityEntity,
@@ -18,7 +18,7 @@ import {
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
   resetAndinitializeDeploymentCompositeAction,
-  selfApplicationLibrary
+  // selfApplicationLibrary
 } from "miroir-core";
 
 // import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "./ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
@@ -176,7 +176,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
         createEntity_newEntityDetailsReportUuid,
         defaultInstanceDetailsReportUuid,
         //
-        adminConfigurationDeploymentParis, //??
+        // adminConfigurationDeploymentParis, //??
         testDeploymentUuid,
         testSelfApplicationUuid,
         entityEntity,

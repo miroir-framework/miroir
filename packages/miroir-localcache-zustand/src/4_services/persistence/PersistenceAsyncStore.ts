@@ -13,7 +13,11 @@ import {
   PersistenceStoreLocalOrRemoteInterface,
   StoreOrBundleAction,
   type ApplicationDeploymentMap,
+  type BoxedExtractorOrCombinerReturningObjectOrObjectList,
+  type BoxedQueryWithExtractorCombinerTransformer,
+  type EntityInstance,
   type MiroirModelEnvironment,
+  type PersistenceStoreControllerAction,
 } from "miroir-core";
 import type { LocalCache } from "../LocalCache.js";
 
@@ -127,7 +131,7 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
-    log.info("handlePersistenceActionForLocalPersistenceStore called");
+    log.info("handlePersistenceActionForLocalPersistenceStore called", action, applicationDeploymentMap);
     
     if (!this.params.localPersistenceStoreControllerManager) {
       return new Action2Error(
@@ -138,19 +142,294 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
 
     try {
       const deploymentUuid = applicationDeploymentMap[(action as any).payload?.application];
-      const storeController = await this.params.localPersistenceStoreControllerManager
+      const localPersistenceStoreController = await this.params.localPersistenceStoreControllerManager
         .getPersistenceStoreController(deploymentUuid);
       
-      if (!storeController) {
+      if (!localPersistenceStoreController) {
         return new Action2Error(
           "FailedToHandlePersistenceActionForLocalPersistenceStore",
           `Store controller not found for deployment ${deploymentUuid}`
         );
       }
 
-      return await storeController.handleAction(action);
+      // return await storeController.handleAction(action);
+      switch (action.actionType) {
+      case "storeManagementAction_createStore":
+      case "storeManagementAction_deleteStore":
+      case "storeManagementAction_resetAndInitApplicationDeployment":
+      case "storeManagementAction_openStore":
+      case "storeManagementAction_closeStore":
+      //
+      case "bundleAction": {
+        throw new Error(
+          "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore should not be used to handle action " +
+            JSON.stringify(action) +
+            " please use handleStoreOrBundleActionForLocalStore instead!"
+        );
+        break;
+      }
+      // case "instanceAction":
+      case "createInstance":
+      case "deleteInstance":
+      case "deleteInstanceWithCascade":
+      case "updateInstance":
+      case "loadNewInstancesInLocalCache":
+      case "getInstance":
+      case "getInstances":
+      // case "modelAction": {
+      case "initModel":
+      case "commit":
+      case "rollback":
+      case "remoteLocalCacheRollback":
+      case "resetModel":
+      case "resetData":
+      case "alterEntityAttribute":
+      case "renameEntity":
+      case "createEntity":
+      case "dropEntity": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + deploymentUuid
+            // + " available controllers: " +
+            // this.persistenceStoreControllerManager.getPersistenceStoreControllers()
+          );
+        }
+        const localStoreResult = await localPersistenceStoreController.handleAction(action, applicationDeploymentMap)
+        log.info(
+          "PersistenceAsyncStore innerHandlePersistenceActionForLocalPersistenceStore done for action",
+          action,
+          "result=",
+          localStoreResult
+          // JSON.stringify(action, undefined, 2)
+        );
+        return localStoreResult;
+        break;
+      }
+      case "LocalPersistenceAction_create":
+      case "LocalPersistenceAction_read":
+      case "LocalPersistenceAction_update":
+      case "LocalPersistenceAction_delete": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for" +
+              "application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+              " deployment: " +
+              applicationDeploymentMap[action.payload.application],
+          );
+        }
+        const actionMap: {
+          [k: string]: "createInstance" | "deleteInstance" | "updateInstance" | "getInstances";
+        } = {
+          create: "createInstance",
+          read: "getInstances",
+          update: "updateInstance",
+          delete: "deleteInstance",
+        };
+        const newActionType = actionMap[action.actionType.split("_")[1]];
+        const localStoreAction: PersistenceStoreControllerAction = {
+          actionType: actionMap[newActionType],
+          parentName: action.payload.parentName ?? "",
+          parentUuid: action.payload.parentUuid ?? "",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            application: action.payload.application,
+            applicationSection: action.payload.section,
+            objects: [
+              {
+                // type issue: read action does not have "objects" attribute
+                parentName: action.payload.parentName ?? "",
+                parentUuid: action.payload.parentUuid ?? "",
+                applicationSection: action.payload.section,
+                instances: (Array.isArray(action.payload.objects)
+                  ? action.payload.objects
+                  : []) as EntityInstance[],
+              },
+            ],
+          },
+        } as PersistenceStoreControllerAction;
+        log.info(
+          "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore handle LocalPersistenceAction",
+          action,
+          "localStoreAction=",
+          localStoreAction
+        );
+        // log.info(
+        //   "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore handle RestPersistenceAction",
+        //   JSON.stringify(action, undefined, 2),
+        //   "localStoreAction=",
+        //   JSON.stringify(localStoreAction, undefined, 2)
+        // );
+        const localStoreResult: Action2ReturnType = await localPersistenceStoreController.handleAction(localStoreAction, applicationDeploymentMap)
+        log.info(
+          "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore LocalPersistenceAction result",
+          localStoreResult
+          // JSON.stringify(localStoreResult, undefined, 2)
+        );
+        return localStoreResult;
+        break;
+      }
+      case "runBoxedExtractorAction": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              deploymentUuid
+          );
+        }
+        const localStoreResult = await localPersistenceStoreController.handleBoxedExtractorAction(
+          action,
+          applicationDeploymentMap,
+          currentModel,
+        );
+        return localStoreResult;
+        break;
+      }
+      case "runBoxedQueryAction": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              deploymentUuid
+          );
+        }
+        const localStoreResult = await localPersistenceStoreController.handleBoxedQueryAction(
+          action,
+          applicationDeploymentMap,
+          currentModel,
+        );
+        return localStoreResult;
+        break;
+      }
+      case "runBoxedExtractorOrQueryAction": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for" +
+              " application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+            " deployment: " +
+              deploymentUuid
+          );
+        }
+        switch (action.payload.query.queryType) {
+          case "boxedExtractorOrCombinerReturningObjectList":
+          case "boxedExtractorOrCombinerReturningObject": {
+            const localQuery: BoxedExtractorOrCombinerReturningObjectOrObjectList =
+              action.payload.query;
+            const localStoreResult = await localPersistenceStoreController.handleBoxedExtractorAction(
+                {
+                  actionType: "runBoxedExtractorAction",
+                  application: action.application,
+                  endpoint: action.endpoint,
+                  payload: {
+                    application: action.payload.application,
+                    // deploymentUuid: action.payload.deploymentUuid,
+                    applicationSection: action.payload.applicationSection,
+                    query: localQuery,
+                  },
+                },
+                applicationDeploymentMap,
+                currentModel
+            );
+            return localStoreResult;
+            break;
+          }
+          case "boxedQueryWithExtractorCombinerTransformer": {
+            const localQuery: BoxedQueryWithExtractorCombinerTransformer = action.payload.query;
+            const localStoreResult = await localPersistenceStoreController.handleBoxedQueryAction(
+                {
+                  actionType: "runBoxedQueryAction",
+                  application: action.application,
+                  endpoint: action.endpoint,
+                  payload: {
+                    application: action.payload.application,
+                    // deploymentUuid: action.payload.deploymentUuid,
+                    applicationSection: action.payload.applicationSection,
+                    query: localQuery,
+                  },
+                },
+                applicationDeploymentMap,
+                currentModel
+            );
+            return localStoreResult;
+            break;
+          }
+          default: {
+            throw new Error(
+              "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not handle action " +
+                JSON.stringify(action)
+            );
+            break;
+          }
+        }
+        break;
+      }
+      case "runBoxedQueryTemplateAction": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+            " deployment: " +
+              deploymentUuid
+          );
+        }
+        const localStoreResult = await localPersistenceStoreController.handleQueryTemplateActionForServerONLY(action, applicationDeploymentMap)
+        return localStoreResult;
+        break;
+      }
+      case "runBoxedExtractorTemplateAction": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+              " deployment: " +
+              deploymentUuid,
+          );
+        }
+            const localStoreResult = await localPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(action, applicationDeploymentMap)
+        ;
+        return localStoreResult;
+        break;
+      }
+      case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
+        if (!localPersistenceStoreController) {
+          throw new Error(
+            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
+              action.payload.application +
+              " applicationDeploymentMap: " +
+              JSON.stringify(applicationDeploymentMap, null, 2) +
+              " deployment: " +
+              deploymentUuid,
+          );
+        }
+        const localStoreResult = await localPersistenceStoreController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+            action,
+            applicationDeploymentMap
+          );
+        return localStoreResult;
+        break;
+      }
+      case "RestPersistenceAction_create":
+      case "RestPersistenceAction_read":
+      case "RestPersistenceAction_update":
+      case "RestPersistenceAction_delete":
+      default: {
+        throw new Error(
+          "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore no handler found for action " +
+            JSON.stringify(action)
+        );
+      }
+    }
+
     } catch (error: any) {
-      log.error("handlePersistenceActionForLocalPersistenceStore error:", error);
+      log.error("PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore error:", error);
       return new Action2Error("FailedToHandlePersistenceActionForLocalPersistenceStore", error.message, error.stack);
     }
   }

@@ -967,6 +967,93 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
+  "select Authors with values filter (multiple values)": {
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractors: {
+        authors: {
+          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          filter: {
+            attributeName: "name",
+            values: ["Norman", "Veyne"],
+          },
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "4441169e-0c22-4fbc-81b2-28c87cf48ab2": {
+            uuid: "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            name: "Don Norman",
+          },
+          "ce7b601d-be5f-4bc6-a5af-14091594046a": {
+            uuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            name: "Paul Veyne",
+          },
+        }),
+        resultAccessPath: ["authors"],
+      },
+    },
+  },
+  "select Authors with values filter and not flag": {
+    query: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: selfApplicationLibrary.uuid,
+      contextResults: {},
+      pageParams: {
+        applicationSection: "data",
+      },
+      queryParams: {},
+      extractors: {
+        authors: {
+          extractorOrCombinerType: "extractorByEntityReturningObjectList",
+          parentName: "Author",
+          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          filter: {
+            attributeName: "name",
+            not: true,
+            values: ["Norman", "Veyne"],
+          },
+        },
+      },
+    },
+    ...testExtractorTools,
+    testAssertions: {
+      test1: {
+        expectedResult: Object.values({
+          "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17": {
+            uuid: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            conceptLevel: "Data",
+            name: "Cornell Woolrich",
+          },
+          "e4376314-d197-457c-aa5e-d2da5f8d5977": {
+            uuid: "e4376314-d197-457c-aa5e-d2da5f8d5977",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            conceptLevel: "Data",
+            name: "Catherine Guérard",
+          },
+        }),
+        resultAccessPath: ["authors"],
+      },
+    },
+  },
   "select Books of Publisher of given Book from Domain State": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",

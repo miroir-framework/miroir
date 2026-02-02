@@ -9,12 +9,13 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
   entityApplicationForAdmin,
   entityDeployment,
   entityMenu,
   entitySelfApplication,
-  metaModel
+  metaModel,
+  noValue
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { applicationParis, packageName } from "../../constants.js";
@@ -57,7 +58,7 @@ const initialValues = {
   newApplicationName: "Paris",
   newAdminAppApplicationUuid: applicationParis.uuid,
   newSelfApplicationUuid: applicationParis.selfApplication,
-  newDeploymentUuid: adminConfigurationDeploymentParis.uuid,
+  newDeploymentUuid: noValue.uuid,
 }
 
 // ################################################################################################

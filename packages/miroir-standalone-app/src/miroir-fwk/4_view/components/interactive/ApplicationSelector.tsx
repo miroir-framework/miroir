@@ -7,6 +7,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   entityApplicationForAdmin,
   noValue,
+  selfApplicationMiroir,
 } from "miroir-core";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
@@ -82,6 +83,11 @@ export const ApplicationSelector: FC<{
                   foreignKeyParams: {
                     targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
                     targetEntity: entityApplicationForAdmin.uuid,
+                    targetEntityFilterInstancesBy: {
+                      attributeName: "uuid",
+                      not: true,
+                      values: [noValue.uuid, selfApplicationMiroir.uuid, adminSelfApplication.uuid],
+                    },
                     targetEntityOrderInstancesBy: "name",
                   },
                 },

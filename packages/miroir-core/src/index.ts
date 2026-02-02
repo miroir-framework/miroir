@@ -1284,7 +1284,7 @@ const selfApplicationStoreBasedConfigurationAdmin = require("./assets/admin_mode
 const adminConfigurationDeploymentAdmin = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
 const adminConfigurationDeploymentMiroir = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json"); //assert { type: "json" };
 const adminConfigurationDeploymentLibrary = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
-const adminConfigurationDeploymentParis = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/3d15b8c8-a74c-48ce-81d5-c76853803b90.json"); //assert { type: "json" };
+// const adminConfigurationDeploymentParis = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/3d15b8c8-a74c-48ce-81d5-c76853803b90.json"); //assert { type: "json" };
 const entityApplicationForAdmin = require("./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
 const entityDeployment = require("./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json"); //assert { type: "json" };
 const entityDefinitionDeployment = require("./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json"); //assert { type: "json" };
@@ -1296,7 +1296,7 @@ export {
   adminAdminApplication, adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
   adminLibraryApplication,
   adminMiroirApplication,
   adminSelfApplication, entityApplicationForAdmin,

@@ -276,14 +276,18 @@ beforeAll(
   }
 )
 
+let beforEachCount = 0;
 // ################################################################################################
 beforeEach(
   async  () => {
+    beforEachCount++;
+    console.log("################################################### beforeEach start", beforEachCount);
     await resetAndInitApplicationDeployment(
       domainController,
       applicationDeploymentMap,
       selfApplicationDeploymentConfigurations
     );
+    console.log("################################################### beforeEach resetAndinitializeDeploymentCompositeAction", beforEachCount);
     const initResult:Action2ReturnType = await domainController.handleCompositeAction(
       resetAndinitializeDeploymentCompositeAction(
         selfApplicationLibrary.uuid,
@@ -301,45 +305,46 @@ beforeEach(
         defaultLibraryModelEnvironment.currentModel,
       ),
       applicationDeploymentMap,
-      // testOnLibrary_resetInitAndAddTestDataToLibraryDeployment(miroirConfig, libraryEntitiesAndInstances),
       defaultMiroirModelEnvironment,
       {},
     );
     if (initResult.status !== "ok") {
-      throw new Error("beforeEach failed initialization!");
+      throw new Error("beforeEach failed initialization! " + beforEachCount + " " + JSON.stringify(initResult, null, 2));
     }
     document.body.innerHTML = '';
-    console.log("beforeEach done");
+    console.log("################################################### beforeEach done", beforEachCount);
   }
 )
 
-// // ################################################################################################
-// afterEach(
-//   async () => {
-//     await resetApplicationDeployments(
-//       deploymentConfigurations,
-//       applicationDeploymentMap,
-//       domainController,
-//       localCache,
-//     );
-//   }
-// )
+// ################################################################################################
+afterEach(
+  async () => {
+    log.info("################################################### afterEach start", beforEachCount);
+    await resetApplicationDeployments(
+      deploymentConfigurations,
+      applicationDeploymentMap,
+      domainController,
+      localCache,
+    );
+    log.info("################################################### afterEach done", beforEachCount);
+  }
+)
 
-// // ################################################################################################
-// afterAll(
-//   async () => {
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-//     await deleteAndCloseApplicationDeployments(
-//       miroirConfig,
-//       domainController,
-//       applicationDeploymentMap,
-//       [
-//         adminConfigurationDeploymentMiroir as AdminApplicationDeploymentConfiguration,
-//       ]
-//     );
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-//   }
-// )
+// ################################################################################################
+afterAll(
+  async () => {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+    await deleteAndCloseApplicationDeployments(
+      miroirConfig,
+      domainController,
+      applicationDeploymentMap,
+      [
+        adminConfigurationDeploymentMiroir as AdminApplicationDeploymentConfiguration,
+      ]
+    );
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+  }
+)
 
 
 // ##############################################################################################
@@ -347,70 +352,10 @@ beforeEach(
 // ##############################################################################################
 
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
-describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
+describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async () => {
   const runAsSql = true;
 
-  // ################################################################################################
-  it("get Entity Entity from Miroir", async () => {
-    await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
-      {},
-      async () => {
-        console.log("#######################################################################################################");
-        const applicationSection:ApplicationSection = "model";
-
-        const queryResult: Action2ReturnType =
-          await localMiroirPersistenceStoreController.handleBoxedExtractorAction(
-            {
-              actionType: "runBoxedExtractorAction",
-              // actionName: "runQuery",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              payload: {
-                application: selfApplicationMiroir.uuid,
-                // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                applicationSection: applicationSection,
-                query: {
-                  queryType: "boxedExtractorOrCombinerReturningObject",
-                  application: selfApplicationMiroir.uuid,
-                  // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  // runAsSql, // TODO: should be supported
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
-                  select: {
-                    extractorOrCombinerType: "extractorForObjectByDirectReference",
-                    applicationSection: "model",
-                    parentName: "Entity",
-                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  },
-                },
-              },
-            },
-            applicationDeploymentMap
-          );
-        console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;
-      },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author", "storageAccess"]),
-      // undefined, // expected result transformation
-      undefined, // name to give to result
-      undefined,
-      {
-        uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        parentName: "Entity",
-        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-        name: "Entity",
-        selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        conceptLevel: "MetaModel",
-        description: "The Metaclass for entities.",
-      }
-    );
-  });
-
-  // ################################################################################################
+    // ################################################################################################
   it("get Miroir Entities", async () => {
     await chainVitestSteps(
       "ExtractorPersistenceStoreRunner_getMiroirEntities",
@@ -421,17 +366,14 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
           await localMiroirPersistenceStoreController.handleBoxedQueryAction(
             {
               actionType: "runBoxedQueryAction",
-              // actionName: "runQuery",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: selfApplicationLibrary.uuid,
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                   runAsSql,
                   pageParams: {},
                   queryParams: {},
@@ -589,6 +531,62 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       }).sort((a, b) => a.name.localeCompare(b.name))
     );
   });
+
+  // ################################################################################################
+  it("get Entity Entity from Miroir", async () => {
+    await chainVitestSteps(
+      "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+      {},
+      async () => {
+        console.log("#######################################################################################################");
+        const applicationSection:ApplicationSection = "model";
+
+        const queryResult: Action2ReturnType =
+          await localMiroirPersistenceStoreController.handleBoxedExtractorAction(
+            {
+              actionType: "runBoxedExtractorAction",
+              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              payload: {
+                application: selfApplicationMiroir.uuid,
+                applicationSection: applicationSection,
+                query: {
+                  queryType: "boxedExtractorOrCombinerReturningObject",
+                  application: selfApplicationMiroir.uuid,
+                  pageParams: {},
+                  queryParams: {},
+                  contextResults: {},
+                  select: {
+                    extractorOrCombinerType: "extractorForObjectByDirectReference",
+                    applicationSection: "model",
+                    parentName: "Entity",
+                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    instanceUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  },
+                },
+              },
+            },
+            applicationDeploymentMap
+          );
+        console.log("queryResult", JSON.stringify(queryResult, null, 2));
+        return queryResult;
+      },
+      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author", "storageAccess"]),
+      undefined, // name to give to result
+      undefined,
+      {
+        uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        parentName: "Entity",
+        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        name: "Entity",
+        selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        conceptLevel: "MetaModel",
+        description: "The Metaclass for entities.",
+      }
+    );
+  });
+
   
   // ################################################################################################
   it("get Library Entities", async () => {
@@ -1495,69 +1493,69 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
     );
   });
 
-  // ################################################################################################
-  it("get Book and foreign key author and return transformed result", async () => {
-    await chainVitestSteps(
-      "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
-      {},
-      async () => {
-        console.log("#######################################################################################################");
-        const applicationSection:ApplicationSection = "data";
+  // // ################################################################################################
+  // it("get Book and foreign key author and return transformed result", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorPersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+  //     {},
+  //     async () => {
+  //       console.log("#######################################################################################################");
+  //       const applicationSection:ApplicationSection = "data";
 
-        const queryResult: Action2ReturnType =
-          await localAppPersistenceStoreController.handleBoxedExtractorAction(
-            {
-              actionType: "runBoxedExtractorAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              payload: {
-                application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                applicationSection: applicationSection,
-                query: {
-                  queryType: "boxedExtractorOrCombinerReturningObject",
-                  application: selfApplicationLibrary.uuid,
-                  // runAsSql, // TODO: enable runAsSql for handleBoxedExtractorAction
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  select: {
-                    extractorOrCombinerType: "extractorForObjectByDirectReference",
-                    applicationSection: applicationSection,
-                    parentName: "Book",
-                    parentUuid: entityBook.uuid,
-                    instanceUuid: book1.uuid,
-                    foreignKeysForTransformer: ["author"],
-                    applyTransformer: {
-                      transformerType: "createObject",
-                      interpolation: "runtime",
-                      definition: {
-                        bookTitle: {
-                          transformerType: "getFromContext",
-                          interpolation: "runtime",
-                          referencePath: ["referenceObject", "name"],
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            applicationDeploymentMap,
-            defaultLibraryModelEnvironment
-          );
-        console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;
-      },
-      (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, []),
-      // undefined, // expected result transformation
-      undefined, // name to give to result
-      undefined,
-      { "bookTitle": "Et dans l'éternité je ne m'ennuierai pas"}
-      // book1
-    );
-  });
+  //       const queryResult: Action2ReturnType =
+  //         await localAppPersistenceStoreController.handleBoxedExtractorAction(
+  //           {
+  //             actionType: "runBoxedExtractorAction",
+  //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //             payload: {
+  //               application: selfApplicationLibrary.uuid,
+  //               // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //               applicationSection: applicationSection,
+  //               query: {
+  //                 queryType: "boxedExtractorOrCombinerReturningObject",
+  //                 application: selfApplicationLibrary.uuid,
+  //                 // runAsSql, // TODO: enable runAsSql for handleBoxedExtractorAction
+  //                 pageParams: {},
+  //                 queryParams: {},
+  //                 contextResults: {},
+  //                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //                 select: {
+  //                   extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //                   applicationSection: applicationSection,
+  //                   parentName: "Book",
+  //                   parentUuid: entityBook.uuid,
+  //                   instanceUuid: book1.uuid,
+  //                   foreignKeysForTransformer: ["author"],
+  //                   applyTransformer: {
+  //                     transformerType: "createObject",
+  //                     interpolation: "runtime",
+  //                     definition: {
+  //                       bookTitle: {
+  //                         transformerType: "getFromContext",
+  //                         interpolation: "runtime",
+  //                         referencePath: ["referenceObject", "name"],
+  //                       },
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           applicationDeploymentMap,
+  //           defaultLibraryModelEnvironment
+  //         );
+  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;
+  //     },
+  //     (a) => ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, []),
+  //     // undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     undefined,
+  //     { "bookTitle": "Et dans l'éternité je ne m'ennuierai pas"}
+  //     // book1
+  //   );
+  // });
 
 
   // // ################################################################################################

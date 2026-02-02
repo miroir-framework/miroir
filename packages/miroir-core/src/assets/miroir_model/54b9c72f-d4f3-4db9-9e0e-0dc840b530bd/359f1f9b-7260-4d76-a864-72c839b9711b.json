@@ -375,6 +375,17 @@
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "transformerForBuildPlusRuntime"
                     }
+                  },
+                  "values": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "transformerForBuildPlusRuntime"
+                      }
+                    }
                   }
                 }
               }
@@ -915,6 +926,19 @@
                       "value": {
                         "canBeTemplate": true,
                         "defaultLabel": "Value"
+                      }
+                    }
+                  },
+                  "values": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    },
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Values"
                       }
                     }
                   }

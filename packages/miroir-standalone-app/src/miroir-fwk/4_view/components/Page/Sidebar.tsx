@@ -7,7 +7,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
   adminSelfApplication,
   defaultSelfApplicationDeploymentMap,
   LoggerInterface,

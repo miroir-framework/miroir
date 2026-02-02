@@ -2,7 +2,7 @@ import {
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
 } from "miroir-core";
 // import { adminConfigurationDeploymentParis } from "./miroir-fwk/4_view/routes/ReportPage.js";
 
@@ -128,5 +128,5 @@ export const deployments = [
   adminConfigurationDeploymentAdmin,
   // adminConfigurationDeploymentTest1,
   // adminConfigurationDeploymentTest4,
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
 ] as any[]; //type for Admin SelfApplication Deployment Entity Definition

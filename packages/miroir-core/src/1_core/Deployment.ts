@@ -323,6 +323,15 @@ export function resetAndinitializeDeploymentCompositeAction(
           },
         },
         {
+          actionType: "commit", // TODO: should be initModel commit?
+          actionLabel: "resetAndinitializeDeploymentCompositeAction_commitInitModel",
+          application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          payload: {
+            application: applicationUuid,
+          },
+        },
+        {
           actionType: "rollback",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_Rollback",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

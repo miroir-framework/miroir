@@ -22,6 +22,7 @@ export type ExtractorFilter = {
   not?: boolean | undefined;
   undefined?: boolean | undefined;
   value?: any | undefined;
+  values?: any[] | undefined;
 };
 
 // ################################################################################################
@@ -48,21 +49,36 @@ export const instanceMatchesFilter = (
 ): boolean => {
   const attributeValue = (instance as any)[filter.attributeName];
 
+  // Validate that value and values are not both specified
+  if (filter.value !== undefined && filter.values !== undefined) {
+    log.error("instanceMatchesFilter: both 'value' and 'values' are specified, this is an error. Using 'value' only.");
+  }
+
   // Handle "undefined" check (filter for instances where attribute is undefined)
   if (filter.undefined) {
     const result = attributeValue === undefined;
     return filter.not ? !result : result;
   }
 
+  // Determine if we're matching against multiple values
+  const matchValues = filter.values !== undefined ? filter.values : (filter.value !== undefined ? [filter.value] : []);
+  
+  if (matchValues.length === 0) {
+    // No value to match against, return based on 'not' flag
+    return filter.not ? true : false;
+  }
+
   // Handle string matching with regex (case-insensitive)
   if (typeof attributeValue === "string") {
-    const matchResult = attributeValue.match(new RegExp(filter.value ?? "", "i")) != null;
+    const matchResult = matchValues.some((val: any) => 
+      attributeValue.match(new RegExp(val ?? "", "i")) != null
+    );
     return filter.not ? !matchResult : matchResult;
   }
 
   // Handle number matching with equality
   if (typeof attributeValue === "number") {
-    const matchResult = attributeValue == filter.value;
+    const matchResult = matchValues.some((val: any) => attributeValue == val);
     return filter.not ? !matchResult : matchResult;
   }
 

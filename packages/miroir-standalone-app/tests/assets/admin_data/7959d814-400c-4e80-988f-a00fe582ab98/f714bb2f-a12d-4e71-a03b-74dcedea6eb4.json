@@ -8,16 +8,19 @@
   "adminApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "configuration": {
     "admin": {
-      "emulatedServerType": "indexedDb",
-      "indexedDbName": "./tests/tmp/indexedDb-admin"
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroirAdmin"
     },
     "model": {
-      "emulatedServerType": "indexedDb",
-      "indexedDbName": "./tests/tmp/indexedDb-app"
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
     },
     "data": {
-      "emulatedServerType": "indexedDb",
-      "indexedDbName": "./tests/tmp/indexedDb-app"
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
     }
   }
 }

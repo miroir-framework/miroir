@@ -43,7 +43,6 @@ export class ModelEntityActionTransformer{
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: modelAction.payload.application,
-              // deploymentUuid: modelAction.payload.deploymentUuid,
               applicationSection: "model",
               parentUuid:entityEntity.uuid,
               objects: [

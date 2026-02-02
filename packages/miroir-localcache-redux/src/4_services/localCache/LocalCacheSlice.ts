@@ -195,41 +195,9 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
 ) {
   // TODO: refactor so as to avoid side effects!
   const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
-  // log.info(
-  //   "initializeLocalCacheSliceStateWithEntityAdapter called",
-  //   "deploymentUuid",
-  //   deploymentUuid,
-  //   "section",
-  //   section,
-  //   "entityUuid",
-  //   entityUuid,
-  //   "index",
-  //   entityInstancesLocationIndex
-  // );
-  // const sliceEntityAdapter = getLocalCacheSliceEntityAdapter();
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
     (state as any)[zone][entityInstancesLocationIndex] = entityAdapter.getInitialState();
-    // log.warn(
-    //   "initializeLocalCacheSliceStateWithEntityAdapter state[",
-    //   zone,
-    //   "][",
-    //   entityInstancesLocationIndex,
-    //   "] is undefined! setting value",
-    //   JSON.stringify((state as any)[zone][entityInstancesLocationIndex])
-    // );
   }
-  // }
-  // log.debug(
-  //   "LocalCacheSlice getInitializedSectionEntityAdapter done",
-  //   "deploymentUuid",
-  //   deploymentUuid,
-  //   "section",
-  //   section,
-  //   "entityUuid",
-  //   entityUuid,
-  //   "result",
-  //   sliceEntityAdapter
-  // );
   return entityAdapter;
 }
 
@@ -620,9 +588,6 @@ function handleModelAction(
           {action},
         );
       }
-      // for (const localInstanceAction of localInstanceActions) {
-      //   handleInstanceAction(state, localInstanceAction);
-      // }
       const handleInstanceActionsResult = localInstanceActions.map((instanceAction) =>
         handleInstanceAction(state, instanceAction, applicationDeploymentMap),
       );

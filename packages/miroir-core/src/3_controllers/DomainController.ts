@@ -687,8 +687,8 @@ export class DomainController implements DomainControllerInterface {
         runBoxedExtractorOrQueryAction?.actionType,
         "queryExecutionStrategy=",
         runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy,
-        "objects=",
-        JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2),
+        // "objects=",
+        // JSON.stringify((runBoxedExtractorOrQueryAction as any)["objects"], null, 2),
       );
       /**
        * TODO: if the query is contained whithin a transactional action, it shall only access the localCache

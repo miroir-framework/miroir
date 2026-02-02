@@ -9,7 +9,7 @@ import {
   Action2ReturnType,
   ACTION_OK,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
   adminSelfApplication,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   defaultMiroirModelEnvironment,
@@ -21,6 +21,7 @@ import {
   MiroirConfigClient,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
+  noValue,
   StoreUnitConfiguration,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap
@@ -189,7 +190,7 @@ export function fetchMiroirAndAppConfigurations(
 
       const foundDeployments = adminDeployments.returnedDomainElement["deployments"].filter(
         (dep: Deployment) => {
-          return dep.uuid !== adminConfigurationDeploymentParis.uuid;
+          return dep.uuid !== noValue.uuid;
         }
       );
       log.info(

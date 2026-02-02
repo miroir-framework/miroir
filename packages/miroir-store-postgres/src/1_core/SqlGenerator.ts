@@ -421,12 +421,31 @@ export function sqlStringForExtractor(
       break;
     }
     case "extractorByEntityReturningObjectList": {
-      return (
-        `SELECT * FROM "${schema}"."${extractor.parentName}"` +
-        (extractor.filter
-          ? ` WHERE "${extractor.filter?.attributeName}" ILIKE '%${extractor.filter?.value}%'`
-          : "")
-      );
+      let whereClause = "";
+      if (extractor.filter) {
+        const { attributeName, value, values, not, undefined: isUndefined } = extractor.filter;
+        
+        // Handle undefined check
+        if (isUndefined) {
+          whereClause = not 
+            ? ` WHERE "${attributeName}" IS NOT NULL`
+            : ` WHERE "${attributeName}" IS NULL`;
+        }
+        // Handle values array (multiple values)
+        else if (values !== undefined && values.length > 0) {
+          const valueList = values.map(v => `'${v}'`).join(', ');
+          whereClause = not
+            ? ` WHERE "${attributeName}" NOT IN (${valueList})`
+            : ` WHERE "${attributeName}" IN (${valueList})`;
+        }
+        // Handle single value
+        else if (value !== undefined) {
+          whereClause = not
+            ? ` WHERE "${attributeName}" NOT ILIKE '%${value}%'`
+            : ` WHERE "${attributeName}" ILIKE '%${value}%'`;
+        }
+      }
+      return `SELECT * FROM "${schema}"."${extractor.parentName}"${whereClause}`;
       break;
     }
     case "extractorWrapperReturningObject":
