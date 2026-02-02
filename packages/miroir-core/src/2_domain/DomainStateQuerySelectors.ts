@@ -14,8 +14,9 @@ import {
   ExtractorOrCombinerReturningObject,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition,
-  QueryByTemplateGetParamJzodSchema
+  QueryByTemplateGetParamJzodSchema,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import {
   Domain2Element,
   Domain2ElementFailed,
@@ -116,22 +117,28 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 > = (
   domainState: DomainState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
+  extractorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const deploymentUuid =
-    applicationDeploymentMap[foreignKeyParams.extractor.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
-  const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? "data";
+    applicationDeploymentMap[extractorParams.extractor.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
+  const applicationSection = extractorParams.extractor.select.applicationSection ?? "data";
 
-  const entityUuid: Uuid = foreignKeyParams.extractor.select.parentUuid;
+  const entityUuid: Uuid = extractorParams.extractor.select.parentUuid;
 
-  // log.info("selectEntityInstanceUuidIndexFromDomainState params", foreignKeyParams, deploymentUuid, applicationSection, entityUuid);
+  log.info(
+    "selectEntityInstanceUuidIndexFromDomainState params",
+    extractorParams,
+    deploymentUuid,
+    applicationSection,
+    entityUuid,
+  );
   // log.info("selectEntityInstanceUuidIndexFromDomainState domainState", domainState);
 
   if (!deploymentUuid || !applicationSection || !entityUuid) {
     return new Domain2ElementFailed({
       queryFailure: "IncorrectParameters",
       queryContext: "deploymentUuid=" + deploymentUuid + ", applicationSection=" + applicationSection + ", entityUuid=" + entityUuid,
-      queryParameters: JSON.stringify(foreignKeyParams),
+      queryParameters: JSON.stringify(extractorParams),
     });
     // resolving by fetchDataReference, fetchDataReferenceAttribute
   }
@@ -178,7 +185,27 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
     });
   }
 
-  return domainState[deploymentUuid][applicationSection][entityUuid];
+  const entityInstances = domainState[deploymentUuid][applicationSection][entityUuid];
+
+  if (extractorParams.extractor.select.extractorOrCombinerType !== "extractorByEntityReturningObjectList"
+    || (!extractorParams.extractor.select.filter && !extractorParams.extractor.select.orderBy)
+  ) {
+    return entityInstances;
+  }
+
+  log.info("selectEntityInstanceUuidIndexFromDomainState applying filter", extractorParams.extractor.select.filter);
+  const localSelect = extractorParams.extractor.select;
+  const filteredInstancesArray = applyExtractorFilterAndOrderBy(
+    Object.values(entityInstances),
+    localSelect
+  );
+  log.info("selectEntityInstanceUuidIndexFromDomainState filteredInstancesArray", filteredInstancesArray);
+  const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
+    acc[instance.uuid] = instance;
+    return acc;
+  }, {});
+  log.info("selectEntityInstanceUuidIndexFromDomainState filtered result", result);
+  return result;  
 };
 
 // ################################################################################################

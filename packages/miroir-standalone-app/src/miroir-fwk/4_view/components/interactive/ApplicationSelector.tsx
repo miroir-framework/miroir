@@ -26,7 +26,6 @@ export const ApplicationSelector: FC<{
   applicationUuid: string | undefined;
   onApplicationChange: (applicationUuid: string) => void;
 }> = ({ applicationUuid, onApplicationChange }) => {
-  const runnerName: string = "ApplicationSelector";
   const context = useMiroirContextService();
   const persistedToolsPageState: any = context.toolsPageState;
   
@@ -115,23 +114,14 @@ export const ApplicationSelector: FC<{
     };
   }, []);
 
-
-  // const [currentInnerApplication, setCurrentInnerApplication] = useState<string>(noValue.uuid);
-
-  // const context = useMiroirContextService();
-  // const currentMiroirModelEnvironment = useCurrentModelEnvironment(deploymentUuid);
   const onChangeVector = useMemo(
     () => {
       const vector = {
-        // "applicationSelector.application": (value: any, rootLessListKey: string) => {
         application: (value: any, rootLessListKey: string) => {
-          // log.info("ApplicationSelector observed application change", value, rootLessListKey);
           onApplicationChange(value);
-          // setCurrentInnerApplication(value);
           // log.info("ApplicationSelector set currentInnerApplication done:", applicationUuid);
         },
       };
-      // log.info("ApplicationSelector creating onChangeVector", Object.keys(vector), vector);
       return vector;
     },
     [onApplicationChange]

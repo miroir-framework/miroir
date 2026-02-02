@@ -21,6 +21,9 @@ const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d81
 const adminConfigurationDeploymentLibrary = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
 // const instanceConfigurationReference = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
 const entityEntity = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json');
+const entityEndpointVersion = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json");
+const entityMenu = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json");
+const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
 const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json');
 const adminSelfApplication = require("../assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
 const adminConfigurationDeploymentAdmin = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
@@ -67,7 +70,12 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
-import { defaultMiroirMetaModel, defaultMiroirModelEnvironment, metaModelEntities, miroirModelEntities } from "../1_core/Model";
+import {
+  defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
+  metaModelEntities,
+  miroirModelEntities,
+} from "../1_core/Model";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
@@ -102,7 +110,6 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
-import { entityMenu, entityReport } from '../index.js';
 import { ConfigurationService } from './ConfigurationService.js';
 
 // const defaultSelfApplicationDeploymentMap: Record<Uuid, Uuid> = {
@@ -1086,6 +1093,66 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   // converts a Domain model action into a set of local cache actions and remote store actions
+  private async createModelInstancesFromResetModel(
+    kindLabel: string,
+    actionLabel: string,
+    instances: any[],
+    parentEntity: Entity,
+    application: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2VoidReturnType> {
+    log.info(
+      "handleModelAction resetModel creating",
+      instances.length,
+      kindLabel,
+      instances,
+    );
+    const createInstanceAction: InstanceAction = {
+      actionType: "createInstance",
+      actionLabel,
+      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application,
+        applicationSection: "model",
+        parentUuid: parentEntity.uuid,
+        objects: [
+          {
+            parentUuid: parentEntity.uuid,
+            applicationSection: "model",
+            instances,
+          },
+        ],
+      },
+    };
+    const createInstanceResult = await this.handleAction(
+      {
+        actionType: "transactionalInstanceAction",
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        payload: {
+          application,
+          instanceAction: createInstanceAction,
+        },
+      },
+      applicationDeploymentMap,
+    );
+    if (createInstanceResult instanceof Action2Error) {
+      log.error(
+        `handleModelAction resetModel failed to create ${kindLabel}`,
+        createInstanceResult,
+      );
+      return new Action2Error(
+        "FailedToHandleAction",
+        `handleModelAction resetModel failed to create ${kindLabel} from model`,
+        [],
+        createInstanceResult,
+      );
+    }
+    log.info(`handleModelAction resetModel successfully created all ${kindLabel}`);
+    return ACTION_OK;
+  }
+
   async handleModelAction(
     // deploymentUuid: Uuid,
     modelAction: ModelAction,
@@ -1281,107 +1348,45 @@ export class DomainController implements DomainControllerInterface {
             }
 
             if (model.reports && model.reports.length > 0) {
-              log.info(
-                "handleModelAction resetModel creating",
-                model.reports.length,
+              const createReportsResult = await this.createModelInstancesFromResetModel(
                 "reports",
+                "Create Reports from Model",
                 model.reports,
-              );
-              const createReportsAction: InstanceAction = {
-                actionType: "createInstance",
-                actionLabel: "Create Reports from Model",
-                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                payload: {
-                  application: modelActionResetModel.payload.application,
-                  applicationSection: "model",
-                  parentUuid: entityReport.uuid,
-                  objects: [
-                    {
-                      parentUuid: entityReport.uuid,
-                      applicationSection: "model",
-                      instances: model.reports,
-                    }
-                  ],
-                },
-              };
-              const createReportsResult = await this.handleAction(
-                {
-                  actionType: "transactionalInstanceAction",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  payload: {
-                    application: modelActionResetModel.payload.application,
-                    instanceAction: createReportsAction,
-                  },
-                },
+                entityReport,
+                modelActionResetModel.payload.application,
                 applicationDeploymentMap,
               );
               if (createReportsResult instanceof Action2Error) {
-                log.error(
-                  "handleModelAction resetModel failed to create reports",
-                  createReportsResult
-                );
-                return new Action2Error(
-                  "FailedToHandleAction",
-                  "handleModelAction resetModel failed to create reports from model",
-                  [],
-                  createReportsResult,
-                );
+                return createReportsResult;
               }
-              log.info("handleModelAction resetModel successfully created all reports");
             }
 
             if (model.menus && model.menus.length > 0) {
-              log.info(
-                "handleModelAction resetModel creating",
-                model.menus.length,
+              const createMenusResult = await this.createModelInstancesFromResetModel(
                 "menus",
+                "Create Menus from Model",
                 model.menus,
-              );
-              const createMenusAction: InstanceAction = {
-                actionType: "createInstance",
-                actionLabel: "Create Menus from Model",
-                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                payload: {
-                  application: modelActionResetModel.payload.application,
-                  applicationSection: "model",
-                  parentUuid: entityMenu.uuid,
-                  objects: [
-                    {
-                      parentUuid: entityMenu.uuid,
-                      applicationSection: "model",
-                      instances: model.menus,
-                    }
-                  ],
-                },
-              };
-              const createMenusResult = await this.handleAction(
-                {
-                  actionType: "transactionalInstanceAction",
-                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  payload: {
-                    application: modelActionResetModel.payload.application,
-                    instanceAction: createMenusAction,
-                  },
-                },
+                entityMenu,
+                modelActionResetModel.payload.application,
                 applicationDeploymentMap,
               );
               if (createMenusResult instanceof Action2Error) {
-                log.error(
-                  "handleModelAction resetModel failed to create menus",
-                  createMenusResult
-                );
-                return new Action2Error(
-                  "FailedToHandleAction",
-                  "handleModelAction resetModel failed to create menus from model",
-                  [],
-                  createMenusResult,
-                );
+                return createMenusResult;
               }
-              log.info("handleModelAction resetModel successfully created all menus");
+            }
+
+            if (model.endpoints && model.endpoints.length > 0) {
+              const createEndpointsResult = await this.createModelInstancesFromResetModel(
+                "endpoints",
+                "Create Endpoints from Model",
+                model.endpoints,
+                entityEndpointVersion,
+                modelActionResetModel.payload.application,
+                applicationDeploymentMap,
+              );
+              if (createEndpointsResult instanceof Action2Error) {
+                return createEndpointsResult;
+              }
             }
           }
           break;

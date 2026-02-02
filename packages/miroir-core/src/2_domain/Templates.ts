@@ -326,7 +326,6 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
   );
   // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted extractorTemplates, result:", queries);
   
-  // const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
   const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
   if (failedQueries.length > 0) {
     throw new Error(
@@ -367,7 +366,6 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     queryParams: queryTemplate.queryParams,
     contextResults: queryTemplate.contextResults,
     application: queryTemplate.application,
-    // ...(queryTemplate.deploymentUuid ? {deploymentUuid: queryTemplate.deploymentUuid} : {}),
     extractors: queries as ExtractorOrCombinerRecord,
     combiners: combiners as Record<string, ExtractorOrCombiner>,
     runtimeTransformers: queryTemplate.runtimeTransformers,

@@ -280,7 +280,6 @@ export function useJzodElementEditorHooks(
             {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: targetApplication,
-              // deploymentUuid,
               pageParams: {},
               queryParams: {},
               contextResults: {},

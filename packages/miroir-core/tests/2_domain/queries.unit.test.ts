@@ -30,7 +30,9 @@ import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInt
 import domainStateImport from "./domainState.json";
 // import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
 import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
-import selfApplicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+import {
+  selfApplicationLibrary
+} from "miroir-example-library";
 
 // import {
 //   BoxedQueryTemplateWithExtractorCombinerTransformer,
@@ -88,7 +90,6 @@ const ignoreFailureAttributes:string[] = [
   "failureMessage",
   "failureOrigin",
   "innerError",
-  // "queryContext",
   "queryParameters",
   "queryReference",
   "query",
@@ -157,11 +158,6 @@ const testExtractorTools = {
     
     getQueryRunnerParamsForReduxDeploymentsState: getQueryRunnerParamsForReduxDeploymentsState,
     runQueryFromReduxDeploymentsState: runQueryFromReduxDeploymentsState,
-
-    // extractors
-    // extractorRunnerForReduxDeploymentsState: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<ReduxDeploymentsState>,
-    // extractorTemplateRunnerForReduxDeploymentsState: extractWithBoxedExtractorTemplate<ReduxDeploymentsState>,
-    // getExtractorTemplateRunnerParamsForReduxDeploymentsState: getExtractorTemplateRunnerParamsForReduxDeploymentsState,
 }
 
 // console.log("domainState data entities:", Object.keys(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]));
@@ -187,7 +183,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "XXXXXX",
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "returnValue",
             mlSchema: { type: "uuid" },
@@ -241,7 +237,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "returnValue",
             mlSchema: { type: "uuid" },
@@ -294,7 +290,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "returnValue",
             mlSchema: { type: "uuid" },
@@ -425,7 +421,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "getFromParameters",
             interpolation: "build",
@@ -479,7 +475,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "returnValue",
             mlSchema: { type: "uuid" },
@@ -497,7 +493,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-          },
+          } as any, // TODO: fix type
           objectReference: {
             transformerType: "getFromContext",
             interpolation: "runtime",
@@ -562,13 +558,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            },
+            } as  any, // TODO: fix type
             instanceUuid: {
               transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-            },
+            } as any, // TODO: fix type
           },
         },
         combinerTemplates: {
@@ -580,7 +576,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-            },
+            } as any, // TODO: fix type
             objectReference: {
               transformerType: "getFromContext",
               interpolation: "runtime",
@@ -687,7 +683,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-            },
+            } as any, // TODO: fix type
             instanceUuid: {
               transformerType: "returnValue",
               mlSchema: { type: "uuid" },
@@ -705,7 +701,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            },
+            } as any, // TODO: fix type
             objectReference: {
               transformerType: "getFromContext",
               interpolation: "runtime",
@@ -721,7 +717,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-            },
+            } as any, // TODO: fix type
             objectListReference: {
               transformerType: "getFromContext",
               interpolation: "runtime",
@@ -840,7 +836,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          },
+          } as any, // TODO: fix type
         },
       },
       runtimeTransformers: {},
@@ -902,7 +898,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -917,13 +912,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          },
+          } as any, // TODO: fix type
           filter: {
             attributeName: "name",
             value: {
               transformerType: "returnValue",
               mlSchema: { type: "string" },
-              interpolation: "build",
               value: "or",
             },
           },
@@ -977,7 +971,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -992,7 +985,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "returnValue",
             mlSchema: { type: "uuid" },
@@ -1010,7 +1003,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-          },
+          } as any, // TODO: fix type
           objectReference: {
             transformerType: "getFromContext",
             interpolation: "runtime",
@@ -1027,7 +1020,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           objectReference: {
             transformerType: "getFromContext",
             interpolation: "runtime",
@@ -1041,7 +1034,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1099,7 +1091,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1114,7 +1105,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "returnValue",
             mlSchema: { type: "uuid" },
@@ -1132,7 +1123,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-          },
+          } as any, // TODO: fix type
           objectReference: {
             transformerType: "getFromContext",
             interpolation: "runtime",
@@ -1148,7 +1139,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           objectReference: {
             transformerType: "getFromContext",
             interpolation: "runtime",
@@ -1157,17 +1148,17 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           AttributeOfListObjectToCompareToReferenceUuid: "publisher",
         },
         result1: {
-          extractorOrCombinerType: "extractorTemplateByExtractorWrapperReturningObject",
+          extractorOrCombinerType: "extractorByExtractorWrapperReturningObject",
           definition: {
             "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
               transformerType: "getFromContext",
               interpolation: "runtime",
               referenceName: "booksOfPublisher",
-            },
+            } as any, // TODO: fix type
           },
         },
         result2: {
-          extractorOrCombinerType: "extractorTemplateByExtractorWrapperReturningList",
+          extractorOrCombinerType: "extractorByExtractorWrapperReturningList",
           definition: [
             {
               transformerType: "getFromContext",
@@ -1311,7 +1302,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentUuid: {
             transformerType: "returnValue",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-          },
+          } as any, // TODO: fix type
           instanceUuid: {
             transformerType: "returnValue",
             value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
@@ -1325,7 +1316,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           parentUuid: {
             transformerType: "returnValue",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
           objectReference: {
             transformerType: "getFromContext",
             interpolation: "runtime",
@@ -1414,7 +1405,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             parentUuid: {
               transformerType: "returnValue",
               value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-            },
+            } as any, // TODO: fix type
             instanceUuid: {
               transformerType: "returnValue",
               value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
@@ -1428,7 +1419,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             parentUuid: {
               transformerType: "returnValue",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            },
+            } as any, // TODO: fix type
             objectReference: {
               transformerType: "getFromContext",
               interpolation: "runtime",
@@ -1576,7 +1567,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-            },
+            } as any, // TODO: fix type
           },
         },
         combinerTemplates: {
@@ -1591,7 +1582,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
                   transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "uuid",
-                },
+                } as any, // TODO: fix type
               },
               rootQueryObjectTransformer: {
                 transformerType: "recordOfTransformers",
@@ -1635,7 +1626,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
                   transformerType: "getFromParameters",
                   interpolation: "build",
                   referenceName: "uuid",
-                },
+                } as any, // TODO: fix type
               },
               rootQueryObjectTransformer: {
                 transformerType: "recordOfTransformers",
@@ -1682,7 +1673,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
+          } as any, // TODO: fix type
         },
       },
       runtimeTransformers: {

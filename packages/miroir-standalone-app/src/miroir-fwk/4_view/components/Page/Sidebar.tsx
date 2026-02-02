@@ -131,11 +131,6 @@ export const Sidebar: FC<{
 
   const filteredAppSidebarSections = useMemo(() => (
     [
-      // {
-      //   deploymentUuid: adminConfigurationDeploymentParis.uuid,
-      //   applicationUuid: applicationParis.uuid,
-      //   menuUuid: defaultMenuParisUuid
-      // },
       {
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         applicationUuid: selfApplicationLibrary.uuid,

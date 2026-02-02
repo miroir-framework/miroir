@@ -9,8 +9,9 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   JzodObject,
-  QueryByEntityUuidGetEntityDefinition
+  QueryByEntityUuidGetEntityDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Domain2ElementFailed, Domain2QueryReturnType, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import {
@@ -349,7 +350,27 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   //   "result",
   //   deploymentEntityState[deploymentEntityStateIndex].entities
   // );
-  return deploymentEntityState[deploymentEntityStateIndex].entities;
+  const entityInstances = deploymentEntityState[deploymentEntityStateIndex].entities;
+  const localSelect = foreignKeyParams.extractor.select;
+  if (
+    localSelect.extractorOrCombinerType !== "extractorByEntityReturningObjectList" ||
+    (!localSelect.filter && !localSelect.orderBy)
+  ) {
+    return entityInstances;
+  }
+  // Apply filter and orderBy
+  const filteredInstancesArray = applyExtractorFilterAndOrderBy(
+    Object.values(entityInstances),
+    localSelect
+  );
+  log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filteredInstancesArray", filteredInstancesArray);
+
+  const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
+    acc[instance.uuid] = instance;
+    return acc;
+  }, {});
+  log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filtered result", result);
+  return result;
 };
 
 // ################################################################################################

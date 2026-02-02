@@ -8,9 +8,9 @@ import {
   RunBoxedExtractorAction,
   RunBoxedQueryAction,
   type CombinerForObjectByRelation,
-  type ExtractorByEntityReturningObjectList,
   type ExtractorForObjectByDirectReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   Action2EntityInstanceCollection,
@@ -494,37 +494,13 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     if (
       extractorRunnerParams.extractor.select.extractorOrCombinerType ==
         "extractorByEntityReturningObjectList" &&
-      extractorRunnerParams.extractor.select.filter
+      (extractorRunnerParams.extractor.select.filter || extractorRunnerParams.extractor.select.orderBy)
     ) {
-      const localSelect: ExtractorByEntityReturningObjectList = extractorRunnerParams.extractor.select;
-      entityInstanceCollection.returnedDomainElement.instances = entityInstanceCollection.returnedDomainElement.instances.filter(
-        (instance: EntityInstance) => {
-          const filterAttributeName: string =
-            localSelect.filter!.attributeName;
-          const filterAttributeValue =
-            localSelect.filter!.value;
-          const a: string = "aaaa";
-          return typeof (instance as any)[filterAttributeName] == "string"
-            ? (instance as any)[filterAttributeName].match(new RegExp(filterAttributeValue, "i")) != null
-            : typeof (instance as any)[filterAttributeName] == "number"
-              ? (instance as any)[filterAttributeName] == filterAttributeValue
-              : false;
-        }
+      const localSelect = extractorRunnerParams.extractor.select;
+      entityInstanceCollection.returnedDomainElement.instances = applyExtractorFilterAndOrderBy(
+        entityInstanceCollection.returnedDomainElement.instances,
+        localSelect
       );
-    }
-
-    if (extractorRunnerParams.extractor.select.orderBy) {
-      const orderByAttribute: string = extractorRunnerParams.extractor.select.orderBy.attributeName;
-      const orderDirection = extractorRunnerParams.extractor.select.orderBy.direction ?? "asc";
-      entityInstanceCollection.returnedDomainElement.instances.sort((a: any, b: any) => {
-        if (a[orderByAttribute] < b[orderByAttribute]) {
-          return orderDirection === "asc" ? -1 : 1;
-        } else if (a[orderByAttribute] > b[orderByAttribute]) {
-          return orderDirection === "asc" ? 1 : -1;
-        } else {
-          return 0;
-        }
-      });
     }
 
     return entityInstanceCollection.returnedDomainElement.instances;

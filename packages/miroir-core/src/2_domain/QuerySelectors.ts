@@ -27,6 +27,7 @@ import {
   RunBoxedQueryAction,
   TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { applyExtractorFilterAndOrderBy, instanceMatchesFilter } from "./ExtractorByEntityReturningObjectListTools";
 import {
   Action2Error,
   Action2ReturnType,
@@ -190,49 +191,9 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
   }
   switch (query.select.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList": {
-      const localQuery: ExtractorByEntityReturningObjectList = query.select;
-      const filterValueTest: (value: string | undefined) => boolean = localQuery.filter
-        ? localQuery.filter.undefined
-          ? (value: string | undefined) => value === undefined
-          : (value: string | undefined) =>
-              value !== undefined && (new RegExp(localQuery?.filter?.value ?? "", "i").test as any) // TODO: check for correct type
-        : (value: string | undefined) => true;
-
-      const filterTest: (value: string | undefined) => boolean = localQuery.filter?.not
-        ? (value: string | undefined) => !filterValueTest(value)
-        : (value: string | undefined) => filterValueTest(value);
-
-      // TODO: implement orderBy.direction!
-      const sortFunction = localQuery.orderBy
-        ? (a: EntityInstance, b: EntityInstance) => {
-            return (a as any)[localQuery.orderBy?.attributeName ?? ""].localeCompare(
-              (b as any)[localQuery.orderBy?.attributeName ?? ""],
-              "en",
-              { sensitivity: "base" },
-            );
-          }
-        : undefined;
-      // log.info(
-      //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory filter",
-      //   JSON.stringify(localQuery.filter)
-      // );
-      const filteredResult: Domain2QueryReturnType<EntityInstance[]> = localQuery.filter
-        ? selectedInstancesList.filter((i: EntityInstance) => {
-            const matchResult = filterTest(
-              (i as any)[localQuery.filter?.attributeName ?? ""],
-            );
-            // log.info(
-            //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory filter",
-            //   JSON.stringify(i[1]),
-            //   "matchResult",
-            //   matchResult
-            // );
-            return matchResult;
-          })
-        : selectedInstancesList;
-      const orderResult = sortFunction ? filteredResult.sort(sortFunction) : filteredResult;
-      return orderResult;
-      break;
+      const localQuery = query.select;
+      // Use centralized filter and orderBy implementation
+      return applyExtractorFilterAndOrderBy(selectedInstancesList, localQuery);
     }
     case "combinerByRelationReturningObjectList": {
       const relationQuery: CombinerByRelationReturningObjectList = query.select;
@@ -410,10 +371,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   switch (query.select.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList": {
-      const localQuery: ExtractorByEntityReturningObjectList = query.select;
-      const filterTest = localQuery.filter
-        ? new RegExp(localQuery.filter.value??"", "i") // TODO: check for correct type
-        : undefined;
+      const localQuery = query.select;
       // log.info(
       //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
       //   JSON.stringify(localQuery.filter)
@@ -425,17 +383,11 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
           JSON.stringify(query, undefined, 2)
         )
       }
+      // Use centralized filter implementation via instanceMatchesFilter
       const result: Domain2QueryReturnType<EntityInstancesUuidIndex> = localQuery.filter
         ? Object.fromEntries(
             Object.entries(selectedInstancesUuidIndex).filter((i: [string, EntityInstance]) => {
-              const matchResult = filterTest?.test((i as any)[1][localQuery.filter?.attributeName ?? ""]);
-              // log.info(
-              //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory filter",
-              //   JSON.stringify(i[1]),
-              //   "matchResult",
-              //   matchResult
-              // );
-              return matchResult;
+              return instanceMatchesFilter(i[1], localQuery.filter!);
             })
           )
         : selectedInstancesUuidIndex;
@@ -1071,40 +1023,40 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
  * StateType is the type of the deploymentEntityState, which may be a ReduxDeploymentsState or a ReduxDeploymentsStateWithUuidIndex
  * 
  * 
- * @param foreignKeyParams the array of basic extractor functions
+ * @param extractorParams the array of basic extractor functions
  * @returns 
  */
 export const runQuery = <StateType>(
   state: StateType,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: SyncQueryRunnerExtractorAndParams<StateType>,
+  extractorParams: SyncQueryRunnerExtractorAndParams<StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<Record<string,any>> => { 
 
   // log.info("########## runQuery begin, query", foreignKeyParams);
   const context: Record<string, any> = {
-    ...(foreignKeyParams?.extractor?.contextResults ?? {})
+    ...(extractorParams?.extractor?.contextResults ?? {})
   };
-  const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application]?? "DEPLOYMENT_UUID_NOT_FOUND";
+  const deploymentUuid = applicationDeploymentMap[extractorParams.extractor.application]?? "DEPLOYMENT_UUID_NOT_FOUND";
   // log.info("########## DomainSelector runQuery will use context", context);
   const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> =
-    foreignKeyParams?.extractorRunnerMap ?? emptySelectorMap;
+    extractorParams?.extractorRunnerMap ?? emptySelectorMap;
 
   for (const extractor of Object.entries(
-    foreignKeyParams?.extractor?.extractors ?? {}
+    extractorParams?.extractor?.extractors ?? {}
   )) {
     let result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
-      foreignKeyParams.extractor.pageParams,
+      extractorParams.extractor.pageParams,
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...foreignKeyParams.extractor.pageParams,
-        ...foreignKeyParams.extractor.queryParams,
+        ...extractorParams.extractor.pageParams,
+        ...extractorParams.extractor.queryParams,
       },
       localSelectorMap as any,
-      foreignKeyParams.extractor.application,
+      extractorParams.extractor.application,
       applicationDeploymentMap,
       deploymentUuid,
       extractor[1]
@@ -1146,19 +1098,19 @@ export const runQuery = <StateType>(
   //   Object.keys(context)
   // );
   for (const combiner of Object.entries(
-    foreignKeyParams.extractor.combiners ?? {}
+    extractorParams.extractor.combiners ?? {}
   )) {
     let result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
-      foreignKeyParams.extractor.pageParams,
+      extractorParams.extractor.pageParams,
       modelEnvironment,
       {
-        ...foreignKeyParams.extractor.pageParams,
-        ...foreignKeyParams.extractor.queryParams,
+        ...extractorParams.extractor.pageParams,
+        ...extractorParams.extractor.queryParams,
       },
       localSelectorMap as any,
-      foreignKeyParams.extractor.application,
+      extractorParams.extractor.application,
       applicationDeploymentMap,
       deploymentUuid,
       combiner[1]
@@ -1179,14 +1131,14 @@ export const runQuery = <StateType>(
 
   for (const transformerForBuildPlusRuntime of 
     Object.entries(
-    foreignKeyParams.extractor.runtimeTransformers ?? {}
+    extractorParams.extractor.runtimeTransformers ?? {}
   )) {
     let result = applyExtractorTransformerInMemory(
       transformerForBuildPlusRuntime[1],
       modelEnvironment,
       {
-        ...foreignKeyParams.extractor.pageParams,
-        ...foreignKeyParams.extractor.queryParams,
+        ...extractorParams.extractor.pageParams,
+        ...extractorParams.extractor.queryParams,
       },
       context
     );

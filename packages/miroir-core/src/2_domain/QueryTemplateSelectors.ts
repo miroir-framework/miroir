@@ -87,7 +87,6 @@ export async function handleQueryTemplateAction(
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
         application: queryTemplateAction.payload.application,
-        // deploymentUuid: queryTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
       }
@@ -215,7 +214,6 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
       payload: {
         application: queryTemplateOrExtractorTemplateAction.payload.application,
-        // deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
         applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
         query: resolvedQuery as any,
       }
