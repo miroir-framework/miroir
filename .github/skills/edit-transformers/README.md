@@ -14,8 +14,8 @@ A skill for creating and updating Miroir Transformers following TDD (Test-Driven
 
 ### Direct invocation:
 ```
-/manipulate-transformers create myTransformer
-/manipulate-transformers update existingTransformer
+/edit-transformers create myTransformer
+/edit-transformers update existingTransformer
 ```
 
 ## What This Skill Does
@@ -51,7 +51,7 @@ RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transform
 ## Files Structure
 
 ```
-manipulate-transformers/
+edit-transformers/
 ├── SKILL.md                          # Main skill instructions
 ├── examples.md                       # Detailed examples
 ├── template-library-transformer.json # Template for library transformers

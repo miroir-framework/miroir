@@ -1,5 +1,5 @@
 ---
-name: manipulate-transformers
+name: edit-transformers
 description: Create or update Miroir Transformers in a TDD style. Use when working with transformerType, TransformerDefinition, library-implemented or composite transformers, or running transformer tests.
 allowed-tools: Read, Grep, Glob, Bash(npm *), Edit, Create
 ---
