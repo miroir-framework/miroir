@@ -32,13 +32,29 @@ Create and update **composite** transformers - those composed entirely of other 
 
 ---
 
+### Query Skills
+
+#### 🔍 [edit-queries](edit-queries/)
+Create and update **Miroir Queries** (with Extractors, Combiners, and Transformers) using TDD practices.
+
+**Use when:**
+- Creating data access patterns with extractors
+- Building query templates with build-time interpolation
+- Implementing foreign key joins with combiners
+- Transforming query results with runtime transformers
+- Working with `boxedQueryWithExtractorCombinerTransformer`
+
+**Examples**: Object fetching, filtered lists, FK joins, many-to-many relations
+
+---
+
 ### Other Skills
 
 #### [create-skill](create-skill/)
 Tools for creating new Copilot skills.
 
 #### [query-editor](query-editor/)
-Work with Miroir queries and extractors.
+Legacy query/transformer workflow (see [edit-queries](edit-queries/) for TDD-focused query work).
 
 ---
 
@@ -54,6 +70,14 @@ Comprehensive guide explaining:
 ---
 
 ## Skill Selection Guide
+
+### "I want to create a query..."
+
+**→ With extractors, combiners, or filters?**
+  - Yes → Use [edit-queries](edit-queries/)
+
+**→ Following TDD practices?**
+  - Yes → Use [edit-queries](edit-queries/)
 
 ### "I want to create a transformer..."
 
