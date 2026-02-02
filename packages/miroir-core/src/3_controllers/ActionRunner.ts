@@ -20,7 +20,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 /**
- * runs a model action: "modelActionUpdateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
+ * runs a storeManagementAction 
  * @param actionType
  * @param action
  * @returns

@@ -25,7 +25,7 @@ const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1
 const adminSelfApplication = require("../assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
 const adminConfigurationDeploymentAdmin = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
 
-import { selfApplicationLibrary, selfApplicationDeploymentLibrary } from "miroir-example-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   ApplicationSection,
@@ -83,7 +83,7 @@ const selfApplicationStoreBasedConfigurationMiroir = require('../assets/miroir_d
 
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
-import { Endpoint, libraryEndpointUuid } from "./Endpoint";
+import { Endpoint } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
 // import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
 import {
@@ -94,7 +94,7 @@ import {
   TransformerFailure,
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
-import { defaultSelfApplicationDeploymentMap, type ApplicationDeploymentMap } from '../1_core/Deployment.js';
+import { type ApplicationDeploymentMap } from '../1_core/Deployment.js';
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
   ignorePostgresExtraAttributesOnList,
@@ -102,6 +102,7 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
+import { entityMenu, entityReport } from '../index.js';
 import { ConfigurationService } from './ConfigurationService.js';
 
 // const defaultSelfApplicationDeploymentMap: Record<Uuid, Uuid> = {
@@ -1277,6 +1278,110 @@ export class DomainController implements DomainControllerInterface {
               }
               
               log.info("handleModelAction resetModel successfully created all entities");
+            }
+
+            if (model.reports && model.reports.length > 0) {
+              log.info(
+                "handleModelAction resetModel creating",
+                model.reports.length,
+                "reports",
+                model.reports,
+              );
+              const createReportsAction: InstanceAction = {
+                actionType: "createInstance",
+                actionLabel: "Create Reports from Model",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                payload: {
+                  application: modelActionResetModel.payload.application,
+                  applicationSection: "model",
+                  parentUuid: entityReport.uuid,
+                  objects: [
+                    {
+                      parentUuid: entityReport.uuid,
+                      applicationSection: "model",
+                      instances: model.reports,
+                    }
+                  ],
+                },
+              };
+              const createReportsResult = await this.handleAction(
+                {
+                  actionType: "transactionalInstanceAction",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  payload: {
+                    application: modelActionResetModel.payload.application,
+                    instanceAction: createReportsAction,
+                  },
+                },
+                applicationDeploymentMap,
+              );
+              if (createReportsResult instanceof Action2Error) {
+                log.error(
+                  "handleModelAction resetModel failed to create reports",
+                  createReportsResult
+                );
+                return new Action2Error(
+                  "FailedToHandleAction",
+                  "handleModelAction resetModel failed to create reports from model",
+                  [],
+                  createReportsResult,
+                );
+              }
+              log.info("handleModelAction resetModel successfully created all reports");
+            }
+
+            if (model.menus && model.menus.length > 0) {
+              log.info(
+                "handleModelAction resetModel creating",
+                model.menus.length,
+                "menus",
+                model.menus,
+              );
+              const createMenusAction: InstanceAction = {
+                actionType: "createInstance",
+                actionLabel: "Create Menus from Model",
+                application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                payload: {
+                  application: modelActionResetModel.payload.application,
+                  applicationSection: "model",
+                  parentUuid: entityMenu.uuid,
+                  objects: [
+                    {
+                      parentUuid: entityMenu.uuid,
+                      applicationSection: "model",
+                      instances: model.menus,
+                    }
+                  ],
+                },
+              };
+              const createMenusResult = await this.handleAction(
+                {
+                  actionType: "transactionalInstanceAction",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  payload: {
+                    application: modelActionResetModel.payload.application,
+                    instanceAction: createMenusAction,
+                  },
+                },
+                applicationDeploymentMap,
+              );
+              if (createMenusResult instanceof Action2Error) {
+                log.error(
+                  "handleModelAction resetModel failed to create menus",
+                  createMenusResult
+                );
+                return new Action2Error(
+                  "FailedToHandleAction",
+                  "handleModelAction resetModel failed to create menus from model",
+                  [],
+                  createMenusResult,
+                );
+              }
+              log.info("handleModelAction resetModel successfully created all menus");
             }
           }
           break;

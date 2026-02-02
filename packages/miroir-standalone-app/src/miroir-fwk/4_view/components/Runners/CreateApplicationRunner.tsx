@@ -226,84 +226,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
   };
 
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
-    const serverConfig: any = {
-      emulatedServerType: "sql",
-      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-    };
 
-    let testDeploymentStorageConfiguration: TransformerForBuildPlusRuntime = {} as any;
-    switch (serverConfig.emulatedServerType as any) {
-      case "filesystem": {
-        testDeploymentStorageConfiguration = {
-          admin: {
-            emulatedServerType: "filesystem",
-            directory: `${serverConfig.rootDirectory}/admin`,
-          },
-          model: {
-            emulatedServerType: "filesystem",
-            directory: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: `${serverConfig.rootDirectory}/{{createApplicationAndDeployment.applicationName}}_model`,
-            },
-          },
-          data: {
-            emulatedServerType: "filesystem",
-            directory: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: `${serverConfig.rootDirectory}/{{createApplicationAndDeployment.applicationName}}_data`,
-            },
-          },
-        };
-        break;
-      }
-      case "sql": {
-        testDeploymentStorageConfiguration = {
-          admin: {
-            emulatedServerType: "sql",
-            connectionString: serverConfig.connectionString,
-            schema: "miroirAdmin",
-          },
-          model: {
-            emulatedServerType: "sql",
-            connectionString: serverConfig.connectionString,
-            schema: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: "{{createApplicationAndDeployment.applicationName}}",
-            }, // TODO: separate model and data schemas
-          },
-          data: {
-            emulatedServerType: "sql",
-            connectionString: serverConfig.connectionString,
-            schema: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: "{{createApplicationAndDeployment.applicationName}}",
-            }, // TODO: separate model and data schemas
-          },
-        };
-        break;
-      }
-      case "indexedDb": {
-        testDeploymentStorageConfiguration = {
-          admin: {
-            emulatedServerType: "indexedDb",
-            indexedDbName: `${serverConfig.rootIndexDbName}_admin`,
-          },
-          model: {
-            emulatedServerType: "indexedDb",
-            indexedDbName: `${serverConfig.rootIndexDbName}_model`,
-          },
-          data: {
-            emulatedServerType: "indexedDb",
-            indexedDbName: `${serverConfig.rootIndexDbName}_data`,
-          },
-        };
-        break;
-      }
-    }
     const defaultDirectory = "tmp/miroir_data_storage";
 
     const sqltestDeploymentStorageConfigurationTemplate: TransformerForBuildPlusRuntime = {
@@ -421,7 +344,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           then: {
             admin: {
               emulatedServerType: "indexedDb",
-              // indexedDbName: "{{createApplicationAndDeployment.applicationName}}_admin",
               indexedDbName: {
                 transformerType: "+",
                 args: [
@@ -458,7 +380,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
                   "_model",
                 ],
               },
-              // indexedDbName: "{{createApplicationAndDeployment.applicationName}}_model",
             },
             data: {
               emulatedServerType: "indexedDb",
@@ -481,7 +402,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
                   "_data",
                 ],
               },
-              // indexedDbName: "{{createApplicationAndDeployment.applicationName}}_data",
             },
           },
         },
@@ -696,7 +616,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
               configuration: {
-                // [testDeploymentUuid]: testDeploymentStorageConfiguration as any,
                 [testDeploymentUuid]: sqltestDeploymentStorageConfigurationTemplate as any,
               },
             },
@@ -709,7 +628,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             payload: {
               application: testSelfApplicationUuid,
               deploymentUuid: testDeploymentUuid,
-              // configuration: testDeploymentStorageConfiguration as any,
               configuration: sqltestDeploymentStorageConfigurationTemplate as any,
             },
           },
@@ -748,7 +666,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
                         definition: `The description of deployment of application {{createApplicationAndDeployment.applicationName}}`,
                       } as any,
                       adminApplication: testSelfApplicationUuid,
-                      // configuration: testDeploymentStorageConfiguration,
                       configuration: sqltestDeploymentStorageConfigurationTemplate as any,
                     } as Deployment,
                   ],
