@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub](https://img.shields.io/github/stars/miroir-framework/miroir?style=social)](https://github.com/miroir-framework/miroir)
 
+⚠️ THINGS WILL BREAK, MORE OFTEN THAN NOT. USE WITH CAUTION & FASTEN YOUR SEATBELTS. ⚠️
 ---
 
 ## What is Miroir?
