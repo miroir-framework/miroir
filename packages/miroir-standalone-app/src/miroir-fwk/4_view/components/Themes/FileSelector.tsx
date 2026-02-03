@@ -21,6 +21,10 @@ export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'
   folder?: boolean;
   /** Callback when a file is selected */
   onFileSelect?: (fileOrPath: File | string) => void;
+  // 
+  setSelectedFileName: (path: string | undefined) => void;
+  setSelectedFileContents: (fileContents: any) => void;
+  setSelectedFileError: (errorMessage: string | undefined) => void;
   /** Callback when file is cleared */
   onFileClear?: () => void;
   /** Current selected file name to display */
@@ -68,6 +72,9 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   folder = false,
   onFileSelect,
   onFileClear,
+  setSelectedFileName,
+  setSelectedFileContents,
+  setSelectedFileError,
   selectedFileName,
   error,
   successMessage,
@@ -79,20 +86,79 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   const { currentTheme } = useMiroirTheme();
 
   // Helper to extract directory from webkitRelativePath in browser (no Node path module)
+  // const uploadFile = useCallback((fileOrPath: File | string) => {
+  const uploadFile = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileOrPath = event.target.files?.[0];
+    console.log('FileSelector - Selected file:', fileOrPath, event.target);
+
+    // Since upload=true, we should always receive a File object
+    if (typeof fileOrPath === 'string') {
+      setSelectedFileError('Unexpected error: received path instead of file');
+      return;
+    }
+    
+    const file = fileOrPath;
+    if (!fileOrPath?.name.endsWith('.json')) {
+      setSelectedFileError('Please select a valid JSON file');
+      setSelectedFileContents(undefined);
+      setSelectedFileName(undefined);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const parsedData = JSON.parse(content);
+        
+        // Basic validation that it looks like a MetaModel
+        if (!parsedData.entities || !parsedData.entityDefinitions) {
+          setSelectedFileError('Invalid MetaModel format: missing required properties (entities, entityDefinitions)');
+          setSelectedFileContents(undefined);
+          setSelectedFileName(undefined);
+          return;
+        }
+
+        setSelectedFileName(fileOrPath.name);
+        setSelectedFileContents(parsedData);
+        setSelectedFileError(undefined);
+        // log.info('MetaModel loaded successfully from file:', file.name);
+      } catch (error) {
+        setSelectedFileError(`Error parsing JSON file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        setSelectedFileContents(undefined);
+        setSelectedFileName(undefined);
+      }
+    };
+    reader.onerror = () => {
+      setSelectedFileError('Error reading file');
+      setSelectedFileContents(undefined);
+      setSelectedFileName(undefined);
+    };
+    reader.readAsText(fileOrPath);
+  }, []);
 
   // Handle file input change
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     console.log('FileSelector - Selected file:', file, event.target);
-    if (file && onFileSelect) {
-      if (folder) {
-        const prefix =
-          process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
-        console.warn("Folder selection is not fully supported in all browsers.", file.webkitRelativePath);
-        const dir = file.webkitRelativePath ? prefix + getDirectoryFromWebkitPath(file.webkitRelativePath) : "";
-        onFileSelect(dir || file.name);
-      } else {
-        onFileSelect(file);
+    if (!folder) {
+        setSelectedFileName(undefined);
+        setSelectedFileContents(undefined);
+        setSelectedFileError("FileSelector handleFileChange cannot proceed in folder mode");
+    } else {
+      if (file && onFileSelect) {
+        if (folder) {
+          const prefix =
+            process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
+          console.warn("Folder selection is not fully supported in all browsers.", file.webkitRelativePath);
+          const dir = file.webkitRelativePath ? prefix + getDirectoryFromWebkitPath(file.webkitRelativePath) : "";
+          onFileSelect(dir || file.name);
+          setSelectedFileName(dir || file.name);
+          setSelectedFileContents(undefined);
+          setSelectedFileError(undefined);
+        } else {
+          onFileSelect(file);
+        }
       }
     }
     // Reset input value to allow selecting the same file again
@@ -181,7 +247,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
               directory: "" as any,
               mozdirectory: "" as any 
             } : {})}
-            onChange={handleFileChange}
+            onChange={folder ? handleFileChange : uploadFile}
           />
         </Button>
 

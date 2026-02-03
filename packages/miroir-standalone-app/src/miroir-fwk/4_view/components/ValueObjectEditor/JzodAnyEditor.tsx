@@ -6,6 +6,7 @@ import {
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
+  type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
 
@@ -20,6 +21,10 @@ import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
 import { JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
+import { ThemedLabeledEditor } from "../Themes/FormComponents.js";
+import { ThemedDisplayValue } from "../Themes/DisplayComponents.js";
+import { FileSelector } from "../Themes/FileSelector.js";
+import { useCallback, useState } from "react";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -28,6 +33,13 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// ################################################################################################
+/**
+ * JzodAnyEditor Component
+ * 
+ * Editor for Jzod schema elements of type "any".
+ * Supports dynamic type selection and rendering of appropriate sub-editors.
+ */
 let JzodAnyEditorRenderCount: number = 0;
 export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   props: JzodAnyEditorProps
@@ -40,21 +52,23 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     rootLessListKey,
     rootLessListKeyArray,
     reportSectionPathAsString,
-    
+
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
     resolvedElementJzodSchemaDEFUNCT: resolvedElementJzodSchema, // handleSelectLiteralChange,
     labelElement,
     insideAny,
+    readOnly,
     typeCheckKeyMap,
   } = props;
-  
+
   const {
     formik,
     currentValueObject,
     currentValueObjectAtKey: currentValue,
     formikRootLessListKey,
+    localResolvedElementJzodSchemaBasedOnValue,
     currentModel,
     miroirMetaModel,
   } = useJzodElementEditorHooks(
@@ -66,21 +80,27 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     props.applicationDeploymentMap,
     props.currentDeploymentUuid,
     JzodAnyEditorRenderCount,
-    "JzodAnyEditor"
+    "JzodAnyEditor",
   );
+
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(
+    currentValueObject || undefined,
+  );
+  const [fileError, setFileError] = useState<string | undefined>(undefined);
+
+  const setSelectedFileContents = useCallback(
+    (metaModel: MetaModel | undefined) => {
+      formik.setFieldValue(formikRootLessListKey, metaModel);
+    },
+    [formikRootLessListKey, formik],
+  );
+
+  const format = localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.any?.format;
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     props.currentApplication,
-    props.applicationDeploymentMap
+    props.applicationDeploymentMap,
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema:
-  //       context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
-  //     currentModel: currentModel,
-  //     miroirMetaModel: miroirMetaModel,
-  //   };
-  // }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   // const currentValue = resolvePathOnObject(formik.values[reportSectionPathAsString], rootLessListKeyArray);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -92,16 +112,51 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
         state.presentModelSnapshot.current,
         props.applicationDeploymentMap,
         () => ({}),
-        currentMiroirModelEnvironment
-      )
+        currentMiroirModelEnvironment,
+      ),
   );
+
+  if (format === "file") {
+    // if (readOnly) {
+    //   return (
+    //     <ThemedLabeledEditor
+    //       labelElement={labelElement ?? <>{name}</>}
+    //       editor={<ThemedDisplayValue value={currentValue} type="string" />}
+    //     />
+    //   );
+    // }
+    return (
+      <>
+      fomat = "file"
+      <ThemedLabeledEditor
+        labelElement={labelElement ?? <>{name}</>}
+        editor={
+          <FileSelector
+            title=""
+            buttonLabel={"Select File"}
+            accept={"*.json"}
+            folder={format === "folder"}
+            setSelectedFileContents={setSelectedFileContents}
+            setSelectedFileError={setFileError}
+            setSelectedFileName={setSelectedFileName}
+            selectedFileName={selectedFileName}
+            error={fileError}
+            showBorder={false}
+            compact={true}
+            style={{ marginBottom: 0 }}
+          />
+        }
+      />
+      </>
+    );
+  }
 
   return (
     <div key={rootLessListKey}>
       {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
       <ThemedOnScreenDebug
         label={`JzodAnyEditor Render Count for ${rootLessListKey} ${JzodAnyEditorRenderCount}`}
-        data={(typeCheckKeyMap??{})[rootLessListKey]}
+        data={(typeCheckKeyMap ?? {})[rootLessListKey]}
         initiallyUnfolded={false}
         useCodeBlock={true}
       />

@@ -366,6 +366,19 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "any": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "file"
+                          ]
+                        }
+                      }
+                    },
                     "string": {
                       "type": "object",
                       "optional": true,
@@ -755,6 +768,19 @@ export const miroirFundamentalJzodSchema = {
                             "definition": [
                               "portalSelector",
                               "muiSelector"
+                            ]
+                          }
+                        }
+                      },
+                      "any": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "file"
                             ]
                           }
                         }
@@ -24576,6 +24602,46 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "any": {
+                          "optional": true,
+                          "type": "union",
+                          "discriminator": "transformerType",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "format": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "definition": [
+                                    {
+                                      "type": "enum",
+                                      "optional": true,
+                                      "definition": [
+                                        "file"
+                                      ]
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ],
+                                  "discriminator": "transformerType"
+                                }
+                              }
+                            }
+                          ]
+                        },
                         "string": {
                           "optional": true,
                           "type": "union",
@@ -25783,6 +25849,46 @@ export const miroirFundamentalJzodSchema = {
                                                 "definition": [
                                                   "portalSelector",
                                                   "muiSelector"
+                                                ]
+                                              },
+                                              {
+                                                "type": "schemaReference",
+                                                "definition": {
+                                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  "relativePath": "transformerForBuildCarryOnObject"
+                                                }
+                                              }
+                                            ],
+                                            "discriminator": "transformerType"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "any": {
+                                    "optional": true,
+                                    "type": "union",
+                                    "discriminator": "transformerType",
+                                    "definition": [
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "definition": {
+                                          "format": {
+                                            "type": "union",
+                                            "optional": true,
+                                            "definition": [
+                                              {
+                                                "type": "enum",
+                                                "optional": true,
+                                                "definition": [
+                                                  "file"
                                                 ]
                                               },
                                               {
@@ -29387,6 +29493,46 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "any": {
+                          "optional": true,
+                          "type": "union",
+                          "discriminator": "transformerType",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "format": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "definition": [
+                                    {
+                                      "type": "enum",
+                                      "optional": true,
+                                      "definition": [
+                                        "file"
+                                      ]
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ],
+                                  "discriminator": "transformerType"
+                                }
+                              }
+                            }
+                          ]
+                        },
                         "string": {
                           "optional": true,
                           "type": "union",
@@ -30574,6 +30720,46 @@ export const miroirFundamentalJzodSchema = {
                                           "definition": [
                                             "portalSelector",
                                             "muiSelector"
+                                          ]
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ],
+                                      "discriminator": "transformerType"
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "any": {
+                              "optional": true,
+                              "type": "union",
+                              "discriminator": "transformerType",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "format": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "enum",
+                                          "optional": true,
+                                          "definition": [
+                                            "file"
                                           ]
                                         },
                                         {
@@ -31797,6 +31983,46 @@ export const miroirFundamentalJzodSchema = {
                                                     "definition": [
                                                       "portalSelector",
                                                       "muiSelector"
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ],
+                                                "discriminator": "transformerType"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "any": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "format": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "definition": [
+                                                  {
+                                                    "type": "enum",
+                                                    "optional": true,
+                                                    "definition": [
+                                                      "file"
                                                     ]
                                                   },
                                                   {
@@ -44837,6 +45063,19 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "any": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "file"
+                          ]
+                        }
+                      }
+                    },
                     "string": {
                       "type": "object",
                       "optional": true,
@@ -45276,6 +45515,19 @@ export const miroirFundamentalJzodSchema = {
                             "definition": [
                               "portalSelector",
                               "muiSelector"
+                            ]
+                          }
+                        }
+                      },
+                      "any": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "file"
                             ]
                           }
                         }
@@ -55917,6 +56169,19 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "any": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "file"
+                          ]
+                        }
+                      }
+                    },
                     "string": {
                       "type": "object",
                       "optional": true,
@@ -56356,6 +56621,19 @@ export const miroirFundamentalJzodSchema = {
                             "definition": [
                               "portalSelector",
                               "muiSelector"
+                            ]
+                          }
+                        }
+                      },
+                      "any": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "file"
                             ]
                           }
                         }
@@ -59768,6 +60046,19 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "any": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "file"
+                          ]
+                        }
+                      }
+                    },
                     "string": {
                       "type": "object",
                       "optional": true,
@@ -60207,6 +60498,19 @@ export const miroirFundamentalJzodSchema = {
                             "definition": [
                               "portalSelector",
                               "muiSelector"
+                            ]
+                          }
+                        }
+                      },
+                      "any": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "file"
                             ]
                           }
                         }
@@ -70848,6 +71152,19 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "any": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "file"
+                          ]
+                        }
+                      }
+                    },
                     "string": {
                       "type": "object",
                       "optional": true,
@@ -71287,6 +71604,19 @@ export const miroirFundamentalJzodSchema = {
                             "definition": [
                               "portalSelector",
                               "muiSelector"
+                            ]
+                          }
+                        }
+                      },
+                      "any": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "file"
                             ]
                           }
                         }

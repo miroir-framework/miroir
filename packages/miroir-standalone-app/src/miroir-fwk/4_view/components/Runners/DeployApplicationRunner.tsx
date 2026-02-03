@@ -37,7 +37,7 @@ import {
 } from "miroir-example-library";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector';
+import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
@@ -62,23 +62,21 @@ function formatYYYYMMDD_HHMMSS(date = new Date()) {
 }
 
 // ################################################################################################
-export interface CreateApplicationToolProps {
+export interface DeployApplicationRunnerProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
 }
 
 // ################################################################################################
-export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
+export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = ({
   applicationDeploymentMap,
 }) => {
   const runnerName: string = "createApplicationAndDeployment";
 
   // State for MetaModel file upload
-  const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | undefined>(undefined);
-  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
-  const [fileError, setFileError] = useState<string | undefined>(undefined);
+  const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | null>(null);
+  // const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  // const [fileError, setFileError] = useState<string | null>(null);
   // const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  // const [selectedFileNameAndContents, setSelectedFileName] = useState<string | null>(null);
 
   // ##############################################################################################
   const runnerDeploymentUuid = useMemo(() => {
@@ -87,6 +85,67 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     return deploymentUuid || "";
   }, [applicationDeploymentMap]);
   // File selection handler
+  // const handleFileSelect = useCallback((fileOrPath: File | string) => {
+  //   // Since upload=true, we should always receive a File object
+  //   if (typeof fileOrPath === 'string') {
+  //     setFileError('Unexpected error: received path instead of file');
+  //     return;
+  //   }
+    
+  //   const file = fileOrPath;
+  //   if (!file.name.endsWith('.json')) {
+  //     setFileError('Please select a valid JSON file');
+  //     setSelectedMetaModel(null);
+  //     setSelectedFileName(null);
+  //     setSuccessMessage(null);
+  //     return;
+  //   }
+
+  //   const reader = new FileReader();
+  //   reader.onload = (e) => {
+  //     try {
+  //       const content = e.target?.result as string;
+  //       const parsedData = JSON.parse(content);
+        
+  //       // Basic validation that it looks like a MetaModel
+  //       if (!parsedData.entities || !parsedData.entityDefinitions) {
+  //         setFileError('Invalid MetaModel format: missing required properties (entities, entityDefinitions)');
+  //         setSelectedMetaModel(null);
+  //         setSelectedFileName(null);
+  //         setSuccessMessage(null);
+  //         return;
+  //       }
+
+  //       setSelectedMetaModel(parsedData as MetaModel);
+  //       setSelectedFileName(file.name);
+  //       setFileError(null);
+  //       setSuccessMessage(
+  //         `MetaModel loaded successfully with ${parsedData.entities?.length || 0} entities and ${parsedData.entityDefinitions?.length || 0} entity definitions.`
+  //       );
+  //       log.info('MetaModel loaded successfully from file:', file.name);
+  //     } catch (error) {
+  //       setFileError(`Error parsing JSON file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  //       setSelectedMetaModel(null);
+  //       setSelectedFileName(null);
+  //       setSuccessMessage(null);
+  //     }
+  //   };
+  //   reader.onerror = () => {
+  //     setFileError('Error reading file');
+  //     setSelectedMetaModel(null);
+  //     setSelectedFileName(null);
+  //     setSuccessMessage(null);
+  //   };
+  //   reader.readAsText(file);
+  // }, []);
+
+  // // Clear selected file
+  // const handleFileClear = useCallback(() => {
+  //   setSelectedMetaModel(null);
+  //   setSelectedFileName(null);
+  //   setFileError(null);
+  //   setSuccessMessage(null);
+  // }, []);
 
   // ##############################################################################################
   const miroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
@@ -115,6 +174,19 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           createApplicationAndDeployment: {
             type: "object",
             definition: {
+              applicationBundle: {
+                type: "any",
+                tag: {
+                  value: {
+                    defaultLabel: "Application Bundle",
+                    display: {
+                      string: {
+                        format: "file",
+                      },
+                    },
+                  },
+                },
+              },
               applicationStorage: {
                 type: "schemaReference",
                 context: {
@@ -200,14 +272,14 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
                   relativePath: "storeSectionConfiguration",
                 },
               },
-              applicationName: {
-                type: "string",
-                tag: {
-                  value: {
-                    defaultLabel: "Application Name",
-                  },
-                },
-              },
+              // applicationName: {
+              //   type: "string",
+              //   tag: {
+              //     value: {
+              //       defaultLabel: "Application Name",
+              //     },
+              //   },
+              // },
             },
           },
         },
@@ -235,7 +307,8 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           {}, // contextResults
           deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
         ).createApplicationAndDeployment,
-        applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
+        applicationBundle: undefined,
+        // applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
       },
     }),
     [],
@@ -275,7 +348,6 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
           then: {
             admin: {
               emulatedServerType: "mongodb",
-              // connectionString: "mongodb://localhost:27017",
               connectionString: {
                 transformerType: "getFromParameters",
                 referencePath: [
@@ -805,9 +877,9 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
       payload: {
         application: "NOT_USED_IN_TEMPLATE",
         definition: [
-          ...(localCreateApplicationCompositeActionTemplate.payload.definition as any),
-          ...localCreateDeploymentCompositeActionTemplate.payload.definition,
-          ...localResetAndinitializeDeploymentCompositeActionTemplate.payload.definition,
+          // ...(localCreateApplicationCompositeActionTemplate.payload.definition as any),
+          // ...localCreateDeploymentCompositeActionTemplate.payload.definition,
+          // ...localResetAndinitializeDeploymentCompositeActionTemplate.payload.definition,
         ],
       },
     };
@@ -825,22 +897,18 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
   return (
     <>
       {/* Model File Upload Section */}
-      <FileSelector
+      {/* <FileSelector
         title="Optional: Load Custom Model"
         description="Upload a JSON file containing an Application Model to install. If no file is selected, the Model will be empty."
         buttonLabel="Select Model JSON"
         accept=".json"
-        setSelectedFileContents={setSelectedMetaModel}
-        setSelectedFileError={setFileError}
-        setSelectedFileName={setSelectedFileName}
+        // upload={true}
+        onFileSelect={handleFileSelect}
+        onFileClear={handleFileClear}
         selectedFileName={selectedFileName}
         error={fileError}
-        successMessage={
-          selectedMetaModel
-            ? `MetaModel loaded successfully with ${selectedMetaModel?.entities?.length || 0} entities and ${selectedMetaModel?.entityDefinitions?.length || 0} entity definitions.`
-            : undefined
-        }
-      />
+        successMessage={successMessage}
+      /> */}
 
       <RunnerView
         runnerName={runnerName}

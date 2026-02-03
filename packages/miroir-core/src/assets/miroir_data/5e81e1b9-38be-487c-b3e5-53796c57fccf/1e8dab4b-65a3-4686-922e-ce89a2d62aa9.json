@@ -357,6 +357,19 @@
                         }
                       }
                     },
+                    "any": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "file"
+                          ]
+                        }
+                      }
+                    },
                     "string": {
                       "type": "object",
                       "optional": true,
@@ -733,6 +746,17 @@
                             "type": "enum",
                             "optional": true,
                             "definition": ["portalSelector", "muiSelector"]
+                          }
+                        }
+                      },
+                      "any": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": ["file"]
                           }
                         }
                       },

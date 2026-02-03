@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { FormikProps } from "formik";
 
 import {
@@ -8,7 +8,7 @@ import {
 } from "../Themes/index";
 import { FileSelector } from "../Themes/FileSelector.js";
 import type { JzodEditorPropsRoot } from "./JzodElementEditorInterface";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, type MetaModel } from "miroir-core";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 
@@ -61,33 +61,22 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
   const format = stringDisplay?.format;
   const multiline = stringDisplay?.multiline;
   const rows = stringDisplay?.rows || 4;
-  const [selectedFileName, setSelectedFileName] = React.useState<string | null>(
-    currentValueObjectAtKey || null
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(
+    currentValueObjectAtKey || undefined
   );
-  const [fileError, setFileError] = React.useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | undefined>(undefined);
 
-  const handleFileSelect = useCallback((fileOrPath: File | string) => {
+  const setSelectedMetaModel = useCallback((metaModel: MetaModel | undefined) => {
+    formik.setFieldValue(formikRootLessListKey, metaModel);
+  }, [formikRootLessListKey, formik]);
+
+  const setSelectedFileName2 = useCallback((fileName: string | undefined) => {
     // When upload=false (default), we receive a path string
-    const fileName = typeof fileOrPath === 'string' ? fileOrPath : fileOrPath.name;
     log.info('JzodElementStringEditor - Selected file name:', fileName);
     setSelectedFileName(fileName);
-    setFileError(null);
+    setFileError(undefined);
     // Store the file path/name in formik
-    const callback = onChangeVector?.[rootLessListKey];
-    if (callback) {
-      callback(fileName, rootLessListKey);
-    }
     formik.setFieldValue(formikRootLessListKey, fileName);
-  }, [formikRootLessListKey, onChangeVector, rootLessListKey, formik]);
-
-  const handleFileClear = useCallback(() => {
-    setSelectedFileName(null);
-    setFileError(null);
-    const callback = onChangeVector?.[rootLessListKey];
-    if (callback) {
-      callback("", rootLessListKey);
-    }
-    formik.setFieldValue(formikRootLessListKey, "");
   }, [formikRootLessListKey, onChangeVector, rootLessListKey, formik]);
 
   // Handle file and folder formats using FileSelector
@@ -109,9 +98,9 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
             buttonLabel={format === "folder" ? "Select Folder" : "Select File"}
             accept={format === "file" ? "*" : undefined}
             folder={format === "folder"}
-            // upload={false}
-            onFileSelect={handleFileSelect}
-            onFileClear={handleFileClear}
+            setSelectedFileContents={setSelectedMetaModel}
+            setSelectedFileError={setFileError}
+            setSelectedFileName={setSelectedFileName2}
             selectedFileName={selectedFileName}
             error={fileError}
             showBorder={false}

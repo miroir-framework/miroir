@@ -18,6 +18,7 @@ import { CreateApplicationRunner } from '../components/Runners/CreateApplication
 import { CreateEntityRunner } from '../components/Runners/CreateEntityRunner';
 import { DeleteEntityRunner } from '../components/Runners/DeleteEntityRunner';
 import { DropApplicationRunner } from '../components/Runners/DropApplicationRunner';
+import { DeployApplicationRunner } from '../components/Runners/DeployApplicationRunner';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -49,6 +50,10 @@ const runnerConfigs = [
   // //   title: "Endpoint Action Caller",
   // //   component: EndpointActionCaller,
   // // },
+  {
+    title: "Deploy Application",
+    component: DeployApplicationRunner,
+  },
   {
     title: "Create Application & Deployment",
     component: CreateApplicationRunner,
