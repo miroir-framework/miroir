@@ -11412,7 +11412,7 @@ export const miroirFundamentalJzodSchema = {
                     "defaultLabel": "Sort Order",
                     "initializeTo": {
                       "initializeToType": "value",
-                      "value": "DESC"
+                      "value": "desc"
                     }
                   }
                 },
@@ -12657,7 +12657,7 @@ export const miroirFundamentalJzodSchema = {
                             "defaultLabel": "Sort Order",
                             "initializeTo": {
                               "initializeToType": "value",
-                              "value": "DESC"
+                              "value": "desc"
                             }
                           }
                         },
@@ -36878,7 +36878,7 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultLabel": "Sort Order",
                                     "initializeTo": {
                                       "initializeToType": "value",
-                                      "value": "DESC"
+                                      "value": "desc"
                                     }
                                   }
                                 },
@@ -40458,7 +40458,7 @@ export const miroirFundamentalJzodSchema = {
                             "defaultLabel": "Sort Order",
                             "initializeTo": {
                               "initializeToType": "value",
-                              "value": "DESC"
+                              "value": "desc"
                             },
                             "isTemplate": true
                           }
@@ -40472,7 +40472,7 @@ export const miroirFundamentalJzodSchema = {
                                 "defaultLabel": "Sort Order",
                                 "initializeTo": {
                                   "initializeToType": "value",
-                                  "value": "DESC"
+                                  "value": "desc"
                                 }
                               }
                             },
@@ -52735,7 +52735,7 @@ export const miroirFundamentalJzodSchema = {
                             "defaultLabel": "Sort Order",
                             "initializeTo": {
                               "initializeToType": "value",
-                              "value": "DESC"
+                              "value": "desc"
                             }
                           }
                         },
@@ -57966,7 +57966,7 @@ export const miroirFundamentalJzodSchema = {
                     "defaultLabel": "Sort Order",
                     "initializeTo": {
                       "initializeToType": "value",
-                      "value": "DESC"
+                      "value": "desc"
                     }
                   }
                 },
@@ -67550,7 +67550,7 @@ export const miroirFundamentalJzodSchema = {
                             "defaultLabel": "Sort Order",
                             "initializeTo": {
                               "initializeToType": "value",
-                              "value": "DESC"
+                              "value": "desc"
                             }
                           }
                         },
@@ -72781,7 +72781,7 @@ export const miroirFundamentalJzodSchema = {
                     "defaultLabel": "Sort Order",
                     "initializeTo": {
                       "initializeToType": "value",
-                      "value": "DESC"
+                      "value": "desc"
                     }
                   }
                 },

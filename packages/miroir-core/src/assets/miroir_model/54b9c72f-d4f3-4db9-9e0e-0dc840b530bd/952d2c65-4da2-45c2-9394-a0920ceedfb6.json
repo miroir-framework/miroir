@@ -592,7 +592,7 @@
                         "defaultLabel": "Sort Order",
                         "initializeTo": {
                           "initializeToType": "value",
-                          "value": "DESC"
+                          "value": "desc"
                         }
                       }
                     },
