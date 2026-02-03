@@ -357,32 +357,61 @@
                         }
                       }
                     },
+                    "string": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "email",
+                            "url",
+                            "uuid",
+                            "uri",
+                            "date-time",
+                            "date",
+                            "time",
+                            "file",
+                            "folder"
+                          ]
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "rows": {
+                          "type": "number",
+                          "optional": true
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
                       "definition": ["left", "stacked", "hidden"]
                     },
-                    "objectHideDeleteButton":{
+                    "objectHideDeleteButton": {
                       "type": "boolean",
                       "optional": true
                     },
-                    "objectHideOptionalButton":{
+                    "objectHideOptionalButton": {
                       "type": "boolean",
                       "optional": true
                     },
-                    "objectWithoutHeader":{
+                    "objectWithoutHeader": {
                       "type": "boolean",
                       "optional": true
                     },
-                    "objectAttributesNoIndent":{
+                    "objectAttributesNoIndent": {
                       "type": "boolean",
                       "optional": true
                     },
-                    "objectOrArrayWithoutFrame":{
+                    "objectOrArrayWithoutFrame": {
                       "type": "boolean",
                       "optional": true
                     },
-                    "unfoldSubLevels":{
+                    "unfoldSubLevels": {
                       "type": "number",
                       "optional": true
                     }
@@ -704,6 +733,35 @@
                             "type": "enum",
                             "optional": true,
                             "definition": ["portalSelector", "muiSelector"]
+                          }
+                        }
+                      },
+                      "string": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "email",
+                              "url",
+                              "uuid",
+                              "uri",
+                              "date-time",
+                              "date",
+                              "time",
+                              "file",
+                              "folder"
+                            ]
+                          },
+                          "multiline": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "rows": {
+                            "type": "number",
+                            "optional": true
                           }
                         }
                       },

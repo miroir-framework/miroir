@@ -55,7 +55,9 @@ import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMi
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
+import { JzodElementStringEditor } from "./JzodElementStringEditor.js";
 import { ThemedOnScreenDebug, ThemedOnScreenHelper } from "../Themes/BasicComponents";
+import { FileSelector } from "../Themes/FileSelector.js";
 
 
 
@@ -863,32 +865,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "string": {
-          // log.info(
-          //   "JzodElementEditor: Rendering string input for rootLessListKey",
-          //   props.rootLessListKey,
-          //   "formik",
-          //   formik,
-          //   "with value",
-          //   currentValue
-          // );
+          // Get display configuration from schema tag
+          const stringDisplay = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.string;
+          
           return (
-            <ThemedLabeledEditor
-              labelElement={enhancedLabelElement}
-              editor={
-                props.readOnly ? (
-                  <ThemedDisplayValue value={currentValueObjectAtKey} type="string" />
-                ) : (
-                  <ThemedTextEditor
-                    variant="standard"
-                    data-testid="miroirInput"
-                    id={props.rootLessListKey}
-                    key={props.rootLessListKey}
-                    {...formik.getFieldProps(formikRootLessListKey)}
-                    // name={props.rootLessListKey}
-                    error={hasPathError}
-                  />
-                )
-              }
+            <JzodElementStringEditor
+              {...props}
+              formik={formik}
+              formikRootLessListKey={formikRootLessListKey}
+              currentValueObjectAtKey={currentValueObjectAtKey}
+              localReadOnly={localReadOnly}
+              enhancedLabelElement={enhancedLabelElement}
+              hasPathError={hasPathError}
+              stringDisplay={stringDisplay}
             />
           );
         }

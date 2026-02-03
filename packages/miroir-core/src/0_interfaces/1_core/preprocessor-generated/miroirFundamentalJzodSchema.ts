@@ -366,6 +366,35 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "string": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "email",
+                            "url",
+                            "uuid",
+                            "uri",
+                            "date-time",
+                            "date",
+                            "time",
+                            "file",
+                            "folder"
+                          ]
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "rows": {
+                          "type": "number",
+                          "optional": true
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
@@ -727,6 +756,35 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          }
+                        }
+                      },
+                      "string": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "email",
+                              "url",
+                              "uuid",
+                              "uri",
+                              "date-time",
+                              "date",
+                              "time",
+                              "file",
+                              "folder"
+                            ]
+                          },
+                          "multiline": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "rows": {
+                            "type": "number",
+                            "optional": true
                           }
                         }
                       },
@@ -24518,6 +24576,90 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "string": {
+                          "optional": true,
+                          "type": "union",
+                          "discriminator": "transformerType",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "format": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "definition": [
+                                    {
+                                      "type": "enum",
+                                      "optional": true,
+                                      "definition": [
+                                        "email",
+                                        "url",
+                                        "uuid",
+                                        "uri",
+                                        "date-time",
+                                        "date",
+                                        "time",
+                                        "file",
+                                        "folder"
+                                      ]
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ],
+                                  "discriminator": "transformerType"
+                                },
+                                "multiline": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "discriminator": "transformerType",
+                                  "definition": [
+                                    {
+                                      "type": "boolean",
+                                      "optional": true
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "rows": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "discriminator": "transformerType",
+                                  "definition": [
+                                    {
+                                      "type": "number",
+                                      "optional": true
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
                         "objectUuidAttributeLabelPosition": {
                           "type": "union",
                           "optional": true,
@@ -25652,6 +25794,90 @@ export const miroirFundamentalJzodSchema = {
                                               }
                                             ],
                                             "discriminator": "transformerType"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "string": {
+                                    "optional": true,
+                                    "type": "union",
+                                    "discriminator": "transformerType",
+                                    "definition": [
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "definition": {
+                                          "format": {
+                                            "type": "union",
+                                            "optional": true,
+                                            "definition": [
+                                              {
+                                                "type": "enum",
+                                                "optional": true,
+                                                "definition": [
+                                                  "email",
+                                                  "url",
+                                                  "uuid",
+                                                  "uri",
+                                                  "date-time",
+                                                  "date",
+                                                  "time",
+                                                  "file",
+                                                  "folder"
+                                                ]
+                                              },
+                                              {
+                                                "type": "schemaReference",
+                                                "definition": {
+                                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  "relativePath": "transformerForBuildCarryOnObject"
+                                                }
+                                              }
+                                            ],
+                                            "discriminator": "transformerType"
+                                          },
+                                          "multiline": {
+                                            "type": "union",
+                                            "optional": true,
+                                            "discriminator": "transformerType",
+                                            "definition": [
+                                              {
+                                                "type": "boolean",
+                                                "optional": true
+                                              },
+                                              {
+                                                "type": "schemaReference",
+                                                "definition": {
+                                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  "relativePath": "transformerForBuildCarryOnObject"
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          "rows": {
+                                            "type": "union",
+                                            "optional": true,
+                                            "discriminator": "transformerType",
+                                            "definition": [
+                                              {
+                                                "type": "number",
+                                                "optional": true
+                                              },
+                                              {
+                                                "type": "schemaReference",
+                                                "definition": {
+                                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  "relativePath": "transformerForBuildCarryOnObject"
+                                                }
+                                              }
+                                            ]
                                           }
                                         }
                                       }
@@ -29161,6 +29387,90 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
+                        "string": {
+                          "optional": true,
+                          "type": "union",
+                          "discriminator": "transformerType",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "format": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "definition": [
+                                    {
+                                      "type": "enum",
+                                      "optional": true,
+                                      "definition": [
+                                        "email",
+                                        "url",
+                                        "uuid",
+                                        "uri",
+                                        "date-time",
+                                        "date",
+                                        "time",
+                                        "file",
+                                        "folder"
+                                      ]
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ],
+                                  "discriminator": "transformerType"
+                                },
+                                "multiline": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "discriminator": "transformerType",
+                                  "definition": [
+                                    {
+                                      "type": "boolean",
+                                      "optional": true
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "rows": {
+                                  "type": "union",
+                                  "optional": true,
+                                  "discriminator": "transformerType",
+                                  "definition": [
+                                    {
+                                      "type": "number",
+                                      "optional": true
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
                         "objectUuidAttributeLabelPosition": {
                           "type": "union",
                           "optional": true,
@@ -30275,6 +30585,90 @@ export const miroirFundamentalJzodSchema = {
                                         }
                                       ],
                                       "discriminator": "transformerType"
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "string": {
+                              "optional": true,
+                              "type": "union",
+                              "discriminator": "transformerType",
+                              "definition": [
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "format": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "definition": [
+                                        {
+                                          "type": "enum",
+                                          "optional": true,
+                                          "definition": [
+                                            "email",
+                                            "url",
+                                            "uuid",
+                                            "uri",
+                                            "date-time",
+                                            "date",
+                                            "time",
+                                            "file",
+                                            "folder"
+                                          ]
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ],
+                                      "discriminator": "transformerType"
+                                    },
+                                    "multiline": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "discriminator": "transformerType",
+                                      "definition": [
+                                        {
+                                          "type": "boolean",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "rows": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "discriminator": "transformerType",
+                                      "definition": [
+                                        {
+                                          "type": "number",
+                                          "optional": true
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
                                     }
                                   }
                                 }
@@ -31414,6 +31808,90 @@ export const miroirFundamentalJzodSchema = {
                                                   }
                                                 ],
                                                 "discriminator": "transformerType"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "string": {
+                                        "optional": true,
+                                        "type": "union",
+                                        "discriminator": "transformerType",
+                                        "definition": [
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "format": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "definition": [
+                                                  {
+                                                    "type": "enum",
+                                                    "optional": true,
+                                                    "definition": [
+                                                      "email",
+                                                      "url",
+                                                      "uuid",
+                                                      "uri",
+                                                      "date-time",
+                                                      "date",
+                                                      "time",
+                                                      "file",
+                                                      "folder"
+                                                    ]
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ],
+                                                "discriminator": "transformerType"
+                                              },
+                                              "multiline": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "boolean",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "rows": {
+                                                "type": "union",
+                                                "optional": true,
+                                                "discriminator": "transformerType",
+                                                "definition": [
+                                                  {
+                                                    "type": "number",
+                                                    "optional": true
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
                                               }
                                             }
                                           }
@@ -44359,6 +44837,35 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "string": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "email",
+                            "url",
+                            "uuid",
+                            "uri",
+                            "date-time",
+                            "date",
+                            "time",
+                            "file",
+                            "folder"
+                          ]
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "rows": {
+                          "type": "number",
+                          "optional": true
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
@@ -44770,6 +45277,35 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          }
+                        }
+                      },
+                      "string": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "email",
+                              "url",
+                              "uuid",
+                              "uri",
+                              "date-time",
+                              "date",
+                              "time",
+                              "file",
+                              "folder"
+                            ]
+                          },
+                          "multiline": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "rows": {
+                            "type": "number",
+                            "optional": true
                           }
                         }
                       },
@@ -55381,6 +55917,35 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "string": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "email",
+                            "url",
+                            "uuid",
+                            "uri",
+                            "date-time",
+                            "date",
+                            "time",
+                            "file",
+                            "folder"
+                          ]
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "rows": {
+                          "type": "number",
+                          "optional": true
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
@@ -55792,6 +56357,35 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          }
+                        }
+                      },
+                      "string": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "email",
+                              "url",
+                              "uuid",
+                              "uri",
+                              "date-time",
+                              "date",
+                              "time",
+                              "file",
+                              "folder"
+                            ]
+                          },
+                          "multiline": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "rows": {
+                            "type": "number",
+                            "optional": true
                           }
                         }
                       },
@@ -59174,6 +59768,35 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "string": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "email",
+                            "url",
+                            "uuid",
+                            "uri",
+                            "date-time",
+                            "date",
+                            "time",
+                            "file",
+                            "folder"
+                          ]
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "rows": {
+                          "type": "number",
+                          "optional": true
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
@@ -59585,6 +60208,35 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          }
+                        }
+                      },
+                      "string": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "email",
+                              "url",
+                              "uuid",
+                              "uri",
+                              "date-time",
+                              "date",
+                              "time",
+                              "file",
+                              "folder"
+                            ]
+                          },
+                          "multiline": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "rows": {
+                            "type": "number",
+                            "optional": true
                           }
                         }
                       },
@@ -70196,6 +70848,35 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     },
+                    "string": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "format": {
+                          "type": "enum",
+                          "optional": true,
+                          "definition": [
+                            "email",
+                            "url",
+                            "uuid",
+                            "uri",
+                            "date-time",
+                            "date",
+                            "time",
+                            "file",
+                            "folder"
+                          ]
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        "rows": {
+                          "type": "number",
+                          "optional": true
+                        }
+                      }
+                    },
                     "objectUuidAttributeLabelPosition": {
                       "type": "enum",
                       "optional": true,
@@ -70607,6 +71288,35 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          }
+                        }
+                      },
+                      "string": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "format": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "email",
+                              "url",
+                              "uuid",
+                              "uri",
+                              "date-time",
+                              "date",
+                              "time",
+                              "file",
+                              "folder"
+                            ]
+                          },
+                          "multiline": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "rows": {
+                            "type": "number",
+                            "optional": true
                           }
                         }
                       },

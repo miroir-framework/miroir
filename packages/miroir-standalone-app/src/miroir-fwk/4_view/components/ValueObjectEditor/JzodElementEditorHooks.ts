@@ -244,17 +244,17 @@ export function useJzodElementEditorHooks(
             formik.values, // contextResults - pass the instance to transform
             "value" // resolveBuildTransformersTo
           );
-          log.info(
-            "useJzodElementEditorHooks",
-            "rootLessListKey:", rootLessListKey,
-            "resolved applicationUuid:",
-            targetApplication,
-            "for",
-            (
-              currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams
-                ?.targetApplicationUuid as any
-            )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid
-          );
+          // log.info(
+          //   "useJzodElementEditorHooks",
+          //   "rootLessListKey:", rootLessListKey,
+          //   "resolved applicationUuid:",
+          //   targetApplication,
+          //   "for",
+          //   (
+          //     currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams
+          //       ?.targetApplicationUuid as any
+          //   )?.label, "transformer:", currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid
+          // );
           if (targetApplication instanceof TransformerFailure) {
             throw new Error(
               "JzodElementEditorHooks: applicationUuid resolved from transformer is not a string: " +
@@ -329,33 +329,17 @@ export function useJzodElementEditorHooks(
       applicationDeploymentMap,
   ) || {};
 
-  log.info(
-    "useJzodElementEditorHooks",
-    "rootLessListKey:",
-    rootLessListKey,
-    "currentDeploymentUuid:",
-    currentDeploymentUuid,
-    "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
-    currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
-    "foreignKeyObjectsFetchQueryParams",
-    foreignKeyObjectsFetchQueryParams,
-    "foreignKeyObjects", foreignKeyObjects,
-  );
-
   // log.info(
   //   "useJzodElementEditorHooks",
-  //   "rootLessListKey",
+  //   "rootLessListKey:",
   //   rootLessListKey,
-  //   "currentTypecheckKeyMap",
-  //   currentTypecheckKeyMap,
-  //   "foreignKeyParams",
-  //   currentTypecheckKeyMap?.rawSchema?.tag?.value?.foreignKeyParams,
-  //   "aggregate",
-  //   count,
-  //   "caller",
-  //   caller,
-  //   "foreignKeyObjects",
-  //   foreignKeyObjects
+  //   "currentDeploymentUuid:",
+  //   currentDeploymentUuid,
+  //   "currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams:",
+  //   currentTypecheckKeyMap?.rawSchema.tag?.value?.foreignKeyParams,
+  //   "foreignKeyObjectsFetchQueryParams",
+  //   foreignKeyObjectsFetchQueryParams,
+  //   "foreignKeyObjects", foreignKeyObjects,
   // );
 
   // ######################### optional attributes #########################

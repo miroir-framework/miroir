@@ -5,6 +5,7 @@ import { Box, Button, Typography, Alert } from '@mui/material';
 import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from './MaterialSymbolWrappers';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+// removed Node 'path' import; use browser-safe string operations instead
 
 // ################################################################################################
 export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'> {
@@ -16,8 +17,10 @@ export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'
   buttonLabel?: string;
   /** Accepted file types (e.g., ".json", ".csv", ".json,.txt") */
   accept?: string;
+  /** Whether to allow folder selection instead of file selection */
+  folder?: boolean;
   /** Callback when a file is selected */
-  onFileSelect?: (file: File) => void;
+  onFileSelect?: (fileOrPath: File | string) => void;
   /** Callback when file is cleared */
   onFileClear?: () => void;
   /** Current selected file name to display */
@@ -28,8 +31,24 @@ export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'
   successMessage?: string | null;
   /** Whether to show the border around the component */
   showBorder?: boolean;
+  /** Compact mode for inline form display (single line, minimal padding) */
+  compact?: boolean;
 }
 
+
+// export const devRelativePathPrefix = "../tests/tmp/";
+export const devRelativePathPrefix = "tests/tmp/";
+export const prodRelativePathPrefix = "./deployments/";
+
+const getDirectoryFromWebkitPath = (webkitPath: string) => {
+  if (!webkitPath) return "";
+  // Normalize backslashes to forward slashes then remove trailing slash if any
+  const normalized = webkitPath.replace(/\\/g, "/").replace(/\/$/, "");
+  const parts = normalized.split("/");
+  if (parts.length <= 1) return "";
+  parts.pop(); // remove last element (file name)
+  return parts.join("/");
+};
 // ################################################################################################
 /**
  * Reusable File Selector Component
@@ -46,26 +65,39 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   description,
   buttonLabel = "Select File",
   accept = "*",
+  folder = false,
   onFileSelect,
   onFileClear,
   selectedFileName,
   error,
   successMessage,
   showBorder = true,
+  compact = false,
   className,
   style,
 }) => {
   const { currentTheme } = useMiroirTheme();
 
+  // Helper to extract directory from webkitRelativePath in browser (no Node path module)
+
   // Handle file input change
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    console.log('FileSelector - Selected file:', file, event.target);
     if (file && onFileSelect) {
-      onFileSelect(file);
+      if (folder) {
+        const prefix =
+          process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
+        console.warn("Folder selection is not fully supported in all browsers.", file.webkitRelativePath);
+        const dir = file.webkitRelativePath ? prefix + getDirectoryFromWebkitPath(file.webkitRelativePath) : "";
+        onFileSelect(dir || file.name);
+      } else {
+        onFileSelect(file);
+      }
     }
     // Reset input value to allow selecting the same file again
     event.target.value = '';
-  }, [onFileSelect]);
+  }, [onFileSelect, folder]);
 
   // Handle clear button click
   const handleClear = useCallback(() => {
@@ -76,11 +108,11 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
 
   // Container styles
   const containerStyles = css({
-    marginBottom: currentTheme.spacing.lg,
-    padding: currentTheme.spacing.md,
+    marginBottom: compact ? 0 : currentTheme.spacing.lg,
+    padding: compact ? currentTheme.spacing.xs : currentTheme.spacing.md,
     border: showBorder ? `1px solid ${currentTheme.colors.border}` : 'none',
-    borderRadius: currentTheme.borderRadius.md,
-    backgroundColor: currentTheme.colors.surface,
+    borderRadius: compact ? 0 : currentTheme.borderRadius.md,
+    backgroundColor: compact ? 'transparent' : currentTheme.colors.surface,
   });
 
   // Title styles
@@ -117,32 +149,38 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
 
   return (
     <Box css={containerStyles} className={className} style={style}>
-      {/* Title */}
-      {title && (
+      {/* Title - hidden in compact mode */}
+      {!compact && title && (
         <Typography css={titleStyles} variant="h6" component="h3">
           {title}
         </Typography>
       )}
 
-      {/* Description */}
-      {description && (
+      {/* Description - hidden in compact mode */}
+      {!compact && description && (
         <Typography css={descriptionStyles} variant="body2">
           {description}
         </Typography>
       )}
 
       {/* File selection controls */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: compact ? 1 : 2, flexWrap: 'wrap' }}>
         <Button
           variant="outlined"
           component="label"
+          size={compact ? "small" : "medium"}
           startIcon={<CloudUploadIcon />}
         >
           {buttonLabel}
           <input
             type="file"
-            accept={accept}
+            accept={folder ? undefined : accept}
             hidden
+            {...(folder ? { 
+              webkitdirectory: "" as any, 
+              directory: "" as any,
+              mozdirectory: "" as any 
+            } : {})}
             onChange={handleFileChange}
           />
         </Button>
@@ -150,8 +188,8 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
         {/* Selected file display */}
         {selectedFileName && (
           <Box css={fileInfoStyles}>
-            <CheckCircleIcon sx={{ color: 'success.main' }} />
-            <Typography css={fileNameStyles} variant="body2">
+            <CheckCircleIcon sx={{ color: 'success.main', fontSize: compact ? '1rem' : '1.25rem' }} />
+            <Typography css={fileNameStyles} variant={compact ? "caption" : "body2"}>
               {selectedFileName}
             </Typography>
             <Button
@@ -166,15 +204,15 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
         )}
       </Box>
 
-      {/* Error message */}
-      {error && (
+      {/* Error message - hidden in compact mode */}
+      {!compact && error && (
         <Alert severity="error" sx={{ mt: 2 }}>
           {error}
         </Alert>
       )}
 
-      {/* Success message */}
-      {successMessage && (
+      {/* Success message - hidden in compact mode */}
+      {!compact && successMessage && (
         <Alert severity="success" sx={{ mt: 2 }}>
           {successMessage}
         </Alert>

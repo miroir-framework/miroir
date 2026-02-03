@@ -37,7 +37,7 @@ import {
 } from "miroir-example-library";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { FileSelector } from '../Themes/FileSelector';
+import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
@@ -85,7 +85,14 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     return deploymentUuid || "";
   }, [applicationDeploymentMap]);
   // File selection handler
-  const handleFileSelect = useCallback((file: File) => {
+  const handleFileSelect = useCallback((fileOrPath: File | string) => {
+    // Since upload=true, we should always receive a File object
+    if (typeof fileOrPath === 'string') {
+      setFileError('Unexpected error: received path instead of file');
+      return;
+    }
+    
+    const file = fileOrPath;
     if (!file.name.endsWith('.json')) {
       setFileError('Please select a valid JSON file');
       setSelectedMetaModel(null);
@@ -169,10 +176,88 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             definition: {
               applicationStorage: {
                 type: "schemaReference",
+                context: {
+                  indexedDbStoreSectionConfiguration: {
+                    type: "object",
+                    definition: {
+                      emulatedServerType: { type: "literal", definition: "indexedDb" },
+                      // indexedDbName: { type: "string" },
+                    },
+                  },
+                  filesystemDbStoreSectionConfiguration: {
+                    type: "object",
+                    definition: {
+                      emulatedServerType: { type: "literal", definition: "filesystem" },
+                      // directory: {
+                      //   type: "string",
+                      //   tag: {
+                      //     value: {
+                      //       defaultLabel: "Directory Path",
+                      //       display: {
+                      //         string: {
+                      //           format: "folder",
+                      //         },
+                      //       },
+                      //     },
+                      //   },
+                      // },
+                    },
+                  },
+                  sqlDbStoreSectionConfiguration: {
+                    type: "object",
+                    definition: {
+                      emulatedServerType: { type: "literal", definition: "sql" },
+                      connectionString: { type: "string" },
+                      // schema: { type: "string" },
+                    },
+                  },
+                  mongoDbStoreSectionConfiguration: {
+                    type: "object",
+                    definition: {
+                      emulatedServerType: { type: "literal", definition: "mongodb" },
+                      connectionString: { type: "string" },
+                      // database: { type: "string" },
+                    },
+                  },
+                  storeSectionConfiguration: {
+                    type: "union",
+                    discriminator: "emulatedServerType",
+                    definition: [
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          // absolutePath: miroirFundamentalJzodSchemaUuid,
+                          relativePath: "indexedDbStoreSectionConfiguration",
+                        },
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          // absolutePath: miroirFundamentalJzodSchemaUuid,
+                          relativePath: "filesystemDbStoreSectionConfiguration",
+                        },
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          // absolutePath: miroirFundamentalJzodSchemaUuid,
+                          relativePath: "sqlDbStoreSectionConfiguration",
+                        },
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          // absolutePath: miroirFundamentalJzodSchemaUuid,
+                          relativePath: "mongoDbStoreSectionConfiguration",
+                        },
+                      },
+                    ],
+                  },
+                },
                 definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  // absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "storeSectionConfiguration",
-                }
+                },
               },
               applicationName: {
                 type: "string",
@@ -187,7 +272,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
         },
       },
     }),
-    []
+    [],
   );
 
   const initialFormValue = useMemo(
@@ -225,6 +310,9 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
     [testSelfApplicationUuid]: testDeploymentUuid,
   };
 
+  const prefix =
+          process.env.NODE_ENV === "development" ? devRelativePathPrefix : prodRelativePathPrefix;
+
   const createApplicationActionTemplate = useMemo((): CompositeActionTemplate => {
 
     const defaultDirectory = "tmp/miroir_data_storage";
@@ -240,58 +328,68 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
         ],
       },
       whens: [
+        // mongodb
         {
           when: "mongodb",
           then: {
             admin: {
               emulatedServerType: "mongodb",
-              connectionString: "mongodb://localhost:27017",
-              // connectionString: {
-              //   transformerType: "getFromParameters",
-              //   referencePath: [
-              //     "createApplicationAndDeployment",
-              //     "applicationStorage",
-              //     "connectionString",
-              //   ],
-              // },
+              // connectionString: "mongodb://localhost:27017",
+              connectionString: {
+                transformerType: "getFromParameters",
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
+              },
               database: "miroirAdmin",
             },
             model: {
               emulatedServerType: "mongodb",
-              connectionString: "mongodb://localhost:27017",
-              // database: "miroir-app",
-              // connectionString: {
-              //   transformerType: "getFromParameters",
-              //   referencePath: [
-              //     "createApplicationAndDeployment",
-              //     "applicationStorage",
-              //     "connectionString",
-              //   ],
-              // },
+              connectionString: {
+                transformerType: "getFromParameters",
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
+              },
               database: {
-                transformerType: "mustacheStringTemplate",
-                definition: "{{createApplicationAndDeployment.applicationName}}",
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "mustacheStringTemplate",
+                    definition: "{{createApplicationAndDeployment.applicationName}}",
+                  },
+                  "_model",
+                ],
               },
             },
             data: {
               emulatedServerType: "mongodb",
-              connectionString: "mongodb://localhost:27017",
-              // database: "miroir-app",
-              // connectionString: {
-              //   transformerType: "getFromParameters",
-              //   referencePath: [
-              //     "createApplicationAndDeployment",
-              //     "applicationStorage",
-              //     "connectionString",
-              //   ],
-              // },
+              connectionString: {
+                transformerType: "getFromParameters",
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
+              },
               database: {
-                transformerType: "mustacheStringTemplate",
-                definition: "{{createApplicationAndDeployment.applicationName}}",
+                transformerType: "+",
+                args: [
+                  {
+                    transformerType: "mustacheStringTemplate",
+                    definition: "{{createApplicationAndDeployment.applicationName}}",
+                  },
+                  "_data",
+                ],
               },
             },
           },
         },
+        // sql
         {
           when: "sql",
           then: {
@@ -339,6 +437,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             },
           },
         },
+        // indexedDb
         {
           when: "indexedDb",
           then: {
@@ -347,15 +446,16 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               indexedDbName: {
                 transformerType: "+",
                 args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: [
-                      "createApplicationAndDeployment",
-                      "applicationStorage",
-                      "indexedDbName",
-                    ],
-                  },
-                  "_admin",
+                  // {
+                  //   transformerType: "getFromParameters",
+                  //   referencePath: [
+                  //     "createApplicationAndDeployment",
+                  //     "applicationStorage",
+                  //     "indexedDbName",
+                  //   ],
+                  // },
+                  prefix,
+                  "admin",
                 ],
               },
             },
@@ -364,15 +464,16 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               indexedDbName: {
                 transformerType: "+",
                 args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: [
-                      "createApplicationAndDeployment",
-                      "applicationStorage",
-                      "indexedDbName",
-                    ],
-                  },
-                  "/",
+                  // {
+                  //   transformerType: "getFromParameters",
+                  //   referencePath: [
+                  //     "createApplicationAndDeployment",
+                  //     "applicationStorage",
+                  //     "indexedDbName",
+                  //   ],
+                  // },
+                  // "/",
+                  prefix,
                   {
                     transformerType: "getFromParameters",
                     referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -386,15 +487,16 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               indexedDbName: {
                 transformerType: "+",
                 args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: [
-                      "createApplicationAndDeployment",
-                      "applicationStorage",
-                      "indexedDbName",
-                    ],
-                  },
-                  "/",
+                  // {
+                  //   transformerType: "getFromParameters",
+                  //   referencePath: [
+                  //     "createApplicationAndDeployment",
+                  //     "applicationStorage",
+                  //     "indexedDbName",
+                  //   ],
+                  // },
+                  // "/",
+                  prefix,
                   {
                     transformerType: "getFromParameters",
                     referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -405,6 +507,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
             },
           },
         },
+        // filesystem
         {
           when: "filesystem",
           then: {
@@ -412,17 +515,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               emulatedServerType: "filesystem",
               directory: {
                 transformerType: "+",
-                args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: [
-                      "createApplicationAndDeployment",
-                      "applicationStorage",
-                      "directory",
-                    ],
-                  },
-                  "/admin",
-                ],
+                args: [prefix, "/admin"],
               },
             },
             model: {
@@ -430,15 +523,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               directory: {
                 transformerType: "+",
                 args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: [
-                      "createApplicationAndDeployment",
-                      "applicationStorage",
-                      "directory",
-                    ],
-                  },
-                  "/",
+                  prefix,
                   {
                     transformerType: "getFromParameters",
                     referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -452,15 +537,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
               directory: {
                 transformerType: "+",
                 args: [
-                  {
-                    transformerType: "getFromParameters",
-                    referencePath: [
-                      "createApplicationAndDeployment",
-                      "applicationStorage",
-                      "directory",
-                    ],
-                  },
-                  "/",
+                  prefix,
                   {
                     transformerType: "getFromParameters",
                     referencePath: ["createApplicationAndDeployment", "applicationName"],
@@ -812,6 +889,7 @@ export const CreateApplicationRunner: React.FC<CreateApplicationToolProps> = ({
         description="Upload a JSON file containing an Application Model to install. If no file is selected, the Model will be empty."
         buttonLabel="Select Model JSON"
         accept=".json"
+        // upload={true}
         onFileSelect={handleFileSelect}
         onFileClear={handleFileClear}
         selectedFileName={selectedFileName}

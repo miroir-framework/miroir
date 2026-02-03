@@ -5,7 +5,6 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   // adminApplicationLibrary,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   // adminConfigurationDeploymentParis,
   adminSelfApplication,
@@ -18,7 +17,8 @@ import {
   // selfApplicationLibrary,
   selfApplicationMiroir
 } from "miroir-core";
-import { applicationParis, defaultMenuParisUuid, packageName } from '../../../../constants.js';
+import { menuDefaultLibrary } from 'miroir-example-library';
+import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
@@ -31,7 +31,6 @@ import {
   ThemedScrollableContent
 } from "../Themes/index";
 import { SidebarSection } from './SidebarSection.js';
-import { menuDefaultLibrary, selfApplicationLibrary } from 'miroir-example-library';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -90,6 +89,7 @@ export const Sidebar: FC<{
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
   const context = useMiroirContextService();
+  const currentApplicationDeploymentMap = context.applicationDeploymentMap;
   const currentApplication = context.toolsPageState.applicationSelector;
   const setCurrentApplication = useCallback((applicationUuid: string) => {
     context.updateToolsPageStateDEFUNCT({
@@ -130,15 +130,20 @@ export const Sidebar: FC<{
   ), [props.open, context.showModelTools, props.setOpen]);
 
   const filteredAppSidebarSections = useMemo(() => (
-    [
-      {
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-        applicationUuid: selfApplicationLibrary.uuid,
-        menuUuid: menuDefaultLibrary.uuid
-      }
-    ]
+    // [
+    //   {
+    //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+    //     applicationUuid: selfApplicationLibrary.uuid,
+    //     menuUuid: menuDefaultLibrary.uuid
+    //   }
+    // ]
+    Object.entries(currentApplicationDeploymentMap??{}).map(entry => ({
+      applicationUuid: entry[0],
+      deploymentUuid: entry[1],
+      menuUuid: menuDefaultLibrary.uuid, // TODO: correct!
+    }))
     .filter(section => section.applicationUuid === currentApplication)
-  ), [currentApplication]);
+  ), [currentApplication, currentApplicationDeploymentMap]);
 
   const appSidebarSections = useMemo(() => (
     filteredAppSidebarSections
