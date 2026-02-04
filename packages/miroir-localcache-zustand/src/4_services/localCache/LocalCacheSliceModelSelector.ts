@@ -342,7 +342,12 @@ export const selectModelForDeploymentFromReduxState: () => (
       queries: EntityInstancesUuidIndex | undefined,
       endpoints: EntityInstancesUuidIndex | undefined,
     ) => {
+      const applicationVersion = applicationVersions && Object.values(applicationVersions).length > 0
+        ? (Object.values(applicationVersions)[0] as any)
+        : null;
       const result: MetaModel = {
+        applicationUuid: applicationVersion ? applicationVersion.application : "",
+        applicationName: applicationVersion ? applicationVersion.application : "",
         applicationVersions: (applicationVersions
           ? Object.values(applicationVersions)
           : []) as ApplicationVersion[],

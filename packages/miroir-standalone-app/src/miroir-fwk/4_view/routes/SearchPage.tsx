@@ -4,7 +4,6 @@ import { Params, useParams } from "react-router-dom";
 import {
   LoggerInterface,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentLibrary,
   defaultSelfApplicationDeploymentMap,
   type Uuid
 } from "miroir-core";
@@ -18,7 +17,7 @@ import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
 import { useMiroirContextService } from "../MiroirContextReactProvider";
 import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
-import { entityBook, selfApplicationLibrary } from "miroir-example-library";
+import { adminConfigurationDeploymentLibrary, entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

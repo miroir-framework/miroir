@@ -1,4 +1,5 @@
 import { type ZodTypeAny } from "zod";
+// import { get } from "http";
 
 import { jzodToZodTextAndZodSchema, type ZodTextAndZodSchema } from "@miroir-framework/jzod";
 import {
@@ -11,10 +12,11 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MlSchema,
-  defaultLibraryAppModel,
-  defaultLibraryModelEnvironment,
+  defaultLibraryAppModelDEFUNCT,
+  // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
   instanceEndpointV1,
   miroirFundamentalJzodSchema,
   resolveJzodSchemaReferenceInContext,
@@ -22,6 +24,7 @@ import {
   type JzodObject
 } from "miroir-core";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 
 const packageName = "miroir-mcp";
@@ -158,6 +161,12 @@ export async function handleInstanceAction(
     const action = actionBuilder(validatedParams);
     log.info(`${toolName} - constructed action:`, JSON.stringify(action, null, 2));
 
+    const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+      miroirFundamentalJzodSchema as any,
+      defaultMiroirMetaModel,
+      instanceEndpointV1,
+      applicationDeploymentMap[selfApplicationLibrary.uuid],
+    );
     // Execute via DomainController
     const result: Action2VoidReturnType = await domainController.handleAction(
       action,
@@ -360,7 +369,7 @@ export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
   miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
 };
 
-export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModel.endpoints
+export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModelDEFUNCT.endpoints
   .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
   .reduce((acc, endpoint) => {
     const createInstanceHandler = mcpToolEntry(endpoint, "lendDocument");

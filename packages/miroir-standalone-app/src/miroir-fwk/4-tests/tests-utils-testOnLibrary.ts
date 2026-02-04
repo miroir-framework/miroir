@@ -1,31 +1,51 @@
 import {
-  adminConfigurationDeploymentLibrary,
+  // adminConfigurationDeploymentLibrary,
+  // author1,
+  // author2,
+  // author3,
+  // book1,
+  // book2,
+  // book4,
+  // book5,
+  // book6,
+  CompositeActionSequence,
+  // entityAuthor,
+  // entityBook,
+  EntityDefinition,
+  // entityDefinitionAuthor,
+  // entityDefinitionBook,
+  // entityDefinitionPublisher,
+  EntityInstance,
+  // entityPublisher,
+  MetaEntity,
+  MiroirConfigClient,
+  // publisher1,
+  // publisher2,
+  // publisher3,
+  // selfApplicationDeploymentLibrary,
+  Uuid,
+  type ApplicationEntitiesAndInstances
+} from "miroir-core";
+import {
+  entityAuthor,
+  entityDefinitionAuthor,
   author1,
   author2,
   author3,
+  entityBook,
+  entityDefinitionBook,
   book1,
   book2,
   book4,
   book5,
   book6,
-  CompositeActionSequence,
-  entityAuthor,
-  entityBook,
-  EntityDefinition,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
-  EntityInstance,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
   entityPublisher,
-  MetaEntity,
-  MiroirConfigClient,
-  publisher1,
-  publisher2,
-  publisher3,
+  entityDefinitionPublisher,
   selfApplicationDeploymentLibrary,
-  Uuid,
-  type ApplicationEntitiesAndInstances
-} from "miroir-core";
+} from "miroir-example-library";
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
@@ -56,7 +76,7 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
 export function testOnLibrary_resetLibraryDeployment(
   // miroirConfig: MiroirConfigClient,
   application: Uuid = selfApplicationDeploymentLibrary.uuid,
-  deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
+  // deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
 ): CompositeActionSequence {
   return {
     actionType: "compositeActionSequence",

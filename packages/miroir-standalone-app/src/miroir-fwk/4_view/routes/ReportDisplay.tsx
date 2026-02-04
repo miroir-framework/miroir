@@ -12,6 +12,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Report,
+  selfApplicationMiroir,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
@@ -25,7 +26,7 @@ import {
 
 import { ErrorBoundary } from "react-error-boundary";
 import {
-  deployments,
+  deploymentsDEFUNCT,
   packageName,
   ReportUrlParamKeys
 } from "../../../constants.js";
@@ -73,20 +74,19 @@ export const ReportDisplay: React.FC<{
   //   return currentModel.reports || [];
   // }, [currentModel]);
   
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined =
-    deployments.find((d) => d.uuid == pageParams.deploymentUuid); // TODO; inject real existing deployments, not use a fixed list
-
+  const reportSection = application == selfApplicationMiroir ? "data" : "model"
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    return displayedDeploymentDefinition &&
-      pageParams.applicationSection &&
+    return pageParams.applicationSection &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentApplicationDeploymentMap[application]]
       ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
-          displayedDeploymentDefinition?.uuid
+          currentApplicationDeploymentMap[application]
         ][pageParams.applicationSection as ApplicationSection]
       : { availableReports: [], entities: [], entityDefinitions: [] };
   }, [
-    displayedDeploymentDefinition,
+    currentApplicationDeploymentMap,
+    application,
+    currentApplicationDeploymentMap[application],
     context.deploymentUuidToReportsEntitiesDefinitionsMapping,
     pageParams.applicationSection,
   ]);
@@ -165,12 +165,14 @@ export const ReportDisplay: React.FC<{
   return (
     <>
       <ThemedOnScreenDebug label="ReportDisplay pageParams" data={pageParams} />
-      {/* <ThemedOnScreenDebug
-        label="ReportDisplay currentModel"
-        data={currentModel}
+      <ThemedOnScreenDebug
+        label="ReportDisplay currentApplicationDeploymentMap"
+        data={{currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesDefinitionsMapping}}
         initiallyUnfolded={false}
-      /> */}
-      {/* <ThemedOnScreenDebug
+        useCodeBlock={true}
+        copyButton={true}
+      />
+      <ThemedOnScreenDebug
         label="ReportDisplay availableReports"
         data={availableReports.map(r=>({uuid:r.uuid, name:r.name}))}
         initiallyUnfolded={false}
@@ -180,7 +182,7 @@ export const ReportDisplay: React.FC<{
         label="ReportDisplay currentMiroirReport"
         data={currentMiroirReport}
         initiallyUnfolded={false}
-      /> */}
+      />
       <ThemedOnScreenDebug
         label="ReportDisplay currentStoredQueryResults"
         data={currentStoredQueryResults}

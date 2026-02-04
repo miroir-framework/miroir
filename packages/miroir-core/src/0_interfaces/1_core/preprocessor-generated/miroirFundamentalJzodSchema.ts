@@ -13206,6 +13206,12 @@ export const miroirFundamentalJzodSchema = {
       "metaModel": {
         "type": "object",
         "definition": {
+          "applicationUuid": {
+            "type": "uuid"
+          },
+          "applicationName": {
+            "type": "string"
+          },
           "applicationVersions": {
             "type": "array",
             "definition": {
@@ -33111,6 +33117,38 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "object",
             "definition": {
+              "applicationUuid": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "uuid"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "applicationName": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
               "applicationVersions": {
                 "type": "union",
                 "definition": [
@@ -51048,6 +51086,12 @@ export const miroirFundamentalJzodSchema = {
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel": {
         "type": "object",
         "definition": {
+          "applicationUuid": {
+            "type": "uuid"
+          },
+          "applicationName": {
+            "type": "string"
+          },
           "applicationVersions": {
             "type": "array",
             "definition": {
@@ -66031,6 +66075,12 @@ export const miroirFundamentalJzodSchema = {
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel": {
         "type": "object",
         "definition": {
+          "applicationUuid": {
+            "type": "uuid"
+          },
+          "applicationName": {
+            "type": "string"
+          },
           "applicationVersions": {
             "type": "array",
             "definition": {

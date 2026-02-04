@@ -38,7 +38,7 @@ import {
   SelfApplicationDeploymentConfiguration,
   StoreUnitConfiguration,
   Uuid,
-  adminConfigurationDeploymentLibrary,
+  // adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
@@ -75,59 +75,35 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-// ################################################################################################
-// export type TestCompositeActionParams =
-//   | {
-//       testActionType: "testCompositeActionSuite";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       testCompositeAction: TestCompositeActionSuite;
-//     }
-//   | {
-//       testActionType: "testCompositeAction";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       testCompositeAction: TestCompositeAction;
-//     }
-//   | {
-//       testActionType: "testRuntimeCompositeActionSuite";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       testCompositeAction: TestRuntimeCompositeActionSuite;
-//     }
-//   | {
-//       testActionType: "testRuntimeCompositeAction";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       testCompositeAction: TestRuntimeCompositeAction;
-//     }
-//   | {
-//       testActionType: "testBuildPlusRuntimeCompositeActionSuite";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       testParams?: Record<string, any>;
-//       testCompositeAction: TestBuildPlusRuntimeCompositeActionSuite;
-//     }
-//   | {
-//       testActionType: "testBuildPlusRuntimeCompositeAction";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       testParams?: Record<string, any>;
-//       testCompositeAction: TestBuildPlusRuntimeCompositeAction;
-//     }
-//   | {
-//       testActionType: "testCompositeActionTemplate";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       compositeTestActionTemplate: TestCompositeActionTemplate;
-//     }
-//   | {
-//       testActionType: "testCompositeActionTemplateSuite";
-//       testActionLabel: string;
-//       deploymentUuid: Uuid;
-//       testCompositeActionSuite: TestCompositeActionTemplateSuite;
-//     }; 
-
+// const adminConfigurationDeploymentLibrary: Deployment = {
+const adminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration = {
+  uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  parentName: "SelfApplicationDeploymentConfiguration",
+  parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  name: "LibraryApplicationFilesystemDeployment",
+  defaultLabel: "LibraryApplicationFilesystemDeployment",
+  selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  description: "The default Filesystem Deployment for SelfApplication Library",
+  type: "singleNode",
+  applicationModelLevel: "model",
+  configuration: {
+    admin: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "miroirAdmin",
+    },
+    model: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "library",
+    },
+    data: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "library",
+    },
+  },
+};
 
 
 // ################################################################################################

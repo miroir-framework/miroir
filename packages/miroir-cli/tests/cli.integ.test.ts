@@ -3,7 +3,6 @@
 
 import loglevelNextLog from 'loglevelnext';
 import {
-  adminConfigurationDeploymentLibrary,
   ApplicationDeploymentMap,
   ConfigurationService,
   defaultMiroirMetaModel,
@@ -30,7 +29,7 @@ import {
   type MetaEntity,
   type MiroirConfigClient,
   type SpecificLoggerOptionsMap,
-  defaultLibraryAppModel,
+  defaultLibraryAppModelDEFUNCT,
 } from "miroir-core";
 import {
   author1,
@@ -58,6 +57,7 @@ import {
   user1,
   user2,
   user3,
+  adminConfigurationDeploymentLibrary,
 } from "miroir-example-library";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -446,7 +446,7 @@ describe("CLI Commands Integration Tests", () => {
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
       libraryEntitiesAndInstancesWithoutBook3,
-      defaultLibraryAppModel,
+      defaultLibraryAppModelDEFUNCT,
     );
     const beforeEachResult = await domainController.handleCompositeAction(
       createLibraryAction,

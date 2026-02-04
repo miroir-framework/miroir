@@ -87,7 +87,7 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
   label: z.string(),
   defaultlabel: z.string().optional(),
   paramsAsdomainElements: domain2ElementObjectZodSchema,
-  displayedDeploymentDefinition: selfApplicationDeploymentConfiguration.optional(),
+  // displayedDeploymentDefinition: selfApplicationDeploymentConfiguration.optional(),
   applicationDeploymentMap: z.record(z.string(), z.string().uuid()),
 
   // 
@@ -129,6 +129,7 @@ export function defaultFormValues(
   currentEntityJzodSchema: JzodObject,
   idList?:{id:number}[],
   currentMiroirEntity?: Entity,
+  application?: string,
   displayedDeploymentDefinition?: SelfApplicationDeploymentConfiguration,
 ):any {
   // log.info(
@@ -149,7 +150,8 @@ export function defaultFormValues(
         'parentName':currentMiroirEntity?.name,
         'parentUuid':currentMiroirEntity?.uuid,
         'conceptLevel':'Model',
-        'selfApplication': displayedDeploymentDefinition?.selfApplication,
+        // 'selfApplication': displayedDeploymentDefinition?.selfApplication,
+        'selfApplication': application,
         'attributes': [],
       }
       log.info();
@@ -518,18 +520,19 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // // ##############################################################################################
   const onCreateFormObject = useCallback(
-    async (data:any) => {
-      log.info('ReportComponent onEditFormObject called with new object value',data);
-      
-      if (props.displayedDeploymentDefinition && props.displayedDeploymentDefinition.uuid) {
-        if (props.chosenApplicationSection == 'model') {
+    async (data: any) => {
+      log.info("ReportComponent onEditFormObject called with new object value", data);
+
+      // if (props.displayedDeploymentDefinition && props.displayedDeploymentDefinition.uuid) {
+      if (props.application) {
+        if (props.chosenApplicationSection == "model") {
           await domainController.handleActionFromUI(
             {
               actionType: "transactionalInstanceAction",
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15", // miroir application
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
-                application: props.displayedDeploymentDefinition.selfApplication,
+                application: props.application,
                 // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "createInstance",
@@ -557,7 +560,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             },
             props.applicationDeploymentMap,
             // props.tableComponentReportType == "EntityInstance"?currentModel:undefined
-            currentMiroirModelEnvironment // TODO: use model environment for current deployment
+            currentMiroirModelEnvironment, // TODO: use model environment for current deployment
           );
         } else {
           const createAction: InstanceAction = {
@@ -566,7 +569,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              application: props.displayedDeploymentDefinition.selfApplication,
+              application: props.application,
               // deploymentUuid: props.displayedDeploymentDefinition?.uuid,
               applicationSection: currentApplicationSection,
               parentUuid: data.parentUuid,
@@ -583,11 +586,20 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           await domainController.handleActionFromUI(createAction, props.applicationDeploymentMap);
         }
       } else {
-        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+        throw new Error(
+          "ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.",
+        );
       }
     },
-    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection, props.tableComponentReportType, currentApplicationSection, currentModel]
-  )
+    [
+      domainController,
+      props.application,
+      props.chosenApplicationSection,
+      props.tableComponentReportType,
+      currentApplicationSection,
+      currentModel,
+    ],
+  );
 
   // ##############################################################################################
   const onEditFormObject = useCallback(
@@ -595,7 +607,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
       log.info("ReportComponent onEditFormObject called with new object value", data);
 
-      if (props.displayedDeploymentDefinition) {
+      if (props.application) {
         let result: Action2VoidReturnType;
         if (props.chosenApplicationSection == "model") {
           result = await domainController.handleActionFromUI(
@@ -604,14 +616,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
-                application: props.displayedDeploymentDefinition.selfApplication,
+                application: props.application,
                 // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "updateInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
-                    application: props.displayedDeploymentDefinition.selfApplication,
+                    application: props.application,
                     applicationSection: "model",
                     parentUuid: data.parentUuid,
                     objects: [
@@ -636,7 +648,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              application: props.displayedDeploymentDefinition.selfApplication,
+              application: props.application,
               applicationSection: props.chosenApplicationSection
                 ? props.chosenApplicationSection
                 : "data",
@@ -664,7 +676,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     },
     [
       domainController,
-      props.displayedDeploymentDefinition,
+      props.deploymentUuid,
       props.chosenApplicationSection,
       props.tableComponentReportType,
       currentModel,
@@ -680,9 +692,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       log.info('onDeleteFormObject called with new object value',data);
       log.info('onDeleteFormObject called with props',props);
       
-      if (props.displayedDeploymentDefinition) {
+      if (props.application) {
           if (!currentReportTargetEntityDefinition) {
-           throw new Error("ReportSectionListDisplay onDeleteFormObject no EntityDefinition found for object to delete! " + currentReportTargetEntity?.name);
+           throw new Error(
+             "ReportSectionListDisplay onDeleteFormObject no EntityDefinition found for object to delete! " +
+               currentReportTargetEntity?.name,
+           );
           }
 
           await deleteCascade(
@@ -690,7 +705,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               application: props.application,
               applicationDeploymentMap: props.applicationDeploymentMap,
               applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data" as ApplicationSection,
-              deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+              deploymentUuid: props.deploymentUuid,
               domainController: domainController,
               entityDefinition: currentReportTargetEntityDefinition,
               entityDefinitions: currentModel.entityDefinitions,
@@ -699,7 +714,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           )
       }
     },
-    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection, currentReportTargetEntityDefinition, currentModel]
+    [domainController, props.application, props.chosenApplicationSection, currentReportTargetEntityDefinition, currentModel]
   )
 
   
@@ -890,7 +905,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 foreignKeyObjects={foreignKeyObjects}
                 currentApplication={props.application}
                 applicationDeploymentMap={props.applicationDeploymentMap}
-                currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
+                currentDeploymentUuid={props.deploymentUuid}
                 currentApplicationSection={props.chosenApplicationSection}
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
@@ -905,7 +920,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             ) : (
               <></>
             )}
-            {props.displayedDeploymentDefinition ? (
+            {props.deploymentUuid ? (
               <div>
                 {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
                 {/* {entityInstanceGrid} */}
@@ -923,7 +938,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 />
                 <EntityInstanceGrid
                   type={props.tableComponentReportType}
-                  displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+                  // displayedDeploymentDefinition={props.displayedDeploymentDefinition}
                   styles={props.styles}
                   currentEntity={currentReportTargetEntity}
                   currentEntityDefinition={currentReportTargetEntityDefinition}

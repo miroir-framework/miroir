@@ -69,7 +69,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
   const currentDeploymentReportsEntitiesDefinitionsMapping =
-    // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
 
   // Read generalEditMode from ViewParams context
@@ -474,10 +473,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        {/* <ThemedOnScreenHelper
+        <ThemedOnScreenDebug
           label='ReportViewWithEditor'
           data={{deploymentUuid: props.deploymentUuid}}
-        /> */}
+        />
         {props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>

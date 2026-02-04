@@ -53,7 +53,10 @@ const applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVers
 const applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration = require("../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ba38669e-ac6f-40ea-af14-bb200db251d8.json");
 const applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication = require("../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/dc47438c-166a-4d19-aeba-ad70281afdf4.json");
 const applicationVersionInitialMiroirVersionCrossEntityDefinitionReport = require("../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/ede7e794-5ae7-48a8-81c9-d1f82df11829.json");
+
 const selfApplicationVersionInitialMiroirVersion = require("../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json");
+// import { selfApplicationMiroir } from "..";
+const selfApplicationMiroir = require("../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
 // const instanceConfigurationReference = require("../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
 
@@ -87,7 +90,7 @@ import {
   type EndpointDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { Endpoint } from "../3_controllers/Endpoint";
+// import { Endpoint } from "../3_controllers/Endpoint";
 
 /**
  * TODO: REMOVE THIS, IDEALLY!!! (WAIT, NO, THIS IS OK AS LONG AS IT ALLOWS TO MANAGE DISCREPANCIES BETWEEN 
@@ -129,6 +132,8 @@ export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(
 
 // #################################################################################################
 export const defaultMiroirMetaModel: MetaModel = {
+  applicationUuid: selfApplicationMiroir.uuid,
+  applicationName: selfApplicationMiroir.name,
   // configuration: [instanceConfigurationReference],
   storedQueries: [],
   entities: [
@@ -255,12 +260,13 @@ export function getApplicationSection(
  * @returns 
  */
 export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
-  deploymentUuid: Uuid,
+  application: Uuid,
+  // deploymentUuid: Uuid,
   metaModel: MetaModel,
   appModel: MetaModel
 ): DeploymentUuidToReportsEntitiesDefinitions
 {
-  if (deploymentUuid == adminConfigurationDeploymentMiroir.uuid) {
+  if (application === selfApplicationMiroir.uuid) {
     return {
       model: {
         availableQueries: metaModel.storedQueries,

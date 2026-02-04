@@ -17,7 +17,7 @@ import {
   // selfApplicationLibrary,
   selfApplicationMiroir
 } from "miroir-core";
-import { menuDefaultLibrary } from 'miroir-example-library';
+import { adminConfigurationDeploymentLibrary, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-example-library';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
@@ -119,7 +119,7 @@ export const Sidebar: FC<{
         <SidebarSection
           key={section.menuUuid}
           applicationUuid={section.applicationUuid}
-          applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+          applicationDeploymentMap={currentApplicationDeploymentMap}
           deploymentUuid={section.deploymentUuid}
           menuUuid={section.menuUuid}
           open={props.open}
@@ -130,20 +130,21 @@ export const Sidebar: FC<{
   ), [props.open, context.showModelTools, props.setOpen]);
 
   const filteredAppSidebarSections = useMemo(() => (
-    // [
-    //   {
-    //     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-    //     applicationUuid: selfApplicationLibrary.uuid,
-    //     menuUuid: menuDefaultLibrary.uuid
-    //   }
-    // ]
-    Object.entries(currentApplicationDeploymentMap??{}).map(entry => ({
-      applicationUuid: entry[0],
-      deploymentUuid: entry[1],
-      menuUuid: menuDefaultLibrary.uuid, // TODO: correct!
-    }))
-    .filter(section => section.applicationUuid === currentApplication)
+    [
+      {
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        applicationUuid: selfApplicationLibrary.uuid,
+        menuUuid: menuDefaultLibrary.uuid
+      }
+    ]
+    // Object.entries(currentApplicationDeploymentMap??{}).map(entry => ({
+    //   applicationUuid: entry[0],
+    //   deploymentUuid: entry[1],
+    //   menuUuid: menuDefaultLibrary.uuid, // TODO: correct!
+    // }))
+    // .filter(section => section.applicationUuid === currentApplication)
   ), [currentApplication, currentApplicationDeploymentMap]);
+  log.info("Sidebar: filteredAppSidebarSections", filteredAppSidebarSections);
 
   const appSidebarSections = useMemo(() => (
     filteredAppSidebarSections
@@ -153,7 +154,7 @@ export const Sidebar: FC<{
         <SidebarSection
           key={section.menuUuid}
           applicationUuid={section.applicationUuid}
-          applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+          applicationDeploymentMap={currentApplicationDeploymentMap}
           deploymentUuid={section.deploymentUuid}
           menuUuid={section.menuUuid}
           open={props.open}

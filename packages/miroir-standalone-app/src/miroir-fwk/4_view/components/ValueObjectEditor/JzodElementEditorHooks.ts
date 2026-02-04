@@ -26,9 +26,9 @@ import {
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment,
   type TransformerReturnType,
-  type Uuid
+  type Uuid,
+  type JzodObject
 } from "miroir-core";
-import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../../miroir-localcache-imports.js";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";

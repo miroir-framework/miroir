@@ -3,18 +3,18 @@ import { describe, expect } from "vitest";
 // import process from "process";
 
 import {
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
   createDeploymentCompositeAction,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
   EntityDefinition,
   EntityInstance,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
   LoggerInterface,
   MetaEntity,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
@@ -35,9 +35,19 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 
-import type { ApplicationDeploymentMap, Deployment } from "miroir-core";
-import { adminConfigurationDeploymentAdmin, adminMiroirApplication, ConfigurationService, defaultLibraryModelEnvironment, defaultMiroirMetaModel, defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, selfApplicationMiroir, TestCompositeActionParams } from "miroir-core";
-import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
+import type { ApplicationDeploymentMap, Deployment, EndpointDefinition, MlSchema } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminMiroirApplication,
+  ConfigurationService,
+  // defaultLibraryModelEnvironment,
+  defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
+  selfApplicationMiroir,
+  TestCompositeActionParams,
+} from "miroir-core";
+import { LoggerOptions } from "miroir-core";
 import {
   author1,
   author2,
@@ -48,6 +58,7 @@ import {
   book4,
   book5,
   book6,
+  endpointDocument,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
@@ -113,6 +124,80 @@ myConsoleLog("started registered loggers DONE");
 
 const globalTimeOut = 30000;
 // const globalTimeOut = 10^9;
+
+const adminConfigurationDeploymentMiroir: Deployment = {
+  uuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+  parentName: "SelfApplicationDeploymentConfiguration",
+  parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
+  name: "DefaultMiroirApplicationDeployment",
+  defaultLabel:
+    "Miroir SelfApplication Deployment Configuration declaring Miroir SelfApplication Deployment in Admin schema. Run-time-only / DEFUNCT?",
+  adminApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  description: "The default Deployment for SelfApplication Miroir",
+  configuration: {
+    admin: {
+      emulatedServerType: "filesystem",
+      directory: "../miroir-core/src/assets/admin",
+    },
+    model: {
+      emulatedServerType: "filesystem",
+      directory: "../miroir-core/src/assets/miroir_model",
+    },
+    data: {
+      emulatedServerType: "filesystem",
+      directory: "../miroir-core/src/assets/miroir_data",
+    },
+    // admin: {
+    //   emulatedServerType: "sql",
+    //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+    //   schema: "miroirAdmin",
+    // },
+    // model: {
+    //   emulatedServerType: "sql",
+    //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+    //   schema: "miroir",
+    // },
+    // data: {
+    //   emulatedServerType: "sql",
+    //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+    //   schema: "miroir",
+    // },
+  },
+};
+const adminConfigurationDeploymentLibrary: Deployment = {
+  uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  parentName: "SelfApplicationDeploymentConfiguration",
+  parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  name: "LibraryApplicationFilesystemDeployment",
+  defaultLabel: "LibraryApplicationFilesystemDeployment",
+  adminApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  description: "The default Filesystem Deployment for SelfApplication Library",
+  configuration: {
+    admin: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "miroirAdmin",
+    },
+    model: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "library",
+    },
+    data: {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+      schema: "library",
+    },
+  },
+};
+
+const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+  miroirFundamentalJzodSchema as MlSchema,
+  defaultMiroirMetaModel,
+  endpointDocument as EndpointDefinition,
+  adminConfigurationDeploymentLibrary.uuid,
+);
+
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
@@ -139,10 +224,10 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
-const testDeployment: Deployment = {
-  ...adminConfigurationDeploymentLibrary,
-  configuration: testDeploymentStorageConfiguration,
-};
+// const testDeployment: Deployment = {
+//   ...adminConfigurationDeploymentLibrary,
+//   configuration: testDeploymentStorageConfiguration,
+// };
 
 
 // const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
@@ -1127,7 +1212,7 @@ describe.sequential(
         const testSuiteResults = await runTestOrTestSuite(
           domainController,
           testAction,
-          defaultSelfApplicationDeploymentMap,
+          applicationDeploymentMap,
           miroirActivityTracker,
           {}
         );

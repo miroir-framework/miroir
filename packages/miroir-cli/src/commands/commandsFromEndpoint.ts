@@ -11,7 +11,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MlSchema,
-  defaultLibraryAppModel,
+  defaultLibraryAppModelDEFUNCT,
   defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   instanceEndpointV1,
@@ -366,7 +366,7 @@ export const cliRequestHandlers_EntityEndpoint: CliRequestHandlers = {
 // Register Handlers from Library Application Endpoints
 // ################################################################################################
 
-export const cliRequestHandlers_Library_lendingEndpoint: CliRequestHandlers = defaultLibraryAppModel.endpoints
+export const cliRequestHandlers_Library_lendingEndpoint: CliRequestHandlers = defaultLibraryAppModelDEFUNCT.endpoints
   .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
   .reduce((acc, endpoint) => {
     const handler = cliCommandEntry(endpoint, "lendDocument");

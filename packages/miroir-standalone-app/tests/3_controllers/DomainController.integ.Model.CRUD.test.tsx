@@ -5,7 +5,7 @@ import { fetch as crossFetch } from "cross-fetch";
 
 import {
   ConfigurationService,
-  defaultLibraryModelEnvironment,
+  // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
@@ -14,6 +14,7 @@ import {
   entityEntity,
   entityEntityDefinition,
   EntityInstance,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
   JzodElement,
   LocalCacheInterface,
   LoggerInterface,
@@ -23,6 +24,7 @@ import {
   MiroirContextInterface,
   miroirCoreStartup,
   MiroirEventService,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   resetAndInitApplicationDeployment,
@@ -54,9 +56,24 @@ import {
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
-import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances, Deployment } from "miroir-core";
-import { adminConfigurationDeploymentAdmin, adminMiroirApplication, createDeploymentCompositeAction, defaultMiroirModelEnvironment, defaultSelfApplicationDeploymentMap, resetAndinitializeDeploymentCompositeAction, selfApplicationMiroir } from "miroir-core";
+import type {
+  ApplicationDeploymentMap,
+  ApplicationEntitiesAndInstances,
+  Deployment,
+  EndpointDefinition,
+  MlSchema,
+} from "miroir-core";
 import {
+  adminConfigurationDeploymentAdmin,
+  adminMiroirApplication,
+  createDeploymentCompositeAction,
+  defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
+  resetAndinitializeDeploymentCompositeAction,
+  selfApplicationMiroir,
+} from "miroir-core";
+import {
+  endpointDocument,
   entityAuthor,
   entityDefinitionAuthor,
   entityDefinitionPublisher,
@@ -309,6 +326,13 @@ afterAll(async () => {
     miroirActivityTracker
   );
 });
+
+const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+  miroirFundamentalJzodSchema as MlSchema,
+  defaultMiroirMetaModel,
+  endpointDocument as EndpointDefinition,
+  adminConfigurationDeploymentLibrary.uuid,
+);
 
 const testActions: Record<string, TestCompositeActionParams> = {
   "DomainController.integ.Model.CRUD": {

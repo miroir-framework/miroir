@@ -23,7 +23,11 @@ import {
   RestClient,
   SpecificLoggerOptionsMap
 } from "miroir-core";
-import { LocalCacheProvider, RestPersistenceClientAndRestClient, setupMiroirDomainController } from "./miroir-fwk/miroir-localcache-imports.js";
+import {
+  LocalCacheProvider,
+  RestPersistenceClientAndRestClient,
+  setupMiroirDomainController,
+} from "./miroir-fwk/miroir-localcache-imports.js";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";

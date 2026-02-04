@@ -2,7 +2,7 @@
 import {
   MiroirLoggerFactory,
   TestFramework,
-  defaultLibraryModelEnvironment,
+  // defaultLibraryModelEnvironment,
   runTransformerTestInMemory,
   runTransformerTestSuite,
   type LoggerInterface,
@@ -10,7 +10,10 @@ import {
   type TestSuiteListFilter,
   type TransformerReturnType,
   type TransformerTestDefinition,
-  runUnitTransformerTests
+  runUnitTransformerTests,
+  defaultMiroirModelEnvironment,
+  type Action2VoidReturnType,
+  ACTION_OK
 } from "miroir-core";
 
 
@@ -250,7 +253,8 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
   const { handleAsyncAction } = useSnackbar();
   const miroirContextService = useMiroirContextService();
 
-  const onAction = async () => {
+  // const onAction = async (): Promise<Action2VoidReturnType> => {
+  const onAction = async (): Promise<Action2VoidReturnType> => {
     // Reset previous results
     miroirContextService.miroirContext.miroirActivityTracker.resetResults();
 
@@ -267,7 +271,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       (transformerTestSuite as TransformerTestDefinition).definition,
       testFilter, // Use the provided filter
       // {testList: {"resolveConditionalSchema": ["error if no value found at given parentUuid path"]}}, // filter
-      defaultLibraryModelEnvironment,
+      defaultMiroirModelEnvironment, // TODO: use correct environment!
       miroirContextService.miroirContext.miroirActivityTracker, // Pass the unified tracker
       undefined, // parentTrackingId
       true, // trackActionsBelow
@@ -289,6 +293,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
     if (onTestComplete) {
       onTestComplete(testSuiteKey, structuredResults);
     }
+    return ACTION_OK;
   };
 
   return (

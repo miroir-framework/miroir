@@ -15,6 +15,7 @@ import {
 
 import {
   adminSelfApplication,
+  defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
@@ -94,7 +95,7 @@ let count = 0;
 // ################################################################################################
 export interface SidebarSectionProps {
   applicationUuid: Uuid,
-  applicationDeploymentMap: ApplicationDeploymentMap,
+  applicationDeploymentMap: ApplicationDeploymentMap | undefined,
   deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
 
 // ################################################################################################
@@ -108,7 +109,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const context = useMiroirContext();
   const currentModel: MetaModel = useCurrentModel(
     props.applicationUuid,
-    props.applicationDeploymentMap
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
   );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
@@ -123,7 +124,6 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
         {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application: props.applicationUuid,
-              deploymentUuid: props.deploymentUuid,
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -149,7 +149,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   > = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams,
-    props.applicationDeploymentMap,
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
   );
 
   // log.info("SidebarSection deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
@@ -206,6 +206,15 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
           </ThemedList>
         ) : (
           <>
+            <ThemedOnScreenDebug
+              label='SidebarSection'
+              data={{
+                props,
+                miroirMenusDomainElementObject,
+              }}
+              useCodeBlock={true}
+              initiallyUnfolded={false}
+            />
             {!((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType ||
             ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType ==
               "simpleMenu" ? (
@@ -231,7 +240,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                     <MenuItem
                       key={i.label}
                       menuItem={i}
-                      applicationDeploymentMap={props.applicationDeploymentMap}
+                      applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
                       keyValue={i.label}
                       showPadding={true}
                     />
@@ -261,7 +270,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                       <MenuItem
                         key={curr.label + index}
                         menuItem={curr}
-                        applicationDeploymentMap={props.applicationDeploymentMap}
+                        applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
                         keyValue={curr.label + index}
                       />
                     ))

@@ -91,7 +91,21 @@ export function currentModel(
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityQueryVersion.uuid)
       ];
+    const currentApplicationDefinitions = state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          metaModelSection,
+          entitySelfApplicationVersion.uuid
+        )
+      ]?.entities;
+    const currentApplicationDefinition = currentApplicationDefinitions
+      ? Object.values(currentApplicationDefinitions)[0]
+      : null;
     const result = {
+      applicationUuid: application,
+      applicationName: currentApplicationDefinition
+        ? (currentApplicationDefinition as any).name
+        : "",
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],

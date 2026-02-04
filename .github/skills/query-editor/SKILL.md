@@ -31,12 +31,14 @@ During remaining steps, use the filter passed to the `runTransformerTestSuite` f
 There are **two implementation types** for transformers:
 
 ### 1. Library-Implemented Transformers
+
 - Defined with `transformerImplementationType: "libraryImplementation"`
 - Require TypeScript implementation functions
 - Have both in-memory and optional SQL implementations
 - Examples: `ifThenElse`, `mapList`, `createObject`, `dataflowObject`
 
 ### 2. Composite Transformers
+
 - Defined with `transformerImplementationType: "transformer"`
 - Composed of other transformers (no TypeScript code needed)
 - The `definition` field contains the transformer composition
@@ -47,29 +49,37 @@ There are **two implementation types** for transformers:
 ## TDD Workflow
 
 ### Step 1: Verify Current Test State
+
 Always run tests first to establish baseline.
 
 ### Step 2: Write the Test First
+
 Add test case(s) to the appropriate test suite file:
+
 - File: `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
 - This is the `miroirCoreTransformers` test suite
 
 ### Step 3: Run the Test (Expect Failure)
+
 ```bash
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 ```
 
 ### Step 4: Implement the Transformer
+
 Create/modify the transformer definition and implementation.
 
 ### Step 5: Run Tests Again (Expect Success)
+
 ```bash
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
 
 ### Step 6: Rebuild if Needed
+
 If modifying core schemas:
+
 ```bash
 npm run devBuild -w miroir-core
 ```
@@ -83,30 +93,40 @@ npm run devBuild -w miroir-core
 Follow these steps in order for a new library-implemented transformer:
 
 #### Step 1: Run Pre-flight Tests
+
 Establish baseline before any changes.
+
 ```bash
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 ```
 
 #### Step 2: Write Test Cases First (TDD)
+
 Add tests to `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
 
 #### Step 3: Create TransformerDefinition JSON
+
 Create `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json`
 
 #### Step 4: Implement Handler Function
+
 Add `handleTransformer_<name>` to `packages/miroir-core/src/2_domain/TransformersForRuntime.ts`
+
 - Also register in `inMemoryTransformerImplementations` object
 - Also add to `applicationTransformerDefinitions` object
 
 #### Step 5: Export and Register Transformer
+
 In `packages/miroir-core/src/2_domain/Transformers.ts`:
+
 - Import the JSON
 - Export the constant
 - Add to `miroirCoreTransformers` array
 
 #### Step 6: Register Schema Types (CRITICAL)
+
 In `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts`:
+
 - Add `transformerForBuild_<name>` entry in `miroirTransformersForBuild` section
 - Add `transformerForBuildPlusRuntime_<name>` entry in `miroirTransformersForBuildPlusRuntime` section
 - Add `"transformerForBuild_<name>"` to `domainActionDependencySet` array
@@ -116,12 +136,14 @@ In `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirF
 #### Step 7: add pre-generated Schema Types
 
 In `packages/miroir-core/scripts/generate-ts-types.ts`:
+
 - Add `transformerForBuild_<name>` entry in `headerForZodImports` definition
 - Add `transformerForBuild_<name>` entry in `transformerForBuild` definition
 - Add `transformerForBuildPlusRuntime_<name>` entry in `TransformerForBuildPlusRuntime` definition
 - Add `transformerForBuildPlusRuntime_<name>` entry in `transformerForBuildPlusRuntime` definition
 
 #### Step 7: Run devBuild and Tests
+
 ```bash
 npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && && RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
@@ -132,7 +154,7 @@ documentation is in folder `docs-OLD\transformers`
 
 ---
 
-### Files to Create/Modify (Summary):
+### Files to Create/Modify (Summary)
 
 1. **TransformerDefinition JSON** (data layer)
    - Location: `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json`
@@ -156,8 +178,7 @@ documentation is in folder `docs-OLD\transformers`
 5. **Test Cases**
    - Location: `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
 
-
-### TransformerDefinition Structure (Library):
+### TransformerDefinition Structure (Library)
 
 ```json
 {
@@ -201,7 +222,7 @@ documentation is in folder `docs-OLD\transformers`
 }
 ```
 
-### Implementation Function Pattern:
+### Implementation Function Pattern
 
 ```ts
 // In TransformersForRuntime.ts
@@ -223,7 +244,7 @@ export const handleTransformer_<name> = (
 
 ## Creating a Composite Transformer
 
-### Files to Create/Modify:
+### Files to Create/Modify
 
 1. **TransformerDefinition JSON** only
    - Location: `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json`
@@ -234,7 +255,7 @@ export const handleTransformer_<name> = (
 3. **Test Cases**
    - Location: `packages/miroir-core/src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json`
 
-### TransformerDefinition Structure (Composite):
+### TransformerDefinition Structure (Composite)
 
 ```json
 {
@@ -329,16 +350,19 @@ export const handleTransformer_<name> = (
 ## Common Transformers Reference
 
 ### Data Access
+
 - `getFromContext` - Get value from runtime context
 - `getFromParameters` - Get value from build parameters
 - `accessDynamicPath` - Dynamic path access on objects
 
 ### Object Creation
+
 - `createObject` - Create object with literal keys
 - `createObjectFromPairs` - Create object from key-value pairs
 - `mergeIntoObject` - Merge new fields into existing object
 
 ### List Operations
+
 - `mapList` - Transform each element in a list
 - `pickFromList` - Pick element at index
 - `indexListBy` - Index list by a field
@@ -346,15 +370,18 @@ export const handleTransformer_<name> = (
 - `getUniqueValues` - Get unique values from list
 
 ### Control Flow
+
 - `ifThenElse` (operators: ==, !=, <, <=, >, >=) - Conditional logic
 - `case` - Switch on multiple discrete values (like SQL CASE WHEN)
 - `dataflowObject` - Sequential/dataflow transformer composition
 - `returnValue` - Return a constant value
 
 ### Arithmetic/String Operations
+
 - `+` (plus) - Addition for numbers/bigints, concatenation for strings
 
 ### String/Data
+
 - `mustacheStringTemplate` - Mustache template interpolation
 - `generateUuid` - Generate a new UUID
 - `getObjectEntries` - Get object entries as array
@@ -365,7 +392,7 @@ export const handleTransformer_<name> = (
 ## Key Files Reference
 
 | Purpose | Path |
-|---------|------|
+| --------- | ------ |
 | TransformerDefinition entity | `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json` |
 | Transformer definitions (data) | `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/*.json` |
 | Transformer exports | `packages/miroir-core/src/2_domain/Transformers.ts` |
@@ -380,7 +407,6 @@ export const handleTransformer_<name> = (
 ---
 
 ## Interpolation Modes
-
 
 Transformers support two interpolation modes:
 
@@ -398,7 +424,7 @@ Library-implemented transformers require **BOTH** in-memory and SQL implementati
 ### SQL Implementation Files
 
 | Purpose | Path |
-|---------|------|
+| --------- | ------ |
 | SQL Generator | `packages/miroir-store-postgres/src/1_core/SqlGenerator.ts` |
 | Transformer registry | `sqlTransformerImplementations` object in SqlGenerator.ts |
 | Operator mappings | `jsOperatorToSqlOperatorMap` in SqlGenerator.ts |
@@ -406,7 +432,9 @@ Library-implemented transformers require **BOTH** in-memory and SQL implementati
 ### SQL Implementation Workflow
 
 #### Step 1: Define SQL Function Name
+
 In your TransformerDefinition JSON, specify the SQL implementation function:
+
 ```json
 "transformerImplementation": {
   "transformerImplementationType": "libraryImplementation",
@@ -416,12 +444,15 @@ In your TransformerDefinition JSON, specify the SQL implementation function:
 ```
 
 #### Step 2: Study Existing SQL Patterns
+
 Reference existing implementations in `SqlGenerator.ts`:
+
 - `sqlStringForConditionalTransformer` - for ifThenElse logic
 - `sqlStringForCaseTransformer` - for case/when pattern
 - `sqlStringForMapListTransformer` - for list operations
 
 #### Step 3: Implement the SQL Generator Function
+
 Add your function to `SqlGenerator.ts` following the `ITransformerHandler` signature:
 
 ```typescript
@@ -446,6 +477,7 @@ const sqlStringFor<Name>Transformer: ITransformerHandler = function (
 ```
 
 #### Step 4: Register in sqlTransformerImplementations
+
 Add your function to the registry object at the top of `SqlGenerator.ts`:
 
 ```typescript
@@ -456,6 +488,7 @@ export const sqlTransformerImplementations: Record<string, ITransformerHandler> 
 ```
 
 #### Step 5: Build and Test
+
 ```bash
 # Build the postgres store package
 npm run build -w miroir-store-postgres
@@ -469,7 +502,7 @@ RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transform
 SQL generators return `SqlStringForTransformerElementValue` with these types:
 
 | Type | Description | Example |
-|------|-------------|---------|
+| ------ | ------------- | --------- |
 | `"scalar"` | Single value (string, number, boolean) | `case when... end` |
 | `"json"` | JSON object | `jsonb_build_object(...)` |
 | `"table"` | Table reference | `FROM table_name` |
@@ -551,11 +584,14 @@ If integration tests fail after adding SQL support:
 **Cause**: Missing schema registration in `getMiroirFundamentalJzodSchema.ts`
 
 **Solution**: Add both entries to the schema file:
+
 ```typescript
 transformerForBuild_<name>: miroirTransformersForBuild.transformer_<name>,
 transformerForBuildPlusRuntime_<name>: miroirTransformersForBuildPlusRuntime.transformer_<name>,
 ```
+
 And add to `domainActionDependencySet`:
+
 ```typescript
 "transformerForBuild_<name>",
 ```
@@ -565,6 +601,7 @@ And add to `domainActionDependencySet`:
 **Cause**: Transformer not registered in `TransformersForRuntime.ts`
 
 **Solution**: Ensure the handler is added to both:
+
 - `inMemoryTransformerImplementations` object
 - `applicationTransformerDefinitions` object
 
@@ -573,6 +610,7 @@ And add to `domainActionDependencySet`:
 **Cause**: Transformer not exported in `Transformers.ts`
 
 **Solution**: Add to `miroirCoreTransformers` array:
+
 ```typescript
 export const miroirCoreTransformers: TransformerDefinition[] = [
   // ... other transformers

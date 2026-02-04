@@ -35,7 +35,7 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
-import { entityEndpointVersion, entityQueryVersion } from "..";
+import { entityEndpointVersion, entityQueryVersion, selfApplicationMiroir } from "..";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
@@ -73,6 +73,8 @@ export function selectCurrentDeploymentModel(
     } else {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
       return ({
+        applicationUuid: selfApplicationMiroir.uuid,
+        applicationName: selfApplicationMiroir.name,
         entities: (
           domainState[deploymentUuid] &&
           domainState[deploymentUuid]["model"] &&

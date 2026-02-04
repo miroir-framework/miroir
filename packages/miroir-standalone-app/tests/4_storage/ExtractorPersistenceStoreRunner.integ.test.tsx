@@ -3,9 +3,12 @@ import { describe } from 'vitest';
 import {
   type Action2ReturnType,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
+  createDeploymentCompositeAction,
+  // defaultLibraryModelEnvironment,
+  defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   EntityDefinition,
   entityEndpointVersion,
@@ -22,22 +25,14 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   resetAndInitApplicationDeployment,
+  resetAndinitializeDeploymentCompositeAction,
+  selfApplicationMiroir,
   // selfApplicationLibrary,
   StoreUnitConfiguration
 } from "miroir-core";
 
 import {
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
-  entityAuthor,
-  entityBook,
-  entityCountry,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
-  entityLendingHistoryItem,
-  entityPublisher,
-  entityUser,
+  adminConfigurationDeploymentLibrary,
   author1,
   author2,
   author3,
@@ -47,10 +42,21 @@ import {
   book4,
   book5,
   book6,
+  entityAuthor,
+  entityBook,
+  entityCountry,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
+  entityLendingHistoryItem,
+  entityPublisher,
+  entityUser,
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
   selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
 } from "miroir-example-library";
 
 import {
@@ -70,14 +76,6 @@ import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 // import { miroirCoreStartup } from 'miroir-core/src/startup.js';
 import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances, Deployment, Entity } from 'miroir-core';
-import {
-  createDeploymentCompositeAction,
-  defaultLibraryModelEnvironment,
-  defaultMiroirModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
-  resetAndinitializeDeploymentCompositeAction,
-  selfApplicationMiroir,
-} from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   createMiroirDeploymentGetPersistenceStoreController,

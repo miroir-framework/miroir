@@ -51,5 +51,10 @@
   "accessibility.signals.noInlayHints": {
     "sound": "off"
   },
-  "accessibility.signalOptions.volume": 20
+  "accessibility.signalOptions.volume": 20,
+  "markdownlint.config": {
+        "MD033": {
+            "allowed_elements": [ "a", "img"  ]
+        }
+    }
 }

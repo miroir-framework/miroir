@@ -51,7 +51,7 @@
                       "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
                     },
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      "targetApplicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                       "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
                       "targetEntityOrderInstancesBy": "name"
                     }
@@ -68,7 +68,7 @@
                       "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
                     },
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      "targetApplicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                       "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                       "targetEntityOrderInstancesBy": "name"
                     }

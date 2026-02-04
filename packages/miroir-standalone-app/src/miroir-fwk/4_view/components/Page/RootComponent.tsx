@@ -19,9 +19,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 import {
-  actionsWithDeploymentInPayload,
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
+  // adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   adminSelfApplication,
   AppTheme,
@@ -74,7 +73,7 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { selfApplicationLibrary } from 'miroir-example-library';
+import { adminConfigurationDeploymentLibrary, selfApplicationLibrary } from 'miroir-example-library';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -108,9 +107,18 @@ export interface RootComponentProps {
  * 4. Optimized context value dependencies to only change when necessary
  * 5. Batched domain controller actions to take advantage of React 18's automatic batching
  */
+let count = 0;
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
+  count++;
 
+  log.info("RootComponent render", count, "######################################");
+  log.info("RootComponent render", count, "######################################");
+  log.info("RootComponent render", count, "######################################");
+  log.info("RootComponent render", count, "######################################");
+  log.info("RootComponent render", count, "######################################");
+  log.info("RootComponent render", count, "######################################");
+  log.info("RootComponent render", count, "######################################");
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
 
   // log.info("actionsWithDeploymentInPayload", actionsWithDeploymentInPayload);
@@ -162,7 +170,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // );
 
   // Memoize current model to prevent unnecessary re-renders
-  const currentModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
+  // const currentModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
 
   if (miroirConfig && miroirConfig.miroirConfigType != "client") {
     throw new Error(
@@ -172,8 +180,11 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const adminAppModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
-  const libraryAppModel: MetaModel = useCurrentModel(selfApplicationLibrary.uuid, defaultSelfApplicationDeploymentMap);
 
+
+  // log.info("RootComponent", count, "currentModel", currentModel);
+  // log.info("RootComponent", count, "adminAppModel", adminAppModel);
+  log.info("RootComponent", count, "miroirMetaModel", miroirMetaModel);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateSelectorMap(),
     []
@@ -188,6 +199,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
+  log.info("RootComponent defaultSelfApplicationDeploymentMap",defaultSelfApplicationDeploymentMap);
   log.info("RootComponent adminAppModel",adminAppModel);
   const fetchAdminDeploymentsQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
     useMemo(
@@ -247,9 +259,16 @@ export const RootComponent = (props: RootComponentProps) => {
 
   useEffect(() => {
     if (applicationDeploymentMap) {
+      log.info("RootComponent calling setApplicationDeploymentMap in context",applicationDeploymentMap);
       context.setApplicationDeploymentMap(applicationDeploymentMap);
     }
   }, [applicationDeploymentMap]);
+  
+  const libraryAppModel: MetaModel = useCurrentModel(
+    selfApplicationLibrary.uuid,
+    applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  );
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -259,40 +278,23 @@ export const RootComponent = (props: RootComponentProps) => {
     () => (
       {
         [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentAdmin.uuid,
+          adminSelfApplication.uuid,// adminConfigurationDeploymentAdmin.uuid,
           miroirMetaModel, 
           adminAppModel,
         ),
         [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentMiroir.uuid,
+          selfApplicationMiroir.uuid,// adminConfigurationDeploymentMiroir.uuid,
           miroirMetaModel, 
           miroirMetaModel, 
         ),
         [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminConfigurationDeploymentLibrary.uuid,
+          selfApplicationLibrary.uuid,// adminConfigurationDeploymentLibrary.uuid,
           miroirMetaModel, 
           libraryAppModel,
         ),
-        // [adminConfigurationDeploymentTest1.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentTest1.uuid,
-        //   miroirMetaModel, 
-        //   test1AppModel,
-        // ),
-        // [adminConfigurationDeploymentTest4.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentTest4.uuid,
-        //   miroirMetaModel, 
-        //   test4AppModel,
-        // ),
-        // [adminConfigurationDeploymentParis.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   adminConfigurationDeploymentParis.uuid,
-        //   miroirMetaModel, 
-        //   parisAppModel,
-        // ),
       }
     ),
-    // [miroirMetaModel, libraryAppModel, adminAppModel, test1AppModel, test4AppModel, parisAppModel]
-    // [miroirMetaModel, libraryAppModel, adminAppModel, parisAppModel]
-    [miroirMetaModel, libraryAppModel, adminAppModel]
+    [miroirMetaModel, adminAppModel, libraryAppModel]
   );
 
   useEffect(() =>
@@ -352,17 +354,17 @@ export const RootComponent = (props: RootComponentProps) => {
     [openSidebarCloseOutline, closeSidebar]
   );
 
-  const handleChangeDisplayedDeployment = useMemo(
-    () => (event: SelectChangeEvent<unknown>) => {
-      event.stopPropagation();
-      log.info("handleChangeDisplayedDeployment", event);
-      setDisplayedDeploymentUuid(event.target.value as string);
-      log.info("handleChangeDisplayedDeployment", displayedDeploymentUuid);
-      setDisplayedApplicationSection("data");
-      // setDisplayedReportUuid("");
-    },
-    [setDisplayedDeploymentUuid, setDisplayedApplicationSection]
-  );
+  // const handleChangeDisplayedDeployment = useMemo(
+  //   () => (event: SelectChangeEvent<unknown>) => {
+  //     event.stopPropagation();
+  //     log.info("handleChangeDisplayedDeployment", event);
+  //     setDisplayedDeploymentUuid(event.target.value as string);
+  //     log.info("handleChangeDisplayedDeployment", displayedDeploymentUuid);
+  //     setDisplayedApplicationSection("data");
+  //     // setDisplayedReportUuid("");
+  //   },
+  //   [setDisplayedDeploymentUuid, setDisplayedApplicationSection]
+  // );
 
   // ##############################################################################################
   // InstanceEditorOutline handlers with sidebar coordination
@@ -544,10 +546,10 @@ export const RootComponent = (props: RootComponentProps) => {
   // Stabilize query params to prevent unnecessary selector re-runs
   const stableQueryParams = useMemo(
     () =>
-      currentModel?.entities?.length > 0
+      adminAppModel?.entities?.length > 0
         ? defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
         : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid),
-    [currentModel?.entities?.length]
+    [adminAppModel?.entities?.length]
   );
 
   log.info("RootComponent: stableQueryParams", stableQueryParams);
@@ -799,6 +801,20 @@ export const RootComponent = (props: RootComponentProps) => {
                 outlineWidth={outlineWidth}
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
+                <ThemedOnScreenDebug
+                  label="RootComponent adminAppModel"
+                  data={{applicationDeploymentMap, adminAppModel}}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                  copyButton={true}
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent adminAppModel"
+                  data={{applicationDeploymentMap, adminAppModel}}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                  copyButton={true}
+                />
                 <ThemedOnScreenDebug
                   label="RootComponent viewParams generalEditMode"
                   data={context.viewParams.generalEditMode}

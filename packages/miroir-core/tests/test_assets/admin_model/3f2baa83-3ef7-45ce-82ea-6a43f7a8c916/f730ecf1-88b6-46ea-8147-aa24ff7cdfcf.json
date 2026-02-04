@@ -1,0 +1,36 @@
+{
+  "uuid": "f730ecf1-88b6-46ea-8147-aa24ff7cdfcf",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"ApplicationDetails",
+  "defaultLabel": "Detailed information about an Admin Application",
+  "definition": {
+    "extractorTemplates": {
+      "application": {
+        "extractorOrCombinerType": "extractorForObjectByDirectReference",
+        "parentName": "Application",
+        "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type":"objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+            "fetchedDataReference": "application",
+            "sortByAttribute": "name"
+          }
+        }
+      ]
+    }
+  }
+}

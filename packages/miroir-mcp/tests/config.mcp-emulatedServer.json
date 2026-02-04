@@ -4,8 +4,7 @@
     "rootApiUrl": "http://localhost:3080",
     "applicationDeploymentMap": {
       "360fcf1f-f0d4-4f8a-9262-07886e70fa15": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      "55af124e-8c05-4bae-a3ef-0933d41daa92": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-      "5af03c98-fe5e-490b-b08f-e1230971c57f": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+      "55af124e-8c05-4bae-a3ef-0933d41daa92": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b"
     },
     "deploymentStorageConfig": {
       "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
@@ -34,20 +33,6 @@
         "data": {
           "emulatedServerType": "filesystem",
           "directory": "./tests/assets/admin_data"
-        }
-      },
-      "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
-        "admin": {
-          "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/miroir_admin"
-        },
-        "model": {
-          "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/library_model"
-        },
-        "data": {
-          "emulatedServerType": "filesystem",
-          "directory": "./tests/tmp/library_data"
         }
       }
     },

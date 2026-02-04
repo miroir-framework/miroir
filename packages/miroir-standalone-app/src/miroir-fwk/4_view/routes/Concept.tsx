@@ -24,7 +24,7 @@ import {
   type MiroirModelEnvironment
 } from "miroir-core";
 
-import { deployments, packageName } from "../../../constants.js";
+import { deploymentsDEFUNCT, packageName } from "../../../constants.js";
 import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
@@ -214,7 +214,7 @@ export const ConceptPage: React.FC<any> = (
     [props,JSON.stringify(dialogOuterFormObject, null, 2)]
   );
 
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
+  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deploymentsDEFUNCT.find(
     (d) => d.uuid == context.deploymentUuid
   );
 

@@ -16,7 +16,6 @@ import {
   reportReportDetails,
   ReportSection,
   resolvePathOnObject,
-  SelfApplicationDeploymentConfiguration,
   transformer_extended_apply_wrapper,
   TransformerFailure,
   Uuid,
@@ -24,10 +23,9 @@ import {
   type JzodObject
 } from "miroir-core";
 
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { useFormikContext } from 'formik';
 import type { Params } from 'react-router-dom';
-import { deployments, packageName, type ReportUrlParamKeys } from '../../../../constants.js';
+import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
@@ -35,7 +33,6 @@ import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
 import { ThemedOnScreenDebug, ThemedProgressiveAccordion } from '../Themes/BasicComponents';
-import { ExpandMoreIcon } from '../Themes/MaterialSymbolWrappers';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
@@ -155,20 +152,19 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // // const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(undefined);
   // const [hasValidationErrors, setHasValidationErrors] = useState(false);
 
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
-    (d) => d.uuid == props.deploymentUuid
-  );
+  // const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deploymentsDEFUNCT.find(
+  //   (d) => d.uuid == props.deploymentUuid
+  // );
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    return displayedDeploymentDefinition &&
+    return props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
-      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
+      context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
+      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
         props.applicationSection
         ]
       : { availableReports: [], entities: [], entityDefinitions: [] };
-  }, [displayedDeploymentDefinition, context.deploymentUuidToReportsEntitiesDefinitionsMapping, props.applicationSection]);
-
+  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping, props.deploymentUuid, props.applicationSection]);
   // // Get Report entity definition from Miroir model (for TypedValueObjectEditor schema)
   // const reportEntityDefinition = useMemo(() => {
   //   const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
@@ -413,11 +409,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 deploymentUuid={props.deploymentUuid}
                 chosenApplicationSection={props.applicationSection as ApplicationSection}
                 paramsAsdomainElements={props.paramsAsdomainElements}
-                displayedDeploymentDefinition={displayedDeploymentDefinition} // ??
                 //
                 domainElementObjectDEFUNCT={props.reportDataDEFUNCT.reportData}
                 fetchedDataJzodSchemaDEFUNCT={props.fetchedDataJzodSchemaDEFUNCT}
-                // reportSectionDEFUNCT={props.reportSectionDEFUNCT}
                 reportSectionDEFUNCT={reportSectionDefinitionFromFormik}
                 //
                 formikValuePath={props.reportSectionPath}

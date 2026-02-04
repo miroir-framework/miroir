@@ -36,6 +36,7 @@ export { default as selfApplicationStoreBasedConfigurationLibrary } from "./asse
 export { default as selfApplicationVersionLibraryInitialVersion } from "./assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json" assert { type: "json" };
 export { default as selfApplicationModelBranchLibraryMasterBranch } from "./assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json" assert { type: "json" };
 export { default as selfApplicationDeploymentLibrary } from "./assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" assert { type: "json" };
+export { default as adminConfigurationDeploymentLibrary } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" assert { type: "json" };
 
 // Library Model - Documents
 export { default as endpointDocument } from "./assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/212f2784-5b68-43b2-8ee0-89b1c6fdd0de.json" assert { type: "json" };

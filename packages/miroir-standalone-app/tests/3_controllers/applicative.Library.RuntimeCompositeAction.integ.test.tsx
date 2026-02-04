@@ -18,6 +18,7 @@ import {
   // book5,
   // book6,
   CompositeActionSequence,
+  CompositeRunTestAssertion,
   ConfigurationService,
   displayTestSuiteResultsDetails,
   DomainAction,
@@ -64,14 +65,35 @@ import {
 // import { packageName } from 'miroir-core';
 // import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 import {
-  adminConfigurationDeploymentParis,
+  // adminConfigurationDeploymentParis,
   adminMiroirApplication,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
+  emptyMetaModel,
   resetAndinitializeDeploymentCompositeAction,
   TestCompositeActionParams,
 } from "miroir-core";
-import { CompositeRunTestAssertion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book3,
+  book4,
+  book5,
+  book6,
+  entityAuthor,
+  entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
+  entityPublisher,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
+  selfApplicationLibrary,
+} from "miroir-example-library";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -83,8 +105,6 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
-import { emptyMetaModel } from 'miroir-core';
-import { selfApplicationLibrary } from 'miroir-example-library';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

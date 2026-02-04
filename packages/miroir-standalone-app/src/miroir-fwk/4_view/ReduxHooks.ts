@@ -38,6 +38,7 @@ import {
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
+  defaultMiroirModelEnvironment,
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -283,9 +284,11 @@ export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends Que
 export function useCurrentModel(
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  // deploymentUuid: Uuid | undefined
 ): MetaModel {
-  // log.info("useCurrentModel", application, applicationDeploymentMap);
+  // log.info("ReduxHooks useCurrentModel", application, applicationDeploymentMap);
+  // if (!applicationDeploymentMap) {
+  //   return defaultMiroirModelEnvironment.currentModel;
+  // }
   const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
   const foreignKeyParams: LocalCacheExtractor = useMemo(
     () =>
@@ -300,9 +303,11 @@ export function useCurrentModel(
     [application, applicationDeploymentMap]
   );
 
-  return useSelector((state: ReduxStateWithUndoRedo) =>
+  const result = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, applicationDeploymentMap, foreignKeyParams)
   );
+  log.info("ReduxHooks useCurrentModel for application",application, "result", result);
+  return result;
 }
 
 

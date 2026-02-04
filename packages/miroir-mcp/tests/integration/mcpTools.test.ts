@@ -1,41 +1,23 @@
 import loglevelNextLog from 'loglevelnext';
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+
 import {
-  adminConfigurationDeploymentLibrary,
   ApplicationDeploymentMap,
-  author1,
-  author2,
-  author3,
-  book1,
-  book2,
-  book4,
-  book5,
-  book6,
   ConfigurationService,
+  defaultLibraryAppModelDEFUNCT,
   defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
-  entityAuthor,
-  entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
-  entityPublisher,
   LocalCacheInterface,
   LoggerInterface,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  publisher1,
-  publisher2,
-  publisher3,
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
-  selfApplicationLibrary,
-  selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
   StoreOrBundleAction,
   StoreUnitConfiguration,
   type ApplicationEntitiesAndInstances,
@@ -47,17 +29,6 @@ import {
   type MiroirConfigClient,
   type SpecificLoggerOptionsMap
 } from "miroir-core";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
-
-
-import {
-  defaultLibraryAppModel,
-  entityDefinitionUser,
-  entityUser,
-  user1,
-  user2,
-  user3,
-} from "miroir-core";
 import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { setupMiroirPlatform } from '../../src/startup/setup.js';
@@ -68,6 +39,34 @@ import {
 } from "./mcpToolsTestCases.js";
 
 
+import {
+  adminConfigurationDeploymentLibrary,
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book4,
+  book5,
+  book6,
+  entityAuthor,
+  entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
+  entityDefinitionUser,
+  entityPublisher,
+  entityUser,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
+  selfApplicationLibrary,
+  selfApplicationModelBranchLibraryMasterBranch,
+  selfApplicationVersionLibraryInitialVersion,
+  user1,
+  user2,
+  user3,
+} from "miroir-example-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
 
 // import { runMcpTestsViaHttp } from './mcpClient.js';
@@ -314,7 +313,7 @@ describe("MCP Tools Integration Tests", () => {
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
       libraryEntitiesAndInstancesWithoutBook3,
-      defaultLibraryAppModel,
+      defaultLibraryAppModelDEFUNCT,
     );
     const beforeEachResult = await domainController.handleCompositeAction(
       createLibraryAction,

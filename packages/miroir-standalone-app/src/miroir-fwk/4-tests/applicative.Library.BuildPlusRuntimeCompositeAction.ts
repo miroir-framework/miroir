@@ -7,7 +7,7 @@ import {
   StoreUnitConfiguration,
   TestCompositeActionParams,
   Uuid,
-  adminConfigurationDeploymentLibrary,
+  // adminConfigurationDeploymentLibrary,
   // adminConfigurationDeploymentParis,
   createDeploymentCompositeAction,
   emptyMetaModel,
@@ -20,6 +20,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   // selfApplicationLibrary
 } from "miroir-core";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 // import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "./ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
 

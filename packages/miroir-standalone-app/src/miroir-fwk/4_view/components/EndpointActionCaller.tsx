@@ -6,7 +6,7 @@ import {
 import { Formik, type FormikProps } from 'formik';
 import {
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
+  // adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
@@ -101,9 +101,9 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     // adminConfigurationDeploymentLibrary.uuid
     selfApplicationLibrary.uuid
   );
-  const [innerSelectedDeploymentUuid, setInnerSelectedDeploymentUuid] = useState<string>(
-    adminConfigurationDeploymentLibrary.uuid
-  );
+  // const [innerSelectedDeploymentUuid, setInnerSelectedDeploymentUuid] = useState<string>(
+  //   adminConfigurationDeploymentLibrary.uuid
+  // );
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   // const reportContext = useReportPageContext();

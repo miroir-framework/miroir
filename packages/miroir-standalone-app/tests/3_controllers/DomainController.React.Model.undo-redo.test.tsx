@@ -8,7 +8,9 @@ import {
   DomainControllerInterface,
   Entity,
   EntityDefinition,
+  LocalCacheInterface,
   LoggerInterface,
+  LoggerOptions,
   MiroirActivityTracker,
   MiroirContextInterface,
   MiroirEventService,
@@ -16,20 +18,27 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  defaultMiroirMetaModel,
+  adminLibraryApplication,
+  adminMiroirApplication,
+  createDeploymentCompositeAction,
+  defaultMiroirModelEnvironment,
+  entityEntity,
+  entityReport,
+  miroirCoreStartup,
+  resetAndInitApplicationDeployment,
+  selfApplicationMiroir
+} from "miroir-core";
+
+import {
+  adminConfigurationDeploymentLibrary,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
-  entityEntity,
-  entityReport,
-  miroirCoreStartup,
-  resetAndInitApplicationDeployment
-} from "miroir-core";
+  selfApplicationLibrary,
+} from "miroir-example-library";
 
-import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 import {
   DisplayLoadingInfo,
   adminApplicationDeploymentConfigurations,
@@ -40,24 +49,16 @@ import {
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
-import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
-import { LocalCache } from "../../src/miroir-fwk/miroir-localcache-imports.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { cleanLevel, packageName } from "./constants.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-import { LocalCacheInterface } from "miroir-core";
-import { defaultMiroirModelEnvironment } from "miroir-core";
-import { createDeploymentCompositeAction } from "miroir-core";
-import { adminLibraryApplication } from "miroir-core";
-import { adminMiroirApplication } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-core";
-import { selfApplicationMiroir } from "miroir-core";
+import { cleanLevel, packageName } from "./constants.js";
 
 
 
