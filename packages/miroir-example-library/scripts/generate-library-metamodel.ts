@@ -32,6 +32,7 @@ import {
   reportPublisherList,
   // Application metadata
   selfApplicationVersionLibraryInitialVersion,
+  selfApplicationLibrary,
 } from "../index.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -46,7 +47,9 @@ async function generateLibraryMetaModel() {
   try {
     console.log("Generating Library application MetaModel...");
 
-    const libraryMetaModel = {
+    const libraryMetaModel /*: MetaModel */ = {
+      applicationUuid: selfApplicationLibrary.uuid,
+      applicationName: selfApplicationLibrary.name,
       entities: [
         entityAuthor,
         entityBook,
@@ -97,6 +100,8 @@ async function generateLibraryMetaModel() {
     await writeFile(outputPath, jsonContent, "utf-8");
 
     console.log(`✓ Library MetaModel successfully generated at: ${outputPath}`);
+    console.log("uuid:", libraryMetaModel.applicationUuid);
+    console.log("name:", libraryMetaModel.applicationName);
     console.log(`  - Entities: ${libraryMetaModel.entities.length}`);
     console.log(`  - Entity Definitions: ${libraryMetaModel.entityDefinitions.length}`);
     console.log(`  - Endpoints: ${libraryMetaModel.endpoints.length}`);

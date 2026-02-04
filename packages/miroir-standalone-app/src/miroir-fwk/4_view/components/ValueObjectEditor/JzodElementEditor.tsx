@@ -316,7 +316,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // editor state
     formik,
     formikRootLessListKey,
-    formikRootLessListKeyArray,
     codeMirrorValue,
     setCodeMirrorValue,
     codeMirrorIsValidJson,
@@ -342,27 +341,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   );
 
 
-  // const formikRootLessListKey =
-  //   props.reportSectionPathAsString + (props.rootLessListKey ? `.${props.rootLessListKey}` : "");
-
-
-  // log.info(
-  //   "JzodElementEditor",
-  //   count,
-  //   "Rendering JzodElementEditor for listKey",
-  //   props.rootLessListKey,
-  //   // "rootLessListKeyArray",
-  //   // props.rootLessListKeyArray,
-  //   // "formikRootLessListKey",
-  //   // JSON.stringify(formikRootLessListKey),
-  //   // "localResolvedElementJzodSchemaBasedOnValue",
-  //   // localResolvedElementJzodSchemaBasedOnValue,
-  //   // "props.typeCheckKeyMap", props.typeCheckKeyMap,
-  //   // "currentKeyMap", currentKeyMap,
-  // );
-
   // Extract hiddenFormItems and setHiddenFormItems from props
-  const reportContext = useReportPageContext();
+  // const reportContext = useReportPageContext();
 
   // ##############################################################################################
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
@@ -414,7 +394,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   
   // ##############################################################################################
   // Determine if the element is an object, array or any type
-  const objectOrArrayOrAny = useMemo(() => 
+  const resolvedTypeIsObjectOrArrayOrAny = useMemo(() => 
     !localResolvedElementJzodSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
       localResolvedElementJzodSchemaBasedOnValue.type
     ), [localResolvedElementJzodSchemaBasedOnValue]
@@ -424,7 +404,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const displayAsStructuredElementSwitch: JSX.Element = useMemo(
     () => (
       <>
-        {!props.readOnly && objectOrArrayOrAny ? (
+        {!props.readOnly && resolvedTypeIsObjectOrArrayOrAny ? (
           <ThemedSwitch
             checked={displayAsStructuredElement}
             id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
@@ -439,7 +419,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     ),
     [
       props.readOnly,
-      objectOrArrayOrAny,
+      resolvedTypeIsObjectOrArrayOrAny,
       displayAsStructuredElement,
       handleDisplayAsStructuredElementSwitchChange,
       codeMirrorIsValidJson,
@@ -452,11 +432,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     !currentKeyMap ||
     !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement
-    ||
-    localResolvedElementJzodSchemaBasedOnValue?.type == "any"
     // ||
-    // (currentKeyMap?.rawSchema?.type !== "any" && localResolvedElementJzodSchemaBasedOnValue?.type == "any")
-    // ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type)
+    // localResolvedElementJzodSchemaBasedOnValue?.type == "any"
   ;
 
   // const hideSubJzodEditor = false; 
@@ -525,20 +502,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     [currentKeyMap?.resolvedSchema?.tag?.value?.display?.objectOrArrayWithoutFrame]
   );
 
-  //   log.info(
-  //   "JzodElementEditor",
-  //   count,
-  //   "Rendering JzodElementEditor for rootLessListKeyArray",
-  //   JSON.stringify(props.rootLessListKeyArray),
-  //   "displayError",
-  //   JSON.stringify(props.displayError),
-  //   "hasPathError",
-  //   hasPathError,
-  //   "borderColor", borderColor,
-  //   "leftBorderColor",
-  //   leftBorderColor,
-  // );
-
 
   // Create the main element based on the schema type
   // ##############################################################################################
@@ -546,10 +509,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const mainElement = useMemo(() => {
+  const mainElement: JSX.Element = useMemo(() => {
     try {
       if (props.returnsEmptyElement || props.hidden) {
-        return null;
+        return <></>;
       }
 
       // DEBUG: Log for boolean fields specifically
@@ -568,7 +531,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       //   console.log("===================");
       // }
 
-      // if (!localResolvedElementJzodSchemaBasedOnValue || !props.rawJzodSchema) {
+      // HANDLE MISSING SCHEMA
       if (!localResolvedElementJzodSchemaBasedOnValue) {
         return (
           <div>
@@ -587,10 +550,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         );
       }
 
+      // HIDDEN ELEMENT
       if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden) {
         const hidden: TransformerForBuildPlusRuntime = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden;
         if (typeof hidden === "boolean" && hidden === true) {
-          return null;
+          return <></>;
         }
         const newContext = {
           valueObject: currentValueObjectAtKey,
@@ -611,43 +575,47 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         if (hiddenTransformerResult === true) {
           log.info("JzodElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);
-          return null;
+          return <></>;
         }
       }
-      // // Handle "any" type
-      // if (
-      //   currentKeyMap?.rawSchema?.type === "any" &&
-      //   localResolvedElementJzodSchemaBasedOnValue.type === "any" &&
-      //   !props.insideAny
-      // ) {
-      //   return (
-      //     <>
-      //       <ThemedOnScreenDebug
-      //         label={`Rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || "ROOT"}`}
-      //         data={props.rootLessListKey}
-      //       />
-      //       <JzodAnyEditor
-      //         valueObjectEditMode={props.valueObjectEditMode}
-      //         name={props.name}
-      //         labelElement={props.labelElement}
-      //         listKey={props.listKey}
-      //         rootLessListKey={props.rootLessListKey}
-      //         rootLessListKeyArray={props.rootLessListKeyArray}
-      //         reportSectionPathAsString={props.reportSectionPathAsString}
-      //         currentApplication={props.currentApplication}
-      //         applicationDeploymentMap={props.applicationDeploymentMap}
-      //         currentDeploymentUuid={props.currentDeploymentUuid}
-      //         currentApplicationSection={props.currentApplicationSection}
-      //         resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
-      //         typeCheckKeyMap={props.typeCheckKeyMap}
-      //         foreignKeyObjects={props.foreignKeyObjects}
-      //         readOnly={props.readOnly}
-      //         displayError={props.displayError}
-      //         onChangeVector={props.onChangeVector}
-      //       />
-      //     </>
-      //   );
-      // }
+      // Handle RAW "any" type
+      if (
+        (
+          currentKeyMap?.rawSchema?.type === "any" ||
+          localResolvedElementJzodSchemaBasedOnValue.type === "any"
+        ) &&
+        !props.insideAny
+      ) {
+        return (
+          <>
+            <ThemedOnScreenDebug
+              label={`Rendering JzodAnyEditor for 'any' type at ${props.rootLessListKey || "ROOT"}`}
+              data={props.rootLessListKey}
+            />
+            <JzodAnyEditor
+              valueObjectEditMode={props.valueObjectEditMode}
+              name={props.name}
+              labelElement={props.labelElement}
+              listKey={props.listKey}
+              rootLessListKey={props.rootLessListKey}
+              rootLessListKeyArray={props.rootLessListKeyArray}
+              reportSectionPathAsString={props.reportSectionPathAsString}
+              currentApplication={props.currentApplication}
+              applicationDeploymentMap={props.applicationDeploymentMap}
+              currentDeploymentUuid={props.currentDeploymentUuid}
+              currentApplicationSection={props.currentApplicationSection}
+              resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
+              typeCheckKeyMap={props.typeCheckKeyMap}
+              foreignKeyObjects={props.foreignKeyObjects}
+              submitButton={props.submitButton}
+              readOnly={props.readOnly}
+              insideAny={props.insideAny}
+              displayError={props.displayError}
+              onChangeVector={props.onChangeVector}
+            />
+          </>
+        );
+      }
       if (displayAsCodeEditor) {
         return <div>displaying code editor for {props.rootLessListKey || "ROOT"}</div>;
       }
@@ -698,6 +666,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
+              insideAny={props.insideAny}
               extraToolsButtons={props.extraToolsButtons}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
@@ -1088,7 +1057,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "undefined":
-        case "any": {
+        case "any": { // NOT REACHABLE ? JUST IN THE UNDEFINED CASE ?
           return (
             <>
             {/* <ThemedOnScreenHelper
@@ -1111,6 +1080,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentDeploymentUuid={props.currentDeploymentUuid}
               resolvedElementJzodSchemaDEFUNCT={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
+              insideAny={props.insideAny}
               readOnly={props.readOnly}
               displayError={props.displayError}
               onChangeVector={props.onChangeVector}
@@ -1281,18 +1251,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     itemsOrder,
     stringSelectList,
     enhancedLabelElement,
-    // Removed potentially unstable object/array references that don't affect render:
-    // - formik (only used for getFieldProps/setFieldValue in event handlers)
-    // - foreignKeyObjects (from props - used in hook to compute stringSelectList)
-    // - displayAsStructuredElementSwitch (JSX element, doesn't affect logic)
-    // - reportContext.foldedObjectAttributeOrArrayItems (map object, unstable reference)
-    // - context.miroirContext.miroirActivityTracker (unstable reference, only used in transform calls)
-    // - typeCheckKeyMap (from props - used in hook to compute localResolvedElementJzodSchemaBasedOnValue)
-    // - applicationDeploymentMap (from props - passed to children)
-    // - rootLessListKeyArray (array - passed to children)
-    // - displayError (object - used to compute enhancedLabelElement)
-    // - deleteButtonElement (JSX element - passed to children)
-    // - extraToolsButtons (array - passed to children)
   ]);
   // ##############################################################################################
   // ##############################################################################################
@@ -1327,6 +1285,45 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     }
   });
 
+  const codeEditorWithButtonOrMainElement: JSX.Element =
+    resolvedTypeIsObjectOrArrayOrAny?
+     displayAsCodeEditor ? (
+      <>
+        {props.submitButton}
+        JzodElementEditor rendering as JzodElementEditorReactCodeMirror 1
+        <JzodElementEditorReactCodeMirror
+          formikRootLessListKey={formikRootLessListKey}
+          initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
+          codeMirrorValue={codeMirrorValue}
+          setCodeMirrorValue={setCodeMirrorValue}
+          codeMirrorIsValidJson={codeMirrorIsValidJson}
+          setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+          rootLessListKey={props.rootLessListKey}
+          rootLessListKeyArray={props.rootLessListKeyArray}
+          hidden={!displayAsCodeEditor}
+          insideAny={props.insideAny}
+          isUnderTest={isUnderTest}
+          displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+        />
+      </>
+    ) : displayWithoutFrame ? (
+      <>
+      {/* AAAAAA1 */}
+      {mainElement}
+      </>
+    ) : (
+      <span
+        style={{
+          display: hideSubJzodEditor ? "none" : "block",
+          margin: "2px 5px 5px 5px",
+          width: "calc(100% - 15px)",
+          flexGrow: 1,
+        }}
+      >
+        {/* BBBBBBB2 */}
+        {mainElement}
+      </span>
+    ): (<></>);
   return (
     <>
       {props.isTopLevel && (
@@ -1335,14 +1332,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type} existing ${existingObject}`}
             data={{ existingObject }}
             copyButton={true}
-            // initiallyUnfolded={false}
             useCodeBlock={true}
           />
         </>
       )}
       {currentKeyMap?.rawSchema?.type === "any" && (
         <ThemedOnScreenDebug
-          label={`Rendering JzodElementEditor for 'any' type at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${objectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`}
+          label={`Rendering JzodElementEditor for 'any' type at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`}
           data={{
             localResolvedElementJzodSchemaBasedOnValue,
             currentValueObjectAtKey,
@@ -1352,148 +1348,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         />
       )}
       <div>
-        {/* <ThemedOnScreenHelper
-          label={"element" + props.rootLessListKey}
-          data={{
-            objectOrArrayOrAny,
-            displayAsCodeEditor,
-            returnsEmptyElement: props.returnsEmptyElement,
-            hidden: props.hidden,
-            insideAny: props.insideAny,
-            hideSubJzodEditor,
-            rawSchemaType: currentKeyMap?.rawSchema?.type,
-            localResolvedElementJzodSchemaBasedOnValueType: localResolvedElementJzodSchemaBasedOnValue
-              ? localResolvedElementJzodSchemaBasedOnValue.type
-              : "undefined",
-          }}
-        /> */}
         {props.rootLessListKey === "" && (
           <RenderPerformanceMetrics.RenderPerformanceDisplay
             componentKey={componentKey}
             indentLevel={props.indentLevel}
           />
         )}
-        {/* <ThemedOnScreenHelper
-          label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
-          data={onChangeCallback ? "onChangeCallback" : "no onChangeCallback"}
-        /> */}
-        {objectOrArrayOrAny ? (
-          displayWithoutFrame ? (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-start",
-                width: "100%",
-              }}
-            >
-              {props.submitButton}
-              {displayAsCodeEditor ? (
-                <>
-                  JzodElementEditor rendering as JzodElementEditorReactCodeMirror 1
-                  <JzodElementEditorReactCodeMirror
-                    formikRootLessListKey={formikRootLessListKey}
-                    initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
-                    codeMirrorValue={codeMirrorValue}
-                    setCodeMirrorValue={setCodeMirrorValue}
-                    codeMirrorIsValidJson={codeMirrorIsValidJson}
-                    setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                    rootLessListKey={props.rootLessListKey}
-                    rootLessListKeyArray={props.rootLessListKeyArray}
-                    hidden={!displayAsCodeEditor}
-                    insideAny={props.insideAny}
-                    isUnderTest={isUnderTest}
-                    displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-                  />
-                </>
-              ) : (
-                mainElement
-              )}
-            </div>
-          ) : (
-            // Render with ThemedCard frame (original behavior)
-            <ThemedCard
-              id={props.rootLessListKey}
-              key={props.rootLessListKey}
-              title={
-                hasPathError && props.displayError ? props.displayError.errorMessage : undefined
-              }
-              style={{
-                padding: "1px",
-                width: "calc(100% - 10px)",
-                margin: "5px 10px 5px 0",
-                position: "relative",
-                backgroundColor: backgroundColor,
-                border: `1px solid ${borderColor}`,
-                borderLeft: isNestableType
-                  ? `3px solid ${leftBorderColor}`
-                  : `1px solid ${borderColor}`,
-                justifyContent: "space-between",
-                boxShadow: "none",
-              }}
-            >
-              <ThemedCardContent
-                style={{
-                  backgroundColor: backgroundColor,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {props.submitButton}
-                {displayAsCodeEditor ? (
-                  <>
-                    <ThemedOnScreenDebug
-                      label={`JzodElementEditor: rendering as code editor for key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
-                      data={{
-                        formikRootLessListKey,
-                        rootLessListKey: props.rootLessListKey,
-                        displayAsCodeEditor,
-                        displayAsStructuredElement,
-                        localResolvedElementJzodSchemaBasedOnValue:
-                          localResolvedElementJzodSchemaBasedOnValue ??
-                          "localResolvedElementJzodSchemaBasedOnValue is undefined",
-                        currentKeyMapRawSchemaType: currentKeyMap?.rawSchema?.type,
-                      }}
-                      copyButton={true}
-                      // initiallyUnfolded={false}
-                      useCodeBlock={true}
-                    />
-                    {props.labelElement}
-                    <JzodElementEditorReactCodeMirror
-                      formikRootLessListKey={formikRootLessListKey}
-                      initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
-                      codeMirrorValue={codeMirrorValue}
-                      setCodeMirrorValue={setCodeMirrorValue}
-                      codeMirrorIsValidJson={codeMirrorIsValidJson}
-                      setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                      rootLessListKey={props.rootLessListKey}
-                      rootLessListKeyArray={props.rootLessListKeyArray}
-                      hidden={!displayAsCodeEditor}
-                      insideAny={props.insideAny}
-                      isUnderTest={isUnderTest}
-                      displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-                    />
-                  </>
-                ) : (
-                  <span
-                    style={{
-                      display: hideSubJzodEditor ? "none" : "block",
-                      margin: "2px 5px 5px 5px",
-                      width: "calc(100% - 15px)",
-                      flexGrow: 1,
-                    }}
-                  >
-                    {/* main element */}
-                    {mainElement}
-                  </span>
-                )}
-                {/* </span> */}
-              </ThemedCardContent>
-            </ThemedCard>
-          )
-        ) : (
-          // simple type value / attribute
-
+        {!resolvedTypeIsObjectOrArrayOrAny ? (
+          // simple type value / object attribute
           <span
             style={{
               display: "flex",
@@ -1502,16 +1364,51 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               width: "100%",
             }}
           >
-            {/* <ThemedOnScreenHelper
-              label={`JzodElementEditor: simple type for key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
-              data={localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.uuid?.selector}
-            /> */}
-            {/* simple type */}
-            {/* <span>{props.deleteButtonElement ?? <></>}</span> */}
             {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
               ?.objectHideDeleteButton && props.deleteButtonElement}
             {mainElement}
           </span>
+        ) : displayWithoutFrame ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              width: "100%",
+            }}
+          >
+            {codeEditorWithButtonOrMainElement}
+          </div>
+        ) : (
+          // Render with ThemedCard frame (original behavior)
+          <ThemedCard
+            id={props.rootLessListKey}
+            key={props.rootLessListKey}
+            title={hasPathError && props.displayError ? props.displayError.errorMessage : undefined}
+            style={{
+              padding: "1px",
+              width: "calc(100% - 10px)",
+              margin: "5px 10px 5px 0",
+              position: "relative",
+              backgroundColor: backgroundColor,
+              border: `1px solid ${borderColor}`,
+              borderLeft: isNestableType
+                ? `3px solid ${leftBorderColor}`
+                : `1px solid ${borderColor}`,
+              justifyContent: "space-between",
+              boxShadow: "none",
+            }}
+          >
+            <ThemedCardContent
+              style={{
+                backgroundColor: backgroundColor,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              {codeEditorWithButtonOrMainElement}
+            </ThemedCardContent>
+          </ThemedCard>
         )}
         {/* <div>{count}</div> */}
       </div>

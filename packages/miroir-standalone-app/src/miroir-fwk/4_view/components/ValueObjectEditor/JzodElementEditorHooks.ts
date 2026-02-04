@@ -56,6 +56,7 @@ export interface JzodElementEditorHooks {
   // ??
   deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>;
   // state
+  currentTypecheckKeyMap: KeyMapEntry | undefined;
   formik: FormikProps<Record<string, any>>;
   formikRootLessListKeyArray: (string | number)[];
   formikRootLessListKey: string;
@@ -191,11 +192,8 @@ export function useJzodElementEditorHooks(
   // value schema
   // Memoize to prevent infinite re-renders when used in useMemo dependencies
   const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
-    () =>
-      typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
-        ? typeCheckKeyMap[rootLessListKey]?.resolvedSchema
-        : undefined,
-    [typeCheckKeyMap, rootLessListKey]
+    () =>currentTypecheckKeyMap?.resolvedSchema,
+    [currentTypecheckKeyMap, rootLessListKey]
   );
   // for objects, records
   const itemsOrder: any[] = useMemo(
@@ -427,6 +425,7 @@ export function useJzodElementEditorHooks(
     context,
     currentModel,
     miroirMetaModel,
+    currentTypecheckKeyMap,
     currentValueObject: currentReportSectionFormikValues,
     currentValueObjectAtKey,
     currentApplicationModelEnvironment,

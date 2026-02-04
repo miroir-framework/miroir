@@ -38,9 +38,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const TransformationResultPanel: React.FC<{
   transformationResult: TransformerReturnType<any>;
   transformationResultSchema?: JzodElement;
-  // selectedEntityInstance: EntityInstance | undefined;
   showAllInstances: boolean;
-  // entityInstances: EntityInstance[];
   inputSelectorMode: "instance" | "here" | "none";
   inputApplication: Uuid;
   inputDeploymentUuid: Uuid;
@@ -58,11 +56,8 @@ export const TransformationResultPanel: React.FC<{
   ({
     transformationResult,
     transformationResultSchema,
-    // transformationError,
-    // selectedEntityInstance,
     showAllInstances,
     inputSelectorMode,
-    // entityInstances,
     inputApplication,
     inputDeploymentUuid,
   }) => {

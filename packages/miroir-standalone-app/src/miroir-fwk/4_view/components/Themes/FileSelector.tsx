@@ -89,7 +89,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   // const uploadFile = useCallback((fileOrPath: File | string) => {
   const uploadFile = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const fileOrPath = event.target.files?.[0];
-    console.log('FileSelector - Selected file:', fileOrPath, event.target);
+    console.log('FileSelector - upload Selected file:', fileOrPath, event.target);
 
     // Since upload=true, we should always receive a File object
     if (typeof fileOrPath === 'string') {

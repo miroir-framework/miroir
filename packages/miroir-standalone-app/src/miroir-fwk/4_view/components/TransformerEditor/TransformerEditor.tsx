@@ -551,9 +551,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
             // ################################################################################################
             const transformationResultSchema: JzodElement = useMemo(() => {
-              // if (!currentHereTransformerDefinition) {
-              //   return { type: "any" } as JzodElement;
-              // }
               return (valueToJzod(transformationResult) ?? { type: "any" }) as JzodElement;
             }, [transformationResult]);
 
@@ -827,10 +824,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   <TransformationResultPanel
                     transformationResult={transformationResult}
                     transformationResultSchema={transformationResultSchema}
-                    // transformationError={transformationError}
-                    // selectedEntityInstance={selectedEntityInstance}
                     showAllInstances={showAllInstances}
-                    // entityInstances={entityInstances}
                     inputApplication={application}
                     inputDeploymentUuid={deploymentUuid}
                     inputSelectorMode={formikContext.values[formikPath_TransformerEditorInputModeSelector].mode}

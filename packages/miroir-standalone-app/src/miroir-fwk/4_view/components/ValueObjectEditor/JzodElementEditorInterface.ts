@@ -96,6 +96,8 @@ export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
 
 // #################################################################################################
 export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
+  submitButton?: JSX.Element; // used to display a submit button in the editor
+
   // visible?: boolean;
 }
 

@@ -310,50 +310,12 @@ export function alterObjectAtPathWithCreate(
           current = current[segment];
           continue;
         }
-        // if (current.length < segment) {
         throw new Error("alterObjectAtPathWithCreate could not access index " + segment + " for array " + JSON.stringify(current, null, 2) + " (out of bounds)");
-        // }
       } else {
-        // if (segment == 0) {
-        //   current[segment] = i == path.length?value:typeof path[i+1] == "string"?{}:[];
-        //   current = current[segment];
-        //   continue;
-        // }
         throw new Error("alterObjectAtPathWithCreate could not access item " + segment + " for non-array " + JSON.stringify(current, null, 2));
       }
     }
-    // if (current[segment] === undefined) {
-    //   // Create an object or array based on the next path segment
-    //   if (typeof path[i + 1] === "number") {
-    //     current[segment] = [];
-    //   } else {
-    //     current[segment] = {};
-    //   }
-    // }
-    // current = current[segment];
   }
-  // if (Array.isArray(current)) {
-  //   current.push(value);
-  // }
-  // if (typeof current === "object") {
-
-  // if (path.length == 0) {
-  //   return value
-  // }
-  // const head = path[0]
-
-  // return {
-  //   ...object,
-  //   [head]: alterObjectAtPathWithCreate(object[head], path.slice(1),value)
-  // }
-
-  // if (!object) {
-  //   throw new Error("alterObjectAtPath could not access attribute " + head + " for undefined object");
-  // }
-  // if (object[head]) {
-  // } else {
-  //   throw new Error("alterObjectAtPath could not access attribute " + head + " for object " + JSON.stringify(object, null, 2));
-  // }
 }
 
 // ################################################################################################

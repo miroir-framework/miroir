@@ -1,4 +1,12 @@
 {
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__tests__/*"
+  ],
   "compilerOptions": {
 		"target": "esnext",
 		"module": "esnext",
@@ -16,8 +24,6 @@
     "removeComments": true,
     "jsx": "react-jsx",
     "allowJs": true,
-    "outDir": "./dist",
-    "plugins": [
-    ]
+    "outDir": "./dist"
   }
 }

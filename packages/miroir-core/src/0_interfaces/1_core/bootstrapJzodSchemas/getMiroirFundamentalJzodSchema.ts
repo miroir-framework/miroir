@@ -941,6 +941,12 @@ export function getMiroirFundamentalJzodSchema(
         metaModel: {
           type: "object",
           definition: {
+            applicationUuid: {
+              type: "uuid",
+            },
+            applicationName: {
+              type: "string",
+            },
             applicationVersions: {
               type: "array",
               definition: {
