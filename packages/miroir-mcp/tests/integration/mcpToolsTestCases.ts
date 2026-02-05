@@ -1,10 +1,3 @@
-import {
-  book1,
-  entityBook,
-  noValue,
-  selfApplicationLibrary,
-  user1,
-} from "miroir-core";
 
 
 import {
@@ -17,10 +10,17 @@ import {
   defaultLevels,
   LoggerInterface,
   MiroirLoggerFactory,
+  noValue,
   type LoggerFactoryInterface,
   type LoggerOptions,
   type SpecificLoggerOptionsMap
 } from "miroir-core";
+import {
+  book1,
+  entityBook,
+  selfApplicationLibrary,
+  user1,
+} from "miroir-example-library";
 
 
 const packageName = "miroir-mcp";

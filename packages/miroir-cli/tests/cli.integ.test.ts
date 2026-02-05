@@ -29,9 +29,12 @@ import {
   type MetaEntity,
   type MiroirConfigClient,
   type SpecificLoggerOptionsMap,
-  defaultLibraryAppModelDEFUNCT,
+  miroirFundamentalJzodSchema,
+  instanceEndpointV1,
+  type MlSchema,
 } from "miroir-core";
 import {
+  getDefaultLibraryModelEnvironmentDEFUNCT,
   author1,
   author2,
   author3,
@@ -435,6 +438,13 @@ describe("CLI Commands Integration Tests", () => {
       selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
     ]);
 
+    const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
+      miroirFundamentalJzodSchema as MlSchema,
+      defaultMiroirMetaModel,
+      instanceEndpointV1,
+      applicationDeploymentMap.libraryDeploymentUuid,
+    )
+    
     const createLibraryAction = resetAndinitializeDeploymentCompositeAction(
       selfApplicationLibrary.uuid,
       adminConfigurationDeploymentLibrary.uuid,
@@ -446,7 +456,7 @@ describe("CLI Commands Integration Tests", () => {
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
       libraryEntitiesAndInstancesWithoutBook3,
-      defaultLibraryAppModelDEFUNCT,
+      defaultLibraryAppModelDEFUNCT.currentModel as any,
     );
     const beforeEachResult = await domainController.handleCompositeAction(
       createLibraryAction,

@@ -33,18 +33,18 @@ import {
 
 
 
-const libraryEntities = [
-  "author",
-  "book",
-  "country",
-  "publisher",
-  "user",
-]
+// const libraryEntities = [
+//   "author",
+//   "book",
+//   "country",
+//   "publisher",
+//   "user",
+// ]
 
-const reports = [
-  "list",
-  "details",
-]
+// const reports = [
+//   "list",
+//   "details",
+// ]
 
 const libraryAppEntityDefinitionsByName = {
   author: entityDefinitionAuthor,

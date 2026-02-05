@@ -44,7 +44,7 @@ export const coreEndpoints: Record<string, Endpoint> = {
 
 export const coreEndpointsUuidList = Object.keys(coreEndpoints);
 
-export const libraryEndpointUuid: Uuid = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
+// export const libraryEndpointUuid: Uuid = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
 
 // ################################################################################################
 export class Endpoint implements EndpointInterfaceNOTUSED {

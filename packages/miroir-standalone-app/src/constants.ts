@@ -96,6 +96,5 @@ export const applicationParis = {
 
 export const deploymentsDEFUNCT = [
   adminConfigurationDeploymentMiroir,
-  // adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentAdmin,
 ] as any[]; //type for Admin SelfApplication Deployment Entity Definition

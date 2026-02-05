@@ -1,3 +1,9 @@
+
+export {
+  defaultLibraryAppModelDEFUNCT,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
+} from "./src/Library";
+
 // Library Model - Entities
 export { default as entityPublisher } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" assert { type: "json" };
 export { default as entityAuthor } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json" assert { type: "json" };

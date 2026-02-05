@@ -319,6 +319,7 @@ export function useCurrentModel(
  */
 export function useCurrentModelEnvironment(
   application: Uuid,
+  // applicationUuids: Uuid[],
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): MiroirModelEnvironment {
   const context = useMiroirContextService();
@@ -326,7 +327,7 @@ export function useCurrentModelEnvironment(
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
   const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap);
   const endpointsByUuid: Record<Uuid, any> = useEndpointsOfApplications(
-    defaultApplicationUuids,// defaultDeploymentUuids,
+    Object.keys(applicationDeploymentMap),// defaultDeploymentUuids,
     applicationDeploymentMap
   ).reduce((acc, endpoint) => {
     acc[endpoint.uuid] = endpoint;

@@ -161,17 +161,6 @@ export function useJzodElementEditorHooks(
     currentApplication,
     applicationDeploymentMap
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as MlSchema,
-  //     miroirMetaModel: miroirMetaModel,
-  //     currentModel: currentModel,
-  //   };
-  // }, [
-  //   miroirMetaModel,
-  //   currentModel,
-  //   context.miroirFundamentalJzodSchema,
-  // ]);
 
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
     typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]

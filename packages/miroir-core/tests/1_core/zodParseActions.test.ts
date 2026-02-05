@@ -138,6 +138,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           // metaModel: defaultMiroirMetaModel,
           metaModel: {
+            applicationUuid: "",
+            applicationName: "",
             endpoints: [],
             entities: [],
             entityDefinitions: [],

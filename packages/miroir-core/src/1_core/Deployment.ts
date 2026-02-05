@@ -26,25 +26,11 @@ import entityDeployment from "../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9
 
 import adminAdminApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json";
 import adminMiroirApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
-
-import {selfApplicationLibrary} from "miroir-example-library";
-
-const localSelfApplicationLibrary: SelfApplication = selfApplicationLibrary as any as SelfApplication; // TODO: fix type in library package
-
 import { noValue } from "./Instance";
-
-export const defaultApplications: SelfApplication[] = [
-  selfApplicationMiroir as SelfApplication,
-  adminSelfApplication as SelfApplication,
-  localSelfApplicationLibrary,
-];
-
-export const defaultApplicationUuids = defaultApplications.map(application => application.uuid);
 
 export const defaultDeployments: Deployment[] = [
   adminConfigurationDeploymentMiroir as Deployment,
   adminConfigurationDeploymentAdmin as Deployment,
-  // adminConfigurationDeploymentLibrary as Deployment,
 ];
 export const defaultDeploymentUuids = defaultDeployments.map(deployment => deployment.uuid);
 
@@ -55,13 +41,11 @@ export interface ApplicationDeploymentMap {
 export const defaultSelfApplicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
   [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
-  // [localSelfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
 export const defaultAdminApplicationDeploymentMapNOTGOOD: ApplicationDeploymentMap = {
   [adminMiroirApplication.uuid]: adminConfigurationDeploymentMiroir.uuid,
   [adminAdminApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
-  // [adminLibraryApplication.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;

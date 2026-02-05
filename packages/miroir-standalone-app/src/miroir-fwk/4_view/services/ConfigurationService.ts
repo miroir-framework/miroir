@@ -204,7 +204,6 @@ export function fetchMiroirAndAppConfigurations(
       const openStoreActions: Promise<any>[] = [];
       deploymentsToLoad  = foundDeployments.filter((deployment: Deployment) => {
         return (
-          // deployment.adminApplication !== selfApplicationLibrary.uuid && // remove library to debug
           deployment.adminApplication !== adminSelfApplication.uuid
         ); // no need to load admin app deployment, it was already loaded in the firs step
         // return deployment.adminApplication !== adminSelfApplication.uuid; // no need to load admin app deployment, it was already loaded in the firs step

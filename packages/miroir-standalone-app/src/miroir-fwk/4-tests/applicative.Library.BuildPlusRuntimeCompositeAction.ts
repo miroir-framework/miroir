@@ -7,8 +7,6 @@ import {
   StoreUnitConfiguration,
   TestCompositeActionParams,
   Uuid,
-  // adminConfigurationDeploymentLibrary,
-  // adminConfigurationDeploymentParis,
   createDeploymentCompositeAction,
   emptyMetaModel,
   entityEntity,
@@ -18,40 +16,8 @@ import {
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
   resetAndinitializeDeploymentCompositeAction,
-  // selfApplicationLibrary
 } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-example-library";
-
-// import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "./ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
-
-// const libraryEntitesAndInstances = [
-//   {
-//     entity: entityAuthor as MetaEntity,
-//     entityDefinition: entityDefinitionAuthor as EntityDefinition,
-//     instances: [author1, author2, author3 as EntityInstance],
-//   },
-//   {
-//     entity: entityBook as MetaEntity,
-//     entityDefinition: entityDefinitionBook as EntityDefinition,
-//     instances: [
-//       book1 as EntityInstance,
-//       book2 as EntityInstance,
-//       book3 as EntityInstance,
-//       book4 as EntityInstance,
-//       book5 as EntityInstance,
-//       book6 as EntityInstance,
-//     ],
-//   },
-//   {
-//     entity: entityPublisher as MetaEntity,
-//     entityDefinition: entityDefinitionPublisher as EntityDefinition,
-//     instances: [
-//       publisher1 as EntityInstance,
-//       publisher2 as EntityInstance,
-//       publisher3 as EntityInstance,
-//     ],
-//   },
-// ];
 
 // ################################################################################################
 export const testSuiteNameForBuildPlusRuntimeCompositeAction: string =

@@ -31,6 +31,7 @@
     "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts"
   },
   "devDependencies": {
+    "miroir-core": "*",
     "copyfiles": "^2.4.1",
     "tsup": "^8.3.5",
     "tsx": "^4.19.3",

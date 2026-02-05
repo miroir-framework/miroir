@@ -3,7 +3,6 @@
 import type { EntityDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getModelUpdate } from "../../src/1_core/ModelUpdate.js";
 import { selfApplicationLibrary } from "miroir-example-library";
-// import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 
 const entityDefinitionBook: EntityDefinition = {
   uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",

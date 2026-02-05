@@ -1,46 +1,11 @@
-// import { describe, expect, it } from 'vitest';
-
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 
-// import {
-//   BoxedQueryTemplateWithExtractorCombinerTransformer,
-//   BoxedQueryWithExtractorCombinerTransformer,
-//   ReduxDeploymentsState,
-//   getQueryRunnerParamsForReduxDeploymentsState,
-//   GetQueryRunnerParamsForReduxDeploymentsState,
-//   runQueryFromReduxDeploymentsState,
-//   GetQueryTemplateRunnerParamsForReduxDeploymentsState,
-//   getQueryTemplateRunnerParamsForReduxDeploymentsState,
-//   runQueryTemplateFromReduxDeploymentsState,
-//   SyncQueryRunner,
-//   SyncQueryTemplateRunner,
-//   GetQueryRunnerParamsForDomainState,
-//   getQueryRunnerParamsForDomainState,
-//   runQueryFromDomainState,
-//   getQueryTemplateRunnerParamsForDomainState,
-//   GetSelectorParamsForQueryTemplateOnDomainStateType,
-//   runQueryTemplateFromDomainState,
-//   domainStateToReduxDeploymentsState,
-//   resolvePathOnObject,
-//   Domain2ElementFailed, Domain2QueryReturnType,
-//   ignorePostgresExtraAttributes,
-// } from "miroir-core";
-
-// import domainStateImport from "./domainState.json" with { type: "json" };
 import domainStateImport from "./domainState.json";
-// import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
-// import adminConfigurationDeploymentLibrary from "../testassets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 import adminConfigurationDeploymentLibrary from "../test_assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 
-// import {
-//   BoxedQueryTemplateWithExtractorCombinerTransformer,
-//   BoxedQueryWithExtractorCombinerTransformer,
-//   SyncQueryRunner,
-//   SyncQueryTemplateRunner,
-// } from "../../dist";
 import {
   Domain2QueryReturnType
 } from "../../src/0_interfaces/2_domain/DomainElement.js";

@@ -18,17 +18,11 @@ import {
 
 
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
-// const adminConfigurationDeploymentLibrary = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json"); //assert { type: "json" };
-// const instanceConfigurationReference = require('../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json');
 const entityEntity = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json');
 const entityEndpointVersion = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json");
 const entityMenu = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json");
 const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
 const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json');
-const adminSelfApplication = require("../assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
-const adminConfigurationDeploymentAdmin = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
-
-import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   ApplicationSection,
@@ -112,11 +106,6 @@ import {
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
 
-// const defaultSelfApplicationDeploymentMap: Record<Uuid, Uuid> = {
-//   [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
-//   [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
-//   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
-// };
 
 const autocommit = true;
 // const autocommit = false;
@@ -1874,8 +1863,7 @@ export class DomainController implements DomainControllerInterface {
       domainAction.actionType,
       (domainAction as any).actionLabel,
       (async () => {
-        // if ((domainAction as any)?.endpoint == libraryEndpointUuid) {
-        if ((domainAction as any)?.application == selfApplicationLibrary.uuid) {
+        if ((domainAction as any)?.application !== selfApplicationMiroir.uuid) {
           return this.handleApplicationAction(
             domainAction,
             applicationDeploymentMap,

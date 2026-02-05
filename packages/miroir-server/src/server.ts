@@ -73,9 +73,6 @@ const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterfac
 const configurations: Record<string, Deployment> = {
   [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin as Deployment,
   [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir as Deployment,
-  // [adminConfigurationDeploymentLibrary.uuid]: adminConfigurationDeploymentLibrary.configuration as StoreUnitConfiguration,
-  // [adminConfigurationDeploymentParis.uuid]: adminConfigurationDeploymentParis.configuration as StoreUnitConfiguration,
-  // // [adminConfigurationDeploymentTest1.uuid]: adminConfigurationDeploymentTest1.configuration as StoreUnitConfiguration,
 }
 
 

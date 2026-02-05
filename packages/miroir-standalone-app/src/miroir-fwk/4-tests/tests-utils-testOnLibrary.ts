@@ -1,28 +1,9 @@
 import {
-  // adminConfigurationDeploymentLibrary,
-  // author1,
-  // author2,
-  // author3,
-  // book1,
-  // book2,
-  // book4,
-  // book5,
-  // book6,
   CompositeActionSequence,
-  // entityAuthor,
-  // entityBook,
   EntityDefinition,
-  // entityDefinitionAuthor,
-  // entityDefinitionBook,
-  // entityDefinitionPublisher,
   EntityInstance,
-  // entityPublisher,
   MetaEntity,
   MiroirConfigClient,
-  // publisher1,
-  // publisher2,
-  // publisher3,
-  // selfApplicationDeploymentLibrary,
   Uuid,
   type ApplicationEntitiesAndInstances
 } from "miroir-core";
@@ -74,9 +55,7 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
 
 
 export function testOnLibrary_resetLibraryDeployment(
-  // miroirConfig: MiroirConfigClient,
   application: Uuid = selfApplicationDeploymentLibrary.uuid,
-  // deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid, // TODO: remove this default value
 ): CompositeActionSequence {
   return {
     actionType: "compositeActionSequence",
@@ -93,7 +72,6 @@ export function testOnLibrary_resetLibraryDeployment(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application,
-            // deploymentUuid,
           },
         },
       ],

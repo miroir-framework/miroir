@@ -652,8 +652,6 @@ export {
   ApplicationEntitiesAndInstances,
   createApplicationCompositeAction,
   createDeploymentCompositeAction,
-  defaultApplications,
-  defaultApplicationUuids,
   defaultDeployments,
   defaultDeploymentUuids,
   defaultAdminApplicationDeploymentMapNOTGOOD,
@@ -700,10 +698,6 @@ export {
   noValue,
   actionsWithDeploymentInPayload,
 } from "./1_core/Instance";
-export {
-  defaultLibraryAppModelDEFUNCT,
-  getDefaultLibraryModelEnvironmentDEFUNCT,
-} from "./1_core/Library";
 export {
   applicationModelEntities,
   defaultMetaModelEnvironment,
@@ -1147,133 +1141,8 @@ export {
 };
 
 // ################################################################################################
-// LIBRARY APPLICATION
+// ADMIN APPLICATION
 // ################################################################################################
-const adminApplicationLibrary = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
-
-// // Import library assets from miroir-example-library package
-// import {
-//   selfApplicationLibrary,
-//   selfApplicationStoreBasedConfigurationLibrary,
-//   selfApplicationVersionLibraryInitialVersion,
-//   selfApplicationModelBranchLibraryMasterBranch,
-//   selfApplicationDeploymentLibrary,
-//   entityPublisher,
-//   entityAuthor,
-//   entityBook,
-//   entityCountry,
-//   entityLendingHistoryItem,
-//   entityUser,
-//   reportAuthorList,
-//   reportBookList,
-//   reportBookInstance,
-//   reportPublisherList,
-//   entityDefinitionBook,
-//   entityDefinitionPublisher,
-//   entityDefinitionAuthor,
-//   entityDefinitionCountry,
-//   entityDefinitionLendingHistoryItem,
-//   entityDefinitionUser,
-//   menuDefaultLibrary,
-//   reportAuthorDetails,
-//   reportBookDetails,
-//   reportCountryList,
-//   lendingEndpoint,
-//   bookEndpoint,
-//   folio,
-//   penguin,
-//   springer,
-//   author1,
-//   author2,
-//   author3,
-//   author4,
-//   book1,
-//   book2,
-//   book3,
-//   book4,
-//   book5,
-//   book6,
-//   Country1,
-//   Country2,
-//   Country3,
-//   Country4,
-//   user1,
-//   user2,
-//   user3,
-// } from "miroir-example-library";
-
-// // Re-export for backward compatibility
-// const publisher1 = folio;
-// const publisher2 = penguin;
-// const publisher3 = springer;
-
-
-// export {
-//   // reportTestList,
-//   entityAuthor,
-//   entityBook,
-//   entityCountry,
-//   entityPublisher,
-//   entityLendingHistoryItem,
-//   entityUser,
-//   // entityTest,
-//   entityDefinitionAuthor,
-//   entityDefinitionBook,
-//   entityDefinitionCountry,
-//   entityDefinitionPublisher,
-//   entityDefinitionLendingHistoryItem,
-//   entityDefinitionUser,
-//   adminApplicationLibrary,
-//   // reports
-//   reportAuthorDetails,
-//   reportAuthorList,
-//   reportBookDetails,
-//   reportBookInstance,
-//   reportBookList,
-//   reportCountryList,
-//   reportPublisherList,
-//   // application
-//   selfApplicationDeploymentLibrary,
-//   selfApplicationLibrary,
-//   selfApplicationModelBranchLibraryMasterBranch,
-//   selfApplicationStoreBasedConfigurationLibrary,
-//   selfApplicationVersionLibraryInitialVersion,
-//   // endpoints
-//   lendingEndpoint,
-//   bookEndpoint,
-//   // menu
-//   menuDefaultLibrary,
-//   // authors
-//   author1,
-//   author2,
-//   author3,
-//   author4,
-//   // books
-//   book1,
-//   book2,
-//   book3,
-//   book4,
-//   book5,
-//   book6,
-//   // countries
-//   Country1,
-//   Country2,
-//   Country3,
-//   Country4,
-//   // publishers
-//   folio,
-//   springer,
-//   penguin,
-//   publisher1,
-//   publisher2,
-//   publisher3,
-//   // users
-//   user1,
-//   user2,
-//   user3,
-//   // reports details
-// };
-
 const adminAdminApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
 const adminMiroirApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json"); //assert { type: "json" };
 const adminLibraryApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json"); //assert { type: "json" };

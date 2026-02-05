@@ -12,19 +12,23 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MlSchema,
-  defaultLibraryAppModelDEFUNCT,
-  // defaultLibraryModelEnvironment,
+  // defaultLibraryAppModelDEFUNCT,
   defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
-  getDefaultLibraryModelEnvironmentDEFUNCT,
+  defaultSelfApplicationDeploymentMap,
+  // getDefaultLibraryModelEnvironmentDEFUNCT,
   instanceEndpointV1,
   miroirFundamentalJzodSchema,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
-  type JzodObject
+  type JzodObject,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
-import { selfApplicationLibrary } from "miroir-example-library";
+import {
+  adminConfigurationDeploymentLibrary,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
+  selfApplicationLibrary,
+} from "miroir-example-library";
 
 
 const packageName = "miroir-mcp";
@@ -171,7 +175,7 @@ export async function handleInstanceAction(
     const result: Action2VoidReturnType = await domainController.handleAction(
       action,
       applicationDeploymentMap,
-      defaultLibraryModelEnvironment, // defaultMiroirModelEnvironment,
+      defaultLibraryModelEnvironment as MiroirModelEnvironment, // defaultMiroirModelEnvironment,
     );
 
     log.info(`${toolName} - result:`, JSON.stringify(result, null, 2));
@@ -369,10 +373,19 @@ export const mcpRequestHandlers_EntityEndpoint: McpRequestHandlers = {
   miroir_loadNewInstancesInLocalCache: mcpToolEntry(instanceEndpointV1, "loadNewInstancesInLocalCache"),
 };
 
-export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModelDEFUNCT.endpoints
+const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
+  miroirFundamentalJzodSchema as any,
+  defaultMiroirMetaModel,
+  instanceEndpointV1,
+  {
+    ...defaultSelfApplicationDeploymentMap,
+    [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid
+  } as ApplicationDeploymentMap,
+)
+export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModelDEFUNCT.currentModel.endpoints
   .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
   .reduce((acc, endpoint) => {
-    const createInstanceHandler = mcpToolEntry(endpoint, "lendDocument");
+    const createInstanceHandler = mcpToolEntry(endpoint as EndpointDefinition, "lendDocument");
     acc["miroir_" + createInstanceHandler.actionEnvelope.actionType] = createInstanceHandler;
     return acc;
   }, {} as McpRequestHandlers);

@@ -11,15 +11,20 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   MlSchema,
-  defaultLibraryAppModelDEFUNCT,
-  defaultLibraryModelEnvironment,
+  // defaultLibraryAppModelDEFUNCT,
+  // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
+  // getDefaultLibraryModelEnvironmentDEFUNCT,
   instanceEndpointV1,
   miroirFundamentalJzodSchema,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
   type JzodObject
 } from "miroir-core";
+import {
+  getDefaultLibraryModelEnvironmentDEFUNCT,
+  defaultLibraryAppModelDEFUNCT,
+} from "miroir-example-library";
 
 const packageName = "miroir-cli";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -230,11 +235,17 @@ export async function handleCliAction(
     const action = actionBuilder(validatedParams);
     log.info(`${commandName} - constructed action:`, JSON.stringify(action, null, 2));
 
+    const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+      miroirFundamentalJzodSchema as MlSchema,
+      defaultMiroirMetaModel,
+      instanceEndpointV1,
+      applicationDeploymentMap.libraryDeploymentUuid,
+    );
     // Execute via DomainController
     const result: Action2VoidReturnType = await domainController.handleAction(
       action,
       applicationDeploymentMap,
-      defaultLibraryModelEnvironment,
+      defaultLibraryModelEnvironment as any,
     );
 
     log.info(`${commandName} - result:`, JSON.stringify(result, null, 2));
@@ -252,8 +263,8 @@ export async function handleCliAction(
         command: commandName,
         error: {
           type: "errorType" in result ? result.errorType : "unknown",
-          message: "errorMessage" in result ? result.errorMessage : "Action failed",
-          stack: "errorStack" in result ? result.errorStack : undefined,
+          message: ("errorMessage" in result ? result.errorMessage : "Action failed") as any,
+          stack: ("errorStack" in result ? result.errorStack : undefined) as any,
           context: "errorContext" in result ? result.errorContext : undefined,
         },
       };
@@ -369,7 +380,7 @@ export const cliRequestHandlers_EntityEndpoint: CliRequestHandlers = {
 export const cliRequestHandlers_Library_lendingEndpoint: CliRequestHandlers = defaultLibraryAppModelDEFUNCT.endpoints
   .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
   .reduce((acc, endpoint) => {
-    const handler = cliCommandEntry(endpoint, "lendDocument");
+    const handler = cliCommandEntry(endpoint as EndpointDefinition, "lendDocument");
     acc[handler.actionEnvelope.actionType] = handler;
     return acc;
   }, {} as CliRequestHandlers);
