@@ -528,7 +528,7 @@ export async function queryTemplateActionHandler(
       defaultMiroirModelEnvironment, // TODO: get the right model for the app / deployment
     );
     log.info(
-      "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=", result
+      "RestServer queryTemplateActionHandler used deployment_Miroir domainController result=", result
       // JSON.stringify(result, undefined, 2)
     );
     return continuationFunction(response)(result);

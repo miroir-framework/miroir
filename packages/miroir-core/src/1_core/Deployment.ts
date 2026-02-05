@@ -19,19 +19,19 @@ import { cleanLevel } from "./constants";
 
 import selfApplicationMiroir from '../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import {
-  adminConfigurationDeploymentMiroir,
+  deployment_Miroir,
   adminSelfApplication,
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   entityApplicationForAdmin,
   entityDeployment,
-  adminAdminApplication,
-  adminMiroirApplication
+  adminApplication_Admin,
+  adminApplication_Miroir
 } from "miroir-deployment-admin";
 import { noValue } from "./Instance";
 
 export const defaultDeployments: Deployment[] = [
-  adminConfigurationDeploymentMiroir as Deployment,
-  adminConfigurationDeploymentAdmin as Deployment,
+  deployment_Miroir as Deployment,
+  deployment_Admin as Deployment,
 ];
 export const defaultDeploymentUuids = defaultDeployments.map(deployment => deployment.uuid);
 
@@ -40,13 +40,13 @@ export interface ApplicationDeploymentMap {
 }
 
 export const defaultSelfApplicationDeploymentMap: ApplicationDeploymentMap = {
-  [selfApplicationMiroir.uuid]: adminConfigurationDeploymentMiroir.uuid,
-  [adminSelfApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
+  [selfApplicationMiroir.uuid]: deployment_Miroir.uuid,
+  [adminSelfApplication.uuid]: deployment_Admin.uuid,
 };
 
 export const defaultAdminApplicationDeploymentMapNOTGOOD: ApplicationDeploymentMap = {
-  [adminMiroirApplication.uuid]: adminConfigurationDeploymentMiroir.uuid,
-  [adminAdminApplication.uuid]: adminConfigurationDeploymentAdmin.uuid,
+  [adminApplication_Miroir.uuid]: deployment_Miroir.uuid,
+  [adminApplication_Admin.uuid]: deployment_Admin.uuid,
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -192,7 +192,7 @@ export function createDeploymentCompositeAction(
                     name: `Deployment of application ${applicationName}`,
                     defaultLabel: `The deployment of application ${applicationName}`,
                     description: `The description of deployment of application ${applicationName}`,
-                    adminApplication: selfApplicationUuid, // TODO: this should be selfApplication
+                    selfApplication: selfApplicationUuid, // TODO: this should be selfApplication
                     configuration: newDeploymentConfiguration,
                   } as Deployment,
                 ],

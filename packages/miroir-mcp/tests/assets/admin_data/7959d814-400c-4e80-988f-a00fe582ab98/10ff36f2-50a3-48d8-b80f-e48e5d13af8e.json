@@ -1,10 +1,10 @@
 {
   "uuid":"10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-  "parentName":"SelfApplicationDeploymentConfiguration",
+  "parentName":"Deployment",
   "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
   "name":"DefaultMiroirApplicationDeployment",
   "defaultLabel": "Miroir SelfApplication Deployment Configuration declaring Miroir SelfApplication Deployment in Admin schema. Run-time-only / DEFUNCT?",
-  "adminApplication":"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "selfApplication":"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "description": "The default Deployment for SelfApplication Miroir",
   "configuration": {
     "admin": {

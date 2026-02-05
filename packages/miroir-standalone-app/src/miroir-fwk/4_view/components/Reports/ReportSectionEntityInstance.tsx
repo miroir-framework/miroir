@@ -310,7 +310,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // const currentDeploymentModel: MetaModel = useCurrentModel(
   //   props.applicationSection == "data"
   //     ? props.deploymentUuid
-  //     : adminConfigurationDeploymentMiroir.uuid // the report to edit any element from the 'model' section must be in the meta-model
+  //     : deployment_Miroir.uuid // the report to edit any element from the 'model' section must be in the meta-model
   // );
 
   const currentDeploymentReportsEntitiesDefinitionsMapping =

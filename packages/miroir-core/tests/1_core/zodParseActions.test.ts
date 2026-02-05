@@ -25,7 +25,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-deployment-admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 import selfApplicationMiroir from "../../src/assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import menuDefaultMiroir from "../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
@@ -462,7 +462,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-        configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+        configuration: deployment_Miroir.configuration as StoreUnitConfiguration,
       },
     },
   },
@@ -475,7 +475,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-        configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+        configuration: deployment_Miroir.configuration as StoreUnitConfiguration,
       },
       // storeName: sqlDbStoreName,
     },
@@ -497,7 +497,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             name: "TestApplicationSqlDeployment",
             defaultLabel: "TestApplicationSqlDeployment",
             description: "The default Sql Deployment for TestApplication",
-            adminApplication: "00000000-0000-0000-0000-000000000001",
+            selfApplication: "00000000-0000-0000-0000-000000000001",
             bundle: "00000000-0000-0000-0000-000000000002",
             configuration: {
               admin: {
@@ -533,10 +533,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         configuration: {
-          admin: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+          admin: deployment_Miroir.configuration as StoreUnitConfiguration,
         },
       },
-      // configuration: adminConfigurationDeploymentMiroir.configuration as StoreUnitConfiguration,
+      // configuration: deployment_Miroir.configuration as StoreUnitConfiguration,
       // storeName: sqlDbStoreName,
     },
   },

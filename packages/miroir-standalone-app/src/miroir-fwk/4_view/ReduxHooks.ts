@@ -302,7 +302,7 @@ export function useCurrentModel(
   const result = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, applicationDeploymentMap, foreignKeyParams)
   );
-  log.info("ReduxHooks useCurrentModel for application",application, "result", result);
+  // log.info("ReduxHooks useCurrentModel for application",application, "result", result);
   return result;
 }
 

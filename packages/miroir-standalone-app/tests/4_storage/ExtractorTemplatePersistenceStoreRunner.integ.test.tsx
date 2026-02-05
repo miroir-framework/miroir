@@ -39,10 +39,10 @@ import {
 
 import { LocalCacheInterface, MiroirContext } from 'miroir-core';
 import {
-  adminConfigurationDeploymentAdmin
+  deployment_Admin
 } from "miroir-deployment-admin";
 import {
-  adminConfigurationDeploymentLibrary,
+  deployment_Library_DO_NO_USE,
   author1,
   author2,
   author3,
@@ -126,33 +126,33 @@ myConsoleLog("started registered loggers DONE");
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
 // const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-//   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-//   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+//   ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+//   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
-const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
 
   
 const adminDeployment: Deployment = {
-  ...adminConfigurationDeploymentAdmin,
+  ...deployment_Admin,
   configuration: adminDeploymentStorageConfiguration,
 };
 
-const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = deployment_Library_DO_NO_USE as any;
 
 const ApplicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
@@ -202,7 +202,7 @@ beforeAll(
 
     const createLibraryDeploymentAction = createDeploymentCompositeAction(
       "library",
-      adminConfigurationDeploymentLibrary.uuid,
+      deployment_Library_DO_NO_USE.uuid,
       selfApplicationLibrary.uuid,
       adminDeployment,
       libraryDeploymentStorageConfiguration);
@@ -218,7 +218,7 @@ beforeAll(
     }
 
     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-      adminConfigurationDeploymentLibrary.uuid
+      deployment_Library_DO_NO_USE.uuid
     );
     if (!tmplocalAppPersistenceStoreController) {
       throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
@@ -243,7 +243,7 @@ beforeEach(
       domainController,
       localCache,
       miroirConfig,
-      adminConfigurationDeploymentLibrary,
+      deployment_Library_DO_NO_USE,
       applicationDeploymentMap,
       [
         // authors
@@ -343,7 +343,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   //             payload: {
   //               application: selfApplicationDeploymentMiroir.uuid,
-  //               // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //               // deploymentUuid: deployment_Miroir.uuid,
   //               applicationSection: applicationSection,
   //               query: {
   //                 application: selfApplicationDeploymentMiroir.uuid,
@@ -351,8 +351,8 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //                 pageParams: {},
   //                 queryParams: {},
   //                 contextResults: {},
-  //                 // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-  //                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //                 // deploymentUuid: deployment_Miroir.uuid,
+  //                 // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //                 select: {
   //                   extractorOrCombinerType: "extractorForObjectByDirectReference",
   //                   applicationSection: "model",
@@ -419,14 +419,14 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               payload: {
                 application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 query: {
                   application: selfApplicationLibrary.uuid,
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     entities: {
                       extractorOrCombinerType: "extractorForObjectListByEntity",
@@ -475,7 +475,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -483,7 +483,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     entities: {
                       extractorOrCombinerType: "extractorForObjectListByEntity",
@@ -545,7 +545,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   application: selfApplicationLibrary.uuid,
@@ -553,7 +553,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
                       extractorOrCombinerType: "extractorForObjectListByEntity",
@@ -625,7 +625,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
                       extractorOrCombinerType: "extractorForObjectListByEntity",
@@ -681,7 +681,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   application: selfApplicationLibrary.uuid,
@@ -689,7 +689,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     books: {
                       extractorOrCombinerType: "extractorForObjectListByEntity",
@@ -766,7 +766,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //       const queryResult = await localAppPersistenceStoreController.handleQueryTemplateActionForServerONLY({
   //         actionType: "runBoxedQueryTemplateAction",
   //         actionName: "runQuery",
-  //         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //         deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //         endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   //         applicationSection: applicationSection,
   //         query: {
@@ -777,7 +777,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //           // pageParams: { elementType: "object", elementValue: {} },
   //           // queryParams: { elementType: "object", elementValue: {} },
   //           // contextResults: { elementType: "object", elementValue: {} },
-  //           deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //           deploymentUuid: deployment_Library_DO_NO_USE.uuid,
   //           extractorTemplates: {
   //             books: {
   //               extractorOrCombinerType: "extractorForObjectListByEntity",
@@ -877,7 +877,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -887,7 +887,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
                   },
                   contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                  // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                   extractorTemplates: {
                     book: {
                       extractorOrCombinerType: "extractorForObjectByDirectReference",

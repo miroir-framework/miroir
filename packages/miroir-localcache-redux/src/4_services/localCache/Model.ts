@@ -8,7 +8,7 @@
  * @returns 
  */
 
-import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-deployment-admin";
 import {
   type MetaModel,
   getReduxDeploymentsStateIndex,
@@ -63,7 +63,7 @@ export function currentModel(
   } else {
     const metaModelSection = "model";
     const modelSection =
-      deploymentUuid == adminConfigurationDeploymentMiroir.uuid ? "data" : "model";
+      deploymentUuid == deployment_Miroir.uuid ? "data" : "model";
     const applicationVersions =
       state.current[
         getReduxDeploymentsStateIndex(

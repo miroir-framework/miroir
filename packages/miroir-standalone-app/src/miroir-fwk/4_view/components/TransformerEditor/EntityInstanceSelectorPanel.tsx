@@ -49,8 +49,8 @@ import {
 import {
   adminSelfApplication,
   entityApplicationForAdmin,
-  adminLibraryApplication,
 } from "miroir-deployment-admin";
+import { selfApplicationLibrary } from 'miroir-example-library';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -140,14 +140,10 @@ export function EntityInstanceSelectorPanel(props:{
     persistedState?.currentInstanceIndex || 0
   );
 
-  // // Application selection is now managed internally in EntityInstanceSelectorPanel
-  // const [selectedApplicationUuid, setSelectedApplicationUuid] = useState<Uuid>(
-  //   persistedState?.selectedApplicationUuid || adminLibraryApplication.uuid
-  // );
 
   const inputSelector_applicationUuid: Uuid =
     formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application ||
-    adminLibraryApplication.uuid;
+    selfApplicationLibrary.uuid;
 
   const inputSelector_deploymentUuidFromApplicationUuid: Uuid = 
     !inputSelector_applicationUuid || inputSelector_applicationUuid == noValue.uuid

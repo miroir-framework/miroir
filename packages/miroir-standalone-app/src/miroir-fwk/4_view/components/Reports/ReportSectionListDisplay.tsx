@@ -31,8 +31,8 @@ import {
   objectListReportSection,
   ReduxDeploymentsState,
   resolvePathOnObject,
-  SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentConfiguration,
+  Deployment,
+  deployment,
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
@@ -87,7 +87,7 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
   label: z.string(),
   defaultlabel: z.string().optional(),
   paramsAsdomainElements: domain2ElementObjectZodSchema,
-  // displayedDeploymentDefinition: selfApplicationDeploymentConfiguration.optional(),
+  // displayedDeploymentDefinition: deployment.optional(),
   applicationDeploymentMap: z.record(z.string(), z.string().uuid()),
 
   // 
@@ -130,7 +130,7 @@ export function defaultFormValues(
   idList?:{id:number}[],
   currentMiroirEntity?: Entity,
   application?: string,
-  displayedDeploymentDefinition?: SelfApplicationDeploymentConfiguration,
+  displayedDeploymentDefinition?: Deployment,
 ):any {
   // log.info(
   //   "defaultFormValues called TableComponentType",

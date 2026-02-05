@@ -1,6 +1,6 @@
 import {
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentAdmin,
+  deployment_Miroir,
+  deployment_Admin,
 } from "miroir-deployment-admin";
 // import { adminConfigurationDeploymentParis } from "./miroir-fwk/4_view/routes/ReportPage.js";
 
@@ -95,6 +95,6 @@ export const applicationParis = {
 
 
 export const deploymentsDEFUNCT = [
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentAdmin,
+  deployment_Miroir,
+  deployment_Admin,
 ] as any[]; //type for Admin SelfApplication Deployment Entity Definition

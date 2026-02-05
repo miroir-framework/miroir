@@ -881,8 +881,8 @@ export function getMiroirFundamentalJzodSchema(
         ),
         test: entityDefinitionTest.mlSchema as any,
         testCompositeActionParams,
-        selfApplicationDeploymentConfiguration:
-          entityDefinitionSelfApplicationDeploymentConfiguration.mlSchema as any,
+        // deployment:
+        //   entityDefinitionSelfApplicationDeploymentConfiguration.mlSchema as any,
         // selfApplication: entityDefinitionSelfApplicationV1.mlSchema as JzodObject,
         // applicationVersion: entityDefinitionSelfApplicationVersionV1.mlSchema as JzodObject,
         // bundle: entityDefinitionBundleV1.mlSchema as JzodObject,

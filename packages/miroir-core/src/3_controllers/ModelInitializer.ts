@@ -55,7 +55,7 @@ import {
   EntityInstance,
   MetaModel,
   SelfApplication,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface.js';
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface.js';
@@ -176,9 +176,9 @@ export async function modelInitialize(
     
 
     await persistenceStoreController.upsertInstance('data', selfApplication);
-    // log.info(logHeader, 'inserting miroir selfApplicationDeploymentConfiguration',selfApplicationDeploymentConfiguration);
-    // await persistenceStoreController.upsertInstance('data', selfApplicationDeploymentConfiguration);
-    // log.info(logHeader, 'inserting miroir selfApplicationDeploymentConfiguration DONE');
+    // log.info(logHeader, 'inserting miroir deployment',deployment);
+    // await persistenceStoreController.upsertInstance('data', deployment);
+    // log.info(logHeader, 'inserting miroir deployment DONE');
     await persistenceStoreController.upsertInstance('data', selfApplicationModelBranch);
     await persistenceStoreController.upsertInstance('data', selfApplicationVersion);
     // await persistenceStoreController.upsertInstance('data', selfApplicationStoreBasedConfiguration);
@@ -239,7 +239,7 @@ export async function modelInitialize(
     // );
     // log.info(
     //   logHeader,
-    //   "app initialized entity selfApplicationDeploymentConfiguration",
+    //   "app initialized entity deployment",
     //   persistenceStoreController.getEntityUuids()
     // );
 
@@ -295,9 +295,9 @@ export async function modelInitialize(
     // log.info(logHeader, "app initialized entity StoreBasedConfiguration", persistenceStoreController.getEntityUuids());
 
     await persistenceStoreController.upsertInstance("model", selfApplication);
-    // // log.info(logHeader, 'inserting app selfApplicationDeploymentConfiguration',selfApplicationDeploymentConfiguration);
-    // await persistenceStoreController.upsertInstance("model", selfApplicationDeploymentConfiguration);
-    // // log.info(logHeader, 'inserting app selfApplicationDeploymentConfiguration DONE');
+    // // log.info(logHeader, 'inserting app deployment',deployment);
+    // await persistenceStoreController.upsertInstance("model", deployment);
+    // // log.info(logHeader, 'inserting app deployment DONE');
     await persistenceStoreController.upsertInstance("model", selfApplicationModelBranch);
     await persistenceStoreController.upsertInstance("model", selfApplicationVersion);
     // await persistenceStoreController.upsertInstance("model", selfApplicationStoreBasedConfiguration);

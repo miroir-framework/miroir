@@ -34,8 +34,8 @@ import {
   restServerDefaultHandlers
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentMiroir,
-  adminConfigurationDeploymentAdmin,
+  deployment_Miroir,
+  deployment_Admin,
   adminSelfApplication,
   entityDeployment,
 } from "miroir-deployment-admin";
@@ -73,8 +73,8 @@ const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterfac
 // );
 
 const configurations: Record<string, Deployment> = {
-  [adminConfigurationDeploymentAdmin.uuid]: adminConfigurationDeploymentAdmin as Deployment,
-  [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir as Deployment,
+  [deployment_Admin.uuid]: deployment_Admin as Deployment,
+  [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
 }
 
 
@@ -203,7 +203,7 @@ for (const c of Object.entries(configurations)) {
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
-      application: c[1].adminApplication,
+      application: c[1].selfApplication,
       deploymentUuid: c[0],
       configuration: {
         [c[0]]: c[1].configuration as StoreUnitConfiguration,
@@ -259,8 +259,7 @@ myLogger.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circular
 
 const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce(
   (acc, curr) => {
-    // acc[curr[1].adminApplication??("NO ADMIN APPLICATION for " + curr[0])] = curr[0];
-    return {...acc, [curr.adminApplication??("NO ADMIN APPLICATION for " + curr.name)] : curr.uuid};
+    return {...acc, [curr.selfApplication??("NO ADMIN APPLICATION for " + curr.name)] : curr.uuid};
   },
   {}
 );
@@ -274,7 +273,7 @@ for (const c of deploymentsToOpen) {
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
     payload: {
-      application: c[1].adminApplication,
+      application: c[1].selfApplication,
       deploymentUuid: c[0],
       configuration: {
         [c[0]]: c[1].configuration as StoreUnitConfiguration,

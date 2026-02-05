@@ -25,7 +25,7 @@ import {
   type Runner
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   adminSelfApplication,
   entityDeployment,
 } from "miroir-deployment-admin";
@@ -195,7 +195,7 @@ export function useDeploymentUuidFromApplicationUuid2(
           queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
           application: adminSelfApplication.uuid,
           applicationDeploymentMap,
-          deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          deploymentUuid: deployment_Admin.uuid,
           pageParams: {},
           queryParams: {},
           contextResults: {},
@@ -207,7 +207,7 @@ export function useDeploymentUuidFromApplicationUuid2(
               parentName: entityDeployment.name,
               applicationSection: "data",
               filter: {
-                attributeName: "adminApplication",
+                attributeName: "selfApplication",
                 value: applicationUuid,
               },
             },
@@ -257,7 +257,7 @@ export function useDeploymentUuidFromApplicationUuid(
       applicationUuid && applicationUuid !== noValue.uuid
         ? ({
             queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            deploymentUuid: deployment_Admin.uuid,
             application: adminSelfApplication.uuid,
             pageParams: {},
             queryParams: {},
@@ -270,7 +270,7 @@ export function useDeploymentUuidFromApplicationUuid(
                 parentName: entityDeployment.name,
                 applicationSection: "data",
                 filter: {
-                  attributeName: "adminApplication",
+                  attributeName: "selfApplication",
                   value: applicationUuid,
                 },
               },

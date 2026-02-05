@@ -17,7 +17,7 @@ import {
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type Query,
-  type SelfApplicationDeploymentConfiguration,
+  type Deployment,
   type Uuid
 } from "miroir-core";
 import {

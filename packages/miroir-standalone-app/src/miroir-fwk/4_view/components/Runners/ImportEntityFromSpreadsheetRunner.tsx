@@ -18,7 +18,7 @@ import {
   noValue
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   adminSelfApplication,
   entityApplicationForAdmin,
   entityDeployment
@@ -84,7 +84,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                     defaultLabel: "Application",
                     editable: true,
                     foreignKeyParams: {
-                      targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                      targetDeploymentUuid: deployment_Admin.uuid,
                       targetEntity: entityApplicationForAdmin.uuid,
                       targetEntityOrderInstancesBy: "name",
                     },
@@ -166,7 +166,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //   | BoxedQueryTemplateWithExtractorCombinerTransformer
   //   | undefined = {
   //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-  //   deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  //   deploymentUuid: deployment_Admin.uuid,
   //   pageParams: {},
   //   queryParams: {},
   //   contextResults: {},
@@ -202,12 +202,12 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //           actionType: "runBoxedExtractorOrQueryAction",
   //           actionName: "runQuery",
   //           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  //           deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  //           deploymentUuid: deployment_Admin.uuid,
   //           payload: {
   //             applicationSection: "data",
   //             query: {
   //               queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //               deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+  //               deploymentUuid: deployment_Admin.uuid,
   //               pageParams: {},
   //               queryParams: {},
   //               contextResults: {},
@@ -359,7 +359,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                       parentName: entityDeployment.name,
                       applicationSection: "data",
                       filter: {
-                        attributeName: "adminApplication",
+                        attributeName: "selfApplication",
                         value: {
                           transformerType: "getFromParameters",
                           referencePath: [runnerName, "application"],

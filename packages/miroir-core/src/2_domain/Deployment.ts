@@ -105,7 +105,7 @@ export function getBasicApplicationConfiguration(
       defaultLabel: `The ${applicationName} selfApplication`,
       description: `The model and data of the ${applicationName} selfApplication`,
     },
-    // selfApplicationDeploymentConfiguration: {
+    // deployment: {
     //   ...selfApplicationDeploymentLibrary,
     //   selfApplication: selfApplicationUuid,
     //   uuid: adminConfigurationDeploymentUuid,

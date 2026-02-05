@@ -14,7 +14,7 @@ This package contains the admin data model and instance data used by the Miroir 
 ```typescript
 import { 
   entityApplicationForAdmin,
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   // ... other exports
 } from 'miroir-deployment-admin';
 ```

@@ -313,8 +313,6 @@ export {
   runner,
   SelfApplication,
   selfApplication,
-  SelfApplicationDeploymentConfiguration,
-  selfApplicationDeploymentConfiguration,
   ServerConfigForClientConfig,
   serverConfigForClientConfig,
   ShippingBox,
@@ -463,7 +461,7 @@ export {
 } from "./0_interfaces/1_core/Model.js";
 export {
   // SelfApplicationDeploymentConfigurationSchema,
-  // SelfApplicationDeploymentConfiguration,
+  // Deployment,
   AdminApplicationDeploymentConfiguration,
   ApplicationModelLevel,
   ApplicationModelLevelSchema,

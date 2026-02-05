@@ -84,7 +84,7 @@ export const libraryApplicationInstances: EntityInstanceCollection[] = [
 //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
 //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
 //       payload: {
-//         deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+//         deploymentUuid:deployment_Library_DO_NO_USE.uuid,
 //         entities: [
 //           { entity: entityAuthor as Entity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
 //           { entity: entityBook as Entity, entityDefinition: entityDefinitionBook as EntityDefinition },
@@ -103,7 +103,7 @@ export const libraryApplicationInstances: EntityInstanceCollection[] = [
 //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
 //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
 //       payload: {
-//         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+//         deploymentUuid: deployment_Library_DO_NO_USE.uuid,
 //       }
 //     },
 //     // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
@@ -116,14 +116,14 @@ export const libraryApplicationInstances: EntityInstanceCollection[] = [
 //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
 //       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
 //       payload: {
-//         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+//         deploymentUuid: deployment_Library_DO_NO_USE.uuid,
 //         instanceAction: {
 //           // actionType: "instanceAction",
 //           actionType: "createInstance",
 //           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
 //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
 //           payload: {
-//             deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+//             deploymentUuid: deployment_Library_DO_NO_USE.uuid,
 //             applicationSection: "model",
 //             objects: [
 //               {
@@ -154,7 +154,7 @@ export const libraryApplicationInstances: EntityInstanceCollection[] = [
 //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
 //       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
 //       payload: {
-//         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+//         deploymentUuid: deployment_Library_DO_NO_USE.uuid,
 //       }
 //     },
 //     // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
@@ -167,7 +167,7 @@ export const libraryApplicationInstances: EntityInstanceCollection[] = [
 //     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
 //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
 //     payload: {
-//       deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+//       deploymentUuid: deployment_Library_DO_NO_USE.uuid,
 //       applicationSection: "data",
 //       objects: libraryApplicationInstances,
 //     },

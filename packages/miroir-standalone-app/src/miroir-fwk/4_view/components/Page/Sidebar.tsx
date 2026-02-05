@@ -9,13 +9,13 @@ import {
   selfApplicationMiroir
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
+  deployment_Admin,
+  deployment_Miroir,
   adminSelfApplication,
   menuDefaultAdmin
 } from "miroir-deployment-admin";
 
-import { adminConfigurationDeploymentLibrary, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-example-library';
+import { deployment_Library_DO_NO_USE, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-example-library';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
@@ -100,12 +100,12 @@ export const Sidebar: FC<{
   const miroirSidebarSections = useMemo(() => (
     [
       {
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        deploymentUuid: deployment_Miroir.uuid,
         applicationUuid: selfApplicationMiroir.uuid,
         menuUuid: menuDefaultMiroir.uuid
       },
       {
-        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        deploymentUuid: deployment_Admin.uuid,
         applicationUuid: adminSelfApplication.uuid,
         menuUuid: menuDefaultAdmin.uuid
       },
@@ -130,7 +130,7 @@ export const Sidebar: FC<{
   const filteredAppSidebarSections = useMemo(() => (
     [
       {
-        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         applicationUuid: selfApplicationLibrary.uuid,
         menuUuid: menuDefaultLibrary.uuid
       }

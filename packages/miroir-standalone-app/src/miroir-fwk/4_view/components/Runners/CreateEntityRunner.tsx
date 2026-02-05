@@ -75,7 +75,7 @@ export function getCreateEntityActionTemplate(
                     parentName: entityDeployment.name,
                     applicationSection: "data",
                     filter: {
-                      attributeName: "adminApplication",
+                      attributeName: "selfApplication",
                       value: {
                         transformerType: "mustacheStringTemplate",
                         definition: "{{createEntity.application}}",

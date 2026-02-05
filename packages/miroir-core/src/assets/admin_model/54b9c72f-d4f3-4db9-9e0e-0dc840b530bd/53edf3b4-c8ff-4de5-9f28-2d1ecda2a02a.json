@@ -47,7 +47,7 @@
         "optional": true,
         "tag": { "value": {  "id":8, "defaultLabel": "Type of Report", "display": { "editable": true } }}
       },
-      "adminApplication": {
+      "selfApplication": {
         "type": "uuid",
         "tag": {
           "value": {

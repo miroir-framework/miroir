@@ -25,7 +25,7 @@ import {
 } from "miroir-core";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 import {
-  adminConfigurationDeploymentLibrary,
+  deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
 } from "miroir-example-library";
@@ -379,7 +379,7 @@ const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
   instanceEndpointV1,
   {
     ...defaultSelfApplicationDeploymentMap,
-    [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid
+    [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid
   } as ApplicationDeploymentMap,
 )
 export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = defaultLibraryAppModelDEFUNCT.currentModel.endpoints

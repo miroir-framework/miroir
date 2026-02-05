@@ -104,7 +104,7 @@ export const defaultLibraryAppModelDEFUNCT: MetaModel = {
 //   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
 //   miroirMetaModel: defaultMiroirMetaModel,
 //   endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
-//   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+//   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
 //   currentModel: defaultLibraryAppModelDEFUNCT,
 // };
 

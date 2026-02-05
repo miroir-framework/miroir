@@ -16,7 +16,7 @@ import {
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   defaultSelfApplicationDeploymentMap,
   entityEntity,
   jzodTypeCheck,
@@ -65,7 +65,7 @@ const pageLabel = "Tools";
 //         }
 //       },
 //       "storeSectionConfiguration": {
-//         [adminConfigurationDeploymentMiroir.uuid]:{
+//         [deployment_Miroir.uuid]:{
 //           "admin": {
 //             "emulatedServerType": "sql",
 //             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -82,7 +82,7 @@ const pageLabel = "Tools";
 //             "schema": "miroir"
 //           }
 //         },
-//         [adminConfigurationDeploymentLibrary.uuid]: {
+//         [deployment_Library_DO_NO_USE.uuid]: {
 //           "admin": {
 //             "emulatedServerType": "sql",
 //             "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -214,15 +214,15 @@ export const ConceptPage: React.FC<any> = (
     [props,JSON.stringify(dialogOuterFormObject, null, 2)]
   );
 
-  const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deploymentsDEFUNCT.find(
+  const displayedDeploymentDefinition: Deployment | undefined = deploymentsDEFUNCT.find(
     (d) => d.uuid == context.deploymentUuid
   );
 
 
   // ##############################################################################################
   const currentApplicationUuid = displayedDeploymentDefinition?.selfApplication??emptyString;
-  // const currentApplicationUuid = adminConfigurationDeploymentLibrary.selfApplication;
-  // const currentDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+  // const currentApplicationUuid = deployment_Library_DO_NO_USE.selfApplication;
+  // const currentDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
   const currentDeploymentUuid = context.deploymentUuid;
   // const currentApplicationUuid = props.currentApplicationUuid
   // const currentDeploymentUuid = props.currentDeploymentUuid;

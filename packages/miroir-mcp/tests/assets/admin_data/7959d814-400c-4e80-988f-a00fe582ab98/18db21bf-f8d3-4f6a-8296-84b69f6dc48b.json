@@ -4,7 +4,7 @@
   "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
   "name": "AdminApplicationFilesystemDeployment",
   "defaultLabel": "AdminApplicationFilesystemDeployment",
-  "adminApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
   "description": "The default Filesystem Deployment for SelfApplication Admin",
   "configuration": {
     "admin": {
@@ -13,11 +13,11 @@
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory": "../miroir-core/src/assets/admin_model"
+      "directory": "../miroir-deployment-admin/assets/admin_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory": "../miroir-core/src/assets/admin_data"
+      "directory": "../miroir-deployment-admin/assets/admin_data"
     }
   }
 }

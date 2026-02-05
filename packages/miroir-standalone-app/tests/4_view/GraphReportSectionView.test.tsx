@@ -15,7 +15,7 @@ import { packageName } from "../../src/constants";
 import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext";
-import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-deployment-admin";
 
 // Setup logger
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -188,7 +188,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
             showPerformanceDisplay={true}
@@ -213,7 +213,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
           />
@@ -233,7 +233,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
           />
@@ -255,7 +255,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
           />
@@ -276,7 +276,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={lineChartReportSection}
           />
@@ -315,7 +315,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={lineChartWithDates}
           />
@@ -337,7 +337,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={pieChartReportSection}
           />
@@ -371,7 +371,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={pieChartWithoutColors}
           />
@@ -400,7 +400,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
           />
@@ -427,7 +427,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
           />
@@ -469,7 +469,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={customConfigSection}
           />
@@ -503,7 +503,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={sectionWithoutConfig}
           />
@@ -525,7 +525,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
           />
@@ -559,7 +559,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={unknownGraphTypeSection}
           />
@@ -585,7 +585,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
             showPerformanceDisplay={true}
@@ -605,7 +605,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
-            deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+            deploymentUuid={deployment_Miroir.uuid}
             queryResults={queryResults}
             reportSection={barChartReportSection}
             showPerformanceDisplay={false}

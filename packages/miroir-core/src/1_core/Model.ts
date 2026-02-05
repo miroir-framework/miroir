@@ -74,7 +74,7 @@ const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f7
 
 import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
-import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-deployment-admin";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
@@ -222,13 +222,13 @@ export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
   currentModel: defaultMiroirMetaModel,
-  // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  // deploymentUuid: deployment_Miroir.uuid,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
-  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  deploymentUuid: deployment_Miroir.uuid,
   currentModel: defaultMiroirMetaModel,
 };
 
@@ -245,7 +245,7 @@ export function getApplicationSection(
   deploymentUuid: Uuid,
   entityUuid: Uuid,
 ): ApplicationSection{
-  if (deploymentUuid == adminConfigurationDeploymentMiroir.uuid) {
+  if (deploymentUuid == deployment_Miroir.uuid) {
     return metaMetaModelEntityUuids.includes(entityUuid)?"model":"data";
   }
   return metaModelEntityUuids.includes(entityUuid)?"model":"data";

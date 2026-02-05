@@ -44,8 +44,8 @@ import {
   type SyncQueryRunnerExtractorAndParams
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
+  deployment_Admin,
+  deployment_Miroir,
   adminSelfApplication,
   defaultAdminViewParams,
   entityDeployment
@@ -63,7 +63,7 @@ import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeC
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { adminConfigurationDeploymentLibrary, selfApplicationLibrary } from 'miroir-example-library';
+import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from 'miroir-example-library';
 import { packageName } from '../../../../constants.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
@@ -220,7 +220,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     label: "RootComponent_adminDeployments",
                     parentName: "Deployment",
                     applicationSection: getApplicationSection(
-                      adminConfigurationDeploymentAdmin.uuid,
+                      deployment_Admin.uuid,
                       entityDeployment.uuid
                     ),
                     parentUuid: entityDeployment.uuid,
@@ -250,7 +250,7 @@ export const RootComponent = (props: RootComponentProps) => {
       Array.isArray(adminDeploymentsQueryResult.deployments)
         ? Object.fromEntries(
             adminDeploymentsQueryResult.deployments.map((deployment: Deployment) => {
-              return [deployment.adminApplication, deployment.uuid];
+              return [deployment.selfApplication, deployment.uuid];
             })
           )
         : undefined,
@@ -278,18 +278,18 @@ export const RootComponent = (props: RootComponentProps) => {
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
       {
-        [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          adminSelfApplication.uuid,// adminConfigurationDeploymentAdmin.uuid,
+        [deployment_Admin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          adminSelfApplication.uuid,// deployment_Admin.uuid,
           miroirMetaModel, 
           adminAppModel,
         ),
-        [adminConfigurationDeploymentMiroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          selfApplicationMiroir.uuid,// adminConfigurationDeploymentMiroir.uuid,
+        [deployment_Miroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          selfApplicationMiroir.uuid,// deployment_Miroir.uuid,
           miroirMetaModel, 
           miroirMetaModel, 
         ),
-        [adminConfigurationDeploymentLibrary.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          selfApplicationLibrary.uuid,// adminConfigurationDeploymentLibrary.uuid,
+        [deployment_Library_DO_NO_USE.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          selfApplicationLibrary.uuid,// deployment_Library_DO_NO_USE.uuid,
           miroirMetaModel, 
           libraryAppModel,
         ),
@@ -606,7 +606,7 @@ export const RootComponent = (props: RootComponentProps) => {
     const config: ViewParamsUpdateQueueConfig = {
       // delayMs: 60000, // 1 minute
       delayMs: 5000, // 5 seconds
-      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+      deploymentUuid: deployment_Admin.uuid,
       viewParamsInstanceUuid: viewParamsInstanceUuid,
     };
 

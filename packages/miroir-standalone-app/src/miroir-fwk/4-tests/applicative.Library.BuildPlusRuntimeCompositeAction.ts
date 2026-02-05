@@ -131,7 +131,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
     [testSuiteNameForBuildPlusRuntimeCompositeAction]: {
       testActionType: "testBuildPlusRuntimeCompositeActionSuite",
       application: selfApplicationLibrary.uuid, // NOT USED
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       testActionLabel: testSuiteNameForBuildPlusRuntimeCompositeAction,
       testParams: {
         createEntity_newEntityDescription,

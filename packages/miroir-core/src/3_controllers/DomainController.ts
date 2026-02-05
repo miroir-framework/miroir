@@ -23,7 +23,7 @@ const entityMenu = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a98
 const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
 const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json');
 
-import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-deployment-admin";
 import {
   ApplicationSection,
   ApplicationVersion,
@@ -45,7 +45,7 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   // RuntimeCompositeAction,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   TestAssertion,
   TestBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
@@ -118,14 +118,14 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export interface DeploymentConfiguration {
   adminConfigurationDeployment: EntityInstance,
-  selfApplicationDeployment: SelfApplicationDeploymentConfiguration,
+  selfApplicationDeployment: Deployment,
 }
 
 // ################################################################################################
 export async function resetAndInitApplicationDeployment(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  selfAdminConfigurationDeployments: SelfApplicationDeploymentConfiguration[], // TODO: use Deployment Entity Type!
+  selfAdminConfigurationDeployments: Deployment[], // TODO: use Deployment Entity Type!
 ) {
 
   for (const selfAdminConfigurationDeployment of selfAdminConfigurationDeployments) {
@@ -153,13 +153,13 @@ export async function resetAndInitApplicationDeployment(
           // deploymentUuid: selfAdminConfigurationDeployment.uuid,
           params: {
             dataStoreType:
-              selfAdminConfigurationDeployment.uuid == adminConfigurationDeploymentMiroir.uuid
+              selfAdminConfigurationDeployment.uuid == deployment_Miroir.uuid
                 ? "miroir"
                 : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
             metaModel: defaultMiroirMetaModel,
             // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
             selfApplication: selfApplicationMiroir,
-            // selfApplicationDeploymentConfiguration: selfAdminConfigurationDeployment,
+            // deployment: selfAdminConfigurationDeployment,
             applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
             // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
             applicationVersion: selfApplicationVersionInitialMiroirVersion,
@@ -417,11 +417,11 @@ export class DomainController implements DomainControllerInterface {
 
           // TODO: information has to come from localCacheSlice, not from hard-coded source!
           const modelEntitiesToFetch: MetaEntity[] =
-            adminDeploymentUuid == adminConfigurationDeploymentMiroir.uuid
+            adminDeploymentUuid == deployment_Miroir.uuid
               ? miroirModelEntities
               : metaModelEntities;
           const dataEntitiesToFetch: MetaEntity[] =
-            adminDeploymentUuid == adminConfigurationDeploymentMiroir.uuid
+            adminDeploymentUuid == deployment_Miroir.uuid
               ? (
                   context.dataEntitiesFromModelSection.returnedDomainElement?.instances ?? []
                 ).filter(
@@ -1451,7 +1451,7 @@ export class DomainController implements DomainControllerInterface {
           }
 
           const sectionOfapplicationEntities: ApplicationSection =
-            currentDeploymentUuid == adminConfigurationDeploymentMiroir.uuid ? "data" : "model";
+            currentDeploymentUuid == deployment_Miroir.uuid ? "data" : "model";
           const newModelVersionUuid = uuidv4();
           // TODO: this seems to be taken from the Admin Model Version
           // in the application, only the selfApplication could be used
@@ -1465,7 +1465,6 @@ export class DomainController implements DomainControllerInterface {
             previousVersion: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
             branch: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
             selfApplication: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-            // adminApplication: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
           };
 
           log.info(
@@ -2094,7 +2093,7 @@ export class DomainController implements DomainControllerInterface {
             await resetAndInitApplicationDeployment(
               this,
               applicationDeploymentMap,
-              domainAction.payload.deployments as any as SelfApplicationDeploymentConfiguration[],
+              domainAction.payload.deployments as any as Deployment[],
             ); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
           } else {
             try {

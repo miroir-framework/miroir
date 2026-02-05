@@ -672,7 +672,7 @@ describe('jzodReferencesGraphConnectedComponents', () => {
   //       "______________________________________________entities_____________________________________________",
   //     ],
   //     ["adminApplication"],
-  //     ["selfApplicationDeploymentConfiguration"],
+  //     ["deployment"],
   //     [
   //       "_________________________________configuration_and_bundles_________________________________",
   //     ],
@@ -1263,7 +1263,7 @@ describe('jzodReferencesGraphConnectedComponents', () => {
     //     "______________________________________________entities_____________________________________________",
     //   ],
     //   ["adminApplication"],
-    //   ["selfApplicationDeploymentConfiguration"],
+    //   ["deployment"],
     //   [
     //     "_________________________________configuration_and_bundles_________________________________",
     //   ],

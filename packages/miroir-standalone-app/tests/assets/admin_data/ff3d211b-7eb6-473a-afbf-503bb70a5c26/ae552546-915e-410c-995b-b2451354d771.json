@@ -3,7 +3,6 @@
   "parentName":"ApplicationVersion",
   "parentUuid":"ff3d211b-7eb6-473a-afbf-503bb70a5c26",
   "name":"Admin Initial",
-  "adminApplication":"55af124e-8c05-4bae-a3ef-0933d41daa92",
   "selfApplication":"55af124e-8c05-4bae-a3ef-0933d41daa92",
   "branch":"aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa",
   "description": "Initial Admin selfApplication version",

@@ -104,13 +104,13 @@ export const HomePage = (props: RootComponentProps) => {
   );
 
   // computing current state #####################################################################
-  // const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
+  // const displayedDeploymentDefinition: Deployment | undefined = deployments.find(
   //   (d) => d.uuid == displayedDeploymentUuid
   // );
   // log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
 
   // // TODO: adapt to Admin app deployment!
-  // const currentModel = displayedDeploymentUuid == adminConfigurationDeploymentMiroir.uuid? defaultMiroirMetaModel:currentAppModel;
+  // const currentModel = displayedDeploymentUuid == deployment_Miroir.uuid? defaultMiroirMetaModel:currentAppModel;
   // // const currentModel = libraryAppModel;
   // log.info("HomePage currentModel",currentModel);
 
@@ -238,7 +238,7 @@ export const HomePage = (props: RootComponentProps) => {
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               payload: {
                 application: selfApplicationMiroir.uuid,
-                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                deploymentUuid: deployment_Miroir.uuid,
               }
             }, currentApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}
@@ -256,7 +256,7 @@ export const HomePage = (props: RootComponentProps) => {
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               payload: {
                 application: selfApplicationMiroir.uuid,
-                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                deploymentUuid: deployment_Miroir.uuid,
               }
             }, currentApplicationDeploymentMap, defaultMiroirModelEnvironment);
           }}
@@ -272,7 +272,7 @@ export const HomePage = (props: RootComponentProps) => {
         // currentDeploymentUuid={adminConfigurationDeploymentTest1.uuid}
         // currentDeploymentUuid="f97cce64-78e9-419f-a4bd-5cbf52833ede" // test4
         // currentDeploymentUuid="3d15b8c8-a74c-48ce-81d5-c76853803b90" // Paris
-        currentDeploymentUuid={adminConfigurationDeploymentLibrary.uuid}
+        currentDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
         // currentApplicationUuid={test1SelfApplication.uuid}
         // currentApplicationUuid="478d3a5d-d866-41c8-944c-121aca3ab87f" // test4
         // currentApplicationUuid="2c1d14d5-691f-42cf-9850-887122170a43" // Paris

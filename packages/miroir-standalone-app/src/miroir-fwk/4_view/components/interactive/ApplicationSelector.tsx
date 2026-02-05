@@ -8,7 +8,7 @@ import {
 } from "miroir-core";
 import {
   adminSelfApplication,
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   entityApplicationForAdmin,
 } from "miroir-deployment-admin";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
@@ -45,7 +45,7 @@ export const ApplicationSelector: FC<{
     []
   );
   const application = adminSelfApplication.uuid;
-  const deploymentUuid = adminConfigurationDeploymentAdmin.uuid;
+  const deploymentUuid = deployment_Admin.uuid;
   const formikValuePathAsString = "applicationSelector";
   const formLabel = "Select Application to delete";
 
@@ -83,7 +83,7 @@ export const ApplicationSelector: FC<{
                     },
                   },
                   foreignKeyParams: {
-                    targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                    targetDeploymentUuid: deployment_Admin.uuid,
                     targetEntity: entityApplicationForAdmin.uuid,
                     targetEntityFilterInstancesBy: {
                       attributeName: "uuid",

@@ -41,9 +41,9 @@ import {
   type Deployment
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir
+  deployment_Admin,
+  deployment_Library_DO_NO_USE,
+  deployment_Miroir
 } from "miroir-deployment-admin";
 
 import {
@@ -118,40 +118,40 @@ myConsoleLog("started registered loggers DONE");
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
-const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
-: miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
+: miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
 
   
 const adminDeployment: Deployment = {
-  ...adminConfigurationDeploymentAdmin,
+  ...deployment_Admin,
   configuration: adminDeploymentStorageConfiguration,
 };
 
-const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = deployment_Library_DO_NO_USE as any;
 
 // const applicationDeploymentMap: ApplicationDeploymentMap = {
 //   ...defaultSelfApplicationDeploymentMap,
-//   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+//   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 // };
 
 // const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-//   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-//   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+//   ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+//   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
-// const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+// const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 // const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
 //   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
 //   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
@@ -201,7 +201,7 @@ beforeAll(
     }
     const createLibraryDeploymentAction = createDeploymentCompositeAction(
       "library",
-      adminConfigurationDeploymentLibrary.uuid,
+      deployment_Library_DO_NO_USE.uuid,
       selfApplicationLibrary.uuid,
       adminDeployment,
       libraryDeploymentStorageConfiguration
@@ -218,7 +218,7 @@ beforeAll(
     }
 
     const tmplocalAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
-      adminConfigurationDeploymentLibrary.uuid
+      deployment_Library_DO_NO_USE.uuid
     );
     if (!tmplocalAppPersistenceStoreController) {
       throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
@@ -336,17 +336,17 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // //     if (miroirConfig.client.emulateServer) {
   // //       console.log("Create miroir2 store START")
   // //       const testResult: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
-  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
+  // //         miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid].model
   // //       );
   // //       const testResult2: Action2ReturnType = await localMiroirPersistenceStoreController.createStore(
-  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
+  // //         miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid].data
   // //       );
   // //       //cleanup
   // //       const testResult3: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
-  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].model
+  // //         miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid].model
   // //       );
   // //       const testResult4: Action2ReturnType = await localMiroirPersistenceStoreController.deleteStore(
-  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid].data
+  // //         miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid].data
   // //       );
   // //       // test
   // //       expect(testResult).toEqual(ACTION_OK)
@@ -370,12 +370,12 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // //       const deployMiroir = await persistenceStoreControllerManager.deployModule(
   // //         localMiroirPersistenceStoreController,
   // //         newMiroirDeploymentUuid,
-  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid],
+  // //         miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid],
   // //         {
   // //           metaModel: defaultMiroirMetaModel,
   // //           dataStoreType: 'miroir',
   // //           selfApplication: selfApplicationMiroir,
-  // //           applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //adminConfigurationDeploymentMiroir,
+  // //           applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //deployment_Miroir,
   // //           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
   // //           applicationVersion: selfApplicationVersionInitialMiroirVersion,
   // //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
@@ -384,12 +384,12 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // //       const deployApp = await persistenceStoreControllerManager.deployModule(
   // //         localMiroirPersistenceStoreController,
   // //         newLibraryDeploymentUuid,
-  // //         miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentLibrary.uuid],
+  // //         miroirConfig.client.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid],
   // //         {
   // //           metaModel: defaultMiroirMetaModel,
   // //           dataStoreType: 'app',
   // //           selfApplication: selfApplicationLibrary,
-  // //           applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //adminConfigurationDeploymentLibrary,
+  // //           applicationDeploymentConfiguration: selfApplicationDeploymentLibrary, //deployment_Library_DO_NO_USE,
   // //           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
   // //           applicationVersion: selfApplicationVersionLibraryInitialVersion,
   // //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
@@ -516,7 +516,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid, 
         entityName: entityAuthor.name,
         entityDefinitionUuid: entityDefinitionAuthor.uuid,
@@ -609,7 +609,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid, 
         // entityName: entityAuthor.name,
         entityDefinitionUuid: entityDefinitionAuthor.uuid
@@ -705,7 +705,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid, 
         entityDefinitionUuid: entityDefinitionAuthor.uuid,
         entityName: entityAuthor.name,

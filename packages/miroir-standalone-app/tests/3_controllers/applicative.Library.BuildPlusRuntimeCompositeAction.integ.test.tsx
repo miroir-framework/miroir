@@ -20,7 +20,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   resetAndInitApplicationDeployment,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration
 } from "miroir-core";
@@ -45,7 +45,7 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
-import { adminConfigurationDeploymentMiroir } from 'miroir-deployment-admin';
+import { deployment_Miroir } from 'miroir-deployment-admin';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;
@@ -102,8 +102,8 @@ const testApplicationName: string = "Test";
 const testApplicationUuid: Uuid = "ca7832a9-379a-41d9-8d4d-6c12c05a0cd6";
 
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
 const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
   "admin": {
@@ -121,7 +121,7 @@ const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
 }
 
 const typedAdminConfigurationDeploymentMiroir = {
-  ...adminConfigurationDeploymentMiroir,
+  ...deployment_Miroir,
   configuration: miroirStoreUnitConfigurationForTest,
 } as AdminApplicationDeploymentConfiguration;
 
@@ -159,7 +159,7 @@ const beforeAll = async () => {
   }
 
   const resetAndInitResult = await resetAndInitApplicationDeployment(domainController, [
-    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    selfApplicationDeploymentMiroir as Deployment,
   ]);
 
   if (resetAndInitResult.status !== "ok") {
@@ -178,7 +178,7 @@ const beforeAll = async () => {
 //     throw new Error("beforeEach DomainController is not initialized");
 //   }
 //   await resetAndInitApplicationDeployment(domainController, [
-//     selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+//     selfApplicationDeploymentMiroir as Deployment,
 //   ]);
 //   document.body.innerHTML = '';
 //   LoggerGlobalContext.setTest(undefined);

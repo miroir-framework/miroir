@@ -152,7 +152,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // // const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(undefined);
   // const [hasValidationErrors, setHasValidationErrors] = useState(false);
 
-  // const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deploymentsDEFUNCT.find(
+  // const displayedDeploymentDefinition: Deployment | undefined = deploymentsDEFUNCT.find(
   //   (d) => d.uuid == props.deploymentUuid
   // );
 

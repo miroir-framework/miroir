@@ -8,7 +8,7 @@ import {
   JzodObject,
   LoggerInterface,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   // adminConfigurationDeploymentParis,
   entityApplicationForAdmin,
   entityDeployment,
@@ -1778,7 +1778,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // );
 
   // const currentModel: MetaModel = useCurrentModel(
-  //   context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  //   context.applicationSection == "data" ? context.deploymentUuid : deployment_Miroir.uuid
   // );
   // const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
@@ -2109,7 +2109,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         applicationSection: "data",
   //         deploymentUuid: {
   //           transformerType: "mustacheStringTemplate",
-  //           definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
+  //           definition: "{{deployment_Admin.uuid}}",
   //         },
   //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
   //         objects: [
@@ -2144,7 +2144,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         applicationSection: "data",
   //         deploymentUuid: {
   //           transformerType: "mustacheStringTemplate",
-  //           definition: "{{adminConfigurationDeploymentAdmin.uuid}}",
+  //           definition: "{{deployment_Admin.uuid}}",
   //         },
   //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
   //         objects: [
@@ -2249,7 +2249,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           ...actionCreateSchemaParamValues,
           entityApplicationForAdmin,
           entitySelfApplication,
-          adminConfigurationDeploymentAdmin,
+          deployment_Admin,
           entityMenu,
           entityDeployment,
         }

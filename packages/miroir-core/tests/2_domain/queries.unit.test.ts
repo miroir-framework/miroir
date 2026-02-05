@@ -1,7 +1,7 @@
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 
 import domainStateImport from "./domainState.json";
-import { adminConfigurationDeploymentLibrary } from "miroir-deployment-admin";
+import { deployment_Library_DO_NO_USE } from "miroir-deployment-admin";
 import {
   selfApplicationLibrary,
 } from "miroir-example-library";
@@ -126,8 +126,8 @@ const testExtractorTools = {
     runQueryFromReduxDeploymentsState: runQueryFromReduxDeploymentsState,
 }
 
-// console.log("domainState data entities:", Object.keys(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]));
-console.log("domainState data authors:", Object.keys(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]["d7a144ff-d1b9-4135-800c-a7cfc1f38733"]));
+// console.log("domainState data entities:", Object.keys(domainState[deployment_Library_DO_NO_USE.uuid]["data"]));
+console.log("domainState data authors:", Object.keys(domainState[deployment_Library_DO_NO_USE.uuid]["data"]["d7a144ff-d1b9-4135-800c-a7cfc1f38733"]));
 
 
 const testExtractorParams: Record<string, TestExtractorParams> = {
@@ -136,7 +136,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -162,7 +162,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -190,7 +190,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -216,7 +216,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -243,7 +243,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -269,7 +269,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -286,7 +286,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult: {
-          book: domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+          book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
           ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         } as any, // TODO: correct type of the expected result
@@ -296,7 +296,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
   "select 1 object from Domain State and apply transformer on foreign key": {
     // queryTemplate: {
     //   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    //   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+    //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
     //   contextResults: {},
     //   pageParams: {},
     //   queryParams: {},
@@ -320,7 +320,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -358,12 +358,12 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             authorName: "Paul Veyne",
             bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
           },
-          // book: domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+          // book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
           //   "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
           // ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         } as any, // TODO: correct type of the expected result
         // expectedResult: {
-        //   book: domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //   book: domainState[deployment_Library_DO_NO_USE.uuid]["data"][
         //     "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         //   ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         // } as any, // TODO: correct type of the expected result
@@ -374,7 +374,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
@@ -399,7 +399,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: { wantedBookUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
@@ -417,7 +417,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult:
-          domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+          domainState[deployment_Library_DO_NO_USE.uuid]["data"][
             "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
           ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         resultAccessPath: ["book"],
@@ -428,7 +428,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -472,7 +472,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -499,7 +499,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult:
-          domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+          domainState[deployment_Library_DO_NO_USE.uuid]["data"][
             "a027c379-8468-43a5-ba4d-bf618be25cab"
           ]["516a7366-39e7-4998-82cb-80199a7fa667"],
         resultAccessPath: ["publisher"],
@@ -511,7 +511,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         contextResults: {},
         pageParams: {},
         queryParams: {},
@@ -576,7 +576,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         contextResults: {},
         pageParams: {},
         queryParams: {},
@@ -717,7 +717,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       // query: {
       //   queryType: "boxedQueryWithExtractorCombinerTransformer",
       //   application: selfApplicationLibrary.uuid,
-      //   // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      //   // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       //   contextResults: {},
       //   pageParams: {},
       //   queryParams: {},
@@ -787,7 +787,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -810,7 +810,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -893,7 +893,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1124,15 +1124,15 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       test1: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
@@ -1230,7 +1230,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1288,15 +1288,15 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       test1: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
@@ -1305,15 +1305,15 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       test2: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
@@ -1322,15 +1322,15 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       test3: {
         expectedResult: Object.values({
           "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
           "c6852e89-3c3c-447f-b827-4b5b9d830975":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
           "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         }),
@@ -1342,7 +1342,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1382,7 +1382,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1410,7 +1410,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     testAssertions: {
       test1: {
         expectedResult:
-          domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+          domainState[deployment_Library_DO_NO_USE.uuid]["data"][
             "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
           ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
         resultAccessPath: ["author"],
@@ -1445,7 +1445,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1501,7 +1501,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1545,7 +1545,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       testAssertions: {
         test1: {
           expectedResult:
-            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+            domainState[deployment_Library_DO_NO_USE.uuid]["data"][
               "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
             ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
           resultAccessPath: ["author"],
@@ -1566,15 +1566,15 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         // test2: {
         //   expectedResult: Object.values({
         //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
         //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
         //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
-        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
         //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
         //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
         //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         //   }),
@@ -1583,15 +1583,15 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         // test3: {
         //   expectedResult: Object.values({
         //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
         //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
         //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
-        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
         //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
         //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //       domainState[deployment_Library_DO_NO_USE.uuid]["data"][
         //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
         //   }),
@@ -1604,7 +1604,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       queryTemplate: {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1653,7 +1653,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       query: {
         queryType: "boxedQueryWithExtractorCombinerTransformer",
         application: selfApplicationLibrary.uuid,
-        // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         contextResults: {},
         pageParams: {
           applicationSection: "data",
@@ -1697,9 +1697,9 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       ...testExtractorTools,
       testAssertions: {
         test1: {
-          // expectedResult: domainState[adminConfigurationDeploymentLibrary.uuid]["data"],
+          // expectedResult: domainState[deployment_Library_DO_NO_USE.uuid]["data"],
           expectedResult: Object.fromEntries(
-            Object.entries(domainState[adminConfigurationDeploymentLibrary.uuid]["data"]).map(
+            Object.entries(domainState[deployment_Library_DO_NO_USE.uuid]["data"]).map(
               (e) => [e[0], Object.values(e[1])]
             )
           ),
@@ -1711,7 +1711,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1744,7 +1744,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1803,7 +1803,7 @@ function cleanupResult(
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
 describe("queries.unit", () => {

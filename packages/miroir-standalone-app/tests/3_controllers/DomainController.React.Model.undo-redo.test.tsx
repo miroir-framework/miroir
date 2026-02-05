@@ -32,7 +32,7 @@ import {
 } from "miroir-core";
 
 import {
-  adminConfigurationDeploymentLibrary,
+  deployment_Library_DO_NO_USE,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
@@ -58,10 +58,9 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
-  adminLibraryApplication,
-  adminMiroirApplication,
+  deployment_Admin,
+  deployment_Miroir,
+  adminApplication_Miroir,
 } from "miroir-deployment-admin";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
@@ -111,23 +110,23 @@ myConsoleLog("started registered loggers DONE");
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 }
 
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
 
-const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
   const adminDeployment: Deployment = {
-  ...adminConfigurationDeploymentAdmin,
+  ...deployment_Admin,
   configuration: adminDeploymentStorageConfiguration,
 };
 
@@ -156,8 +155,8 @@ beforeAll(
 
     const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
       "miroir",
-      adminConfigurationDeploymentMiroir.uuid,
-      adminMiroirApplication.uuid,
+      deployment_Miroir.uuid,
+      adminApplication_Miroir.uuid,
       adminDeployment,
       miroirtDeploymentStorageConfiguration,
     );
@@ -173,8 +172,8 @@ beforeAll(
 
     const action = createDeploymentCompositeAction(
       "library",
-      adminConfigurationDeploymentLibrary.uuid, 
-      adminLibraryApplication.uuid, 
+      deployment_Library_DO_NO_USE.uuid, 
+      selfApplicationLibrary.uuid, 
       adminDeployment,
       libraryDeploymentStorageConfiguration
     );
@@ -266,7 +265,7 @@ describe.sequential(
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: selfApplicationMiroir.uuid,
-                      // deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
+                      // deploymentUuid:deployment_Miroir.uuid,
                     },
                   },
                   applicationDeploymentMap,
@@ -280,7 +279,7 @@ describe.sequential(
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     },
                   },
                   applicationDeploymentMap,
@@ -317,7 +316,7 @@ describe.sequential(
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               payload: {
                 application: selfApplicationLibrary.uuid,
-                // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                 entities: [
                   {
                     entity: entityAuthor as Entity,
@@ -399,7 +398,7 @@ describe.sequential(
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
-                    // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                    // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
                   }
                 }, applicationDeploymentMap,  defaultMiroirModelEnvironment);
               }
@@ -440,7 +439,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -487,7 +486,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -498,7 +497,7 @@ describe.sequential(
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
-                    // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                    // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
                   }
                 }, applicationDeploymentMap, defaultMiroirModelEnvironment);
                 await domainController.handleAction({
@@ -507,7 +506,7 @@ describe.sequential(
                   endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                   payload: {
                     application: selfApplicationLibrary.uuid,
-                    // deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
+                    // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
                   }
                 }, applicationDeploymentMap, defaultMiroirModelEnvironment);
               }
@@ -541,7 +540,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -563,7 +562,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -575,7 +574,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -587,7 +586,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -599,7 +598,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment
@@ -656,7 +655,7 @@ describe.sequential(
                     endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
                     payload: {
                       application: selfApplicationLibrary.uuid,
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                     }
                   },
                   applicationDeploymentMap,  defaultMiroirModelEnvironment

@@ -62,7 +62,7 @@
                       "parentName": "Deployment",
                       "applicationSection": "data",
                       "filter": {
-                        "attributeName": "adminApplication",
+                        "attributeName": "selfApplication",
                         "value": {
                           "transformerType": "mustacheStringTemplate",
                           "interpolation": "build",

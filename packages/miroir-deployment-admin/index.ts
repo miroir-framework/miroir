@@ -32,15 +32,23 @@ export { default as selfApplicationStoreBasedConfigurationAdmin } from "./assets
 export { default as selfApplicationVersionAdminInitialVersion } from "./assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/b843bd4b-83bd-4241-95c6-b16bbdc75abd.json" assert { type: "json" };
 export { default as selfApplicationModelBranchAdminMasterBranch } from "./assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/9034141b-0d0d-4beb-82af-dfc02be15c2d.json" assert { type: "json" };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // Admin Data - Applications
-export { default as adminAdminApplication } from "./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json" assert { type: "json" };
-export { default as adminMiroirApplication } from "./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json" assert { type: "json" };
-export { default as adminLibraryApplication } from "./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json" assert { type: "json" };
+// 
+export { default as adminApplication_Admin } from "./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json" assert { type: "json" };
+export { default as adminApplication_Miroir } from "./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json" assert { type: "json" };
+export { default as adminApplication_Library_DO_NOT_USE } from "./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json" assert { type: "json" };
 
 // Admin Data - Deployments
-export { default as adminConfigurationDeploymentAdmin } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json" assert { type: "json" };
-export { default as adminConfigurationDeploymentMiroir } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" assert { type: "json" };
-export { default as adminConfigurationDeploymentLibrary } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" assert { type: "json" };
+export { default as deployment_Admin } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json" assert { type: "json" };
+export { default as deployment_Miroir } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" assert { type: "json" };
+export { default as deployment_Library_DO_NO_USE } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" assert { type: "json" };
 
 // Admin Data - Store Based Configurations
 export { default as adminStoreBasedConfiguration } from "./assets/admin_data/9f9170da-538d-425c-8cb7-551640623eed/5a7f7ecd-eaa5-44f7-a059-816eb15d164d.json" assert { type: "json" };

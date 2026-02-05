@@ -23,7 +23,7 @@ import {
   type ApplicationDeploymentMap
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   adminSelfApplication,
   entityDeployment,
 } from "miroir-deployment-admin";
@@ -75,10 +75,10 @@ export function fetchMiroirAndAppConfigurations(
     ? miroirConfig.client.deploymentStorageConfig
     : (miroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration;
 
-  if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
+  if (!configurations[deployment_Admin.uuid]) {
     const error = new Error(
       "no configuration for Admin selfApplication Deployment given, can not fetch data. Admin deployment uuid=" +
-        adminConfigurationDeploymentAdmin.uuid +
+        deployment_Admin.uuid +
         " configurations=" +
         JSON.stringify(configurations, null, 2)
     );
@@ -100,7 +100,7 @@ export function fetchMiroirAndAppConfigurations(
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: adminSelfApplication.uuid,
-          // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+          // deploymentUuid: deployment_Admin.uuid,
         },
       },
       defaultSelfApplicationDeploymentMap,
@@ -122,7 +122,7 @@ export function fetchMiroirAndAppConfigurations(
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         application: adminSelfApplication.uuid,
         // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-        // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        // deploymentUuid: deployment_Admin.uuid,
         pageParams: {},
         queryParams: {},
         contextResults: {},
@@ -149,7 +149,7 @@ export function fetchMiroirAndAppConfigurations(
           payload: {
             application: adminSelfApplication.uuid,
             // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-            // deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+            // deploymentUuid: deployment_Admin.uuid,
             applicationSection: "data",
             query: adminDeploymentsQuery,
           },
@@ -206,7 +206,7 @@ export function fetchMiroirAndAppConfigurations(
       const openStoreActions: Promise<any>[] = [];
       deploymentsToLoad  = foundDeployments.filter((deployment: Deployment) => {
         return (
-          deployment.adminApplication !== adminSelfApplication.uuid
+          deployment.selfApplication !== adminSelfApplication.uuid
         ); // no need to load admin app deployment, it was already loaded in the firs step
         // return deployment.adminApplication !== adminSelfApplication.uuid; // no need to load admin app deployment, it was already loaded in the firs step
       });
@@ -216,7 +216,7 @@ export function fetchMiroirAndAppConfigurations(
       applicationDeploymentMapForLoading = deploymentsToLoad
         ? Object.fromEntries(
             deploymentsToLoad.map((deployment: Deployment) => {
-              return [deployment.adminApplication, deployment.uuid];
+              return [deployment.selfApplication, deployment.uuid];
             })
           )
         : defaultSelfApplicationDeploymentMap;
@@ -240,7 +240,7 @@ export function fetchMiroirAndAppConfigurations(
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
               payload: {
-                application: deployment.adminApplication,
+                application: deployment.selfApplication,
                 deploymentUuid: deployment.uuid,
                 configuration: {
                   [deployment.uuid]: deployment.configuration as StoreUnitConfiguration,
@@ -277,7 +277,7 @@ export function fetchMiroirAndAppConfigurations(
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
               payload: {
-                application: deployment.adminApplication,
+                application: deployment.selfApplication,
                 // deploymentUuid: deployment.uuid,
               },
             },

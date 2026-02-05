@@ -18,7 +18,7 @@ const entityJzodSchema = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4
 const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json');
 const entityMenu = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json');
 
-import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-deployment-admin";
 import {
   ApplicationVersion,
   EntityDefinition,
@@ -68,7 +68,7 @@ export function selectCurrentDeploymentModel(
       throw new Error("selectCurrentDeploymentModel for deploymentUuid undefined");
       
     }
-    if (deploymentUuid == adminConfigurationDeploymentMiroir.uuid) {
+    if (deploymentUuid == deployment_Miroir.uuid) {
       return defaultMiroirMetaModel;
     } else {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
@@ -105,39 +105,39 @@ export function selectCurrentDeploymentModel(
         ),
         reports: (
           domainState[deploymentUuid] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityReport.uuid]
-          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityReport.uuid]) as Report[]
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityReport.uuid]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityReport.uuid]) as Report[]
           : []
         ),
         storedQueries: (
           domainState[deploymentUuid] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityQueryVersion.uuid]
-          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityQueryVersion.uuid]) as Query[]
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityQueryVersion.uuid]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityQueryVersion.uuid]) as Query[]
           : []
         ),
         // configuration: (
         //   domainState[deploymentUuid] &&
-        //   domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
-        //   domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]
-        //   ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]) as StoreBasedConfiguration[]
+        //   domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"] &&
+        //   domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]
+        //   ? Object.values(domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]) as StoreBasedConfiguration[]
         //   : []
         // ),
         applicationVersions: (
           domainState[deploymentUuid] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]
-          // ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
-          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as ApplicationVersion[]
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]
+          // ? Object.values(domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as ApplicationVersion[]
           : []
         ),
         menus: (
           domainState[deploymentUuid] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
-          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityMenu.uuid]
-          // ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
-          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityMenu.uuid]) as Menu[]
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityMenu.uuid]
+          // ? Object.values(domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entitySelfApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == deployment_Miroir.uuid?"data":"model"][entityMenu.uuid]) as Menu[]
           : []
         ),
         applicationVersionCrossEntityDefinition: [],

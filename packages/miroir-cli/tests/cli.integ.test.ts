@@ -16,7 +16,7 @@ import {
   MiroirLoggerFactory,
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   selfApplicationDeploymentMiroir,
   StoreOrBundleAction,
   StoreUnitConfiguration,
@@ -60,7 +60,7 @@ import {
   user1,
   user2,
   user3,
-  adminConfigurationDeploymentLibrary,
+  deployment_Library_DO_NO_USE,
 } from "miroir-example-library";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -435,7 +435,7 @@ describe("CLI Commands Integration Tests", () => {
   beforeEach(async () => {
     // Reset Miroir deployment to clean state before each test
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+      selfApplicationDeploymentMiroir as Deployment,
     ]);
 
     const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
@@ -447,7 +447,7 @@ describe("CLI Commands Integration Tests", () => {
     
     const createLibraryAction = resetAndinitializeDeploymentCompositeAction(
       selfApplicationLibrary.uuid,
-      adminConfigurationDeploymentLibrary.uuid,
+      deployment_Library_DO_NO_USE.uuid,
       {
         dataStoreType: "app",
         metaModel: defaultMiroirMetaModel,

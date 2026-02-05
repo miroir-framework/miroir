@@ -5,7 +5,7 @@
   "name": "Deployment of application library",
   "defaultLabel": "The deployment of application library",
   "description": "The description of deployment of application library",
-  "adminApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "configuration": {
     "admin": {
       "emulatedServerType": "mongodb",

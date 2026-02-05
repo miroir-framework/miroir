@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
+  deployment_Library_DO_NO_USE,
+  deployment_Miroir,
   author1,
   author2,
   author3,
@@ -43,7 +43,7 @@ import {
   publisher2,
   publisher3,
   resetAndInitApplicationDeployment,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
   Uuid
@@ -132,8 +132,8 @@ MiroirLoggerFactory.startRegisteredLoggers(
 myConsoleLog("started registered loggers DONE");
 
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
 const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
   "admin": {
@@ -151,7 +151,7 @@ const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
 }
 
 const typedAdminConfigurationDeploymentMiroir = {
-  ...adminConfigurationDeploymentMiroir,
+  ...deployment_Miroir,
   configuration: miroirStoreUnitConfigurationForTest,
 } as AdminApplicationDeploymentConfiguration;
 
@@ -172,7 +172,7 @@ const beforeAll = async () => {
 
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
     "library",
-    adminConfigurationDeploymentMiroir.uuid,
+    deployment_Miroir.uuid,
     typedAdminConfigurationDeploymentMiroir.uuid,
     typedAdminConfigurationDeploymentMiroir.configuration,
   );
@@ -195,7 +195,7 @@ const beforeEach = async  () => {
     throw new Error("beforeEach DomainController is not initialized");
   }
   await resetAndInitApplicationDeployment(domainController, [
-    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    selfApplicationDeploymentMiroir as Deployment,
   ]);
   document.body.innerHTML = '';
 }
@@ -1160,7 +1160,7 @@ const createReportsCompositeActionTemplateAssertions = [
 const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
   [testSuiteName]: {
     testActionType: "testCompositeActionTemplateSuite",
-    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+    deploymentUuid: deployment_Library_DO_NO_USE.uuid,
     testActionLabel: "applicative.Library.integ.test",
     testCompositeActionSuite: {
       testType: "testCompositeActionTemplateSuite",

@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   AdminApplicationDeploymentConfiguration,
-  // adminConfigurationDeploymentLibrary,
-  // adminConfigurationDeploymentMiroir,
+  // deployment_Library_DO_NO_USE,
+  // deployment_Miroir,
   // author1,
   // author2,
   // author3,
@@ -55,7 +55,7 @@ import {
   // publisher3,
   Report,
   resetAndInitApplicationDeployment,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
   Uuid
@@ -66,7 +66,7 @@ import {
 // import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 import {
   // adminConfigurationDeploymentParis,
-  // adminMiroirApplication,
+  // adminApplication_Miroir,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   emptyMetaModel,
@@ -74,7 +74,7 @@ import {
   TestCompositeActionParams,
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentLibrary,
+  deployment_Library_DO_NO_USE,
   author1,
   author2,
   author3,
@@ -107,8 +107,8 @@ import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
 import {
-  adminConfigurationDeploymentMiroir,
-  adminMiroirApplication,
+  deployment_Miroir,
+  adminApplication_Miroir,
 } from "miroir-deployment-admin";
 
 let domainController: DomainControllerInterface | undefined = undefined;
@@ -163,12 +163,12 @@ MiroirLoggerFactory.startRegisteredLoggers(
 );
 myConsoleLog("started registered loggers DONE");
 
-const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const testApplicationUuid = selfApplicationLibrary.uuid;
 
 const miroirtDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
 const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
   "admin": {
@@ -186,7 +186,7 @@ const miroirStoreUnitConfigurationForTest: StoreUnitConfiguration = {
 }
 
 const typedAdminConfigurationDeploymentMiroir = {
-  ...adminConfigurationDeploymentMiroir,
+  ...deployment_Miroir,
   configuration: miroirStoreUnitConfigurationForTest,
 } as AdminApplicationDeploymentConfiguration;
 
@@ -209,8 +209,8 @@ const beforeAll = async () => {
 
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
     "miroir",
-    adminConfigurationDeploymentMiroir.uuid,
-    adminMiroirApplication.uuid,
+    deployment_Miroir.uuid,
+    adminApplication_Miroir.uuid,
     typedAdminConfigurationDeploymentMiroir.configuration,
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
@@ -234,7 +234,7 @@ const beforeEach = async  () => {
     throw new Error("beforeEach DomainController is not initialized");
   }
   await resetAndInitApplicationDeployment(domainController, [
-    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    selfApplicationDeploymentMiroir as Deployment,
   ]);
   document.body.innerHTML = '';
   LoggerGlobalContext.setTest(undefined);

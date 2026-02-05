@@ -35,10 +35,10 @@ import {
   RestClientInterface,
   RestClientStub,
   RestPersistenceClientAndRestClientInterface,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   StoreUnitConfiguration,
   Uuid,
-  // adminConfigurationDeploymentLibrary,
+  // deployment_Library_DO_NO_USE,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   noValue,
@@ -49,7 +49,7 @@ import {
   type MiroirActivityTrackerInterface
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentMiroir
+  deployment_Miroir
 } from "miroir-deployment-admin";
 
 import {
@@ -77,10 +77,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-// const adminConfigurationDeploymentLibrary: Deployment = {
-const adminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration = {
+// const deployment_Library_DO_NO_USE: Deployment = {
+const deployment_Library_DO_NO_USE: AdminApplicationDeploymentConfiguration = {
   uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  parentName: "SelfApplicationDeploymentConfiguration",
+  parentName: "Deployment",
   parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
   name: "LibraryApplicationFilesystemDeployment",
   defaultLabel: "LibraryApplicationFilesystemDeployment",
@@ -110,27 +110,27 @@ const adminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfigurati
 
 // ################################################################################################
 // ################################################################################################
-// const deployments = [adminConfigurationDeploymentMiroir, adminConfigurationDeploymentLibrary ];
+// const deployments = [deployment_Miroir, deployment_Library_DO_NO_USE ];
 
 export const deploymentConfigurations: DeploymentConfiguration[] = [
   {
-    adminConfigurationDeployment: adminConfigurationDeploymentMiroir,
-    selfApplicationDeployment: selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    adminConfigurationDeployment: deployment_Miroir,
+    selfApplicationDeployment: selfApplicationDeploymentMiroir as Deployment,
   },
   {
-    adminConfigurationDeployment: adminConfigurationDeploymentLibrary,
-    selfApplicationDeployment: selfApplicationDeploymentLibrary as SelfApplicationDeploymentConfiguration,
+    adminConfigurationDeployment: deployment_Library_DO_NO_USE,
+    selfApplicationDeployment: selfApplicationDeploymentLibrary as Deployment,
   },
 ];
 
-export const selfApplicationDeploymentConfigurations: SelfApplicationDeploymentConfiguration[] = [
-    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
-    selfApplicationDeploymentLibrary  as SelfApplicationDeploymentConfiguration,
+export const selfApplicationDeploymentConfigurations: Deployment[] = [
+    selfApplicationDeploymentMiroir as Deployment,
+    selfApplicationDeploymentLibrary  as Deployment,
 ];
 
 export const adminApplicationDeploymentConfigurations: AdminApplicationDeploymentConfiguration[] = [
-    adminConfigurationDeploymentMiroir as AdminApplicationDeploymentConfiguration,
-    adminConfigurationDeploymentLibrary as AdminApplicationDeploymentConfiguration,
+    deployment_Miroir as AdminApplicationDeploymentConfiguration,
+    deployment_Library_DO_NO_USE as AdminApplicationDeploymentConfiguration,
 ];
 
 
@@ -249,7 +249,7 @@ export async function addEntitiesAndInstancesForEmulatedServer(
 export async function addEntitiesAndInstancesForRealServer(
   domainController: DomainControllerInterface,
   localCache: LocalCacheInterface,
-  adminConfigurationDeploymentLibrary: EntityInstance,
+  deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
   entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   act?: unknown,
@@ -260,7 +260,7 @@ export async function addEntitiesAndInstancesForRealServer(
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     payload: {
       application: selfApplicationDeploymentLibrary.selfApplication,
-      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       entities: entities
     }
   };
@@ -273,7 +273,7 @@ export async function addEntitiesAndInstancesForRealServer(
         localCache.currentModelEnvironment(
           selfApplicationLibrary.uuid,
           applicationDeploymentMap,
-          // adminConfigurationDeploymentLibrary.uuid
+          // deployment_Library_DO_NO_USE.uuid
         )
       );
       await domainController.handleAction(
@@ -283,14 +283,14 @@ export async function addEntitiesAndInstancesForRealServer(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: selfApplicationDeploymentLibrary.selfApplication,
-            // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+            // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
           },
         },
         applicationDeploymentMap,
         localCache.currentModelEnvironment(
           selfApplicationLibrary.uuid,
           applicationDeploymentMap,
-          // adminConfigurationDeploymentLibrary.uuid
+          // deployment_Library_DO_NO_USE.uuid
         )
       );
     });
@@ -301,7 +301,7 @@ export async function addEntitiesAndInstancesForRealServer(
       localCache.currentModelEnvironment(
         selfApplicationLibrary.uuid,
         applicationDeploymentMap,
-        // adminConfigurationDeploymentLibrary.uuid
+        // deployment_Library_DO_NO_USE.uuid
       )
     );
     await domainController.handleAction(
@@ -311,14 +311,14 @@ export async function addEntitiesAndInstancesForRealServer(
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
           application: selfApplicationDeploymentLibrary.selfApplication,
-          // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+          // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
         },
       },
       applicationDeploymentMap,
       localCache.currentModelEnvironment(
         selfApplicationLibrary.uuid,
         applicationDeploymentMap,
-        // adminConfigurationDeploymentLibrary.uuid
+        // deployment_Library_DO_NO_USE.uuid
       )
     );
   }
@@ -351,7 +351,7 @@ export async function addEntitiesAndInstancesForRealServer(
         localCache.currentModelEnvironment(
           selfApplicationLibrary.uuid,
           applicationDeploymentMap,
-          // adminConfigurationDeploymentLibrary.uuid
+          // deployment_Library_DO_NO_USE.uuid
         )
       );
     });
@@ -362,7 +362,7 @@ export async function addEntitiesAndInstancesForRealServer(
       localCache.currentModelEnvironment(
         selfApplicationLibrary.uuid,
         applicationDeploymentMap,
-        // adminConfigurationDeploymentLibrary.uuid
+        // deployment_Library_DO_NO_USE.uuid
       )
     );
   }
@@ -374,7 +374,7 @@ export async function addEntitiesAndInstances(
   domainController: DomainControllerInterface,
   localCache: LocalCacheInterface,
   miroirConfig: MiroirConfigClient,
-  adminConfigurationDeploymentLibrary: EntityInstance,
+  deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
   entities: { entity: MetaEntity, entityDefinition: EntityDefinition, instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
@@ -390,7 +390,7 @@ export async function addEntitiesAndInstances(
     await addEntitiesAndInstancesForRealServer(
       domainController,
       localCache,
-      adminConfigurationDeploymentLibrary,
+      deployment_Library_DO_NO_USE,
       applicationDeploymentMap,
       entities,
       act,
@@ -598,13 +598,13 @@ export async function createMiroirDeploymentGetPersistenceStoreController(
   const localMiroirPersistenceStoreController = await createDeploymentGetPersistenceStoreController(
     "miroir",
     miroirConfig,
-    adminConfigurationDeploymentMiroir.uuid,
+    deployment_Miroir.uuid,
     selfApplicationMiroir.uuid,
     applicationDeploymentMap,
     adminDeployment,
     miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid],
+    ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+    : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid],
     persistenceStoreControllerManager,
     domainController
   );
@@ -676,7 +676,7 @@ export async function deleteAndCloseApplicationDeployments(
   }
 
   // if (!miroirConfig.client.emulateServer) {
-    log.info('deleteAndCloseApplicationDeployments closing deployment:', adminConfigurationDeploymentMiroir.uuid); // TODO: really???
+    log.info('deleteAndCloseApplicationDeployments closing deployment:', deployment_Miroir.uuid); // TODO: really???
     for (const d of deploymentConfigurations) {
       const deletedStore = await domainController.handleAction(
         {

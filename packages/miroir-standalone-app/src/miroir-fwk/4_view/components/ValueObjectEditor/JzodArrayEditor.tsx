@@ -1,6 +1,6 @@
 ﻿import { FormikContextType, useFormikContext } from "formik";
 import {
-  adminConfigurationDeploymentMiroir,
+  deployment_Miroir,
   defaultSelfApplicationDeploymentMap,
   EntityDefinition,
   entityEntityDefinition,

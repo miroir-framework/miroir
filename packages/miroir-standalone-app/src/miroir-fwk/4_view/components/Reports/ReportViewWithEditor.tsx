@@ -40,7 +40,7 @@ import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormSchema, reportSectionsFormValue } from './ReportTools.js';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
-import { adminConfigurationDeploymentMiroir } from 'miroir-deployment-admin';
+import { deployment_Miroir } from 'miroir-deployment-admin';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -337,7 +337,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         "onEditValueObjectFormSubmit called on deployment",
         props.deploymentUuid,
         "miroir deployment is",
-        adminConfigurationDeploymentMiroir.uuid,
+        deployment_Miroir.uuid,
         "with new object value",
         data,
         "props:",
@@ -377,7 +377,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           "deploymentUuid", props.deploymentUuid,
           "currentInstance", currentInstance, "applicationSection", applicationSection);
         
-        if (props.deploymentUuid === adminConfigurationDeploymentMiroir.uuid && applicationSection === "model") {
+        if (props.deploymentUuid === deployment_Miroir.uuid && applicationSection === "model") {
           // throw new Error("Editing model definitions in the miroir (meta-model) deployment is not allowed.");
           return Promise.resolve(new Action2Error(
             "FailedToHandleAction",
@@ -392,7 +392,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         
         // update entityDefinition instance
         if (
-          props.deploymentUuid == adminConfigurationDeploymentMiroir.uuid || // modifying the meta-model is always transactional
+          props.deploymentUuid == deployment_Miroir.uuid || // modifying the meta-model is always transactional
           applicationSection == "model" // in an application, modifying the model must be transactional
         ) { // meta-model or model change, need transaction
           return domainController.handleActionFromUI(

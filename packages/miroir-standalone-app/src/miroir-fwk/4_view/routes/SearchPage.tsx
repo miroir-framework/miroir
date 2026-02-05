@@ -17,7 +17,7 @@ import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
 import { useMiroirContextService } from "../MiroirContextReactProvider";
 import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
-import { adminConfigurationDeploymentLibrary, entityBook, selfApplicationLibrary } from "miroir-example-library";
+import { deployment_Library_DO_NO_USE, entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -30,7 +30,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // Search Page - displays only the EntityInstanceSelectorPanel for browsing entities
 // ################################################################################################
 export function SearchPage() {
-  // const deploymentUuid: Uuid = adminConfigurationDeploymentMiroir.uuid;
+  // const deploymentUuid: Uuid = deployment_Miroir.uuid;
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const { fetchConfigurations } = usePageConfiguration({
     autoFetchOnMount: true,
@@ -42,7 +42,7 @@ export function SearchPage() {
   const persistedState = context.toolsPageState.transformerEditor;
   const showAllInstances = persistedState?.showAllInstances || false;
 
-  const deploymentUuid: Uuid = adminConfigurationDeploymentLibrary.uuid;
+  const deploymentUuid: Uuid = deployment_Library_DO_NO_USE.uuid;
   
   // Initialize with a default entity (Entity entity itself)
   // const initialEntityUuid: Uuid = "381ab1be-337f-4198-b1d3-f686867fc1dd"; // Entity entityDefinition UUID

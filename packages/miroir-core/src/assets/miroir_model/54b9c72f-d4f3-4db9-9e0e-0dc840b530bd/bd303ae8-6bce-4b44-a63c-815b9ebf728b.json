@@ -5,7 +5,7 @@
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
   "conceptLevel": "Model",
-  "name": "SelfApplicationDeploymentConfiguration",
+  "name": "Deployment",
   "icon": "Interests",
   "cache": {
     "cacheAllInstancesOnRefresh": true

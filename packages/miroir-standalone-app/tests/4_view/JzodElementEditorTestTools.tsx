@@ -812,10 +812,10 @@ export function getWrapperLoadingLocalCache(
     localCache.getInnerStore().getState()
   );  
   // localCache.setInstancesForEntityUuidIndex(
-  //   adminConfigurationDeploymentMiroir.uuid,
+  //   deployment_Miroir.uuid,
   //   "MetaModel",
   //   {
-  //     [adminConfigurationDeploymentMiroir.uuid]: adminConfigurationDeploymentMiroir,
+  //     [deployment_Miroir.uuid]: deployment_Miroir,
   //   }
   // );
 

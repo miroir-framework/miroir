@@ -603,7 +603,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
             "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
         } as any,
       },
-      // selfApplicationDeploymentConfiguration: {
+      // deployment: {
       //   ...selfApplicationDeploymentLibrary,
       //   selfApplication: selfApplicationUuid,
       //   uuid: adminConfigurationDeploymentUuid,
@@ -760,7 +760,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                         interpolation: "build",
                         definition: `The description of deployment of application {{deployApplication.applicationBundle.applicationName}}`,
                       } as any,
-                      adminApplication: testSelfApplicationUuid,
+                      selfApplication: testSelfApplicationUuid,
                       configuration: sqltestDeploymentStorageConfigurationTemplate as any,
                     } as Deployment,
                   ],

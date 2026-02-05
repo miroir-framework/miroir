@@ -27,7 +27,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   resetAndInitApplicationDeployment,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
   TestCompositeActionParams
@@ -85,7 +85,7 @@ import {
 } from "miroir-example-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
-import { adminConfigurationDeploymentAdmin, adminMiroirApplication } from "miroir-deployment-admin";
+import { deployment_Admin, adminApplication_Miroir } from "miroir-deployment-admin";
 // import { entityBook } from "miroir-core";
 
 const env: any = (import.meta as any).env;
@@ -136,14 +136,14 @@ const columnForTestDefinition: JzodElement = {
   tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)"} },
 };
 // const globalTimeOut = 10^9;
-const adminConfigurationDeploymentMiroir: Deployment = {
+const deployment_Miroir: Deployment = {
   uuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-  parentName: "SelfApplicationDeploymentConfiguration",
+  parentName: "Deployment",
   parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
   name: "DefaultMiroirApplicationDeployment",
   defaultLabel:
     "Miroir SelfApplication Deployment Configuration declaring Miroir SelfApplication Deployment in Admin schema. Run-time-only / DEFUNCT?",
-  adminApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   description: "The default Deployment for SelfApplication Miroir",
   configuration: {
     admin: {
@@ -175,13 +175,13 @@ const adminConfigurationDeploymentMiroir: Deployment = {
     // },
   },
 };
-const adminConfigurationDeploymentLibrary: Deployment = {
+const deployment_Library_DO_NO_USE: Deployment = {
   uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  parentName: "SelfApplicationDeploymentConfiguration",
+  parentName: "Deployment",
   parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
   name: "LibraryApplicationFilesystemDeployment",
   defaultLabel: "LibraryApplicationFilesystemDeployment",
-  adminApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
   description: "The default Filesystem Deployment for SelfApplication Library",
   configuration: {
     admin: {
@@ -204,38 +204,38 @@ const adminConfigurationDeploymentLibrary: Deployment = {
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 }
 
 const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
 const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentAdmin.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentAdmin.uuid];
+  ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
+  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
 
   
 const adminDeployment: Deployment = {
-  ...adminConfigurationDeploymentAdmin,
+  ...deployment_Admin,
   configuration: adminDeploymentStorageConfiguration,
 };
 
 const testApplicationUuid = selfApplicationLibrary.uuid;
-const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const testApplicationDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 
 const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
 const testDeployment: Deployment = {
-  ...adminConfigurationDeploymentLibrary,
+  ...deployment_Library_DO_NO_USE,
   configuration: testDeploymentStorageConfiguration,
 };
 
 
 // const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
-//   adminConfigurationDeploymentLibrary as any;
+//   deployment_Library_DO_NO_USE as any;
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -286,8 +286,8 @@ beforeAll(async () => {
   // create the Miroir app deployment containing the meta-model
   const createMiroirDeploymentCompositeAction = createDeploymentCompositeAction(
     "miroir",
-    adminConfigurationDeploymentMiroir.uuid,
-    adminMiroirApplication.uuid,
+    deployment_Miroir.uuid,
+    adminApplication_Miroir.uuid,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
   );
@@ -312,7 +312,7 @@ beforeAll(async () => {
 // executed only once like beforeAll, since there is only 1 test suite
 beforeEach(async () => {
   await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-    selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+    selfApplicationDeploymentMiroir as Deployment,
   ]);
   document.body.innerHTML = "";
 });
@@ -330,7 +330,7 @@ const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema as MlSchema,
   defaultMiroirMetaModel,
   endpointDocument as EndpointDefinition,
-  adminConfigurationDeploymentLibrary.uuid,
+  deployment_Library_DO_NO_USE.uuid,
 );
 
 const testActions: Record<string, TestCompositeActionParams> = {
@@ -350,12 +350,12 @@ const testActions: Record<string, TestCompositeActionParams> = {
       ),
       beforeEach: resetAndinitializeDeploymentCompositeAction(
         selfApplicationLibrary.uuid,
-        adminConfigurationDeploymentLibrary.uuid,
+        deployment_Library_DO_NO_USE.uuid,
         {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
           metaModel: defaultMiroirMetaModel,
           selfApplication: selfApplicationLibrary,
-          // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+          // deployment: selfApplicationDeploymentLibrary,
           applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
           // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
@@ -374,11 +374,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
         defaultLibraryModelEnvironment.currentModel as any,
         [entityPublisher.uuid], 
       ),
-      afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
+      afterEach: testOnLibrary_resetLibraryDeployment(deployment_Library_DO_NO_USE.uuid),
       afterAll: testOnLibrary_deleteLibraryDeployment(
         miroirConfig,
         selfApplicationLibrary.uuid,
-        adminConfigurationDeploymentLibrary.uuid
+        deployment_Library_DO_NO_USE.uuid
       ),
       testCompositeActions: {
         "Refresh all Instances": {
@@ -400,7 +400,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: deployment_Miroir.uuid,
                   },
                 },
                 {
@@ -632,7 +632,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: deployment_Miroir.uuid,
                   },
                 },
                 {
@@ -760,7 +760,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: deployment_Miroir.uuid,
                   },
                 },
                 {
@@ -839,7 +839,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                       application: testApplicationUuid,
                       queryExecutionStrategy: "storage",
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
@@ -966,7 +966,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: deployment_Miroir.uuid,
                   },
                 },
                 {
@@ -1109,7 +1109,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: deployment_Miroir.uuid,
                   },
                 },
                 {
@@ -1252,7 +1252,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: selfApplicationMiroir.uuid,
-                    // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                    // deploymentUuid: deployment_Miroir.uuid,
                   },
                 },
                 {
@@ -1307,7 +1307,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                       application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       queryExecutionStrategy: "storage",
@@ -1347,7 +1347,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
-                      // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
                       application: testApplicationUuid,
                       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
                       queryExecutionStrategy: "storage",

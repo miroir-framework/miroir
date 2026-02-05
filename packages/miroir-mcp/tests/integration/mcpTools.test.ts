@@ -16,7 +16,7 @@ import {
   MiroirLoggerFactory,
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
-  SelfApplicationDeploymentConfiguration,
+  Deployment,
   selfApplicationDeploymentMiroir,
   StoreOrBundleAction,
   StoreUnitConfiguration,
@@ -40,7 +40,7 @@ import {
 
 
 import {
-  adminConfigurationDeploymentLibrary,
+  deployment_Library_DO_NO_USE,
   author1,
   author2,
   author3,
@@ -299,12 +299,12 @@ describe("MCP Tools Integration Tests", () => {
   beforeEach(async () => {
     // Reset Miroir deployment to clean state before each test
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-      selfApplicationDeploymentMiroir as SelfApplicationDeploymentConfiguration,
+      selfApplicationDeploymentMiroir as Deployment,
     ]);
 
     const createLibraryAction = resetAndinitializeDeploymentCompositeAction(
       selfApplicationLibrary.uuid,
-      adminConfigurationDeploymentLibrary.uuid,
+      deployment_Library_DO_NO_USE.uuid,
       {
         dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
         metaModel: defaultMiroirMetaModel,

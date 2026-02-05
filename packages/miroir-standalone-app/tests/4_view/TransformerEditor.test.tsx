@@ -4,7 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
 
 import {
-  adminConfigurationDeploymentLibrary,
+  deployment_Library_DO_NO_USE,
   JzodElement,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -37,7 +37,7 @@ MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(pack
 
 // ################################################################################################
 // Mock data setup
-const mockDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
+const mockDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const mockEntityUuid = entityBook.uuid;
 
 // Sample transformers for testing

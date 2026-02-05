@@ -5,9 +5,9 @@ import {
 
 import { Formik, type FormikProps } from 'formik';
 import {
-  // adminConfigurationDeploymentAdmin,
-  // adminConfigurationDeploymentLibrary,
-  // adminConfigurationDeploymentMiroir,
+  // deployment_Admin,
+  // deployment_Library_DO_NO_USE,
+  // deployment_Miroir,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -41,8 +41,8 @@ import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
 import { ThemedPaper } from './Themes/index.js';
 import { selfApplicationLibrary } from 'miroir-example-library';
 import {
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
+  deployment_Admin,
+  deployment_Miroir,
   entityApplicationForAdmin,
 } from "miroir-deployment-admin";
 
@@ -103,11 +103,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   });
 
   const [innerSelectedApplicationUuid, setInnerSelectedApplicationUuid] = useState<string>(
-    // adminConfigurationDeploymentLibrary.uuid
+    // deployment_Library_DO_NO_USE.uuid
     selfApplicationLibrary.uuid
   );
   // const [innerSelectedDeploymentUuid, setInnerSelectedDeploymentUuid] = useState<string>(
-  //   adminConfigurationDeploymentLibrary.uuid
+  //   deployment_Library_DO_NO_USE.uuid
   // );
 
   const domainController: DomainControllerInterface = useDomainControllerService();
@@ -227,11 +227,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           const currentInnerModel: MetaModel = useCurrentModel(
             selectedApplicationUuid != noValue.uuid
               ? selectedApplicationUuid
-              : adminConfigurationDeploymentMiroir.uuid,
+              : deployment_Miroir.uuid,
             defaultSelfApplicationDeploymentMap
           );
           // const currentInnerModel: MetaModel = useCurrentModel(
-          //   selectedDeploymentUuid != noValue.uuid? selectedDeploymentUuid : adminConfigurationDeploymentMiroir.uuid
+          //   selectedDeploymentUuid != noValue.uuid? selectedDeploymentUuid : deployment_Miroir.uuid
           // );
 
           const selectedEndpointUuid =
@@ -312,7 +312,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                         defaultLabel: "Application",
                         editable: true,
                         foreignKeyParams: {
-                          targetDeploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                          targetDeploymentUuid: deployment_Admin.uuid,
                           targetEntity: entityApplicationForAdmin.uuid,
                           targetEntityOrderInstancesBy: "name",
                         },
@@ -522,7 +522,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     labelElement={<span>select Application</span>}
                     formValueMLSchema={endpointActionCallerFormikSchema}
                     formikValuePathAsString={formikPath_EndpointActionCaller}
-                    deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
+                    deploymentUuid={deployment_Miroir.uuid} // dummy deployment for application selection
                     applicationSection={"data"}
                     formLabel={"Submit Action"}
                     mode="create" // Readonly viewer mode, not relevant here
@@ -537,7 +537,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     labelElement={<span>select Application</span>}
                     formValueMLSchema={endpointActionCallerFormikSchema}
                     formikValuePathAsString={formikPath_EndpointActionCaller}
-                    deploymentUuid={adminConfigurationDeploymentMiroir.uuid} // dummy deployment for application selection
+                    deploymentUuid={deployment_Miroir.uuid} // dummy deployment for application selection
                     application={innerSelectedApplicationUuid}
                     applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
                     applicationSection={"data"}

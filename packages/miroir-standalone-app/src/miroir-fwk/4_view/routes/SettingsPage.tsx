@@ -15,7 +15,7 @@ import {
   type LoggerInterface
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
+  deployment_Admin,
   adminSelfApplication,
   defaultAdminViewParams,
   reportViewParamsDetails
@@ -115,7 +115,7 @@ export const SettingsPage: React.FC<any> = (props: any) => {
 
     const config: ViewParamsUpdateQueueConfig = {
       delayMs: 5000,
-      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+      deploymentUuid: deployment_Admin.uuid,
       viewParamsInstanceUuid: viewParamsInstanceUuid,
     };
 
@@ -226,7 +226,7 @@ export const SettingsPage: React.FC<any> = (props: any) => {
             pageParams={
               {
                 application: adminSelfApplication.uuid,
-                deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                deploymentUuid: deployment_Admin.uuid,
                 applicationSection: "data",
                 reportUuid: reportViewParamsDetails.uuid,
                 instanceUuid: defaultAdminViewParams.uuid,

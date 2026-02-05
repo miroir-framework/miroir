@@ -5,7 +5,7 @@
   "name": "Deployment of application miroir",
   "defaultLabel": "The deployment of application miroir",
   "description": "The description of deployment of application miroir",
-  "adminApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "configuration": {
     "admin": {
       "emulatedServerType": "sql",

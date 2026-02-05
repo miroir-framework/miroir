@@ -4,7 +4,7 @@
   "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
   "name": "ParisApplicationSqlDeployment",
   "defaultLabel": "ParisApplicationSqlDeployment",
-  "adminApplication": "a118ba22-1be2-423f-aa77-f0baaa76313f",
+  "selfApplication": "a118ba22-1be2-423f-aa77-f0baaa76313f",
   "description": "The default Sql Deployment for SelfApplication Paris",
   "configuration": {
     "admin": {

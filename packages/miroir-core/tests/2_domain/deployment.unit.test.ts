@@ -4,11 +4,11 @@
 
 // import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 // import { getBasicApplicationConfiguration } from "../../src/2_domain/Deployment";
-// // import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
+// // import deployment_Library_DO_NO_USE from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
 // import menuDefaultAdmin from "../../src/assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json";
-// import adminConfigurationDeploymentAdmin from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json";
-// import adminConfigurationDeploymentMiroir from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+// import deployment_Admin from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json";
+// import deployment_Miroir from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 // // import adminConfigurationDeploymentTest1 from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/15e2004a-e7a0-4b9e-8acd-6d3500a6c9ad.json";
 // import entityApplicationForAdmin from "../../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json";
 // // import entityDeployment from "../../src/assets/admin_model/16dbfe28-e1d7-4fa8-b3fa-f2c007fdbe24/7959d814-400c-4e80-988f-a00fe582ab98.json";
@@ -27,7 +27,7 @@
 // // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 // // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-// const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = adminConfigurationDeploymentLibrary as any;
+// const typedAdminConfigurationDeploymentLibrary:AdminApplicationDeploymentConfiguration = deployment_Library_DO_NO_USE as any;
 // // describe.sequential("templatesDEFUNCT.unit.test", () => {
 // describe("deployment.unit.test", () => {
 //   // ################################################################################################
@@ -37,13 +37,13 @@
 //       const result: InitApplicationParameters = getBasicApplicationConfiguration(
 //         "Library",
 //         selfApplicationLibrary.uuid,
-//         adminConfigurationDeploymentLibrary.uuid,
+//         deployment_Library_DO_NO_USE.uuid,
 //         selfApplicationModelBranchLibraryMasterBranch.uuid,
 //         selfApplicationVersionLibraryInitialVersion.uuid,
 //       );
 //       const expectedResult: InitApplicationParameters = {
 //         dataStoreType:
-//           adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+//           deployment_Library_DO_NO_USE.uuid == deployment_Miroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
 //         metaModel: defaultMiroirMetaModel,
 //         // selfApplication: selfApplicationMiroir,
 //         selfApplication: {
@@ -54,7 +54,7 @@
 //           "description": "The model and data of the Library selfApplication",
 //         },
 //         // adminApplicationDeploymentConfiguration: typedAdminConfigurationDeploymentLibrary,
-//         // selfApplicationDeploymentConfiguration: selfApplicationDeploymentLibrary,
+//         // deployment: selfApplicationDeploymentLibrary,
 //         applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
 //         // applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
 //         applicationVersion: selfApplicationVersionLibraryInitialVersion,
@@ -96,7 +96,7 @@
 
 //       const expectedResult: InitApplicationParameters = {
 //         dataStoreType:
-//           adminConfigurationDeploymentLibrary.uuid == adminConfigurationDeploymentMiroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+//           deployment_Library_DO_NO_USE.uuid == deployment_Miroir.uuid ? "miroir" : "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
 //         metaModel: defaultMiroirMetaModel,
 //         // adminApplicationDeploymentConfiguration: {
 //         //   ...typedAdminConfigurationDeploymentLibrary,
@@ -105,15 +105,15 @@
 //         //   configuration: {
 //         //     ...typedAdminConfigurationDeploymentLibrary.configuration,
 //         //     // admin: {
-//         //     //   ...adminConfigurationDeploymentLibrary.configuration.admin,
+//         //     //   ...deployment_Library_DO_NO_USE.configuration.admin,
 //         //     //   directory:  `../miroir-core/src/assets/admin`
 //         //     // },
 //         //     model: {
-//         //       ...adminConfigurationDeploymentLibrary.configuration.model,
+//         //       ...deployment_Library_DO_NO_USE.configuration.model,
 //         //       directory: `../miroir-core/src/assets/${applicationNameLC}_model`,
 //         //     } as StoreSectionConfiguration,
 //         //     data: {
-//         //       ...adminConfigurationDeploymentLibrary.configuration.model,
+//         //       ...deployment_Library_DO_NO_USE.configuration.model,
 //         //       directory: `../miroir-core/src/assets/${applicationNameLC}_data`,
 //         //     } as StoreSectionConfiguration,
 //         //   },
@@ -125,7 +125,7 @@
 //           defaultLabel: `The ${applicationName} selfApplication`,
 //           description: `The model and data of the ${applicationName} selfApplication`,
 //         },
-//         // selfApplicationDeploymentConfiguration: {
+//         // deployment: {
 //         //   ...selfApplicationDeploymentLibrary,
 //         //   uuid: adminApplicationDeploymentConfigurationUuid,
 //         //   selfApplication: selfApplicationUuid,

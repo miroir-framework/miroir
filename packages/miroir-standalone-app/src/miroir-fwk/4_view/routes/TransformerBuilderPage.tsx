@@ -46,7 +46,7 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-deployment-admin";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -126,7 +126,7 @@ export const TransformerBuilderPage: React.FC<any> = (
       )
   );
   
-  const entityTransformerTestKey = adminConfigurationDeploymentMiroir.uuid + "_data_" + entityTransformerTest.uuid
+  const entityTransformerTestKey = deployment_Miroir.uuid + "_data_" + entityTransformerTest.uuid
   // log.info(
   //   "Tools.tsx deploymentEntityStateSelectorMap",
   //   deploymentEntityStateSelectorMap,
@@ -199,7 +199,7 @@ export const TransformerBuilderPage: React.FC<any> = (
   //         ...actionCreateSchemaParamValues,
   //         entityApplicationForAdmin,
   //         entitySelfApplication,
-  //         adminConfigurationDeploymentAdmin,
+  //         deployment_Admin,
   //         entityMenu,
   //         entityDeployment,
   //       };
