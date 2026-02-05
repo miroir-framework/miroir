@@ -205,7 +205,13 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
   const [loaded,setLoaded] = useState(false);
   return (
     <div>
-      <button onClick={()=>setStep(step+1)} name={'next step '+props.reportUuid  + ' step=' + step} role='button'>{'next step '+props.reportUuid + ' step=' + step}</button>
+      <button
+        onClick={() => setStep(step + 1)}
+        name={"next step " + props.reportUuid + " step=" + step}
+        role="button"
+      >
+        {"next step " + props.reportUuid + " step=" + step}
+      </button>
       <span role={"step:" + step}>loaded step:{step}</span>
       <span>loaded:{loaded ? "finished" : "not"}</span>
     </div>

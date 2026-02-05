@@ -371,7 +371,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             ],
           },
         ],
-        defaultLibraryModelEnvironment.currentModel,
+        defaultLibraryModelEnvironment.currentModel as any,
         [entityPublisher.uuid], 
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),
