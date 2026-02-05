@@ -926,12 +926,15 @@ export {
   testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
-// admin
-const entityAdminApplication = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
-const entityViewParams = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json"); //assert { type: "json" };
-const entityDefinitionViewParams = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json"); //assert { type: "json" };
-const defaultAdminViewParams = require("../src/assets/admin_data/b9765b7c-b614-4126-a0e2-634463f99937/441cb6fd-2728-4a16-b170-ebceec1ce6c2.json"); //assert { type: "json" };
-const reportViewParamsDetails = require("./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/57b3d7ef-8c12-4891-893e-35bab00b2037.json");
+// // admin
+// const {
+//   entityApplicationForAdmin: entityAdminApplication,
+//   entityViewParams,
+//   entityDefinitionViewParams,
+//   defaultAdminViewParams,
+//   reportViewParamsDetails,
+//   entityDefinitionAdminApplication
+// } = require("miroir-deployment-admin"); //assert { type: "json" };
 // miroir model
 const entityEndpointVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json");
 const entityEntity = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
@@ -950,7 +953,7 @@ const entityTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a987
 const entityTransformerDefinition = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json");
 const entityTransformerTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/681be9ca-c593-45f5-b45a-5f1d4969e91e.json");
 
-const entityDefinitionAdminApplication = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json");
+// const { entityDefinitionAdminApplication: entityDefinitionAdminApplicationFromPackage } = require("miroir-deployment-admin");
 const entityDefinitionEndpoint = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json");
 const entityDefinitionEntity = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json");
 const entityDefinitionEntityDefinition = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json");
@@ -1043,13 +1046,13 @@ export {
   // instanceEndpoint,
   // modelEndpoint,
   applicationEndpointV1,
-  defaultAdminViewParams,
+  // defaultAdminViewParams,
   storeManagementEndpoint as deploymentEndpointV1,
   // entityDefinitionSelfApplicationV1,
   domainEndpointVersionV1,
-  entityAdminApplication,
+  // entityAdminApplication,
   // entityDefinitionSelfApplicationVersionV1,
-  entityDefinitionAdminApplication,
+  // entityDefinitionAdminApplication,
   entityDefinitionBundleV1,
   entityDefinitionCommit,
   entityDefinitionEndpoint,
@@ -1073,7 +1076,7 @@ export {
   entityDefinitionTest,
   entityDefinitionTransformerDefinition,
   entityDefinitionTransformerTest,
-  entityDefinitionViewParams,
+  // entityDefinitionViewParams,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -1092,7 +1095,7 @@ export {
   entityTransformerDefinition,
   entityTransformerTest,
   // admin
-  entityViewParams,
+  // entityViewParams,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -1123,7 +1126,7 @@ export {
   reportTestList,
   reportTransformerTestDetails,
   reportTransformerTestList,
-  reportViewParamsDetails,
+  // reportViewParamsDetails,
   runnerDropApplication,
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
@@ -1143,33 +1146,34 @@ export {
 // ################################################################################################
 // ADMIN APPLICATION
 // ################################################################################################
-const adminAdminApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
-const adminMiroirApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json"); //assert { type: "json" };
-const adminLibraryApplication = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/5af03c98-fe5e-490b-b08f-e1230971c57f.json"); //assert { type: "json" };
-const adminSelfApplication = require("./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json"); //assert { type: "json" };
-
-const menuDefaultAdmin = require("./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json"); //assert { type: "json" };
-const selfApplicationStoreBasedConfigurationAdmin = require("./assets/admin_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/a192c4bd-15c9-4932-84f6-3885b9d5969f.json");
-const adminConfigurationDeploymentAdmin = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json"); //assert { type: "json" };
-const adminConfigurationDeploymentMiroir = require("./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json"); //assert { type: "json" };
-const entityApplicationForAdmin = require("./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
-const entityDeployment = require("./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json"); //assert { type: "json" };
-const entityDefinitionDeployment = require("./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json"); //assert { type: "json" };
+// const {
+//   adminAdminApplication,
+//   adminMiroirApplication,
+//   adminLibraryApplication,
+//   adminSelfApplication,
+//   menuDefaultAdmin,
+//   selfApplicationStoreBasedConfigurationAdmin,
+//   adminConfigurationDeploymentAdmin,
+//   adminConfigurationDeploymentMiroir,
+//   entityApplicationForAdmin,
+//   entityDeployment,
+//   entityDefinitionDeployment
+// } = require("miroir-deployment-admin"); //assert { type: "json" };
 const test1SelfApplication = require("./assets/test1_model/a659d350-dd97-4da9-91de-524fa01745dc/70a866bd-a645-41be-8ec5-814451f12337.json"); //assert { type: "json" };
 const menuDefaultTest1 = require("./assets/test1_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/84c178cc-1b1b-497a-a035-9b3d756bb085.json"); //assert { type: "json" };
 
 
-export {
-  adminAdminApplication, adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
-  adminLibraryApplication,
-  adminMiroirApplication,
-  adminSelfApplication, entityApplicationForAdmin,
-  entityDefinitionDeployment,
-  entityDeployment,
-  menuDefaultAdmin,
-  selfApplicationStoreBasedConfigurationAdmin
-};
+// export {
+//   adminAdminApplication, adminConfigurationDeploymentAdmin,
+//   adminConfigurationDeploymentMiroir,
+//   adminLibraryApplication,
+//   adminMiroirApplication,
+//   adminSelfApplication, entityApplicationForAdmin,
+//   entityDefinitionDeployment,
+//   entityDeployment,
+//   menuDefaultAdmin,
+//   selfApplicationStoreBasedConfigurationAdmin
+// };
 
   export { menuDefaultTest1, test1SelfApplication };
 

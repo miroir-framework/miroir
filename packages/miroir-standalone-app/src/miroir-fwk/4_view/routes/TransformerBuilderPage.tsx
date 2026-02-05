@@ -10,7 +10,6 @@ import {
   JzodObject,
   LoggerInterface,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentMiroir,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   entityTransformerTest,
@@ -23,7 +22,11 @@ import {
   type SyncBoxedExtractorOrQueryRunnerMap
 } from "miroir-core";
 
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from "../../miroir-localcache-imports.js";
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  type ReduxStateWithUndoRedo,
+  useSelector,
+} from "../../miroir-localcache-imports.js";
 // import {
 //   Entity,
 //   TestSuiteResult
@@ -38,7 +41,12 @@ import { usePageConfiguration } from "../services/index.js";
 
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
-import { entityBook, selfApplicationDeploymentLibrary, selfApplicationLibrary } from "miroir-example-library";
+import {
+  entityBook,
+  selfApplicationDeploymentLibrary,
+  selfApplicationLibrary,
+} from "miroir-example-library";
+import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

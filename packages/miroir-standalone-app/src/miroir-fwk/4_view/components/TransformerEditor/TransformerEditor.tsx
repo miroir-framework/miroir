@@ -6,30 +6,25 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
-  adminSelfApplication,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
-  entityApplicationForAdmin,
   entityDefinitionTransformerDefinition,
   getInnermostTransformerError,
-  miroirFundamentalJzodSchema,
+  noValue,
   safeStringify,
-  selfApplicationMiroir,
   transformer_extended_apply_wrapper,
   type JzodElement,
   type JzodObject,
-  type MlSchema,
   type JzodUnion,
-  type MetaModel,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap,
-  noValue
+  type SyncBoxedExtractorOrQueryRunnerMap
 } from 'miroir-core';
+import {
+  adminSelfApplication,
+  entityApplicationForAdmin
+} from "miroir-deployment-admin";
 
 
 import { Formik, type FormikProps } from 'formik';
@@ -38,32 +33,31 @@ import {
   type TransformerForBuildPlusRuntime
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { packageName } from '../../../../constants';
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector, type ReduxStateWithUndoRedo } from '../../../miroir-localcache-imports.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
-import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
+import { useCurrentModelEnvironment } from '../../ReduxHooks';
 import {
   useDeploymentUuidFromApplicationUuid,
   useTransformer
 } from "../Reports/ReportHooks";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
   ThemedHeaderSection,
-  ThemedOnScreenHelper,
   ThemedTitle
 } from "../Themes/index";
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
+import { TransformationResultPanel } from './TransformationResultPanel';
 import {
   formikPath_TransformerEditorInputModeSelector,
   type TransformerEditorFormikValueType,
   type TransformerEditorProps,
 } from "./TransformerEditorInterface";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
-import { TransformationResultPanel } from './TransformationResultPanel';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents';
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from '../../../miroir-localcache-imports.js';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

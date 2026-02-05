@@ -16,13 +16,9 @@ import type {
   TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
-  adminSelfApplication,
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
-  entityApplicationForAdmin,
-  entityDeployment,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  miroirFundamentalJzodSchemaUuid,
   MiroirLoggerFactory,
   noValue,
   selfApplicationMiroir
@@ -42,7 +38,11 @@ import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
-import { dir } from "console";
+import {
+  adminSelfApplication,
+  entityApplicationForAdmin,
+  entityDeployment,
+} from "miroir-deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

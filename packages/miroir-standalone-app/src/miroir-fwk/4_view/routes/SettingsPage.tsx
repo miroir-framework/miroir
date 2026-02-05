@@ -1,34 +1,26 @@
 import {
   Box,
   Container,
-  Paper,
-  Typography,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
+  Paper,
+  Select,
   SelectChangeEvent,
+  Typography,
 } from "@mui/material";
 import {
-  MiroirLoggerFactory,
-  type LoggerInterface,
-  adminConfigurationDeploymentAdmin,
-  deployment,
-  reportViewParamsDetails,
-  defaultAdminViewParams,
-  adminSelfApplication,
   defaultSelfApplicationDeploymentMap,
+  MiroirLoggerFactory,
+  type LoggerInterface
 } from "miroir-core";
-import { packageName } from "../../../constants.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
-import { cleanLevel } from "../constants.js";
-import { usePageConfiguration } from "../services/index.js";
-import { MiroirThemeSelector } from "../components/MiroirThemeSelector.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import {
-  useDomainControllerService,
-  useMiroirContextService,
-} from "../MiroirContextReactProvider.js";
+  adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  defaultAdminViewParams,
+  reportViewParamsDetails
+} from "miroir-deployment-admin";
+
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   Domain2QueryReturnType,
@@ -39,13 +31,23 @@ import {
   SyncQueryRunner,
   ViewParamsData,
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
-import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 import { useMemo } from "react";
+import { packageName } from "../../../constants.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
+import { MiroirThemeSelector } from "../components/MiroirThemeSelector.js";
+import { PageContainer } from "../components/Page/PageContainer.js";
 import {
   ViewParamsUpdateQueue,
   ViewParamsUpdateQueueConfig,
 } from "../components/ViewParamsUpdateQueue.js";
+import { cleanLevel } from "../constants.js";
+import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import {
+  useDomainControllerService,
+  useMiroirContextService,
+} from "../MiroirContextReactProvider.js";
+import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
+import { usePageConfiguration } from "../services/index.js";
 import { ReportDisplay } from "./ReportDisplay.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

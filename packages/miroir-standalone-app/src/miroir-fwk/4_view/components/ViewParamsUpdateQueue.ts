@@ -2,12 +2,12 @@ import type { Domain } from "domain";
 import {
   DomainControllerInterface,
   EntityInstance,
-  entityViewParams,
   LoggerInterface,
   MiroirLoggerFactory,
   ViewParamsData,
   type DomainAction,
 } from "miroir-core";
+import { entityViewParams } from "miroir-deployment-admin";
 
 export interface ViewParamsUpdate {
   currentValue: ViewParamsData | undefined;

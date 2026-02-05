@@ -1,0 +1,35 @@
+{
+  "name": "miroir-deployment-admin",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Admin deployment assets for the Miroir Framework",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "LICENSE.md",
+    "package.json",
+    "index.d.ts",
+    "dist/index.js",
+    "dist/index.js.map"
+  ],
+  "scripts": {
+    "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "miroir-core": "*",
+    "copyfiles": "^2.4.1",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

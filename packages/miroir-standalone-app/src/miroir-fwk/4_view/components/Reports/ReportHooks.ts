@@ -2,19 +2,12 @@ import { useMemo } from 'react';
 import { Params } from 'react-router-dom';
 
 import {
-  adminAdminApplication,
-  adminConfigurationDeploymentAdmin,
-  adminSelfApplication,
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   defaultMiroirModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   Domain2QueryReturnType,
-  dummyDomainManyQueryWithDeploymentUuid,
-  entityDeployment,
-  EntityInstance,
   entityRunner,
   entityTransformerDefinition,
   getApplicationSection,
@@ -31,16 +24,20 @@ import {
   type Report,
   type Runner
 } from "miroir-core";
-
+import {
+  adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  entityDeployment,
+} from "miroir-deployment-admin";
 
 
 import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
 import type { TransformerDefinition } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap
 } from "../../../miroir-localcache-imports.js";
-import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 
 // Entity constants

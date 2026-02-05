@@ -8,19 +8,19 @@
   "adminApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "configuration": {
     "admin": {
-      "emulatedServerType": "mongodb",
-      "connectionString": "mongodb://localhost:27017",
-      "database": "miroir-admin"
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroirAdmin"
     },
     "model": {
-      "emulatedServerType": "mongodb",
-      "connectionString": "mongodb://localhost:27017",
-      "database": "miroir-app"
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
     },
     "data": {
-      "emulatedServerType": "mongodb",
-      "connectionString": "mongodb://localhost:27017",
-      "database": "miroir-app"
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
     }
   }
 }

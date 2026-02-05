@@ -2,8 +2,6 @@ import { describe } from 'vitest';
 
 import {
   type Action2ReturnType,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
   ApplicationSection,
   createDeploymentCompositeAction,
   // defaultLibraryModelEnvironment,
@@ -22,6 +20,7 @@ import {
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirEventService,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   resetAndInitApplicationDeployment,
@@ -30,6 +29,11 @@ import {
   // selfApplicationLibrary,
   StoreUnitConfiguration
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentMiroir
+} from "miroir-deployment-admin";
+
 
 import {
   adminConfigurationDeploymentLibrary,
@@ -42,6 +46,7 @@ import {
   book4,
   book5,
   book6,
+  endpointDocument,
   entityAuthor,
   entityBook,
   entityCountry,
@@ -51,6 +56,7 @@ import {
   entityLendingHistoryItem,
   entityPublisher,
   entityUser,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
@@ -75,7 +81,14 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 // import { miroirCoreStartup } from 'miroir-core/src/startup.js';
-import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances, Deployment, Entity } from 'miroir-core';
+import type {
+  ApplicationDeploymentMap,
+  ApplicationEntitiesAndInstances,
+  Deployment,
+  EndpointDefinition,
+  Entity,
+  MlSchema,
+} from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   createMiroirDeploymentGetPersistenceStoreController,
@@ -202,6 +215,13 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   },
 ];
 
+const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+  miroirFundamentalJzodSchema as MlSchema,
+  defaultMiroirMetaModel,
+  endpointDocument as EndpointDefinition,
+  adminConfigurationDeploymentLibrary.uuid,
+);
+
 // ################################################################################################
 beforeAll(
   async () => {
@@ -300,7 +320,7 @@ beforeEach(
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         libraryEntitiesAndInstances,
-        defaultLibraryModelEnvironment.currentModel,
+        defaultLibraryModelEnvironment.currentModel as any,
       ),
       applicationDeploymentMap,
       defaultMiroirModelEnvironment,
@@ -343,6 +363,7 @@ afterAll(
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
   }
 )
+
 
 
 // ##############################################################################################

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
@@ -16,13 +16,9 @@ import type {
   TransformerForBuildPlusRuntime
 } from "miroir-core";
 import {
-  adminSelfApplication,
   defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
-  entityApplicationForAdmin,
-  entityDeployment,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  miroirFundamentalJzodSchemaUuid,
   MiroirLoggerFactory,
   noValue,
   selfApplicationMiroir
@@ -36,13 +32,17 @@ import {
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-example-library";
 import { packageName } from "../../../../constants.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from "../../constants.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
-import { dir } from "console";
+import {
+  adminSelfApplication,
+  entityApplicationForAdmin,
+  entityDeployment,
+} from "miroir-deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

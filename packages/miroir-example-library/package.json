@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "miroir-core": "*",
+    "miroir-deployment-admin": "*",
     "copyfiles": "^2.4.1",
     "tsup": "^8.3.5",
     "tsx": "^4.19.3",

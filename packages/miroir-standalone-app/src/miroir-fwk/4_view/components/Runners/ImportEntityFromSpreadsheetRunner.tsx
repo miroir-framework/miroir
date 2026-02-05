@@ -13,14 +13,17 @@ import type {
   Uuid
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
-  adminSelfApplication,
   defaultSelfApplicationDeploymentMap,
-  entityApplicationForAdmin,
-  entityDeployment,
   MiroirLoggerFactory,
   noValue
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  entityApplicationForAdmin,
+  entityDeployment
+} from "miroir-deployment-admin";
+
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "../../MiroirContextReactProvider.js";

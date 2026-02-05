@@ -5,14 +5,11 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
-  adminLibraryApplication,
-  adminSelfApplication,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
   defaultTransformers,
-  entityApplicationForAdmin,
   getEntityInstancesUuidIndexNonHook,
   noValue,
   type ApplicationDeploymentMap,
@@ -26,12 +23,12 @@ import {
 
 
 import { useFormikContext } from 'formik';
+import { packageName } from '../../../../constants';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
-  type ReduxStateWithUndoRedo,
   useSelector,
+  type ReduxStateWithUndoRedo,
 } from "../../../miroir-localcache-imports.js";
-import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
 import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
@@ -49,6 +46,11 @@ import {
   formikPath_TransformerEditorInputModeSelector,
   type TransformerEditorFormikValueType,
 } from "./TransformerEditorInterface";
+import {
+  adminSelfApplication,
+  entityApplicationForAdmin,
+  adminLibraryApplication,
+} from "miroir-deployment-admin";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

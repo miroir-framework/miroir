@@ -8,7 +8,6 @@ import {
   DomainControllerInterface,
   EntityDefinition,
   EntityInstance,
-  getDefaultLibraryModelEnvironmentDEFUNCT,
   LoggerInterface,
   MetaEntity,
   MiroirActivityTracker,
@@ -37,8 +36,8 @@ import { miroirAppStartup } from "../../src/startup.js";
 
 import type { ApplicationDeploymentMap, Deployment, EndpointDefinition, MlSchema } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
-  adminMiroirApplication,
+  // adminConfigurationDeploymentAdmin,
+  // adminMiroirApplication,
   ConfigurationService,
   // defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
@@ -47,6 +46,11 @@ import {
   selfApplicationMiroir,
   TestCompositeActionParams,
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminMiroirApplication
+} from "miroir-deployment-admin";
+
 import { LoggerOptions } from "miroir-core";
 import {
   author1,
@@ -65,6 +69,7 @@ import {
   entityDefinitionBook,
   entityDefinitionPublisher,
   entityPublisher,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
@@ -72,6 +77,7 @@ import {
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-example-library";
+import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   testOnLibrary_deleteLibraryDeployment,
@@ -79,7 +85,6 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 
 const env: any = (import.meta as any).env;
 
@@ -359,7 +364,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
           applicationVersion: selfApplicationVersionLibraryInitialVersion,
         },
         libraryEntitiesAndInstancesWithoutBook3,
-        defaultLibraryModelEnvironment.currentModel,
+        defaultLibraryModelEnvironment.currentModel as any,
         [entityAuthor.uuid, entityBook.uuid, entityPublisher.uuid], 
       ),
       afterEach: testOnLibrary_resetLibraryDeployment(adminConfigurationDeploymentLibrary.uuid),

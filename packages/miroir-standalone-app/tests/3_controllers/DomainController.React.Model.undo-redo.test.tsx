@@ -18,9 +18,6 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
-  adminConfigurationDeploymentMiroir,
-  adminLibraryApplication,
-  adminMiroirApplication,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   entityEntity,
@@ -59,6 +56,11 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
+import {
+  adminConfigurationDeploymentMiroir,
+  adminMiroirApplication,
+  adminLibraryApplication,
+} from "miroir-deployment-admin";
 
 
 

@@ -2,13 +2,15 @@ import {
   type JzodObject,
   type LoggerInterface,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentAdmin,
-  adminSelfApplication,
   defaultSelfApplicationDeploymentMap,
-  entityApplicationForAdmin,
   noValue,
   selfApplicationMiroir,
 } from "miroir-core";
+import {
+  adminSelfApplication,
+  adminConfigurationDeploymentAdmin,
+  entityApplicationForAdmin,
+} from "miroir-deployment-admin";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
 import { packageName } from "../../../../constants";

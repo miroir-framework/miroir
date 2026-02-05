@@ -1,0 +1,50 @@
+{
+  "uuid": "4cb43523-350f-49bd-813e-ab7d5cef78b2",
+  "parentName":"EntityDefinition",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "b9765b7c-b614-4126-a0e2-634463f99937",
+  "conceptLevel":"Model",
+  "name":"ViewParams",
+  "icon": "Interests",
+  "defaultInstanceDetailsReportUuid": "57b3d7ef-8c12-4891-893e-35bab00b2037",
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "uuid",
+        "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "display": { "editable": false } } }
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 2, "defaultLabel": "Entity Name", "display": { "editable": false } } }
+      },
+      "parentUuid": {
+        "type": "uuid",
+        "tag": { "value": { "id": 3, "defaultLabel": "Entity Uuid", "display": { "editable": false } } }
+      },
+      "name": {
+        "type": "string",
+        "tag": { "value": { "id": 5, "defaultLabel": "Name", "display": { "editable": true } } }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": { "value": { "id": 6, "defaultLabel": "Default Label", "display": { "editable": true } } }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "id": 7, "defaultLabel": "Description", "display": { "editable": true } } }
+      },
+      "sidebarWidth": { "type": "number" },
+      "gridType": { "type": "enum", "definition": ["ag-grid", "glide-data-grid"] },
+      "appTheme": { "type": "enum", "definition": ["default", "dark", "compact", "material"] },
+      "generalEditMode": {
+        "type": "boolean",
+        "optional": true,
+        "tag": { "value": { "id": 8, "defaultLabel": "Edit Mode", "display": { "editable": true } } }
+      }
+    }
+  }
+}

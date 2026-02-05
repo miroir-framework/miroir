@@ -8,9 +8,7 @@ import "@testing-library/jest-dom";
 import { Container } from "react-dom";
 
 import {
-  book1,
   EntityDefinition,
-  entityDefinitionBook,
   entityDefinitionEntityDefinition,
   entityDefinitionTest,
   JzodAttributePlainDateWithValidations,
@@ -46,6 +44,7 @@ import {
 } from "./JzodElementEditorTestTools";
 import { debug } from "console";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
+import { book1, entityDefinitionBook } from "miroir-example-library";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
@@ -1947,7 +1946,7 @@ export function getJzodBookEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityDefinitionBook.mlSchema,
+            rawJzodSchema: entityDefinitionBook.mlSchema as JzodObject,
             // rawJzodSchema: {
             //   type: "object",
             //   definition: {a:{ type: "string" }, b:{ type: "number" }},
@@ -2345,75 +2344,75 @@ const jzodElementEditorTests: Record<
   string,
   ReactComponentTestSuitePrep<any> & { modes?: ModesType }
 > = {
-  // JzodArrayEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodArrayEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodEnumEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   // modes: '*',
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodLiteralEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   // modes: "*",
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodObjectEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodSimpleTypeEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodUnionEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodUnionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // // // ################# PERFORMANCE
-  // // JzodEditorPerformanceTests: {
-  // //   editor: JzodElementEditor,
-  // //   getJzodEditorTests: getJzodEditorPerformanceTests,
-  // //   performanceTests: true,
-  // //   // modes: '*',
-  // //   // modes: ['jzodElementEditor', 'component'],
-  // //   modes: 'jzodElementEditor',
-  // // },
-  // // ################# INSTANCES
-  JzodBookEditor: {
+  JzodArrayEditor: {
     editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodBookEditorTests,
-    performanceTests: true,
+    getJzodEditorTests: getJzodArrayEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
     modes: "jzodElementEditor",
   },
-  // // ################# MODEL
-  JzodEntityDefinitionEditor: {
+  JzodEnumEditor: {
     editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+    getJzodEditorTests: getJzodEnumEditorTests,
+    // modes: '*',
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodLiteralEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    // modes: "*",
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodObjectEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodObjectEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
     modes: "jzodElementEditor",
   },
+  JzodSimpleTypeEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  JzodUnionEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodUnionEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  // // ################# PERFORMANCE
+  // JzodEditorPerformanceTests: {
+  //   editor: JzodElementEditor,
+  //   getJzodEditorTests: getJzodEditorPerformanceTests,
+  //   performanceTests: true,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // ################# INSTANCES
+  // JzodBookEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodBookEditorTests,
+  //   performanceTests: true,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  // },
+  // // // ################# MODEL
+  // JzodEntityDefinitionEditor: {
+  //   editor: getJzodElementEditorForTest(pageLabel),
+  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  // },
   // // ################# ENDPOINTS
   // JzodEndpointEditor: {
   //   editor: JzodElementEditor,

@@ -18,14 +18,15 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
 import selfApplicationMiroir from '../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
-import adminConfigurationDeploymentMiroir from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
-import adminSelfApplication from "../assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json";
-import adminConfigurationDeploymentAdmin from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json";
-import entityApplicationForAdmin from "../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json";
-import entityDeployment from "../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json";
-
-import adminAdminApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/55af124e-8c05-4bae-a3ef-0933d41daa92.json";
-import adminMiroirApplication from "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
+import {
+  adminConfigurationDeploymentMiroir,
+  adminSelfApplication,
+  adminConfigurationDeploymentAdmin,
+  entityApplicationForAdmin,
+  entityDeployment,
+  adminAdminApplication,
+  adminMiroirApplication
+} from "miroir-deployment-admin";
 import { noValue } from "./Instance";
 
 export const defaultDeployments: Deployment[] = [

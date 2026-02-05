@@ -1,0 +1,9 @@
+{
+  "uuid": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName":"AdminApplication",
+  "parentUuid":"25d935e7-9e93-42c2-aade-0472b883492b",
+  "name":"Miroir",
+  "defaultLabel": "The Miroir AdminApplication for Meta-Model",
+  "description": "The model and data of the Miroir AdminApplication.",
+  "selfApplication":"360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+}

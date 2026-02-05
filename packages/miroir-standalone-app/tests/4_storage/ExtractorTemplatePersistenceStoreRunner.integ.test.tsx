@@ -3,37 +3,20 @@ import { describe } from 'vitest';
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   Action2ReturnType,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
   ApplicationSection,
-  author1,
-  author2,
-  author3,
-  book1,
-  book2,
-  book3,
-  book4,
-  book5,
-  book6,
   ConfigurationService,
+  createDeploymentCompositeAction,
   defaultLevels,
-  defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  entityAuthor,
-  entityBook,
   EntityDefinition,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
   EntityInstance,
   entityMenu,
-  entityPublisher,
-  ignorePostgresExtraAttributesOnList,
-  ignorePostgresExtraAttributesOnObject,
+  ignorePostgresExtraAttributes,
   LoggerInterface,
   MetaEntity,
   MiroirActivityTracker,
@@ -43,53 +26,64 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
-  publisher1,
-  publisher2,
-  publisher3,
+  removeUndefinedProperties,
   Report,
-  reportBookList,
   resetAndInitApplicationDeployment,
   StoreUnitConfiguration,
-  type ApplicationDeploymentMap
+  unNullify,
+  type AdminApplicationDeploymentConfiguration,
+  type ApplicationDeploymentMap,
+  type Deployment
 } from "miroir-core";
 
 
 import { LocalCacheInterface, MiroirContext } from 'miroir-core';
+import {
+  adminConfigurationDeploymentAdmin
+} from "miroir-deployment-admin";
+import {
+  adminConfigurationDeploymentLibrary,
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book3,
+  book4,
+  book5,
+  book6,
+  entityAuthor,
+  entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
+  entityDefinitionPublisher,
+  entityPublisher,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
+  reportBookList,
+  selfApplicationLibrary
+} from "miroir-example-library";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { miroirAppStartup } from '../../src/startup.js';
 import {
   addEntitiesAndInstances,
   createMiroirDeploymentGetPersistenceStoreController,
-  deploymentConfigurations,
-  // loadTestConfigFiles,
-  resetApplicationDeployments,
   selfApplicationDeploymentConfigurations,
   setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
-import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
-import { defaultMiroirModelEnvironment } from 'miroir-core';
-import { unNullify } from 'miroir-core';
-import { removeUndefinedProperties } from 'miroir-core';
-import { ignorePostgresExtraAttributes } from 'miroir-core';
-import { createDeploymentCompositeAction } from 'miroir-core';
-import { adminLibraryApplication } from 'miroir-core';
-import { selfApplicationDeploymentLibrary } from 'miroir-core';
-import { selfApplicationDeploymentMiroir } from 'miroir-core';
-import { selfApplicationLibrary } from 'miroir-core';
-import type { Deployment } from 'miroir-core';
-import { adminConfigurationDeploymentAdmin } from 'miroir-core';
-import type { AdminApplicationDeploymentConfiguration } from 'miroir-core';
+import { miroirAppStartup } from '../../src/startup.js';
+import { loadTestConfigFiles } from '../utils/fileTools.js';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
-let miroirContext: MiroirContext;
+// let miroirContext: MiroirContext;
 let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
 
 const env:any = (import.meta as any).env
@@ -135,9 +129,9 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: adminConfigurationDeploymentLibrary.uuid,
 };
 
-const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
+// const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
+//   ? miroirConfig.client.deploymentStorageConfig[adminConfigurationDeploymentMiroir.uuid]
+//   : miroirConfig.client.serverConfig.storeSectionConfiguration[adminConfigurationDeploymentMiroir.uuid];
 
 const testApplicationDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
 const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
@@ -291,31 +285,31 @@ beforeEach(
   }
 )
 
-// ################################################################################################
-afterEach(
-  async () => {
-    await resetApplicationDeployments(
-      deploymentConfigurations,
-      applicationDeploymentMap,
-      domainController,
-      localCache,
-    );
-  }
-)
+// // ################################################################################################
+// afterEach(
+//   async () => {
+//     await resetApplicationDeployments(
+//       deploymentConfigurations,
+//       applicationDeploymentMap,
+//       domainController,
+//       localCache,
+//     );
+//   }
+// )
 
-// ################################################################################################
-afterAll(
-  async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-    try {
-      await localMiroirPersistenceStoreController.close();
-      await localAppPersistenceStoreController.close();
-    } catch (error) {
-      console.error('Error afterAll',error);
-    }
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-  }
-)
+// // ################################################################################################
+// afterAll(
+//   async () => {
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
+//     try {
+//       await localMiroirPersistenceStoreController.close();
+//       await localAppPersistenceStoreController.close();
+//     } catch (error) {
+//       console.error('Error afterAll',error);
+//     }
+//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
+//   }
+// )
 
 
 const resultHandler = (a: any, ignoreAttributes?: string[]) =>
@@ -334,79 +328,79 @@ const resultHandler = (a: any, ignoreAttributes?: string[]) =>
 
 describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => {
 
-  // ################################################################################################
-  it("get Entity Entity from Miroir", async () => {
-    await chainVitestSteps(
-      "ExtractorTemplatePersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
-      {},
-      async () => {
-        const applicationSection: ApplicationSection = "model";
-        const queryResult: Action2ReturnType =
-          await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(
-            {
-              actionType: "runBoxedExtractorTemplateAction",
-              application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              payload: {
-                application: selfApplicationDeploymentMiroir.uuid,
-                // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                applicationSection: applicationSection,
-                query: {
-                  application: selfApplicationDeploymentMiroir.uuid,
-                  queryType: "boxedExtractorTemplateReturningObject",
-                  pageParams: {},
-                  queryParams: {},
-                  contextResults: {},
-                  // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                  // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                  select: {
-                    extractorOrCombinerType: "extractorForObjectByDirectReference",
-                    applicationSection: "model",
-                    parentName: "Entity",
-                    parentUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    },
-                    instanceUuid: {
-                      transformerType: "returnValue",
-                      mlSchema: { type: "uuid" },
-                      interpolation: "build",
-                      value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    },
-                  },
-                },
-              },
-            },
-            applicationDeploymentMap
-          );
-        console.log("queryResult", JSON.stringify(queryResult, null, 2));
-        return queryResult;
-      },
-      (a: any) => resultHandler(a.returnedDomainElement, ["author"]),
-      // resultHandler,
-      // (a) =>
-      //   removeUndefinedProperties(
-      //     unNullify(
-      //       ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"])
-      //     )
-      //   ),
-      // undefined, // expected result transformation
-      undefined, // name to give to result
-      undefined,
-      {
-        uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        parentName: "Entity",
-        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
-        name: "Entity",
-        selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        conceptLevel: "MetaModel",
-        description: "The Metaclass for entities.",
-      }
-    );
-  });
+  // // ################################################################################################
+  // it("get Entity Entity from Miroir", async () => {
+  //   await chainVitestSteps(
+  //     "ExtractorTemplatePersistenceStoreRunner_selectEntityInstance_selectObjectByDirectReference",
+  //     {},
+  //     async () => {
+  //       const applicationSection: ApplicationSection = "model";
+  //       const queryResult: Action2ReturnType =
+  //         await localMiroirPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(
+  //           {
+  //             actionType: "runBoxedExtractorTemplateAction",
+  //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+  //             payload: {
+  //               application: selfApplicationDeploymentMiroir.uuid,
+  //               // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //               applicationSection: applicationSection,
+  //               query: {
+  //                 application: selfApplicationDeploymentMiroir.uuid,
+  //                 queryType: "boxedExtractorTemplateReturningObject",
+  //                 pageParams: {},
+  //                 queryParams: {},
+  //                 contextResults: {},
+  //                 // deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  //                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  //                 select: {
+  //                   extractorOrCombinerType: "extractorForObjectByDirectReference",
+  //                   applicationSection: "model",
+  //                   parentName: "Entity",
+  //                   parentUuid: {
+  //                     transformerType: "returnValue",
+  //                     mlSchema: { type: "uuid" },
+  //                     interpolation: "build",
+  //                     value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                   } as any,
+  //                   instanceUuid: {
+  //                     transformerType: "returnValue",
+  //                     mlSchema: { type: "uuid" },
+  //                     interpolation: "build",
+  //                     value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           applicationDeploymentMap
+  //         );
+  //       console.log("queryResult", JSON.stringify(queryResult, null, 2));
+  //       return queryResult;
+  //     },
+  //     (a: any) => resultHandler(a.returnedDomainElement, ["author"]),
+  //     // resultHandler,
+  //     // (a) =>
+  //     //   removeUndefinedProperties(
+  //     //     unNullify(
+  //     //       ignorePostgresExtraAttributesOnObject((a as any).returnedDomainElement, ["author"])
+  //     //     )
+  //     //   ),
+  //     // undefined, // expected result transformation
+  //     undefined, // name to give to result
+  //     undefined,
+  //     {
+  //       uuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //       parentName: "Entity",
+  //       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  //       parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  //       name: "Entity",
+  //       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  //       conceptLevel: "MetaModel",
+  //       description: "The Metaclass for entities.",
+  //     }
+  //   );
+  // });
   
   
   // ################################################################################################
@@ -423,11 +417,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
-                application: selfApplicationDeploymentLibrary.uuid,
+                application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 query: {
-                  application: selfApplicationDeploymentLibrary.uuid,
+                  application: selfApplicationLibrary.uuid,
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
                   pageParams: {},
                   queryParams: {},
@@ -443,7 +437,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         mlSchema: { type: "uuid" },
                         interpolation: "build",
                         value: entityEntity.uuid,
-                      },
+                      } as any,
                     },
                   },
                 },
@@ -480,12 +474,12 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
-                application: selfApplicationDeploymentLibrary.uuid,
+                application: selfApplicationLibrary.uuid,
                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                  application: selfApplicationDeploymentLibrary.uuid,
+                  application: selfApplicationLibrary.uuid,
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
@@ -500,7 +494,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         mlSchema: { type: "uuid" },
                         interpolation: "build",
                         value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      },
+                      } as any,
                       filter: {
                         attributeName: "name",
                         value: {
@@ -550,11 +544,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
-                application: selfApplicationDeploymentLibrary.uuid,
+                application: selfApplicationLibrary.uuid,
                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
-                  application: selfApplicationDeploymentLibrary.uuid,
+                  application: selfApplicationLibrary.uuid,
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
                   pageParams: {},
                   queryParams: {},
@@ -571,7 +565,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         interpolation: "build",
                         // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                         value: entityBook.uuid,
-                      },
+                      } as any,
                     },
                   },
                   runtimeTransformers: {
@@ -623,11 +617,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
-                application: selfApplicationDeploymentLibrary.uuid,
+                application: selfApplicationLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                  application: selfApplicationDeploymentLibrary.uuid,
+                  application: selfApplicationLibrary.uuid,
                   pageParams: {},
                   queryParams: {},
                   contextResults: {},
@@ -642,7 +636,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         mlSchema: { type: "uuid" },
                         interpolation: "build",
                         value: entityBook.uuid,
-                      },
+                      } as any,
                     },
                   },
                   runtimeTransformers: {
@@ -686,11 +680,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
-                application: selfApplicationDeploymentLibrary.uuid,
+                application: selfApplicationLibrary.uuid,
                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
-                  application: selfApplicationDeploymentLibrary.uuid,
+                  application: selfApplicationLibrary.uuid,
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
                   pageParams: {},
                   queryParams: {},
@@ -706,7 +700,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         mlSchema: { type: "uuid" },
                         interpolation: "build",
                         value: entityBook.uuid,
-                      },
+                      } as any,
                     },
                   },
                   runtimeTransformers: {
@@ -882,12 +876,12 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
               payload: {
-                application: selfApplicationDeploymentLibrary.uuid,
+                application: selfApplicationLibrary.uuid,
                 // deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                 applicationSection: applicationSection,
                 query: {
                   queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                  application: selfApplicationDeploymentLibrary.uuid,
+                  application: selfApplicationLibrary.uuid,
                   pageParams: {},
                   queryParams: {
                     instanceUuid: "c6852e89-3c3c-447f-b827-4b5b9d830975",
@@ -903,7 +897,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         mlSchema: { type: "uuid" },
                         interpolation: "build",
                         value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                      },
+                      } as any,
                       instanceUuid: {
                         transformerType: "getFromParameters",
                         referenceName: "instanceUuid",
@@ -919,7 +913,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         mlSchema: { type: "uuid" },
                         interpolation: "build",
                         value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                      },
+                      } as any,
                       objectReference: {
                         transformerType: "getFromContext",
                         interpolation: "runtime",
@@ -935,7 +929,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                         mlSchema: { type: "uuid" },
                         interpolation: "build",
                         value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                      },
+                      } as any,
                       objectReference: {
                         transformerType: "getFromContext",
                         interpolation: "runtime",

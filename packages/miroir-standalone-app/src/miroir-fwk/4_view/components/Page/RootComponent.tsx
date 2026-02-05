@@ -1,4 +1,3 @@
-import type { SelectChangeEvent } from '@mui/material';
 import {
   Alert,
   Snackbar
@@ -19,12 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 import {
-  adminConfigurationDeploymentAdmin,
-  // adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
-  adminSelfApplication,
   AppTheme,
-  defaultAdminViewParams,
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   Domain2ElementFailed,
@@ -32,7 +26,6 @@ import {
   DomainControllerInterface,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
-  entityDeployment,
   EntityInstancesUuidIndex,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
@@ -50,6 +43,14 @@ import {
   type Deployment,
   type SyncQueryRunnerExtractorAndParams
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentMiroir,
+  adminSelfApplication,
+  defaultAdminViewParams,
+  entityDeployment
+} from "miroir-deployment-admin";
+
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "../../../miroir-localcache-imports.js";
 
 import {
@@ -62,6 +63,7 @@ import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeC
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
+import { adminConfigurationDeploymentLibrary, selfApplicationLibrary } from 'miroir-example-library';
 import { packageName } from '../../../../constants.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
@@ -73,7 +75,6 @@ import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEdi
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { adminConfigurationDeploymentLibrary, selfApplicationLibrary } from 'miroir-example-library';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

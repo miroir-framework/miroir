@@ -25,7 +25,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
-import adminConfigurationDeploymentMiroir from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 import selfApplicationMiroir from "../../src/assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import menuDefaultMiroir from "../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
@@ -719,7 +719,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-              deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+              // deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               applicationSection: "data",
               objects: [
                 {

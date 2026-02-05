@@ -26,17 +26,19 @@ import {
   SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
-  adminSelfApplication,
   circularReplacer,
   defaultLevels,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  entityDeployment,
   miroirCoreStartup,
   restServerDefaultHandlers
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  entityDeployment,
+} from "miroir-deployment-admin";
 import { mcpRequestHandlers, setupMcpServer } from "miroir-mcp";
 
 import { setupMiroirDomainController } from 'miroir-localcache-redux';

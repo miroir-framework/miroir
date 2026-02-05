@@ -14,7 +14,6 @@ import {
   entityEntity,
   entityEntityDefinition,
   EntityInstance,
-  getDefaultLibraryModelEnvironmentDEFUNCT,
   JzodElement,
   LocalCacheInterface,
   LoggerInterface,
@@ -64,8 +63,6 @@ import type {
   MlSchema,
 } from "miroir-core";
 import {
-  adminConfigurationDeploymentAdmin,
-  adminMiroirApplication,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -78,6 +75,7 @@ import {
   entityDefinitionAuthor,
   entityDefinitionPublisher,
   entityPublisher,
+  getDefaultLibraryModelEnvironmentDEFUNCT,
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
@@ -87,6 +85,7 @@ import {
 } from "miroir-example-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
+import { adminConfigurationDeploymentAdmin, adminMiroirApplication } from "miroir-deployment-admin";
 // import { entityBook } from "miroir-core";
 
 const env: any = (import.meta as any).env;

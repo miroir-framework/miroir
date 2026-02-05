@@ -5,7 +5,6 @@ import { Formik } from 'formik';
 
 import {
   Action2Error,
-  adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
@@ -41,6 +40,7 @@ import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormSchema, reportSectionsFormValue } from './ReportTools.js';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
+import { adminConfigurationDeploymentMiroir } from 'miroir-deployment-admin';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

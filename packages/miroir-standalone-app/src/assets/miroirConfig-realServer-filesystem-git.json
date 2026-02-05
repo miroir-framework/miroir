@@ -18,15 +18,15 @@
         "18db21bf-f8d3-4f6a-8296-84b69f6dc48b":{
           "admin": {
             "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin"
+            "directory":"../miroir-deployment-admin/assets"
           },
           "model": {
             "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin_model"
+            "directory":"../miroir-deployment-admin/assets"
           },
           "data": {
             "emulatedServerType": "filesystem",
-            "directory":"../miroir-core/src/assets/admin_data"
+            "directory":"../miroir-deployment-admin/assets/admin_data"
           }
         }
       }

@@ -8,15 +8,11 @@ import {
   Action2Error,
   Action2ReturnType,
   ACTION_OK,
-  adminConfigurationDeploymentAdmin,
-  // adminConfigurationDeploymentParis,
-  adminSelfApplication,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   DomainControllerInterface,
-  entityDeployment,
   LoggerInterface,
   MiroirConfigClient,
   MiroirConfigForRestClient,
@@ -26,6 +22,12 @@ import {
   type Action2VoidReturnType,
   type ApplicationDeploymentMap
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminSelfApplication,
+  entityDeployment,
+} from "miroir-deployment-admin";
+
 import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 import { packageName } from '../../../constants.js';

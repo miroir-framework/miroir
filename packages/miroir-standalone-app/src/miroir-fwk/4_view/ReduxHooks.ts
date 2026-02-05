@@ -12,7 +12,6 @@ import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   JzodElement,
   JzodPlainAttribute,
-  MlSchema,
   JzodSchemaQuerySelector,
   JzodSchemaQueryTemplateSelector,
   LocalCacheExtractor,
@@ -22,6 +21,7 @@ import {
   MiroirModelEnvironment,
   MiroirQuery,
   MiroirQueryTemplate,
+  MlSchema,
   QueryJzodSchemaParams,
   RecordOfJzodElement,
   ReduxDeploymentsState,
@@ -30,15 +30,11 @@ import {
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
   Uuid,
-  adminConfigurationDeploymentMiroir,
-  defaultApplicationUuids,
-  defaultDeploymentUuids,
   defaultMetaModelEnvironment,
   miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
-  type ApplicationDeploymentMap,
-  defaultMiroirModelEnvironment,
+  type ApplicationDeploymentMap
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,

@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   AdminApplicationDeploymentConfiguration,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
+  // adminConfigurationDeploymentLibrary,
+  // adminConfigurationDeploymentMiroir,
   // author1,
   // author2,
   // author3,
@@ -66,7 +66,7 @@ import {
 // import { AdminApplicationDeploymentConfiguration } from 'miroir-core/src/0_interfaces/1_core/StorageConfiguration.js';
 import {
   // adminConfigurationDeploymentParis,
-  adminMiroirApplication,
+  // adminMiroirApplication,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   emptyMetaModel,
@@ -74,6 +74,7 @@ import {
   TestCompositeActionParams,
 } from "miroir-core";
 import {
+  adminConfigurationDeploymentLibrary,
   author1,
   author2,
   author3,
@@ -105,6 +106,10 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
+import {
+  adminConfigurationDeploymentMiroir,
+  adminMiroirApplication,
+} from "miroir-deployment-admin";
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

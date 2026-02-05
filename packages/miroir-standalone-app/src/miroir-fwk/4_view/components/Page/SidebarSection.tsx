@@ -12,9 +12,10 @@ import {
   ThemedListMiroirIcon
 } from "../Themes/index";
 
-
 import {
-  adminSelfApplication,
+adminSelfApplication,
+} from "miroir-deployment-admin";
+import {
   defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,

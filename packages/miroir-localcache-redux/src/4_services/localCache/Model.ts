@@ -8,9 +8,9 @@
  * @returns 
  */
 
+import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
 import {
   type MetaModel,
-  adminConfigurationDeploymentMiroir,
   getReduxDeploymentsStateIndex,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,

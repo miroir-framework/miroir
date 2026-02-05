@@ -27,9 +27,9 @@ import {
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
+  // adminConfigurationDeploymentAdmin,
+  // adminConfigurationDeploymentLibrary,
+  // adminConfigurationDeploymentMiroir,
   createDeploymentCompositeAction,
   // author1,
   // book1,
@@ -47,6 +47,19 @@ import {
   type ApplicationDeploymentMap,
   type Deployment
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
+  adminConfigurationDeploymentMiroir
+} from "miroir-deployment-admin";
+
+import {
+  author1,
+  book1,
+  entityAuthor,
+  entityDefinitionAuthor,
+  selfApplicationLibrary,
+} from "miroir-example-library";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
@@ -62,13 +75,6 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
-import {
-  author1,
-  book1,
-  entityAuthor,
-  entityDefinitionAuthor,
-  selfApplicationLibrary,
-} from "miroir-example-library";
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;

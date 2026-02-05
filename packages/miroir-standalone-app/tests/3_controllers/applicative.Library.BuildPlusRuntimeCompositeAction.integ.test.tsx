@@ -6,7 +6,6 @@ import * as vitest from 'vitest';
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   AdminApplicationDeploymentConfiguration,
-  adminConfigurationDeploymentMiroir,
   ConfigurationService,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
@@ -46,6 +45,7 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
+import { adminConfigurationDeploymentMiroir } from 'miroir-deployment-admin';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

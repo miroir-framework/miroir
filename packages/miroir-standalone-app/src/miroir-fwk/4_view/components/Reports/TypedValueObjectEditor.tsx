@@ -1,9 +1,8 @@
+import { useFormikContext } from "formik";
 import { useCallback, useEffect, useMemo } from 'react';
-import { FormikProps, useFormikContext } from "formik";
 
 import {
   ACTION_OK,
-  adminConfigurationDeploymentMiroir,
   ApplicationSection,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -14,25 +13,20 @@ import {
   getApplicationSection,
   getInnermostTypeCheckError,
   getQueryRunnerParamsForReduxDeploymentsState,
-  getSchemaAtPath,
   getValueAtPath,
-  JzodElement,
   jzodTypeCheck,
   LoggerInterface,
   MetaModel,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   ResolvedJzodSchemaReturnType,
   selfApplicationMiroir,
-  setValueAtPath,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
   Uuid,
   type ApplicationDeploymentMap,
   type JzodObject,
-  type MlSchema,
   type MiroirModelEnvironment
 } from "miroir-core";
 import {
@@ -58,11 +52,11 @@ import {
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
+import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
+import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
 import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
-import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
-import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;

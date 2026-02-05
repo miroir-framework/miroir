@@ -1,21 +1,21 @@
-import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import '@testing-library/jest-dom';
 
+import type { GraphReportSection } from "miroir-core";
 import {
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentMiroir
 } from "miroir-core";
 
-import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext";
-import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView";
 import { packageName } from "../../src/constants";
+import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
-import type { GraphReportSection } from "miroir-core";
+import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext";
+import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
 
 // Setup logger
 let log: LoggerInterface = console as any as LoggerInterface;

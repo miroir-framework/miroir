@@ -58,7 +58,6 @@ const selfApplicationVersionInitialMiroirVersion = require("../assets/miroir_dat
 // import { selfApplicationMiroir } from "..";
 const selfApplicationMiroir = require("../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
 // const instanceConfigurationReference = require("../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
-const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
 
 const applicationEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json");
 const deploymentEndpointV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json");
@@ -75,6 +74,7 @@ const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f7
 
 import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
+import { adminConfigurationDeploymentMiroir } from "miroir-deployment-admin";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";

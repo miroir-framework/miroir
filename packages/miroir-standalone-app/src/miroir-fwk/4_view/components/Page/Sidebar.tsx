@@ -3,20 +3,18 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // import AutoStories from '@mui/icons-material/AutoStories';
 import {
-  // adminApplicationLibrary,
-  adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentMiroir,
-  // adminConfigurationDeploymentParis,
-  adminSelfApplication,
-  defaultSelfApplicationDeploymentMap,
   LoggerInterface,
-  menuDefaultAdmin,
-  // menuDefaultLibrary,
   menuDefaultMiroir,
   MiroirLoggerFactory,
-  // selfApplicationLibrary,
   selfApplicationMiroir
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentMiroir,
+  adminSelfApplication,
+  menuDefaultAdmin
+} from "miroir-deployment-admin";
+
 import { adminConfigurationDeploymentLibrary, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-example-library';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';

@@ -5,14 +5,14 @@ import {
 
 import { Formik, type FormikProps } from 'formik';
 import {
-  adminConfigurationDeploymentAdmin,
+  // adminConfigurationDeploymentAdmin,
   // adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
+  // adminConfigurationDeploymentMiroir,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  entityApplicationForAdmin,
+  // entityApplicationForAdmin,
   entityEndpointVersion,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodObject,
@@ -40,6 +40,11 @@ import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
 import { ThemedPaper } from './Themes/index.js';
 import { selfApplicationLibrary } from 'miroir-example-library';
+import {
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentMiroir,
+  entityApplicationForAdmin,
+} from "miroir-deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

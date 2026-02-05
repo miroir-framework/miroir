@@ -10,10 +10,8 @@ import type {
   LoggerInterface
 } from "miroir-core";
 import {
-  adminSelfApplication,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
-  entityDeployment,
   MiroirLoggerFactory,
   noValue
 } from "miroir-core";
@@ -21,6 +19,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
+import { adminSelfApplication, entityDeployment } from "miroir-deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

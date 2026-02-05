@@ -39,7 +39,6 @@ import {
   StoreUnitConfiguration,
   Uuid,
   // adminConfigurationDeploymentLibrary,
-  adminConfigurationDeploymentMiroir,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
   noValue,
@@ -49,6 +48,9 @@ import {
   type Deployment,
   type MiroirActivityTrackerInterface
 } from "miroir-core";
+import {
+  adminConfigurationDeploymentMiroir
+} from "miroir-deployment-admin";
 
 import {
   selfApplicationDeploymentLibrary,
@@ -58,6 +60,9 @@ import {
 import {
   TestCompositeActionParams
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { packageName } from '../../constants';
+import { MiroirContextReactProvider } from '../4_view/MiroirContextReactProvider';
+import { cleanLevel } from '../4_view/constants';
 import {
   LocalCache,
   LocalCacheProvider,
@@ -65,9 +70,6 @@ import {
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController
 } from "../miroir-localcache-imports.js";
-import { packageName } from '../../constants';
-import { MiroirContextReactProvider } from '../4_view/MiroirContextReactProvider';
-import { cleanLevel } from '../4_view/constants';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -108,7 +110,7 @@ const adminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfigurati
 
 // ################################################################################################
 // ################################################################################################
-const deployments = [adminConfigurationDeploymentMiroir, adminConfigurationDeploymentLibrary ];
+// const deployments = [adminConfigurationDeploymentMiroir, adminConfigurationDeploymentLibrary ];
 
 export const deploymentConfigurations: DeploymentConfiguration[] = [
   {

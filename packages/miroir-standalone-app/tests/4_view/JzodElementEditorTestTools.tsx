@@ -1,17 +1,44 @@
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
-import { Profiler, useCallback, useMemo, useState } from "react";
+import { Profiler, useCallback, useMemo } from "react";
 import { expect, ExpectStatic, vi } from "vitest";
 
 import {
   Action2ReturnType,
-  adminConfigurationDeploymentMiroir,
   ConfigurationService,
   defaultMiroirMetaModel,
+  defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
+  entityEntity,
+  entityEntityDefinition,
+  entityJzodSchema,
+  entityMenu,
+  entityReport,
+  entitySelfApplicationVersion,
+  JzodElement,
+  jzodTypeCheck,
+  LocalCacheInterface,
+  MetaModel,
+  MiroirActivityTracker,
+  MiroirContext,
+  MiroirEventService,
+  PersistenceStoreControllerManager,
+  ResolvedJzodSchemaReturnType,
+  selfApplicationMiroir,
+  type ApplicationDeploymentMap,
+  type EntityInstance
+} from "miroir-core";
+import {
+  LocalCache,
+  LocalCacheProvider,
+  PersistenceReduxSaga,
+} from "../../src/miroir-fwk/miroir-localcache-imports.js";
+
+// import { rootLessListKeyMapDEFUNCT } from "miroir-core";
+import {
   entityAuthor,
   entityBook,
   entityCountry,
@@ -19,21 +46,9 @@ import {
   entityDefinitionBook,
   entityDefinitionCountry,
   entityDefinitionPublisher,
-  entityEntity,
-  entityEntityDefinition,
-  entityJzodSchema,
-  entityMenu,
   entityPublisher,
-  entityReport,
-  entitySelfApplicationVersion,
-  JzodElement,
-  LocalCacheInterface,
+  libraryApplicationInstances,
   menuDefaultLibrary,
-  MetaModel,
-  MiroirActivityTracker,
-  MiroirContext,
-  MiroirEventService,
-  PersistenceStoreControllerManager,
   reportAuthorDetails,
   reportAuthorList,
   reportBookDetails,
@@ -41,31 +56,18 @@ import {
   reportBookList,
   reportCountryList,
   reportPublisherList,
-  selfApplication,
   selfApplicationDeploymentLibrary,
-  type ApplicationDeploymentMap
-} from "miroir-core";
-import { LocalCache, LocalCacheProvider, PersistenceReduxSaga } from "../../src/miroir-fwk/miroir-localcache-imports.js";
-
-// import { rootLessListKeyMapDEFUNCT } from "miroir-core";
+  selfApplicationLibrary,
+} from "miroir-example-library";
 import { Container } from "react-dom";
+import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
+import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks";
-import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
-import { ResolvedJzodSchemaReturnType } from "miroir-core";
-import { measuredJzodTypeCheck } from "../../src/miroir-fwk/4_view/tools/hookPerformanceMeasure";
-import { jzodTypeCheck } from "miroir-core";
-import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
-import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";
-import { log } from "console";
-import { emptyDomainElementObject } from "../../src/miroir-fwk/4_view/components/Page/RootComponent";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Concept";
-import { selfApplicationDeploymentMiroir } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-core";
-import { selfApplicationMiroir } from "miroir-core";
-import { defaultSelfApplicationDeploymentMap } from "miroir-core";
+// import { log } from "console";
 
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
@@ -701,10 +703,10 @@ export function getWrapperLoadingLocalCache(
           parentUuid: entityEntity.uuid,
           applicationSection: "model",
           instances: [
-            entityAuthor,
-            entityBook,
-            entityCountry,
-            entityPublisher
+            entityAuthor as EntityInstance,
+            entityBook as EntityInstance,
+            entityCountry as EntityInstance,
+            entityPublisher as EntityInstance
           ]
         },
         {
@@ -712,10 +714,10 @@ export function getWrapperLoadingLocalCache(
           parentUuid: entityEntityDefinition.uuid,
           applicationSection: "model",
           instances: [
-            entityDefinitionBook,
-            entityDefinitionAuthor,
-            entityDefinitionCountry,
-            entityDefinitionPublisher,
+            entityDefinitionBook as EntityInstance,
+            entityDefinitionAuthor as EntityInstance,
+            entityDefinitionCountry as EntityInstance,
+            entityDefinitionPublisher as EntityInstance,
           ]
         },
         {
@@ -735,13 +737,13 @@ export function getWrapperLoadingLocalCache(
           parentUuid: entityReport.uuid,
           applicationSection: "model",
           instances: [
-              reportAuthorList,
-              reportAuthorDetails,
-              reportBookList,
-              reportBookDetails,
-              reportBookInstance,
-              reportCountryList,
-              reportPublisherList,
+              reportAuthorList as EntityInstance,
+              reportAuthorDetails as EntityInstance,
+              reportBookList as EntityInstance,
+              reportBookDetails as EntityInstance,
+              reportBookInstance as EntityInstance,
+              reportCountryList as EntityInstance,
+              reportPublisherList as EntityInstance,
           ],
         },
         // {
@@ -1726,7 +1728,7 @@ export function extractValuesFromRenderedElements(
       // }
 
       if (label && !elementName.startsWith(label)) {
-        log("extractValuesFromRenderedElements: combobox name/id does not match label", {
+        console.log("extractValuesFromRenderedElements: combobox name/id does not match label", {
           elementName,
           label,
         });

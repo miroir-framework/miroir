@@ -12,7 +12,6 @@ import {
   ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
-  adminConfigurationDeploymentMiroir,
   defaultSelfApplicationDeploymentMap,
   entityQueryVersion,
   entityTransformerTest,
@@ -32,12 +31,11 @@ import {
   useViewParams
 } from "../../MiroirContextReactProvider.js";
 
-import { Toc } from '../Themes/MaterialSymbolWrappers';
 import { useFormikContext } from 'formik';
+import { packageName } from '../../../../constants.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap
 } from "../../../miroir-localcache-imports.js";
-import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
   useCurrentModel,
@@ -49,13 +47,11 @@ import {
   ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
-  ThemedIconButton,
   ThemedLabel,
   ThemedOnScreenHelper,
   ThemedPreformattedText,
   ThemedText,
-  ThemedTitle,
-  ThemedTooltip
+  ThemedTitle
 } from "../Themes/index";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
