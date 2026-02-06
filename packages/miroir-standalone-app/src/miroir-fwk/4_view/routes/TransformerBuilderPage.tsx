@@ -46,7 +46,7 @@ import {
   selfApplicationDeploymentLibrary,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { deployment_Miroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

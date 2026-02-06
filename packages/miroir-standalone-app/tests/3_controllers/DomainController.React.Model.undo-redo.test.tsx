@@ -61,7 +61,7 @@ import {
   deployment_Admin,
   deployment_Miroir,
   adminApplication_Miroir,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";

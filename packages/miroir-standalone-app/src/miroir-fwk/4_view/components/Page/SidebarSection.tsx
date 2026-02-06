@@ -14,7 +14,7 @@ import {
 
 import {
 adminSelfApplication,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import {
   defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,

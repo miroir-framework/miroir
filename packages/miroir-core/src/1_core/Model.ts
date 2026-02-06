@@ -74,7 +74,7 @@ const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f7
 
 import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
-import { deployment_Miroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";

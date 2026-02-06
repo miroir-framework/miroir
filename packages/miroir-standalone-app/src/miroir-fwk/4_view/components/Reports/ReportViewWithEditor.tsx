@@ -40,7 +40,7 @@ import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormSchema, reportSectionsFormValue } from './ReportTools.js';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
-import { deployment_Miroir } from 'miroir-deployment-admin';
+import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -28,7 +28,7 @@ import {
   deployment_Admin,
   adminSelfApplication,
   entityDeployment,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 
 import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';

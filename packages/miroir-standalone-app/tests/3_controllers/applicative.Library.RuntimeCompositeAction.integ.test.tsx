@@ -109,7 +109,7 @@ import { cleanLevel, packageName } from './constants.js';
 import {
   deployment_Miroir,
   adminApplication_Miroir,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

@@ -49,7 +49,7 @@ import {
   adminSelfApplication,
   defaultAdminViewParams,
   entityDeployment
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "../../../miroir-localcache-imports.js";
 

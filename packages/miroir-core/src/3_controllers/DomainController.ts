@@ -23,7 +23,7 @@ const entityMenu = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a98
 const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
 const entitySelfApplicationVersion = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json');
 
-import { deployment_Miroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   ApplicationSection,
   ApplicationVersion,

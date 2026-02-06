@@ -2,7 +2,7 @@ import {
   adminSelfApplication,
   defaultAdminViewParams,
   entityViewParams,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerExtractorAndParams,

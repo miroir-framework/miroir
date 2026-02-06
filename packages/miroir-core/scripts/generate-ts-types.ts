@@ -13,7 +13,7 @@ import {
   jzodToTsCode,
 } from "@miroir-framework/jzod-ts";
 
-import { entityDefinitionAdminApplication, entityDefinitionDeployment } from "miroir-deployment-admin";
+import { entityDefinitionAdminApplication, entityDefinitionDeployment } from "miroir-test-app_deployment-admin";
 
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
 import entityDefinitionCommit from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json";

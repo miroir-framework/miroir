@@ -1,7 +1,7 @@
 import {
   deployment_Miroir,
   deployment_Admin,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 // import { adminConfigurationDeploymentParis } from "./miroir-fwk/4_view/routes/ReportPage.js";
 
 export const packageName = "miroir-standalone-app";

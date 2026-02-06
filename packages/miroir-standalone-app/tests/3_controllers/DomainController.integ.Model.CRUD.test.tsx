@@ -85,7 +85,7 @@ import {
 } from "miroir-example-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
-import { deployment_Admin, adminApplication_Miroir } from "miroir-deployment-admin";
+import { deployment_Admin, adminApplication_Miroir } from "miroir-test-app_deployment-admin";
 // import { entityBook } from "miroir-core";
 
 const env: any = (import.meta as any).env;

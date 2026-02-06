@@ -49,7 +49,7 @@ import {
 import {
   adminApplication_Miroir,
   deployment_Admin
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 import { LoggerOptions } from "miroir-core";
 import {

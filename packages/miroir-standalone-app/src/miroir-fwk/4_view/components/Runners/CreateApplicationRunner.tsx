@@ -42,7 +42,7 @@ import {
   adminSelfApplication,
   entityApplicationForAdmin,
   entityDeployment,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

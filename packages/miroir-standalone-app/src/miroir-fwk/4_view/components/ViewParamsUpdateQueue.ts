@@ -7,7 +7,7 @@ import {
   ViewParamsData,
   type DomainAction,
 } from "miroir-core";
-import { entityViewParams } from "miroir-deployment-admin";
+import { entityViewParams } from "miroir-test-app_deployment-admin";
 
 export interface ViewParamsUpdate {
   currentValue: ViewParamsData | undefined;

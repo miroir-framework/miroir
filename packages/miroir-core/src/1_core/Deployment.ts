@@ -26,7 +26,7 @@ import {
   entityDeployment,
   adminApplication_Admin,
   adminApplication_Miroir
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import { noValue } from "./Instance";
 
 export const defaultDeployments: Deployment[] = [

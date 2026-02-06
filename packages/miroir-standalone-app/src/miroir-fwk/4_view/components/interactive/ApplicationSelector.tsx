@@ -10,7 +10,7 @@ import {
   adminSelfApplication,
   deployment_Admin,
   entityApplicationForAdmin,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
 import { packageName } from "../../../../constants";

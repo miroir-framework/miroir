@@ -50,7 +50,7 @@ import {
 } from "miroir-core";
 import {
   deployment_Miroir
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 import {
   selfApplicationDeploymentLibrary,

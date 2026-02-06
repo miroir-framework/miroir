@@ -13,7 +13,7 @@ import {
   deployment_Miroir,
   adminSelfApplication,
   menuDefaultAdmin
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 import { deployment_Library_DO_NO_USE, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-example-library';
 import { packageName } from '../../../../constants.js';

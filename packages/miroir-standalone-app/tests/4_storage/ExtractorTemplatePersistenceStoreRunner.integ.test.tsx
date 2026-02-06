@@ -40,7 +40,7 @@ import {
 import { LocalCacheInterface, MiroirContext } from 'miroir-core';
 import {
   deployment_Admin
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import {
   deployment_Library_DO_NO_USE,
   author1,

@@ -17,7 +17,6 @@ import {
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type Query,
-  type Deployment,
   type Uuid
 } from "miroir-core";
 import {
@@ -26,7 +25,6 @@ import {
 
 import { ErrorBoundary } from "react-error-boundary";
 import {
-  deploymentsDEFUNCT,
   packageName,
   ReportUrlParamKeys
 } from "../../../constants.js";
@@ -35,11 +33,10 @@ import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js"
 import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { ThemedBox, ThemedOnScreenHelper, ThemedSpan } from "../components/Themes/index.js";
+import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
+import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
-import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
-import { lab } from "d3";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

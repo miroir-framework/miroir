@@ -49,7 +49,7 @@ import {
 import {
   adminSelfApplication,
   entityApplicationForAdmin,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import { selfApplicationLibrary } from 'miroir-example-library';
 
 // ################################################################################################

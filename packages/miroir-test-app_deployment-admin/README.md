@@ -1,4 +1,4 @@
-# miroir-deployment-admin
+# miroir-test-app_deployment-admin
 
 Admin deployment assets for the Miroir Framework.
 
@@ -16,7 +16,7 @@ import {
   entityApplicationForAdmin,
   deployment_Admin,
   // ... other exports
-} from 'miroir-deployment-admin';
+} from 'miroir-test-app_deployment-admin';
 ```
 
 ## License

@@ -19,7 +19,7 @@ import {
   adminSelfApplication,
   defaultAdminViewParams,
   reportViewParamsDetails
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,

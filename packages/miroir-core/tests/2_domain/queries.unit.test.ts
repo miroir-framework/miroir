@@ -1,7 +1,7 @@
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 
 import domainStateImport from "./domainState.json";
-import { deployment_Library_DO_NO_USE } from "miroir-deployment-admin";
+import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-admin";
 import {
   selfApplicationLibrary,
 } from "miroir-example-library";

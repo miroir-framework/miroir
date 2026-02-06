@@ -45,7 +45,7 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { cleanLevel, packageName } from './constants.js';
-import { deployment_Miroir } from 'miroir-deployment-admin';
+import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 
 let domainController: DomainControllerInterface | undefined = undefined;
 let localCache: LocalCacheInterface | undefined = undefined;

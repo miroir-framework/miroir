@@ -44,7 +44,7 @@ import {
   deployment_Admin,
   deployment_Library_DO_NO_USE,
   deployment_Miroir
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 import {
   author1,

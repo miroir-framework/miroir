@@ -25,7 +25,7 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { deployment_Miroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 import selfApplicationMiroir from "../../src/assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import menuDefaultMiroir from "../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";

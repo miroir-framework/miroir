@@ -22,7 +22,7 @@ import {
   adminSelfApplication,
   entityApplicationForAdmin,
   entityDeployment
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";

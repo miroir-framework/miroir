@@ -1,5 +1,5 @@
 {
-  "name": "miroir-deployment-admin",
+  "name": "miroir-test-app_deployment-admin",
   "private": true,
   "version": "0.0.0",
   "description": "Admin deployment assets for the Miroir Framework",

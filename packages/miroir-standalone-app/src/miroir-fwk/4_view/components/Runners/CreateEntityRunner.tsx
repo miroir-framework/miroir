@@ -19,7 +19,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
-import { adminSelfApplication, entityDeployment } from "miroir-deployment-admin";
+import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

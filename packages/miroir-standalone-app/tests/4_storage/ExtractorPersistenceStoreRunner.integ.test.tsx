@@ -33,7 +33,7 @@ import {
   deployment_Admin,
   deployment_Miroir,
   deployment_Library_DO_NO_USE,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 
 
 import {

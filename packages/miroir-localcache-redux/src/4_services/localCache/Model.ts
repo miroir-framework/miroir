@@ -8,7 +8,7 @@
  * @returns 
  */
 
-import { deployment_Miroir } from "miroir-deployment-admin";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   type MetaModel,
   getReduxDeploymentsStateIndex,

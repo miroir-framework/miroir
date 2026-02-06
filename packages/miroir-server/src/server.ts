@@ -38,7 +38,7 @@ import {
   deployment_Admin,
   adminSelfApplication,
   entityDeployment,
-} from "miroir-deployment-admin";
+} from "miroir-test-app_deployment-admin";
 import { mcpRequestHandlers, setupMcpServer } from "miroir-mcp";
 
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
