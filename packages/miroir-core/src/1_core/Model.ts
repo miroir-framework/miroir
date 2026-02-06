@@ -222,7 +222,6 @@ export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
   currentModel: defaultMiroirMetaModel,
-  // deploymentUuid: deployment_Miroir.uuid,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
@@ -242,10 +241,10 @@ const metaModelReports = [
 
 // ################################################################################################
 export function getApplicationSection(
-  deploymentUuid: Uuid,
+  applicationUuid: Uuid,
   entityUuid: Uuid,
 ): ApplicationSection{
-  if (deploymentUuid == deployment_Miroir.uuid) {
+  if (applicationUuid == selfApplicationMiroir.uuid) {
     return metaMetaModelEntityUuids.includes(entityUuid)?"model":"data";
   }
   return metaModelEntityUuids.includes(entityUuid)?"model":"data";

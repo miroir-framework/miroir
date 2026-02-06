@@ -105,9 +105,6 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   const theme = useTheme();
   const context = useMiroirContextService();
 
-  // const domainController: DomainControllerInterface = useDomainControllerService();
-  // const miroirConfig = context.getMiroirConfig();
-  // const context = useMiroirContext();
   const currentModel: MetaModel = useCurrentModel(
     props.applicationUuid,
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
@@ -132,7 +129,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                 menus: {
                   extractorOrCombinerType: "extractorForObjectByDirectReference",
                   parentName: "Menu",
-                  applicationSection: getApplicationSection(props.deploymentUuid, entityMenu.uuid),
+                  applicationSection: getApplicationSection(props.applicationUuid, entityMenu.uuid),
                   parentUuid: entityMenu.uuid,
                   instanceUuid: props.menuUuid,
                 },

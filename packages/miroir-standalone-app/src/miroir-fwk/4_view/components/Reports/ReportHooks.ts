@@ -319,7 +319,7 @@ export function useTransformer(
   transformerUuid: Uuid | undefined
 ): Domain2ElementFailed | TransformerDefinition | undefined {
   const transformerDefinitionApplicationSection = getApplicationSection(
-    deploymentUuid,
+    application,
     entityTransformerDefinition.uuid
   );
 

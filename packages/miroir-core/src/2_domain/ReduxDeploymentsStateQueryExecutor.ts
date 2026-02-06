@@ -131,14 +131,13 @@ export function getEntityInstancesUuidIndexNonHook(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application,
-      // deploymentUuid: currentDeploymentUuid,
       pageParams: {},
       queryParams: {},
       contextResults: {},
       extractors: {
         [targetEntity]: {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
-          applicationSection: getApplicationSection(currentDeploymentUuid, targetEntity),
+          applicationSection: getApplicationSection(application, targetEntity),
           parentName: "",
           parentUuid: targetEntity,
           orderBy: orderBy ? {
@@ -189,7 +188,7 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
       entityUuid,
       {
         extractorOrCombinerType: "extractorByEntityReturningObjectList" as const,
-        applicationSection: getApplicationSection(currentDeploymentUuid, entityUuid),
+        applicationSection: getApplicationSection(application, entityUuid),
         parentName: "",
         parentUuid: entityUuid,
         orderBy: orderBy ? {

@@ -459,7 +459,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             extractorOrCombinerType: "extractorByEntityReturningObjectList",
             label: "extractorForForeignKey_" + e[0],
             applicationSection: getApplicationSection(
-              props.deploymentUuid,
+              props.application,
               e[1].tag?.value?.foreignKeyParams?.targetEntity ?? "undefined"
             ),
             parentName: "",

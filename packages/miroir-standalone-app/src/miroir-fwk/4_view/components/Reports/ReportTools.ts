@@ -19,6 +19,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export const reportSectionsFormSchema = (
   reportSection: ReportSection,
+  applicationUuid: Uuid,
   deploymentUuid: Uuid,
   currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
   currentModel: MetaModel,
@@ -34,6 +35,7 @@ export const reportSectionsFormSchema = (
             ...acc,
             ...reportSectionsFormSchema(
               curr,
+              applicationUuid,
               deploymentUuid,
               currentDeploymentReportsEntitiesDefinitionsMapping,
               currentModel,
@@ -52,6 +54,7 @@ export const reportSectionsFormSchema = (
               ...rowAcc,
               ...reportSectionsFormSchema(
                 subSection,
+                applicationUuid,
                 deploymentUuid,
                 currentDeploymentReportsEntitiesDefinitionsMapping,
                 currentModel,
@@ -67,9 +70,7 @@ export const reportSectionsFormSchema = (
       );
     case "objectInstanceReportSection": {
       const entityUuid = reportSection.definition.parentUuid;
-      const applicationSection = getApplicationSection(deploymentUuid, entityUuid)
-      // const targetEntityDefinition: EntityDefinition | undefined =
-      //   currentModel?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
+      const applicationSection = getApplicationSection(applicationUuid, entityUuid)
       const targetEntityDefinition: EntityDefinition | undefined =
         currentDeploymentReportsEntitiesDefinitionsMapping?.[
           applicationSection

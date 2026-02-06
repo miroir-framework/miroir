@@ -259,7 +259,7 @@ export function useJzodElementEditorHooks(
         // );
         let deploymentUuid: Uuid | undefined = applicationDeploymentMap[targetApplication];
         const applicationSection = getApplicationSection(
-          deploymentUuid,
+          targetApplication,
           currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity
         );
         if (targetApplication !== noValue.uuid) {

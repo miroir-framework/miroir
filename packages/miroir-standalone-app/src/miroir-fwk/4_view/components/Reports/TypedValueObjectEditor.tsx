@@ -415,7 +415,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 [jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
-                    deploymentUuid,
+                    application,
                     jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity
                   ),
                   parentName: "",

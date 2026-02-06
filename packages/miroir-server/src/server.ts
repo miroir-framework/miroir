@@ -72,10 +72,6 @@ const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterfac
 //   specificLoggerOptions,
 // );
 
-const configurations: Record<string, Deployment> = {
-  [deployment_Admin.uuid]: deployment_Admin as Deployment,
-  [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-}
 
 
 let myLogger: LoggerInterface = console as any as LoggerInterface;
@@ -103,14 +99,6 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json({limit: '50mb'}));
-// app.use(express.json());
-// app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-
-// // create application/json parser
-// var jsonParser = bodyParser.json({limit: '50mb'});
- 
-// // create application/x-www-form-urlencoded parser
-// var urlencodedParser = bodyParser.urlencoded({ extended: true, limit: '50mb' });
 
 myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
 
@@ -196,6 +184,11 @@ const domainController = await setupMiroirDomainController(
   }
 ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
+const configurations: Record<string, Deployment> = {
+  [deployment_Admin.uuid]: deployment_Admin as Deployment,
+  [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
+}
+
 // open all configured stores
 for (const c of Object.entries(configurations)) {
   const openStoreAction: StoreOrBundleAction = {
@@ -232,7 +225,6 @@ const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQue
       pageParams: {},
       queryParams: {},
       contextResults: {},
-      // runAsSql: true,
       extractors: {
         deployments: {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",

@@ -220,7 +220,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     label: "RootComponent_adminDeployments",
                     parentName: "Deployment",
                     applicationSection: getApplicationSection(
-                      deployment_Admin.uuid,
+                      adminSelfApplication.uuid,
                       entityDeployment.uuid
                     ),
                     parentUuid: entityDeployment.uuid,

@@ -730,7 +730,7 @@ export {
   getBasicStoreUnitConfiguration
 } from "./2_domain/Deployment.js";
 export {
-  selectCurrentDeploymentModel,
+  // selectCurrentDeploymentModel,
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,

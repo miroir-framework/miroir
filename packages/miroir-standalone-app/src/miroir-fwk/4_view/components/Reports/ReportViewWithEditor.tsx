@@ -200,6 +200,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     }
     const r = reportSectionsFormSchema(
       props.reportDefinition?.definition.section,
+      props.application,
       props.pageParams.deploymentUuid,
       currentDeploymentReportsEntitiesDefinitionsMapping,
       currentModel,
@@ -369,7 +370,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           );
         }
         const currentInstance = data[data[lastSubmitButtonClicked]];
-        const applicationSection = getApplicationSection(props.deploymentUuid, currentInstance.parentUuid);
+        const applicationSection = getApplicationSection(props.application, currentInstance.parentUuid);
 
         const mode = data[lastSubmitButtonClicked + "_mode"];
         log.info("onEditValueObjectFormSubmit",

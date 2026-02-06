@@ -31,6 +31,9 @@ import {
   SyncQueryTemplateRunnerParams,
   Uuid,
   defaultMetaModelEnvironment,
+  entityEndpointVersion,
+  getApplicationSection,
+  getReduxDeploymentsStateIndex,
   miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
@@ -47,6 +50,7 @@ import {
   applyReduxDeploymentsStateQuerySelectorForCleanedResult,
   applyReduxDeploymentsStateQueryTemplateSelector,
   applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult,
+  selectCurrentReduxDeploymentsStateFromReduxState,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeploymentFromReduxState,
@@ -281,10 +285,6 @@ export function useCurrentModel(
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): MetaModel {
-  // log.info("ReduxHooks useCurrentModel", application, applicationDeploymentMap);
-  // if (!applicationDeploymentMap) {
-  //   return defaultMiroirModelEnvironment.currentModel;
-  // }
   const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
   const foreignKeyParams: LocalCacheExtractor = useMemo(
     () =>
@@ -315,7 +315,6 @@ export function useCurrentModel(
  */
 export function useCurrentModelEnvironment(
   application: Uuid,
-  // applicationUuids: Uuid[],
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): MiroirModelEnvironment {
   const context = useMiroirContextService();
@@ -325,10 +324,7 @@ export function useCurrentModelEnvironment(
   const endpointsByUuid: Record<Uuid, any> = useEndpointsOfApplications(
     Object.keys(applicationDeploymentMap),// defaultDeploymentUuids,
     applicationDeploymentMap
-  ).reduce((acc, endpoint) => {
-    acc[endpoint.uuid] = endpoint;
-    return acc;
-  }, {} as Record<Uuid, any>);
+  );
 
   return useMemo(() => {
     return {
@@ -339,7 +335,7 @@ export function useCurrentModelEnvironment(
       currentModel: currentModel,
       deploymentUuid,
     };
-  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
+  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema, endpointsByUuid, deploymentUuid]);
 }
 
 // ################################################################################################
@@ -347,18 +343,28 @@ export function useEndpointsOfApplications(
   applicationUuids: Uuid[],
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
-  const models = applicationUuids.map((applicationUuid) =>
-    useCurrentModel(applicationUuid, applicationDeploymentMap)
-  );
-  const endpoints = models.flatMap((model) => model.endpoints ?? []); // TODO: deal with applications having many deployments
-  return endpoints;
+  const state: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState)
+  const endpoints: Record<Uuid, any>[] = applicationUuids.map((applicationUuid) => {
+    const deploymentUuid = applicationDeploymentMap[applicationUuid];
+    if (!deploymentUuid) {
+      return {} as Record<Uuid, any>;
+    }
+    const localEntityIndex = getReduxDeploymentsStateIndex(
+      deploymentUuid,
+      getApplicationSection(applicationUuid, entityEndpointVersion.uuid),
+      entityEndpointVersion.uuid
+    );
+    const entityState = state[localEntityIndex];
+    return entityState?.entities ?? {} as Record<Uuid, any>;
+  }) ?? ([] as Record<Uuid, any>[]);
+
+  let result: Record<Uuid, any> = {}
+  endpoints.forEach((model) => {
+    result = { ...result, ...model };
+  }, {} as Record<Uuid, any>);
+  return result;
 }
 
-// export function useEndpointsOfDeployments(deploymentUuids: Uuid[]) {
-//   const models = deploymentUuids.map((deploymentUuid) => useCurrentModel(deploymentUuid));
-//   const endpoints = models.flatMap((model) => model.endpoints ?? []); // TODO: deal with applications having many deployments
-//   return endpoints;
-// }
 
 // ################################################################################################
 export function useEntityInstanceUuidIndexFromLocalCache(

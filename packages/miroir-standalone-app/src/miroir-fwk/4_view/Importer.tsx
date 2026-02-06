@@ -8,10 +8,6 @@ import {
   JzodObject,
   LoggerInterface,
   MiroirLoggerFactory,
-  deployment_Admin,
-  // adminConfigurationDeploymentParis,
-  entityApplicationForAdmin,
-  entityDeployment,
   entityMenu,
   entitySelfApplication,
   metaModel,
@@ -21,6 +17,11 @@ import * as XLSX from 'xlsx';
 import { applicationParis, packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
+import {
+  deployment_Admin,
+  entityApplicationForAdmin,
+  entityDeployment,
+} from "miroir-test-app_deployment-admin";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;

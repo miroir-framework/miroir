@@ -154,7 +154,7 @@ export function StoredRunnerView(props: {
               },
             },
           } as FormMLSchema),
-    [storedRunner, currentActionDefinition]
+    [storedRunner, currentActionDefinition, runnerName]
   );
 
   const initialFormValue = useMemo(() => {
@@ -198,7 +198,7 @@ export function StoredRunnerView(props: {
         : {[storedRunner.name]:storedRunner.definition.formMLSchema.initialFormValues ?? {}}
       : undefined // impossible case, choices are "actionRunner" || "customRunner"
     ;
-  }, [runnerName]);
+  }, [storedRunner, formMLSchema, runnerDeploymentUuid, libraryAppModelEnvironment, deploymentEntityState, runnerName]);
 
   const storedRunnerAction: RunnerAction<Record<string, any>> | undefined
   // CompositeActionTemplate | undefined 

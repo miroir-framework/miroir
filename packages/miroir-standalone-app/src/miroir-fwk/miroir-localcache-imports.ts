@@ -39,6 +39,7 @@
 //   reduxStoreWithUndoRedoGetInitialState,
   
 //   // Selectors - Basic
+// selectCurrentReduxDeploymentsStateFromReduxState,
 //   selectCurrentTransaction,
 //   selectInstanceArrayForDeploymentSectionEntity,
 //   selectEntityInstanceUuidIndexFromLocalCache,
@@ -89,6 +90,7 @@ export {
   reduxStoreWithUndoRedoGetInitialState,
   
   // Selectors - Basic
+  selectCurrentReduxDeploymentsStateFromReduxState,
   selectCurrentTransaction,
   selectInstanceArrayForDeploymentSectionEntity,
   selectEntityInstanceUuidIndexFromLocalCache,

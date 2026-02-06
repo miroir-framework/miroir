@@ -144,7 +144,7 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
     //     }
     //   }
     // };
-    const applicationSection = getApplicationSection(props.deploymentUuid, newReportDefinition.parentUuid)
+    const applicationSection = getApplicationSection(props.application, newReportDefinition.parentUuid)
     log.info("MarkdownEditorModal handleSave", 
       "reportDefinitionFromFormik", reportDefinitionFromFormik,
       // "reportSectionDefinitionFromFormik", reportSectionDefinitionFromFormik,
@@ -161,15 +161,14 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         payload: {
           application: props.application,
-          // deploymentUuid: props.deploymentUuid,
           instanceAction: {
             actionType: "updateInstance",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               application: props.application,
-              // deploymentUuid: props.deploymentUuid,
               applicationSection: applicationSection,
+              parentUuid: newReportDefinition.parentUuid,
               objects: [
                 {
                   parentName: newReportDefinition.name,

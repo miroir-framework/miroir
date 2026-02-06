@@ -59,7 +59,6 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
   const formik = useFormikContext<any>();
   // const formikReportDefinition: Report = formik.values[reportSectionPath.join("_")];
   const formikReportDefinition: Report = formik.values[formikReportDefinitionPathString];
-  const applicationSectionComputed = getApplicationSection(deploymentUuid, formikReportDefinition?.parentUuid);
   log.info("InlineReportEditor: formikReportDefinition =", formikReportDefinition);
   return (
     <div
@@ -114,7 +113,7 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
                 application={application}
                 applicationDeploymentMap={applicationDeploymentMap}
                 deploymentUuid={deploymentUuid}
-                applicationSection={getApplicationSection(deploymentUuid, formikReportDefinition?.parentUuid)}
+                applicationSection={getApplicationSection(application, formikReportDefinition?.parentUuid)}
                 entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema
                 formValueMLSchema={formValueMLSchema}
                 formikValuePath={formikValuePath}

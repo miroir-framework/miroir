@@ -72,80 +72,15 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
 }) => {
   const runnerName: string = "deployApplication";
 
-  // State for MetaModel file upload
-  // const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | null>(null);
-  // const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-  // const [fileError, setFileError] = useState<string | null>(null);
-  // const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
   // ##############################################################################################
   const runnerDeploymentUuid = useMemo(() => {
     // Find deployment UUID from applicationDeploymentMap
-    const deploymentUuid = applicationDeploymentMap[applicationDeploymentMap ? Object.keys(applicationDeploymentMap)[0] : ""];
+    const deploymentUuid =
+      applicationDeploymentMap[
+        applicationDeploymentMap ? Object.keys(applicationDeploymentMap)[0] : ""
+      ];
     return deploymentUuid || "";
   }, [applicationDeploymentMap]);
-  // File selection handler
-  // const handleFileSelect = useCallback((fileOrPath: File | string) => {
-  //   // Since upload=true, we should always receive a File object
-  //   if (typeof fileOrPath === 'string') {
-  //     setFileError('Unexpected error: received path instead of file');
-  //     return;
-  //   }
-    
-  //   const file = fileOrPath;
-  //   if (!file.name.endsWith('.json')) {
-  //     setFileError('Please select a valid JSON file');
-  //     setSelectedMetaModel(null);
-  //     setSelectedFileName(null);
-  //     setSuccessMessage(null);
-  //     return;
-  //   }
-
-  //   const reader = new FileReader();
-  //   reader.onload = (e) => {
-  //     try {
-  //       const content = e.target?.result as string;
-  //       const parsedData = JSON.parse(content);
-        
-  //       // Basic validation that it looks like a MetaModel
-  //       if (!parsedData.entities || !parsedData.entityDefinitions) {
-  //         setFileError('Invalid MetaModel format: missing required properties (entities, entityDefinitions)');
-  //         setSelectedMetaModel(null);
-  //         setSelectedFileName(null);
-  //         setSuccessMessage(null);
-  //         return;
-  //       }
-
-  //       setSelectedMetaModel(parsedData as MetaModel);
-  //       setSelectedFileName(file.name);
-  //       setFileError(null);
-  //       setSuccessMessage(
-  //         `MetaModel loaded successfully with ${parsedData.entities?.length || 0} entities and ${parsedData.entityDefinitions?.length || 0} entity definitions.`
-  //       );
-  //       log.info('MetaModel loaded successfully from file:', file.name);
-  //     } catch (error) {
-  //       setFileError(`Error parsing JSON file: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  //       setSelectedMetaModel(null);
-  //       setSelectedFileName(null);
-  //       setSuccessMessage(null);
-  //     }
-  //   };
-  //   reader.onerror = () => {
-  //     setFileError('Error reading file');
-  //     setSelectedMetaModel(null);
-  //     setSelectedFileName(null);
-  //     setSuccessMessage(null);
-  //   };
-  //   reader.readAsText(file);
-  // }, []);
-
-  // // Clear selected file
-  // const handleFileClear = useCallback(() => {
-  //   setSelectedMetaModel(null);
-  //   setSelectedFileName(null);
-  //   setFileError(null);
-  //   setSuccessMessage(null);
-  // }, []);
 
   // ##############################################################################################
   const miroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
@@ -312,10 +247,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
         ).deployApplication,
         applicationBundle: undefined,
-        // applicationBundle: null,
-        // applicationBundle: "",
-        // applicationBundle: { a: 1, b: 2 }, // Dummy initial value
-        // applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
       },
     }),
     [],
@@ -817,80 +748,80 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
             //   } : {}),
             // },
           },
-          {
-            actionType: "initModel",
-            actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              application: testSelfApplicationUuid,
-              params: {
-                transformerType: "returnValue",
-                label: "initParametersForTest",
-                interpolation: "runtime",
-                value: initParametersForTest,
-              } as any, // TODO: fix type
-            },
-          },
-          {
-            actionType: "commit", // in the case where initModel has a model attribute
-            actionLabel: "refreshLocalCacheForApplication",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              application: testSelfApplicationUuid,
-            },
-          },
-          {
-            actionType: "rollback",
-            actionLabel: "refreshLocalCacheForApplication",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              application: testSelfApplicationUuid,
-            },
-          },
-          {
-            actionType: "createEntity",
-            actionLabel: "CreateApplicationStoreEntities",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              application: testSelfApplicationUuid,
-              entities: appEntitesAndInstances,
-            },
-          },
-          {
-            actionType: "commit",
-            actionLabel: "CommitApplicationStoreEntities",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            payload: {
-              application: testSelfApplicationUuid,
-            },
-          },
-          {
-            actionType: "createInstance",
-            actionLabel: "CreateApplicationStoreInstances",
-            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            payload: {
-              application: testSelfApplicationUuid,
-              applicationSection: "data",
-              parentUuid:
-                appEntitesAndInstances.length > 0
-                  ? appEntitesAndInstances[0].entity.uuid
-                  : noValue.uuid,
-              objects: appEntitesAndInstances.map((e) => {
-                return {
-                  parentName: e.entity.name,
-                  parentUuid: e.entity.uuid,
-                  applicationSection: "data",
-                  instances: e.instances,
-                };
-              }),
-            },
-          },
+          // {
+          //   actionType: "initModel",
+          //   actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
+          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          //   payload: {
+          //     application: testSelfApplicationUuid,
+          //     params: {
+          //       transformerType: "returnValue",
+          //       label: "initParametersForTest",
+          //       interpolation: "runtime",
+          //       value: initParametersForTest,
+          //     } as any, // TODO: fix type
+          //   },
+          // },
+          // {
+          //   actionType: "commit", // in the case where initModel has a model attribute
+          //   actionLabel: "refreshLocalCacheForApplication",
+          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          //   payload: {
+          //     application: testSelfApplicationUuid,
+          //   },
+          // },
+          // {
+          //   actionType: "rollback",
+          //   actionLabel: "refreshLocalCacheForApplication",
+          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          //   payload: {
+          //     application: testSelfApplicationUuid,
+          //   },
+          // },
+          // {
+          //   actionType: "createEntity",
+          //   actionLabel: "CreateApplicationStoreEntities",
+          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          //   payload: {
+          //     application: testSelfApplicationUuid,
+          //     entities: appEntitesAndInstances,
+          //   },
+          // },
+          // {
+          //   actionType: "commit",
+          //   actionLabel: "CommitApplicationStoreEntities",
+          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+          //   payload: {
+          //     application: testSelfApplicationUuid,
+          //   },
+          // },
+          // {
+          //   actionType: "createInstance",
+          //   actionLabel: "CreateApplicationStoreInstances",
+          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          //   payload: {
+          //     application: testSelfApplicationUuid,
+          //     applicationSection: "data",
+          //     parentUuid:
+          //       appEntitesAndInstances.length > 0
+          //         ? appEntitesAndInstances[0].entity.uuid
+          //         : noValue.uuid,
+          //     objects: appEntitesAndInstances.map((e) => {
+          //       return {
+          //         parentName: e.entity.name,
+          //         parentUuid: e.entity.uuid,
+          //         applicationSection: "data",
+          //         instances: e.instances,
+          //       };
+          //     }),
+          //   },
+          // },
         ],
       },
     };
@@ -918,7 +849,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
     testDeploymentUuid,
     testSelfApplicationUuid,
     testApplicationVersionUuid,
-    // selectedMetaModel,
   ]);
 
   return (
