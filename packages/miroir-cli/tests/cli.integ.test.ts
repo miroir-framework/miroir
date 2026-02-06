@@ -61,7 +61,7 @@ import {
   user2,
   user3,
   deployment_Library_DO_NO_USE,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { loadMiroirCliConfig } from "../src/config/configLoader.js";

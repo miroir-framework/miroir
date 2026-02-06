@@ -4,7 +4,7 @@ import domainStateImport from "./domainState.json";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-admin";
 import {
   selfApplicationLibrary,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 
 import {
   Domain2QueryReturnType

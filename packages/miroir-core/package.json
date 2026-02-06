@@ -54,7 +54,7 @@
     "fast-json-stable-stringify": "^2.1.0",
     "json-diff": "^1.0.6",
     "miroir-test-app_deployment-admin": "*",
-    "miroir-example-library": "*",
+    "miroir-test-app_deployment-library": "*",
     "mustache": "^4.2.0",
     "serialize-error": "^12.0.0",
     "uuid": "^11.0.0",

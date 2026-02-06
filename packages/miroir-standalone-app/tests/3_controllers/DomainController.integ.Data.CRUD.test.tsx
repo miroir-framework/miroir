@@ -76,7 +76,7 @@ import {
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {

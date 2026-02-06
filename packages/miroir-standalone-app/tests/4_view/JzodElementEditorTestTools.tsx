@@ -58,7 +58,7 @@ import {
   reportPublisherList,
   selfApplicationDeploymentLibrary,
   selfApplicationLibrary,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { Container } from "react-dom";
 import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";

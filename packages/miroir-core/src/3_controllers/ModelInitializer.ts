@@ -46,7 +46,7 @@ const instanceEndpointV1 = require('../assets/miroir_data/3d8da4d4-8f76-4bb4-921
 
 const miroirJzodSchemaBootstrap = require('../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json');
 const menuDefaultMiroir = require('../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json');
-import { menuDefaultLibrary } from "miroir-example-library";
+import { menuDefaultLibrary } from "miroir-test-app_deployment-library";
 
 import { entityDefinitionRunner, entityRunner } from "..";
 import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition";

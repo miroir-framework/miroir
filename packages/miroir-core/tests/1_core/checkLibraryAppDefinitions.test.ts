@@ -28,7 +28,7 @@ import {
   reportCountryList,
   reportAuthorDetails,
   reportBookDetails,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 // import reportBookInstance from "../../src/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
 
 

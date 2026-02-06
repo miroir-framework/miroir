@@ -39,7 +39,7 @@ import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedOnScreenDebug } from './Themes/BasicComponents.js';
 import { ThemedPaper } from './Themes/index.js';
-import { selfApplicationLibrary } from 'miroir-example-library';
+import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import {
   deployment_Admin,
   deployment_Miroir,

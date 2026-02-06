@@ -23,7 +23,7 @@ import {
 
 import { TransformerEditor } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
-import { book1, entityBook, entityDefinitionBook } from "miroir-example-library";
+import { book1, entityBook, entityDefinitionBook } from "miroir-test-app_deployment-library";
 
 // ################################################################################################
 const pageLabel = "TransformerEditor.test";

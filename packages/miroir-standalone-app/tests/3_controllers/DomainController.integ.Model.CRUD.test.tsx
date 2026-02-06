@@ -82,7 +82,7 @@ import {
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 import { deployment_Admin, adminApplication_Miroir } from "miroir-test-app_deployment-admin";

@@ -63,7 +63,7 @@ import {
   springer as publisher3,
   reportBookList,
   selfApplicationLibrary
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';

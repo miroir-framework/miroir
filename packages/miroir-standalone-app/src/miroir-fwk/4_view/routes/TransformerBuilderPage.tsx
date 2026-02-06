@@ -45,7 +45,7 @@ import {
   entityBook,
   selfApplicationDeploymentLibrary,
   selfApplicationLibrary,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 // ################################################################################################

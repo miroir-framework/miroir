@@ -30,7 +30,7 @@ import {
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';

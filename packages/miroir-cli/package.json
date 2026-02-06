@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "miroir-core": "*",
-    "miroir-example-library": "*",
+    "miroir-test-app_deployment-library": "*",
     "miroir-localcache-redux": "*",
     "@miroir-framework/jzod": "0.8.2",
     "commander": "^12.1.0",
@@ -57,7 +57,7 @@
     "@types/uuid": "^10.0.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "miroir-example-library": "*",
+    "miroir-test-app_deployment-library": "*",
     "tsup": "^8.0.1",
     "typescript": "5.8.2",
     "vitest": "^3.2.4"

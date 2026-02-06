@@ -38,7 +38,7 @@ import {
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 
 import { MetaEntity, Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
 import {

@@ -44,7 +44,7 @@ import {
 } from "./JzodElementEditorTestTools";
 import { debug } from "console";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
-import { book1, entityDefinitionBook } from "miroir-example-library";
+import { book1, entityDefinitionBook } from "miroir-test-app_deployment-library";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";

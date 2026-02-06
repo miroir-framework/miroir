@@ -26,7 +26,7 @@ import {
   entityPublisher,
   entityDefinitionPublisher,
   selfApplicationDeploymentLibrary,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {

@@ -66,7 +66,7 @@ import {
   user1,
   user2,
   user3,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
 
 // import { runMcpTestsViaHttp } from './mcpClient.js';

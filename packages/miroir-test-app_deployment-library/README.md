@@ -1,4 +1,4 @@
-# miroir-example-library
+# miroir-test-app_deployment-library
 
 Example library application assets for the Miroir Framework.
 
@@ -12,7 +12,7 @@ This package contains the model and data definitions for a simple library manage
 ## Usage
 
 ```typescript
-import { libraryAssets } from 'miroir-example-library';
+import { libraryAssets } from 'miroir-test-app_deployment-library';
 ```
 
 ## License

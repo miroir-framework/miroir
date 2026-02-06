@@ -38,7 +38,7 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   selfApplicationLibrary,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 
 import {
   DisplayLoadingInfo,

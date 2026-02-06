@@ -17,7 +17,7 @@ import {
   getBasicStoreUnitConfiguration,
   resetAndinitializeDeploymentCompositeAction,
 } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-example-library";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 // ################################################################################################
 export const testSuiteNameForBuildPlusRuntimeCompositeAction: string =

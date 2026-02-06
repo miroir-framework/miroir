@@ -50,7 +50,7 @@ import {
   adminSelfApplication,
   entityApplicationForAdmin,
 } from "miroir-test-app_deployment-admin";
-import { selfApplicationLibrary } from 'miroir-example-library';
+import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;

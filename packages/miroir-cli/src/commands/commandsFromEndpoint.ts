@@ -24,7 +24,7 @@ import {
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   defaultLibraryAppModelDEFUNCT,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 
 const packageName = "miroir-cli";
 let log: LoggerInterface = console as any as LoggerInterface;

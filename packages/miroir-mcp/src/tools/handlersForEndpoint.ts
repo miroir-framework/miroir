@@ -28,7 +28,7 @@ import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
-} from "miroir-example-library";
+} from "miroir-test-app_deployment-library";
 
 
 const packageName = "miroir-mcp";
