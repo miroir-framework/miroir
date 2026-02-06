@@ -395,5 +395,5 @@ export const mcpRequestHandlers_Library_lendingEndpoint: McpRequestHandlers = de
 // ################################################################################################
 export const mcpRequestHandlers: McpRequestHandlers = {
   ...mcpRequestHandlers_EntityEndpoint,
-  ...mcpRequestHandlers_Library_lendingEndpoint,
+  // ...mcpRequestHandlers_Library_lendingEndpoint,
 };

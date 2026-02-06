@@ -100,14 +100,6 @@ export const defaultLibraryAppModelDEFUNCT: MetaModel = {
 // console.log("###################################################################################")
 // console.log("###################################################################################")
 
-// export const defaultLibraryModelEnvironment: MiroirModelEnvironment = {
-//   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-//   miroirMetaModel: defaultMiroirMetaModel,
-//   endpointsByUuid: {[endpointDocument.uuid]: endpointDocument},
-//   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-//   currentModel: defaultLibraryAppModelDEFUNCT,
-// };
-
 export function getDefaultLibraryModelEnvironmentDEFUNCT(
   miroirFundamentalJzodSchema: MlSchema,
   defaultMiroirMetaModel: MetaModel,

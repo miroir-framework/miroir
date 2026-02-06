@@ -105,9 +105,6 @@ export const RunnersPage: React.FC<any> = (
     actionName: "check page configuration fetch"
   });
   
-  // const deploymentUuid = adminConfigurationDeploymentParis.uuid;
-  // const applicationUuid = selfApplicationLibrary.uuid;
-  // const deploymentUuid = deployment_Library_DO_NO_USE.uuid;
   const context = useMiroirContextService();
   const applicationDeploymentMap = context.applicationDeploymentMap;
 

@@ -13,11 +13,11 @@
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory": "test/test_assets/admin_model"
+      "directory": "../miroir-test-app_deployment-admin-admin/assets"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory": "test/test_assets/admin_data"
+      "directory": "../miroir-test-app_deployment-admin-admin/assets/admin_data"
     }
   }
 }

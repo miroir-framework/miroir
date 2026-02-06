@@ -63,7 +63,7 @@ import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeC
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+// import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import { packageName } from '../../../../constants.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
@@ -265,10 +265,10 @@ export const RootComponent = (props: RootComponentProps) => {
     }
   }, [applicationDeploymentMap]);
   
-  const libraryAppModel: MetaModel = useCurrentModel(
-    selfApplicationLibrary.uuid,
-    applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-  );
+  // const libraryAppModel: MetaModel = useCurrentModel(
+  //   selfApplicationLibrary.uuid,
+  //   applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  // );
 
   // ##############################################################################################
   // ##############################################################################################
@@ -288,14 +288,14 @@ export const RootComponent = (props: RootComponentProps) => {
           miroirMetaModel, 
           miroirMetaModel, 
         ),
-        [deployment_Library_DO_NO_USE.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          selfApplicationLibrary.uuid,// deployment_Library_DO_NO_USE.uuid,
-          miroirMetaModel, 
-          libraryAppModel,
-        ),
+        // [deployment_Library_DO_NO_USE.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        //   selfApplicationLibrary.uuid,// deployment_Library_DO_NO_USE.uuid,
+        //   miroirMetaModel, 
+        //   libraryAppModel,
+        // ),
       }
     ),
-    [miroirMetaModel, adminAppModel, libraryAppModel]
+    [miroirMetaModel, adminAppModel]
   );
 
   useEffect(() =>

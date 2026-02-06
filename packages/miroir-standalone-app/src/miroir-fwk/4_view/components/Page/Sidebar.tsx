@@ -6,7 +6,8 @@ import {
   LoggerInterface,
   menuDefaultMiroir,
   MiroirLoggerFactory,
-  selfApplicationMiroir
+  selfApplicationMiroir,
+  type Uuid
 } from "miroir-core";
 import {
   deployment_Admin,
@@ -15,7 +16,7 @@ import {
   menuDefaultAdmin
 } from "miroir-test-app_deployment-admin";
 
-import { deployment_Library_DO_NO_USE, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+// import { deployment_Library_DO_NO_USE, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
@@ -127,21 +128,26 @@ export const Sidebar: FC<{
     ))
   ), [props.open, context.showModelTools, props.setOpen]);
 
-  const filteredAppSidebarSections = useMemo(() => (
-    [
-      {
-        deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-        applicationUuid: selfApplicationLibrary.uuid,
-        menuUuid: menuDefaultLibrary.uuid
-      }
-    ]
+  const filteredAppSidebarSections: {
+    deploymentUuid: Uuid;
+    applicationUuid: Uuid;
+    menuUuid: Uuid;
+  }[] = useMemo(
+    () => [
+      // {
+      //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+      //   applicationUuid: selfApplicationLibrary.uuid,
+      //   menuUuid: menuDefaultLibrary.uuid
+      // }
+    ],
     // Object.entries(currentApplicationDeploymentMap??{}).map(entry => ({
     //   applicationUuid: entry[0],
     //   deploymentUuid: entry[1],
     //   menuUuid: menuDefaultLibrary.uuid, // TODO: correct!
     // }))
     // .filter(section => section.applicationUuid === currentApplication)
-  ), [currentApplication, currentApplicationDeploymentMap]);
+    [currentApplication, currentApplicationDeploymentMap],
+  );
   log.info("Sidebar: filteredAppSidebarSections", filteredAppSidebarSections);
 
   const appSidebarSections = useMemo(() => (
