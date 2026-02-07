@@ -30,6 +30,7 @@ import {
   ThemedScrollableContent
 } from "../Themes/index";
 import { SidebarSection } from './SidebarSection.js';
+import { useMenusOfApplications } from '../../ReduxHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -128,25 +129,47 @@ export const Sidebar: FC<{
     ))
   ), [props.open, context.showModelTools, props.setOpen]);
 
+  const applicationMenus = useMenusOfApplications(
+    Object.keys(currentApplicationDeploymentMap ?? {}),
+    currentApplicationDeploymentMap ?? {},
+  );
+  log.info("Sidebar: applicationMenus", applicationMenus);
   const filteredAppSidebarSections: {
     deploymentUuid: Uuid;
     applicationUuid: Uuid;
     menuUuid: Uuid;
   }[] = useMemo(
-    () => [
-      // {
-      //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-      //   applicationUuid: selfApplicationLibrary.uuid,
-      //   menuUuid: menuDefaultLibrary.uuid
-      // }
-    ],
+    () => applicationMenus
+    .filter(menu => menu.menus && menu.menus.length > 0)
+    .filter(menu => menu.application === currentApplication)
+    .map(menu => {
+      const applicationUuid = menu.application;
+      const deploymentUuid = currentApplicationDeploymentMap?.[applicationUuid];
+      if (!deploymentUuid) {
+        throw new Error(`No deployment found for application ${applicationUuid}`);
+        // return null;
+      }
+      return {
+        applicationUuid,
+        deploymentUuid,
+        menuUuid: menu.menus?.[0].uuid ?? menuDefaultMiroir.uuid, // TODO: correct!
+      };
+    })
+    .filter((section): section is { deploymentUuid: Uuid; applicationUuid: Uuid; menuUuid: Uuid } => !!section),
+    // [
+    //   // {
+    //   //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
+    //   //   applicationUuid: selfApplicationLibrary.uuid,
+    //   //   menuUuid: menuDefaultLibrary.uuid
+    //   // }
+    // ],
     // Object.entries(currentApplicationDeploymentMap??{}).map(entry => ({
     //   applicationUuid: entry[0],
     //   deploymentUuid: entry[1],
     //   menuUuid: menuDefaultLibrary.uuid, // TODO: correct!
     // }))
     // .filter(section => section.applicationUuid === currentApplication)
-    [currentApplication, currentApplicationDeploymentMap],
+    [applicationMenus, currentApplicationDeploymentMap, currentApplication],
   );
   log.info("Sidebar: filteredAppSidebarSections", filteredAppSidebarSections);
 

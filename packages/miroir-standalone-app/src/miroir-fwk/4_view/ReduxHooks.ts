@@ -32,12 +32,14 @@ import {
   Uuid,
   defaultMetaModelEnvironment,
   entityEndpointVersion,
+  entityMenu,
   getApplicationSection,
   getReduxDeploymentsStateIndex,
   miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
-  type ApplicationDeploymentMap
+  type ApplicationDeploymentMap,
+  type Menu
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -363,6 +365,36 @@ export function useEndpointsOfApplications(
     result = { ...result, ...model };
   }, {} as Record<Uuid, any>);
   return result;
+}
+
+// ################################################################################################
+export function useMenusOfApplications(
+  applicationUuids: Uuid[],
+  applicationDeploymentMap: ApplicationDeploymentMap
+) {
+  const state: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState)
+  const menus: { application: Uuid; menus: Menu[] }[] =
+    applicationUuids.map((applicationUuid) => {
+      const deploymentUuid = applicationDeploymentMap[applicationUuid];
+      if (!deploymentUuid) {
+        // return {} as Record<Uuid, any>;
+        throw new Error(`No deployment found for application ${applicationUuid}`);
+      }
+      const localEntityIndex = getReduxDeploymentsStateIndex(
+        deploymentUuid,
+        getApplicationSection(applicationUuid, entityMenu.uuid),
+        entityMenu.uuid,
+      );
+      const entityState = state[localEntityIndex];
+      return {application: applicationUuid, menus: Object.values(entityState?.entities ?? {})} as { application: Uuid; menus: Menu[] };
+    }) ?? [];
+  return menus;
+  // let result: Record<Uuid, Menu[]> = {}
+  // menus.forEach((menu) => {
+  //   if (menu)
+  //   result = { ...result, ...menu };
+  // }, {} as Record<Uuid, any>);
+  // return result;
 }
 
 

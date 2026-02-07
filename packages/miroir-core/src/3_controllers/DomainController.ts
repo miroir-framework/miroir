@@ -59,7 +59,8 @@ import {
   // TransformerForRuntime,
   UndoRedoAction,
   type EndpointDefinition,
-  type TransformerForBuildPlusRuntime
+  type TransformerForBuildPlusRuntime,
+  type ModelActionInitModel
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -1381,12 +1382,139 @@ export class DomainController implements DomainControllerInterface {
         }
         case "resetData":
         case "initModel": {
+          const modelActionInitModel = modelAction as ModelActionInitModel;
           await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // continuation
             applicationDeploymentMap,
             modelAction,
           );
+                    // If a model is provided, create entities from it
+          if (modelActionInitModel.payload.model) {
+            const model = modelActionInitModel.payload.model;
+            log.info("handleModelAction resetModel creating entities from provided model", {
+              entitiesCount: model.entities?.length || 0,
+              entityDefinitionsCount: model.entityDefinitions?.length || 0
+            });
+            
+            // Combine entities with their definitions
+            const entitiesToCreate: { entity: Entity; entityDefinition: EntityDefinition }[] = [];
+            
+            // Create a map of entityDefinitions by entityUuid for quick lookup
+            const entityDefinitionMap = new Map<string, EntityDefinition>();
+            if (model.entityDefinitions) {
+              for (const entityDef of model.entityDefinitions) {
+                entityDefinitionMap.set(entityDef.entityUuid, entityDef);
+              }
+            }
+            
+            // Match entities with their definitions
+            if (model.entities) {
+              for (const entity of model.entities) {
+                const entityDefinition = entityDefinitionMap.get(entity.uuid);
+                if (entityDefinition) {
+                  entitiesToCreate.push({ entity, entityDefinition });
+                } else {
+                  log.warn(
+                    "handleModelAction resetModel: no entityDefinition found for entity",
+                    entity.uuid,
+                    entity.name
+                  );
+                }
+              }
+            }
+            
+            if (entitiesToCreate.length > 0) {
+              log.info(
+                "handleModelAction resetModel creating",
+                entitiesToCreate.length,
+                "entities",
+                entitiesToCreate,
+              );
+              
+              // Create entities via persistence action for each entity
+              for (const { entity, entityDefinition } of entitiesToCreate) {
+                const createEntityAction: ModelAction = {
+                  actionType: "createEntity",
+                  application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: {
+                    application: modelActionInitModel.payload.application,
+                    entities: [{ entity, entityDefinition }]
+                  }
+                };
+                
+                // const createResult = await this.callUtil.callPersistenceAction(
+                  const createResult = await this.handleModelAction(
+                  createEntityAction,
+                  applicationDeploymentMap,
+                  currentModelEnvironment,
+                  // {}, // context
+                  // {}, // continuation
+                );
+                
+                if (createResult instanceof Action2Error) {
+                  log.error(
+                    "handleModelAction resetModel failed to create entity",
+                    entity.uuid,
+                    entity.name,
+                    createResult
+                  );
+                  return new Action2Error(
+                    "FailedToHandleAction",
+                    "handleModelAction resetModel failed to create entity from model",
+                    [],
+                    createResult,
+                  );
+                }
+              }
+              
+              log.info("handleModelAction resetModel successfully created all entities");
+            }
+
+            if (model.reports && model.reports.length > 0) {
+              const createReportsResult = await this.createModelInstancesFromResetModel(
+                "reports",
+                "Create Reports from Model",
+                model.reports,
+                entityReport,
+                modelActionInitModel.payload.application,
+                applicationDeploymentMap,
+              );
+              if (createReportsResult instanceof Action2Error) {
+                return createReportsResult;
+              }
+            }
+
+            if (model.menus && model.menus.length > 0) {
+              const createMenusResult = await this.createModelInstancesFromResetModel(
+                "menus",
+                "Create Menus from Model",
+                model.menus,
+                entityMenu,
+                modelActionInitModel.payload.application,
+                applicationDeploymentMap,
+              );
+              if (createMenusResult instanceof Action2Error) {
+                return createMenusResult;
+              }
+            }
+
+            if (model.endpoints && model.endpoints.length > 0) {
+              const createEndpointsResult = await this.createModelInstancesFromResetModel(
+                "endpoints",
+                "Create Endpoints from Model",
+                model.endpoints,
+                entityEndpointVersion,
+                modelActionInitModel.payload.application,
+                applicationDeploymentMap,
+              );
+              if (createEndpointsResult instanceof Action2Error) {
+                return createEndpointsResult;
+              }
+            }
+          }
+
           break;
         }
         case "commit": {

@@ -253,7 +253,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
   );
 
   let applicationDeploymentMapWithNewApplication: ApplicationDeploymentMap = {};
-  const testSelfApplicationUuid = uuidv4();
+  const testSelfApplicationUuid = selfApplicationLibrary.uuid;
   const testDeploymentUuid = uuidv4();
   const testApplicationModelBranchUuid = uuidv4();
   const testApplicationVersionUuid = uuidv4();
@@ -728,7 +728,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               definition: {
                 transformerType: "createObject",
                 definition: {
-                  application: testSelfApplicationUuid
+                  application: testSelfApplicationUuid,
                   // ISBN: {
                   //   transformerType: "getFromParameters",
                   //   referencePath: ["payload", "ISBN"],
@@ -748,80 +748,99 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
             //   } : {}),
             // },
           },
-          // {
-          //   actionType: "initModel",
-          //   actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
-          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          //   payload: {
-          //     application: testSelfApplicationUuid,
-          //     params: {
-          //       transformerType: "returnValue",
-          //       label: "initParametersForTest",
-          //       interpolation: "runtime",
-          //       value: initParametersForTest,
-          //     } as any, // TODO: fix type
-          //   },
-          // },
-          // {
-          //   actionType: "commit", // in the case where initModel has a model attribute
-          //   actionLabel: "refreshLocalCacheForApplication",
-          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          //   payload: {
-          //     application: testSelfApplicationUuid,
-          //   },
-          // },
-          // {
-          //   actionType: "rollback",
-          //   actionLabel: "refreshLocalCacheForApplication",
-          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          //   payload: {
-          //     application: testSelfApplicationUuid,
-          //   },
-          // },
-          // {
-          //   actionType: "createEntity",
-          //   actionLabel: "CreateApplicationStoreEntities",
-          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          //   payload: {
-          //     application: testSelfApplicationUuid,
-          //     entities: appEntitesAndInstances,
-          //   },
-          // },
-          // {
-          //   actionType: "commit",
-          //   actionLabel: "CommitApplicationStoreEntities",
-          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          //   payload: {
-          //     application: testSelfApplicationUuid,
-          //   },
-          // },
-          // {
-          //   actionType: "createInstance",
-          //   actionLabel: "CreateApplicationStoreInstances",
-          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          //   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          //   payload: {
-          //     application: testSelfApplicationUuid,
-          //     applicationSection: "data",
-          //     parentUuid:
-          //       appEntitesAndInstances.length > 0
-          //         ? appEntitesAndInstances[0].entity.uuid
-          //         : noValue.uuid,
-          //     objects: appEntitesAndInstances.map((e) => {
-          //       return {
-          //         parentName: e.entity.name,
-          //         parentUuid: e.entity.uuid,
-          //         applicationSection: "data",
-          //         instances: e.instances,
-          //       };
-          //     }),
-          //   },
-          // },
+          {
+            actionType: "initModel",
+            actionLabel: "resetAndInitializeDeployment_initModel_" + testSelfApplicationUuid,
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: testSelfApplicationUuid,
+              model: {
+                transformerType: "mergeIntoObject",
+                interpolation: "runtime",
+                applyTo: {
+                  transformerType: "getFromContext",
+                  interpolation: "runtime",
+                  referencePath: ["deployApplication", "applicationBundle"],
+                },
+                definition: {
+                  transformerType: "createObject",
+                  definition: {
+                    application: testSelfApplicationUuid,
+                    // ISBN: {
+                    //   transformerType: "getFromParameters",
+                    //   referencePath: ["payload", "ISBN"],
+                    // },
+                  },
+                },
+              } as any,
+              params: {
+                transformerType: "returnValue",
+                label: "initParametersForTest",
+                interpolation: "runtime",
+                value: initParametersForTest,
+              } as any, // TODO: fix type
+            },
+          },
+          {
+            actionType: "commit", // in the case where initModel has a model attribute
+            actionLabel: "refreshLocalCacheForApplication",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: testSelfApplicationUuid,
+            },
+          },
+          {
+            actionType: "rollback",
+            actionLabel: "refreshLocalCacheForApplication",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: testSelfApplicationUuid,
+            },
+          },
+          {
+            actionType: "createEntity",
+            actionLabel: "CreateApplicationStoreEntities",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: testSelfApplicationUuid,
+              entities: appEntitesAndInstances,
+            },
+          },
+          {
+            actionType: "commit",
+            actionLabel: "CommitApplicationStoreEntities",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              application: testSelfApplicationUuid,
+            },
+          },
+          {
+            actionType: "createInstance",
+            actionLabel: "CreateApplicationStoreInstances",
+            application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              application: testSelfApplicationUuid,
+              applicationSection: "data",
+              parentUuid:
+                appEntitesAndInstances.length > 0
+                  ? appEntitesAndInstances[0].entity.uuid
+                  : noValue.uuid,
+              objects: appEntitesAndInstances.map((e) => {
+                return {
+                  parentName: e.entity.name,
+                  parentUuid: e.entity.uuid,
+                  applicationSection: "data",
+                  instances: e.instances,
+                };
+              }),
+            },
+          },
         ],
       },
     };
