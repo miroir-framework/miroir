@@ -65,7 +65,12 @@ import AppBar from './AppBar.js';
 
 // import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import { packageName } from '../../../../constants.js';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelector, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import {
+  useApplicationDeploymentMapFromLocalCache,
+  useCurrentModel,
+  useReduxDeploymentsStateQuerySelector,
+  useReduxDeploymentsStateQuerySelectorForCleanedResult,
+} from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
@@ -148,6 +153,10 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
+  const currentApplication = context.toolsPageState?.applicationSelector ?? context.application;
+
+  log.info("RootComponent currentApplication", currentApplication);
+
   const navigate = useNavigate();
   // Get theme for theming the outline highlight colors
   const theme = useMiroirTheme();
@@ -182,8 +191,6 @@ export const RootComponent = (props: RootComponentProps) => {
   const adminAppModel: MetaModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
-
-  // log.info("RootComponent", count, "currentModel", currentModel);
   // log.info("RootComponent", count, "adminAppModel", adminAppModel);
   log.info("RootComponent", count, "miroirMetaModel", miroirMetaModel);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
@@ -210,7 +217,6 @@ export const RootComponent = (props: RootComponentProps) => {
             ? {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: adminSelfApplication.uuid,
-                // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
                 pageParams: {},
                 queryParams: {},
                 contextResults: {},
@@ -258,6 +264,21 @@ export const RootComponent = (props: RootComponentProps) => {
   );
   log.info("RootComponent applicationDeploymentMap",applicationDeploymentMap);
 
+  // Use dynamic applicationDeploymentMap (which includes non-default apps like Library)
+  // falling back to defaultSelfApplicationDeploymentMap during initial load.
+  // This ensures the Redux selector subscribes to the correct state slice for the
+  // current application, triggering a re-render when its data is loaded.
+  const currentModel: MetaModel = useCurrentModel(
+    currentApplication,
+    applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  );
+  log.info("RootComponent", count, "currentModel", currentModel);
+
+  // const applicationDeploymentMap2 = useApplicationDeploymentMapFromLocalCache(
+  //   applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  // );
+  // log.info("RootComponent applicationDeploymentMap2",applicationDeploymentMap2);
+  
   useEffect(() => {
     if (applicationDeploymentMap) {
       log.info("RootComponent calling setApplicationDeploymentMap in context",applicationDeploymentMap);
@@ -275,6 +296,7 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
+  const currentDeployment = (applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap)[currentApplication];  
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
       {
@@ -288,18 +310,22 @@ export const RootComponent = (props: RootComponentProps) => {
           miroirMetaModel, 
           miroirMetaModel, 
         ),
-        // [deployment_Library_DO_NO_USE.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-        //   selfApplicationLibrary.uuid,// deployment_Library_DO_NO_USE.uuid,
-        //   miroirMetaModel, 
-        //   libraryAppModel,
-        // ),
+        [currentDeployment]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+          currentApplication,// deployment_Library_DO_NO_USE.uuid,
+          miroirMetaModel, 
+          currentModel,
+        ),
       }
     ),
-    [miroirMetaModel, adminAppModel]
+    [miroirMetaModel, adminAppModel, currentApplication, currentModel]
   );
 
-  useEffect(() =>
-    context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(deploymentUuidToReportsEntitiesDefinitionsMapping)
+  useEffect(
+    () =>
+      context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(
+        deploymentUuidToReportsEntitiesDefinitionsMapping,
+      ),
+    [deploymentUuidToReportsEntitiesDefinitionsMapping],
   );
 
   // ##############################################################################################
@@ -810,12 +836,37 @@ export const RootComponent = (props: RootComponentProps) => {
                   copyButton={true}
                 />
                 <ThemedOnScreenDebug
+                  label="RootComponent applicationDeploymentMap"
+                  data={applicationDeploymentMap}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent currentModel"
+                  data={currentModel}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping"
+                  data={deploymentUuidToReportsEntitiesDefinitionsMapping}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                  copyButton={true}
+                />
+                {/* <ThemedOnScreenDebug
+                  label="RootComponent applicationDeploymentMap2"
+                  data={applicationDeploymentMap2}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                /> */}
+                {/* <ThemedOnScreenDebug
                   label="RootComponent adminAppModel"
                   data={{applicationDeploymentMap, adminAppModel}}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                   copyButton={true}
-                />
+                /> */}
                 <ThemedOnScreenDebug
                   label="RootComponent viewParams generalEditMode"
                   data={context.viewParams.generalEditMode}
@@ -825,12 +876,6 @@ export const RootComponent = (props: RootComponentProps) => {
                 <ThemedOnScreenDebug
                   label="RootComponent adminDeploymentsQueryResult"
                   data={adminDeploymentsQueryResult}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                />
-                <ThemedOnScreenDebug
-                  label="RootComponent applicationDeploymentMap"
-                  data={applicationDeploymentMap}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                 />

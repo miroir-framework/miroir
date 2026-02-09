@@ -31,6 +31,7 @@ import {
   SyncQueryTemplateRunnerParams,
   Uuid,
   defaultMetaModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   entityEndpointVersion,
   entityMenu,
   getApplicationSection,
@@ -39,6 +40,7 @@ import {
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
+  type Deployment,
   type Menu
 } from "miroir-core";
 import {
@@ -62,6 +64,7 @@ import {
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import { useMiroirContextService } from "./MiroirContextReactProvider.js";
+import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -303,8 +306,16 @@ export function useCurrentModel(
 
   const result = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, applicationDeploymentMap, foreignKeyParams)
+    // selectModelForDeploymentFromReduxState()(state, applicationDeploymentMap, foreignKeyParams)
   );
-  // log.info("ReduxHooks useCurrentModel for application",application, "result", result);
+  log.info(
+    "ReduxHooks useCurrentModel for application",
+    application,
+    "applicationDeploymentMap",
+    applicationDeploymentMap,
+    "result",
+    result,
+  );
   return result;
 }
 
@@ -377,7 +388,6 @@ export function useMenusOfApplications(
     applicationUuids.map((applicationUuid) => {
       const deploymentUuid = applicationDeploymentMap[applicationUuid];
       if (!deploymentUuid) {
-        // return {} as Record<Uuid, any>;
         throw new Error(`No deployment found for application ${applicationUuid}`);
       }
       const localEntityIndex = getReduxDeploymentsStateIndex(
@@ -389,12 +399,6 @@ export function useMenusOfApplications(
       return {application: applicationUuid, menus: Object.values(entityState?.entities ?? {})} as { application: Uuid; menus: Menu[] };
     }) ?? [];
   return menus;
-  // let result: Record<Uuid, Menu[]> = {}
-  // menus.forEach((menu) => {
-  //   if (menu)
-  //   result = { ...result, ...menu };
-  // }, {} as Record<Uuid, any>);
-  // return result;
 }
 
 
@@ -403,13 +407,40 @@ export function useEntityInstanceUuidIndexFromLocalCache(
   params: LocalCacheExtractor,
   applicationDeploymentMap: ApplicationDeploymentMap
 ): EntityInstancesUuidIndex | undefined {
-  const foreignKeyParams: LocalCacheExtractor = useMemo(() => ({ ...params }), [params]);
+  const localCacheExtractor: LocalCacheExtractor = useMemo(() => ({ ...params }), [params]);
 
   return useSelector((state: ReduxStateWithUndoRedo) =>
-    selectEntityInstanceUuidIndexFromLocalCache(state, applicationDeploymentMap,foreignKeyParams)
+    selectEntityInstanceUuidIndexFromLocalCache(state, applicationDeploymentMap, localCacheExtractor)
   );
 }
 
+// ################################################################################################
+export function useApplicationDeploymentMapFromLocalCache(
+  applicationDeploymentMap: ApplicationDeploymentMap
+): ApplicationDeploymentMap {
+
+  return useSelector((state: ReduxStateWithUndoRedo) => {
+    const localCacheDeployments = useEntityInstanceUuidIndexFromLocalCache(
+      {
+        queryType: "localCacheEntityInstancesExtractor",
+        definition: {
+          application: adminSelfApplication.uuid,
+          applicationSection: "data",
+          entityUuid: entityDeployment.uuid,
+        },
+      },
+      applicationDeploymentMap
+      ,
+    );
+    return localCacheDeployments
+      ? (Object.fromEntries(
+          Object.entries(localCacheDeployments as Record<string, Deployment>).map(
+            (e: [string, Deployment]) => [e[1].selfApplication, e[1].uuid],
+          ),
+        ) as any)
+      : ({} as any);
+  });
+}
 //#########################################################################################
 function entityInstancesUuidIndexToEntityInstanceArraySelector(state: EntityInstancesUuidIndex) {
   return Object.values(state);
@@ -429,7 +460,6 @@ export function useLocalCacheInstancesForJzodAttribute(
       queryType: "localCacheEntityInstancesExtractor",
       definition: {
         application,
-        // deploymentUuid,
         applicationSection,
         entityUuid,
       },

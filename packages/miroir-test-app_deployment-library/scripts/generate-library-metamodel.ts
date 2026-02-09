@@ -33,6 +33,13 @@ import {
   // Application metadata
   selfApplicationVersionLibraryInitialVersion,
   selfApplicationLibrary,
+  reportUserList,
+  reportUserDetails,
+  reportLendingHistoryItemDetails,
+  reportLendingHistoryItemList,
+  reportLibraryHome,
+  reportCountryDetails,
+  reportPublisherDetails,
 } from "../index.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -78,8 +85,15 @@ async function generateLibraryMetaModel() {
         reportAuthorList,
         reportBookDetails,
         reportBookList,
+        reportCountryDetails,
         reportCountryList,
+        reportPublisherDetails,
         reportPublisherList,
+        reportUserDetails,
+        reportUserList,
+        reportLendingHistoryItemDetails,
+        reportLendingHistoryItemList,
+        reportLibraryHome,
       ],
       storedQueries: [],
       jzodSchemas: [],

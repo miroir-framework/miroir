@@ -121,8 +121,6 @@ export function fetchMiroirAndAppConfigurations(
       const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
         queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
         application: adminSelfApplication.uuid,
-        // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-        // deploymentUuid: deployment_Admin.uuid,
         pageParams: {},
         queryParams: {},
         contextResults: {},
@@ -148,8 +146,6 @@ export function fetchMiroirAndAppConfigurations(
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: adminSelfApplication.uuid,
-            // applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-            // deploymentUuid: deployment_Admin.uuid,
             applicationSection: "data",
             query: adminDeploymentsQuery,
           },

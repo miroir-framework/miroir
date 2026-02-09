@@ -221,7 +221,7 @@ function loadNewEntityInstancesInLocalCache(
   instanceCollection: EntityInstanceCollection
 ) {
   log.info(
-    "loadNewEntityInstancesInLocalCache called with deployment",
+    "loadNewEntityInstancesInLocalCache Redux called with deployment",
     deploymentUuid,
     "section",
     section,
@@ -727,7 +727,8 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     ): void {
       log.info(
         "localCacheSliceObject.handleAction called with action",
-        JSON.stringify(box.payload.action, undefined, 2)
+        box.payload.action
+        // JSON.stringify(box.payload.action, undefined, 2)
       );
       actionReturnTypeToException(handleAction(state, box.payload.action, box.payload.applicationDeploymentMap));
     },

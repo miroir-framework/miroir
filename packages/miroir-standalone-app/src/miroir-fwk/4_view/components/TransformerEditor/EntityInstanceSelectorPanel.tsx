@@ -150,7 +150,7 @@ export function EntityInstanceSelectorPanel(props:{
       ? deploymentUuid
       : defaultAdminApplicationDeploymentMapNOTGOOD[inputSelector_applicationUuid];
 
-  const currentModel = useCurrentModel(inputSelector_applicationUuid, defaultSelfApplicationDeploymentMap);
+  const currentModel = useCurrentModel(inputSelector_applicationUuid, props.applicationDeploymentMap);
   // const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
 
   // Entities are always defined in the 'model' section, sorted by name

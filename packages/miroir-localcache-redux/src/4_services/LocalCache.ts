@@ -206,7 +206,7 @@ export class LocalCache implements LocalCacheInterface {
     action: LocalCacheAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType {
-    log.info("LocalCache handleLocalCacheAction", action);
+    log.info("LocalCache handleLocalCacheAction", action, applicationDeploymentMap);
     // log.info("LocalCache handleAction", JSON.stringify(action, undefined, 2));
 
     const result: Action2ReturnType = exceptionToActionReturnType(() =>

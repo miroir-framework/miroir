@@ -28,7 +28,10 @@ export {
 } from "./4_services/localCache/LocalCacheSlice.js";
 
 // Model selectors
-export { selectModelForDeploymentFromReduxState } from "./4_services/localCache/LocalCacheSliceModelSelector.js";
+export {
+  // selectApplicationDeploymentMapFromReduxDeploymentsState,
+  selectModelForDeploymentFromReduxState,
+} from "./4_services/localCache/LocalCacheSliceModelSelector.js";
 
 // Selectors
 export {

@@ -176,7 +176,7 @@ export function useQueryTemplateResults(
       deploymentEntityStateFetchQueryParams,
       applicationDeploymentMap
     );
-  log.info("useQueryTemplateResults reportData", reportData);
+  log.info("useQueryTemplateResults reportData from stored Query", reportData);
   return {reportData, resolvedQuery: reportDataQuery};
 };
 

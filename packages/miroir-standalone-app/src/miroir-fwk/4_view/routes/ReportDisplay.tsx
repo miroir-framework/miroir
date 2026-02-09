@@ -67,10 +67,6 @@ export const ReportDisplay: React.FC<{
   const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
-  // const availableReports: Report[] = useMemo(() => {
-  //   return currentModel.reports || [];
-  // }, [currentModel]);
-  
   const reportSection = application == selfApplicationMiroir ? "data" : "model"
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return pageParams.applicationSection &&
