@@ -938,6 +938,24 @@ export function getMiroirFundamentalJzodSchema(
         mlSchema: entityDefinitionJzodSchemaV1.mlSchema as any,
         // mlSchema: entityDefinitionJzodSchemaV1.mlSchema as JzodObject,
         report: (entityDefinitionReportV1 as any).mlSchema,
+        dataSet: {
+          type: "object",
+          definition: {
+            "applicationUuid": {
+              type: "uuid",
+            },
+            instances: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "entityInstanceCollection",
+                },
+              },
+            }
+          }
+        },
         metaModel: {
           type: "object",
           definition: {

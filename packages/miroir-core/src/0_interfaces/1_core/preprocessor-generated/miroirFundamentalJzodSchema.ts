@@ -13093,6 +13093,24 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "dataSet": {
+        "type": "object",
+        "definition": {
+          "applicationUuid": {
+            "type": "uuid"
+          },
+          "instances": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstanceCollection"
+              }
+            }
+          }
+        }
+      },
       "metaModel": {
         "type": "object",
         "definition": {

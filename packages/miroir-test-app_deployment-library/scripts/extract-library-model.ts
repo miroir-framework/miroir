@@ -93,30 +93,8 @@ export async function extractEntityInstances(
   return instances;
 }
 
-/**
- * Extracts the complete MetaModel from a filesystem-deployed Library application.
- * This script mounts the store, reads all model elements dynamically, and outputs a JSON file.
- */
-async function extractLibraryModel() {
+async function mountLibraryDeployment() {
   try {
-    console.log("=".repeat(80));
-    console.log("Extracting Library Application MetaModel from Filesystem Store");
-    console.log("=".repeat(80));
-
-    // Initialize Miroir framework
-    console.log("\n1. Initializing Miroir framework...");
-    miroirCoreStartup();
-    miroirFileSystemStoreSectionStartup();
-    miroirIndexedDbStoreSectionStartup();
-    miroirPostgresStoreSectionStartup();
-    ConfigurationService.registerTestImplementation({ expect: {} as any });
-
-    MiroirLoggerFactory.registerLoggerToStart(
-      MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "extract-library-metamodel")
-    ).then((logger: LoggerInterface) => {
-      log = logger;
-    });
-
     // Load configuration
     console.log("2. Loading configuration from extractMetaModelConfig.json...");
     const configPath = resolve(__dirname, "extractMetaModelConfig.json");
@@ -225,9 +203,44 @@ async function extractLibraryModel() {
 
     console.log("   Store mounted successfully");
 
+    return { storeController, persistenceStoreControllerManager };
+  } catch (error) {
+    console.error("\n" + "!".repeat(80));
+    console.error("Error during library deployment mounting:");
+    console.error("!".repeat(80));
+    console.error(error);
+    console.error("!".repeat(80));
+    throw error; // Rethrow to be caught by the main function
+  }
+}
+/**
+ * Extracts the complete MetaModel from a filesystem-deployed Library application.
+ * This script mounts the store, reads all model elements dynamically, and outputs a JSON file.
+ */
+async function extractLibraryModel() {
+  try {
+    console.log("=".repeat(80));
+    console.log("Extracting Library Application MetaModel from Filesystem Store");
+    console.log("=".repeat(80));
+
+    // Initialize Miroir framework
+    console.log("\n1. Initializing Miroir framework...");
+    miroirCoreStartup();
+    miroirFileSystemStoreSectionStartup();
+    miroirIndexedDbStoreSectionStartup();
+    miroirPostgresStoreSectionStartup();
+    ConfigurationService.registerTestImplementation({ expect: {} as any });
+
+    MiroirLoggerFactory.registerLoggerToStart(
+      MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "extract-library-metamodel")
+    ).then((logger: LoggerInterface) => {
+      log = logger;
+    });
+
+    const { storeController, persistenceStoreControllerManager } = await mountLibraryDeployment();
+
     // Read all model elements from the store
     console.log("\n7. Reading model elements from filesystem store...");
-
 
     // Extract all entities
     const entities = await extractEntityInstances(storeController, ENTITY_ENTITY_UUID, "entities");
