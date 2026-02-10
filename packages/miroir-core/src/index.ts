@@ -217,6 +217,8 @@ export {
   jzodRecord,
   JzodReference,
   jzodReference,
+  DataSet,
+  dataSet,
   MlSchema,
   mlSchema,
   JzodSet,

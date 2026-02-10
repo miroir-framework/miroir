@@ -15,9 +15,20 @@ import {
   PersistenceStoreControllerManager,
   createDeploymentCompositeAction,
   defaultSelfApplicationDeploymentMap,
+  entityDefinition,
+  entityEndpointVersion,
+  entityEntity,
+  entityEntityDefinition,
+  entityJzodSchema,
+  entityMenu,
+  entityQueryVersion,
+  entityReport,
+  entitySelfApplicationVersion,
   miroirCoreStartup,
   type ApplicationDeploymentMap,
+  type ApplicationSection,
   type ApplicationVersion,
+  type DataSet,
   type Deployment,
   type EndpointDefinition,
   type Entity,
@@ -37,7 +48,7 @@ import {
   deployment_Library_DO_NO_USE
 } from "miroir-test-app_deployment-admin";
 
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { entityAuthor, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -47,16 +58,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Entity UUIDs from Miroir meta-model
-const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
-const ENTITY_DEFINITION_UUID = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
-const ENTITY_MENU_UUID = "dde4c883-ae6d-47c3-b6df-26bc6e3c1842";
-const ENTITY_REPORT_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
-const ENTITY_ENDPOINT_VERSION_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
-const ENTITY_JZOD_SCHEMA_UUID = "5e81e1b9-38be-487c-b3e5-53796c57fccf";
-const ENTITY_QUERY_VERSION_UUID = "e4320b9e-ab45-4abe-85d8-359604b3c62f";
-const ENTITY_SELF_APPLICATION_UUID = "a659d350-dd97-4da9-91de-524fa01745dc";
-const ENTITY_SELF_APPLICATION_VERSION_UUID = "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24";
-const ENTITY_SELF_APPLICATION_MODEL_BRANCH_UUID = "cdb0aec6-b848-43ac-a058-fe2dbe5811f1";
+// const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+const ENTITY_ENTITY_UUID = entityEntity.uuid;
+const ENTITY_DEFINITION_UUID = entityEntityDefinition.uuid;
+const ENTITY_MENU_UUID = entityMenu.uuid;
+const ENTITY_REPORT_UUID = entityReport.uuid;
+const ENTITY_ENDPOINT_VERSION_UUID = entityEndpointVersion.uuid;
+const ENTITY_JZOD_SCHEMA_UUID = entityJzodSchema.uuid;
+const ENTITY_QUERY_VERSION_UUID = entityQueryVersion.uuid;
+// const ENTITY_SELF_APPLICATION_UUID = "a659d350-dd97-4da9-91de-524fa01745dc";
+const ENTITY_SELF_APPLICATION_VERSION_UUID = entitySelfApplicationVersion.uuid;
+// const ENTITY_SELF_APPLICATION_MODEL_BRANCH_UUID = "cdb0aec6-b848-43ac-a058-fe2dbe5811f1";
 
 // Logger setup
 const packageName = "miroir-test-app_deployment-library";
@@ -73,11 +85,12 @@ let log: LoggerInterface = console as any as LoggerInterface;
  */
 export async function extractEntityInstances(
   storeController: PersistenceStoreControllerInterface,
+  applicationSection: ApplicationSection,
   entityUuid: string,
   entityName: string,
 ) {
   console.log(`   - Reading ${entityName}...`);
-  const result = await storeController.getInstances("model", entityUuid);
+  const result = await storeController.getInstances(applicationSection, entityUuid);
 
   if (result instanceof Action2Error) {
     throw new Error(`Error reading ${entityName}: ${result}`);
@@ -135,9 +148,9 @@ async function mountLibraryDeployment() {
 
     // Setup Miroir context and activity tracking
     console.log("3. Setting up Miroir context...");
-    const miroirActivityTracker = new MiroirActivityTracker();
-    const miroirEventService = new MiroirEventService(miroirActivityTracker);
-    const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
+    // const miroirActivityTracker = new MiroirActivityTracker();
+    // const miroirEventService = new MiroirEventService(miroirActivityTracker);
+    // const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
 
     // Create persistence store controller manager
     console.log("4. Creating persistence store controller manager...");
@@ -146,34 +159,34 @@ async function mountLibraryDeployment() {
       ConfigurationService.StoreSectionFactoryRegister
     );
 
-    // Setup application deployment map
-    const applicationDeploymentMap: ApplicationDeploymentMap = {
-      ...defaultSelfApplicationDeploymentMap,
-      [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-    };
+    // // Setup application deployment map
+    // const applicationDeploymentMap: ApplicationDeploymentMap = {
+    //   ...defaultSelfApplicationDeploymentMap,
+    //   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+    // };
 
     // Get storage configurations
     const libraryDeploymentStorageConfiguration = miroirConfig.client.deploymentStorageConfig[
       deployment_Library_DO_NO_USE.uuid
     ];
 
-    const adminDeploymentStorageConfiguration =
-      miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid];
+    // const adminDeploymentStorageConfiguration =
+    //   miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid];
 
-    const adminDeployment: Deployment = {
-      ...deployment_Admin,
-      configuration: adminDeploymentStorageConfiguration,
-    };
+    // const adminDeployment: Deployment = {
+    //   ...deployment_Admin,
+    //   configuration: adminDeploymentStorageConfiguration,
+    // };
 
-    // Create the library deployment
-    console.log("5. Creating library deployment...");
-    const createLibraryDeploymentAction = createDeploymentCompositeAction(
-      "library",
-      deployment_Library_DO_NO_USE.uuid,
-      selfApplicationLibrary.uuid,
-      adminDeployment,
-      libraryDeploymentStorageConfiguration
-    );
+    // // Create the library deployment
+    // console.log("5. Creating library deployment...");
+    // const createLibraryDeploymentAction = createDeploymentCompositeAction(
+    //   "library",
+    //   deployment_Library_DO_NO_USE.uuid,
+    //   selfApplicationLibrary.uuid,
+    //   adminDeployment,
+    //   libraryDeploymentStorageConfiguration
+    // );
 
     // We need a domain controller to execute the deployment creation
     // For this, we'll use the setupMiroirDomainController pattern from tests
@@ -217,7 +230,72 @@ async function mountLibraryDeployment() {
  * Extracts the complete MetaModel from a filesystem-deployed Library application.
  * This script mounts the store, reads all model elements dynamically, and outputs a JSON file.
  */
-async function extractLibraryModel() {
+async function extractLibraryModel(
+  storeController: PersistenceStoreControllerInterface,
+  // persistenceStoreControllerManager: PersistenceStoreControllerManager
+) {
+  try {
+    // Read all model elements from the store
+    console.log("\n7. Reading model elements from filesystem store...");
+
+    // Extract all entities
+    const entities = await extractEntityInstances(storeController, "model", entityEntity.uuid, "entities");
+    const entityDefinitions = await extractEntityInstances(storeController, "model", entityEntityDefinition.uuid, "entity definitions");
+    const endpoints = await extractEntityInstances(storeController, "model", entityEndpointVersion.uuid, "endpoints");
+    const menus = await extractEntityInstances(storeController, "model", entityMenu.uuid, "menus");
+    const reports = await extractEntityInstances(storeController, "model", entityReport.uuid, "reports");
+    const jzodSchemas = await extractEntityInstances(storeController, "model", entityJzodSchema.uuid, "jzod schemas");
+    const queries = await extractEntityInstances(storeController, "model", entityQueryVersion.uuid, "queries");
+    const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
+
+    // Assemble the MetaModel
+    console.log("\n8. Assembling MetaModel structure...");
+    const libraryMetaModel: MetaModel = {
+      applicationUuid: selfApplicationLibrary.uuid,
+      applicationName: selfApplicationLibrary.name,
+      entities: entities as Entity[],
+      entityDefinitions: entityDefinitions as EntityDefinition[],
+      endpoints: endpoints as EndpointDefinition[],
+      menus: menus as Menu[],
+      reports: reports as Report[],
+      storedQueries: queries as Query[],
+      jzodSchemas: jzodSchemas as MlSchema[],
+      applicationVersions: applicationVersions as ApplicationVersion[],
+      applicationVersionCrossEntityDefinition: [], // These would need to be read separately if needed
+    };
+
+    return libraryMetaModel;
+  } catch (error) {
+    console.error("Error extracting Library MetaModel:");
+    throw error;
+  }
+}
+
+async function extractLibraryData(
+  storeController: PersistenceStoreControllerInterface,
+): Promise<DataSet> {
+  try {
+    console.log("\nExtracting data sets from filesystem store...");
+    const authors = await extractEntityInstances(storeController, "data", entityAuthor.uuid, "authors");
+
+    return Promise.resolve({
+      applicationUuid: selfApplicationLibrary.uuid,
+      instances: [
+        {
+          parentUuid: entityAuthor.uuid,
+          applicationSection: "data",
+          parentName: "Author",
+          instances: authors,
+        }
+      ]
+    });
+  } catch (error) {
+    console.error("Error extracting data sets:");
+    throw error;
+  }
+}
+
+async function extractLibrary() {
   try {
     console.log("=".repeat(80));
     console.log("Extracting Library Application MetaModel from Filesystem Store");
@@ -239,43 +317,24 @@ async function extractLibraryModel() {
 
     const { storeController, persistenceStoreControllerManager } = await mountLibraryDeployment();
 
-    // Read all model elements from the store
-    console.log("\n7. Reading model elements from filesystem store...");
-
-    // Extract all entities
-    const entities = await extractEntityInstances(storeController, ENTITY_ENTITY_UUID, "entities");
-    const entityDefinitions = await extractEntityInstances(storeController, ENTITY_DEFINITION_UUID, "entity definitions");
-    const endpoints = await extractEntityInstances(storeController, ENTITY_ENDPOINT_VERSION_UUID, "endpoints");
-    const menus = await extractEntityInstances(storeController, ENTITY_MENU_UUID, "menus");
-    const reports = await extractEntityInstances(storeController, ENTITY_REPORT_UUID, "reports");
-    const jzodSchemas = await extractEntityInstances(storeController, ENTITY_JZOD_SCHEMA_UUID, "jzod schemas");
-    const queries = await extractEntityInstances(storeController, ENTITY_QUERY_VERSION_UUID, "queries");
-    const applicationVersions = await extractEntityInstances(storeController, ENTITY_SELF_APPLICATION_VERSION_UUID, "application versions");
-
-    // Assemble the MetaModel
-    console.log("\n8. Assembling MetaModel structure...");
-    const libraryMetaModel: MetaModel = {
-      applicationUuid: selfApplicationLibrary.uuid,
-      applicationName: selfApplicationLibrary.name,
-      entities: entities as Entity[],
-      entityDefinitions: entityDefinitions as EntityDefinition[],
-      endpoints: endpoints as EndpointDefinition[],
-      menus: menus as Menu[],
-      reports: reports as Report[],
-      storedQueries: queries as Query[],
-      jzodSchemas: jzodSchemas as MlSchema[],
-      applicationVersions: applicationVersions as ApplicationVersion[],
-      applicationVersionCrossEntityDefinition: [], // These would need to be read separately if needed
-    };
+    const libraryMetaModel: MetaModel = await extractLibraryModel(
+      storeController,
+      // persistenceStoreControllerManager,
+    );
 
     // Write to output file
     console.log("9. Writing MetaModel to file...");
-    const outputPath = resolve(__dirname, "..", "dist", "library-metamodel-extracted.json");
+    const outputPath = resolve(__dirname, "..", "dist", "library-model-extracted.json");
     const outputDir = dirname(outputPath);
 
     await mkdir(outputDir, { recursive: true });
     const jsonContent = JSON.stringify(libraryMetaModel, null, 2);
     await writeFile(outputPath, jsonContent, "utf-8");
+
+    const libraryData = await extractLibraryData(storeController);
+    const dataOutputPath = resolve(__dirname, "..", "dist", "library-data-extracted.json");
+    const dataJsonContent = JSON.stringify(libraryData, null, 2);
+    await writeFile(dataOutputPath, dataJsonContent, "utf-8");
 
     // Close the store
     console.log("10. Cleaning up...");
@@ -310,6 +369,6 @@ async function extractLibraryModel() {
   }
 }
 
-extractLibraryModel();
+extractLibrary();
 
 // export { extractEntityInstances };
