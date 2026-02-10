@@ -23,16 +23,21 @@
     "dist/index.cjs",
     "dist/index.cjs.map",
     "dist/assets/**/*.json",
-    "dist/library-metamodel.json"
+    "dist/library-metamodel.json",
+    "dist/library-metamodel-extracted.json"
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
     "build": "tsup",
-    "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts"
+    "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts",
+    "extract-library-model": "tsx ./scripts/extract-library-model.ts"
   },
   "devDependencies": {
     "miroir-core": "*",
     "miroir-test-app_deployment-admin": "*",
+    "miroir-store-filesystem": "*",
+    "miroir-store-indexedDb": "*",
+    "miroir-store-postgres": "*",
     "copyfiles": "^2.4.1",
     "tsup": "^8.3.5",
     "tsx": "^4.19.3",
