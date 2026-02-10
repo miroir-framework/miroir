@@ -26,6 +26,8 @@ import {
   type Menu,
   type MetaModel,
   type MlSchema,
+  type PersistenceStoreController,
+  type PersistenceStoreControllerInterface,
   type Query,
   type Report
 } from "miroir-core";
@@ -60,6 +62,36 @@ const ENTITY_SELF_APPLICATION_MODEL_BRANCH_UUID = "cdb0aec6-b848-43ac-a058-fe2db
 const packageName = "miroir-test-app_deployment-library";
 const cleanLevel = "info";
 let log: LoggerInterface = console as any as LoggerInterface;
+
+
+/**
+ * Extracts instances of a specific entity from the store.
+ * @param storeController - The persistence store controller.
+ * @param entityUuid - The UUID of the entity to extract instances for.
+ * @param entityName - The name of the entity (for logging purposes).
+ * @returns An array of instances of the specified entity.
+ */
+export async function extractEntityInstances(
+  storeController: PersistenceStoreControllerInterface,
+  entityUuid: string,
+  entityName: string,
+) {
+  console.log(`   - Reading ${entityName}...`);
+  const result = await storeController.getInstances("model", entityUuid);
+
+  if (result instanceof Action2Error) {
+    throw new Error(`Error reading ${entityName}: ${result}`);
+  }
+  if (result.returnedDomainElement instanceof Domain2ElementFailed) {
+    throw new Error(
+      `Domain2Element conversion failed for ${entityName}: ${result.returnedDomainElement}`,
+    );
+  }
+
+  const instances = result.status === "ok" ? result.returnedDomainElement.instances : [];
+  console.log(`     Found ${instances.length} ${entityName}`);
+  return instances;
+}
 
 /**
  * Extracts the complete MetaModel from a filesystem-deployed Library application.
@@ -196,111 +228,16 @@ async function extractLibraryModel() {
     // Read all model elements from the store
     console.log("\n7. Reading model elements from filesystem store...");
 
-    console.log("   - Reading entities...");
-    const entitiesResult = await storeController.getInstances("model", ENTITY_ENTITY_UUID);
-    if (entitiesResult instanceof Action2Error) {
-      throw new Error(`Error reading entities: ${entitiesResult}`);
-    }
-    if (entitiesResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for entities: ${entitiesResult.returnedDomainElement}`);
-    }
 
-    const entities =
-      entitiesResult.status === "ok" ? entitiesResult.returnedDomainElement.instances : [];
-    console.log(`     Found ${entities.length} entities`);
-
-    console.log("   - Reading entity definitions...");
-    const entityDefinitionsResult = await storeController.getInstances(
-      "model",
-      ENTITY_DEFINITION_UUID
-    );
-    if (entityDefinitionsResult instanceof Action2Error) {
-      throw new Error(`Error reading entity definitions: ${entityDefinitionsResult}`);
-    }
-    if (entityDefinitionsResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for entity definitions: ${entityDefinitionsResult.returnedDomainElement}`);
-    }
-    const entityDefinitions =
-      entityDefinitionsResult.status === "ok"
-        ? entityDefinitionsResult.returnedDomainElement.instances
-        : [];
-    console.log(`     Found ${entityDefinitions.length} entity definitions`);
-
-    console.log("   - Reading endpoints...");
-    const endpointsResult = await storeController.getInstances("model", ENTITY_ENDPOINT_VERSION_UUID);
-    if (endpointsResult instanceof Action2Error) {
-      throw new Error(`Error reading endpoints: ${endpointsResult}`);
-    }
-    if (endpointsResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for endpoints: ${endpointsResult.returnedDomainElement}`);
-    }
-    const endpoints =
-      endpointsResult.status === "ok" ? endpointsResult.returnedDomainElement.instances : [];
-    console.log(`     Found ${endpoints.length} endpoints`);
-
-    console.log("   - Reading menus...");
-    const menusResult = await storeController.getInstances("model", ENTITY_MENU_UUID);
-    if (menusResult instanceof Action2Error) {
-      throw new Error(`Error reading menus: ${menusResult}`);
-    }
-    if (menusResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for menus: ${menusResult.returnedDomainElement}`);
-    }
-    const menus = menusResult.status === "ok" ? menusResult.returnedDomainElement.instances : [];
-    console.log(`     Found ${menus.length} menus`);
-
-    console.log("   - Reading reports...");
-    const reportsResult = await storeController.getInstances("model", ENTITY_REPORT_UUID);
-    if (reportsResult instanceof Action2Error) {
-      throw new Error(`Error reading reports: ${reportsResult}`);
-    }
-    if (reportsResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for reports: ${reportsResult.returnedDomainElement}`);
-    }
-    const reports =
-      reportsResult.status === "ok" ? reportsResult.returnedDomainElement.instances : [];
-    console.log(`     Found ${reports.length} reports`);
-
-    console.log("   - Reading jzod schemas...");
-    const jzodSchemasResult = await storeController.getInstances("model", ENTITY_JZOD_SCHEMA_UUID);
-    if (jzodSchemasResult instanceof Action2Error) {
-      throw new Error(`Error reading jzod schemas: ${JSON.stringify(jzodSchemasResult, null, 2)}`);
-    }
-    if (jzodSchemasResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for jzod schemas: ${jzodSchemasResult.returnedDomainElement}`);
-    }
-    const jzodSchemas =
-      jzodSchemasResult.status === "ok" ? jzodSchemasResult.returnedDomainElement.instances : [];
-    console.log(`     Found ${jzodSchemas.length} jzod schemas`);
-
-    console.log("   - Reading queries...");
-    const queriesResult = await storeController.getInstances("model", ENTITY_QUERY_VERSION_UUID);
-    if (queriesResult instanceof Action2Error) {
-      throw new Error(`Error reading queries: ${queriesResult}`);
-    }
-    if (queriesResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for queries: ${queriesResult.returnedDomainElement}`);
-    }
-    const queries =
-      queriesResult.status === "ok" ? queriesResult.returnedDomainElement.instances : [];
-    console.log(`     Found ${queries.length} queries`);
-
-    console.log("   - Reading application versions...");
-    const applicationVersionsResult = await storeController.getInstances(
-      "model",
-      ENTITY_SELF_APPLICATION_VERSION_UUID
-    );
-    if (applicationVersionsResult instanceof Action2Error) {
-      throw new Error(`Error reading application versions: ${applicationVersionsResult}`);
-    }
-    if (applicationVersionsResult.returnedDomainElement instanceof Domain2ElementFailed) {
-      throw new Error(`Domain2Element conversion failed for application versions: ${applicationVersionsResult.returnedDomainElement}`);
-    }
-    const applicationVersions =
-      applicationVersionsResult.status === "ok"
-        ? applicationVersionsResult.returnedDomainElement.instances
-        : [];
-    console.log(`     Found ${applicationVersions.length} application versions`);
+    // Extract all entities
+    const entities = await extractEntityInstances(storeController, ENTITY_ENTITY_UUID, "entities");
+    const entityDefinitions = await extractEntityInstances(storeController, ENTITY_DEFINITION_UUID, "entity definitions");
+    const endpoints = await extractEntityInstances(storeController, ENTITY_ENDPOINT_VERSION_UUID, "endpoints");
+    const menus = await extractEntityInstances(storeController, ENTITY_MENU_UUID, "menus");
+    const reports = await extractEntityInstances(storeController, ENTITY_REPORT_UUID, "reports");
+    const jzodSchemas = await extractEntityInstances(storeController, ENTITY_JZOD_SCHEMA_UUID, "jzod schemas");
+    const queries = await extractEntityInstances(storeController, ENTITY_QUERY_VERSION_UUID, "queries");
+    const applicationVersions = await extractEntityInstances(storeController, ENTITY_SELF_APPLICATION_VERSION_UUID, "application versions");
 
     // Assemble the MetaModel
     console.log("\n8. Assembling MetaModel structure...");
@@ -361,3 +298,5 @@ async function extractLibraryModel() {
 }
 
 extractLibraryModel();
+
+// export { extractEntityInstances };
