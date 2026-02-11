@@ -1093,6 +1093,23 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            runners: {
+              type: "array",
+              definition: {
+                type: "any"
+                /** runner creates a circular dependency on mlSchemaTemplate
+                 * the simpler solution is to not include runner in the metaModel, 
+                 * MetaModel being used by ancillary tools, not by the user,
+                 * the contents of a MetaModel will generally not be viewed directly by the user.
+                 * Extra FIX: add the dependency to mlSchemaTemplate as a runtime type.
+                 */
+                // type: "schemaReference",
+                // definition: {
+                //   absolutePath: miroirFundamentalJzodSchemaUuid,
+                //   relativePath: "runner",
+                // },
+              },
+            },
           },
         },
         // ########################################################################################
@@ -3794,7 +3811,6 @@ export function getMiroirFundamentalJzodSchema(
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            // relativePath: "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
             relativePath: "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
           },
         },

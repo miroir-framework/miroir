@@ -106,6 +106,7 @@ import {
   unNullify,
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
+import { entityQueryVersion, entityRunner } from '../index.js';
 
 
 const autocommit = true;
@@ -1502,6 +1503,20 @@ export class DomainController implements DomainControllerInterface {
               }
             }
 
+            if (model.runners && model.runners.length > 0) {
+              const createRunnersResult = await this.createModelInstancesFromResetModel(
+                "runners",
+                "Create Runners from Model",
+                model.runners,
+                entityRunner,
+                modelActionInitModel.payload.application,
+                applicationDeploymentMap,
+              );
+              if (createRunnersResult instanceof Action2Error) {
+                return createRunnersResult;
+              }
+            }
+
             if (model.menus && model.menus.length > 0) {
               const createMenusResult = await this.createModelInstancesFromResetModel(
                 "menus",
@@ -1527,6 +1542,19 @@ export class DomainController implements DomainControllerInterface {
               );
               if (createEndpointsResult instanceof Action2Error) {
                 return createEndpointsResult;
+              }
+            }
+            if (model.storedQueries && model.storedQueries.length > 0) {
+              const createStoredQueriesResult = await this.createModelInstancesFromResetModel(
+                "storedQueries",
+                "Create Stored Queries from Model",
+                model.storedQueries,
+                entityQueryVersion,
+                modelActionInitModel.payload.application,
+                applicationDeploymentMap,
+              );
+              if (createStoredQueriesResult instanceof Action2Error) {
+                return createStoredQueriesResult;
               }
             }
           }

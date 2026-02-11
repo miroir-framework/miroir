@@ -111,13 +111,13 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
         const content = e.target?.result as string;
         const parsedData = JSON.parse(content);
         
-        // Basic validation that it looks like a MetaModel
-        if (!parsedData.entities || !parsedData.entityDefinitions) {
-          setSelectedFileError('Invalid MetaModel format: missing required properties (entities, entityDefinitions)');
-          setSelectedFileContents(undefined);
-          setSelectedFileName(undefined);
-          return;
-        }
+        // // Basic validation that it looks like a MetaModel
+        // if (!parsedData.entities || !parsedData.entityDefinitions) {
+        //   setSelectedFileError('Invalid MetaModel format: missing required properties (entities, entityDefinitions)');
+        //   setSelectedFileContents(undefined);
+        //   setSelectedFileName(undefined);
+        //   return;
+        // }
 
         setSelectedFileName(fileOrPath.name);
         setSelectedFileContents(parsedData);

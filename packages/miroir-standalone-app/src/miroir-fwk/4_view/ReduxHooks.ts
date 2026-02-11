@@ -308,14 +308,14 @@ export function useCurrentModel(
     localSelectModelForDeployment(state, applicationDeploymentMap, foreignKeyParams)
     // selectModelForDeploymentFromReduxState()(state, applicationDeploymentMap, foreignKeyParams)
   );
-  log.info(
-    "ReduxHooks useCurrentModel for application",
-    application,
-    "applicationDeploymentMap",
-    applicationDeploymentMap,
-    "result",
-    result,
-  );
+  // log.info(
+  //   "ReduxHooks useCurrentModel for application",
+  //   application,
+  //   "applicationDeploymentMap",
+  //   applicationDeploymentMap,
+  //   "result",
+  //   result,
+  // );
   return result;
 }
 

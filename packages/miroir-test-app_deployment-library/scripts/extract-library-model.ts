@@ -23,6 +23,7 @@ import {
   entityMenu,
   entityQueryVersion,
   entityReport,
+  entityRunner,
   entitySelfApplicationVersion,
   miroirCoreStartup,
   type ApplicationDeploymentMap,
@@ -40,7 +41,8 @@ import {
   type PersistenceStoreController,
   type PersistenceStoreControllerInterface,
   type Query,
-  type Report
+  type Report,
+  type Runner
 } from "miroir-core";
 
 import {
@@ -48,7 +50,7 @@ import {
   deployment_Library_DO_NO_USE
 } from "miroir-test-app_deployment-admin";
 
-import { entityAuthor, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { entityAuthor, entityBook, entityCountry, entityLendingHistoryItem, entityPublisher, entityUser, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -247,6 +249,7 @@ async function extractLibraryModel(
     const jzodSchemas = await extractEntityInstances(storeController, "model", entityJzodSchema.uuid, "jzod schemas");
     const queries = await extractEntityInstances(storeController, "model", entityQueryVersion.uuid, "queries");
     const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
+    const runners = await extractEntityInstances(storeController, "model", entityRunner.uuid, "runners");
 
     // Assemble the MetaModel
     console.log("\n8. Assembling MetaModel structure...");
@@ -262,6 +265,7 @@ async function extractLibraryModel(
       jzodSchemas: jzodSchemas as MlSchema[],
       applicationVersions: applicationVersions as ApplicationVersion[],
       applicationVersionCrossEntityDefinition: [], // These would need to be read separately if needed
+      runners: runners as Runner[], 
     };
 
     return libraryMetaModel;
@@ -277,16 +281,52 @@ async function extractLibraryData(
   try {
     console.log("\nExtracting data sets from filesystem store...");
     const authors = await extractEntityInstances(storeController, "data", entityAuthor.uuid, "authors");
+    const books = await extractEntityInstances(storeController, "data", entityBook.uuid, "books");
+    const countries = await extractEntityInstances(storeController, "data", entityCountry.uuid, "countries");
+    const publishers = await extractEntityInstances(storeController, "data", entityPublisher.uuid, "publishers");
+    const users = await extractEntityInstances(storeController, "data", entityUser.uuid, "users");
+    const lendingHistoryItems = await extractEntityInstances(storeController, "data", entityLendingHistoryItem.uuid, "lending history items");
 
     return Promise.resolve({
       applicationUuid: selfApplicationLibrary.uuid,
       instances: [
+        // order matters here for referential integrity when re-importing the data
+        {
+          parentUuid: entityCountry.uuid,
+          applicationSection: "data",
+          parentName: "Country",
+          instances: countries,
+        },
+        {
+          parentUuid: entityPublisher.uuid,
+          applicationSection: "data",
+          parentName: "Publisher",
+          instances: publishers,
+        },
+        {
+          parentUuid: entityUser.uuid,
+          applicationSection: "data",
+          parentName: "User",
+          instances: users,
+        },
         {
           parentUuid: entityAuthor.uuid,
           applicationSection: "data",
           parentName: "Author",
           instances: authors,
-        }
+        },
+        {
+          parentUuid: entityBook.uuid,
+          applicationSection: "data",
+          parentName: "Book",
+          instances: books,
+        },
+        {
+          parentUuid: entityLendingHistoryItem.uuid,
+          applicationSection: "data",
+          parentName: "LendingHistoryItem",
+          instances: lendingHistoryItems,
+        },
       ]
     });
   } catch (error) {
@@ -354,6 +394,7 @@ async function extractLibrary() {
     console.log(`  - Endpoints: ${libraryMetaModel.endpoints.length}`);
     console.log(`  - Menus: ${libraryMetaModel.menus.length}`);
     console.log(`  - Reports: ${libraryMetaModel.reports.length}`);
+    console.log(`  - Runners: ${libraryMetaModel.runners.length}`);
     console.log(`  - Jzod Schemas: ${libraryMetaModel.jzodSchemas.length}`);
     console.log(`  - Stored Queries: ${libraryMetaModel.storedQueries.length}`);
     console.log(`  - Application Versions: ${libraryMetaModel.applicationVersions.length}`);

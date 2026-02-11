@@ -126,6 +126,23 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                   },
                 },
               },
+              deploymentData: {
+                type: "any",
+                tag: {
+                  value: {
+                    defaultLabel: "Deployment Data",
+                    display: {
+                      any: {
+                        format: "file",
+                      },
+                    },
+                    initializeTo: {
+                      initializeToType: "value",
+                      value: ""
+                    }
+                  },
+                },
+              },
               applicationStorage: {
                 type: "schemaReference",
                 context: {
@@ -247,6 +264,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
         ).deployApplication,
         applicationBundle: undefined,
+        deploymentData: undefined,
       },
     }),
     [],
@@ -377,14 +395,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               indexedDbName: {
                 transformerType: "+",
                 args: [
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: [
-                  //     "deployApplication",
-                  //     "applicationStorage",
-                  //     "indexedDbName",
-                  //   ],
-                  // },
                   prefix,
                   "admin",
                 ],
@@ -395,15 +405,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               indexedDbName: {
                 transformerType: "+",
                 args: [
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: [
-                  //     "deployApplication",
-                  //     "applicationStorage",
-                  //     "indexedDbName",
-                  //   ],
-                  // },
-                  // "/",
                   prefix,
                   {
                     transformerType: "getFromParameters",
@@ -467,10 +468,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                     transformerType: "getFromParameters",
                     referencePath: ["deployApplication", "applicationBundle", "applicationName"],
                   },
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["deployApplication", "applicationName"],
-                  // },
                   "_model",
                 ],
               },
@@ -729,24 +726,9 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                 transformerType: "createObject",
                 definition: {
                   application: testSelfApplicationUuid,
-                  // ISBN: {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["payload", "ISBN"],
-                  // },
                 },
               },
             } as any,
-            // payload: {
-            //   application: testSelfApplicationUuid,
-            //   ...(selectedMetaModel ? {
-            //     model: {
-            //       transformerType: "returnValue",
-            //       label: "customMetaModel",
-            //       interpolation: "runtime",
-            //       value: selectedMetaModel,
-            //     } as any // TODO: fix type
-            //   } : {}),
-            // },
           },
           {
             actionType: "initModel",
@@ -767,10 +749,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                   transformerType: "createObject",
                   definition: {
                     application: testSelfApplicationUuid,
-                    // ISBN: {
-                    //   transformerType: "getFromParameters",
-                    //   referencePath: ["payload", "ISBN"],
-                    // },
                   },
                 },
               } as any,
@@ -828,28 +806,18 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               application: testSelfApplicationUuid,
               applicationSection: "data",
               parentUuid:
-                appEntitesAndInstances.length > 0
-                  ? appEntitesAndInstances[0].entity.uuid
-                  : noValue.uuid,
-              objects: appEntitesAndInstances.map((e) => {
-                return {
-                  parentName: e.entity.name,
-                  parentUuid: e.entity.uuid,
-                  applicationSection: "data",
-                  instances: e.instances,
-                };
-              }),
+              {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["deployApplication", "deploymentData", "instances", "parentUuid"],
+              } as any,
+              objects: {
+                transformerType: "getFromContext",
+                interpolation: "runtime",
+                referencePath: ["deployApplication", "deploymentData", "instances"],
+              } as any, // TODO: fix type
             },
           }
-          // {
-          //   actionType: "rollback",
-          //   actionLabel: "refreshLocalCacheForApplication",
-          //   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          //   payload: {
-          //     application: testSelfApplicationUuid,
-          //   },
-          // },
         ],
       },
     };
@@ -881,20 +849,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
 
   return (
     <>
-      {/* Model File Upload Section */}
-      {/* <FileSelector
-        title="Optional: Load Custom Model"
-        description="Upload a JSON file containing an Application Model to install. If no file is selected, the Model will be empty."
-        buttonLabel="Select Model JSON"
-        accept=".json"
-        // upload={true}
-        onFileSelect={handleFileSelect}
-        onFileClear={handleFileClear}
-        selectedFileName={selectedFileName}
-        error={fileError}
-        successMessage={successMessage}
-      /> */}
-
       <RunnerView
         runnerName={runnerName}
         applicationDeploymentMap={applicationDeploymentMapWithNewApplication}

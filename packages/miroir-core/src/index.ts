@@ -1028,7 +1028,8 @@ const jzodSchemajzodMiroirBootstrapSchema = require("../src/assets/miroir_data/5
 // const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 
-const runnerDropApplication = require("./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/1cd065d8-dfb0-466f-974c-e81e993f2c66.json"); //assert { type: "json" };
+const runnerDropApplication = require("../src/assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/1cd065d8-dfb0-466f-974c-e81e993f2c66.json"); //assert { type: "json" };
+const runnerDropEntity = require("../src/assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/44313751-b0e5-4132-bb12-a544806e759b.json"); //assert { type: "json" };
 
 export {
   // applicationEndpoint,
@@ -1118,6 +1119,8 @@ export {
   reportTransformerTestList,
   // reportViewParamsDetails,
   runnerDropApplication,
+  runnerDropEntity,
+  // 
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,

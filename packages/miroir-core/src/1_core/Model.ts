@@ -72,6 +72,9 @@ const localCacheEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76
 const queryEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0faae143-0d7b-4a8a-a950-4fc3df943bde.json"); //assert { type: "json" };
 const persistenceEndpointVersionV1 = require("../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a93598b3-19b6-42e8-828c-f02042d212d4.json"); //assert { type: "json" };
 
+const runnerDropApplication = require("../assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/1cd065d8-dfb0-466f-974c-e81e993f2c66.json"); //assert { type: "json" };
+const runnerDropEntity = require("../assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/44313751-b0e5-4132-bb12-a544806e759b.json"); //assert { type: "json" };
+
 import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -88,6 +91,7 @@ import {
   Report,
   type ApplicationSection,
   type EndpointDefinition,
+  type Runner,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 // import { Endpoint } from "../3_controllers/Endpoint";
@@ -198,6 +202,10 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportReportList as Report,
     reportRunnerList as Report,
     reportRunnerDetails as Report,
+  ],
+  runners: [
+    runnerDropApplication as Runner,
+    runnerDropEntity as Runner,
   ],
   applicationVersionCrossEntityDefinition: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,

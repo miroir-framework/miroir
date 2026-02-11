@@ -229,6 +229,7 @@ export const emptyMetaModel: MetaModel = {
   menus: [],
   reports: [],
   storedQueries: [],
+  runners: [],
 }
 // ################################################################################################
 export function metaModelFilterEntities(

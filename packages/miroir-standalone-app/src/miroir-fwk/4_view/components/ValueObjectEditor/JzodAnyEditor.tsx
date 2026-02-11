@@ -293,8 +293,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           compact={true}
           style={{ marginBottom: 0 }}
         />
-        {/* }
-        /> */}
       </div>
     );
   }

@@ -29,6 +29,8 @@ import {
   selfApplicationMiroir,
   getReduxDeploymentsStateIndex,
   type Deployment,
+  entityRunner,
+  type Runner,
 } from "miroir-core";
 import {
   selectCurrentReduxDeploymentsStateFromReduxState,
@@ -264,6 +266,34 @@ const selectReportsFromReduxState = createSelector(
 );
 
 // ################################################################################################
+const selectRunnersFromReduxState = createSelector(
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ): EntityInstancesUuidIndex | undefined => {
+    return selectEntityInstancesFromReduxDeploymentsState(
+      reduxState,
+      applicationDeploymentMap,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application
+        : params.application,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application == selfApplicationMiroir.uuid
+          ? "data"
+          : "model"
+        : undefined,
+      entityRunner.uuid
+    );
+  }
+);
+
+// ################################################################################################
 const selectQueriesFromReduxState = createSelector(
   [
     selectCurrentReduxDeploymentsStateFromReduxState,
@@ -362,6 +392,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectJzodSchemasFromReduxState,
       selectMenusFromReduxState,
       selectReportsFromReduxState,
+      selectRunnersFromReduxState,
       selectQueriesFromReduxState,
       selectEndpointsFromReduxState,
     ],
@@ -373,6 +404,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       jzodSchemas: EntityInstancesUuidIndex | undefined,
       menus: EntityInstancesUuidIndex | undefined,
       reports: EntityInstancesUuidIndex | undefined,
+      runners: EntityInstancesUuidIndex | undefined,
       queries: EntityInstancesUuidIndex | undefined,
       endpoints: EntityInstancesUuidIndex | undefined,
     ) => {
@@ -392,6 +424,7 @@ export const selectModelForDeploymentFromReduxState: () => (
         jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as MlSchema[],
         menus: (menus ? Object.values(menus) : []) as Menu[],
         reports: (reports ? Object.values(reports) : []) as Report[],
+        runners: (runners ? Object.values(runners) : []) as Runner[],
         storedQueries: (queries ? Object.values(queries) : []) as Query[],
       };
       return result;

@@ -13274,6 +13274,12 @@ export const miroirFundamentalJzodSchema = {
                 "relativePath": "report"
               }
             }
+          },
+          "runners": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            }
           }
         }
       },
@@ -33650,6 +33656,38 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ],
                 "discriminator": "transformerType"
+              },
+              "runners": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "any"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ],
+                "discriminator": "transformerType"
               }
             }
           }
@@ -51197,6 +51235,12 @@ export const miroirFundamentalJzodSchema = {
                 "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report"
               }
             }
+          },
+          "runners": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            }
           }
         }
       },
@@ -66200,6 +66244,12 @@ export const miroirFundamentalJzodSchema = {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_report"
               }
+            }
+          },
+          "runners": {
+            "type": "array",
+            "definition": {
+              "type": "any"
             }
           }
         }
