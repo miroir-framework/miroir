@@ -40,7 +40,6 @@ import {
   useSnackbar
 } from "../../MiroirContextReactProvider.js";
 
-import { javascript } from '@codemirror/lang-javascript';
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
@@ -50,7 +49,6 @@ import {
   useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedOnScreenDebug } from '../Themes/BasicComponents.js';
@@ -64,7 +62,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-const codeMirrorExtensions = [javascript()];
+// const codeMirrorExtensions = [javascript()];
 
 
 // ################################################################################################
@@ -249,35 +247,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     currentApplication,
     applicationDeploymentMap
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //     return {
-  //       miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as MlSchema,
-  //       miroirMetaModel: currentMiroirModel,
-  //       currentModel: currentModel,
-  //     };
-  //   }, [
-  //     currentMiroirModel,
-  //     currentModel,
-  //     context.miroirFundamentalJzodSchema,
-  //   ]);
-  
-
-  // log.info(
-  //   "TypedValueObjectEditor render",
-  //   "navigationCount",
-  //   navigationCount,
-  //   "instance",
-  //   valueObject,
-  //   "valueObjectMMLSchema",
-  //   valueObjectMMLSchema,
-  //   "hasZoomPath",
-  //   hasZoomPath,
-  //   "displayValueObject",
-  //   displayValueObject,
-  //   "displaySchema",
-  //   displaySchema
-  // );
-  
   
   let typeError: JSX.Element | undefined = undefined;
   const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
@@ -292,13 +261,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               [],
               currentMiroirModelEnvironment,
               {}, // relativeReferenceJzodContext
-              // formik.values,// formik.values, // currentDefaultValue
               valueObject, // currentDefaultValue
               reduxDeploymentsState,
               deploymentUuid, // Now passing the actual deploymentUuid
-              // formik.values,// rootObject - use full object for context, but validate the subset
               valueObject, //formik.values // rootObject - use full object for context, but validate the subset
-              // hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
             )
           : undefined;
     } catch (e) {

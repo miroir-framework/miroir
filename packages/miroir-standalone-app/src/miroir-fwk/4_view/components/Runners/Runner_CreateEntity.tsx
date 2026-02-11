@@ -23,7 +23,7 @@ import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployme
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateEntityRunner"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateEntity"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
@@ -136,7 +136,7 @@ export function getCreateEntityActionTemplate(
 
 
 // ################################################################################################
-export const CreateEntityRunner: React.FC<CreateEntityToolProps> = ({
+export const Runner_CreateEntity: React.FC<CreateEntityToolProps> = ({
   applicationDeploymentMap,
 }) => {
   const runnerName: string = "createEntity";

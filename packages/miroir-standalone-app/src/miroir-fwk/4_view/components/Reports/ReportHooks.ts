@@ -229,7 +229,7 @@ export function useDeploymentUuidFromApplicationUuid2(
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
     throw new Error(
-      "DeleteEntityRunner: failed to get report data: " +
+      "Runner_DeleteEntity: failed to get report data: " +
         JSON.stringify(deploymentUuidQueryResults, null, 2)
     );
   }
@@ -295,7 +295,7 @@ export function useDeploymentUuidFromApplicationUuid(
   if (deploymentUuidQueryResults instanceof Domain2ElementFailed) {
     // should never happen
     throw new Error(
-      "DeleteEntityRunner: failed to get report data: " +
+      "Runner_DeleteEntity: failed to get report data: " +
         JSON.stringify(deploymentUuidQueryResults, null, 2)
     );
   }
@@ -395,7 +395,7 @@ export function useRunner(
   runnerUuid: Uuid | undefined
 ): Domain2QueryReturnType<Runner | undefined>  {
   const runnerApplicationSection = getApplicationSection(
-    deploymentUuid,
+    application,
     entityRunner.uuid
   );
 
@@ -404,7 +404,7 @@ export function useRunner(
     // | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
-      deploymentUuid && deploymentUuid !== noValue.uuid
+      application && application !== noValue.uuid
         ? ({
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application,
@@ -430,7 +430,7 @@ export function useRunner(
             contextResults: {},
             extractors: {},
           },
-    [deploymentUuid, runnerApplicationSection, runnerUuid]
+    [application, runnerApplicationSection, runnerUuid]
   );
 
   log.info("useRunner runnerQuery", runnerQuery);

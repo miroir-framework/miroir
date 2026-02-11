@@ -10,15 +10,14 @@ import {
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
-import { LibraryRunner_LendDocument } from '../components/Runners/LibraryRunner_LendDocument.js';
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { usePageConfiguration } from "../services/index.js";
-import { CreateApplicationRunner } from '../components/Runners/CreateApplicationRunner';
-import { CreateEntityRunner } from '../components/Runners/CreateEntityRunner';
-import { DeleteEntityRunner } from '../components/Runners/DeleteEntityRunner';
-import { DropApplicationRunner } from '../components/Runners/DropApplicationRunner';
-import { DeployApplicationRunner } from '../components/Runners/DeployApplicationRunner';
+import { Runner_CreateApplication } from '../components/Runners/Runner_CreateApplication';
+import { Runner_CreateEntity } from '../components/Runners/Runner_CreateEntity';
+import { Runner_DeleteEntity } from '../components/Runners/Runner_DeleteEntity';
+import { Runner_DropApplication } from '../components/Runners/Runner_DropApplication';
+import { Runner_InstallApplication } from '../components/Runners/Runner_InstallApplication';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -46,38 +45,38 @@ const pageLabel = "Admin";
 // ################################################################################################
 // Runner configurations
 const runnerConfigs = [
-  // // {
-  // //   title: "Endpoint Action Caller",
-  // //   component: EndpointActionCaller,
-  // // },
+  // {
+  //   title: "Endpoint Action Caller",
+  //   component: EndpointActionCaller,
+  // },
   {
-    title: "Deploy Application",
-    component: DeployApplicationRunner,
+    title: "Install Application",
+    component: Runner_InstallApplication,
   },
   {
     title: "Create Application & Deployment",
-    component: CreateApplicationRunner,
+    component: Runner_CreateApplication,
   },
   {
     title: "Drop Application & Deployment",
-    component: DropApplicationRunner,
+    component: Runner_DropApplication,
   },
   {
     title: "Create Entity",
-    component: CreateEntityRunner,
+    component: Runner_CreateEntity,
   },
   {
     title: "Drop Entity",
-    component: DeleteEntityRunner,
+    component: Runner_DeleteEntity,
   },
-  // // {
-  // //   title: "Import Entity From Spreadsheet",
-  // //   component: ImportEntityFromSpreadsheetRunner,
-  // // },
-  {
-    title: "Lend Document",
-    component: LibraryRunner_LendDocument,
-  },
+  // // // {
+  // // //   title: "Import Entity From Spreadsheet",
+  // // //   component: ImportEntityFromSpreadsheetRunner,
+  // // // },
+  // {
+  //   title: "Lend Document",
+  //   component: LibraryRunner_LendDocument,
+  // },
 ] as const;
 
 // ################################################################################################

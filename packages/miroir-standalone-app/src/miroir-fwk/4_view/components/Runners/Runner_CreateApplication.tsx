@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
@@ -32,12 +32,12 @@ import {
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
 import { packageName } from "../../../../constants.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from "../../constants.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { devRelativePathPrefix, FileSelector, prodRelativePathPrefix } from '../Themes/FileSelector.js';
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../../miroir-localcache-imports.js";
 import {
   adminSelfApplication,
   entityApplicationForAdmin,
@@ -46,7 +46,7 @@ import {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateApplicationRunner"), "UI",
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateApplication"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
@@ -62,25 +62,31 @@ function formatYYYYMMDD_HHMMSS(date = new Date()) {
 }
 
 // ################################################################################################
-export interface DeployApplicationRunnerProps {
+export interface CreateApplicationToolProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
 }
 
 // ################################################################################################
-export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = ({
+export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   applicationDeploymentMap,
 }) => {
-  const runnerName: string = "deployApplication";
+  const runnerName: string = "createApplicationAndDeployment";
+
+  // State for MetaModel file upload
+  const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | undefined>(undefined);
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
+  const [fileError, setFileError] = useState<string | undefined>(undefined);
+  // const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // const [selectedFileNameAndContents, setSelectedFileName] = useState<string | null>(null);
 
   // ##############################################################################################
   const runnerDeploymentUuid = useMemo(() => {
     // Find deployment UUID from applicationDeploymentMap
-    const deploymentUuid =
-      applicationDeploymentMap[
-        applicationDeploymentMap ? Object.keys(applicationDeploymentMap)[0] : ""
-      ];
+    const deploymentUuid = applicationDeploymentMap[applicationDeploymentMap ? Object.keys(applicationDeploymentMap)[0] : ""];
     return deploymentUuid || "";
   }, [applicationDeploymentMap]);
+  // File selection handler
 
   // ##############################################################################################
   const miroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
@@ -106,43 +112,9 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
       mlSchema: {
         type: "object",
         definition: {
-          deployApplication: {
+          createApplicationAndDeployment: {
             type: "object",
             definition: {
-              applicationBundle: {
-                type: "any",
-                tag: {
-                  value: {
-                    defaultLabel: "Application Bundle",
-                    display: {
-                      any: {
-                        format: "file",
-                      },
-                    },
-                    initializeTo: {
-                      initializeToType: "value",
-                      value: ""
-                    }
-                  },
-                },
-              },
-              deploymentData: {
-                type: "any",
-                tag: {
-                  value: {
-                    defaultLabel: "Deployment Data",
-                    display: {
-                      any: {
-                        format: "file",
-                      },
-                    },
-                    initializeTo: {
-                      initializeToType: "value",
-                      value: ""
-                    }
-                  },
-                },
-              },
               applicationStorage: {
                 type: "schemaReference",
                 context: {
@@ -228,14 +200,14 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                   relativePath: "storeSectionConfiguration",
                 },
               },
-              // applicationName: {
-              //   type: "string",
-              //   tag: {
-              //     value: {
-              //       defaultLabel: "Application Name",
-              //     },
-              //   },
-              // },
+              applicationName: {
+                type: "string",
+                tag: {
+                  value: {
+                    defaultLabel: "Application Name",
+                  },
+                },
+              },
             },
           },
         },
@@ -246,7 +218,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
 
   const initialFormValue = useMemo(
     () => ({
-      deployApplication: {
+      createApplicationAndDeployment: {
         ...getDefaultValueForJzodSchemaWithResolutionNonHook(
           "build",
           (formMLSchema as any).mlSchema,
@@ -262,16 +234,15 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           {}, // transformerParams
           {}, // contextResults
           deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
-        ).deployApplication,
-        applicationBundle: undefined,
-        deploymentData: undefined,
+        ).createApplicationAndDeployment,
+        applicationName: "test_application_" + formatYYYYMMDD_HHMMSS(new Date()),
       },
     }),
     [],
   );
 
   let applicationDeploymentMapWithNewApplication: ApplicationDeploymentMap = {};
-  const testSelfApplicationUuid = selfApplicationLibrary.uuid;
+  const testSelfApplicationUuid = uuidv4();
   const testDeploymentUuid = uuidv4();
   const testApplicationModelBranchUuid = uuidv4();
   const testApplicationVersionUuid = uuidv4();
@@ -291,7 +262,11 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
       transformerType: "case",
       discriminator: {
         transformerType: "getFromParameters",
-        referencePath: ["deployApplication", "applicationStorage", "emulatedServerType"],
+        referencePath: [
+          "createApplicationAndDeployment",
+          "applicationStorage",
+          "emulatedServerType",
+        ],
       },
       whens: [
         // mongodb
@@ -300,9 +275,14 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           then: {
             admin: {
               emulatedServerType: "mongodb",
+              // connectionString: "mongodb://localhost:27017",
               connectionString: {
                 transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
               },
               database: "miroirAdmin",
             },
@@ -310,19 +290,19 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               emulatedServerType: "mongodb",
               connectionString: {
                 transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
               },
               database: {
                 transformerType: "+",
                 args: [
                   {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                    transformerType: "mustacheStringTemplate",
+                    definition: "{{createApplicationAndDeployment.applicationName}}",
                   },
-                  // {
-                  //   transformerType: "mustacheStringTemplate",
-                  //   definition: "{{deployApplication.applicationName}}",
-                  // },
                   "_model",
                 ],
               },
@@ -331,19 +311,19 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               emulatedServerType: "mongodb",
               connectionString: {
                 transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
               },
               database: {
                 transformerType: "+",
                 args: [
                   {
-                    transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                    transformerType: "mustacheStringTemplate",
+                    definition: "{{createApplicationAndDeployment.applicationName}}",
                   },
-                  // {
-                  //   transformerType: "mustacheStringTemplate",
-                  //   definition: "{{deployApplication.applicationName}}",
-                  // },
                   "_data",
                 ],
               },
@@ -358,7 +338,11 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               emulatedServerType: "sql",
               connectionString: {
                 transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
               },
               schema: "miroirAdmin",
             },
@@ -366,22 +350,30 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               emulatedServerType: "sql",
               connectionString: {
                 transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
               },
               schema: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createApplicationAndDeployment.applicationName}}",
               }, // TODO: separate model and data schemas
             },
             data: {
               emulatedServerType: "sql",
               connectionString: {
                 transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationStorage", "connectionString"],
+                referencePath: [
+                  "createApplicationAndDeployment",
+                  "applicationStorage",
+                  "connectionString",
+                ],
               },
               schema: {
-                transformerType: "getFromParameters",
-                referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                transformerType: "mustacheStringTemplate",
+                definition: "{{createApplicationAndDeployment.applicationName}}",
               }, // TODO: separate model and data schemas
             },
           },
@@ -395,6 +387,14 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               indexedDbName: {
                 transformerType: "+",
                 args: [
+                  // {
+                  //   transformerType: "getFromParameters",
+                  //   referencePath: [
+                  //     "createApplicationAndDeployment",
+                  //     "applicationStorage",
+                  //     "indexedDbName",
+                  //   ],
+                  // },
                   prefix,
                   "admin",
                 ],
@@ -405,15 +405,20 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               indexedDbName: {
                 transformerType: "+",
                 args: [
+                  // {
+                  //   transformerType: "getFromParameters",
+                  //   referencePath: [
+                  //     "createApplicationAndDeployment",
+                  //     "applicationStorage",
+                  //     "indexedDbName",
+                  //   ],
+                  // },
+                  // "/",
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
                   },
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["deployApplication", "applicationName"],
-                  // },
                   "_model",
                 ],
               },
@@ -426,7 +431,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                   // {
                   //   transformerType: "getFromParameters",
                   //   referencePath: [
-                  //     "deployApplication",
+                  //     "createApplicationAndDeployment",
                   //     "applicationStorage",
                   //     "indexedDbName",
                   //   ],
@@ -435,12 +440,8 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
                   },
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["deployApplication", "applicationName"],
-                  // },
                   "_data",
                 ],
               },
@@ -455,7 +456,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
               emulatedServerType: "filesystem",
               directory: {
                 transformerType: "+",
-                args: [prefix, "admin"],
+                args: [prefix, "/admin"],
               },
             },
             model: {
@@ -466,7 +467,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
                   },
                   "_model",
                 ],
@@ -480,12 +481,8 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                   prefix,
                   {
                     transformerType: "getFromParameters",
-                    referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+                    referencePath: ["createApplicationAndDeployment", "applicationName"],
                   },
-                  // {
-                  //   transformerType: "getFromParameters",
-                  //   referencePath: ["deployApplication", "applicationName"],
-                  // },
                   "_data",
                 ],
               },
@@ -516,19 +513,20 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
         ...selfApplicationLibrary,
         uuid: testSelfApplicationUuid,
         name: {
-          transformerType: "getFromParameters",
-          referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition: "{{createApplicationAndDeployment.applicationName}}",
         } as any,
         defaultLabel: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
-          definition: "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
+          definition: "The {{createApplicationAndDeployment.applicationName}} selfApplication",
         } as any,
         description: {
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition:
-            "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
+            "The model and data of the {{createApplicationAndDeployment.applicationName}} selfApplication",
         } as any,
       },
       // deployment: {
@@ -545,7 +543,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition:
-            "The master branch of the {{deployApplication.applicationBundle.applicationName}} SelfApplication",
+            "The master branch of the {{createApplicationAndDeployment.applicationName}} SelfApplication",
         },
       } as any,
       // applicationStoreBasedConfiguration: {
@@ -561,7 +559,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           transformerType: "mustacheStringTemplate",
           interpolation: "build",
           definition:
-            "Initial {{deployApplication.applicationBundle.applicationName}} selfApplication version",
+            "Initial {{createApplicationAndDeployment.applicationName}} selfApplication version",
         },
       } as any,
     };
@@ -594,22 +592,19 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                       parentName: entityApplicationForAdmin.name,
                       parentUuid: entityApplicationForAdmin.uuid,
                       name: {
-                        transformerType: "getFromParameters",
-                        referencePath: [
-                          "deployApplication",
-                          "applicationBundle",
-                          "applicationName",
-                        ],
+                        transformerType: "mustacheStringTemplate",
+                        interpolation: "build",
+                        definition: `{{createApplicationAndDeployment.applicationName}}`,
                       } as any,
                       defaultLabel: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `The {{deployApplication.applicationBundle.applicationName}} Admin Application.`,
+                        definition: `The {{createApplicationAndDeployment.applicationName}} Admin Application.`,
                       } as any,
                       description: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `This Admin Application contains the {{deployApplication.applicationBundle.applicationName}} model and data.`,
+                        definition: `This Admin Application contains the {{createApplicationAndDeployment.applicationName}} model and data.`,
                       } as any,
                       selfApplication: testSelfApplicationUuid,
                     } as AdminApplication,
@@ -676,17 +671,17 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
                       name: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `Deployment of application {{deployApplication.applicationBundle.applicationName}}`,
+                        definition: `Deployment of application {{createApplicationAndDeployment.applicationName}}`,
                       } as any,
                       defaultLabel: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `The deployment of application {{deployApplication.applicationBundle.applicationName}}`,
+                        definition: `The deployment of application {{createApplicationAndDeployment.applicationName}}`,
                       } as any,
                       description: {
                         transformerType: "mustacheStringTemplate",
                         interpolation: "build",
-                        definition: `The description of deployment of application {{deployApplication.applicationBundle.applicationName}}`,
+                        definition: `The description of deployment of application {{createApplicationAndDeployment.applicationName}}`,
                       } as any,
                       selfApplication: testSelfApplicationUuid,
                       configuration: sqltestDeploymentStorageConfigurationTemplate as any,
@@ -715,20 +710,16 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
-              transformerType: "mergeIntoObject",
-              interpolation: "runtime",
-              applyTo: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["deployApplication", "applicationBundle"],
-              },
-              definition: {
-                transformerType: "createObject",
-                definition: {
-                  application: testSelfApplicationUuid,
-                },
-              },
-            } as any,
+              application: testSelfApplicationUuid,
+              ...(selectedMetaModel ? {
+                model: {
+                  transformerType: "returnValue",
+                  label: "customMetaModel",
+                  interpolation: "runtime",
+                  value: selectedMetaModel,
+                } as any // TODO: fix type
+              } : {}),
+            },
           },
           {
             actionType: "initModel",
@@ -737,21 +728,6 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
               application: testSelfApplicationUuid,
-              model: {
-                transformerType: "mergeIntoObject",
-                interpolation: "runtime",
-                applyTo: {
-                  transformerType: "getFromContext",
-                  interpolation: "runtime",
-                  referencePath: ["deployApplication", "applicationBundle"],
-                },
-                definition: {
-                  transformerType: "createObject",
-                  definition: {
-                    application: testSelfApplicationUuid,
-                  },
-                },
-              } as any,
               params: {
                 transformerType: "returnValue",
                 label: "initParametersForTest",
@@ -762,7 +738,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           },
           {
             actionType: "commit", // in the case where initModel has a model attribute
-            actionLabel: "commitApplicationModelToPersistentStore",
+            actionLabel: "refreshLocalCacheForApplication",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
@@ -805,19 +781,17 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
             payload: {
               application: testSelfApplicationUuid,
               applicationSection: "data",
-              parentUuid:
-              {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["deployApplication", "deploymentData", "instances", "parentUuid"],
-              } as any,
-              objects: {
-                transformerType: "getFromContext",
-                interpolation: "runtime",
-                referencePath: ["deployApplication", "deploymentData", "instances"],
-              } as any, // TODO: fix type
+              parentUuid: appEntitesAndInstances.length > 0 ? appEntitesAndInstances[0].entity.uuid : noValue.uuid,
+              objects: appEntitesAndInstances.map((e) => {
+                return {
+                  parentName: e.entity.name,
+                  parentUuid: e.entity.uuid,
+                  applicationSection: "data",
+                  instances: e.instances,
+                };
+              }),
             },
-          }
+          },
         ],
       },
     };
@@ -825,7 +799,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
     // Combine all three composite actions into one
     const combinedCompositeActionTemplate: CompositeActionTemplate = {
       actionType: "compositeActionSequence",
-      actionLabel: "deployApplication",
+      actionLabel: "createApplicationAndDeployment",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
@@ -845,10 +819,29 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
     testDeploymentUuid,
     testSelfApplicationUuid,
     testApplicationVersionUuid,
+    selectedMetaModel,
   ]);
 
   return (
     <>
+      {/* Model File Upload Section */}
+      <FileSelector
+        title="Optional: Load Custom Model"
+        description="Upload a JSON file containing an Application Model to install. If no file is selected, the Model will be empty."
+        buttonLabel="Select Model JSON"
+        accept=".json"
+        setSelectedFileContents={setSelectedMetaModel}
+        setSelectedFileError={setFileError}
+        setSelectedFileName={setSelectedFileName}
+        selectedFileName={selectedFileName}
+        error={fileError}
+        successMessage={
+          selectedMetaModel
+            ? `MetaModel loaded successfully with ${selectedMetaModel?.entities?.length || 0} entities and ${selectedMetaModel?.entityDefinitions?.length || 0} entity definitions.`
+            : undefined
+        }
+      />
+
       <RunnerView
         runnerName={runnerName}
         applicationDeploymentMap={applicationDeploymentMapWithNewApplication}
@@ -858,7 +851,7 @@ export const DeployApplicationRunner: React.FC<DeployApplicationRunnerProps> = (
           actionType: "compositeActionTemplate",
           compositeActionTemplate: createApplicationActionTemplate,
         }}
-        formikValuePathAsString="deployApplication"
+        formikValuePathAsString="createApplicationAndDeployment"
         formLabel="Create Application & Deployment"
         displaySubmitButton="onFirstLine"
         useActionButton={false}

@@ -16,7 +16,7 @@ import { useApplicationDeploymentMap } from "../../MiroirContextReactProvider.js
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DeleteEntityRunner"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_DeleteEntity"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
@@ -29,7 +29,7 @@ export interface CreateEntityToolProps {
 
 
 // ################################################################################################
-export const DeleteEntityRunner: React.FC<CreateEntityToolProps> = ({
+export const Runner_DeleteEntity: React.FC<CreateEntityToolProps> = ({
   // application,
   applicationDeploymentMap,
   // deploymentUuid,

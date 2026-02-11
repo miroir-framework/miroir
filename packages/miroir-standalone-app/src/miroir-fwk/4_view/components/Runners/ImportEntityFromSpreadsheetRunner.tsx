@@ -556,11 +556,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   return (
     <>
       {/* <ThemedOnScreenHelper
-        label={`DeleteEntityRunner for ${runnerName} initialFormValue`}
+        label={`Runner_DeleteEntity for ${runnerName} initialFormValue`}
         data={initialFormValue}
       />
       <ThemedOnScreenHelper
-        label={`DeleteEntityRunner for ${runnerName} deploymentUuidQuery`}
+        label={`Runner_DeleteEntity for ${runnerName} deploymentUuidQuery`}
         data={deploymentUuidQuery}
       /> */}
       <form>

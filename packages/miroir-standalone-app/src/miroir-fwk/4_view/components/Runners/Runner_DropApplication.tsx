@@ -14,7 +14,7 @@ import { StoredRunnerView } from "./RunnerView.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DropApplicationRunner"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_DropApplication"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
@@ -25,7 +25,7 @@ export interface DropApplicationToolProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
 }
 
-export const DropApplicationRunner: React.FC<DropApplicationToolProps> = ({
+export const Runner_DropApplication: React.FC<DropApplicationToolProps> = ({
   applicationDeploymentMap,
 }) => {
 

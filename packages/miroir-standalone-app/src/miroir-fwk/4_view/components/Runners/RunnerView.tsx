@@ -47,6 +47,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// ################################################################################################
 export function StoredRunnerView(props: {
   applicationUuid: Uuid,
   applicationDeploymentMap?: ApplicationDeploymentMap,
@@ -54,14 +55,14 @@ export function StoredRunnerView(props: {
   // storedRunner: Runner,
 }) {
   // const context = useMiroirContextService();
-  
-  const runnerDeploymentUuid: Uuid = props.applicationDeploymentMap
-    ? props.applicationDeploymentMap[props.applicationUuid]
+  const applicationDeploymentMap = props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  const runnerDeploymentUuid: Uuid = applicationDeploymentMap
+    ? applicationDeploymentMap[props.applicationUuid]
     : defaultSelfApplicationDeploymentMap[props.applicationUuid];
 
   const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
     props.applicationUuid,
-    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+    applicationDeploymentMap,
     runnerDeploymentUuid,
     props.runnerUuid
   );
@@ -94,7 +95,7 @@ export function StoredRunnerView(props: {
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
-        defaultSelfApplicationDeploymentMap,
+        applicationDeploymentMap,
         () => ({}),
         libraryAppModelEnvironment,
       )
@@ -245,6 +246,17 @@ export function StoredRunnerView(props: {
       ) : runnerDefinitionFromLocalCache ? (
         <>
           <ThemedOnScreenDebug
+            label={`StoredRunnerView for ${runnerName} props`}
+            data={{
+              applicationUuid: props.applicationUuid,
+              applicationDeploymentMap:
+                props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+              runnerDeploymentUuid,
+              props,
+            }}
+            initiallyUnfolded={false}
+          />
+          <ThemedOnScreenDebug
             label={`StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`}
             data={runnerDefinitionFromLocalCache}
             initiallyUnfolded={false}
@@ -280,26 +292,26 @@ export function StoredRunnerView(props: {
           ) : (
             // <div>Application Runner type not yet supported in StoredRunnerView</div>
             <>
-            <ThemedOnScreenDebug
-              label={`StoredRunnerView for ${runnerName} storedRunnerAction`}
-              data={storedRunnerAction}
-              // initiallyUnfolded={false}
-              useCodeBlock={true}
-            />
-            <RunnerView
-              runnerName={runnerName}
-              applicationDeploymentMap={
-                props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-              }
-              // deploymentUuid={runnerDeploymentUuid}
-              formMLSchema={formMLSchema}
-              initialFormValue={initialFormValue}
-              action={storedRunnerAction as any}
-              formLabel={runnerDefinitionFromLocalCache.defaultLabel}
-              formikValuePathAsString={runnerName}
-              displaySubmitButton="onFirstLine"
-              useActionButton={false}
-            />
+              <ThemedOnScreenDebug
+                label={`StoredRunnerView for ${runnerName} storedRunnerAction`}
+                data={storedRunnerAction}
+                // initiallyUnfolded={false}
+                useCodeBlock={true}
+              />
+              <RunnerView
+                runnerName={runnerName}
+                applicationDeploymentMap={
+                  props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+                }
+                // deploymentUuid={runnerDeploymentUuid}
+                formMLSchema={formMLSchema}
+                initialFormValue={initialFormValue}
+                action={storedRunnerAction as any}
+                formLabel={runnerDefinitionFromLocalCache.defaultLabel}
+                formikValuePathAsString={runnerName}
+                displaySubmitButton="onFirstLine"
+                useActionButton={false}
+              />
             </>
           )}
         </>

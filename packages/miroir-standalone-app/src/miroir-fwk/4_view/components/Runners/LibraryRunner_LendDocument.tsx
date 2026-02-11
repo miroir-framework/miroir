@@ -12,7 +12,7 @@ import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CreateEntityRunner"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateEntity"),
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
