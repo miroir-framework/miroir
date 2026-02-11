@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import {
   ApplicationSection,
@@ -334,8 +334,9 @@ export function useCurrentModelEnvironment(
   const deploymentUuid = applicationDeploymentMap[application]
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
   const currentModel: MetaModel = useCurrentModel(application, applicationDeploymentMap);
+  const applicationUuids = useMemo(() => Object.keys(applicationDeploymentMap), [applicationDeploymentMap]);
   const endpointsByUuid: Record<Uuid, any> = useEndpointsOfApplications(
-    Object.keys(applicationDeploymentMap),// defaultDeploymentUuids,
+    applicationUuids,
     applicationDeploymentMap
   );
 
@@ -357,25 +358,28 @@ export function useEndpointsOfApplications(
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
   const state: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState)
-  const endpoints: Record<Uuid, any>[] = applicationUuids.map((applicationUuid) => {
-    const deploymentUuid = applicationDeploymentMap[applicationUuid];
-    if (!deploymentUuid) {
-      return {} as Record<Uuid, any>;
-    }
-    const localEntityIndex = getReduxDeploymentsStateIndex(
-      deploymentUuid,
-      getApplicationSection(applicationUuid, entityEndpointVersion.uuid),
-      entityEndpointVersion.uuid
-    );
-    const entityState = state[localEntityIndex];
-    return entityState?.entities ?? {} as Record<Uuid, any>;
-  }) ?? ([] as Record<Uuid, any>[]);
 
-  let result: Record<Uuid, any> = {}
-  endpoints.forEach((model) => {
-    result = { ...result, ...model };
-  }, {} as Record<Uuid, any>);
-  return result;
+  return useMemo(() => {
+    const endpoints: Record<Uuid, any>[] = applicationUuids.map((applicationUuid) => {
+      const deploymentUuid = applicationDeploymentMap[applicationUuid];
+      if (!deploymentUuid) {
+        return {} as Record<Uuid, any>;
+      }
+      const localEntityIndex = getReduxDeploymentsStateIndex(
+        deploymentUuid,
+        getApplicationSection(applicationUuid, entityEndpointVersion.uuid),
+        entityEndpointVersion.uuid
+      );
+      const entityState = state[localEntityIndex];
+      return entityState?.entities ?? {} as Record<Uuid, any>;
+    }) ?? ([] as Record<Uuid, any>[]);
+
+    let result: Record<Uuid, any> = {}
+    endpoints.forEach((model) => {
+      result = { ...result, ...model };
+    }, {} as Record<Uuid, any>);
+    return result;
+  }, [state, applicationUuids, applicationDeploymentMap]);
 }
 
 // ################################################################################################
@@ -384,21 +388,24 @@ export function useMenusOfApplications(
   applicationDeploymentMap: ApplicationDeploymentMap
 ) {
   const state: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState)
-  const menus: { application: Uuid; menus: Menu[] }[] =
-    applicationUuids.map((applicationUuid) => {
-      const deploymentUuid = applicationDeploymentMap[applicationUuid];
-      if (!deploymentUuid) {
-        throw new Error(`No deployment found for application ${applicationUuid}`);
-      }
-      const localEntityIndex = getReduxDeploymentsStateIndex(
-        deploymentUuid,
-        getApplicationSection(applicationUuid, entityMenu.uuid),
-        entityMenu.uuid,
-      );
-      const entityState = state[localEntityIndex];
-      return {application: applicationUuid, menus: Object.values(entityState?.entities ?? {})} as { application: Uuid; menus: Menu[] };
-    }) ?? [];
-  return menus;
+
+  return useMemo(() => {
+    const menus: { application: Uuid; menus: Menu[] }[] =
+      applicationUuids.map((applicationUuid) => {
+        const deploymentUuid = applicationDeploymentMap[applicationUuid];
+        if (!deploymentUuid) {
+          throw new Error(`No deployment found for application ${applicationUuid}`);
+        }
+        const localEntityIndex = getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          getApplicationSection(applicationUuid, entityMenu.uuid),
+          entityMenu.uuid,
+        );
+        const entityState = state[localEntityIndex];
+        return {application: applicationUuid, menus: Object.values(entityState?.entities ?? {})} as { application: Uuid; menus: Menu[] };
+      }) ?? [];
+    return menus;
+  }, [state, applicationUuids, applicationDeploymentMap]);
 }
 
 

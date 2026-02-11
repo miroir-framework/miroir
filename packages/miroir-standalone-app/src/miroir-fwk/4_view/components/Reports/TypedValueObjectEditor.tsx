@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
   ACTION_OK,
@@ -314,7 +314,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   }, [
     currentModel,
     currentMiroirModelEnvironment,
-    context,
     context.miroirFundamentalJzodSchema,
     deploymentUuid,
     zoomedInDisplaySchema,
@@ -336,17 +335,15 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   //   jzodTypeCheckResult
   // );
   // extruding typeCheckKeyMap to context for Outline usage
+  const previousKeyMapRef = useRef<Record<string, any> | undefined>(undefined);
   useEffect(() => {
     if (
       jzodTypeCheckResult &&
       jzodTypeCheckResult.status == "ok" &&
-      jzodTypeCheckResult.keyMap
-      // context.typeCheckKeyMap !== jzodTypeCheckResult.keyMap
+      jzodTypeCheckResult.keyMap &&
+      jzodTypeCheckResult.keyMap !== previousKeyMapRef.current
     ) {
-      // log.info(
-      //   "Outline: TypedValueObjectEditor updating context typeCheckKeyMap",
-      //   jzodTypeCheckResult.keyMap
-      // );
+      previousKeyMapRef.current = jzodTypeCheckResult.keyMap;
       if (context.setTypeCheckKeyMap) {
         context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
       } else {
@@ -645,26 +642,28 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   //   const renderDuration = renderEndTime - renderStartTime;
   //   RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
   // }
-  useEffect(() => {
-      // Track render performance at the end of render
-    if (context.showPerformanceDisplay) {
-      const renderEndTime = performance.now();
-      const renderDuration = renderEndTime - renderStartTime;
-      const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
 
-      // Log performance every 50 renders or if render took longer than 10ms
-      if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
-        log.info(
-          `JzodElementEditor render performance - ${componentKey}: ` +
-          `#${currentMetrics.renderCount} renders, ` +
-          `Current: ${renderDuration.toFixed(2)}ms, ` +
-          `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
-          `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
-          `Min/Max: ${currentMetrics.minRenderTime.toFixed(2)}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
-        );
-      }
-    }
-  });
+  // useful?
+  // useEffect(() => {
+  //     // Track render performance at the end of render
+  //   if (context.showPerformanceDisplay) {
+  //     const renderEndTime = performance.now();
+  //     const renderDuration = renderEndTime - renderStartTime;
+  //     const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+
+  //     // Log performance every 50 renders or if render took longer than 10ms
+  //     if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
+  //       log.info(
+  //         `JzodElementEditor render performance - ${componentKey}: ` +
+  //         `#${currentMetrics.renderCount} renders, ` +
+  //         `Current: ${renderDuration.toFixed(2)}ms, ` +
+  //         `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+  //         `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
+  //         `Min/Max: ${currentMetrics.minRenderTime.toFixed(2)}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
+  //       );
+  //     }
+  //   }
+  // });
   
   return result;
 };

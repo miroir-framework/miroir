@@ -1,5 +1,5 @@
 import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from "miroir-core";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
@@ -94,10 +94,12 @@ export function DocumentOutlineContextProvider(props: {
 
   const context = useMiroirContextService();
 
-  context.setSetTypeCheckKeyMap((a) =>{
-    // console.log("DocumentOutlineContextProvider: called setTypeCheckKeyMap in context");
-    return setTypeCheckKeyMap
-  });
+  useEffect(() => {
+    context.setSetTypeCheckKeyMap((a) => {
+      // console.log("DocumentOutlineContextProvider: called setTypeCheckKeyMap in context");
+      return setTypeCheckKeyMap;
+    });
+  }, [context.setSetTypeCheckKeyMap, setTypeCheckKeyMap]);
   
   const outlineContextValue: DocumentOutlineContextType = useMemo<DocumentOutlineContextType>(
     () => ({

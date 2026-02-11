@@ -55,12 +55,12 @@ export const ReportPage = () => {
   // const outlineContext = useDocumentOutlineContext();
 
   // log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
-  useEffect(() =>
-    context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : "")
-  );
-  useEffect(() =>
-    context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data")
-  );
+  useEffect(() => {
+    context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : "");
+  }, [pageParams.deploymentUuid]);
+  useEffect(() => {
+    context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data");
+  }, [pageParams.applicationSection]);
 
   useEffect(() => {
     // Only reset metrics if we're navigating to a different deployment
