@@ -146,10 +146,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   onChangeVector,
   ...props
 }) => {
-  const renderStartTime = performance.now();
+  // const renderStartTime = performance.now();
   const context = useMiroirContextService();
   const { isActionRunning } = useSnackbar();
-  const componentKey = `TypedValueObjectEditor-${deploymentUuid}-${applicationSection}`;
+  // const componentKey = `TypedValueObjectEditor-${deploymentUuid}-${applicationSection}`;
   // Access Formik from context (Formik is created in parent component)
   // const formik = useFormikValueObject();
   const formik = useFormikContext<Record<string, any>>();
@@ -461,13 +461,13 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           data={valueObject}
         /> */}
       {typeError && (<span>"typeError: "{typeError}</span>) }
-      <ThemedOnScreenDebug
+      {/* <ThemedOnScreenDebug
         label={`TypedValueObjectEditor Render Performance Metrics for ${formikValuePathAsString} mode "${props.valueObjectEditMode}"`}
-        data={props}
+        data={{displaySubmitButton, application, applicationSection, deploymentUuid, navigationCount, totalCount}}
         copyButton={true}
         initiallyUnfolded={false}
         useCodeBlock={true}
-      />
+      /> */}
       {/* </div> */}
       {/* <ThemedOnScreenHelper
         label={`TypedValueObjectEditor: "${formikValuePathAsString}"`}

@@ -253,7 +253,6 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   menuSection.items
                     .filter(
                       (curr: MiroirMenuItem) =>
-                      // !curr.menuItemScope || curr.menuItemScope == "data" || context.showModelTools
                       (
                         (curr.selfApplication === adminSelfApplication.uuid || curr.selfApplication === selfApplicationDeploymentMiroir)
                         && context.showModelTools

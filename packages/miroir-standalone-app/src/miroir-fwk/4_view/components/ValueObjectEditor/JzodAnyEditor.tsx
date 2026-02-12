@@ -300,7 +300,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   if (localResolvedElementJzodSchemaBasedOnValue?.type === "any") {
     return (
       <>
-      zzzzzzz
         {props.submitButton ?? <></>}
         JzodAnyEditor rendering as JzodElementEditorReactCodeMirror 1 format: {format}
         {/* <JzodElementEditorReactCodeMirror
@@ -330,7 +329,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
         initiallyUnfolded={false}
         useCodeBlock={true}
       />
-      yyyyyyy
       {/* <div>
         <ChangeValueTypeSelect
           onChange={(type: JzodElement) => {

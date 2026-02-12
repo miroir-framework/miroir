@@ -649,6 +649,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
           <TypedValueObjectEditor
             valueObjectEditMode={props.valueObjectEditMode}
+            // displaySubmitButton={true}
             labelElement={labelElement}
             application={props.application}
             applicationDeploymentMap={props.applicationDeploymentMap}

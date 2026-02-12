@@ -1289,8 +1289,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     resolvedTypeIsObjectOrArrayOrAny?
      displayAsCodeEditor ? (
       <>
-        {props.submitButton}
-        JzodElementEditor rendering as JzodElementEditorReactCodeMirror 1
+        {/* {props.submitButton}
+        JzodElementEditor rendering as JzodElementEditorReactCodeMirror 1 */}
         <JzodElementEditorReactCodeMirror
           formikRootLessListKey={formikRootLessListKey}
           initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
@@ -1334,6 +1334,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             copyButton={true}
             useCodeBlock={true}
           />
+          {props.submitButton ?? <></>}
         </>
       )}
       {currentKeyMap?.rawSchema?.type === "any" && (
