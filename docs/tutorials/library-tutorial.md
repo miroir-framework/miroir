@@ -10,11 +10,21 @@ estimated reading time: 20 minutes (according to ChatGPT 4.1).
 
 ### Deploy the Library Application
 
-TBW
+Use the **Install Existing Application** runner:
 
-### Load the Example Data
+<img src="./libraryTutorial/miroir-install_application.png" alt="Install Application" width="80%"/>
 
-TBW
+Select the **library-model.json** and **library-data.jaon** files, and deploy the application on your storage of choice (the choice of the storage is irrerlevant for the remainder of this tutorial, the straightforward solution being the filesystem on which you installed the Miroir platform):
+
+<img src="./libraryTutorial/miroir-install_application-library.png" alt="Install the Library Application" width="80%"/>
+
+
+### Select the installed Application
+
+Once the installation is over, you'll get a green notification of success, then you can select the newly installed Library application:
+
+<img src="./libraryTutorial/miroir-select_application.png" alt="Select the Library Application" width="80%"/>
+
 
 ## Part 1: Discovering the Library Application
 

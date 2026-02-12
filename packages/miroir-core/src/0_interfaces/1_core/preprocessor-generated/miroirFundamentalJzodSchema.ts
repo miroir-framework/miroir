@@ -10373,6 +10373,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "type": "schemaReference",
           "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "relativePath": "miroirMenuItem"
           }
         }
@@ -10389,6 +10390,7 @@ export const miroirFundamentalJzodSchema = {
           "items": {
             "type": "schemaReference",
             "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "menuItemArray"
             }
           }
@@ -10404,6 +10406,7 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "type": "schemaReference",
             "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "menuItemArray"
             }
           }
@@ -10421,6 +10424,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "schemaReference",
               "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "sectionOfMenu"
               }
             }
@@ -10434,12 +10438,14 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "simpleMenu"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "complexMenu"
             }
           }
@@ -10652,6 +10658,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "miroirMenuItem"
                   }
                 }
@@ -10668,6 +10675,7 @@ export const miroirFundamentalJzodSchema = {
                   "items": {
                     "type": "schemaReference",
                     "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "menuItemArray"
                     }
                   }
@@ -10683,6 +10691,7 @@ export const miroirFundamentalJzodSchema = {
                   "definition": {
                     "type": "schemaReference",
                     "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "menuItemArray"
                     }
                   }
@@ -10700,6 +10709,7 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "sectionOfMenu"
                       }
                     }
@@ -10713,12 +10723,14 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "schemaReference",
                     "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "simpleMenu"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "complexMenu"
                     }
                   }
@@ -10726,6 +10738,7 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "menuDefinition"
             }
           }
@@ -36575,8 +36588,8 @@ export const miroirFundamentalJzodSchema = {
                         "definition": {
                           "type": "schemaReference",
                           "definition": {
-                            "relativePath": "miroirMenuItem",
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "miroirMenuItem"
                           },
                           "context": {}
                         }
@@ -36593,8 +36606,8 @@ export const miroirFundamentalJzodSchema = {
                           "items": {
                             "type": "schemaReference",
                             "definition": {
-                              "relativePath": "menuItemArray",
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "menuItemArray"
                             },
                             "context": {}
                           }
@@ -36610,8 +36623,8 @@ export const miroirFundamentalJzodSchema = {
                           "definition": {
                             "type": "schemaReference",
                             "definition": {
-                              "relativePath": "menuItemArray",
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "menuItemArray"
                             },
                             "context": {}
                           }
@@ -36629,8 +36642,8 @@ export const miroirFundamentalJzodSchema = {
                             "definition": {
                               "type": "schemaReference",
                               "definition": {
-                                "relativePath": "sectionOfMenu",
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "sectionOfMenu"
                               },
                               "context": {}
                             }
@@ -36644,16 +36657,16 @@ export const miroirFundamentalJzodSchema = {
                           {
                             "type": "schemaReference",
                             "definition": {
-                              "relativePath": "simpleMenu",
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "simpleMenu"
                             },
                             "context": {}
                           },
                           {
                             "type": "schemaReference",
                             "definition": {
-                              "relativePath": "complexMenu",
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "complexMenu"
                             },
                             "context": {}
                           }
@@ -36661,8 +36674,8 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuDefinition"
                     }
                   },
                   {
@@ -38414,15 +38427,15 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_simpleMenu"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_complexMenu"
             }
           },
           {
@@ -39200,8 +39213,8 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray"
                     },
                     "context": {}
                   },
@@ -39253,8 +39266,8 @@ export const miroirFundamentalJzodSchema = {
                         {
                           "type": "schemaReference",
                           "definition": {
-                            "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu",
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sectionOfMenu"
                           },
                           "context": {}
                         },
@@ -39537,8 +39550,8 @@ export const miroirFundamentalJzodSchema = {
                 {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem",
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem"
                   },
                   "context": {}
                 },
@@ -39620,8 +39633,8 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray",
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_menuItemArray"
                     },
                     "context": {}
                   },
