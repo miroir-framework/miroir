@@ -1,23 +1,16 @@
-import { ExpandMoreIcon } from '../components/Themes/MaterialSymbolWrappers';
 // import { z } from "zod";
 
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import {
-  defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory,
   type LoggerInterface
 } from "miroir-core";
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
+import { runnerConfigs, RunnerDisplay } from '../components/Runners/RunnersList';
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { usePageConfiguration } from "../services/index.js";
-import { Runner_CreateApplication } from '../components/Runners/Runner_CreateApplication';
-import { Runner_CreateEntity } from '../components/Runners/Runner_CreateEntity';
-import { Runner_DeleteEntity } from '../components/Runners/Runner_DeleteEntity';
-import { Runner_DropApplication } from '../components/Runners/Runner_DropApplication';
-import { Runner_InstallApplication } from '../components/Runners/Runner_InstallApplication';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -26,58 +19,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 let count = 0;
 
-// const testSubPartPathArray = [
-//   "definition",
-//   "testCompositeActions",
-//   "create new Entity and reports from spreadsheet",
-//   "compositeActionSequence",
-//   "payload",
-//   "templates",
-// ];
-// // const valuePath = "definition.testCompositeActions"
-// const testSubPart = resolvePathOnObject(
-//   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-//   testSubPartPathArray
-// );
-
 const pageLabel = "Admin";
-
-// ################################################################################################
-// Runner configurations
-const runnerConfigs = [
-  // {
-  //   title: "Endpoint Action Caller",
-  //   component: EndpointActionCaller,
-  // },
-  {
-    title: "Install Application",
-    component: Runner_InstallApplication,
-  },
-  {
-    title: "Create Application & Deployment",
-    component: Runner_CreateApplication,
-  },
-  {
-    title: "Drop Application & Deployment",
-    component: Runner_DropApplication,
-  },
-  {
-    title: "Create Entity",
-    component: Runner_CreateEntity,
-  },
-  {
-    title: "Drop Entity",
-    component: Runner_DeleteEntity,
-  },
-  // // // {
-  // // //   title: "Import Entity From Spreadsheet",
-  // // //   component: ImportEntityFromSpreadsheetRunner,
-  // // // },
-  // {
-  //   title: "Lend Document",
-  //   component: LibraryRunner_LendDocument,
-  // },
-] as const;
 
 // ################################################################################################
 function formatYYYYMMDD_HHMMSS(date = new Date()) {
@@ -111,33 +53,9 @@ export const RunnersPage: React.FC<any> = (
     <ReportPageContextProvider>
       <PageContainer>
         <h1>Runners</h1>
-        This is the Admin page. It has been rendered {count} times.
-        <br />
-        {/* path: {testSubPartPathArray.join(".")} */}
-          {/* <ApplicationSelector
-            applicationUuid={currentApplication}
-            onApplicationChange={setCurrentApplication}
-          />
+        {/* This is the Admin page. It has been rendered {count} times.
         <br /> */}
-        {runnerConfigs.map((config, index) => {
-          const RunnerComponent = config.component;
-          return (
-            <Accordion key={index} style={{ marginBottom: 12 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <div style={{ fontWeight: 500 }}>{config.title}</div>
-              </AccordionSummary>
-              <AccordionDetails>
-                {/* <RunnerComponent deploymentUuid={deploymentUuid} /> */}
-                <RunnerComponent
-                  // application={applicationUuid}
-                  applicationDeploymentMap={
-                    applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-                  }
-                />
-              </AccordionDetails>
-            </Accordion>
-          );
-        })}
+        <RunnerDisplay config={runnerConfigs} applicationDeploymentMap={applicationDeploymentMap} />
       </PageContainer>
     </ReportPageContextProvider>
   );

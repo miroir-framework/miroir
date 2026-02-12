@@ -34,6 +34,7 @@ import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
+import { RunnerDisplay, runnerConfigs } from "../components/Runners/RunnersList.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -83,19 +84,8 @@ export const HomePage = (props: RootComponentProps) => {
     successMessage: "Home page configurations loaded successfully",
     actionName: "home page configuration fetch"
   });
-  
-  // log.info("RootComponent deployments",deployments);
 
-  // context utility functions
-  // const displayedApplication = context.application;
-  // const displayedDeploymentUuid = context.deploymentUuid;
-  // const setDisplayedDeploymentUuid = context.setDeploymentUuid;
-
-  // const displayedReportUuid = context.reportUuid;
-  // const setDisplayedReportUuid = context.setReportUuid;
   const displayedApplicationSection = context.applicationSection;
-  // const setDisplayedApplicationSection = context.setApplicationSection;
-
   const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
 
   const currentAppModel: MetaModel = useCurrentModel(
@@ -264,7 +254,11 @@ export const HomePage = (props: RootComponentProps) => {
           Redo
         </button>
       </span> */}
-      <p />
+      <RunnerDisplay config={runnerConfigs} applicationDeploymentMap={currentApplicationDeploymentMap} />
+
+
+
+      {/* <p /> */}
       {/* <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span> */}
       {/* <Importer
         filename=""

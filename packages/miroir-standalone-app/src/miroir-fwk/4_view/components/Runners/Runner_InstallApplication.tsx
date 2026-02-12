@@ -228,14 +228,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                   relativePath: "storeSectionConfiguration",
                 },
               },
-              // applicationName: {
-              //   type: "string",
-              //   tag: {
-              //     value: {
-              //       defaultLabel: "Application Name",
-              //     },
-              //   },
-              // },
             },
           },
         },
@@ -859,7 +851,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
           compositeActionTemplate: createApplicationActionTemplate,
         }}
         formikValuePathAsString="deployApplication"
-        formLabel="Create Application & Deployment"
+        formLabel="Install Existing Application"
         displaySubmitButton="onFirstLine"
         useActionButton={false}
       />
