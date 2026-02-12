@@ -37,6 +37,7 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
   array: DataTypes.JSONB, // OK?
   boolean: DataTypes.BOOLEAN,
   entity_instance_uuid: DataTypes.STRING,
+  union: DataTypes.JSONB, 
   object: DataTypes.JSONB, 
   number: DataTypes.INTEGER, 
   record: DataTypes.JSONB, 
@@ -95,11 +96,11 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
                 // "set",
                 // "simpleType",
                 // "tuple",
-                // "union"
+                "union",
               ].includes(a[1].type))
               ? dataTypesMapping[a[1].type]
-              : a[1].type == "array" || a[1].type == "object"
-              ? dataTypesMapping[a[1].type]
+              // : a[1].type == "array" || a[1].type == "object"
+              // ? dataTypesMapping[a[1].type]
               : DataTypes.STRING,
           // allowNull: a[1].type == "simpleType" ? a[1].optional : false,
           allowNull: ((a[1] as any)["optional"] || (a[1] as any)["nullable"]) ?? false,
