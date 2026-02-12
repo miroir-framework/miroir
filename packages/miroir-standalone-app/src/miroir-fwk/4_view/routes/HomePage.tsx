@@ -34,7 +34,7 @@ import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ThemedOnScreenDebug } from "../components/Themes/BasicComponents.js";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { RunnerDisplay, runnerConfigs } from "../components/Runners/RunnersList.js";
+import { RunnerList, runnerConfigs } from "../components/Runners/RunnersList.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -254,7 +254,7 @@ export const HomePage = (props: RootComponentProps) => {
           Redo
         </button>
       </span> */}
-      <RunnerDisplay config={runnerConfigs} applicationDeploymentMap={currentApplicationDeploymentMap} />
+      <RunnerList config={runnerConfigs} applicationDeploymentMap={currentApplicationDeploymentMap} />
 
 
 

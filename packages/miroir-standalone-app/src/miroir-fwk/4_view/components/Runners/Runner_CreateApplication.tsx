@@ -122,26 +122,12 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "indexedDb" },
-                      // indexedDbName: { type: "string" },
                     },
                   },
                   filesystemDbStoreSectionConfiguration: {
                     type: "object",
                     definition: {
                       emulatedServerType: { type: "literal", definition: "filesystem" },
-                      // directory: {
-                      //   type: "string",
-                      //   tag: {
-                      //     value: {
-                      //       defaultLabel: "Directory Path",
-                      //       display: {
-                      //         string: {
-                      //           format: "folder",
-                      //         },
-                      //       },
-                      //     },
-                      //   },
-                      // },
                     },
                   },
                   sqlDbStoreSectionConfiguration: {
@@ -149,7 +135,6 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                     definition: {
                       emulatedServerType: { type: "literal", definition: "sql" },
                       connectionString: { type: "string" },
-                      // schema: { type: "string" },
                     },
                   },
                   mongoDbStoreSectionConfiguration: {
@@ -157,7 +142,6 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                     definition: {
                       emulatedServerType: { type: "literal", definition: "mongodb" },
                       connectionString: { type: "string" },
-                      // database: { type: "string" },
                     },
                   },
                   storeSectionConfiguration: {
@@ -167,28 +151,24 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "indexedDbStoreSectionConfiguration",
                         },
                       },
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "filesystemDbStoreSectionConfiguration",
                         },
                       },
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "sqlDbStoreSectionConfiguration",
                         },
                       },
                       {
                         type: "schemaReference",
                         definition: {
-                          // absolutePath: miroirFundamentalJzodSchemaUuid,
                           relativePath: "mongoDbStoreSectionConfiguration",
                         },
                       },
@@ -196,7 +176,6 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
                   },
                 },
                 definition: {
-                  // absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "storeSectionConfiguration",
                 },
               },
@@ -825,7 +804,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   return (
     <>
       {/* Model File Upload Section */}
-      <FileSelector
+      {/* <FileSelector
         title="Optional: Load Custom Model"
         description="Upload a JSON file containing an Application Model to install. If no file is selected, the Model will be empty."
         buttonLabel="Select Model JSON"
@@ -840,7 +819,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
             ? `MetaModel loaded successfully with ${selectedMetaModel?.entities?.length || 0} entities and ${selectedMetaModel?.entityDefinitions?.length || 0} entity definitions.`
             : undefined
         }
-      />
+      /> */}
 
       <RunnerView
         runnerName={runnerName}

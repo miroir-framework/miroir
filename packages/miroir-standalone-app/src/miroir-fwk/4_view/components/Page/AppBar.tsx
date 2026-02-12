@@ -56,13 +56,13 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
   //     }
   //   }
   // },
-  {
-    "label": "runners",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
-    "icon": "directions_run"
-  },
+  // {
+  //   "label": "runners",
+  //   "section": "model",
+  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+  //   "icon": "directions_run"
+  // },
   {
     "label": "events",
     "section": "model",

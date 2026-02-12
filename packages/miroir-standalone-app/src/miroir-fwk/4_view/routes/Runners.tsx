@@ -7,7 +7,7 @@ import {
 import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
-import { runnerConfigs, RunnerDisplay } from '../components/Runners/RunnersList';
+import { runnerConfigs, RunnerList } from '../components/Runners/RunnersList';
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { usePageConfiguration } from "../services/index.js";
@@ -55,7 +55,7 @@ export const RunnersPage: React.FC<any> = (
         <h1>Runners</h1>
         {/* This is the Admin page. It has been rendered {count} times.
         <br /> */}
-        <RunnerDisplay config={runnerConfigs} applicationDeploymentMap={applicationDeploymentMap} />
+        <RunnerList config={runnerConfigs} applicationDeploymentMap={applicationDeploymentMap} />
       </PageContainer>
     </ReportPageContextProvider>
   );

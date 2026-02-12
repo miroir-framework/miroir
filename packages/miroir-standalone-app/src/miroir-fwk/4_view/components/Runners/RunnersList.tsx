@@ -62,7 +62,7 @@ export const runnerConfigs: RunnerConfig[] = [
 ] as const;
 
 // ################################################################################################
-export const RunnerDisplay: React.FC<{
+export const RunnerList: React.FC<{
   config: RunnerConfig[];
   applicationDeploymentMap?: any;
 }> = ({ config, applicationDeploymentMap }) => {
@@ -71,7 +71,8 @@ export const RunnerDisplay: React.FC<{
     return (
       <Accordion key={index} style={{ marginBottom: 12 }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <div style={{ fontWeight: 500 }}>{config.title}</div>
+          {/* <div style={{ fontWeight: 500 }}>{config.title}</div> */}
+          <div>{config.title}</div>
         </AccordionSummary>
         <AccordionDetails>
           {/* <RunnerComponent deploymentUuid={deploymentUuid} /> */}
