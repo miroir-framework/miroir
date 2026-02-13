@@ -838,6 +838,8 @@ Miroir occupies a unique position attempting to bridge academic research (meta-p
 
 [The Gartner Magic Quadrant 2025 for Low-code](https://www.microsoft.com/en-us/power-platform/blog/power-apps/microsoft-recognized-as-a-leader-in-the-2025-gartner-magic-quadrant-for-enterprise-low-code-application-platforms/)
 
+[The comparison to other solutions on UI Bakery](https://uibakery.io/appsmith-alternatives)
+
 ## Annex 1: How this document was produced
 
 The initial version of this document was generated on 2026/01/24, by Claude Sonnet 4.5 in agent mode, using the following prompts:
