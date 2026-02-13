@@ -834,9 +834,13 @@ The table reveals that **no single platform combines all of Miroir's characteris
 
 Miroir occupies a unique position attempting to bridge academic research (meta-programming, bootstrapped systems) with practical low-code/model-driven development, while remaining fully open source and self-hostable.
 
+## Further comparison elements:
+
+[The Gartner Magic Quadrant 2025 for Low-code](https://www.microsoft.com/en-us/power-platform/blog/power-apps/microsoft-recognized-as-a-leader-in-the-2025-gartner-magic-quadrant-for-enterprise-low-code-application-platforms/)
+
 ## Annex 1: How this document was produced
 
-This document was mostly generated on 2026/01/24, by Claude Sonnet 4.5 in agent mode, using the following prompts:
+The initial version of this document was generated on 2026/01/24, by Claude Sonnet 4.5 in agent mode, using the following prompts:
 
 `
 give me a list of open source projects and a list of non-open-source projects, which resemble the Miroir Framework. For each item in the lists, give a brief description of similarities and a brief description of differences
