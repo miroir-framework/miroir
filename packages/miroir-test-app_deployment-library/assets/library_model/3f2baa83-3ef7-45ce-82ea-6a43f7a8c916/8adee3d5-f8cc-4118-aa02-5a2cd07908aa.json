@@ -11,10 +11,7 @@
       "user": {
         "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "User",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "ca794e28-b2dc-45b3-8137-00151557eea8"
-        },
+        "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"

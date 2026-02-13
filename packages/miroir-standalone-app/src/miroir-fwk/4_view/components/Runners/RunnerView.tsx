@@ -56,9 +56,7 @@ export function StoredRunnerView(props: {
 }) {
   // const context = useMiroirContextService();
   const applicationDeploymentMap = props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
-  const runnerDeploymentUuid: Uuid = applicationDeploymentMap
-    ? applicationDeploymentMap[props.applicationUuid]
-    : defaultSelfApplicationDeploymentMap[props.applicationUuid];
+  const runnerDeploymentUuid: Uuid = applicationDeploymentMap[props.applicationUuid];
 
   const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
     props.applicationUuid,
@@ -86,7 +84,7 @@ export function StoredRunnerView(props: {
   // ##############################################################################################
   const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     props.applicationUuid,
-    defaultSelfApplicationDeploymentMap
+    applicationDeploymentMap
   );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -259,6 +257,11 @@ export function StoredRunnerView(props: {
           <ThemedOnScreenDebug
             label={`StoredRunnerView for ${runnerName} runnerDefinitionFromLocalCache`}
             data={runnerDefinitionFromLocalCache}
+            initiallyUnfolded={false}
+          />
+          <ThemedOnScreenDebug
+            label={`StoredRunnerView for ${runnerName} currentEndpointDefinition`}
+            data={currentEndpointDefinition}
             initiallyUnfolded={false}
           />
           <ThemedOnScreenDebug

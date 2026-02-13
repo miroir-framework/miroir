@@ -11,10 +11,7 @@
       "book": {
         "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "Book",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-        },
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"
@@ -47,10 +44,7 @@
       "booksOfPublisher": {
         "extractorOrCombinerType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-        },
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
@@ -61,10 +55,7 @@
       "booksOfAuthor": {
         "extractorOrCombinerType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-        },
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",

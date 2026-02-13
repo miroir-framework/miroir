@@ -17,14 +17,6 @@
           "type": "runnerReportSection",
           "definition": {
             "runnerReportSectionType": "storedRunner",
-            "label": "updateISBN",
-            "runner": "5c707fe4-359a-4211-8653-8565a8af0c55"
-          }
-        },
-        {
-          "type": "runnerReportSection",
-          "definition": {
-            "runnerReportSectionType": "storedRunner",
             "label": "lendBook",
             "runner": "cc853632-f158-43fa-b9ed-437c9c25f539"
           }
