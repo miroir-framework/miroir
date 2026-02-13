@@ -11,12 +11,7 @@
       "viewParams": {
         "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "Deployment",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "mlSchema": { "type": "uuid" },
-          "interpolation": "build",
-          "value": "b9765b7c-b614-4126-a0e2-634463f99937"
-        },
+        "parentUuid": "b9765b7c-b614-4126-a0e2-634463f99937",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "interpolation": "build",

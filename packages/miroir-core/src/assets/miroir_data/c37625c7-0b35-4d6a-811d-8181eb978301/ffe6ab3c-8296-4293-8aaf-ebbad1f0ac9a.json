@@ -1,10 +1,10 @@
 {
   "uuid": "ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a",
-  "parentName":"Test",
-  "parentUuid":"c37625c7-0b35-4d6a-811d-8181eb978301",
-  "name":"createEntityAndReportFromSpreadsheetAndUpdateMenu",
-  "selfApplication":"21840247-b5b1-4344-baec-f818f4797d92",
-  "branch":"ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "parentName": "Test",
+  "parentUuid": "c37625c7-0b35-4d6a-811d-8181eb978301",
+  "name": "createEntityAndReportFromSpreadsheetAndUpdateMenu",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "First Test",
   "definition": {
     "testCompositeActions": {
@@ -20,127 +20,103 @@
             "templates": {
               "createEntity_newEntity": {
                 "transformerType": "createObject",
-                "interpolation": "build",
                 "definition": {
                   "uuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "newEntityUuid"
                   },
                   "parentUuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referencePath": ["entityEntity", "uuid"]
                   },
                   "selfApplication": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testSelfApplicationUuid"
                   },
                   "description": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "createEntity_newEntityDescription"
                   },
                   "name": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "newEntityName"
                   }
                 }
               },
               "createEntity_newEntityDefinition": {
                 "transformerType": "createObject",
-                "interpolation": "build",
                 "definition": {
                   "name": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "newEntityName"
                   },
                   "uuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "newEntityDefinitionUuid"
                   },
                   "parentName": "EntityDefinition",
                   "parentUuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referencePath": ["entityEntityDefinition", "uuid"]
                   },
                   "entityUuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referencePath": ["createEntity_newEntity", "uuid"]
                   },
                   "conceptLevel": "Model",
                   "defaultInstanceDetailsReportUuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "defaultInstanceDetailsReportUuid"
                   },
                   "mlSchema": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "newEntityJzodSchema"
                   }
                 }
               },
               "newEntityListReport": {
                 "transformerType": "createObject",
-                "interpolation": "build",
                 "definition": {
                   "uuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "createEntity_newEntityListReportUuid"
                   },
                   "selfApplication": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testSelfApplicationUuid"
                   },
                   "parentName": {
                     "transformerType": "returnValue",
-                    "interpolation": "build",
                     "value": "Report"
                   },
                   "parentUuid": {
                     "transformerType": "mustacheStringTemplate",
-                    "interpolation": "build",
                     "definition": "{{entityReport.uuid}}"
                   },
                   "conceptLevel": "model",
                   "name": {
                     "transformerType": "mustacheStringTemplate",
-                    "interpolation": "build",
                     "definition": "{{newEntityName}}List"
                   },
                   "defaultLabel": {
                     "transformerType": "mustacheStringTemplate",
-                    "interpolation": "build",
                     "definition": "List of {{newEntityName}}s"
                   },
                   "type": "list",
                   "definition": {
                     "transformerType": "createObject",
-                    "interpolation": "build",
                     "definition": {
                       "extractors": {
                         "transformerType": "createObject",
-                        "interpolation": "build",
                         "definition": {
                           "instanceList": {
                             "extractorOrCombinerType": "extractorByEntityReturningObjectList",
                             "parentName": {
                               "transformerType": "getFromParameters",
-                              "interpolation": "build",
                               "referenceName": "newEntityName"
                             },
                             "parentUuid": {
                               "transformerType": "mustacheStringTemplate",
-                              "interpolation": "build",
                               "definition": "{{createEntity_newEntity.uuid}}"
                             }
                           }
@@ -148,27 +124,22 @@
                       },
                       "section": {
                         "transformerType": "createObject",
-                        "interpolation": "build",
                         "definition": {
                           "type": {
                             "transformerType": "returnValue",
-                            "interpolation": "build",
                             "value": "objectListReportSection"
                           },
                           "definition": {
                             "label": {
                               "transformerType": "mustacheStringTemplate",
-                              "interpolation": "build",
                               "definition": "{{newEntityName}}s"
                             },
                             "parentUuid": {
                               "transformerType": "mustacheStringTemplate",
-                              "interpolation": "build",
                               "definition": "{{createEntity_newEntity.uuid}}"
                             },
                             "fetchedDataReference": {
                               "transformerType": "returnValue",
-                              "interpolation": "build",
                               "value": "instanceList"
                             }
                           }
@@ -180,54 +151,44 @@
               },
               "newEntityDetailsReport": {
                 "transformerType": "createObject",
-                "interpolation": "build",
                 "definition": {
                   "uuid": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "createEntity_newEntityDetailsReportUuid"
                   },
                   "selfApplication": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testSelfApplicationUuid"
                   },
                   "parentName": {
                     "transformerType": "mustacheStringTemplate",
-                    "interpolation": "build",
                     "definition": "{{entityReport.name}}"
                   },
                   "parentUuid": {
                     "transformerType": "mustacheStringTemplate",
-                    "interpolation": "build",
                     "definition": "{{entityReport.uuid}}"
                   },
                   "conceptLevel": "Model",
                   "name": {
                     "transformerType": "mustacheStringTemplate",
-                    "interpolation": "build",
                     "definition": "{{newEntityName}}Details"
                   },
                   "defaultLabel": {
                     "transformerType": "mustacheStringTemplate",
-                    "interpolation": "build",
                     "definition": "Details of {{newEntityName}}"
                   },
                   "definition": {
                     "extractorTemplates": {
                       "elementToDisplay": {
                         "transformerType": "returnValue",
-                        "interpolation": "build",
                         "value": {
                           "extractorOrCombinerType": "extractorForObjectByDirectReference",
                           "parentName": {
                             "transformerType": "getFromContext",
-                            "interpolation": "build",
                             "referenceName": "newEntityName"
                           },
                           "parentUuid": {
                             "transformerType": "mustacheStringTemplate",
-                            "interpolation": "build",
                             "definition": "{{newEntityUuid}}"
                           },
                           "instanceUuid": {
@@ -250,12 +211,10 @@
                           "definition": {
                             "label": {
                               "transformerType": "mustacheStringTemplate",
-                              "interpolation": "build",
                               "definition": "My {{newEntityName}}"
                             },
                             "parentUuid": {
                               "transformerType": "mustacheStringTemplate",
-                              "interpolation": "build",
                               "definition": "{{newEntityUuid}}"
                             },
                             "fetchedDataReference": "elementToDisplay"
@@ -276,19 +235,16 @@
                 "payload": {
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   },
                   "entities": [
                     {
                       "entity": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "createEntity_newEntity"
                       },
                       "entityDefinition": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "createEntity_newEntityDefinition"
                       }
                     }
@@ -301,7 +257,6 @@
                 "payload": {
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   },
                   "instanceAction": {
@@ -311,7 +266,6 @@
                     "payload": {
                       "application": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "testApplicationUuid"
                       },
                       "applicationSection": "model",
@@ -319,24 +273,20 @@
                         {
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["newEntityListReport", "parentName"]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["newEntityListReport", "parentUuid"]
                           },
                           "applicationSection": "model",
                           "instances": [
                             {
                               "transformerType": "getFromParameters",
-                              "interpolation": "build",
                               "referenceName": "newEntityListReport"
                             },
                             {
                               "transformerType": "getFromParameters",
-                              "interpolation": "build",
                               "referenceName": "newEntityDetailsReport"
                             }
                           ]
@@ -353,7 +303,6 @@
                 "payload": {
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   }
                 }
@@ -367,7 +316,6 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   },
                   "payload": {
@@ -376,13 +324,11 @@
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {
                         "currentDeploymentUuid": {
                           "transformerType": "getFromParameters",
-                          "interpolation": "build",
                           "referenceName": "testDeploymentUuid"
                         }
                       },
@@ -394,12 +340,10 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityEntityDefinition", "name"]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityEntityDefinition", "uuid"]
                           },
                           "orderBy": {
@@ -410,7 +354,6 @@
                       }
                     }
                   }
-
                 }
               },
               {
@@ -422,7 +365,6 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   },
                   "payload": {
@@ -431,13 +373,11 @@
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {
                         "currentApplicationUuid": {
                           "transformerType": "getFromParameters",
-                          "interpolation": "build",
                           "referenceName": "testApplicationUuid"
                         }
                       },
@@ -449,12 +389,10 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityEntity", "name"]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityEntity", "uuid"]
                           },
                           "orderBy": {
@@ -476,7 +414,6 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   },
                   "payload": {
@@ -485,13 +422,11 @@
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {
                         "currentApplicationUuid": {
                           "transformerType": "getFromParameters",
-                          "interpolation": "build",
                           "referenceName": "testApplicationUuid"
                         }
                       },
@@ -504,12 +439,10 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityReport", "name"]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityReport", "uuid"]
                           },
                           "orderBy": {
@@ -532,7 +465,6 @@
                   "payload": {
                     "application": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "testApplicationUuid"
                     },
                     "applicationSection": "model",
@@ -540,7 +472,6 @@
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {},
@@ -552,12 +483,10 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityMenu", "name"]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityMenu", "uuid"]
                           }
                         }
@@ -579,18 +508,15 @@
                           "definition": {
                             "reportUuid": {
                               "transformerType": "getFromParameters",
-                              "interpolation": "build",
                               "referenceName": "createEntity_newEntityListReportUuid"
                             },
                             "label": {
                               "transformerType": "mustacheStringTemplate",
-                              "interpolation": "build",
                               "definition": "List of {{newEntityName}}s"
                             },
                             "section": "data",
                             "selfApplication": {
                               "transformerType": "getFromParameters",
-                              "interpolation": "build",
                               "referencePath": ["adminConfigurationDeploymentParis", "uuid"]
                             },
                             "icon": "local_drink"
@@ -622,7 +548,6 @@
                 "payload": {
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   },
                   "instanceAction": {
@@ -632,7 +557,6 @@
                     "payload": {
                       "application": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "testApplicationUuid"
                       },
                       "applicationSection": "model",
@@ -640,12 +564,10 @@
                         {
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityMenu", "name"]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityMenu", "uuid"]
                           },
                           "applicationSection": "model",
@@ -669,7 +591,6 @@
                 "payload": {
                   "application": {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "testApplicationUuid"
                   }
                 }
@@ -684,7 +605,6 @@
                   "payload": {
                     "application": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "testApplicationUuid"
                     },
                     "applicationSection": "model",
@@ -692,7 +612,6 @@
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "referenceName": "testApplicationUuid"
                       },
                       "pageParams": {},
@@ -705,7 +624,6 @@
                           "parentName": "Menu",
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "interpolation": "build",
                             "referencePath": ["entityMenu", "uuid"]
                           }
                         }
@@ -737,27 +655,22 @@
                   {
                     "uuid": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "newEntityUuid"
                     },
                     "parentUuid": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referencePath": ["entityEntity", "uuid"]
                     },
                     "selfApplication": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "testSelfApplicationUuid"
                     },
                     "description": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "createEntity_newEntityDescription"
                     },
                     "name": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "newEntityName"
                     }
                   }
@@ -787,34 +700,28 @@
                   {
                     "name": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "newEntityName"
                     },
                     "uuid": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "newEntityDefinitionUuid"
                     },
                     "parentName": "EntityDefinition",
                     "parentUuid": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referencePath": ["entityEntityDefinition", "uuid"]
                     },
                     "entityUuid": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referencePath": ["newEntityUuid"]
                     },
                     "conceptLevel": "Model",
                     "defaultInstanceDetailsReportUuid": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "defaultInstanceDetailsReportUuid"
                     },
                     "mlSchema": {
                       "transformerType": "getFromParameters",
-                      "interpolation": "build",
                       "referenceName": "newEntityJzodSchema"
                     }
                   }
@@ -835,12 +742,10 @@
                 "expectedValue": [
                   {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "newEntityListReport"
                   },
                   {
                     "transformerType": "getFromParameters",
-                    "interpolation": "build",
                     "referenceName": "newEntityDetailsReport"
                   }
                 ]
@@ -930,18 +835,15 @@
                             {
                               "reportUuid": {
                                 "transformerType": "getFromParameters",
-                                "interpolation": "build",
                                 "referenceName": "createEntity_newEntityListReportUuid"
                               },
                               "label": {
                                 "transformerType": "mustacheStringTemplate",
-                                "interpolation": "build",
                                 "definition": "List of {{newEntityName}}s"
                               },
                               "section": "data",
                               "selfApplication": {
                                 "transformerType": "getFromParameters",
-                                "interpolation": "build",
                                 "referencePath": ["adminConfigurationDeploymentParis", "uuid"]
                               },
                               "icon": "local_drink"

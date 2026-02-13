@@ -11,10 +11,7 @@
       "endpoints": {
         "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "Endpoint",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
-        }
+        "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
       }
     },
     "section": {

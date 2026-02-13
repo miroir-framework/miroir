@@ -96,9 +96,10 @@
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                     "applicationSection": "data",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                     "objects": [
                       {
-                        "parentUuid": "Book",
+                        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                         "applicationSection": "data",
                         "instances": [
                           {

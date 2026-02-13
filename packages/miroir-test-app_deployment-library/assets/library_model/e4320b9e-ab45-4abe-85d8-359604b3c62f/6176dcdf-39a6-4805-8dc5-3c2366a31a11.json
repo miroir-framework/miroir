@@ -11,10 +11,7 @@
         "extractorOrCombinerType": "extractorForObjectListByEntity",
         "applicationSection": "data",
         "parentName": "Publisher",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
-        }
+        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
       }
     },
     "combinerTemplates": {
@@ -23,10 +20,7 @@
         "label": "BookCountByPublisher_BookWithPublisher",
         "applicationSection": "data",
         "parentName": "Book",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-        },
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
         "objectListReference": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",

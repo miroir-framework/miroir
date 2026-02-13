@@ -11,10 +11,7 @@
       "menu": {
         "extractorOrCombinerType": "extractorForObjectByDirectReference",
         "parentName": "Menu",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"
-        },
+        "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "referenceName": "instanceUuid"

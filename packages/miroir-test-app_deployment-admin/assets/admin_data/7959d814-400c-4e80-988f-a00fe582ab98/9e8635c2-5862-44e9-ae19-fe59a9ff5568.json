@@ -1,0 +1,26 @@
+{
+  "uuid": "9e8635c2-5862-44e9-ae19-fe59a9ff5568",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "Deployment of application Library",
+  "defaultLabel": "The deployment of application Library",
+  "description": "The description of deployment of application Library",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroirAdmin"
+    },
+    "model": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "Library"
+    },
+    "data": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "Library"
+    }
+  }
+}

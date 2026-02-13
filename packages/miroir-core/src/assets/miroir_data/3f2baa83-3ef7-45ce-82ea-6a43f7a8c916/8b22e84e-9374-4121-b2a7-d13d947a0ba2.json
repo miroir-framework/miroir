@@ -11,10 +11,7 @@
       "jzodSchemas": {
         "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "MlSchema",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
-        }
+        "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
       }
     },
     "section": {

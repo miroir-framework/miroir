@@ -12,10 +12,7 @@
       "commits": {
         "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "Commit",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "73bb0c69-e636-4e3b-a230-51f25469c089"
-        }
+        "parentUuid": "73bb0c69-e636-4e3b-a230-51f25469c089"
       }
     },
     "section": {

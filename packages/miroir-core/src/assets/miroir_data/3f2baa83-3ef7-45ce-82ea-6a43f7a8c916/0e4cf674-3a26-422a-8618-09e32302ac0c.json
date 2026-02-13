@@ -10,10 +10,7 @@
     "extractorTemplates": {
       "applications": {
         "extractorOrCombinerType": "extractorForObjectListByEntity",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "a659d350-dd97-4da9-91de-524fa01745dc"
-        }
+        "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc"
       }
     },
     "section": {

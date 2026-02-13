@@ -108,6 +108,7 @@
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                     "applicationSection": "data",
+                    "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
                     "objects": [
                       {
                         "parentName": "LendingHistoryItem",
