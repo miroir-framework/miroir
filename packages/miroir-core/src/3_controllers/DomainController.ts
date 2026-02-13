@@ -3566,17 +3566,13 @@ export class DomainController implements DomainControllerInterface {
         "handleCompositeActionTemplate",
         actionLabel,
         "currentAction",
-        // JSON.stringify(currentAction, null, 2),
         currentAction.actionLabel,
         currentAction,
-        // "actionParamsAndTemplates",
-        // resolved.actionParamsAndTemplates,
         "localContext keys",
         Object.keys(localContext),
         "localContext",
         localContext,
       );
-      // const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
       const resolvedActionTemplate: any = transformer_extended_apply(
         "runtime",
         [],
@@ -3590,15 +3586,11 @@ export class DomainController implements DomainControllerInterface {
       log.info(
         "handleCompositeActionTemplate compositeInstanceAction",
         currentAction.actionLabel ?? "without step name",
-        // "resolvedActionTemplate instanceof Domain2ElementFailed",
-        // resolvedActionTemplate instanceof Domain2ElementFailed,
         "resolvedActionTemplate instanceof TransformerFailure",
         resolvedActionTemplate instanceof TransformerFailure,
         "resolved action Template",
         JSON.stringify(resolvedActionTemplate, null, 2),
       );
-      // log.info("handleCompositeActionTemplate compositeInstanceAction current model", currentModel);
-      // if (resolvedActionTemplate instanceof Domain2ElementFailed) {
       if (resolvedActionTemplate instanceof TransformerFailure) {
         return new Action2Error(
           "FailedToResolveTemplate",
@@ -3712,7 +3704,6 @@ export class DomainController implements DomainControllerInterface {
         //
         case "undo":
         case "redo":
-        // case "modelAction":
         case "initModel":
         case "commit":
         case "rollback":
@@ -3726,7 +3717,6 @@ export class DomainController implements DomainControllerInterface {
         //
         case "transactionalInstanceAction":
         case "compositeActionSequence":
-        // case "storeManagementAction":
         case "storeManagementAction_createStore":
         case "storeManagementAction_deleteStore":
         case "storeManagementAction_resetAndInitApplicationDeployment":

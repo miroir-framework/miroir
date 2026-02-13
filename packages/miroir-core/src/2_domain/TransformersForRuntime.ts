@@ -3470,7 +3470,6 @@ export function transformer_extended_apply(
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   const transformerLabel = label ?? (transformer as any)?.label ?? (transformer as any)?.transformerType ?? "unnamed_transformer";
-  // if (transformerLabel == "initParametersForTest") {
   if ((transformer as any)?.transformerType == "returnValue") {
     log.info(
       "transformer_extended_apply called for label",
@@ -3653,7 +3652,6 @@ export function transformer_extended_apply(
               break;
             }
             case "transformer": {
-              // if (foundApplicationTransformer.transformerImplementation.transformerImplementationType == "transformer") {
               // TODO: clean up environment, only parameters to transformer should be passed
               // evaluate transformer parameters
               if (!foundApplicationTransformer.transformerInterface) {
@@ -3780,16 +3778,6 @@ export function transformer_extended_apply(
                   " not found",
                 queryParameters: transformer as any,
               });
-              // throw new Error(
-              //   "transformer_extended_apply failed for " +
-              //     label +
-              //     " using to resolve build transformers for step: " +
-              //     step +
-              //     " transformer " +
-              //     JSON.stringify(transformer, null, 2) +
-              //     " transformerImplementation " +
-              //     JSON.stringify(foundApplicationTransformer.transformerImplementation, null, 2)
-              // );
               break;
             }
           }
@@ -3827,7 +3815,6 @@ export function transformer_extended_apply(
               ((transformer as any)["interpolation"] ?? "build" == "build") &&
               resolveBuildTransformersTo == "constantTransformer"
             ) {
-              const value = preResult;
               result = {
                 transformerType: "returnValue",
                 value: preResult,

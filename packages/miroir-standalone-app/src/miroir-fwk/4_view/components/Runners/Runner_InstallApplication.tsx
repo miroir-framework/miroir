@@ -723,65 +723,13 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
               application: testSelfApplicationUuid,
               model: {
                 transformerType: "returnValue",
-                interpolation: "runtime",
+                interpolation: "build",
                 value: {
-                  transformerType: "returnValue",
+                  transformerType: "getFromContext",
                   interpolation: "runtime",
-                  value: {
-                    transformerType: "getFromContext",
-                    interpolation: "runtime",
-                    referencePath: ["deployApplication", "applicationBundle"],
-                  },
+                  referencePath: ["deployApplication", "applicationBundle"],
                 },
               } as any,
-              // params: {
-              //   dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-              //   metaModel: defaultMiroirMetaModel,
-              //   selfApplication: {
-              //     ...selfApplicationLibrary,
-              //     uuid: testSelfApplicationUuid,
-              //     name: {
-              //       transformerType: "getFromParameters",
-              //       referencePath: ["deployApplication", "applicationBundle", "applicationName"],
-              //     } as any,
-              //     defaultLabel: {
-              //       transformerType: "mustacheStringTemplate",
-              //       interpolation: "build",
-              //       definition:
-              //         "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
-              //     } as any,
-              //     description: {
-              //       transformerType: "mustacheStringTemplate",
-              //       interpolation: "build",
-              //       definition:
-              //         "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
-              //     } as any,
-              //   },
-              //   applicationModelBranch: {
-              //     ...selfApplicationModelBranchLibraryMasterBranch,
-              //     uuid: testApplicationModelBranchUuid,
-              //     selfApplication: testSelfApplicationUuid,
-              //     headVersion: testApplicationVersionUuid,
-              //     description: {
-              //       transformerType: "mustacheStringTemplate",
-              //       interpolation: "build",
-              //       definition:
-              //         "The master branch of the {{deployApplication.applicationBundle.applicationName}} SelfApplication",
-              //     },
-              //   } as any,
-              //   applicationVersion: {
-              //     ...selfApplicationVersionLibraryInitialVersion,
-              //     uuid: testApplicationVersionUuid,
-              //     selfApplication: testSelfApplicationUuid,
-              //     branch: testApplicationModelBranchUuid,
-              //     description: {
-              //       transformerType: "mustacheStringTemplate",
-              //       interpolation: "build",
-              //       definition:
-              //         "Initial {{deployApplication.applicationBundle.applicationName}} selfApplication version",
-              //     },
-              //   } as any,
-              // } as any, // TODO: fix type
               params: {
                 transformerType: "returnValue",
                 label: "initParametersForTest",
@@ -852,7 +800,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
     };
 
     // Combine all three composite actions into one
-    const combinedCompositeActionTemplate: CompositeActionTemplate = {
+    const createApplicationActionTemplate: CompositeActionTemplate = {
       actionType: "compositeActionSequence",
       actionLabel: "deployApplication",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -867,7 +815,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
       },
     };
 
-    return combinedCompositeActionTemplate;
+    return createApplicationActionTemplate;
   }, [
     applicationDeploymentMap,
     testApplicationModelBranchUuid,

@@ -12,10 +12,7 @@
       "countries": {
         "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "Country",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
-        }
+        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
       }
     },
     "runStoredQueries": [

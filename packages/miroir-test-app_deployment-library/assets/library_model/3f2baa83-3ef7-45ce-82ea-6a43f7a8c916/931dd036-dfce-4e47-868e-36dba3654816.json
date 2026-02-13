@@ -13,10 +13,7 @@
       "tests": {
         "extractorOrCombinerType": "extractorForObjectListByEntity",
         "parentName": "Test",
-        "parentUuid": {
-          "transformerType": "returnValue",
-          "value": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
-        }
+        "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
       }
     },
     "section": {

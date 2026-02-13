@@ -30,7 +30,6 @@ export function resolveCompositeActionTemplate(
     throw new Error("resolveCompositeActionTemplate compositeActionTemplate is undefined");
   }
   const localActionParams = { ...actionParamValues };
-  // let localContext: Record<string, any> = { ...actionParamValues }; 
   const compositeActionLabel = (compositeActionTemplate as any).actionLabel??"NO_ACTION_LABEL";
 
   log.info(
@@ -146,12 +145,10 @@ export function resolveCompositeActionTemplate(
   const resolvedCompositeAction: CompositeActionSequence = {
     actionType: "compositeActionSequence",
     actionLabel: compositeActionLabel,
-    // templates: resolvedCompositeActionTemplates, // TODO: TEMPLATES IN COMPOSITE ACTION?
     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
     payload: {
       application: (compositeActionTemplate as CompositeActionSequence).payload.application,
-      // deploymentUuid: (compositeActionTemplate as CompositeActionSequence).deploymentUuid,
       definition: resolvedCompositeActionDefinition as any,
     }
   }
