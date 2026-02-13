@@ -175,7 +175,7 @@ export async function handleInstanceAction(
     const result: Action2VoidReturnType = await domainController.handleAction(
       action,
       applicationDeploymentMap,
-      defaultLibraryModelEnvironment as MiroirModelEnvironment, // defaultMiroirModelEnvironment,
+      defaultLibraryModelEnvironment as any as MiroirModelEnvironment, // defaultMiroirModelEnvironment,
     );
 
     log.info(`${toolName} - result:`, JSON.stringify(result, null, 2));

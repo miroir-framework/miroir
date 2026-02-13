@@ -16,7 +16,6 @@ import {
   menuDefaultAdmin
 } from "miroir-test-app_deployment-admin";
 
-// import { deployment_Library_DO_NO_USE, menuDefaultLibrary, selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
@@ -156,19 +155,6 @@ export const Sidebar: FC<{
       };
     })
     .filter((section): section is { deploymentUuid: Uuid; applicationUuid: Uuid; menuUuid: Uuid } => !!section),
-    // [
-    //   // {
-    //   //   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-    //   //   applicationUuid: selfApplicationLibrary.uuid,
-    //   //   menuUuid: menuDefaultLibrary.uuid
-    //   // }
-    // ],
-    // Object.entries(currentApplicationDeploymentMap??{}).map(entry => ({
-    //   applicationUuid: entry[0],
-    //   deploymentUuid: entry[1],
-    //   menuUuid: menuDefaultLibrary.uuid, // TODO: correct!
-    // }))
-    // .filter(section => section.applicationUuid === currentApplication)
     [applicationMenus, currentApplicationDeploymentMap, currentApplication],
   );
   log.info("Sidebar: filteredAppSidebarSections", filteredAppSidebarSections);

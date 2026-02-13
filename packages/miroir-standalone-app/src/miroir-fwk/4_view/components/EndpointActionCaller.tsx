@@ -5,14 +5,10 @@ import {
 
 import { Formik, type FormikProps } from 'formik';
 import {
-  // deployment_Admin,
-  // deployment_Library_DO_NO_USE,
-  // deployment_Miroir,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  // entityApplicationForAdmin,
   entityEndpointVersion,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodObject,

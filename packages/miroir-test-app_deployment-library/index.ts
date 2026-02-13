@@ -5,6 +5,9 @@ export {
 } from "./src/Library";
 export { libraryApplicationInstances } from "./src/uploadBooksAndReports";
 
+export { default as adminApplication_Library_DO_NOT_USE } from "./assets/deployment/5af03c98-fe5e-490b-b08f-e1230971c57f.json" assert { type: "json" };
+export { default as deployment_Library_DO_NO_USE } from "./assets/deployment/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" assert { type: "json" };
+
 // Library Model - Entities
 export { default as entityPublisher } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" assert { type: "json" };
 export { default as entityAuthor } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json" assert { type: "json" };
@@ -50,7 +53,7 @@ export { default as selfApplicationStoreBasedConfigurationLibrary } from "./asse
 export { default as selfApplicationVersionLibraryInitialVersion } from "./assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json" assert { type: "json" };
 export { default as selfApplicationModelBranchLibraryMasterBranch } from "./assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json" assert { type: "json" };
 export { default as selfApplicationDeploymentLibrary } from "./assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" assert { type: "json" };
-export { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-admin";
+// export { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-admin";
 
 // Library Model - Documents
 export { default as endpointDocument } from "./assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/212f2784-5b68-43b2-8ee0-89b1c6fdd0de.json" assert { type: "json" };

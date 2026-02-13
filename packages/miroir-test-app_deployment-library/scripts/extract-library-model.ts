@@ -47,8 +47,10 @@ import {
 
 import {
   deployment_Admin,
-  deployment_Library_DO_NO_USE
 } from "miroir-test-app_deployment-admin";
+import {
+  deployment_Library_DO_NO_USE
+} from "miroir-test-app_deployment-library";
 
 import { entityAuthor, entityBook, entityCountry, entityLendingHistoryItem, entityPublisher, entityUser, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 

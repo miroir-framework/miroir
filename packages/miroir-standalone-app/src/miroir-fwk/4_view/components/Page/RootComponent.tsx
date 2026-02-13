@@ -63,7 +63,6 @@ import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeC
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-// import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import { packageName } from '../../../../constants.js';
 import {
   useApplicationDeploymentMapFromLocalCache,
@@ -311,7 +310,7 @@ export const RootComponent = (props: RootComponentProps) => {
           miroirMetaModel, 
         ),
         [currentDeployment]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
-          currentApplication,// deployment_Library_DO_NO_USE.uuid,
+          currentApplication,
           miroirMetaModel, 
           currentModel,
         ),
