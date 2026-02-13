@@ -14,7 +14,15 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<TableComponentRow>) => {
   // const context = useMiroirContextService();
-  
+  // log.info(
+  //   "EntityInstanceCellRenderer rendering for field",
+  //   props.colDef?.field,
+  //   "with deploymentUuid",
+  //   props.data?.deploymentUuid,
+  //   "props.data?.rawValue",
+  //   props.data?.rawValue,
+  //   props,
+  // );
   const entityUuid = props.colDef?.cellRendererParams.entityUuid;
   const isFK = props.colDef?.cellRendererParams.isFK
   
@@ -66,7 +74,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   //   "EntityInstanceCellRenderer called for field",
   //   props.colDef?.field,
   //   "with deploymentUuid",
-  //   context.deploymentUuid,
+  //   props.data?.deploymentUuid,
   //   "entityUuid",
   //   entityUuid,
   //   "attributeName",

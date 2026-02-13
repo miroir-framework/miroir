@@ -64,6 +64,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const outlineContext = useDocumentOutlineContext();
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   
+  const currentDeploymentUuid = (props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap)[props.application]; 
   const currentModel: MetaModel = useCurrentModel(
     props.application,
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
@@ -201,7 +202,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     const r = reportSectionsFormSchema(
       props.reportDefinition?.definition.section,
       props.application,
-      props.pageParams.deploymentUuid,
+      currentDeploymentUuid,
       currentDeploymentReportsEntitiesDefinitionsMapping,
       currentModel,
       reportData,

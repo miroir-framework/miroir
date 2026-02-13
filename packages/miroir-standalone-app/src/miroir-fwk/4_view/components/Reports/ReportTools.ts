@@ -78,7 +78,7 @@ export const reportSectionsFormSchema = (
       if (!targetEntityDefinition) {
         throw new Error(
           "ReportViewWithEditor reportSectionsFormSchema: cannot find target entity definition for " +
-          " deploymentUuid " + deploymentUuid +
+          " deploymentUuid " + JSON.stringify(deploymentUuid) +
            " entityUuid " +
             entityUuid +
             " in applicationSection " +

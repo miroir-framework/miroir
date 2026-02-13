@@ -251,6 +251,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   defaultFormValuesObject,
   // setformHelperState,
   // dialog: open and close dialog, collect result
+  currentApplication,
   currentDeploymentUuid,
   currentApplicationSection,
   entityDefinition,
@@ -306,8 +307,9 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
 
   // ##############################################################################################
   const formValueMLSchema: JzodObject = useMemo(() => {
-    const r = currentDeploymentUuid?reportSectionsFormSchema(
+    const r = currentDeploymentUuid && currentApplication ? reportSectionsFormSchema(
       (defaultDetailsReport as any)?.definition?.section?.definition[0],
+      currentApplication,
       currentDeploymentUuid,
       currentDeploymentReportsEntitiesDefinitionsMapping,
       currentModel,
@@ -377,7 +379,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
             <ReportSectionViewWithEditor
               valueObjectEditMode={props.valueObjectEditMode}
               applicationSection={currentApplicationSection}
-              application={props.currentApplication}
+              application={currentApplication}
               applicationDeploymentMap={props.applicationDeploymentMap}
               deploymentUuid={currentDeploymentUuid}
               generalEditMode={true}

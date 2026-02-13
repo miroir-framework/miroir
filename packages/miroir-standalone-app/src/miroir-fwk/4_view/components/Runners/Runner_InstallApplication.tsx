@@ -523,11 +523,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
         } as any,
       },
-      // deployment: {
-      //   ...selfApplicationDeploymentLibrary,
-      //   selfApplication: selfApplicationUuid,
-      //   uuid: adminConfigurationDeploymentUuid,
-      // },
       applicationModelBranch: {
         ...selfApplicationModelBranchLibraryMasterBranch,
         uuid: testApplicationModelBranchUuid,
@@ -540,10 +535,6 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             "The master branch of the {{deployApplication.applicationBundle.applicationName}} SelfApplication",
         },
       } as any,
-      // applicationStoreBasedConfiguration: {
-      //   ...selfApplicationStoreBasedConfigurationLibrary,
-      //   defaultLabel: `The reference configuration for the ${applicationName} selfApplication storage`,
-      // } as any,
       applicationVersion: {
         ...selfApplicationVersionLibraryInitialVersion,
         uuid: testApplicationVersionUuid,
@@ -707,6 +698,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             payload: {
+              // TODO: remove!!
               transformerType: "mergeIntoObject",
               interpolation: "runtime",
               applyTo: {
@@ -730,20 +722,66 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             payload: {
               application: testSelfApplicationUuid,
               model: {
-                transformerType: "mergeIntoObject",
+                transformerType: "returnValue",
                 interpolation: "runtime",
-                applyTo: {
-                  transformerType: "getFromContext",
+                value: {
+                  transformerType: "returnValue",
                   interpolation: "runtime",
-                  referencePath: ["deployApplication", "applicationBundle"],
-                },
-                definition: {
-                  transformerType: "createObject",
-                  definition: {
-                    application: testSelfApplicationUuid,
+                  value: {
+                    transformerType: "getFromContext",
+                    interpolation: "runtime",
+                    referencePath: ["deployApplication", "applicationBundle"],
                   },
                 },
               } as any,
+              // params: {
+              //   dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
+              //   metaModel: defaultMiroirMetaModel,
+              //   selfApplication: {
+              //     ...selfApplicationLibrary,
+              //     uuid: testSelfApplicationUuid,
+              //     name: {
+              //       transformerType: "getFromParameters",
+              //       referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+              //     } as any,
+              //     defaultLabel: {
+              //       transformerType: "mustacheStringTemplate",
+              //       interpolation: "build",
+              //       definition:
+              //         "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
+              //     } as any,
+              //     description: {
+              //       transformerType: "mustacheStringTemplate",
+              //       interpolation: "build",
+              //       definition:
+              //         "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
+              //     } as any,
+              //   },
+              //   applicationModelBranch: {
+              //     ...selfApplicationModelBranchLibraryMasterBranch,
+              //     uuid: testApplicationModelBranchUuid,
+              //     selfApplication: testSelfApplicationUuid,
+              //     headVersion: testApplicationVersionUuid,
+              //     description: {
+              //       transformerType: "mustacheStringTemplate",
+              //       interpolation: "build",
+              //       definition:
+              //         "The master branch of the {{deployApplication.applicationBundle.applicationName}} SelfApplication",
+              //     },
+              //   } as any,
+              //   applicationVersion: {
+              //     ...selfApplicationVersionLibraryInitialVersion,
+              //     uuid: testApplicationVersionUuid,
+              //     selfApplication: testSelfApplicationUuid,
+              //     branch: testApplicationModelBranchUuid,
+              //     description: {
+              //       transformerType: "mustacheStringTemplate",
+              //       interpolation: "build",
+              //       definition:
+              //         "Initial {{deployApplication.applicationBundle.applicationName}} selfApplication version",
+              //     },
+              //   } as any,
+              // } as any, // TODO: fix type
               params: {
                 transformerType: "returnValue",
                 label: "initParametersForTest",
@@ -797,8 +835,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
             payload: {
               application: testSelfApplicationUuid,
               applicationSection: "data",
-              parentUuid:
-              {
+              parentUuid: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
                 referencePath: ["deployApplication", "deploymentData", "instances", "parentUuid"],
@@ -809,7 +846,7 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                 referencePath: ["deployApplication", "deploymentData", "instances"],
               } as any, // TODO: fix type
             },
-          }
+          },
         ],
       },
     };
