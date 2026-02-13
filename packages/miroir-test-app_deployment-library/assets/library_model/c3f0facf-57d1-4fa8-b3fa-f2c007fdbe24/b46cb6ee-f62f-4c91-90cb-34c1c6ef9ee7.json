@@ -1,0 +1,10 @@
+{
+  "uuid": "b46cb6ee-f62f-4c91-90cb-34c1c6ef9ee7",
+  "parentName": "SelfApplicationVersion",
+  "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+  "description": "TODO: no description yet",
+  "name": "TODO: No label was given to this version.",
+  "previousVersion": "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa",
+  "branch": "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa",
+  "selfApplication": "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa"
+}
