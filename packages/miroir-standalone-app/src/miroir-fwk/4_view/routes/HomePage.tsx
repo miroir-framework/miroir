@@ -74,9 +74,6 @@ const metaModelReports = [
 export const HomePage = (props: RootComponentProps) => {
   const context = useMiroirContextService();
 
-  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  // const errorLog = useErrorLogService();
-  // const domainController: DomainControllerInterface = useDomainControllerService();
   const currentApplication = context.toolsPageState?.applicationSelector ?? context.application;
   // Auto-fetch configurations when the page loads
   const { fetchConfigurations } = usePageConfiguration({
@@ -162,20 +159,6 @@ export const HomePage = (props: RootComponentProps) => {
       : currentStoredQueryResults?.reportData?.selfApplication;
   // log.info("HomePage currentStoredQueryResults",currentStoredQueryResults);
 
-  // const currentMiroirReport: Report | undefined = availableReports?.find((r: Report)=>r.uuid === displayedReportUuid);
-
-  // const pageParams:Params<ReportUrlParamKeys> = useMemo(
-  //   () => (
-  //     {
-  //       application: displayedApplication,
-  //       deploymentUuid:displayedDeploymentUuid,
-  //       applicationSection:displayedApplicationSection,
-  //       reportUuid:currentMiroirReport?.uuid,
-  //       instanceUuid: "undefined"
-  //     } as Params<ReportUrlParamKeys>
-  //   ),
-  //   [currentMiroirReport, displayedApplication, displayedApplicationSection, displayedDeploymentUuid]
-  // )
   const navigate = useNavigate();
 
 
@@ -206,13 +189,12 @@ export const HomePage = (props: RootComponentProps) => {
       <ThemedOnScreenDebug
         label={`HomePage application: ${currentApplication} section: ${displayedApplicationSection}`}
         data={{
+          currentAppModel,
           currentStoredQuery,
           currentStoredQueryResults,
-          // application: context.application,
           toolsPageState: context.toolsPageState,
           currentApplicationDeploymentMap,
           applicationDefinition,
-          // miroirContext: context.miroirContext,
         }}
         // initiallyUnfolded={false}
         copyButton={true}

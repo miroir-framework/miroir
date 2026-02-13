@@ -204,7 +204,7 @@ export function EntityInstanceSelectorPanel(props:{
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
     inputSelector_applicationUuid,
-    defaultSelfApplicationDeploymentMap
+    props.applicationDeploymentMap
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
@@ -236,7 +236,7 @@ export function EntityInstanceSelectorPanel(props:{
         deploymentEntityState,
         currentMiroirModelEnvironment,
         inputSelector_applicationUuid,
-        defaultSelfApplicationDeploymentMap,
+        props.applicationDeploymentMap,
         inputSelector_deploymentUuidFromApplicationUuid,
         selectedEntityUuid,
         "name" // Order by name if available
@@ -459,7 +459,7 @@ export function EntityInstanceSelectorPanel(props:{
                 formValueMLSchema={entityInstanceSelectorPanelSchema}
                 formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
                 application={inputSelector_applicationUuid}
-                applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+                applicationDeploymentMap={props.applicationDeploymentMap}
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}
                 formLabel={"Application Selector jzod"}
@@ -603,7 +603,7 @@ export function EntityInstanceSelectorPanel(props:{
                   } // TODO: ILL-TYPED!!
                   formikValuePathAsString="entityInstances"
                   application={inputSelector_applicationUuid}
-                  applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+                  applicationDeploymentMap={props.applicationDeploymentMap}
                   deploymentUuid={deploymentUuid}
                   applicationSection={"data"}
                   formLabel={"All Entity Instances Viewer"}
@@ -641,7 +641,7 @@ export function EntityInstanceSelectorPanel(props:{
               formikValuePathAsString="selectedEntityInstance"
               deploymentUuid={deploymentUuid}
               application={inputSelector_applicationUuid}
-              applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+              applicationDeploymentMap={props.applicationDeploymentMap}
               applicationSection={"data"}
               formLabel={"Entity Instance Viewer"}
               onSubmit={async () => {}} // No-op for readonly

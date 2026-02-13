@@ -787,17 +787,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 >
                   {/* input selector */}
                   <ThemedFoldableContainer style={{ flex: 1 }} title="Transformer Input">
-                    {/* <ThemedHeaderSection>
-                        <ThemedTitle>
-                          Transformer Input
-                        </ThemedTitle>
-                      </ThemedHeaderSection> */}
                     <TypedValueObjectEditor
                       valueObjectEditMode="create"
                       labelElement={<>Input Definition</>}
                       formValueMLSchema={formMLSchema}
                       formikValuePathAsString={formikPath_TransformerEditorInputModeSelector}
-                      // zoomInPath="selector"
                       application={(formikContext.values.transformerEditor_transformer_selector as any).application}
                       applicationDeploymentMap={applicationDeploymentMap}
                       deploymentUuid={deploymentUuid}

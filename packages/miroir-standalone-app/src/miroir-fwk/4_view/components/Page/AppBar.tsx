@@ -29,33 +29,33 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
+const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
   {
-    "label": "Search",
+    label: "Search",
     targetRoot: "search",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-    "icon": {
+    section: "model",
+    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
+    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
+    icon: {
       iconType: "mui",
       name: "search",
-    }
+    },
   },
-  // {
-  //   "label": "Transformer Builder",
-  //   targetRoot: "transformerBuilder",
-  //   "section": "model",
-  //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-  //   "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-  //   "icon": {
-  //     iconType: "mui",
-  //     name: "build",
-  //     superImpose: {
-  //       letter: "T",
-  //       color: "#FF0000",
-  //     }
-  //   }
-  // },
+  {
+    label: "Transformer Builder",
+    targetRoot: "transformerBuilder",
+    section: "model",
+    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
+    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
+    icon: {
+      iconType: "mui",
+      name: "build",
+      superImpose: {
+        letter: "T",
+        color: "#FF0000",
+      },
+    },
+  },
   // {
   //   "label": "runners",
   //   "section": "model",
@@ -64,17 +64,17 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
   //   "icon": "directions_run"
   // },
   {
-    "label": "events",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    label: "events",
+    section: "model",
+    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
     // "icon": "event_note"
   },
   {
-    "label": "error-logs",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    label: "error-logs",
+    section: "model",
+    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
     // "icon": "error"
   },
   // {
@@ -85,12 +85,12 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string})[] = [
   //   "icon": "engineering"
   // },
   {
-    "label": "settings",
-    "section": "model",
-    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
-    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    label: "settings",
+    section: "model",
+    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
     // "icon": "manufacturing"
-    "icon": "settings"
+    icon: "settings",
     // "icon": {
     //   iconType: "mui",
     //   name: "settings",

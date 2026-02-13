@@ -501,9 +501,36 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
         },
       },
     };
+
+    const effectiveSelfApplication = {
+        ...selfApplicationLibrary,
+        uuid: testSelfApplicationUuid,
+        name: {
+          transformerType: "getFromParameters",
+          referencePath: ["deployApplication", "applicationBundle", "applicationName"],
+        } as any,
+        defaultLabel: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition: "The {{deployApplication.applicationBundle.applicationName}} selfApplication",
+        } as any,
+        description: {
+          transformerType: "mustacheStringTemplate",
+          interpolation: "build",
+          definition:
+            "The model and data of the {{deployApplication.applicationBundle.applicationName}} selfApplication",
+        } as any,
+      }
     const initParametersForTest: InitApplicationParameters = {
       dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-      metaModel: defaultMiroirMetaModel,
+      // metaModel: defaultMiroirMetaModel,
+      metaModel: {
+        transformerType: "returnValue",
+        label: "initParametersForTest",
+        interpolation: "runtime",
+        value: defaultMiroirMetaModel,
+      } as any,
+      // selfApplication: effectiveSelfApplication,
       selfApplication: {
         ...selfApplicationLibrary,
         uuid: testSelfApplicationUuid,
@@ -730,12 +757,13 @@ export const Runner_InstallApplication: React.FC<DeployApplicationRunnerProps> =
                   referencePath: ["deployApplication", "applicationBundle"],
                 },
               } as any,
-              params: {
-                transformerType: "returnValue",
-                label: "initParametersForTest",
-                interpolation: "runtime",
-                value: initParametersForTest,
-              } as any, // TODO: fix type
+              params: initParametersForTest
+              // params: {
+              //   transformerType: "returnValue",
+              //   label: "initParametersForTest",
+              //   interpolation: "runtime",
+              //   value: initParametersForTest,
+              // } as any, // TODO: fix type
             },
           },
           {

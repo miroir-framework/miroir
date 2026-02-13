@@ -104,12 +104,6 @@ export const TransformerBuilderPage: React.FC<any> = (
   const domainController: DomainControllerInterface = useDomainControllerService();
   
   const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
-  // const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
-  // const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
-  //   undefined
-  // );
-  // // const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
-  // const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
 
 
 
