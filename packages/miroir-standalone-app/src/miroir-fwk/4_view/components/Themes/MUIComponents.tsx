@@ -2,6 +2,14 @@
 import { css } from '@emotion/react';
 import React from 'react';
 import {
+  Dialog,
+  DialogProps,
+  DialogTitle,
+  DialogTitleProps,
+  DialogContent,
+  DialogContentProps,
+  DialogActions,
+  DialogActionsProps,
   FormControl,
   FormControlProps,
   InputLabel,
@@ -220,5 +228,131 @@ export const ThemedPaper: React.FC<PaperProps & ThemedComponentProps> = ({
     >
       {children}
     </Paper>
+  );
+};
+
+// ################################################################################################
+// Dialog Components
+// ################################################################################################
+
+export const ThemedDialog: React.FC<DialogProps & ThemedComponentProps> = ({
+  children,
+  className,
+  style,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+
+  const dialogStyles = css({
+    '& .MuiDialog-paper': {
+      backgroundColor: currentTheme.colors.surface,
+      color: currentTheme.colors.text,
+      fontFamily: currentTheme.typography.fontFamily,
+      borderRadius: currentTheme.borderRadius.lg,
+      border: `1px solid ${currentTheme.colors.border}`,
+      boxShadow: currentTheme.elevation.high,
+    },
+    '& .MuiBackdrop-root': {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+  });
+
+  return (
+    <Dialog
+      css={dialogStyles}
+      className={className}
+      style={style}
+      {...props}
+    >
+      {children}
+    </Dialog>
+  );
+};
+
+export const ThemedDialogTitle: React.FC<DialogTitleProps & ThemedComponentProps> = ({
+  children,
+  className,
+  style,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+
+  const dialogTitleStyles = css({
+    backgroundColor: currentTheme.colors.surface,
+    color: currentTheme.colors.text,
+    fontFamily: currentTheme.typography.fontFamily,
+    fontSize: currentTheme.typography.fontSize.xl,
+    fontWeight: currentTheme.typography.fontWeight.bold,
+    padding: currentTheme.spacing.lg,
+    borderBottom: `1px solid ${currentTheme.colors.border}`,
+  });
+
+  return (
+    <DialogTitle
+      css={dialogTitleStyles}
+      className={className}
+      style={style}
+      {...props}
+    >
+      {children}
+    </DialogTitle>
+  );
+};
+
+export const ThemedDialogContent: React.FC<DialogContentProps & ThemedComponentProps> = ({
+  children,
+  className,
+  style,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+
+  const dialogContentStyles = css({
+    backgroundColor: currentTheme.colors.surface,
+    color: currentTheme.colors.text,
+    fontFamily: currentTheme.typography.fontFamily,
+    padding: currentTheme.spacing.lg,
+    fontSize: currentTheme.typography.fontSize.md,
+  });
+
+  return (
+    <DialogContent
+      css={dialogContentStyles}
+      className={className}
+      style={style}
+      {...props}
+    >
+      {children}
+    </DialogContent>
+  );
+};
+
+export const ThemedDialogActions: React.FC<DialogActionsProps & ThemedComponentProps> = ({
+  children,
+  className,
+  style,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+
+  const dialogActionsStyles = css({
+    backgroundColor: currentTheme.colors.surface,
+    padding: currentTheme.spacing.md,
+    borderTop: `1px solid ${currentTheme.colors.border}`,
+    gap: currentTheme.spacing.sm,
+    '& > *': {
+      marginLeft: '0 !important', // Override MUI default margin
+    },
+  });
+
+  return (
+    <DialogActions
+      css={dialogActionsStyles}
+      className={className}
+      style={style}
+      {...props}
+    >
+      {children}
+    </DialogActions>
   );
 };

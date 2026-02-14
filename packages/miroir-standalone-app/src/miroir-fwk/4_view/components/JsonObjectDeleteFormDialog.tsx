@@ -1,5 +1,4 @@
 
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useCallback, useMemo } from "react";
 
 
@@ -25,6 +24,16 @@ import {
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
+import {
+  ThemedDialog,
+  ThemedDialogTitle,
+  ThemedDialogContent,
+  ThemedDialogActions,
+  ThemedStyledButton,
+  ThemedLabel,
+  ThemedSpan,
+  ThemedBox,
+} from "./Themes/index.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -178,7 +187,6 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
 
   return (
     <div className="JsonObjectDeleteFormDialog">
-      {/* <span> */}
       {props.showButton && (
         <h3>
           Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)
@@ -189,34 +197,44 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
         !props.showButton &&
         props?.isOpen &&
         dialogOuterFormObject && (
-          <Dialog onClose={handleDeleteObjectDialogFormClose} open={formIsOpen}>
-            <DialogTitle>Delete Element: {props.label}</DialogTitle>
-            <DialogContent>
-              <div style={{ marginBottom: 12 }}>
-                <strong>UUID:</strong> <span style={{ wordBreak: 'break-all' }}>{dialogOuterFormObject?.uuid}</span>
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <strong>Name:</strong> <span>{dialogOuterFormObject?.name}</span>
-              </div>
-              <div style={{ marginTop: 16, marginBottom: 8 }}>
-                <span style={{ fontWeight: 500, color: '#b71c1c' }}>Are you sure you want to delete this object?</span>
-              </div>
-            </DialogContent>
-            <button
-              type="button"
-              name={props.label + ".OK"}
-              onClick={handleDeleteObjectDialogFormSubmit}
-            >
-              OK
-            </button>
-            <button
-              type="button"
-              name={props.label + ".CANCEL"}
-              onClick={handleDeleteObjectDialogFormClose}
-            >
-              CANCEL
-            </button>
-          </Dialog>
+          <ThemedDialog onClose={handleDeleteObjectDialogFormClose} open={formIsOpen}>
+            <ThemedDialogTitle>Delete Element: {props.label}</ThemedDialogTitle>
+            <ThemedDialogContent>
+              <ThemedBox style={{ marginBottom: 12 }}>
+                <ThemedLabel style={{ fontWeight: 500 }}>UUID:</ThemedLabel>{' '}
+                <ThemedSpan style={{ wordBreak: 'break-all', marginLeft: 8 }}>
+                  {dialogOuterFormObject?.uuid}
+                </ThemedSpan>
+              </ThemedBox>
+              <ThemedBox style={{ marginBottom: 12 }}>
+                <ThemedLabel style={{ fontWeight: 500 }}>Name:</ThemedLabel>{' '}
+                <ThemedSpan style={{ marginLeft: 8 }}>
+                  {dialogOuterFormObject?.name}
+                </ThemedSpan>
+              </ThemedBox>
+              <ThemedBox style={{ marginTop: 16, marginBottom: 8 }}>
+                <ThemedSpan style={{ fontWeight: 500, color: '#b71c1c' }}>
+                  Are you sure you want to delete this object?
+                </ThemedSpan>
+              </ThemedBox>
+            </ThemedDialogContent>
+            <ThemedDialogActions>
+              <ThemedStyledButton
+                variant="contained"
+                color="error"
+                onClick={handleDeleteObjectDialogFormSubmit}
+              >
+                OK
+              </ThemedStyledButton>
+              <ThemedStyledButton
+                variant="outlined"
+                color="secondary"
+                onClick={handleDeleteObjectDialogFormClose}
+              >
+                CANCEL
+              </ThemedStyledButton>
+            </ThemedDialogActions>
+          </ThemedDialog>
         )}
     </div>
   );

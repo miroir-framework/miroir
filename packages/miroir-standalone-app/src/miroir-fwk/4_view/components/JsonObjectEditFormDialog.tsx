@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { Dialog, DialogTitle, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles"; // For MUI v5
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -44,7 +44,7 @@ import {
 } from "../tools/hookPerformanceMeasure.js";
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
 import { reportSectionsFormSchema, reportSectionsFormValue } from "./Reports/ReportTools.js";
-import { ThemedOnScreenDebug } from "./Themes/BasicComponents.js";
+import { ThemedDialog, ThemedDialogTitle, ThemedOnScreenDebug } from "./Themes/index.js";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
 
 
@@ -334,8 +334,8 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   ]);
 
   return (
-    <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
-      <DialogTitle>{label} add / edit Element</DialogTitle>
+    <ThemedDialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
+      <ThemedDialogTitle>{label} add / edit Element</ThemedDialogTitle>
       <div>
         <ThemedOnScreenDebug
           label={"JsonObjectEditFormDialog formValueMLSchema"}
@@ -397,7 +397,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
           )}
         </ErrorBoundary>
       </span>
-    </Dialog>
+    </ThemedDialog>
   );
 };
 

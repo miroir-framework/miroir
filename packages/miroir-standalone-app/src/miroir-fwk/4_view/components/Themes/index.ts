@@ -15,6 +15,8 @@ export {
   ThemedText,
   ThemedSpan,
   ThemedOnScreenHelper,
+  ThemedOnScreenDebug,
+  ThemedProgressiveAccordion,
 } from './BasicComponents';
 
 // File selector component
@@ -112,4 +114,8 @@ export {
   ThemedMenuItem,
   ThemedMUISelect,
   ThemedPaper,
+  ThemedDialog,
+  ThemedDialogTitle,
+  ThemedDialogContent,
+  ThemedDialogActions,
 } from './MUIComponents';
