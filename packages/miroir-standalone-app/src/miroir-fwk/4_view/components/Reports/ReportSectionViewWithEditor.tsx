@@ -98,63 +98,23 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const formik = useFormikContext<Record<string, any>>();
   const valueObjectEditMode = props.valueObjectEditMode || "update";
 
-  // log.info(
-  //   "ReportSectionViewWithEditor: formik values =",
-  //   formik.values,
-  //   "props.formikReportDefinitionPathString =",
-  //   props.formikReportDefinitionPathString,
-  //   "props.reportSectionPath =",
-  //   props.reportSectionPath
-  // );
-  const reportDefinitionFromFormik: Report  | undefined =
-    formik.values &&
-    props.formikReportDefinitionPathString &&
-    formik.values[props.formikReportDefinitionPathString]
-      ? formik.values[props.formikReportDefinitionPathString]
-      // : props.reportDefinitionDEFUNCT;
-      : undefined;
-  ;
-
-  // const formikReportSectionDefinitionPathString = [props.formikReportDefinitionPathString, ...(props.reportSectionPath ?? [])].join(".");
-
   const reportSectionDefinitionFromFormik: ReportSection | undefined =
     formik.values &&
     props.formikReportDefinitionPathString &&
     formik.values[props.formikReportDefinitionPathString] &&
     props.reportSectionPath
       ? resolvePathOnObject(
-          // props.reportDefinitionDEFUNCT, props.reportSectionPath ?? []
           formik.values[props.formikReportDefinitionPathString],
           props.reportSectionPath ?? []
         )
       : undefined;
 
-  // const reportSectionCurrentValueFromFormik: any = formik.values && props.reportSectionPath
   const reportSectionCurrentValueFromFormik: any = formik.values && props.formikReportDefinitionPathString
     ? formik.values[props.formikReportDefinitionPathString]
     : undefined;
 
-  // const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath.join("_") ?? 'root'}`;
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
-
-  // log.info(
-  //   "ReportSectionViewWithEditor render",
-  //   reportSectionDefinitionFromFormik?.type,
-  //   currentNavigationKey,
-  //   "reportSectionDefinitionFromFormik",
-  //   reportSectionDefinitionFromFormik,
-  //   "props",
-  //   props
-  // );
-
-  // const [isEditing, setIsEditing] = useState(false);
-  // // const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(undefined);
-  // const [hasValidationErrors, setHasValidationErrors] = useState(false);
-
-  // const displayedDeploymentDefinition: Deployment | undefined = deploymentsDEFUNCT.find(
-  //   (d) => d.uuid == props.deploymentUuid
-  // );
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return props.deploymentUuid &&
@@ -165,12 +125,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         ]
       : { availableReports: [], entities: [], entityDefinitions: [] };
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping, props.deploymentUuid, props.applicationSection]);
-  // // Get Report entity definition from Miroir model (for TypedValueObjectEditor schema)
-  // const reportEntityDefinition = useMemo(() => {
-  //   const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
-  //   if (!miroirMapping) return undefined;
-  //   return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
-  // }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
   const currentListReportTargetEntity: Entity | undefined =
     props.reportSectionDEFUNCT?.type === "objectListReportSection"
@@ -207,12 +161,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       "value", // resolveBuildTransformersTo
     );
   }, [reportSectionDefinitionFromFormik]);
-
-  // // helper to get active definition (if editing locally)
-  // const activeDefinitionDEFUNCT =
-  //   isEditing && localEditedDefinition !== undefined
-  //     ? localEditedDefinition
-  //     : props.reportSectionDEFUNCT.definition;
 
   // Render icon bar (edit/save/cancel)
   // const IconBar = () => (
@@ -312,7 +260,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                   <ReportSectionViewWithEditor
                     {...props}
                     reportSectionDEFUNCT={innerReportSection}
-                    // sectionPath={(props.sectionPath ?? '') + `/definition[${rowIndex}][${colIndex}]`}
                     reportSectionPath={[
                       ...(props.reportSectionPath ?? []),
                       "definition",
@@ -361,6 +308,13 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
           </ThemedText>
         )}
+        <ThemedOnScreenDebug
+          label={"ReportSectionViewWithEditor - reportSectionDefinitionFromFormik"}
+          data={reportSectionDefinitionFromFormik}
+          initiallyUnfolded={false}
+          copyButton={true}
+          useCodeBlock={true}
+        />
         {/* {props.reportSectionDEFUNCT.type == "objectListReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "accordionReportSection" && (
           // <></>
@@ -377,20 +331,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                   />
                 }
             </ThemedProgressiveAccordion>
-            {/* <Accordion style={{ marginBottom: 12 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <div>{reportSectionDefinitionFromFormik?.label}</div>
-              </AccordionSummary>
-              <AccordionDetails>
-                {
-                  <ReportSectionViewWithEditor
-                    {...props}
-                    reportSectionDEFUNCT={reportSectionDefinitionFromFormik?.definition}
-                    reportSectionPath={[...(props.reportSectionPath ?? []), "definition"]}
-                  />
-                }
-              </AccordionDetails>
-            </Accordion> */}
           </ThemedBox>
         )}
         {reportSectionDefinitionFromFormik?.type == "objectListReportSection" && (
@@ -478,14 +418,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 }}
               />
             )}
-            {/* not implemented yet */}
-            {/* <GraphReportSectionView
-              applicationSection={props.applicationSection}
-              deploymentUuid={props.deploymentUuid}
-              queryResults={formik.values}
-              reportSection={reportSectionDefinitionFromFormik as any}
-              showPerformanceDisplay={props.showPerformanceDisplay}
-            /> */}
           </div>
         )}
         {reportSectionDefinitionFromFormik?.type == "graphReportSection" && (
@@ -518,7 +450,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             )}
           </>
         )}
-        {/* {props.reportSectionDEFUNCT.type == "markdownReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown
             application={props.application}

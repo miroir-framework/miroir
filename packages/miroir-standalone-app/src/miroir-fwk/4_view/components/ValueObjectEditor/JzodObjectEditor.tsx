@@ -372,11 +372,6 @@ const ProgressiveAttribute: FC<{
 // ##############################################################################################
 let count = 0;
 export function JzodObjectEditor(props: JzodObjectEditorProps) {
-  // const [count, setCount] = useState(0);
-
-  // React.useEffect(() => {
-  //   setCount((prevCount) => prevCount + 1);
-  // }, [props]);
 
   const {
     name,
@@ -452,54 +447,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   );
 
   const reportContext = useReportPageContext();
-
-  // log.info("JzodObjectEditor",
-  //   count,
-  //   "Rendering JzodObjectEditor for props.rootLessListKeyArray",
-  //   rootLessListKeyArray,
-  //   "rootLessListKey",
-  //   rootLessListKey,
-  //   // "formik.values",
-  //   // JSON.stringify(formik.values, null, 2),
-  //   // "currentValueObject",
-  //   // JSON.stringify(currentValueObject, null, 2),
-  //   "foreignKeyObjects",
-  //   foreignKeyObjects,
-  //   "itemsOrder",
-  //   itemsOrder,
-  //   // "typeCheckKeyMap[rootLessListKey]",
-  //   // typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined,
-  //   // "typeCheckKeyMap",
-  //   // typeCheckKeyMap,
-  //   // "currentReportSectionFormikValues",
-  //   // currentReportSectionFormikValues,
-  //   // "props",
-  //   // props,
-  //   // reportContext.isNodeFolded(props.rootLessListKeyArray),
-  //   // "reportContext.foldedObjectAttributeOrArrayItems",
-  //   // reportContext.foldedObjectAttributeOrArrayItems,
-  // );
-
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-
-  // Debug the schema structure for editorButton
-  // if (currentTypeCheckKeyMap) {
-  //   log.info("JzodObjectEditor DEBUG schema structure for", rootLessListKey, 
-  //     "has resolvedSchema?", !!currentTypeCheckKeyMap.resolvedSchema,
-  //     "has tag?", !!currentTypeCheckKeyMap.resolvedSchema?.tag,
-  //     "has tag.value?", !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value,
-  //     "has editorButton?", !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value?.editorButton,
-  //     "tag structure:", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema?.tag, null, 2)
-  //   );
-  //   console.log("JzodObjectEditor DEBUG schema structure", {
-  //     rootLessListKey,
-  //     hasResolvedSchema: !!currentTypeCheckKeyMap.resolvedSchema,
-  //     hasTag: !!currentTypeCheckKeyMap.resolvedSchema?.tag,
-  //     hasTagValue: !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value,
-  //     hasEditorButton: !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value?.editorButton,
-  //     tagStructure: currentTypeCheckKeyMap.resolvedSchema?.tag
-  //   });
-  // }
 
   // ##############################################################################################
   // Blob detection logic - check if this object should be rendered as a blob editor
@@ -594,12 +542,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // ##############################################################################################
   // Get unfoldingDepth from schema tag or default to 1
   const unfoldingDepth = useMemo(() => {
-    // log.info(
-    //   "JzodObjectEditor computing unfoldingDepth",
-    //   "rootLessListKey",
-    //   rootLessListKey,
-    //   (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels,
-    // );
     return (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
   }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
 
@@ -735,9 +677,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
     const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValueObjectAtKey };
     // log.info("addExtraRecordEntry", "newValue", newRecordValue);
-
-    // const newItemsOrder = getItemsOrder(newRecordValue, currentTypeCheckKeyMap.rawSchema);
-    // log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
     // Invoke onChangeVector callback if registered for this field
     if (onChangeVector?.[rootLessListKey]) {
@@ -1056,6 +995,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           rootLessListKey,
           formikRootLessListKey,
           currentValueObjectAtKey,
+          mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
           // currentTypeCheckKeyMap: currentTypeCheckKeyMap
           // currentKeyMap: currentTypeCheckKeyMap,
         }}

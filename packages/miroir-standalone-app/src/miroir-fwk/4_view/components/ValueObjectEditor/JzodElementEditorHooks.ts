@@ -82,14 +82,18 @@ export interface JzodElementEditorHooks {
 
 // ################################################################################################
 // ##############################################################################################
-export function getItemsOrder(currentValue: any, mlSchema: JzodElement | undefined) {
-  return (mlSchema?.type == "object" || mlSchema?.type == "record") &&
+export function getItemsOrder(
+  currentValue: any,
+  flattenedMLSchema: JzodObject | undefined,
+  resolvedMLSchema: JzodElement | undefined,
+) {
+  return (resolvedMLSchema?.type == "object" || resolvedMLSchema?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null
-    ? Object.keys(currentValue)
+    ? Object.keys(flattenedMLSchema?.definition??{}).filter((k) => k in currentValue)
     : Array.isArray(currentValue)
-    ? currentValue.map((e: any, k: number) => k)
-    : [];
+      ? currentValue.map((e: any, k: number) => k)
+      : [];
 }
 
 // ################################################################################################
@@ -182,12 +186,17 @@ export function useJzodElementEditorHooks(
   // Memoize to prevent infinite re-renders when used in useMemo dependencies
   const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
     () =>currentTypecheckKeyMap?.resolvedSchema,
-    [currentTypecheckKeyMap, rootLessListKey]
+    [currentTypecheckKeyMap]
   );
   // for objects, records
   const itemsOrder: any[] = useMemo(
-    () => getItemsOrder(currentValueObjectAtKey, localResolvedElementJzodSchemaBasedOnValue),
-    [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]
+    () =>
+      getItemsOrder(
+        currentValueObjectAtKey,
+        currentTypecheckKeyMap?.jzodObjectFlattenedSchema,
+        localResolvedElementJzodSchemaBasedOnValue,
+      ),
+    [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey],
   );
     
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =

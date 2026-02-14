@@ -1330,7 +1330,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         <>
           <ThemedOnScreenDebug
             label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type} existing ${existingObject}`}
-            data={{ existingObject }}
+            data={{ existingObject, localResolvedElementJzodSchemaBasedOnValue, itemsOrder }}
             copyButton={true}
             useCodeBlock={true}
           />

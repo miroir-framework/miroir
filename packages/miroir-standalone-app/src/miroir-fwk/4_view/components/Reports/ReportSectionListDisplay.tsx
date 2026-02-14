@@ -757,7 +757,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // TODO: default value should be established in the main body with useMemo instead, get rid of the state / side effect
   const handleAddObjectDialogFormOpen = useCallback(
     // (label: string  | undefined, a: any) => {
-    () => {
+      () => {
+      log.info(
+        "handleAddObjectDialogFormOpen defined with currentReportTargetEntity",
+        currentReportTargetEntity,
+        "currentReportTargetEntityDefinition",
+        currentReportTargetEntityDefinition,
+        Object.keys(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {}),
+        Object.entries(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {})
+      );
       const defaultFormValuesObject =
         currentReportTargetEntity &&
         currentReportTargetEntityDefinition &&
@@ -789,11 +797,16 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         currentReportTargetEntityDefinition
       );
 
-      setdialogOuterFormObject({
-        ...defaultFormValuesObject,
-        parentUuid: currentReportTargetEntity?.uuid,
-        parentName: currentReportTargetEntityDefinition?.name,
-      });
+      defaultFormValuesObject.parentUuid = currentReportTargetEntity?.uuid;
+      defaultFormValuesObject.parentName = currentReportTargetEntity?.name;
+      setdialogOuterFormObject(
+        defaultFormValuesObject,
+        //   {
+        //   parentUuid: currentReportTargetEntity?.uuid,
+        //   parentName: currentReportTargetEntityDefinition?.name,
+        //   ...defaultFormValuesObject,
+        // }
+      );
       setAddObjectdialogFormIsOpen(true);
     },
     [

@@ -211,9 +211,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
     transformerParams,
     contextResults,
     reduxDeploymentsState,
-    // application,
-    // applicationDeploymentMap,
-    // deploymentUuid,
     "defaultValue" // Specify this is for default value generation
   );
 
@@ -269,7 +266,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
       "currentValuePath",
       currentValuePath,
       "result",
-      result
+      Object.keys(result),
+      result,
     );
     return result;
   }
@@ -279,15 +277,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
     effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
     effectiveSchema.tag.value.initializeTo.transformer
   ) {
-    // log.info(
-    //   "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper",
-    //   "deploymentUuid",
-    //   deploymentUuid,
-    //   "rootObject",
-    //   rootObject,
-    //   "mlSchema.tag.value.initializeTo.transformer",
-    //   effectiveSchema.tag.value.initializeTo.transformer
-    // );
     const result = transformer_extended_apply_wrapper(
       // TODO: transformer_extended_apply instead
       undefined, // activityTracker
@@ -304,29 +293,9 @@ export function getDefaultValueForJzodSchemaWithResolution(
       "value",
       reduxDeploymentsState,
     );
-    // log.info(
-    //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning",
-    //   "currentValuePath",
-    //   currentValuePath,
-    //   "result",
-    //   result
-    // );
     return result;
   }
 
-  // log.info(
-  //   "getDefaultValueForJzodSchemaWithResolution called with",
-  //   "currentValuePath",
-  //   currentValuePath,
-  //   "effectiveSchema",
-  //   effectiveSchema,
-  //   "currentDefaultValue",
-  //   currentDefaultValue,
-  //   "forceOptional",
-  //   forceOptional,
-  //   "deploymentUuid",
-  //   deploymentUuid,
-  // );
 
   switch (effectiveSchema.type) {
     case "object": {
@@ -361,6 +330,18 @@ export function getDefaultValueForJzodSchemaWithResolution(
           );
           result[attributeName] = attributeValue;
         });
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution for object type",
+        "effectiveSchema",
+        effectiveSchema,
+        "mlSchema",
+        mlSchema,
+        "resolvedObjectType",
+        resolvedObjectType,
+        "result",
+        Object.keys(result),
+        result
+      );
       return result;
     }
     case "string": {
@@ -398,11 +379,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
         effectiveSchema.tag.value.initializeTo.value
       ) {
         const result = effectiveSchema.tag.value.initializeTo.value;
-        // log.info(
-        //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
-        //   "currentValuePath", currentValuePath,
-        //   "result", result
-        // );
         return result;
       }
       if (
@@ -411,12 +387,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
         effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
         effectiveSchema.tag.value.initializeTo.transformer
       ) {
-        // log.info(
-        //   "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper for UUID",
-        //   "deploymentUuid", deploymentUuid,
-        //   "mlSchema.tag.value.initializeTo.transformer",
-        //   effectiveSchema.tag.value.initializeTo.transformer
-        // );
         const result = transformer_extended_apply_wrapper(
           //TODO: transformer_extended_apply instead
           undefined, // activityTracker
@@ -432,11 +402,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
           "value",
           reduxDeploymentsState,
         );
-        // log.info(
-        //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from transformer",
-        //   "currentValuePath", currentValuePath,
-        //   "result", result
-        // );
         return result;
       }
       if (
@@ -476,21 +441,9 @@ export function getDefaultValueForJzodSchemaWithResolution(
         );
 
         const result = Object.values(foreignKeyObjects)[0]?.uuid;
-        // log.info(
-        //   "getDefaultValueForJzodSchemaWithResolution returning default UUID value from foreign key",
-        //   "currentValuePath",
-        //   currentValuePath,
-        //   "result",
-        //   result
-        // );
         return result;
       }
       const result = uuidv4();
-      // log.info(
-      //   "getDefaultValueForJzodSchemaWithResolution returning random UUID value",
-      //   "currentValuePath", currentValuePath,
-      //   "result", result,
-      // );
       return result;
     }
     case "unknown":

@@ -321,20 +321,14 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       reportSectionPath
     )
      : { };
-    const result: JzodObject = {
+    const formValueMLSchema: JzodObject = {
       type: "object",
       definition: {
         ...r,
         [formikReportDefinitionPath]: entityDefinitionReport.mlSchema,
       },
     };
-    // log.info(
-    //   "############################################## computing formValueMLSchema",
-    //   "formValueMLSchema",
-    //   result,
-    //   []
-    // );
-    return result;
+    return formValueMLSchema;
   }, [
     currentDeploymentReportsEntitiesDefinitionsMapping,
   ]);
@@ -347,6 +341,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
           label={"JsonObjectEditFormDialog formValueMLSchema"}
           data={formValueMLSchema}
           initiallyUnfolded={false}
+          useCodeBlock={true}
         />
         {/* <ThemedOnScreenDebug
           label={"JsonObjectEditFormDialog initialReportSectionsFormValue"}
@@ -404,10 +399,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       </span>
     </Dialog>
   );
-      // }
-    // }
-    // </Formik>
-  // );
 };
 
 // ################################################################################################

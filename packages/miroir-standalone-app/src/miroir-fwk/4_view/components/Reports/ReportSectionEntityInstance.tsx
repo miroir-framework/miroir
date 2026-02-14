@@ -159,27 +159,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const renderStartTime = performance.now();
   const formikContext = useFormikContext<Record<string, any>>();
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
-  // const formikValuePath = props.formikValuePath?.join("_") || "";
-  // const formikReportDefinition: Report = formikContext.values[props.reportSectionPath.join("_")];
 
-  // log.info(
-  //   "ReportSectionEntityInstance: formik values =",
-  //   formikContext.values,
-  //   "props.formikReportDefinitionPathString =",
-  //   props.formikReportDefinitionPathString,
-  //   // "props.formikReportDefinitionEntityDefinitionPathString =",
-  //   // props.formikReportDefinitionEntityDefinitionPathString,
-  //   "props.reportSectionPath =",
-  //   props.reportSectionPath
-  // );
-
-  // const localReportDefinition: Report | undefined = props.formikReportDefinitionPathString
-  //   ? formikContext.values[props.formikReportDefinitionPathString]
-  //   : undefined;
-  // const localReportSectionDefinition: ReportSection | undefined =
-  //   localReportDefinition && props.reportSectionPath
-  //     ? resolvePathOnObject(localReportDefinition, props.reportSectionPath || [])
-  //     : undefined;
   const reportDefinitionFromFormik: Report  | undefined =
     formikContext.values &&
     props.formikReportDefinitionPathString?
@@ -196,42 +176,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           )
         : undefined;
   
-  // const entityUuid: Uuid | undefined = (reportSectionDefinitionFromFormik?.definition as any)?.parentUuid;
-
-  // log.info(
-  //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionEntityInstance render",
-  //   ++count,
-  //   "start",
-  //   "formikValuePathAsString:",
-  //   formikValuePathAsString,
-  //   "props.formikAlreadyAvailable", 
-  //   props.formikAlreadyAvailable, 
-  //   "formikContext:",
-  //   formikContext.values,
-  //   "reportDefinitionFromFormik:",
-  //   reportDefinitionFromFormik,
-  //   "reportSectionDefinitionFromFormik",
-  //   reportSectionDefinitionFromFormik,
-  //   // "entityUuid",
-  //   // entityUuid,
-  //   "with props:",
-  //   props,
-  //   // "formikContext:",
-  //   // formikContext
-  // );
-  // const errorLog = useErrorLogService();
   if (reportSectionDefinitionFromFormik?.type && reportSectionDefinitionFromFormik?.type !== "objectInstanceReportSection") {
     throw new Error(
       "ReportSectionEntityInstance can only be used with objectInstanceReportSection types, got reportDefinition: " +
         JSON.stringify(reportDefinitionFromFormik) + " and path: " +
         JSON.stringify(props.reportSectionPath)
-        // JSON.stringify(reportSectionDefinitionFromFormik)
     );
   }
   const context = useMiroirContextService();
   const viewParams = useViewParams();
   const showPerformanceDisplay = context.showPerformanceDisplay;
-  // const { currentTheme } = useMiroirTheme();
 
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker(
@@ -242,34 +196,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.initialInstanceValueDEFUNCT?.uuid || props.entityUuidDEFUNCT}`;
 
-  // log.info(
-  //   "++++++++++++++++++++++++++++++++ render",
-  //   "navigationCount",
-  //   navigationCount,
-  //   "totalCount",
-  //   totalCount,
-  //   "with props",
-  //   props
-  // );
-
-  // const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
-  // const [displayEditor, setDisplayEditor] = useState(true);
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
-  // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
 
-  // the TypeValueObjectEditor will get the instance value either from formikContext or from props.initialInstanceValueDEFUNCT depending on props.formikAlreadyAvailable
-  // instanceDEFUNCT now serves only in the context of a Query entity instance to get the query definition for execution
   const instance: any = useMemo(() => {
-    // log.info(
-    //   "ReportSectionEntityInstance: computing instance value from props.initialInstanceValue and formikContext",
-    //   props.formikAlreadyAvailable,
-    //   formikContext?.values,
-    //   reportSectionPathAsString
-    // );
     if (props.formikAlreadyAvailable) {
       return formikContext?.values[formikValuePathAsString] as EntityInstance;
     } else {
@@ -282,23 +215,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     formikContext?.values,
   ]) as EntityInstance;
 
-  // log.info(
-  //   "ReportSectionEntityInstance",
-  //   "instance to display:",
-  //   instance,
-  //   "formik:",
-  //   formikContext,
-  //   "props.formikAlreadyAvailable",
-  //   props.formikAlreadyAvailable,
-  //   "formikContext.values[reportSectionPathAsString]",
-  //   formikContext?.values[formikValuePathAsString]
-  // );
-
   // // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
   // // const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
-  // const formInitialValueDEFUNCT: any = useMemo(() => ({
-  //   [formikValuePathAsString] : instance
-  // }), [instance]);
 
   const currentDeploymentModel: MetaModel = useCurrentModel(
     props.applicationSection == "data"
@@ -307,66 +225,33 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
 
-  // const currentDeploymentModel: MetaModel = useCurrentModel(
-  //   props.applicationSection == "data"
-  //     ? props.deploymentUuid
-  //     : deployment_Miroir.uuid // the report to edit any element from the 'model' section must be in the meta-model
-  // );
-
   const currentDeploymentReportsEntitiesDefinitionsMapping =
-    // context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
 
-  // log.info("ReportSectionEntityInstance: currentDeploymentReportsEntitiesDefinitionsMapping:", currentDeploymentReportsEntitiesDefinitionsMapping);
-
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
-      // return displayedDeploymentDefinition &&
       return props.deploymentUuid &&
         context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
         context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
         ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
-        // context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
-        // ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
           props.applicationSection
           ]
         : { availableReports: [], entities: [], entityDefinitions: [] };
     }, [
       props.deploymentUuid,
-      // displayedDeploymentDefinition,
       context.deploymentUuidToReportsEntitiesDefinitionsMapping,
       props.applicationSection,
     ]);
   
 
-  // const currentModelEnvironment = defaultMiroirModelEnvironment;
-  // const domainController: DomainControllerInterface = useDomainControllerService();
-
   const targetEntityUuid: Uuid | undefined = reportSectionDefinitionFromFormik?.definition?.parentUuid;
 
-  // const currentReportDeploymentSectionEntities: Entity[] = currentDeploymentModel.entities; // Entities are always defined in the 'model' section
-  // const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
-  //   currentDeploymentMetaModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
-
   const currentReportTargetEntity: Entity | undefined =
-    // currentDeploymentModel.entities?.find((e) => e?.uuid === targetEntityUuid);
     entities?.find((e) => e?.uuid === targetEntityUuid);
 
   const currentReportSectionTargetEntityDefinition: EntityDefinition | undefined =
     currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
-    // currentDeploymentModel?.entityDefinitions?.find(
-        // (e) => e?.entityUuid === props.entityUuidDEFUNCT // TODO: remove entityUuid from props and use only formValueMLSchema?
         (e) => e?.entityUuid === targetEntityUuid
   );
-
-  // log.info(
-  //   "ReportSectionEntityInstance",
-  //   "props.applicationSection",
-  //   props.applicationSection,
-  //   // "currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??'data']?.entityDefinitions",
-  //   // currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions,
-  //   "currentReportSectionTargetEntityDefinition:",
-  //   currentReportSectionTargetEntityDefinition,
-  // );
 
   // ##############################################################################################
   // ##############################################################################################

@@ -404,13 +404,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     ) || {};
 
-  // log.info(
-  //   "TypedValueObjectEditor foreignKeyObjects fetched for",
-  //   formikValuePathAsString,
-  //   "foreignKeyObjects",
-  //   foreignKeyObjects,
-  //   "keys", Object.keys(foreignKeyObjects)
-  // );
 
   const submitButton = useActionButton ? (
     // TODO: using ActionButtonWithSnackbar is useless, formik.submitForm does not return a result (only Promise<void>)
@@ -451,39 +444,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
 
   const result = (
     <>
-      {/* <div> */}
-        {/* <ThemedOnScreenHelper
-          label={`TypedValueObjectEditor for ${formikValuePathAsString} (navigationCount: ${navigationCount}, totalCount: ${totalCount})`}
-          data={formValueMLSchema}
-        /> */}
-        {/* <ThemedOnScreenHelper
-          label={`TypedValueObjectEditor for ${formikValuePathAsString} valueObject`}
-          data={valueObject}
-        /> */}
       {typeError && (<span>"typeError: "{typeError}</span>) }
-      {/* <ThemedOnScreenDebug
-        label={`TypedValueObjectEditor Render Performance Metrics for ${formikValuePathAsString} mode "${props.valueObjectEditMode}"`}
-        data={{displaySubmitButton, application, applicationSection, deploymentUuid, navigationCount, totalCount}}
-        copyButton={true}
-        initiallyUnfolded={false}
-        useCodeBlock={true}
-      /> */}
-      {/* </div> */}
-      {/* <ThemedOnScreenHelper
-        label={`TypedValueObjectEditor: "${formikValuePathAsString}"`}
-        data={{
-          resolvedElementJzodSchema,
-          // formValueMLSchema,
-          formik: formik.values,
-          valueObject,
-          foreignKeyObjects,
-          error:
-            jzodTypeCheckResult && jzodTypeCheckResult.status != "ok"
-              ? getInnermostTypeCheckError(jzodTypeCheckResult as any)
-              : undefined,
-        }}
-      /> */}
-
       {readonly ? (
         // Readonly mode: just display the editor without form
         <div>

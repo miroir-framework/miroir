@@ -762,8 +762,6 @@ export function jzodTypeCheck(
       keyMap: {
         [currentValuePath.join(".")]: {
           rawSchema: mlSchema,
-          // resolvedSchema: effectiveSchema
-          // resolvedSchema: valueToJzod(valueObject) as JzodElement,
           resolvedSchema: mlSchema,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -790,12 +788,6 @@ export function jzodTypeCheck(
         'typeCheck' // Specify this is for type checking
       ) : mlSchema;
 
-  // log.info(
-  //   "jzodTypeCheck",
-  //   currentValuePath.join("."),
-  //   "effectiveSchemaOrError",
-  //   effectiveSchemaOrError,
-  // );
   if ('error' in effectiveSchemaOrError) {
     return {
       status: "error",
@@ -827,19 +819,6 @@ export function jzodTypeCheck(
         newContext,
         modelEnvironment
       );
-      // log.info(
-      //   "jzodTypeCheck schemaReference",
-      //   "effectiveSchema",
-      //   effectiveRawSchema,
-      //   "resultJzodSchema",
-      //   resolvedJzodSchema,
-      //   // JSON.stringify(resolvedJzodSchema, null, 2),
-      //   "valueObject",
-      //   valueObject,
-      //   "newContext",
-      //   newContext,
-      //   // JSON.stringify(valueObject, null, 2)
-      // );
       const typeCheck = jzodTypeCheck(
         resolvedJzodSchema,
         valueObject,
