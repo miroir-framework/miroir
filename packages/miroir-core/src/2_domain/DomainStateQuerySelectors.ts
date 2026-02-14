@@ -193,18 +193,18 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
     return entityInstances;
   }
 
-  log.info("selectEntityInstanceUuidIndexFromDomainState applying filter", extractorParams.extractor.select.filter);
+  // log.info("selectEntityInstanceUuidIndexFromDomainState applying filter", extractorParams.extractor.select.filter);
   const localSelect = extractorParams.extractor.select;
   const filteredInstancesArray = applyExtractorFilterAndOrderBy(
     Object.values(entityInstances),
     localSelect
   );
-  log.info("selectEntityInstanceUuidIndexFromDomainState filteredInstancesArray", filteredInstancesArray);
+  // log.info("selectEntityInstanceUuidIndexFromDomainState filteredInstancesArray", filteredInstancesArray);
   const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
     acc[instance.uuid] = instance;
     return acc;
   }, {});
-  log.info("selectEntityInstanceUuidIndexFromDomainState filtered result", result);
+  // log.info("selectEntityInstanceUuidIndexFromDomainState filtered result", result);
   return result;  
 };
 
@@ -250,30 +250,23 @@ function selectEntityInstanceDomainState (
   instanceUuidDomainElement: Uuid,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance> {
-  // const querySelectorParams: ExtractorOrCombinerReturningObject = foreignKeyParams.extractor.select as ExtractorOrCombinerReturningObject;
-  // const deploymentUuid = foreignKeyParams.extractor.deploymentUuid;
-  // const applicationSection: ApplicationSection =
-  //   foreignKeyParams.extractor.select.applicationSection ??
-  //   ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
-
-  log.info(
-    "selectEntityInstanceDomainState params",
-    "deploymentUuid",
-    deploymentUuid,
-    "applicationSection",
-    applicationSection
-  );
+  // log.info(
+  //   "selectEntityInstanceDomainState params",
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "applicationSection",
+  //   applicationSection
+  // );
   // const entityUuidReference: Uuid = querySelectorParams.parentUuid;
-  log.info("selectEntityInstanceDomainState entityUuidReference", entityUuidReference);
+  // log.info("selectEntityInstanceDomainState entityUuidReference", entityUuidReference);
 
   // const instanceUuidDomainElement = querySelectorParams.instanceUuid;
 
-  log.info(
-    "selectEntityInstanceDomainState found instanceUuid",
-    JSON.stringify(instanceUuidDomainElement)
-  );
+  // log.info(
+  //   "selectEntityInstanceDomainState found instanceUuid",
+  //   JSON.stringify(instanceUuidDomainElement)
+  // );
 
-  // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
   if (!domainState) {
     return new Domain2ElementFailed({
       queryFailure: "DomainStateNotLoaded",
@@ -346,20 +339,19 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
     foreignKeyParams.extractor.select.applicationSection ??
     ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
-  log.info(
-    "selectEntityInstanceFromObjectQueryAndDomainState params",
-    querySelectorParams,
-    "deploymentUuid",
-    deploymentUuid,
-    "applicationSection",
-    applicationSection
-  );
+  // log.info(
+  //   "selectEntityInstanceFromObjectQueryAndDomainState params",
+  //   querySelectorParams,
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "applicationSection",
+  //   applicationSection
+  // );
   const entityUuidReference: Uuid = querySelectorParams.parentUuid;
-  log.info("selectEntityInstanceFromObjectQueryAndDomainState entityUuidReference", entityUuidReference);
+  // log.info("selectEntityInstanceFromObjectQueryAndDomainState entityUuidReference", entityUuidReference);
 
   switch (querySelectorParams?.extractorOrCombinerType) {
     case "combinerForObjectByRelation": {
-      // const referenceObject = transformer_InnerReference_resolve(
       const referenceObject = transformer_extended_apply(
         "runtime",
         [], // transformerPath
@@ -370,7 +362,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           referenceName: querySelectorParams.objectReference,
         },
         "value", // TODO: not consistent with "runtime" evaluation, this has no influence on the result of "runtime" evaluations.
-        // {...modelEnvironment,...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
         foreignKeyParams.extractor.queryParams,
         foreignKeyParams.extractor.contextResults
@@ -438,10 +429,10 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       const result = targetObject[
         referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
       ];
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation referenceObject", referenceObject);
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation attribute of reference", querySelectorParams.AttributeOfObjectToCompareToReferenceUuid);
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation targetObject", targetObject);
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation result", result);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation referenceObject", referenceObject);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation attribute of reference", querySelectorParams.AttributeOfObjectToCompareToReferenceUuid);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation targetObject", targetObject);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation result", result);
       
       if (querySelectorParams.applyTransformer) {
         const transformedResult = transformer_extended_apply(
@@ -450,17 +441,16 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           querySelectorParams.label ?? querySelectorParams.extractorOrCombinerType,
           querySelectorParams.applyTransformer,
           "value",
-          // {...modelEnvironment,...foreignKeyParams.extractor.queryParams},
           modelEnvironment,
           foreignKeyParams.extractor.queryParams,
           { ...foreignKeyParams.extractor.contextResults, referenceObject, foreignKeyObject: result }
         );
-        log.info(
-          "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, after applyTransformer",
-          querySelectorParams.applyTransformer,
-          "transformedResult",
-          JSON.stringify(transformedResult, null, 2)
-        );
+        // log.info(
+        //   "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, after applyTransformer",
+        //   querySelectorParams.applyTransformer,
+        //   "transformedResult",
+        //   JSON.stringify(transformedResult, null, 2)
+        // );
         return transformedResult;
       }
       
@@ -488,7 +478,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       ).find((e: EntityInstance) => (e as EntityDefinition).entityUuid == entityUuidReference) as EntityDefinition | undefined;
 
       // const entityDefinition = Object.keys(domainState[deploymentUuid]["model"]);
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState entityDefinition", JSON.stringify(currentObjectEntityDefinition, null, 2));
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState entityDefinition", JSON.stringify(currentObjectEntityDefinition, null, 2));
       if (!currentObjectEntityDefinition) {
         return new Domain2ElementFailed({
           queryFailure: "EntityNotFound",
@@ -526,7 +516,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         }
         foreignKeyObjects[attributeName] = foreignKeyObject;
       }
-      log.info("selectEntityInstanceFromObjectQueryAndDomainState foreignKeyObjects", foreignKeyObjects);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState foreignKeyObjects", foreignKeyObjects);
 
       const transformedObject = transformer_extended_apply(
         "runtime",
@@ -534,7 +524,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         querySelectorParams.label ?? querySelectorParams.extractorOrCombinerType,
         querySelectorParams.applyTransformer,
         "value",
-        // {...modelEnvironment,...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
         foreignKeyParams.extractor.queryParams,
         {
@@ -543,12 +532,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           referenceObject: currentObject,
         }
       );
-      log.info(
-        "selectEntityInstanceFromObjectQueryAndDomainState after applyTransformer",
-        querySelectorParams.applyTransformer,
-        "transformedObject",
-        JSON.stringify(transformedObject, null, 2)
-      );
+      // log.info(
+      //   "selectEntityInstanceFromObjectQueryAndDomainState after applyTransformer",
+      //   querySelectorParams.applyTransformer,
+      //   "transformedObject",
+      //   JSON.stringify(transformedObject, null, 2)
+      // );
       return transformedObject;
       break;
     }

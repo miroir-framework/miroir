@@ -46,12 +46,12 @@ export interface InlineReportEditorProps {
 }
 
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
-  reportEntityDefinitionDEFUNCT,
+  // reportEntityDefinitionDEFUNCT,
   formValueMLSchema,
   application,
   applicationDeploymentMap,
   deploymentUuid,
-  applicationSection,
+  // applicationSection,
   formikAlreadyAvailable,
   formikReportDefinitionPathString,
   formikValuePath,
@@ -59,7 +59,7 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
   const formik = useFormikContext<any>();
   // const formikReportDefinition: Report = formik.values[reportSectionPath.join("_")];
   const formikReportDefinition: Report = formik.values[formikReportDefinitionPathString];
-  log.info("InlineReportEditor: formikReportDefinition =", formikReportDefinition);
+  // log.info("InlineReportEditor: formikReportDefinition =", formikReportDefinition);
   return (
     <div
       style={{

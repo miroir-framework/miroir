@@ -1,10 +1,8 @@
 import _ from "lodash";
 
-import { Paper } from "@mui/material";
-import { styled } from "@mui/material/styles"; // For MUI v5
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
-import { Formik, FormikProps, FormikHelpers, useFormikContext } from "formik";
+import { useFormikContext } from "formik";
 import { ErrorBoundary } from "react-error-boundary";
 
 import {
@@ -12,18 +10,12 @@ import {
   DomainControllerInterface,
   EntityAttribute,
   EntityInstancesUuidIndex,
-  InstanceAction,
   JzodObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ResolvedJzodSchemaReturnType,
   Uuid,
-  defaultMetaModelEnvironment,
   entityDefinitionReport,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
-  jzodTypeCheck,
-  selfApplicationDeploymentMiroir,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
   type EntityDefinition,
@@ -33,19 +25,15 @@ import {
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import {
+  useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
-import { useDomainControllerService } from "../MiroirContextReactProvider.js";
-import { JzodElementEditor } from "./ValueObjectEditor/JzodElementEditor.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
-import {
-  measuredJzodTypeCheck,
-} from "../tools/hookPerformanceMeasure.js";
-import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
-import { reportSectionsFormSchema, reportSectionsFormValue } from "./Reports/ReportTools.js";
-import { ThemedDialog, ThemedDialogTitle, ThemedOnScreenDebug } from "./Themes/index.js";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
+import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
+import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
+import { ThemedDialog, ThemedDialogTitle, ThemedOnScreenDebug } from "./Themes/index.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -155,27 +143,25 @@ const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrd
 
 // ################################################################################################
 const reorderArrayField = (
-  // logHeader: string,
   dataParam: any,
   orderUpdatePathParam: string[],
   newOrder: number[]
 ): any => {
-  log.info(
-    "JsonObjectEditFormDialog reorderArrayField",
-    orderUpdatePathParam.length,
-    "path",
-    orderUpdatePathParam,
-    "orderUpdatePathParam[0]",
-    orderUpdatePathParam[0],
-    "dataParam",
-    dataParam
-  );
+  // log.info(
+  //   "JsonObjectEditFormDialog reorderArrayField",
+  //   orderUpdatePathParam.length,
+  //   "path",
+  //   orderUpdatePathParam,
+  //   "orderUpdatePathParam[0]",
+  //   orderUpdatePathParam[0],
+  //   "dataParam",
+  //   dataParam
+  // );
 
-  // return dataParam;
   if (orderUpdatePathParam.length == 1) {
     const newFieldValue = newOrder.reduce((acc:any, curr:number) => [...acc, dataParam[orderUpdatePathParam[0]][curr]], []);
     const result = { ...dataParam, [orderUpdatePathParam[0]]: newFieldValue };
-    log.info("JsonObjectEditFormDialog reorderArrayField final", newFieldValue, "result", result);
+    // log.info("JsonObjectEditFormDialog reorderArrayField final", newFieldValue, "result", result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
@@ -187,20 +173,20 @@ const reorderArrayField = (
         newOrder
       );
       const result: any = { ...dataParam, [orderUpdatePathParam[0]]: recursiveReorder };
-      log.info(
-        "JsonObjectEditFormDialog reorderField",
-        orderUpdatePathParam.length,
-        "path",
-        orderUpdatePathParam,
-        "orderUpdatePathParam[0]",
-        orderUpdatePathParam[0],
-        "recursiveReorder",
-        recursiveReorder,
-        "dataParam",
-        dataParam,
-        "result",
-        result
-      );
+      // log.info(
+      //   "JsonObjectEditFormDialog reorderField",
+      //   orderUpdatePathParam.length,
+      //   "path",
+      //   orderUpdatePathParam,
+      //   "orderUpdatePathParam[0]",
+      //   orderUpdatePathParam[0],
+      //   "recursiveReorder",
+      //   recursiveReorder,
+      //   "dataParam",
+      //   dataParam,
+      //   "result",
+      //   result
+      // );
       return result;
     }
   }
@@ -423,23 +409,21 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     onSubmit,
     showButton,
   } = props;
-  log.info(
-    "##################################### rendering JsonObjectEditFormDialog",
-    "label",
-    label,
-    "aggregate",
-    count,
-    "defaultFormValuesObject",
-    defaultFormValuesObject,
-    "entityDefinitionJzodSchema",
-    entityDefinitionJzodSchema
-  );
+  // log.info(
+  //   "##################################### rendering JsonObjectEditFormDialog",
+  //   "label",
+  //   label,
+  //   "aggregate",
+  //   count,
+  //   "defaultFormValuesObject",
+  //   defaultFormValuesObject,
+  //   "entityDefinitionJzodSchema",
+  //   entityDefinitionJzodSchema
+  // );
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
 
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
-  // const [dialogOuterFormObject, setdialogOuterFormObject] = useState({});
-  // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   const formIsOpen = addObjectdialogFormIsOpen || (!showButton && props.isOpen);
 
@@ -485,72 +469,18 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   }
 
   // ##############################################################################################
+  // TODO: remove, is it used elsewhere?
   // Equivalent to onEditFormObject from ReportSectionEntityInstance
   const onEditFormObject = useCallback(
     async (data: any) => {
-      log.info(
-        "JsonObjectEditFormDialog onEditFormObject called with new object value",
-        data,
-        "currentDeploymentUuid",
-        currentDeploymentUuid,
-        "currentApplicationSection",
-        currentApplicationSection
-      );
-
-      // if (!currentDeploymentUuid) { // TODO: do not throw, use snackbar mechanism
-      //   throw new Error(
-      //     "JsonObjectEditFormDialog onEditFormObject currentDeploymentUuid is undefined."
-      //   );
-      // }
-      // if (!currentApplicationSection) { // TODO: do not throw, use snackbar mechanism
-      //   throw new Error(
-      //     "JsonObjectEditFormDialog onEditFormObject currentApplicationSection is undefined."
-      //   );
-      // }
-      // if (currentDeploymentUuid == selfApplicationDeploymentMiroir.uuid || currentApplicationSection == "model") {
-      //   await domainController.handleAction(
-      //     {
-      //       actionType: "transactionalInstanceAction",
-      //       deploymentUuid: currentDeploymentUuid,
-      //       instanceAction: {
-      //         actionType: "updateInstance",
-      //         deploymentUuid: currentDeploymentUuid,
-      //         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      //         payload: {
-      //           applicationSection: "model",
-      //           includeInTransaction: true, // not used
-      //           objects: [
-      //             {
-      //               parentName: data.name,
-      //               parentUuid: data.parentUuid,
-      //               applicationSection: currentApplicationSection,
-      //               instances: [data],
-      //             },
-      //           ],
-      //         },
-      //       },
-      //     },
-      //     defaultMetaModelEnvironment
-      //   );
-      // } else {
-      //   const updateAction: InstanceAction = {
-      //     actionType: "updateInstance",
-      //     deploymentUuid: currentDeploymentUuid,
-      //     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      //     payload: {
-      //       applicationSection: currentApplicationSection ? currentApplicationSection : "data",
-      //       objects: [
-      //         {
-      //           parentName: data.name,
-      //           parentUuid: data.parentUuid,
-      //           applicationSection: currentApplicationSection ? currentApplicationSection : "data",
-      //           instances: [data],
-      //         },
-      //       ],
-      //     },
-      //   };
-      //   await domainController.handleAction(updateAction);
-      // }
+      // log.info(
+      //   "JsonObjectEditFormDialog onEditFormObject called with new object value",
+      //   data,
+      //   "currentDeploymentUuid",
+      //   currentDeploymentUuid,
+      //   "currentApplicationSection",
+      //   currentApplicationSection
+      // );
     },
     [domainController, currentDeploymentUuid, currentApplicationSection, currentAppModel]
   );
@@ -568,31 +498,31 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   // ##############################################################################################
   const handleAddObjectDialogFormSubmit = useCallback(
     async (data:any, source?: string) => {
-      log.info(
-        "@@@@@@@@@@@@@@@@@@@@@@ handleAddObjectDialogFormSubmit called for data",
-        data,
-        "props",
-        props,
-        "dialogOuterFormObject",
-        dialogOuterFormObject,
-      );
+      // log.info(
+      //   "@@@@@@@@@@@@@@@@@@@@@@ handleAddObjectDialogFormSubmit called for data",
+      //   data,
+      //   "props",
+      //   props,
+      //   "dialogOuterFormObject",
+      //   dialogOuterFormObject,
+      // );
 
       const effectiveData = source == "param" && data ? data : dialogOuterFormObject;
-      log.info("handleAddObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
+      // log.info("handleAddObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
 
       let result: any;
       const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
       delete newVersion["ROOT"];
-      log.info(
-        "handleAddObjectDialogFormSubmit producing",
-        "newVersion",
-        newVersion,
-        "data",
-        data,
-        "props",
-        props,
-        "passed value",
-      );
+      // log.info(
+      //   "handleAddObjectDialogFormSubmit producing",
+      //   "newVersion",
+      //   newVersion,
+      //   "data",
+      //   data,
+      //   "props",
+      //   props,
+      //   "passed value",
+      // );
       
       try {
         // Call the actual domain controller action to save the data
@@ -633,7 +563,6 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           handleAddObjectDialogFormClose={handleAddObjectDialogFormClose}
           onCreateFormObject={onCreateFormObject}
           onEditFormObject={onEditFormObject}
-          // onSubmit={onSubmit}
           currentApplication={props.currentApplication}
           applicationDeploymentMap={props.applicationDeploymentMap}
           currentDeploymentUuid={currentDeploymentUuid}

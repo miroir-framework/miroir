@@ -132,7 +132,7 @@ export const Sidebar: FC<{
     Object.keys(currentApplicationDeploymentMap ?? {}),
     currentApplicationDeploymentMap ?? {},
   );
-  log.info("Sidebar: applicationMenus", applicationMenus);
+  // log.info("Sidebar: applicationMenus", applicationMenus);
   const filteredAppSidebarSections: {
     deploymentUuid: Uuid;
     applicationUuid: Uuid;
@@ -157,7 +157,7 @@ export const Sidebar: FC<{
     .filter((section): section is { deploymentUuid: Uuid; applicationUuid: Uuid; menuUuid: Uuid } => !!section),
     [applicationMenus, currentApplicationDeploymentMap, currentApplication],
   );
-  log.info("Sidebar: filteredAppSidebarSections", filteredAppSidebarSections);
+  // log.info("Sidebar: filteredAppSidebarSections", filteredAppSidebarSections);
 
   const appSidebarSections = useMemo(() => (
     filteredAppSidebarSections

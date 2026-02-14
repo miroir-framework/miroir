@@ -218,21 +218,19 @@ const TreeNodeComponent:React.FC<{
   }, [node.id, hasChildren, onToggleExpand]);
 
   const handleDoubleClick = useCallback(() => {
-    // const pathToUnfold = node.path.slice(1); // Remove the root key for unfolding
-    // const pathToUnfold = node.path; // Remove the root key for unfolding
-    log.info(
-      "Outline: Node double-clicked, exclusively unfolding path",
-      node.path,
-      "for instance:",
-      outlineContext.reportInstance
-    );
+    // log.info(
+    //   "Outline: Node double-clicked, exclusively unfolding path",
+    //   node.path,
+    //   "for instance:",
+    //   outlineContext.reportInstance
+    // );
     if (context.setFoldedObjectAttributeOrArrayItems) {
       const newFoldedObjectAttributeOrArrayItems = exclusivelyUnfoldPath(
       {},
       outlineContext.reportInstance,
       node.path
       );
-      log.info("Outline: New foldedObjectAttributeOrArrayItems state after double-click:", newFoldedObjectAttributeOrArrayItems);
+      // log.info("Outline: New foldedObjectAttributeOrArrayItems state after double-click:", newFoldedObjectAttributeOrArrayItems);
       context.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
 
       // Leave some time before calling onNavigate to ensure main panel has been unfolded

@@ -762,15 +762,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       }
       // indirect access to a remote storeController through the network
       if (action && (action as any).actionType !== "initModel") {
-        log.info(
-          "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
-          JSON.stringify(action, undefined, 2)
-        );
+        // log.info(
+        //   "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
+        //   JSON.stringify(action, undefined, 2)
+        // );
       } else {
-        log.info(
-          "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
-          action
-        );
+        // log.info(
+        //   "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
+        //   action
+        // );
       }
       const clientResult: RestClientCallReturnType = yield* call(() =>
         remotePersistenceStoreRestClient.handleNetworkPersistenceAction(
@@ -781,11 +781,11 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       if (clientResult instanceof Action2Error) {
         return clientResult;
       }
-      log.info(
-        "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
-        clientResult,
-        clientResult instanceof Action2Error
-      );
+      // log.info(
+      //   "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
+      //   clientResult,
+      //   clientResult instanceof Action2Error
+      // );
       if (clientResult && [400, 401, 403, 404, 409, 422, 500, 502, 503].includes(clientResult.status as number)) {
         return new Action2Error(
           "FailedToHandleAction",
@@ -817,26 +817,26 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           break;
         }
         case "runBoxedExtractorOrQueryAction": {
-          log.info(
-            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult",
-            JSON.stringify(clientResult, undefined, 2)
-          );
-          log.debug(
-            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction remoteStoreNetworkClient received status",
-            clientResult.status
-          );
+          // log.info(
+          //   "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction received from remoteStoreNetworkClient clientResult",
+          //   JSON.stringify(clientResult, undefined, 2)
+          // );
+          // log.debug(
+          //   "innerHandlePersistenceActionForRemoteStore runBoxedExtractorOrQueryAction remoteStoreNetworkClient received status",
+          //   clientResult.status
+          // );
           return clientResult.data;
           break;
         }
         case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-          log.info(
-            "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult",
-            clientResult
-          );
-          log.debug(
-            "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result",
-            clientResult.status
-          );
+          // log.info(
+          //   "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction received from remoteStoreNetworkClient clientResult",
+          //   clientResult
+          // );
+          // log.debug(
+          //   "handlePersistenceAction runBoxedQueryTemplateOrBoxedExtractorTemplateAction remoteStoreNetworkClient received result",
+          //   clientResult.status
+          // );
           return clientResult.data;
           break;
         }
@@ -844,14 +844,14 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         case "runBoxedQueryAction":
         case "runBoxedQueryTemplateAction":
         case "runBoxedExtractorTemplateAction": {
-          log.info(
-            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction received from remoteStoreNetworkClient clientResult",
-            clientResult
-          );
-          log.debug(
-            "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction remoteStoreNetworkClient received result",
-            clientResult.status
-          );
+          // log.info(
+          //   "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction received from remoteStoreNetworkClient clientResult",
+          //   clientResult
+          // );
+          // log.debug(
+          //   "innerHandlePersistenceActionForRemoteStore runBoxedExtractorAction remoteStoreNetworkClient received result",
+          //   clientResult.status
+          // );
           return clientResult.data;
           break;
         }
@@ -890,23 +890,23 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
-          log.debug(
-            "innerHandlePersistenceActionForRemoteStore received result",
-            clientResult.status
-          );
+          // log.debug(
+          //   "innerHandlePersistenceActionForRemoteStore received result",
+          //   clientResult.status
+          // );
           return yield ACTION_OK;
           break;
         }
       }
     } catch (error) {
-      log.info(
-        "innerHandlePersistenceActionForRemoteStore exception",
-        error,
-        "for action",
-        action,
-        "full error:",
-        JSON.stringify(error, undefined, 2)
-      );
+      // log.info(
+      //   "innerHandlePersistenceActionForRemoteStore exception",
+      //   error,
+      //   "for action",
+      //   action,
+      //   "full error:",
+      //   JSON.stringify(error, undefined, 2)
+      // );
       return {
         ...new Action2Error(
           "FailedToHandlePersistenceAction",

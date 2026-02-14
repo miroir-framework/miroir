@@ -31,7 +31,7 @@ export function getModelUpdate(
     throw new Error("EntityDefinitions must have the same UUID to compute a ModelUpdate.");
   }
   const changes = diff(entityDefinitionBefore, entityDefinitionAfter);
-  log.info("Computed diff changes:", changes);
+  // log.info("Computed diff changes:", changes);
   if (!changes) {
     return null;
   }

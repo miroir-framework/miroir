@@ -105,7 +105,7 @@ export function createApplicationCompositeAction(
       ],
     }
   };
-  log.info("createApplicationCompositeAction result =", result);
+  // log.info("createApplicationCompositeAction result =", result);
   return result;
 }
 
@@ -117,13 +117,13 @@ export function createDeploymentCompositeAction(
   adminDeploymentConfiguration: Deployment,
   newDeploymentConfiguration: StoreUnitConfiguration
 ): CompositeActionSequence {
-  log.info(
-    "createDeploymentCompositeAction deploymentConfiguration",
-    "newDeploymentUuid:",
-    newDeploymentUuid,
-    "deploymentConfiguration:",
-    newDeploymentConfiguration
-  );
+  // log.info(
+  //   "createDeploymentCompositeAction deploymentConfiguration",
+  //   "newDeploymentUuid:",
+  //   newDeploymentUuid,
+  //   "deploymentConfiguration:",
+  //   newDeploymentConfiguration
+  // );
   return {
     actionType: "compositeActionSequence",
     actionLabel: "createDeploymentCompositeAction",

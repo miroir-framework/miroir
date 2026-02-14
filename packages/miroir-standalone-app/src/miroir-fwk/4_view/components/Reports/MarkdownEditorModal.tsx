@@ -100,7 +100,7 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
     return undefined;
   }, [reportDefinitionFromFormik, props.reportSectionPath]);
   
-  log.info("MarkdownEditorModal render", "isOpen", props.isOpen, "initialContent length", props.initialContent.length);
+  // log.info("MarkdownEditorModal render", "isOpen", props.isOpen, "initialContent length", props.initialContent.length);
   
   // local state for edited content. TODO: is it necessary to have local state here? Why not use the formik context directly?
   const [editedContent, setEditedContent] = useState<string>(props.initialContent);
@@ -125,34 +125,15 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
       ["definition", "section", "definition", 0, "definition", "content"], // TODO: not always the right path!!!
       editedContent
     );
-    // const newReportDefinition = {
-    //   ...reportDefinitionFromFormik,
-    //   definition:{
-    //     ...reportDefinitionFromFormik?.definition,
-    //     section: {
-    //       ...reportDefinitionFromFormik?.definition.section,
-    //       definition : [
-    //         {
-    //           "type": "markdownReportSection",
-    //           "definition": {
-    //             "label": "Toto",
-    //             "content": editedContent,
-    //           }
-    //         },
-    //         reportDefinitionFromFormik?.definition.section.definition[1]
-    //       ],
-    //     }
-    //   }
-    // };
     const applicationSection = getApplicationSection(props.application, newReportDefinition.parentUuid)
-    log.info("MarkdownEditorModal handleSave", 
-      "reportDefinitionFromFormik", reportDefinitionFromFormik,
-      // "reportSectionDefinitionFromFormik", reportSectionDefinitionFromFormik,
-      "content length", editedContent.length,
-      "editedContent", JSON.stringify(editedContent),
-      "applicationSection", applicationSection,
-      "newReportDefinition", newReportDefinition,
-    );
+    // log.info("MarkdownEditorModal handleSave", 
+    //   "reportDefinitionFromFormik", reportDefinitionFromFormik,
+    //   // "reportSectionDefinitionFromFormik", reportSectionDefinitionFromFormik,
+    //   "content length", editedContent.length,
+    //   "editedContent", JSON.stringify(editedContent),
+    //   "applicationSection", applicationSection,
+    //   "newReportDefinition", newReportDefinition,
+    // );
 
     await domainController.handleActionFromUI(
       {
@@ -188,7 +169,7 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
   }, [editedContent, props]);
 
   const handleCancel = useCallback(() => {
-    log.info("MarkdownEditorModal handleCancel");
+    // log.info("MarkdownEditorModal handleCancel");
     setEditedContent(props.initialContent); // Reset to initial
     props.onCancel();
   }, [props]);

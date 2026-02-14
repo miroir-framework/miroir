@@ -78,19 +78,19 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("GraphReportSectionView", currentNavigationKey);
 
-  log.info(
-    "########################## GraphReportSectionView render",
-    "navigationCount",
-    navigationCount,
-    "totalCount",
-    totalCount,
-    "props.queryResults",
-    props.queryResults,
-    "props.reportSection.definition",
-    props.reportSection.definition,
-    // "props",
-    // props
-  );
+  // log.info(
+  //   "########################## GraphReportSectionView render",
+  //   "navigationCount",
+  //   navigationCount,
+  //   "totalCount",
+  //   totalCount,
+  //   "props.queryResults",
+  //   props.queryResults,
+  //   "props.reportSection.definition",
+  //   props.reportSection.definition,
+  //   // "props",
+  //   // props
+  // );
 
   // Extract data from query results
   const rawData = useMemo(() => {
@@ -120,10 +120,10 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
     }
   }, [props.queryResults, props.reportSection.definition.fetchedDataReference]);
 
-  log.info(
-    "GraphReportSectionView: rawData extracted",
-    rawData
-  );
+  // log.info(
+  //   "GraphReportSectionView: rawData extracted",
+  //   rawData
+  // );
   // Transform data to graph format
   const graphDataPoints = useMemo(() => {
     return transformDataToGraphFormat(
@@ -133,10 +133,10 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
     );
   }, [rawData, props.reportSection.definition.dataMapping, props.reportSection.definition.graphType]);
 
-  log.info(
-    "GraphReportSectionView: graphDataPoints transformed",
-    graphDataPoints
-  );
+  // log.info(
+  //   "GraphReportSectionView: graphDataPoints transformed",
+  //   graphDataPoints
+  // );
 
   // Create graph data object
   const graphData: GraphData = useMemo(() => {
@@ -159,10 +159,10 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
     }
   }, [props.reportSection.definition, graphDataPoints]);
 
-  log.info(
-    "GraphReportSectionView: graphData prepared",
-    graphData
-  );
+  // log.info(
+  //   "GraphReportSectionView: graphData prepared",
+  //   graphData
+  // );
   // Render component
   if (graphDataPoints.length === 0) {
     return (

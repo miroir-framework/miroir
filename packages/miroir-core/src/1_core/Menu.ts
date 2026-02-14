@@ -39,19 +39,19 @@ export function handleTransformer_menu_AddItem(
   contextResults?: Record<string, any>,
 ): TransformerReturnType<Menu> {
   // TODO: DO A COPY OF THE MENU, DO NOT UPDATE VIA REFERENCE, IT MODIFIES THE "OLD" MENU
-  log.info(
-    "handleTransformer_menu_AddItem called with",
-    "objectName",
-    objectName,
-    "transformer",
-    transformer,
-    "resolveBuildTransformersTo",
-    resolveBuildTransformersTo,
-    // queryParams,
-    // Object.keys(contextResults??{}),
-    "contextResults",
-    contextResults,
-  );
+  // log.info(
+  //   "handleTransformer_menu_AddItem called with",
+  //   "objectName",
+  //   objectName,
+  //   "transformer",
+  //   transformer,
+  //   "resolveBuildTransformersTo",
+  //   resolveBuildTransformersTo,
+  //   // queryParams,
+  //   // Object.keys(contextResults??{}),
+  //   "contextResults",
+  //   contextResults,
+  // );
   const menu =
     typeof transformer.menuReference == "string"
       // ? (defaultTransformers.transformer_InnerReference_resolve(

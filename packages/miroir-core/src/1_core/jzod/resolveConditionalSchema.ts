@@ -143,21 +143,21 @@ export function resolveConditionalSchema(
           details: JSON.stringify(ifThenElseConfig.parentUuid, null, 2)
         };
       }
-      log.info(
-        "resolveConditionalSchema using pathToUse",
-        pathToUse,
-        "currentValuePath",
-        currentValuePath,
-        "on rootObject",
-        rootObject, 
-      );
+      // log.info(
+      //   "resolveConditionalSchema using pathToUse",
+      //   pathToUse,
+      //   "currentValuePath",
+      //   currentValuePath,
+      //   "on rootObject",
+      //   rootObject, 
+      // );
       const parentUuid = resolveRelativePath(
         rootObject,
         currentValuePath,
         pathToUse.split(".") as RelativePath
       );
 
-      log.info("resolveConditionalSchema resolved parentUuid", parentUuid);
+      // log.info("resolveConditionalSchema resolved parentUuid", parentUuid);
       // Check if parentUuid is invalid or an error
       if (
         parentUuid === undefined ||
@@ -189,19 +189,19 @@ export function resolveConditionalSchema(
         parentUuidStr = parentUuid as Uuid;
       }
 
-      log.info("resolveConditionalSchema found parentUuid", parentUuid, "parentUuidStr", parentUuidStr);
+      // log.info("resolveConditionalSchema found parentUuid", parentUuid, "parentUuidStr", parentUuidStr);
       const currentDeploymentEntityDefinitions: EntityDefinition[] = modelEnvironment.currentModel?.entityDefinitions || [];
-      log.info(
-        "resolveConditionalSchema currentDeploymentEntityDefinitions",
-        currentDeploymentEntityDefinitions
-      );
+      // log.info(
+      //   "resolveConditionalSchema currentDeploymentEntityDefinitions",
+      //   currentDeploymentEntityDefinitions
+      // );
       const parentEntityDefinition = (
         currentDeploymentEntityDefinitions.find(e => e.entityUuid === parentUuidStr) as EntityDefinition
       );
-      log.info(
-        "resolveConditionalSchema parentEntityDefinition",
-        parentEntityDefinition
-      );
+      // log.info(
+      //   "resolveConditionalSchema parentEntityDefinition",
+      //   parentEntityDefinition
+      // );
       if (!parentEntityDefinition) {
         return {
           error: 'PARENT_NOT_FOUND',
@@ -216,10 +216,10 @@ export function resolveConditionalSchema(
         definition: ifThenElseConfig.mmlsReference
       };
     }
-    log.info(
-      "resolveConditionalSchema return effectiveSchema",
-      JSON.stringify(effectiveSchema, null, 2),
-    );
+    // log.info(
+    //   "resolveConditionalSchema return effectiveSchema",
+    //   JSON.stringify(effectiveSchema, null, 2),
+    // );
   }
   return effectiveSchema;
 }

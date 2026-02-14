@@ -166,7 +166,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       //   "######### contextResults",
       //   JSON.stringify(foreignKeyParams.query.contextResults, undefined, 2)
       // );
-      log.info("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation referenceObject:", referenceObject);
+      // log.info("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation referenceObject:", referenceObject);
       
       // In ReduxDeploymentsStateQuerySelectors, referenceObject is the actual object, not a Domain2Element wrapper
       const actualReferenceObject = referenceObject.elementValue || referenceObject;
@@ -306,21 +306,14 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
 
   const entityUuid = foreignKeyParams.extractor.select.parentUuid;
 
-  log.info(
-    "selectEntityInstanceUuidIndexFromReduxDeploymentsState called with params",
-    "application:", foreignKeyParams.extractor.application,
-    "applicationDeploymentMap:", applicationDeploymentMap,
-    "deploymentUuid:", deploymentUuid,
-    "applicationSection:", applicationSection,
-    "entityUuid:", entityUuid,
-    foreignKeyParams,
-  );
-
-  // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState deploymentEntityState", deploymentEntityState);
   // log.info(
-  //   "selectEntityInstanceUuidIndexFromReduxDeploymentsState deploymentEntityState",
-  //   deploymentEntityState
-  //   // JSON.stringify(deploymentEntityState, undefined, 2)
+  //   "selectEntityInstanceUuidIndexFromReduxDeploymentsState called with params",
+  //   "application:", foreignKeyParams.extractor.application,
+  //   "applicationDeploymentMap:", applicationDeploymentMap,
+  //   "deploymentUuid:", deploymentUuid,
+  //   "applicationSection:", applicationSection,
+  //   "entityUuid:", entityUuid,
+  //   foreignKeyParams,
   // );
 
   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
@@ -363,13 +356,13 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
     Object.values(entityInstances),
     localSelect
   );
-  log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filteredInstancesArray", filteredInstancesArray);
+  // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filteredInstancesArray", filteredInstancesArray);
 
   const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
     acc[instance.uuid] = instance;
     return acc;
   }, {});
-  log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filtered result", result);
+  // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filtered result", result);
   return result;
 };
 
@@ -464,13 +457,6 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
       "in deployment",
       deploymentUuid
     );
-    // throw new Error(
-    //   "DomainSelector extractEntityJzodSchemaFromReduxDeploymentsState could not find entity " +
-    //     entityEntityDefinition.uuid +
-    //     " in deployment " +
-    //     localQuery.deploymentUuid +
-    //     ""
-    // );
     return undefined;
   }
 };

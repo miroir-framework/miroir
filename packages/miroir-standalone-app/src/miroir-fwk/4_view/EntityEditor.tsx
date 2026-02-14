@@ -42,8 +42,6 @@ export default forwardRef((props:ICellEditorParams, ref) => {
 
   const initialState = createInitialState();
 
-  // const inputRef = useRef<any>();
-    // const [value, setValue] = useState(ref['value']);
   const [value, setValue] = useState(initialState.value?initialState.value:'');
   const refInput = useRef<any>(null);
 
@@ -66,10 +64,10 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     return !!/\d/.test(charStr);
   };
 
-  const isKeyPressedNumeric = (event: { key: any; }) => {
-    const charStr = event.key;
-    return isCharNumeric(charStr);
-  };
+  // const isKeyPressedNumeric = (event: { key: any; }) => {
+  //   const charStr = event.key;
+  //   return isCharNumeric(charStr);
+  // };
 
   const isBackspace = (event: { key: string; }) => {
     return event.key === KEY_BACKSPACE;
@@ -80,10 +78,10 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     setValue(e.target.value);
   }
 
-  const finishedEditingPressed = (event: { key: any; }) => {
-    const key = event.key;
-    return key === KEY_ENTER || key === KEY_TAB;
-  };
+  // const finishedEditingPressed = (event: { key: any; }) => {
+  //   const key = event.key;
+  //   return key === KEY_ENTER || key === KEY_TAB;
+  // };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     log.info('onKeyDown char typed', event.key)
@@ -102,10 +100,10 @@ export default forwardRef((props:ICellEditorParams, ref) => {
   useImperativeHandle(
     ref,
     () => {
-      log.info('EntityEditor useImperativeHandle called');
+      // log.info('EntityEditor useImperativeHandle called');
       return {
         resolvePathOnObject: () => {
-          log.info('EntityEditor useImperativeHandle resolvePathOnObject', value);
+          // log.info('EntityEditor useImperativeHandle resolvePathOnObject', value);
           return value;
         },
         // afterGuiAttached: () => {

@@ -154,7 +154,6 @@ export function defaultFormValues(
         'selfApplication': application,
         'attributes': [],
       }
-      log.info();
       
       const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,attributeJzodSchema)=>{
         let result
@@ -170,8 +169,7 @@ export function defaultFormValues(
         // log.info('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
         return result;
       },{});
-      log.info('defaultFormValues return',currentEditorAttributes);
-      // return currentEditorAttributes;
+      // log.info('defaultFormValues return',currentEditorAttributes);
       subresult = currentEditorAttributes;
       break;
     }
@@ -192,12 +190,11 @@ export function defaultFormValues(
         } else {
           result = Object.assign({},acc,{[attributeName]:''})
         }
-        log.info('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',attributeName,':',result);
+        // log.info('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',attributeName,':',result);
         return result;
       },{});
-      log.info('defaultFormValues return',currentEditorAttributes);
+      // log.info('defaultFormValues return',currentEditorAttributes);
       subresult = currentEditorAttributes;
-      // return currentEditorAttributes;
       break;
     }
     default: {
@@ -219,27 +216,13 @@ export function defaultFormValues(
 export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
-  // prevProps = props;
-  
   // Track render counts with centralized tracker
   const currentNavigationKey = `${props.deploymentUuid}-${props.chosenApplicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionListDisplay", currentNavigationKey);
 
   const formikContext = useFormikContext<Record<string, any>>();
-
-  // const formikValuePathAsString = props.reportSectionPath?.join("_") || "";
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
 
-  // log.info(
-  //   "ReportSectionListDisplay: formik values =",
-  //   formikContext.values,
-  //   "props.formikValuePath =",
-  //   props.formikValuePath,
-  //   "props.formikReportDefinitionPathString =",
-  //   props.formikReportDefinitionPathString,
-  //   "props.reportSectionPath =",
-  //   props.reportSectionPath
-  // );
   const reportDefinitionFromFormik: Report | undefined =
     formikContext.values &&
     props.formikReportDefinitionPathString &&
@@ -274,42 +257,36 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
 
-  // log.info('@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
-  log.info(
-    "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay",
-    "navigationCount",
-    navigationCount,
-    "totalCount",
-    totalCount,
-    "instancesToDisplay",
-    instancesToDisplay,
-    "localReportDefinition",
-    reportDefinitionFromFormik,
-    "localReportSectionDefinition",
-    reportSectionDefinitionFromFormik,
-    "formikContext.values",
-    formikContext.values,
-    // "props === prevProps",
-    // props === prevProps
-  );
+  // log.info(
+  //   "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay",
+  //   "navigationCount",
+  //   navigationCount,
+  //   "totalCount",
+  //   totalCount,
+  //   "instancesToDisplay",
+  //   instancesToDisplay,
+  //   "localReportDefinition",
+  //   reportDefinitionFromFormik,
+  //   "localReportSectionDefinition",
+  //   reportSectionDefinitionFromFormik,
+  //   "formikContext.values",
+  //   formikContext.values,
+  //   // "props === prevProps",
+  //   // props === prevProps
+  // );
   
-  // log.info('ReportSectionListDisplay props.domainElement',props.domainElement);
-  // log.info('ReportSectionListDisplay props',props);
-
   // ##############################################################################################
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const setAddObjectdialogFormIsOpenCallback = useCallback((a:boolean) => {
-    log.info("ReportSectionListDisplay setAddObjectdialogFormIsOpen called with",a);
+    // log.info("ReportSectionListDisplay setAddObjectdialogFormIsOpen called with",a);
     setAddObjectdialogFormIsOpen(a);
   },[setAddObjectdialogFormIsOpen]);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
-  // const [dialogOuterFormObject, setdialogOuterFormObject] = useState({});
 
   const miroirMetaModel: MetaModel = useCurrentModel(
     selfApplicationMiroir.uuid,
     props.applicationDeploymentMap
   );
-  // const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
   const currentModel: MetaModel = useCurrentModel(props.application, props.applicationDeploymentMap);
   const context = useMiroirContextService();
   
@@ -317,30 +294,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.application,
     props.applicationDeploymentMap
   );
-  // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
-  //   return {
-  //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as MlSchema,
-  //     miroirMetaModel: miroirMetaModel,
-  //     currentModel: currentModel,
-  //   };
-  // }, [
-  //   miroirMetaModel,
-  //   currentModel,
-  //   context.miroirFundamentalJzodSchema,
-  // ]);
   // Get snackbar functionality from context
-  const { showSnackbar, handleAsyncAction } = useSnackbar();
-  
-  // Example usage:
-  // showSnackbar("Operation completed successfully!", "success");
-  // handleAsyncAction(
-  //   async () => { /* your async operation */ },
-  //   "Operation completed successfully!",
-  //   "MyAsyncOperation"
-  // );
-
-  // log.info("ReportSectionListDisplay props.deploymentUuid", props.deploymentUuid);
-
+  const { handleAsyncAction } = useSnackbar();
   const domainController: DomainControllerInterface = useDomainControllerService();
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -357,28 +312,21 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
-    // return displayedDeploymentDefinition &&
     return props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
       ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
-      // context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid]
-      // ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[displayedDeploymentDefinition?.uuid][
         props.chosenApplicationSection
         ]
       : { availableReports: [], entities: [], entityDefinitions: [] };
   }, [
     props.deploymentUuid,
-    // displayedDeploymentDefinition,
     context.deploymentUuidToReportsEntitiesDefinitionsMapping,
     props.chosenApplicationSection,
   ]);
     
-  // log.info("ReportSectionListDisplay availableReports",availableReports);
-
   const currentReportTargetEntity: Entity | undefined =
     reportSectionDefinitionFromFormik?.type === "objectListReportSection" 
-    // props.reportSectionDEFUNCT?.type === "objectListReportSection" 
       ? entities?.find(
           (e:Entity) =>
             e?.uuid === reportSectionDefinitionFromFormik?.definition.parentUuid
@@ -388,7 +336,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
-  // const currentApplicationSection = (props.section?.definition as any)["applicationSection"]??"data";
   const currentApplicationSection = props.chosenApplicationSection??"data";
 
   // ##############################################################################################
@@ -410,19 +357,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  log.info(
-    "ReportSectionListDisplay currentReportTargetEntity",
-    currentReportTargetEntity,
-    "currentReportTargetEntityDefinition",
-    currentReportTargetEntityDefinition,
-    "instancesToDisplayJzodSchema",
-    instancesToDisplayJzodSchema
-  );
-
-  // const instancesToDisplayViewAttributes: string[] | undefined = useMemo(()=>
-  //   currentReportTargetEntityDefinition?.viewAttributes
-  //   ,[currentReportTargetEntityDefinition]
-  // )
+  // log.info(
+  //   "ReportSectionListDisplay currentReportTargetEntity",
+  //   currentReportTargetEntity,
+  //   "currentReportTargetEntityDefinition",
+  //   currentReportTargetEntityDefinition,
+  //   "instancesToDisplayJzodSchema",
+  //   instancesToDisplayJzodSchema
+  // );
 
   // ##############################################################################################
   // FOREIGN KEY OBJECTS FETCHING
@@ -490,7 +432,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: props.application,
-          // deploymentUuid: props.deploymentUuid,
           pageParams: props.paramsAsdomainElements,
           queryParams: {},
           contextResults: {},
@@ -521,9 +462,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // // ##############################################################################################
   const onCreateFormObject = useCallback(
     async (data: any) => {
-      log.info("ReportComponent onEditFormObject called with new object value", data);
+      // log.info("ReportComponent onEditFormObject called with new object value", data);
 
-      // if (props.displayedDeploymentDefinition && props.displayedDeploymentDefinition.uuid) {
       if (props.application) {
         if (props.chosenApplicationSection == "model") {
           await domainController.handleActionFromUI(
@@ -533,14 +473,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.application,
-                // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "createInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: props.application,
-                    // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                     applicationSection: currentApplicationSection,
                     parentUuid: data.parentUuid,
                     objects: [
@@ -549,7 +487,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                         parentUuid: data.parentUuid,
                         applicationSection: "model",
                         instances: [
-                          // newEntity
                           data,
                         ],
                       },
@@ -559,12 +496,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               },
             },
             props.applicationDeploymentMap,
-            // props.tableComponentReportType == "EntityInstance"?currentModel:undefined
             currentMiroirModelEnvironment, // TODO: use model environment for current deployment
           );
         } else {
           const createAction: InstanceAction = {
-            // actionType: "instanceAction",
             actionType: "createInstance",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -604,8 +539,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // ##############################################################################################
   const onEditFormObject = useCallback(
     async (data: any): Promise<Action2VoidReturnType> => {
-      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
-      log.info("ReportComponent onEditFormObject called with new object value", data);
+      // log.info("ReportComponent onEditFormObject called with new object value", data);
 
       if (props.application) {
         let result: Action2VoidReturnType;
@@ -617,7 +551,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
               payload: {
                 application: props.application,
-                // deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 instanceAction: {
                   actionType: "updateInstance",
                   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -639,7 +572,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               },
             },
             props.applicationDeploymentMap,
-            // props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
             currentMiroirModelEnvironment // TODO: use model environment for current deployment
           );
         } else {
@@ -688,9 +620,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // ##############################################################################################
   const onDeleteFormObject = useCallback(
     async (data:any) => {
-      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
-      log.info('onDeleteFormObject called with new object value',data);
-      log.info('onDeleteFormObject called with props',props);
+      // log.info('onDeleteFormObject called with new object value',data);
+      // log.info('onDeleteFormObject called with props',props);
       
       if (props.application) {
           if (!currentReportTargetEntityDefinition) {
@@ -721,14 +652,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // ##############################################################################################
   const onSubmitOuterDialog: (data: JsonObjectEditFormDialogInputs)=>void = useCallback(
     async (data) => {
-      log.info('ReportComponent onSubmitOuterDialog','data',data);
+      // log.info('ReportComponent onSubmitOuterDialog','data',data);
     
       // showSnackbar("Operation completed successfully!", "success");
       await handleAsyncAction(
         async () => { 
             const editResult = await onEditFormObject(data);
 
-            log.info('ReportComponent onSubmitOuterDialog done for','data',data, "editResult",editResult);
+            // log.info('ReportComponent onSubmitOuterDialog done for','data',data, "editResult",editResult);
 
             if (editResult && editResult instanceof Action2Error) {
               log.error('ReportComponent onSubmitOuterDialog error',editResult);
@@ -740,15 +671,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         "Operation completed successfully!",
         "onEditFormObject"
       );
-
-    // const editResult = await onEditFormObject(data);
-
-    // log.info('ReportComponent onSubmitOuterDialog done for','data',data, "editResult",editResult);
-
-    // if (editResult && editResult instanceof Action2Error) {
-    //   log.error('ReportComponent onSubmitOuterDialog error',editResult);
-    // }
-
     },
     [setAddObjectdialogFormIsOpen]
   )
@@ -758,14 +680,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const handleAddObjectDialogFormOpen = useCallback(
     // (label: string  | undefined, a: any) => {
       () => {
-      log.info(
-        "handleAddObjectDialogFormOpen defined with currentReportTargetEntity",
-        currentReportTargetEntity,
-        "currentReportTargetEntityDefinition",
-        currentReportTargetEntityDefinition,
-        Object.keys(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {}),
-        Object.entries(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {})
-      );
+      // log.info(
+      //   "handleAddObjectDialogFormOpen defined with currentReportTargetEntity",
+      //   currentReportTargetEntity,
+      //   "currentReportTargetEntityDefinition",
+      //   currentReportTargetEntityDefinition,
+      //   Object.keys(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {}),
+      //   Object.entries(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {})
+      // );
       const defaultFormValuesObject =
         currentReportTargetEntity &&
         currentReportTargetEntityDefinition &&
@@ -789,23 +711,18 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             )
           : undefined;
 
-      log.info(
-        "handleAddObjectDialogFormOpen",
-        "called, formObject",
-        defaultFormValuesObject,
-        "currentReportTargetEntityDefinition",
-        currentReportTargetEntityDefinition
-      );
+      // log.info(
+      //   "handleAddObjectDialogFormOpen",
+      //   "called, formObject",
+      //   defaultFormValuesObject,
+      //   "currentReportTargetEntityDefinition",
+      //   currentReportTargetEntityDefinition
+      // );
 
       defaultFormValuesObject.parentUuid = currentReportTargetEntity?.uuid;
       defaultFormValuesObject.parentName = currentReportTargetEntity?.name;
       setdialogOuterFormObject(
         defaultFormValuesObject,
-        //   {
-        //   parentUuid: currentReportTargetEntity?.uuid,
-        //   parentName: currentReportTargetEntityDefinition?.name,
-        //   ...defaultFormValuesObject,
-        // }
       );
       setAddObjectdialogFormIsOpen(true);
     },
@@ -820,18 +737,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // ##############################################################################################
   const handleAddObjectDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
     event?.stopPropagation();
-    log.info('ReportSectionListDisplay handleDialogTableRowFormClose',value);
+    // log.info('ReportSectionListDisplay handleDialogTableRowFormClose',value);
     
-    // setAddObjectdialogFormIsOpen(false);
     setAddObjectdialogFormIsOpenCallback(false);
   },[setAddObjectdialogFormIsOpen]);
 
 
-  // log.info("instancesToDisplay",instancesToDisplay);
-  // log.info("currentApplicationSection",currentApplicationSection);
-  // log.info("props.domainElementObject",props.domainElementObject);
-  // log.info("props.currentMiroirEntity",currentReportTargetEntity);
-  // log.info("tableColumnDefs",tableColumnDefs);
   const tableColumnDefs: { columnDefs: AutoGeneratedColumnDef[] } = useMemo(
     () =>
       (reportSectionDefinitionFromFormik?.type == "objectListReportSection"
@@ -871,14 +782,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         initiallyUnfolded={false}
         useCodeBlock={true}
       />
-      {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
       {reportSectionDefinitionFromFormik &&
       reportSectionDefinitionFromFormik.type == "objectListReportSection" &&
       currentReportTargetEntity &&
       currentReportTargetEntityDefinition ? (
         !!tableColumnDefs ? (
-          // columnDefs?.length > 0
-          // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div>
             <div
               style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "10px" }}
@@ -935,8 +843,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             )}
             {props.deploymentUuid ? (
               <div>
-                {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
-                {/* {entityInstanceGrid} */}
                 <ThemedOnScreenDebug
                   label={`ReportSectionListDisplay formik values`}
                   data={{ formik: formikContext.values }}
@@ -946,12 +852,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 <ThemedOnScreenDebug
                   label={`ReportSectionListDisplay reportSectionDefinitionFromFormik`}
                   data={reportSectionDefinitionFromFormik}
-                  // initiallyUnfolded={false}
                   useCodeBlock={true}
                 />
                 <EntityInstanceGrid
                   type={props.tableComponentReportType}
-                  // displayedDeploymentDefinition={props.displayedDeploymentDefinition}
                   styles={props.styles}
                   currentEntity={currentReportTargetEntity}
                   currentEntityDefinition={currentReportTargetEntityDefinition}
@@ -966,7 +870,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   maxRows={50}
                   onRowEdit={onEditFormObject}
                   onRowDelete={onDeleteFormObject}
-                  // sortByAttribute={props.reportSectionDEFUNCT.definition.sortByAttribute}
                   sortByAttribute={reportSectionDefinitionFromFormik.definition?.sortByAttribute}
                   paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
                   //
@@ -984,35 +887,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       ) : (
         <ThemedSpan style={{ color: "red" }}>
           ReportSectionListDisplay, no report or incorrect report to display:{" "}
-          {/* {JSON.stringify(props.reportSectionDEFUNCT)} */}
           {JSON.stringify(reportSectionDefinitionFromFormik)}
         </ThemedSpan>
       )}
     </ThemedBox>
   );
-  // } else { // props.tableComponentReportType == "JSON_ARRAY"
-  //   // const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData
-  //   // log.info('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogOuterFormObject);
-    
-  //   return (
-  //     <div>
-  //       {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
-  //       {/* <JsonObjectEditFormDialog
-  //         showButton={true}
-  //         mlSchema={entityDefinitionEntityDefinition.mlSchema as JzodObject}
-  //         initialValuesObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.mlSchema as JzodObject, [], existingRows)}
-  //         label='InnerDialog'
-  //         onSubmit={onSubmitInnerFormDialog}
-  //       />
-  //       <EntityInstanceGrid
-  //         type="JSON_ARRAY"
-  //         styles={props.styles}
-  //         columnDefs={props.columnDefs}
-  //         rowData={existingRows}
-  //         displayTools={true}
-  //       >
-  //       </EntityInstanceGrid> */}
-  //     </div>
-  //   );
-  // }
 }

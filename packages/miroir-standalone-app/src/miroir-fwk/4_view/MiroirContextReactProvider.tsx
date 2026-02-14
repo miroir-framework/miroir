@@ -122,7 +122,8 @@ export interface MiroirReactContext {
   // ###################################################################################################
   // Miroir meta-model
   miroirFundamentalJzodSchema: MlSchema | undefined;
-  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>;
+  // setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement | undefined>>;
+  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<MlSchema | undefined>>;
   // ###################################################################################################
   // Form state management
   innerFormOutput: any;
@@ -309,7 +310,7 @@ export function MiroirContextReactProvider(props: {
         ...toolsPageState,
         transformerEditor: { ...(toolsPageState.transformerEditor || {}), ...updates },
       };
-      log.info("updateTransformerEditorState", { toolsPageState, updates, newState });
+      // log.info("updateTransformerEditorState", { toolsPageState, updates, newState });
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
       sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
@@ -341,12 +342,12 @@ export function MiroirContextReactProvider(props: {
       try {
         setIsActionRunning(true);
         const result = await action();
-        log.info(
-          `handleAsyncAction done for ${actionName}:`,
-          result,
-          "is error:",
-          result && typeof result === "object" && result.status === "error"
-        );
+        // log.info(
+        //   `handleAsyncAction done for ${actionName}:`,
+        //   result,
+        //   "is error:",
+        //   result && typeof result === "object" && result.status === "error"
+        // );
 
         // Check if the result is an Action2Error (server error)
         if (result && typeof result === "object" && result.status === "error") {
@@ -362,10 +363,10 @@ export function MiroirContextReactProvider(props: {
 
           startTransition(() => {
             if (result.isServerError && result.errorMessage) {
-              log.info("Showing server error snackbar for", actionName);
+              // log.info("Showing server error snackbar for", actionName);
               showSnackbar(`Server error: ${result.errorMessage}`, "error");
             } else {
-              log.info("Showing generic error snackbar for", actionName);
+              // log.info("Showing generic error snackbar for", actionName);
               showSnackbar(
                 `Error in ${actionName}: ${
                   result.errorMessage || result.errorType || "Unknown error"
@@ -461,7 +462,7 @@ export function MiroirContextReactProvider(props: {
         return clientConfig.serverConfig.rootApiUrl;
       }
     } else {
-      log.info("MiroirContextReactProvider found config:", JSON.stringify(config, null, 2));
+      // log.info("MiroirContextReactProvider found config:", JSON.stringify(config, null, 2));
       log.warn("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
       return '';
       // throw new Error("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
@@ -496,12 +497,7 @@ export function MiroirContextReactProvider(props: {
       deploymentUuidToReportsEntitiesDefinitionsMapping,
       setDeploymentUuidToReportsEntitiesDefinitionsMapping,
       miroirFundamentalJzodSchema,
-      // setMiroirFundamentalJzodSchema: (a: any) => {log.info("setMiroirFundamentalJzodSchema called with", a);setMiroirFundamentalJzodSchema(a)},
-      setMiroirFundamentalJzodSchema: (a: any) => {
-        // console.log("setMiroirFundamentalJzodSchema called!");
-        console.log("setMiroirFundamentalJzodSchema called with", Object.keys(a ?? {}).length);
-        setMiroirFundamentalJzodSchema(a);
-      },
+      setMiroirFundamentalJzodSchema,
       viewParams,
       toolsPageState,
       updateToolsPageStateDEFUNCT,

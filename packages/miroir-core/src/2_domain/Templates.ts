@@ -308,13 +308,13 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     ...queryTemplate.queryParams,
   };
 
-  log.info(
-    "resolveQueryTemplateWithExtractorCombinerTransformer converting queryTemplate:",
-    JSON.stringify(queryTemplate.extractorTemplates, null, 2),
-    "params:",
-    params
-    // JSON.stringify(params, null, 2)
-  );
+  // log.info(
+  //   "resolveQueryTemplateWithExtractorCombinerTransformer converting queryTemplate:",
+  //   JSON.stringify(queryTemplate.extractorTemplates, null, 2),
+  //   "params:",
+  //   params
+  //   // JSON.stringify(params, null, 2)
+  // );
   
   const queries = Object.fromEntries(
     Object.entries(queryTemplate.extractorTemplates ?? {}).map(
@@ -354,12 +354,13 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
       "resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable for combiners: " +
         JSON.stringify(failures)
     );
-  } else {
-    log.info(
-      "resolveQueryTemplateWithExtractorCombinerTransformer no failure for combiners: " +
-        JSON.stringify(failures)
-    );
   }
+  //  else {
+  //   // log.info(
+  //   //   "resolveQueryTemplateWithExtractorCombinerTransformer no failure for combiners: " +
+  //   //     JSON.stringify(failures)
+  //   // );
+  // }
   const result: BoxedQueryWithExtractorCombinerTransformer = {
     queryType: "boxedQueryWithExtractorCombinerTransformer",
     pageParams: queryTemplate.pageParams,
@@ -370,7 +371,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     combiners: combiners as Record<string, ExtractorOrCombiner>,
     runtimeTransformers: queryTemplate.runtimeTransformers,
   };
-  log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted query, result:", combiners);
+  // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted query, result:", combiners);
 
   return result;
 }

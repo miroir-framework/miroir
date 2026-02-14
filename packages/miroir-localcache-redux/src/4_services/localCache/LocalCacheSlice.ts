@@ -220,14 +220,14 @@ function loadNewEntityInstancesInLocalCache(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  log.info(
-    "loadNewEntityInstancesInLocalCache Redux called with deployment",
-    deploymentUuid,
-    "section",
-    section,
-    "instanceCollection",
-    instanceCollection
-  );
+  // log.info(
+  //   "loadNewEntityInstancesInLocalCache Redux called with deployment",
+  //   deploymentUuid,
+  //   "section",
+  //   section,
+  //   "instanceCollection",
+  //   instanceCollection
+  // );
   const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
   // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",

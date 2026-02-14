@@ -153,7 +153,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
                 if (currentFilterModel && currentFilterModel[colId]) {
                   delete currentFilterModel[colId];
                   gridApiRef.current.setFilterModel(currentFilterModel);
-                  log.info(`Filter cleared for column: ${colId}`);
+                  // log.info(`Filter cleared for column: ${colId}`);
                 }
               }
             }
@@ -175,7 +175,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
             e.stopImmediatePropagation();
             if (gridApiRef.current) {
               gridApiRef.current.setFilterModel(null);
-              log.info('All filters cleared via global icon click');
+              // log.info('All filters cleared via global icon click');
             }
             return false;
           }, true);
@@ -413,16 +413,16 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   // ##############################################################################################
   const handleEditDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
     // event?.stopPropagation();
-    log.info('handleEditDialogFormOpen called with props',props);
-    log.info('handleEditDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
+    // log.info('handleEditDialogFormOpen called with props',props);
+    // log.info('handleEditDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     
     if (a) {
       setdialogFormObject(a.rawValue);
       setdialogOuterFormObject(a.rawValue)
-      log.info('handleEditDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
+      // log.info('handleEditDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       setdialogFormObject(undefined);
-      log.info('handleEditDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      // log.info('handleEditDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     // setEditDialogFormIsOpen(true);
     setValueObjectEditMode("update");
@@ -441,17 +441,17 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   // ##############################################################################################
   const handleDeleteDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
     // event?.stopPropagation();
-    log.info('handleDeleteDialogFormOpen called with props',props);
-    log.info('handleDeleteDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
+    // log.info('handleDeleteDialogFormOpen called with props',props);
+    // log.info('handleDeleteDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     
     if (a) {
       setdialogFormObject(a.rawValue);
       setdialogOuterFormObject(a.rawValue)
-      log.info('handleDeleteDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
+      // log.info('handleDeleteDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
       setdialogFormObject(undefined);
-      log.info('handleDeleteDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      // log.info('handleDeleteDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     setDeleteDialogFormIsOpen(true);
   },[props.instancesToDisplay]);
@@ -459,8 +459,8 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   // ##############################################################################################
   const handleDuplicateDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
     // event?.stopPropagation();
-    log.info('handleDuplicateDialogFormOpen called with props',props);
-    log.info('handleDuplicateDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
+    // log.info('handleDuplicateDialogFormOpen called with props',props);
+    // log.info('handleDuplicateDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     
     if (a) {
       // Create a duplicate with a new random UUID
@@ -470,10 +470,10 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
       };
       setdialogFormObject(duplicatedObject);
       setdialogOuterFormObject(duplicatedObject);
-      log.info('handleDuplicateDialogFormOpen parameter is defined, created duplicate with new UUID',duplicatedObject);
+      // log.info('handleDuplicateDialogFormOpen parameter is defined, created duplicate with new UUID',duplicatedObject);
     } else {
       setdialogFormObject(undefined);
-      log.info('handleDuplicateDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      // log.info('handleDuplicateDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     // setEditDialogFormIsOpen(true);
     setValueObjectEditMode("create");
@@ -504,7 +504,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
       onFilterClick: () => {
         if (gridApiRef.current) {
           gridApiRef.current.setFilterModel(null);
-          log.info('Filters cleared via header component');
+          // log.info('Filters cleared via header component');
         }
       }
     }

@@ -88,7 +88,6 @@ export type GetExtractorTemplateRunnerParamsForReduxDeploymentsState = <QueryTyp
   applicationDeploymentMap: ApplicationDeploymentMap,
   extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ) => SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState>;
-// ) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, ReduxDeploymentsState>;
 
 export function getExtractorTemplateRunnerParamsForReduxDeploymentsState<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
@@ -142,8 +141,6 @@ export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
     deploymentEntityState &&
     deploymentEntityState[deploymentEntityStateIndex] &&
     deploymentEntityState[deploymentEntityStateIndex].entities
-    // deploymentEntityState[deploymentEntityStateIndex].entities[entityEntityDefinition.uuid]
-    // deploymentEntityState[deploymentEntityStateIndex].entities[foreignKeyParams.query.entityUuid]
   ) {
     const entityDefinition: EntityDefinition | undefined = Object.values(
       deploymentEntityState[deploymentEntityStateIndex].entities as Record<string, EntityDefinition>
@@ -164,11 +161,8 @@ export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
       return undefined;
     }
     const result: JzodObject = entityDefinition.mlSchema;
-    // const result: JzodObject = (
-    //   deploymentEntityState[deploymentEntityStateIndex].entities[foreignKeyParams.query.entityUuid] as EntityDefinition
-    // ).mlSchema;
 
-    log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
+    // log.info("extractEntityJzodSchemaFromReduxDeploymentsState foreignKeyParams", foreignKeyParams, "result", result);
 
     return result;
   } else {

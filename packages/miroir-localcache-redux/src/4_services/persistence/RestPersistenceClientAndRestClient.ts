@@ -273,12 +273,12 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     persistenceAction: PersistenceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<RestClientCallReturnType> {
-    log.info(
-      "handleNetworkPersistenceAction called for persistenceAction",
-      persistenceAction,
-      "applicationDeploymentMap",
-      applicationDeploymentMap
-    );
+    // log.info(
+    //   "handleNetworkPersistenceAction called for persistenceAction",
+    //   persistenceAction,
+    //   "applicationDeploymentMap",
+    //   applicationDeploymentMap
+    // );
     switch (persistenceAction.actionType) {
       // case "instanceAction":
       case "createInstance":
@@ -312,13 +312,13 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           this.rootApiUrl + "/action/" + persistenceAction.actionType,
           applicationDeploymentMap,
         );
-        log.info("handleNetworkPersistenceAction called for action", persistenceAction, "callParams", callParams);
+        // log.info("handleNetworkPersistenceAction called for action", persistenceAction, "callParams", callParams);
         const result = await callParams.operation(
           "/action/:actionType",
           callParams.url,
           callParams.args
         );
-        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return Promise.resolve(result);
         break;
       }
@@ -334,9 +334,9 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "runBoxedExtractorOrQueryAction":
       case "runBoxedQueryAction": {
         const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/query", applicationDeploymentMap);
-        log.info("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
         const result = await callParams.operation("/query", callParams.url, callParams.args);
-        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return result;
         break;
       }
@@ -344,13 +344,13 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "runBoxedQueryTemplateAction":
       case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
         const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/queryTemplate", applicationDeploymentMap);
-        log.debug("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
+        // log.debug("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
         const result = await callParams.operation(
           "/queryTemplate",
           callParams.url,
           callParams.args
         );
-        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return result;
         break;
       }
@@ -385,7 +385,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           );
         }
         const effectiveAction = persistenceAction.actionType.split('_')[1];
-        log.info("handleNetworkPersistenceAction effectiveAction", effectiveAction);
+        // log.info("handleNetworkPersistenceAction effectiveAction", effectiveAction);
         const callParams = this.getRestCallParams(
           persistenceAction,
           this.rootApiUrl +
@@ -398,23 +398,22 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         );
         const completeArgs = {
           ...callParams.args,
-          // actionName: action.actionName,
           application: persistenceAction.payload.application,
           deploymentUuid: applicationDeploymentMap[persistenceAction.payload.application],
           section: persistenceAction.payload.section,
           parentUuid: persistenceAction.payload.parentUuid,
           applicationDeploymentMap,
         };
-        log.info(
-          "handleNetworkPersistenceAction action",
-          persistenceAction,
-          "section",
-          persistenceAction.payload.section,
-          "callParams",
-          callParams,
-          "completeArgs",
-          completeArgs
-        );
+        // log.info(
+        //   "handleNetworkPersistenceAction action",
+        //   persistenceAction,
+        //   "section",
+        //   persistenceAction.payload.section,
+        //   "callParams",
+        //   callParams,
+        //   "completeArgs",
+        //   completeArgs
+        // );
         const result = callParams.operation(
           "/CRUD/:deploymentUuid/:section/entity" +
             (effectiveAction == "read" ? "/:parentUuid/all" : ""),

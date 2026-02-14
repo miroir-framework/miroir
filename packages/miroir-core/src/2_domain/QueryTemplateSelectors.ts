@@ -70,14 +70,14 @@ export async function handleQueryTemplateAction(
     queryTemplateAction.payload.query,
     modelEnvironment,
   );
-  log.info(
-    "handleQueryTemplateAction for ",
-    origin,
-    "handleQueryTemplateAction",
-    JSON.stringify(queryTemplateAction, null, 2),
-    "resolvedQuery",
-    JSON.stringify(resolvedQuery, null, 2)
-  );
+  // log.info(
+  //   "handleQueryTemplateAction for ",
+  //   origin,
+  //   "handleQueryTemplateAction",
+  //   JSON.stringify(queryTemplateAction, null, 2),
+  //   "resolvedQuery",
+  //   JSON.stringify(resolvedQuery, null, 2)
+  // );
 
   return handleBoxedQueryAction(
     origin,
@@ -157,26 +157,26 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
   modelEnvironment: MiroirModelEnvironment
 ): Promise<Action2ReturnType> {
-  log.info(
-    "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-    origin,
-    "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-    JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
-  );
+  // log.info(
+  //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
+  //   origin,
+  //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+  //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
+  // );
 
   if ("queryType" in queryTemplateOrExtractorTemplateAction.payload.query) {
     const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
       queryTemplateOrExtractorTemplateAction.payload.query as BoxedQueryTemplateWithExtractorCombinerTransformer,
       modelEnvironment,
     );
-    log.info(
-      "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-      origin,
-      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-      JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
-      "resolvedQuery",
-      JSON.stringify(resolvedQuery, null, 2)
-    );
+    // log.info(
+    //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
+    //   origin,
+    //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+    //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
+    //   "resolvedQuery",
+    //   JSON.stringify(resolvedQuery, null, 2)
+    // );
     return handleBoxedQueryAction(
       origin,
       {
@@ -185,7 +185,6 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
         payload: {
           application: queryTemplateOrExtractorTemplateAction.payload.application,
-          // deploymentUuid: queryTemplateOrExtractorTemplateAction.payload.deploymentUuid,
           applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
           query: resolvedQuery as any,
         }
@@ -200,14 +199,14 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       localQuery,
       modelEnvironment,
     );
-    log.info(
-      "handleBoxedExtractorTemplateOrQueryTemplateAction for",
-      origin,
-      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-      JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
-      "resolvedQuery",
-      JSON.stringify(resolvedQuery, null, 2)
-    );
+    // log.info(
+    //   "handleBoxedExtractorTemplateOrQueryTemplateAction for",
+    //   origin,
+    //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+    //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
+    //   "resolvedQuery",
+    //   JSON.stringify(resolvedQuery, null, 2)
+    // );
     const extractorAction: RunBoxedExtractorAction = {
       actionType: "runBoxedExtractorAction",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -218,12 +217,12 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
         query: resolvedQuery as any,
       }
     };
-    log.info(
-      "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-      origin,
-      "############################################# extractorAction",
-      JSON.stringify(extractorAction, null, 2),
-    );
+    // log.info(
+    //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
+    //   origin,
+    //   "############################################# extractorAction",
+    //   JSON.stringify(extractorAction, null, 2),
+    // );
     return handleBoxedExtractorAction(
       origin,
       extractorAction,
@@ -245,7 +244,6 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
   >,
   modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<DomainElementSuccess> => {
-  // log.info("########## extractExtractor begin, query", foreignKeyParams);
   if (!foreignKeyParams.extractorRunnerMap) {
     throw new Error("extractWithBoxedExtractorTemplate requires extractorRunnerMap");
   }
@@ -354,7 +352,6 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
   );
 
   if (entityUuidDomainElement instanceof Domain2ElementFailed) {
-  // if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
     log.error(
       "extractzodSchemaForSingleSelectQuery called",
       foreignKeyParams.query,
@@ -374,7 +371,6 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
         contextResults: {},
         pageParams: foreignKeyParams.query.pageParams,
         queryParams: foreignKeyParams.query.queryParams,
-        // deploymentUuid: foreignKeyParams.query.deploymentUuid ?? "",
         entityUuid: entityUuidDomainElement,
       },
     } as ExtractorTemplateRunnerParamsForJzodSchema<
@@ -444,7 +440,6 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
   modelEnvironment: MiroirModelEnvironment
 ):  RecordOfJzodObject | undefined => {
   const localFetchParams: BoxedQueryTemplateWithExtractorCombinerTransformer = foreignKeyParams.query.fetchParams
-  // log.info("selectFetchQueryJzodSchemaFromDomainState called", foreignKeyParams.query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.combinerTemplates ?? {}).map(
@@ -457,7 +452,6 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
             extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
             query: {
               queryType: "getQueryJzodSchema",
-              // deploymentUuid: localFetchParams.deploymentUuid,
               contextResults: {},
               pageParams: foreignKeyParams.query.pageParams,
               queryParams: foreignKeyParams.query.queryParams,
@@ -473,6 +467,5 @@ export const extractFetchQueryTemplateJzodSchema = <StateType>(
     )
   ) as RecordOfJzodObject;
 
-  // log.info("selectFetchQueryJzodSchemaFromDomainState query", JSON.stringify(foreignKeyParams.query, undefined, 2), "fetchQueryJzodSchema", fetchQueryJzodSchema)
   return fetchQueryJzodSchema;
 };

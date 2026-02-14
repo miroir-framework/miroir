@@ -473,20 +473,20 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
   alwaysPropagate: boolean = true,
   skipContextEntry?: (name:string, defn: JzodElement) => boolean,
 ): Record<string, any> {
-  log.info(
-    "createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context",
-    Object.keys(localizedResolutionStore.context ?? {}).length,
-    JSON.stringify(Object.keys(localizedResolutionStore.context ?? {}), null, 2)
-  );
+  // log.info(
+  //   "createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context",
+  //   Object.keys(localizedResolutionStore.context ?? {}).length,
+  //   JSON.stringify(Object.keys(localizedResolutionStore.context ?? {}), null, 2)
+  // );
   return Object.fromEntries(
       Object.entries(localizedResolutionStore.context ?? {}).map((f) => {
-        log.info(
-          customChalk.blue("createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context"),
-          customChalk.green(f[0]),
-          customChalk.yellow(f[1] && f[1].type),
-          // customChalk.magenta(f[1] && f[1].definition && f[1].definition.relativePath)
-          customChalk.magenta(f[1] && (f[1] as any).definition && (f[1] as any).definition?.relativePath)
-        );
+        // log.info(
+        //   customChalk.blue("createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context"),
+        //   customChalk.green(f[0]),
+        //   customChalk.yellow(f[1] && f[1].type),
+        //   // customChalk.magenta(f[1] && f[1].definition && f[1].definition.relativePath)
+        //   customChalk.magenta(f[1] && (f[1] as any).definition && (f[1] as any).definition?.relativePath)
+        // );
         const schemaWithCarryOn =
           skipContextEntry && skipContextEntry(f[0], f[1])
             ? {

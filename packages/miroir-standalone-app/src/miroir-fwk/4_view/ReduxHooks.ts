@@ -263,13 +263,13 @@ export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends Que
   const innerSelector = useMemo(() => {
     return applyReduxDeploymentsStateJzodSchemaSelector(domainStateSelector);
   }, [domainStateSelector]);
-  log.info(
-    "useReduxDeploymentsStateJzodSchemaSelector called",
-    applicationDeploymentMap,
-    foreignKeyParams,
-    "innerSelector",
-    innerSelector
-  );
+  // log.info(
+  //   "useReduxDeploymentsStateJzodSchemaSelector called",
+  //   applicationDeploymentMap,
+  //   foreignKeyParams,
+  //   "innerSelector",
+  //   innerSelector
+  // );
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       innerSelector(state, applicationDeploymentMap, foreignKeyParams, defaultMetaModelEnvironment)

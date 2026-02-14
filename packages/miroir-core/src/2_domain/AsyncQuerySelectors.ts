@@ -77,10 +77,10 @@ export const asyncExtractEntityInstanceUuidIndexWithObjectListExtractor
   )
     .extractEntityInstanceUuidIndex(foreignKeyParams, applicationDeploymentMap, modelEnvironment)
     .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex>) => {
-      log.info(
-        "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
-        selectedInstancesUuidIndex
-      );
+      // log.info(
+      //   "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
+      //   selectedInstancesUuidIndex
+      // );
 
       return applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory(
         selectedInstancesUuidIndex,
@@ -109,10 +109,10 @@ export const asyncExtractEntityInstanceListWithObjectListExtractor
   )
     .extractEntityInstanceList(foreignKeyParams, applicationDeploymentMap, modelEnvironment)
     .then((selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]>) => {
-      log.info(
-        "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
-        selectedInstancesUuidIndex
-      );
+      // log.info(
+      //   "asyncExtractEntityInstanceUuidIndexWithObjectListExtractor found selectedInstances",
+      //   selectedInstancesUuidIndex
+      // );
 
       return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
         selectedInstancesUuidIndex,
@@ -170,13 +170,12 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
     case "extractorByEntityReturningObjectList":
     case "combinerByRelationReturningObjectList":
     case "combinerByManyToManyRelationReturningObjectList": {
-      // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractor({
-      log.info(
-        "############ asyncInnerSelectElementFromQuery",
-        extractorOrCombiner.extractorOrCombinerType,
-        "start, extractorOrCombiner",
-        JSON.stringify(extractorOrCombiner, null, 2)
-      );
+      // log.info(
+      //   "############ asyncInnerSelectElementFromQuery",
+      //   extractorOrCombiner.extractorOrCombinerType,
+      //   "start, extractorOrCombiner",
+      //   JSON.stringify(extractorOrCombiner, null, 2)
+      // );
       const result = await extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         {
           extractorRunnerMap,
@@ -198,23 +197,23 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
         // queryParams, //
         modelEnvironment
       );
-      log.info(
-        "############ asyncInnerSelectElementFromQuery",
-        extractorOrCombiner.extractorOrCombinerType,
-        "done"
-      );
+      // log.info(
+      //   "############ asyncInnerSelectElementFromQuery",
+      //   extractorOrCombiner.extractorOrCombinerType,
+      //   "done"
+      // );
       return Promise.resolve(result);
       break;
     }
     case "combinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
-      log.info(
-        "############ asyncInnerSelectElementFromQuery",
-        extractorOrCombiner.extractorOrCombinerType,
-        "start, extractorOrCombiner",
-        JSON.stringify(extractorOrCombiner, null, 2)
-      );
-      log.info("asyncInnerSelectElementFromQuery", JSON.stringify(extractorOrCombiner, null, 2));
+      // log.info(
+      //   "############ asyncInnerSelectElementFromQuery",
+      //   extractorOrCombiner.extractorOrCombinerType,
+      //   "start, extractorOrCombiner",
+      //   JSON.stringify(extractorOrCombiner, null, 2)
+      // );
+      // log.info("asyncInnerSelectElementFromQuery", JSON.stringify(extractorOrCombiner, null, 2));
       const result = await extractorRunnerMap.extractEntityInstance(
         {
           extractorRunnerMap,
@@ -235,11 +234,11 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
         applicationDeploymentMap,
         modelEnvironment
       ); 
-      log.info(
-        "############ asyncInnerSelectElementFromQuery",
-        extractorOrCombiner.extractorOrCombinerType,
-        "done, result=", JSON.stringify(result, null, 2)
-      );
+      // log.info(
+      //   "############ asyncInnerSelectElementFromQuery",
+      //   extractorOrCombiner.extractorOrCombinerType,
+      //   "done, result=", JSON.stringify(result, null, 2)
+      // );
       return Promise.resolve(result);
       break;
     }
@@ -257,7 +256,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           extractorRunnerMap,
           application,
           applicationDeploymentMap,
-          // deploymentUuid,
           extractors,
           extractor
         );
@@ -278,7 +276,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           extractorRunnerMap,
           application,
           applicationDeploymentMap,
-          // deploymentUuid,
           extractors,
           e
         );
@@ -299,7 +296,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractorRunnerMap,
               application,
               applicationDeploymentMap,
-              // deploymentUuid,
               extractors,
               {
                 extractorOrCombinerType: "extractorOrCombinerContextReference",
@@ -355,7 +351,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               extractorRunnerMap,
               application,
               applicationDeploymentMap,
-              // deploymentUuid,
               extractors,
               resolvedQuery as ExtractorOrCombiner
             );
@@ -524,7 +519,7 @@ export const asyncRunQuery = async (
       query.extractor.extractors ?? {} as any,
       extractor
     );
-    log.info("asyncRunQuery for extractor", key, "result", JSON.stringify(result, null, 2));
+    // log.info("asyncRunQuery for extractor", key, "result", JSON.stringify(result, null, 2));
     context[key] = result; // sequential side-effect update
   }
 
@@ -554,7 +549,7 @@ export const asyncRunQuery = async (
       query.extractor.extractors ?? ({} as any),
       combiner
     );
-    log.info("asyncRunQuery for combiner", key, "result", JSON.stringify(result, null, 2));
+    // log.info("asyncRunQuery for combiner", key, "result", JSON.stringify(result, null, 2));
     context[key] = result;
   }
 
@@ -575,23 +570,13 @@ export const asyncRunQuery = async (
         return [transformer[0], result]; // TODO: check for failure!
       });
     context[result[0]] = result[1]; // does side effect!
-    log.info(
-      "asyncRunQuery for runtimeTransformer",
-      result[0],
-      "result",
-      // JSON.stringify(Object.keys(context))
-      JSON.stringify(result[1], null, 2)
-    );
+    // log.info(
+    //   "asyncRunQuery for runtimeTransformer",
+    //   result[0],
+    //   "result",
+    //   // JSON.stringify(Object.keys(context))
+    //   JSON.stringify(result[1], null, 2)
+    // );
   }
-  // return context;
-  // log.info(
-  //   "runQueryTemplateWithExtractorCombinerTransformer",
-  //   "query",
-  //   foreignKeyParams,
-  //   "domainState",
-  //   deploymentEntityState,
-  //   "newFetchedData",
-  //   context
-  // );
   return context;
 };

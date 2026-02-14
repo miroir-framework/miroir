@@ -118,12 +118,6 @@ export const RootComponent = (props: RootComponentProps) => {
   count++;
 
   log.info("RootComponent render", count, "######################################");
-  log.info("RootComponent render", count, "######################################");
-  log.info("RootComponent render", count, "######################################");
-  log.info("RootComponent render", count, "######################################");
-  log.info("RootComponent render", count, "######################################");
-  log.info("RootComponent render", count, "######################################");
-  log.info("RootComponent render", count, "######################################");
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
 
   // log.info("actionsWithDeploymentInPayload", actionsWithDeploymentInPayload);
@@ -133,9 +127,9 @@ export const RootComponent = (props: RootComponentProps) => {
     snackbarOpen,
     snackbarMessage,
     snackbarSeverity,
-    showSnackbar,
+    // showSnackbar,
     handleSnackbarClose,
-    handleAsyncAction,
+    // handleAsyncAction,
   } = useSnackbar();
 
   // InstanceEditorOutline state
@@ -191,7 +185,7 @@ export const RootComponent = (props: RootComponentProps) => {
   const miroirMetaModel: MetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
   // log.info("RootComponent", count, "adminAppModel", adminAppModel);
-  log.info("RootComponent", count, "miroirMetaModel", miroirMetaModel);
+  // log.info("RootComponent", count, "miroirMetaModel", miroirMetaModel);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateSelectorMap(),
     []
@@ -206,8 +200,8 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  log.info("RootComponent defaultSelfApplicationDeploymentMap",defaultSelfApplicationDeploymentMap);
-  log.info("RootComponent adminAppModel",adminAppModel);
+  // log.info("RootComponent defaultSelfApplicationDeploymentMap",defaultSelfApplicationDeploymentMap);
+  // log.info("RootComponent adminAppModel",adminAppModel);
   const fetchAdminDeploymentsQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
     useMemo(
       () =>
@@ -238,7 +232,7 @@ export const RootComponent = (props: RootComponentProps) => {
       [adminAppModel]
     );
 
-  log.info("RootComponent fetchAdminDeploymentsQueryParams",fetchAdminDeploymentsQueryParams)
+  // log.info("RootComponent fetchAdminDeploymentsQueryParams",fetchAdminDeploymentsQueryParams)
   const adminDeploymentsQueryResult: 
     Domain2QueryReturnType<{deployments:Deployment[]}> = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
@@ -246,7 +240,7 @@ export const RootComponent = (props: RootComponentProps) => {
     defaultSelfApplicationDeploymentMap
   );
 
-  log.info("RootComponent adminDeploymentsQueryResult",adminDeploymentsQueryResult);
+  // log.info("RootComponent adminDeploymentsQueryResult",adminDeploymentsQueryResult);
 
   const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useMemo(
     () =>
@@ -261,7 +255,7 @@ export const RootComponent = (props: RootComponentProps) => {
         : undefined,
     [adminDeploymentsQueryResult]
   );
-  log.info("RootComponent applicationDeploymentMap",applicationDeploymentMap);
+  // log.info("RootComponent applicationDeploymentMap",applicationDeploymentMap);
 
   // Use dynamic applicationDeploymentMap (which includes non-default apps like Library)
   // falling back to defaultSelfApplicationDeploymentMap during initial load.
@@ -271,7 +265,7 @@ export const RootComponent = (props: RootComponentProps) => {
     currentApplication,
     applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
   );
-  log.info("RootComponent", count, "currentModel", currentModel);
+  // log.info("RootComponent", count, "currentModel", currentModel);
 
   // const applicationDeploymentMap2 = useApplicationDeploymentMapFromLocalCache(
   //   applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
@@ -280,7 +274,7 @@ export const RootComponent = (props: RootComponentProps) => {
   
   useEffect(() => {
     if (applicationDeploymentMap) {
-      log.info("RootComponent calling setApplicationDeploymentMap in context",applicationDeploymentMap);
+      // log.info("RootComponent calling setApplicationDeploymentMap in context",applicationDeploymentMap);
       context.setApplicationDeploymentMap(applicationDeploymentMap);
     }
   }, [applicationDeploymentMap]);
@@ -333,16 +327,16 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // Stable references to prevent unnecessary re-renders
-  const displayedDeploymentUuid = useMemo(() => context.deploymentUuid, [context.deploymentUuid]);
-  const setDisplayedDeploymentUuid = useMemo(
-    () => context.setDeploymentUuid,
-    [context.setDeploymentUuid]
-  );
-  // const displayedApplicationSection = useMemo(() => context.applicationSection, [context.applicationSection]);
-  const setDisplayedApplicationSection = useMemo(
-    () => context.setApplicationSection,
-    [context.setApplicationSection]
-  );
+  // const displayedDeploymentUuid = useMemo(() => context.deploymentUuid, [context.deploymentUuid]);
+  // const setDisplayedDeploymentUuid = useMemo(
+  //   () => context.setDeploymentUuid,
+  //   [context.setDeploymentUuid]
+  // );
+  // // const displayedApplicationSection = useMemo(() => context.applicationSection, [context.applicationSection]);
+  // const setDisplayedApplicationSection = useMemo(
+  //   () => context.setApplicationSection,
+  //   [context.setApplicationSection]
+  // );
 
   // ###############################################################################################
   useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any));
@@ -380,18 +374,6 @@ export const RootComponent = (props: RootComponentProps) => {
     [openSidebarCloseOutline, closeSidebar]
   );
 
-  // const handleChangeDisplayedDeployment = useMemo(
-  //   () => (event: SelectChangeEvent<unknown>) => {
-  //     event.stopPropagation();
-  //     log.info("handleChangeDisplayedDeployment", event);
-  //     setDisplayedDeploymentUuid(event.target.value as string);
-  //     log.info("handleChangeDisplayedDeployment", displayedDeploymentUuid);
-  //     setDisplayedApplicationSection("data");
-  //     // setDisplayedReportUuid("");
-  //   },
-  //   [setDisplayedDeploymentUuid, setDisplayedApplicationSection]
-  // );
-
   // ##############################################################################################
   // InstanceEditorOutline handlers with sidebar coordination
   const handleToggleOutline = useCallback(() => {
@@ -420,12 +402,12 @@ export const RootComponent = (props: RootComponentProps) => {
   const handleNavigateToPath = useCallback((path: string[]) => {
     const rootLessListKey = path.join(".");
 
-    console.log(
-      "Attempting to navigate to path:",
-      path,
-      "rootLessListKey:",
-      rootLessListKey,
-    );
+    // log.info(
+    //   "Attempting to navigate to path:",
+    //   path,
+    //   "rootLessListKey:",
+    //   rootLessListKey,
+    // );
 
     // Helper function to escape CSS selectors
     const escapeCSS = (str: string) => {
@@ -578,7 +560,7 @@ export const RootComponent = (props: RootComponentProps) => {
     [adminAppModel?.entities?.length]
   );
 
-  log.info("RootComponent: stableQueryParams", stableQueryParams);
+  // log.info("RootComponent: stableQueryParams", stableQueryParams);
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
     string,
     EntityInstancesUuidIndex
@@ -591,7 +573,7 @@ export const RootComponent = (props: RootComponentProps) => {
     applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
   );
 
-  log.info("RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
+  // log.info("RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
   // Optimize ViewParams state management to reduce re-renders
   const defaultViewParamsFromAdminStorage: ViewParamsData | undefined = useMemo(
     () =>
@@ -753,30 +735,6 @@ export const RootComponent = (props: RootComponentProps) => {
       }
     };
   }, [updateQueue]);
-
-  // const outlineContextValue: DocumentOutlineContextType = useMemo(
-  //   () =>
-  //     new DocumentOutlineContextDefault(
-  //       isOutlineOpen,
-  //       outlineWidth,
-  //       outlineData,
-  //       outlineTitle,
-  //       handleToggleOutline,
-  //       handleNavigateToPath,
-  //       setOutlineData,
-  //       setOutlineTitle,
-  //       ()=>{},
-  //       ()=>{}
-  //     ),
-  //   [
-  //     isOutlineOpen,
-  //     outlineWidth,
-  //     outlineData,
-  //     outlineTitle,
-  //     handleToggleOutline,
-  //     handleNavigateToPath,
-  //   ]
-  // );
 
   // ##############################################################################################
   // ##############################################################################################

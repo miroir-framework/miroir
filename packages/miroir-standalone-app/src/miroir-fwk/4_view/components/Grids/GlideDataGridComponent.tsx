@@ -404,14 +404,14 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       const calculatedHeight = rowCount * rowHeight + headerHeight;
       
       // Log the calculation for debugging
-      log.info("GlideDataGrid height calculation", {
-        rowCount,
-        rowHeight,
-        headerHeight,
-        // filterToolbarHeight,
-        filterGroupsCount: filterState.columnGroups.length,
-        totalCalculatedHeight: calculatedHeight
-      });
+      // log.info("GlideDataGrid height calculation", {
+      //   rowCount,
+      //   rowHeight,
+      //   headerHeight,
+      //   // filterToolbarHeight,
+      //   filterGroupsCount: filterState.columnGroups.length,
+      //   totalCalculatedHeight: calculatedHeight
+      // });
       
       // Apply reasonable bounds but prioritize exact calculation for small datasets
       return Math.min(calculatedHeight, propContainerHeight??maxHeight);
@@ -521,21 +521,21 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   // Memoized handlers for tools cell actions - these are stable references
   // that can be safely used in getCellContent without causing re-renders
   const handleToolsEdit = useCallback((row: TableComponentRow, event?: any) => {
-    log.info("GlideDataGrid: Edit button clicked", { row, event });
+    // log.info("GlideDataGrid: Edit button clicked", { row, event });
     if (onRowEdit) {
       onRowEdit(row, event);
     }
   }, [onRowEdit]);
 
   const handleToolsDuplicate = useCallback((row: TableComponentRow, event?: any) => {
-    log.info("GlideDataGrid: Duplicate button clicked", { row, event });
+    // log.info("GlideDataGrid: Duplicate button clicked", { row, event });
     if (onRowDuplicate) {
       onRowDuplicate(row, event);
     }
   }, [onRowDuplicate]);
 
   const handleToolsDelete = useCallback((row: TableComponentRow, event?: any) => {
-    log.info("GlideDataGrid: Delete button clicked", { row, event });
+    // log.info("GlideDataGrid: Delete button clicked", { row, event });
     if (onRowDelete) {
       onRowDelete(row, event);
     }
@@ -671,7 +671,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         return;
       }
 
-      log.info("GlideDataGrid cell clicked", { cell, event, rowData, colData });
+      // log.info("GlideDataGrid cell clicked", { cell, event, rowData, colData });
 
       // For other columns, call the provided click handler
       if (onCellClicked) {
@@ -686,7 +686,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   // Handle cell edits
   const handleCellEdited = useCallback(
     (cell: Item, newValue: EditableGridCell) => {
-      log.info("GlideDataGrid cell edited", { cell, newValue });
+      // log.info("GlideDataGrid cell edited", { cell, newValue });
       
       if (onCellEdited) {
         onCellEdited(cell, newValue);
@@ -733,22 +733,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   }, [glideTheme, theme]);
 
   return (
-    <div
-      className="glide-data-grid-container"
-      // style={{
-      //   ...styles,
-      //   display: "flex",
-      //   flexDirection: "column",
-      //   flexGrow: 1,
-      //   position: "relative",
-      //   overflow: "hidden",
-      //   boxSizing: "border-box",
-      //   border: theme?.components?.table?.border || "1px solid #e0e0e0",
-      //   borderRadius: theme?.components?.table?.borderRadius || "4px",
-      //   fontFamily: theme?.typography?.fontFamily || "inherit",
-      //   fontSize: theme?.typography?.fontSize || "14px",
-      // }}
-    >
+    <div className="glide-data-grid-container">
       {/* const containerWidth = propContainerWidth || internalContainerWidth; */}
       {/* Filter Toolbar */}
       <GlideDataGridFilterComponent
@@ -766,24 +751,6 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         theme={theme}
       />
 
-      {/* <div
-        style={
-          {
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            // width: calculatedColumnWidths && calculatedColumnWidths.length > 0
-            //   ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
-            //   : '100%',
-            // height: `${height - 2}px`, // Subtract 2px for borders
-            // maxWidth: calculatedColumnWidths && calculatedColumnWidths.length > 0
-            //   ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
-            //   : '100%',
-            // overflow: 'hidden',
-            // position: 'relative',
-          }
-        }
-      > */}
       <div
         ref={containerRef} // Container ref for width / height measurement
         className="glide-data-grid-grid-container"
@@ -800,20 +767,10 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           fontFamily: theme?.typography?.fontFamily || "inherit",
           fontSize: theme?.typography?.fontSize || "14px",
         }}
-        // class: "glide-data-grid-container",
-        // display: "flex",
-        // flexDirection: "column",
-        // flexGrow: 1,
-        // position: "relative",
-        // overflow: "hidden",
-        // boxSizing: "border-box",
       >
         <DataEditor
           columns={glideColumns}
           width="100%"
-          // height="400px"
-          // height="100%"
-          // height={height || propContainerHeight || Math.max(Math.min(sortedAndFilteredTableRows.length, maxRows || 50) * 34 + 36, 100)} // DataEditor height = visible rows + header only
           height={height} // DataEditor height = visible rows + header only
           rows={sortedAndFilteredTableRows.length}
           getCellContent={getCellContent}

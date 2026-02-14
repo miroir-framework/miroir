@@ -98,17 +98,17 @@ let count = 0;
 // #####################################################################################################
 export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps) {
   count++;
-  log.info(
-    "##################################### rendering",
-    "label",
-    props.label,
-    "aggregate",
-    count,
-    "defaultFormValuesObject",
-    props.defaultFormValuesObject,
-    "entityDefinitionJzodSchema",
-    props.entityDefinitionJzodSchema
-  );
+  // log.info(
+  //   "##################################### rendering",
+  //   "label",
+  //   props.label,
+  //   "aggregate",
+  //   count,
+  //   "defaultFormValuesObject",
+  //   props.defaultFormValuesObject,
+  //   "entityDefinitionJzodSchema",
+  //   props.entityDefinitionJzodSchema
+  // );
   const context = useMiroirContextService();
 
   // const currentModel: MetaModel = useCurrentModelEnvironment(
@@ -142,18 +142,18 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
         : undefined,
     [props, context.miroirFundamentalJzodSchema]
   );
-  log.info(
-    "JsonObjectDeleteFormDialog called jzodTypeCheck for valueObject",
-    props.defaultFormValuesObject,
-    "mlSchema",
-    props.entityDefinitionJzodSchema,
-    " resolvedJzodSchema",
-    resolvedJzodSchema
-  );
+  // log.info(
+  //   "JsonObjectDeleteFormDialog called jzodTypeCheck for valueObject",
+  //   props.defaultFormValuesObject,
+  //   "mlSchema",
+  //   props.entityDefinitionJzodSchema,
+  //   " resolvedJzodSchema",
+  //   resolvedJzodSchema
+  // );
 
   // ##############################################################################################
   const handleDeleteObjectDialogFormClose = useCallback(async (value: any) => {
-    log.info("handleDeleteObjectDialogFormClose", value);
+    // log.info("handleDeleteObjectDialogFormClose", value);
 
     props.setDeleteObjectdialogFormIsOpen(false);
     if (!props.showButton) {
@@ -165,14 +165,14 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
   const handleDeleteObjectDialogFormSubmit = useCallback(
     async (data:any, source?: string) => {
       // const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
-      log.info(
-        "@@@@@@@@@@@@@@@@@@@@@@ handleDeleteObjectDialogFormSubmit called for data",
-        data,
-        "props",
-        props,
-        "dialogOuterFormObject",
-        dialogOuterFormObject,
-      );
+      // log.info(
+      //   "@@@@@@@@@@@@@@@@@@@@@@ handleDeleteObjectDialogFormSubmit called for data",
+      //   data,
+      //   "props",
+      //   props,
+      //   "dialogOuterFormObject",
+      //   dialogOuterFormObject,
+      // );
       if (props?.onDeleteFormObject) {
         await props.onDeleteFormObject(dialogOuterFormObject);
       } else {

@@ -309,7 +309,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     }),
     [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]
   );
-  log.info("fetchedDataJzodSchemaParams", fetchedDataJzodSchemaParams, props.applicationDeploymentMap);
+  // log.info("fetchedDataJzodSchemaParams", fetchedDataJzodSchemaParams, props.applicationDeploymentMap);
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useReduxDeploymentsStateJzodSchemaSelector(
     jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,

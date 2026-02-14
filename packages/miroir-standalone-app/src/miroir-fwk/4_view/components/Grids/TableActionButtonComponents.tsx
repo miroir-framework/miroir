@@ -31,7 +31,7 @@ export const EditActionButton: React.FC<BaseActionButtonProps> = ({
   
   const handleClick = (event?: any) => {
     event?.stopPropagation?.();
-    log.info("EditActionButton clicked", { row });
+    // log.info("EditActionButton clicked", { row });
     if (onClick) {
       onClick(row, event);
     }
@@ -77,7 +77,7 @@ export const DuplicateActionButton: React.FC<BaseActionButtonProps> = ({
   
   const handleClick = (event?: any) => {
     event?.stopPropagation?.();
-    log.info("DuplicateActionButton clicked", { row });
+    // log.info("DuplicateActionButton clicked", { row });
     if (onClick) {
       onClick(row, event);
     }
@@ -123,7 +123,7 @@ export const DeleteActionButton: React.FC<BaseActionButtonProps> = ({
   
   const handleClick = (event?: any) => {
     event?.stopPropagation?.();
-    log.info("DeleteActionButton clicked", { row });
+    // log.info("DeleteActionButton clicked", { row });
     if (onClick) {
       onClick(row, event);
     }
