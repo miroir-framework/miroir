@@ -1308,7 +1308,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       </>
     ) : displayWithoutFrame ? (
       <>
-      {/* AAAAAA1 */}
       {mainElement}
       </>
     ) : (
@@ -1320,7 +1319,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           flexGrow: 1,
         }}
       >
-        {/* BBBBBBB2 */}
         {mainElement}
       </span>
     ): (<></>);
@@ -1329,8 +1327,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       {props.isTopLevel && (
         <>
           <ThemedOnScreenDebug
-            label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type} existing ${existingObject}`}
-            data={{ existingObject, localResolvedElementJzodSchemaBasedOnValue, itemsOrder }}
+            label={`JzodElementEditor: key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
+            data={{ existingObject, itemsOrder, localResolvedElementJzodSchemaBasedOnValue,  }}
+            initiallyUnfolded={false}
             copyButton={true}
             useCodeBlock={true}
           />

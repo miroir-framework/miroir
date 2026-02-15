@@ -84,13 +84,16 @@ export interface JzodElementEditorHooks {
 // ##############################################################################################
 export function getItemsOrder(
   currentValue: any,
+  rawMLSchema: JzodElement | undefined,
   flattenedMLSchema: JzodObject | undefined,
   resolvedMLSchema: JzodElement | undefined,
 ) {
-  return (resolvedMLSchema?.type == "object" || resolvedMLSchema?.type == "record") &&
+  return (resolvedMLSchema?.type == "object" || rawMLSchema?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null
-    ? Object.keys(flattenedMLSchema?.definition??{}).filter((k) => k in currentValue)
+    ? rawMLSchema?.type == "record"
+      ? Object.keys(currentValue)
+      : Object.keys(flattenedMLSchema?.definition ?? {}).filter((k) => k in currentValue)
     : Array.isArray(currentValue)
       ? currentValue.map((e: any, k: number) => k)
       : [];
@@ -193,6 +196,7 @@ export function useJzodElementEditorHooks(
     () =>
       getItemsOrder(
         currentValueObjectAtKey,
+        currentTypecheckKeyMap?.rawSchema,
         currentTypecheckKeyMap?.jzodObjectFlattenedSchema,
         localResolvedElementJzodSchemaBasedOnValue,
       ),

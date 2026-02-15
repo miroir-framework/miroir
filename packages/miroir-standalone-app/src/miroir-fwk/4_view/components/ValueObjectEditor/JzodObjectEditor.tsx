@@ -982,22 +982,19 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
   ]);
 
-  // const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveJzodSchemaReferenceInContext(
-  //   currentTypeCheckKeyMap?.rawSchema,
-  //   currentTypeCheckKeyMap?.rawSchema.context ?? {},
-  //   currentApplicationModelEnvironment
-  // ) : currentTypeCheckKeyMap?.rawSchema;
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <ThemedOnScreenDebug
         label={`JzodObjectEditor: ${rootLessListKey}`}
         data={{
           rootLessListKey,
+          itemsOrder,
           formikRootLessListKey,
+          rawSchema: currentTypeCheckKeyMap?.rawSchema,
+          resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
+          jzodObjectFlattenedSchema: currentTypeCheckKeyMap?.jzodObjectFlattenedSchema,
           currentValueObjectAtKey,
-          mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
-          // currentTypeCheckKeyMap: currentTypeCheckKeyMap
-          // currentKeyMap: currentTypeCheckKeyMap,
+          // mlSchema: rootLessListKey == "mlSchema" ? Object.entries(currentValueObjectAtKey.definition) : undefined,
         }}
         copyButton={true}
         initiallyUnfolded={false}
@@ -1022,6 +1019,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 })()}
             </ThemedFlexRow>
           </span>
+          {/* fold/unfold controls */}
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
