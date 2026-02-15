@@ -41,7 +41,8 @@ const handleDiscriminatorChange = (
   parentKeyMap: KeyMapEntry,
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
-  formikRootLessListKey: string,
+  reportSectionPathAsString: string,
+  // formikRootLessListKey: string,
   currentApplication: Uuid,
   appliationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string | undefined,
@@ -191,7 +192,8 @@ const handleDiscriminatorChange = (
     }
     : undefined;
 
-  const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
+  // const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
+  const targetRootLessListKey = [reportSectionPathAsString,...rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1)].join(".")??"";
   log.info(
     `handleDiscriminatorChange (${discriminatorType})`,
     "targetRootLessListKey",
@@ -213,7 +215,7 @@ const handleDiscriminatorChange = (
       onChangeCallback(defaultValue, rootLessListKey);
     }
     formik.setFieldValue(
-      formikRootLessListKey,
+      targetRootLessListKey,
       defaultValue,
       false
     );
@@ -321,7 +323,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         parentKeyMap,
         rootLessListKey,
         rootLessListKeyArray,
-        formikRootLessListKey,
+        // formikRootLessListKey,
+        reportSectionPathAsString,
         currentApplication,
         appliationDeploymentMap,
         currentDeploymentUuid,
@@ -396,7 +399,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           parentKeyMap,
           rootLessListKey,
           rootLessListKeyArray,
-          formikRootLessListKey,
+          // formikRootLessListKey,
+          reportSectionPathAsString,
           currentApplication,
           appliationDeploymentMap,
           currentDeploymentUuid,
