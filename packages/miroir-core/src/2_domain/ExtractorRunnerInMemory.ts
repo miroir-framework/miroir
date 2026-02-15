@@ -50,6 +50,7 @@ import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelec
 import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -371,7 +372,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
     const applicationSection: ApplicationSection =
       foreignKeyParams.extractor.select.applicationSection ??
-      ((foreignKeyParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
+      ((foreignKeyParams.extractor.pageParams?.applicationSection ?? defaultApplicationSection) as ApplicationSection);
 
     const entityUuidReference = querySelectorParams.parentUuid; // TODO: we assume this ia a constant here
 
@@ -444,7 +445,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     const deploymentUuid = applicationDeploymentMap[extractorRunnerParams.extractor.application];
-    const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? "data";
+    const applicationSection = extractorRunnerParams.extractor.select.applicationSection ?? defaultApplicationSection;
 
     const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
 

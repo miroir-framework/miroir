@@ -26,6 +26,7 @@ import {
   ReduxDeploymentsState,
   TransformerFailure,
   Uuid,
+  defaultApplicationSection,
   entityDefinitionEntityDefinition,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
@@ -302,7 +303,7 @@ function handleInstanceAction(
           ([] as EntityInstanceCollection[])) {
           const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
             deploymentUuid,
-            instanceAction.payload.applicationSection??"data",
+            instanceAction.payload.applicationSection,
             instanceCollection.parentUuid
           );
           // log.info(

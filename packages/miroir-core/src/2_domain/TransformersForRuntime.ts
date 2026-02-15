@@ -534,10 +534,11 @@ export function getDefaultValueForJzodSchemaWithResolution(
       if (effectiveSchema.tag?.value?.initializeTo?.initializeToType == "value") {
         return effectiveSchema.tag?.value?.initializeTo.value;
       } else {
-        throw new Error(
-          "getDefaultValueForJzodSchemaWithResolution enum definition does not have 'tag.value.initalizeTo' for effectiveSchema=" +
-            JSON.stringify(effectiveSchema, null, 2)
-        );
+        return effectiveSchema.definition[0];
+        // throw new Error(
+        //   "getDefaultValueForJzodSchemaWithResolution enum definition does not have 'tag.value.initalizeTo' for effectiveSchema=" +
+        //     JSON.stringify(effectiveSchema, null, 2)
+        // );
       }
     }
     case "function":

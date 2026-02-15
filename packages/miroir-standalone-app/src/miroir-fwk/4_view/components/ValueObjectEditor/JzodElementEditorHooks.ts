@@ -83,15 +83,32 @@ export interface JzodElementEditorHooks {
 // ################################################################################################
 // ##############################################################################################
 export function getItemsOrder(
+  formikRootLessListKey: string,
+  typeCheckKeyMapEntry: KeyMapEntry | undefined,
   currentValue: any,
   rawMLSchema: JzodElement | undefined,
   flattenedMLSchema: JzodObject | undefined,
   resolvedMLSchema: JzodElement | undefined,
 ) {
-  return (resolvedMLSchema?.type == "object" || rawMLSchema?.type == "record") &&
+  log.info(
+    "getItemsOrder",
+    "formikRootLessListKey",
+    formikRootLessListKey,
+    "typeCheckKeyMapEntry",
+    typeCheckKeyMapEntry,
+    "currentValue",
+    currentValue,
+    "rawMLSchema",
+    rawMLSchema,
+    "flattenedMLSchema",
+    flattenedMLSchema,
+    "resolvedMLSchema",
+    resolvedMLSchema,
+  );
+  return (resolvedMLSchema?.type == "object" || rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record") &&
     typeof currentValue == "object" &&
     currentValue !== null
-    ? rawMLSchema?.type == "record"
+    ? rawMLSchema?.type == "record" || typeCheckKeyMapEntry?.resolvedReferenceSchemaInContext?.type == "record"
       ? Object.keys(currentValue)
       : Object.keys(flattenedMLSchema?.definition ?? {}).filter((k) => k in currentValue)
     : Array.isArray(currentValue)
@@ -195,6 +212,8 @@ export function useJzodElementEditorHooks(
   const itemsOrder: any[] = useMemo(
     () =>
       getItemsOrder(
+        formikRootLessListKey,
+        currentTypecheckKeyMap,
         currentValueObjectAtKey,
         currentTypecheckKeyMap?.rawSchema,
         currentTypecheckKeyMap?.jzodObjectFlattenedSchema,

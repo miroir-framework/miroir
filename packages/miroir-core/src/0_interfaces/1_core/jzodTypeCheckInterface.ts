@@ -104,6 +104,14 @@ export const keyMapEntry: JzodElement = {
         relativePath: "jzodUnion_RecursivelyUnfold_ReturnTypeOK",
       },
     }, // the recursively unfolded union schema
+    resolvedReferenceSchemaInContext: {
+      type: "schemaReference",
+      optional: true,
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "jzodElement",
+      },
+    }, // when schemaReference, this is the schema with only the context being resolved
     resolvedSchema: {
       type: "schemaReference",
       definition: {
@@ -166,8 +174,6 @@ export const resolvedJzodSchemaReturnTypeOK: JzodElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "ok" },
-    // valuePath: { type: "array", definition: { type: "string" } },
-    // typePath: { type: "array", definition: { type: "string" } },
     valuePath: {
       type: "array",
       definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
@@ -183,6 +189,14 @@ export const resolvedJzodSchemaReturnTypeOK: JzodElement = {
         relativePath: "jzodElement",
       },
     }, // the raw schema that was checked
+    // resolvedReferenceSchemaInContext: {
+    //   type: "schemaReference",
+    //   optional: true,
+    //   definition: {
+    //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //     relativePath: "jzodElement",
+    //   },
+    // }, // the resolved schema that was checked
     resolvedSchema: {
       type: "schemaReference",
       definition: {

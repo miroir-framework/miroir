@@ -268,7 +268,7 @@ const ProgressiveAttribute: FC<{
 
 
   // Determine if this is a record type where attribute names should be editable
-  const isRecordType = currentKeyMap?.rawSchema?.type === "record";
+  const isRecordType = currentKeyMap?.rawSchema?.type === "record" || currentKeyMap?.resolvedReferenceSchemaInContext?.type === "record";
   const editableLabel = isRecordType ? (
     <EditableAttributeName
       initialValue={attribute[0]}
@@ -653,8 +653,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         ? (currentTypeCheckKeyMap?.rawSchema as JzodRecord)
         : (resolvedRawSchema as JzodRecord);
 
-    // const newAttributeType: JzodElement = (currentTypeCheckKeyMap.rawSchema as JzodRecord)?.definition;
-    // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
+    const newAttributeType: JzodElement = (effectiveRawSchema as JzodRecord)?.definition;
+    log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
           "build",
@@ -676,21 +676,34 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       : undefined;
 
     const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValueObjectAtKey };
-    // log.info("addExtraRecordEntry", "newValue", newRecordValue);
+    log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
     // Invoke onChangeVector callback if registered for this field
     if (onChangeVector?.[rootLessListKey]) {
       onChangeVector[rootLessListKey](newRecordValue, rootLessListKey);
     }
-    formik.setFieldValue(formikRootLessListKey, newRecordValue);
-    // log.info(
-    //   "addExtraRecordEntry clicked2!",
-    //   listKey,
-    //   itemsOrder,
-    //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-    //   "formik",
-    //   formik.values
+    // formik.setFieldValue(formikRootLessListKey, newRecordValue);
+    // const targetRootLessListKey = [reportSectionPathAsString, ...formikRootLessListKeyArray].join(
+    //   ".",
     // );
+    // formik.setFieldValue(targetRootLessListKey, newRecordValue);
+    formik.setFieldValue(formikRootLessListKey, newRecordValue);
+    log.info(
+      "addExtraRecordEntry clicked2!",
+      // "targetRootLessListKey",
+      // targetRootLessListKey,
+      "formikRootLessListKey",
+      '"' + formikRootLessListKey + '"',
+      ", reportSectionPathAsString",
+      '"' + reportSectionPathAsString + '"',
+      ", listKey",
+      '"' + listKey + '"',
+      ", itemsOrder",
+      itemsOrder,
+      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+      ", formik",
+      formik.values
+    );
   }, [
     props,
     itemsOrder,

@@ -2792,6 +2792,14 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeOK"
             }
           },
+          "resolvedReferenceSchemaInContext": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodElement"
+            }
+          },
           "resolvedSchema": {
             "type": "schemaReference",
             "definition": {
@@ -13843,10 +13851,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 1,
-                "defaultLabel": "Label",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Label"
               }
             }
           },
@@ -13856,10 +13861,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 2,
-                "defaultLabel": "SelfApplication Section",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "SelfApplication Section"
               }
             },
             "definition": {
@@ -13875,10 +13877,7 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 3,
                 "canBeTemplate": true,
-                "defaultLabel": "Parent Name",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Parent Name"
               }
             }
           },
@@ -13887,9 +13886,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 4,
-                "display": {
-                  "editable": false
-                },
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -26125,9 +26121,6 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 1,
                 "defaultLabel": "Label",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -26139,10 +26132,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 1,
-                    "defaultLabel": "Label",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Label"
                   }
                 }
               },
@@ -26162,9 +26152,6 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -26182,9 +26169,6 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "display": {
-                      "editable": false
-                    },
                     "isTemplate": true
                   }
                 },
@@ -26211,9 +26195,6 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -26226,10 +26207,7 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "canBeTemplate": true,
-                    "defaultLabel": "Parent Name",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -26247,9 +26225,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 4,
-                "display": {
-                  "editable": false
-                },
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -26265,9 +26240,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 4,
-                    "display": {
-                      "editable": false
-                    },
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -43038,9 +43010,6 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Label",
-                    "display": {
-                      "editable": false
-                    },
                     "isTemplate": true
                   }
                 },
@@ -43052,10 +43021,7 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 1,
-                        "defaultLabel": "Label",
-                        "display": {
-                          "editable": false
-                        }
+                        "defaultLabel": "Label"
                       }
                     }
                   },
@@ -43075,9 +43041,6 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "display": {
-                      "editable": false
-                    },
                     "isTemplate": true
                   }
                 },
@@ -43095,9 +43058,6 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "SelfApplication Section",
-                        "display": {
-                          "editable": false
-                        },
                         "isTemplate": true
                       }
                     },
@@ -43124,9 +43084,6 @@ export const miroirFundamentalJzodSchema = {
                     "id": 3,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Name",
-                    "display": {
-                      "editable": false
-                    },
                     "isTemplate": true
                   }
                 },
@@ -43139,10 +43096,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 3,
                         "canBeTemplate": true,
-                        "defaultLabel": "Parent Name",
-                        "display": {
-                          "editable": false
-                        }
+                        "defaultLabel": "Parent Name"
                       }
                     }
                   },
@@ -43160,9 +43114,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 4,
-                    "display": {
-                      "editable": false
-                    },
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -43178,9 +43129,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 4,
-                        "display": {
-                          "editable": false
-                        },
                         "canBeTemplate": true,
                         "defaultLabel": "Parent Uuid",
                         "foreignKeyParams": {
@@ -46798,10 +46746,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 1,
-                "defaultLabel": "Label",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Label"
               }
             }
           },
@@ -46812,9 +46757,6 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -46831,9 +46773,6 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -46849,10 +46788,7 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "canBeTemplate": true,
-                    "defaultLabel": "Parent Name",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -46870,9 +46806,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 4,
-                "display": {
-                  "editable": false
-                },
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -46891,9 +46824,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 4,
-                    "display": {
-                      "editable": false
-                    },
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -59128,10 +59058,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 1,
-                "defaultLabel": "Label",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Label"
               }
             }
           },
@@ -59142,9 +59069,6 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -59161,9 +59085,6 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -59179,10 +59100,7 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "canBeTemplate": true,
-                    "defaultLabel": "Parent Name",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -59200,9 +59118,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 4,
-                "display": {
-                  "editable": false
-                },
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -59221,9 +59136,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 4,
-                    "display": {
-                      "editable": false
-                    },
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -61808,10 +61720,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 1,
-                "defaultLabel": "Label",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Label"
               }
             }
           },
@@ -61822,9 +61731,6 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -61841,9 +61747,6 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -61859,10 +61762,7 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "canBeTemplate": true,
-                    "defaultLabel": "Parent Name",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -61880,9 +61780,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 4,
-                "display": {
-                  "editable": false
-                },
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -61901,9 +61798,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 4,
-                    "display": {
-                      "editable": false
-                    },
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
@@ -74138,10 +74032,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 1,
-                "defaultLabel": "Label",
-                "display": {
-                  "editable": false
-                }
+                "defaultLabel": "Label"
               }
             }
           },
@@ -74152,9 +74043,6 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -74171,9 +74059,6 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "display": {
-                  "editable": false
-                },
                 "isTemplate": true
               }
             },
@@ -74189,10 +74074,7 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "canBeTemplate": true,
-                    "defaultLabel": "Parent Name",
-                    "display": {
-                      "editable": false
-                    }
+                    "defaultLabel": "Parent Name"
                   }
                 }
               },
@@ -74210,9 +74092,6 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 4,
-                "display": {
-                  "editable": false
-                },
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
@@ -74231,9 +74110,6 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 4,
-                    "display": {
-                      "editable": false
-                    },
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {

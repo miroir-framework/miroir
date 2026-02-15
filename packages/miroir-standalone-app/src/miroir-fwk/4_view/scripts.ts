@@ -83,7 +83,6 @@ export const deleteCascade = async (p: {
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
     payload: {
       application: p.application,
-      deploymentUuid: p.deploymentUuid,
       applicationSection: p.applicationSection,
       objects:
         p.entityInstances.length > 0
@@ -119,7 +118,7 @@ export const deleteCascade = async (p: {
     const foreignKeyObjectsFetchQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: p.application,
-      deploymentUuid: p.deploymentUuid,
+      // deploymentUuid: p.deploymentUuid,
       pageParams,
       queryParams: {},
       contextResults: {},
@@ -128,14 +127,10 @@ export const deleteCascade = async (p: {
           entityUuid,
           { // TODO: FILTER ON FK TO ONLY THE ONES POINTING TO THE DELETED INSTANCES
             extractorOrCombinerType: "extractorForObjectListByEntity",
-            // application: p.application,
+            application: p.application,
             applicationSection: p.applicationSection,
             parentName: "",
-            parentUuid: {
-              transformerType: "returnValue",
-              mlSchema: { type: "uuid" },
-              value: entityUuid,
-            },
+            parentUuid: entityUuid,
           } as ExtractorTemplateForObjectListByEntity,
         ])
       ),
@@ -149,7 +144,6 @@ export const deleteCascade = async (p: {
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {
             application: p.application,
-            deploymentUuid: p.deploymentUuid,
             applicationSection: p.applicationSection,
             query: foreignKeyObjectsFetchQuery,
           },

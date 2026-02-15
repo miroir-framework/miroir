@@ -47,6 +47,7 @@ import { cleanLevel } from "./constants";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { getApplicationSection } from "../1_core/Model";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;

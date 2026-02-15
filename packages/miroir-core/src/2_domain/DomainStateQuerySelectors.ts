@@ -50,6 +50,7 @@ import {
 import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -89,7 +90,7 @@ export const dummyDomainModelGetFetchParamJzodSchemaQueryParams: QueryByTemplate
   // applicationDeploymentMap: {},
   // deploymentUuid: "",
   pageParams: {
-    applicationSection: "data" ,
+    applicationSection: defaultApplicationSection,
     deploymentUuid: "" ,
     instanceUuid: "" ,
   },
@@ -121,7 +122,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const deploymentUuid =
     applicationDeploymentMap[extractorParams.extractor.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
-  const applicationSection = extractorParams.extractor.select.applicationSection ?? "data";
+  const applicationSection = extractorParams.extractor.select.applicationSection ?? defaultApplicationSection;
 
   const entityUuid: Uuid = extractorParams.extractor.select.parentUuid;
 

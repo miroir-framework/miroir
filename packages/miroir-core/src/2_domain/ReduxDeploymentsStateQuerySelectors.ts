@@ -44,6 +44,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -81,7 +82,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
   const applicationSection: ApplicationSection =
     foreignKeyParams.extractor.select.applicationSection ??
     ((foreignKeyParams.extractor.pageParams?.applicationSection ??
-      "data") as ApplicationSection);
+      defaultApplicationSection) as ApplicationSection);
 
   const entityUuidReference = querySelectorParams.parentUuid
 
@@ -302,7 +303,7 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
-  const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? "data";
+  const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? defaultApplicationSection;
 
   const entityUuid = foreignKeyParams.extractor.select.parentUuid;
 
@@ -404,7 +405,8 @@ export const extractEntityJzodSchemaFromReduxDeploymentsState = (
   foreignKeyParams: ExtractorRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
 ): JzodObject | undefined => {
   const localQuery: QueryByEntityUuidGetEntityDefinition = foreignKeyParams.query;
-  const deploymentUuid = applicationDeploymentMap[localQuery.application]??"DEPLOYMENT_UUID_NOT_FOUND";
+  const deploymentUuid =
+    applicationDeploymentMap[localQuery.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
 
   const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
     deploymentUuid,

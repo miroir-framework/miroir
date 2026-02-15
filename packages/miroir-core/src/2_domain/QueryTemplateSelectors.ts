@@ -44,6 +44,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve} from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -87,7 +88,7 @@ export async function handleQueryTemplateAction(
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       payload: {
         application: queryTemplateAction.payload.application,
-        applicationSection: queryTemplateAction.payload.applicationSection,
+        applicationSection: queryTemplateAction.payload.applicationSection ?? defaultApplicationSection,
         query: resolvedQuery as any,
       }
     },
@@ -122,8 +123,7 @@ export async function handleBoxedExtractorTemplateAction(
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
     payload: {
       application: boxedExtractorTemplateAction.payload.application,
-      // deploymentUuid: boxedExtractorTemplateAction.payload.deploymentUuid,
-      applicationSection: boxedExtractorTemplateAction.payload.applicationSection,
+      applicationSection: boxedExtractorTemplateAction.payload.applicationSection ?? defaultApplicationSection,
       query: resolvedQuery as any,
     }
   };
@@ -185,7 +185,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
         endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
         payload: {
           application: queryTemplateOrExtractorTemplateAction.payload.application,
-          applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
+          applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection ?? defaultApplicationSection,
           query: resolvedQuery as any,
         }
       },
@@ -213,7 +213,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
       endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
       payload: {
         application: queryTemplateOrExtractorTemplateAction.payload.application,
-        applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection,
+        applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection ?? defaultApplicationSection,
         query: resolvedQuery as any,
       }
     };

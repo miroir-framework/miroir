@@ -2,7 +2,6 @@
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
-  ApplicationSection,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
@@ -33,7 +32,8 @@ import {
 import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { applyTransformer } from "./TransformersForRuntime";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { getApplicationSection } from "../1_core/Model";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -183,13 +183,15 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
             queryType: "boxedExtractorOrCombinerReturningObjectList",
             application,
             contextResults: newFetchedData,
-            pageParams: pageParams,
+            pageParams,
             queryParams,
             select: extractorOrCombiner.applicationSection
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  applicationSection: pageParams.applicationSection as ApplicationSection,
+                  // applicationSection: pageParams.applicationSection ?? defaultApplicationSection as ApplicationSection,
+                  // applicationSection: defaultApplicationSection as ApplicationSection,
+                  applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
                 },
           },
         },
@@ -227,7 +229,9 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  applicationSection: pageParams?.applicationSection as ApplicationSection,
+                  // applicationSection: pageParams?.applicationSection ?? defaultApplicationSection as ApplicationSection,
+                  // applicationSection: defaultApplicationSection as ApplicationSection,
+                  applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
                 },
           },
         },

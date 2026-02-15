@@ -51,8 +51,9 @@ import { cleanLevel } from "./constants";
 import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { applyTransformer, transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
-import { defaultMiroirModelEnvironment } from "../1_core/Model";
+import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -750,7 +751,9 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  applicationSection: pageParams.applicationSection as ApplicationSection,
+                  // applicationSection: pageParams.applicationSection ?? defaultApplicationSection as ApplicationSection,
+                  // applicationSection: defaultApplicationSection as ApplicationSection,
+                  applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
                 },
           },
         },
@@ -777,7 +780,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  applicationSection: pageParams?.applicationSection as ApplicationSection,
+                  // applicationSection: pageParams?.applicationSection ?? defaultApplicationSection as ApplicationSection,
+                  applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
                 },
           },
         },

@@ -180,7 +180,7 @@ beforeAll(
     persistenceStoreControllerManager = localpersistenceStoreControllerManager;
     domainController = localdomainController;
     localCache = locallocalCache;
-    miroirContext = localmiroirContext;
+    // miroirContext = localmiroirContext;
 
 
     const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
@@ -432,12 +432,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: entityEntity.name,
-                      parentUuid: {
-                        transformerType: "returnValue",
-                        mlSchema: { type: "uuid" },
-                        interpolation: "build",
-                        value: entityEntity.uuid,
-                      } as any,
+                      parentUuid: entityEntity.uuid,
                     },
                   },
                 },
@@ -489,12 +484,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Entity",
-                      parentUuid: {
-                        transformerType: "returnValue",
-                        mlSchema: { type: "uuid" },
-                        interpolation: "build",
-                        value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      } as any,
+                      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       filter: {
                         attributeName: "name",
                         value: {
@@ -559,13 +549,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
-                      parentUuid: {
-                        transformerType: "returnValue",
-                        mlSchema: { type: "uuid" },
-                        interpolation: "build",
-                        // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        value: entityBook.uuid,
-                      } as any,
+                      parentUuid: entityBook.uuid,
                     },
                   },
                   runtimeTransformers: {
@@ -631,12 +615,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
-                      parentUuid: {
-                        transformerType: "returnValue",
-                        mlSchema: { type: "uuid" },
-                        interpolation: "build",
-                        value: entityBook.uuid,
-                      } as any,
+                      parentUuid: entityBook.uuid,
                     },
                   },
                   runtimeTransformers: {
@@ -695,12 +674,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                       extractorOrCombinerType: "extractorForObjectListByEntity",
                       applicationSection: applicationSection,
                       parentName: "Book",
-                      parentUuid: {
-                        transformerType: "returnValue",
-                        mlSchema: { type: "uuid" },
-                        interpolation: "build",
-                        value: entityBook.uuid,
-                      } as any,
+                      parentUuid: entityBook.uuid,
                     },
                   },
                   runtimeTransformers: {

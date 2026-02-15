@@ -106,7 +106,7 @@ import {
   unNullify,
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
-import { entityQueryVersion, entityRunner } from '../index.js';
+import { defaultApplicationSection, entityQueryVersion, entityRunner } from '../index.js';
 
 
 const autocommit = true;
@@ -1712,9 +1712,9 @@ export class DomainController implements DomainControllerInterface {
                       // deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
                       application: replayAction.payload.instanceAction.payload.application,
                       applicationSection:
-                        replayAction.payload.instanceAction.payload.applicationSection,
+                        replayAction.payload.instanceAction.payload.applicationSection ?? defaultApplicationSection,
                       section:
-                        replayAction.payload.instanceAction.payload.applicationSection ?? "data",
+                        replayAction.payload.instanceAction.payload.applicationSection ?? defaultApplicationSection,
                       parentName: replayAction.payload.instanceAction.payload.objects[0].parentName,
                       parentUuid: replayAction.payload.instanceAction.payload.objects[0].parentUuid,
                       // objects: replayAction.payload.instanceAction.payload.objects[0].instances,
@@ -2775,17 +2775,6 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunBoxedExtractorOrQueryAction": {
-            // const resolvedActionWithProtectedRuntimeTranformers = (currentAction.query.query as any).runtimeTransformers?
-            //   {
-            //     ...resolvedAction,
-            //     query: {
-            //       ...resolvedAction.query,
-            //       query: {
-            //         ...resolvedAction.query.query,
-            //         runtimeTransformers: (currentAction.query.query as any).runtimeTransformers,
-            //       },
-            //     },
-            //   }: resolvedAction;
             const resolvedActionWithProtectedRuntimeTranformers: {
               actionType: "compositeRunBoxedExtractorOrQueryAction";
               actionLabel?: string | undefined;

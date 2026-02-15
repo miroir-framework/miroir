@@ -457,9 +457,10 @@ export {
 } from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export {
+  defaultApplicationSection,
   DeploymentUuidToReportsEntitiesDefinitions,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
-  foldableElementTypes
+  foldableElementTypes,
 } from "./0_interfaces/1_core/Model.js";
 export {
   // SelfApplicationDeploymentConfigurationSchema,

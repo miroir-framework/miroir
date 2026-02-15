@@ -855,11 +855,13 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: (typeCheck.keyMap??{})[currentValuePath.join(".")]?{
             ...(typeCheck.keyMap??{})[currentValuePath.join(".")], // useful for unions, where the keyMap is a map of value paths to sub-schemas
             rawSchema: effectiveRawSchema,
+            resolvedReferenceSchemaInContext: resolvedJzodSchema,
             resolvedSchema: typeCheck.resolvedSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
           }:{
             rawSchema: effectiveRawSchema,
+            resolvedReferenceSchemaInContext: resolvedJzodSchema,
             resolvedSchema: typeCheck.resolvedSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
