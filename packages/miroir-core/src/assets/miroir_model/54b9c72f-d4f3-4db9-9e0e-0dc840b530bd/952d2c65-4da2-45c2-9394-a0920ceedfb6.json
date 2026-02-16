@@ -530,8 +530,7 @@
                     "tag": {
                       "value": {
                         "id": 1,
-                        "defaultLabel": "Label",
-                        "display": { "editable": false }
+                        "defaultLabel": "Label"
                       }
                     }
                   },
@@ -541,8 +540,7 @@
                     "tag": {
                       "value": {
                         "id": 2,
-                        "defaultLabel": "Entity Name",
-                        "display": { "editable": false }
+                        "defaultLabel": "Entity Name"
                       }
                     }
                   },
@@ -551,7 +549,6 @@
                     "tag": {
                       "value": {
                         "id": 2,
-                        "display": { "editable": false },
                         "defaultLabel": "Entity Uuid",
                         "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                         "foreignKeyParams": {
@@ -567,8 +564,7 @@
                     "tag": {
                       "value": {
                         "id": 3,
-                        "defaultLabel": "Fetched Data Reference",
-                        "display": { "editable": false }
+                        "defaultLabel": "Fetched Data Reference"
                       }
                     }
                   },

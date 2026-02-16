@@ -285,10 +285,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       undefined, // label
       effectiveSchema.tag.value.initializeTo.transformer,
       miroirEnvironment,
-      {
-        deploymentUuid,
-        rootObject,
-      }, // parameters
+      transformerParams, // parameters
       {}, // runtimeContext
       "value",
       reduxDeploymentsState,
@@ -395,9 +392,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
           undefined,
           effectiveSchema.tag.value.initializeTo.transformer,
           miroirEnvironment,
-          {
-            deploymentUuid,
-          }, // parameters
+          transformerParams, // parameters
           {}, // runtimeContext
           "value",
           reduxDeploymentsState,
@@ -592,11 +587,14 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     mlSchema,
     "forceOptional",
     forceOptional,
+    "transformerParams",
+    transformerParams,
     "currentDefaultValue",
     currentDefaultValue,
     "currentValuePath",
     currentValuePath,
-    "reduxDeploymentsState", reduxDeploymentsState,
+    "reduxDeploymentsState",
+    reduxDeploymentsState,
   );
 
   if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
@@ -612,7 +610,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
       applicationDeploymentMap,
       undefined, // deploymentUuid
       miroirEnvironment,
-      {},
+      transformerParams,
       contextResults,
       reduxDeploymentsState,
       relativeReferenceJzodContext,
@@ -631,7 +629,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     applicationDeploymentMap,
     deploymentUuid,
     miroirEnvironment,
-    {},
+    transformerParams,
     contextResults,
     reduxDeploymentsState,
     relativeReferenceJzodContext,

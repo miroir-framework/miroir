@@ -705,7 +705,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               props.applicationDeploymentMap,
               props.deploymentUuid,
               currentMiroirModelEnvironment,
-              {}, // transformerParams
+              {
+                applicationUuid: props.application,
+                deploymentUuid: props.deploymentUuid,
+                rootObject: undefined,
+              }, // transformerParams
               {}, // contextResults
               deploymentEntityState,
             )

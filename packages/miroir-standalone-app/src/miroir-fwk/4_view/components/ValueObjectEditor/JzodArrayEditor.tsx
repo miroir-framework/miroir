@@ -1,6 +1,5 @@
 ﻿import { FormikContextType, useFormikContext } from "formik";
 import {
-  deployment_Miroir,
   defaultSelfApplicationDeploymentMap,
   EntityDefinition,
   entityEntityDefinition,
@@ -12,7 +11,6 @@ import {
   JzodTuple,
   LoggerInterface,
   MetaModel,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   resolveJzodSchemaReferenceInContext,
@@ -20,15 +18,18 @@ import {
   selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodReference,
-  type MlSchema,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type Uuid
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../../miroir-localcache-imports.js";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateWithUndoRedo,
+  useSelector,
+} from "../../../miroir-localcache-imports.js";
 import { cleanLevel } from "../../constants";
 import {
   useMiroirContextService
@@ -36,6 +37,7 @@ import {
 import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { useReportPageContext } from "../Reports/ReportPageContext";
+import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import { ThemedOnScreenDebug } from "../Themes/BasicComponents";
 import {
   ThemedAddIcon,
@@ -44,10 +46,13 @@ import {
   ThemedSizedButton,
   ThemedStyledButton
 } from "../Themes/index";
-import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
+import {
+  FoldUnfoldAllObjectAttributesOrArrayItems,
+  FoldUnfoldObjectOrArray,
+  JzodElementEditor,
+} from "./JzodElementEditor";
 import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
-import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -601,9 +606,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         {}, // transformerParams
         {}, // contextResults
         deploymentEntityState, // deploymentEntityState is not needed here
-        // context.miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
         {}, // relativeReferenceJzodContext
       );
       // Create the new array value
@@ -640,6 +642,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         onChangeVector[rootLessListKey](newArrayValue, rootLessListKey);
       }
       formik.setFieldValue(formikRootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
+
+      reportContext.unfoldAllChildren(rootLessListKeyArray, Object.keys(newItem));
 
       // // Update the items order
       // setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
@@ -769,7 +773,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     <div id={rootLessListKey} key={rootLessListKey}>
       <ThemedOnScreenDebug
         label={`Rendering JzodArrayEditor for array at ${rootLessListKey || "ROOT"}`}
-        data={{rootLessListKey, typeCheckKeyMap,}}
+        data={{ rootLessListKey, readOnly, currentTypeCheckKeyMap }}
         copyButton={true}
         initiallyUnfolded={false}
         useCodeBlock={true}
@@ -808,7 +812,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   currentValue={currentValue}
                   unfoldingDepth={Infinity}
                 ></FoldUnfoldObjectOrArray>
-                {!reportContext.isNodeFolded(rootLessListKeyArray) ? (
+                {!reportContext.isNodeFolded(rootLessListKeyArray) && (
                   <>
                     {itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
                       <FoldUnfoldAllObjectAttributesOrArrayItems
@@ -820,22 +824,20 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                     ) : (
                       <></>
                     )}
-                    <ThemedSizedButton
-                      aria-label={rootLessListKey + ".add"}
-                      name={rootLessListKey + ".add"}
-                      onClick={addNewArrayItem}
-                      title="Add new array item"
-                      style={{
-                        flexShrink: 0,
-                        marginLeft: "1em",
-                      }}
-                    >
-                      <ThemedAddIcon />
-                    </ThemedSizedButton>
                   </>
-                ) : (
-                  <></>
                 )}
+                <ThemedSizedButton
+                  aria-label={rootLessListKey + ".add"}
+                  name={rootLessListKey + ".add"}
+                  onClick={addNewArrayItem}
+                  title="Add new array item"
+                  style={{
+                    flexShrink: 0,
+                    marginLeft: "1em",
+                  }}
+                >
+                  <ThemedAddIcon />
+                </ThemedSizedButton>
               </>
             )}
           </span>
@@ -862,7 +864,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           }}
           key={`${rootLessListKey}|body`}
         >
-          <ThemedOnScreenDebug
+          {/* <ThemedOnScreenDebug
             label={`JzodArrayEditor rendering items for array at ${rootLessListKey || "ROOT"}`}
             data={{ 
               rootLessListKey,
@@ -872,7 +874,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             copyButton={true}
             initiallyUnfolded={false}
             useCodeBlock={true}
-          />
+          /> */}
           {arrayItems}
         </div>
       </div>

@@ -544,16 +544,14 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
 
   return (
     <div className="JsonObjectEditFormDialog">
-      {showButton ? (
+      {showButton && (
         <h3>Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)</h3>
-      ) : (
-        <div></div>
       )}
       {currentDeploymentUuid &&
       currentApplicationSection &&
       !showButton &&
       props?.isOpen &&
-      dialogOuterFormObject ? (
+      dialogOuterFormObject && (
         <JsonElementEditorDialog
           label={label}
           formState={dialogOuterFormObject}
@@ -579,8 +577,6 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
           valueObjectEditMode={props.valueObjectEditMode}
         />
-      ) : (
-        <></>
       )}
     </div>
   );
