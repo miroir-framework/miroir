@@ -4,6 +4,7 @@ import { Clear } from "../Themes/MaterialSymbolWrappers";
 
 import {
   alterObjectAtPath,
+  alterObjectAtPath2,
   ApplicationSection,
   defaultMetaModelEnvironment,
   deleteObjectAtPath,
@@ -624,7 +625,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       newPath.push(newAttributeName);
 
       // Set the value at the new attribute path
-      const newFormState2: any = alterObjectAtPath(newFormState1, newPath, subObject);
+      const newFormState2: any = alterObjectAtPath2(newFormState1, newPath, subObject);
 
       log.info("handleAttributeNameChange newFormState2", newFormState2);
 

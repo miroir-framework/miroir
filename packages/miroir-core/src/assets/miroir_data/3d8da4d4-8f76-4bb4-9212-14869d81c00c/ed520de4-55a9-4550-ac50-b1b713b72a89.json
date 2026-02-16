@@ -46,6 +46,13 @@
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": ["applicationUuid"]
+                      }
+                    },
                     "display": {
                       "editable": false
                     }

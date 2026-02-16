@@ -1908,15 +1908,16 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             currentModelEnvironment,
           ).then(async (result: Action2ReturnType) => {
+            const application = domainAction.payload.application ?? "APPLICATION_UUID_NOT_FOUND";
             const deploymentUuid =
               // domainAction.payload.deploymentUuid ??
-              applicationDeploymentMap[domainAction.payload.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
+              applicationDeploymentMap[application];
             if (result instanceof Action2Error) {
               log.error(
                 "handleActionFromUI not autocommitting due to error result for action",
                 domainAction.actionType,
                 "application",
-                domainAction.payload.application,
+                application,
                 "deployment",
                 deploymentUuid,
                 "domainAction",
@@ -1952,7 +1953,7 @@ export class DomainController implements DomainControllerInterface {
                 application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 payload: {
-                  application: domainAction.payload.application,
+                  application: application,
                 },
               };
               const result = await this.handleActionInternal(
@@ -2160,10 +2161,9 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
   ): Promise<Action2VoidReturnType> {
-    const deploymentUuid =
-      // domainAction.payload.deploymentUuid ??
-      applicationDeploymentMap[domainAction.payload.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
-    // let entityDomainAction:DomainAction | undefined = undefined;
+    const application = domainAction.payload.application ?? "APPLICATION_UUID_NOT_FOUND";
+    const deploymentUuid = applicationDeploymentMap[application];
+
     // log.info(
     //   "handleAction",
     //   "deploymentUuid",

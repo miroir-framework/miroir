@@ -13865,7 +13865,9 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -15036,14 +15038,6 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "extractorOrCombinerContextReference",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
               "relativePath": "extractorOrCombinerReturningObject",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
@@ -15053,6 +15047,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "extractorOrCombinerReturningObjectList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "extractorOrCombinerContextReference",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -18283,6 +18285,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
+                        },
                         "display": {
                           "editable": false
                         }
@@ -18663,6 +18674,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -21548,6 +21568,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     }
@@ -21625,6 +21654,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
                     },
                     "display": {
                       "editable": false
@@ -21715,6 +21753,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     }
@@ -21775,6 +21822,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
                     },
                     "display": {
                       "editable": false
@@ -21840,6 +21896,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
                     },
                     "display": {
                       "editable": false
@@ -21915,6 +21980,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
                     },
                     "display": {
                       "editable": false
@@ -22136,18 +22210,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "application": {
                 "type": "uuid",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "Application",
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false
-                  }
-                }
+                "optional": true
               },
               "templates": {
                 "type": "record",
@@ -22525,15 +22588,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "undoRedoAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "storeOrBundleAction"
+              "relativePath": "instanceAction"
             }
           },
           {
@@ -22549,7 +22604,15 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "instanceAction"
+              "relativePath": "undoRedoAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeOrBundleAction"
             }
           },
           {
@@ -22635,18 +22698,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "application": {
                     "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
+                    "optional": true
                   },
                   "templates": {
                     "type": "record",
@@ -26243,7 +26295,9 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 },
                 "isTemplate": true
               }
@@ -26258,7 +26312,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
                     }
                   }
                 }
@@ -39779,13 +39835,6 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
               "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
@@ -39794,6 +39843,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -42542,53 +42598,6 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference": {
-        "type": "union",
-        "discriminator": "transformerType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildCarryOnObject"
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "extractorOrCombinerType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false,
-                    "display": {
-                      "editable": false
-                    },
-                    "defaultLabel": "Extractor Or Combiner Type"
-                  }
-                },
-                "definition": "extractorOrCombinerContextReference"
-              },
-              "extractorOrCombinerContextReference": {
-                "type": "union",
-                "discriminator": "transformerType",
-                "definition": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
       "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject": {
         "type": "union",
         "discriminator": [
@@ -42656,6 +42665,53 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuildCarryOnObject"
+            }
+          }
+        ]
+      },
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference": {
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorOrCombinerContextReference"
+              },
+              "extractorOrCombinerContextReference": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              }
             }
           }
         ]
@@ -43159,7 +43215,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
                     },
                     "isTemplate": true
                   }
@@ -43174,7 +43232,9 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Parent Uuid",
                         "foreignKeyParams": {
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
                         }
                       }
                     }
@@ -46851,7 +46911,9 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 },
                 "isTemplate": true
               }
@@ -46869,7 +46931,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
                     }
                   }
                 }
@@ -47227,15 +47291,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
             }
           },
           {
@@ -47251,7 +47307,15 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
             }
           },
           {
@@ -47336,48 +47400,8 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "application": {
-                    "type": "union",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false,
-                        "isTemplate": true
-                      }
-                    },
-                    "discriminator": [
-                      "transformerType",
-                      "interpolation"
-                    ],
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "tag": {
-                          "value": {
-                            "canBeTemplate": true,
-                            "defaultLabel": "Application",
-                            "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                              "targetEntityOrderInstancesBy": "name"
-                            },
-                            "editable": false
-                          }
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "transformerForBuildCarryOnObject"
-                        }
-                      }
-                    ]
+                    "type": "uuid",
+                    "optional": true
                   },
                   "templates": {
                     "type": "record",
@@ -47573,29 +47597,866 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "undoRedoAction"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
         "discriminator": "actionType",
         "definition": [
           {
-            "type": "schemaReference",
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction"
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "createInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "description": "Entity UUID (parent entity of the instances to create)",
+                        "foreignKeyParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances (objects) to create",
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "display": {
+                                "editable": false
+                              },
+                              "canBeTemplate": true,
+                              "isTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "display": {
+                                    "editable": false
+                                  },
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Uuid",
+                              "display": {
+                                "editable": false
+                              },
+                              "canBeTemplate": true,
+                              "foreignKeyParams": {
+                                "targetEntityApplicationSection": "model",
+                                "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                "targetEntityOrderInstancesBy": "name"
+                              },
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              },
+                              "isTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "uuid",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Uuid",
+                                  "display": {
+                                    "editable": false
+                                  },
+                                  "canBeTemplate": true,
+                                  "foreignKeyParams": {
+                                    "targetEntityApplicationSection": "model",
+                                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  },
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "getFromParameters",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created",
+                              "isTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "ifThenElseMMLS": {
+                                  "mmlsReference": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "compositeActionTemplate"
+                                  }
+                                },
+                                "isTemplate": true
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "ifThenElseMMLS": {
+                                      "mmlsReference": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "compositeActionTemplate"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
           {
-            "type": "schemaReference",
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction"
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "deleteInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "deleteInstanceWithCascade"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "updateInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "Application UUID",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "description": "The Entity UUID of which instances will be updated",
+                        "foreignKeyParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "description": "Array of entity instances to be updated",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true,
+                          "isTemplate": true
+                        }
+                      },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true,
+                              "isTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "loadNewInstancesInLocalCache"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to place in the local cache",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "getInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "UUID of Application to query",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "description": "UUID of Entity (parent entity)",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "description": "UUID of Instance to retrieve",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "getInstances"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "Application UUID to query",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "description": "Entity UUID to get all instances for",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         ]
@@ -48783,857 +49644,29 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "undoRedoAction"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction": {
         "type": "union",
         "discriminator": "actionType",
         "definition": [
           {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
+            "type": "schemaReference",
             "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "createInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "Application UUID where instances will be created",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section where instances will be created (model or data)",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 3,
-                        "defaultLabel": "Entity Uuid",
-                        "description": "Entity UUID (parent entity of the instances to create)",
-                        "foreignKeyParams": {
-                          "targetEntityApplicationSection": "model",
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "targetEntityOrderInstancesBy": "name"
-                        }
-                      }
-                    }
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances (objects) to create",
-                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "object",
-                      "definition": {
-                        "parentName": {
-                          "type": "union",
-                          "optional": true,
-                          "tag": {
-                            "value": {
-                              "id": 1,
-                              "defaultLabel": "Parent Name",
-                              "display": {
-                                "editable": false
-                              },
-                              "canBeTemplate": true,
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": [
-                            "transformerType",
-                            "interpolation"
-                          ],
-                          "definition": [
-                            {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Parent Name",
-                                  "display": {
-                                    "editable": false
-                                  },
-                                  "canBeTemplate": true
-                                }
-                              }
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuildCarryOnObject"
-                              }
-                            }
-                          ]
-                        },
-                        "parentUuid": {
-                          "type": "union",
-                          "tag": {
-                            "value": {
-                              "id": 2,
-                              "defaultLabel": "Parent Uuid",
-                              "display": {
-                                "editable": false
-                              },
-                              "canBeTemplate": true,
-                              "foreignKeyParams": {
-                                "targetEntityApplicationSection": "model",
-                                "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                "targetEntityOrderInstancesBy": "name"
-                              },
-                              "initializeTo": {
-                                "initializeToType": "transformer",
-                                "transformer": {
-                                  "transformerType": "getFromParameters",
-                                  "interpolation": "build",
-                                  "referencePath": [
-                                    "rootObject",
-                                    "payload",
-                                    "parentUuid"
-                                  ]
-                                }
-                              },
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": [
-                            "transformerType",
-                            "interpolation"
-                          ],
-                          "definition": [
-                            {
-                              "type": "uuid",
-                              "tag": {
-                                "value": {
-                                  "id": 2,
-                                  "defaultLabel": "Parent Uuid",
-                                  "display": {
-                                    "editable": false
-                                  },
-                                  "canBeTemplate": true,
-                                  "foreignKeyParams": {
-                                    "targetEntityApplicationSection": "model",
-                                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                    "targetEntityOrderInstancesBy": "name"
-                                  },
-                                  "initializeTo": {
-                                    "initializeToType": "transformer",
-                                    "transformer": {
-                                      "transformerType": "getFromParameters",
-                                      "interpolation": "build",
-                                      "referencePath": [
-                                        "rootObject",
-                                        "payload",
-                                        "parentUuid"
-                                      ]
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuildCarryOnObject"
-                              }
-                            }
-                          ]
-                        },
-                        "applicationSection": {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                          }
-                        },
-                        "instances": {
-                          "type": "array",
-                          "tag": {
-                            "value": {
-                              "defaultLabel": "Instances",
-                              "description": "instances to be created",
-                              "isTemplate": true
-                            }
-                          },
-                          "definition": {
-                            "type": "union",
-                            "tag": {
-                              "value": {
-                                "canBeTemplate": true,
-                                "ifThenElseMMLS": {
-                                  "mmlsReference": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "compositeActionTemplate"
-                                  }
-                                },
-                                "isTemplate": true
-                              }
-                            },
-                            "discriminator": [
-                              "transformerType",
-                              "interpolation"
-                            ],
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "tag": {
-                                  "value": {
-                                    "canBeTemplate": true,
-                                    "ifThenElseMMLS": {
-                                      "mmlsReference": {
-                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                        "relativePath": "compositeActionTemplate"
-                                      }
-                                    },
-                                    "isTemplate": true
-                                  }
-                                },
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "transformerForBuildCarryOnObject"
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction"
             }
           },
           {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
+            "type": "schemaReference",
             "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "deleteInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "includeInTransaction": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "deleteInstanceWithCascade"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "includeInTransaction": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "updateInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "Application UUID",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section where instances will be updated",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "includeInTransaction": {
-                    "type": "boolean",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "description": "Set to true to include update in a transaction"
-                      }
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 3,
-                        "defaultLabel": "Entity Uuid",
-                        "description": "The Entity UUID of which instances will be updated",
-                        "foreignKeyParams": {
-                          "targetEntityApplicationSection": "model",
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "targetEntityOrderInstancesBy": "name"
-                        }
-                      }
-                    }
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to update",
-                        "description": "Array of entity instances to be updated",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "optional": false,
-                      "type": "union",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true,
-                          "isTemplate": true
-                        }
-                      },
-                      "discriminator": [
-                        "transformerType",
-                        "interpolation"
-                      ],
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true,
-                              "isTemplate": true
-                            }
-                          },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "transformerForBuildCarryOnObject"
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "loadNewInstancesInLocalCache"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to place in the local cache",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "getInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "UUID of Application to query",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section to query (model or data)",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "UUID of Entity (parent entity)",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "uuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "UUID of Instance to retrieve",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "getInstances"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "Application UUID to query",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section to query (model or data)",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "Entity UUID to get all instances for",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction"
             }
           }
         ]
@@ -49688,6 +49721,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -50183,48 +50225,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "application": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "Application",
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false,
-                    "isTemplate": true
-                  }
-                },
-                "discriminator": [
-                  "transformerType",
-                  "interpolation"
-                ],
-                "definition": [
-                  {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
+                "type": "uuid",
+                "optional": true
               },
               "templates": {
                 "type": "record",
@@ -50457,6 +50459,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     },
@@ -50479,6 +50490,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -50564,6 +50584,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     },
@@ -50586,6 +50615,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -50661,6 +50699,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     },
@@ -50683,6 +50730,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -50750,311 +50806,296 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "testAssertion"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction": {
-        "type": "union",
-        "discriminator": "actionType",
-        "definition": [
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_createStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "deploymentUuid": {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Module Deployment Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "configuration": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_deleteStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "deploymentUuid": {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Module Deployment Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "configuration": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_resetAndInitApplicationDeployment"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "deployments": {
-                    "type": "array",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_openStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "deploymentUuid": {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Module Deployment Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "configuration": {
-                    "type": "record",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_closeStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "bundleAction"
+          "relativePath": "applicationSection"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
+        "type": "object",
+        "nonStrict": true,
+        "definition": {
+          "uuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "conceptLevel": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "enum",
+                "definition": [
+                  "MetaModel",
+                  "Model",
+                  "Data"
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Concept Level",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Concept Level",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
+          }
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection": {
+        "type": "object",
+        "definition": {
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Parent Name",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Parent Name",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Parent Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          },
+          "applicationSection": {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+            }
+          },
+          "instances": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "tag": {
+                "value": {
+                  "canBeTemplate": true,
+                  "isTemplate": true
+                }
+              },
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true,
+                      "isTemplate": true
+                    }
+                  },
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "transformerForBuildCarryOnObject"
+                  }
+                }
+              ]
+            }
+          }
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel": {
@@ -51241,165 +51282,6 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "selfApplication"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
-        "type": "object",
-        "nonStrict": true,
-        "definition": {
-          "uuid": {
-            "type": "union",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildCarryOnObject"
-                }
-              }
-            ]
-          },
-          "parentName": {
-            "type": "union",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Name",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildCarryOnObject"
-                }
-              }
-            ]
-          },
-          "parentUuid": {
-            "type": "union",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 3,
-                    "defaultLabel": "Entity Uuid",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildCarryOnObject"
-                }
-              }
-            ]
-          },
-          "conceptLevel": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "enum",
-                "definition": [
-                  "MetaModel",
-                  "Model",
-                  "Data"
-                ],
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 4,
-                    "defaultLabel": "Concept Level",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildCarryOnObject"
-                }
-              }
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Concept Level",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ]
-          }
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement": {
@@ -51747,137 +51629,311 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction": {
+        "type": "union",
+        "discriminator": "actionType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_createStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "configuration": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_deleteStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "configuration": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_resetAndInitApplicationDeployment"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "deployments": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_openStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "configuration": {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_closeStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "applicationSection"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection": {
-        "type": "object",
-        "definition": {
-          "parentName": {
-            "type": "union",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Parent Name",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Parent Name",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildCarryOnObject"
-                }
-              }
-            ]
-          },
-          "parentUuid": {
-            "type": "union",
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Parent Name",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Parent Name",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildCarryOnObject"
-                }
-              }
-            ]
-          },
-          "applicationSection": {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-            }
-          },
-          "instances": {
-            "type": "array",
-            "definition": {
-              "type": "union",
-              "tag": {
-                "value": {
-                  "canBeTemplate": true,
-                  "isTemplate": true
-                }
-              },
-              "discriminator": [
-                "transformerType",
-                "interpolation"
-              ],
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true,
-                      "isTemplate": true
-                    }
-                  },
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                  },
-                  "context": {}
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "transformerForBuildCarryOnObject"
-                  }
-                }
-              ]
-            }
-          }
+          "relativePath": "bundleAction"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer": {
@@ -52189,192 +52245,6 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "storeUnitConfiguration"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment": {
-        "type": "object",
-        "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "name": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 5,
-                "defaultLabel": "Name",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "defaultLabel": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 6,
-                "defaultLabel": "Default Label",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "description": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 7,
-                "defaultLabel": "Description",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "selfApplication": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 8,
-                "display": {
-                  "editable": false
-                },
-                "defaultLabel": "AdminApplication",
-                "description": "The AdminApplication of the Branch.",
-                "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                "foreignKeyParams": {
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "bundle": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 8,
-                "defaultLabel": "Bundle",
-                "description": "The deployed bundle.",
-                "targetEntity": "",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "configuration": {
-            "type": "schemaReference",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 9,
-                "defaultLabel": "Deployment Configuration",
-                "display": {
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-            }
-          },
-          "model": {
-            "type": "schemaReference",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 9,
-                "defaultLabel": "SelfApplication Deployment Model",
-                "display": {
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
-            }
-          },
-          "data": {
-            "type": "schemaReference",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 10,
-                "defaultLabel": "SelfApplication Deployment Data",
-                "display": {
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
-            }
-          }
-        }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion": {
         "type": "schemaReference",
@@ -54846,6 +54716,192 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "miroirIcon"
         }
       },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storeUnitConfiguration"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Default Label",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 8,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "AdminApplication",
+                "description": "The AdminApplication of the Branch.",
+                "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                "foreignKeyParams": {
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "bundle": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Bundle",
+                "description": "The deployed bundle.",
+                "targetEntity": "",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "configuration": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "Deployment Configuration",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+            }
+          },
+          "model": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication Deployment Model",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
+            }
+          },
+          "data": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "SelfApplication Deployment Data",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
+            }
+          }
+        }
+      },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox": {
         "type": "object",
         "definition": {
@@ -55635,13 +55691,6 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "transformerForBuildPlusRuntime_dataflowSequence"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "storeSectionConfiguration"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_actionsArray": {
@@ -56784,17 +56833,17 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "jzodAttributeStringValidations"
         }
       },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storeSectionConfiguration"
+        }
+      },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner": {
         "type": "union",
         "discriminator": "extractorOrCombinerType",
         "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            }
-          },
           {
             "type": "schemaReference",
             "definition": {
@@ -56806,6 +56855,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -57141,34 +57197,6 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_Abstract"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "indexedDbStoreSectionConfiguration"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "filesystemDbStoreSectionConfiguration"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "sqlDbStoreSectionConfiguration"
-        }
-      },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mongoDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "mongoDbStoreSectionConfiguration"
-        }
-      },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_action": {
         "type": "object",
         "tag": {
@@ -57437,6 +57465,34 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "indexedDbStoreSectionConfiguration"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "filesystemDbStoreSectionConfiguration"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "sqlDbStoreSectionConfiguration"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mongoDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "mongoDbStoreSectionConfiguration"
+        }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference": {
         "type": "schemaReference",
@@ -59180,7 +59236,9 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 },
                 "isTemplate": true
               }
@@ -59198,7 +59256,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
                     }
                   }
                 }
@@ -61842,7 +61902,9 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 },
                 "isTemplate": true
               }
@@ -61860,7 +61922,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
                     }
                   }
                 }
@@ -62218,15 +62282,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
             }
           },
           {
@@ -62242,7 +62298,15 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
             }
           },
           {
@@ -62327,48 +62391,8 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "application": {
-                    "type": "union",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false,
-                        "isTemplate": true
-                      }
-                    },
-                    "discriminator": [
-                      "transformerType",
-                      "interpolation"
-                    ],
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "tag": {
-                          "value": {
-                            "canBeTemplate": true,
-                            "defaultLabel": "Application",
-                            "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                              "targetEntityOrderInstancesBy": "name"
-                            },
-                            "editable": false
-                          }
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                        }
-                      }
-                    ]
+                    "type": "uuid",
+                    "optional": true
                   },
                   "templates": {
                     "type": "record",
@@ -62564,29 +62588,866 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "undoRedoAction"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
         "type": "union",
         "discriminator": "actionType",
         "definition": [
           {
-            "type": "schemaReference",
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction"
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "createInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "Application UUID where instances will be created",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be created (model or data)",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "description": "Entity UUID (parent entity of the instances to create)",
+                        "foreignKeyParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances (objects) to create",
+                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "display": {
+                                "editable": false
+                              },
+                              "canBeTemplate": true,
+                              "isTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "display": {
+                                    "editable": false
+                                  },
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Uuid",
+                              "display": {
+                                "editable": false
+                              },
+                              "canBeTemplate": true,
+                              "foreignKeyParams": {
+                                "targetEntityApplicationSection": "model",
+                                "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                "targetEntityOrderInstancesBy": "name"
+                              },
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              },
+                              "isTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "uuid",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Uuid",
+                                  "display": {
+                                    "editable": false
+                                  },
+                                  "canBeTemplate": true,
+                                  "foreignKeyParams": {
+                                    "targetEntityApplicationSection": "model",
+                                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  },
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "getFromParameters",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Instances",
+                              "description": "instances to be created",
+                              "isTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "ifThenElseMMLS": {
+                                  "mmlsReference": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "compositeActionTemplate"
+                                  }
+                                },
+                                "isTemplate": true
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "ifThenElseMMLS": {
+                                      "mmlsReference": {
+                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                        "relativePath": "compositeActionTemplate"
+                                      }
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
           {
-            "type": "schemaReference",
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction"
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "deleteInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "deleteInstanceWithCascade"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to delete",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "updateInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "Application UUID",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section where instances will be updated",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "includeInTransaction": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "description": "Set to true to include update in a transaction"
+                      }
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Entity Uuid",
+                        "description": "The Entity UUID of which instances will be updated",
+                        "foreignKeyParams": {
+                          "targetEntityApplicationSection": "model",
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to update",
+                        "description": "Array of entity instances to be updated",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "optional": false,
+                      "type": "union",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true,
+                          "isTemplate": true
+                        }
+                      },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true,
+                              "isTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "loadNewInstancesInLocalCache"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "objects": {
+                    "type": "array",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Entity Instances to place in the local cache",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "optional": false,
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "getInstance"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "UUID of Application to query",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "description": "UUID of Entity (parent entity)",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "uuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "description": "UUID of Instance to retrieve",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "getInstances"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "description": "Application UUID to query",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "description": "Section to query (model or data)",
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    }
+                  },
+                  "parentUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Uuid",
+                        "description": "Entity UUID to get all instances for",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         ]
@@ -63774,857 +64635,29 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "undoRedoAction"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction": {
         "type": "union",
         "discriminator": "actionType",
         "definition": [
           {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
+            "type": "schemaReference",
             "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "createInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "Application UUID where instances will be created",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section where instances will be created (model or data)",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 3,
-                        "defaultLabel": "Entity Uuid",
-                        "description": "Entity UUID (parent entity of the instances to create)",
-                        "foreignKeyParams": {
-                          "targetEntityApplicationSection": "model",
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "targetEntityOrderInstancesBy": "name"
-                        }
-                      }
-                    }
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances (objects) to create",
-                        "description": "Array of entity instances to create. Each must have uuid and parentUuid.",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "object",
-                      "definition": {
-                        "parentName": {
-                          "type": "union",
-                          "optional": true,
-                          "tag": {
-                            "value": {
-                              "id": 1,
-                              "defaultLabel": "Parent Name",
-                              "display": {
-                                "editable": false
-                              },
-                              "canBeTemplate": true,
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": [
-                            "transformerType",
-                            "interpolation"
-                          ],
-                          "definition": [
-                            {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Parent Name",
-                                  "display": {
-                                    "editable": false
-                                  },
-                                  "canBeTemplate": true
-                                }
-                              }
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                              }
-                            }
-                          ]
-                        },
-                        "parentUuid": {
-                          "type": "union",
-                          "tag": {
-                            "value": {
-                              "id": 2,
-                              "defaultLabel": "Parent Uuid",
-                              "display": {
-                                "editable": false
-                              },
-                              "canBeTemplate": true,
-                              "foreignKeyParams": {
-                                "targetEntityApplicationSection": "model",
-                                "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                "targetEntityOrderInstancesBy": "name"
-                              },
-                              "initializeTo": {
-                                "initializeToType": "transformer",
-                                "transformer": {
-                                  "transformerType": "getFromParameters",
-                                  "interpolation": "build",
-                                  "referencePath": [
-                                    "rootObject",
-                                    "payload",
-                                    "parentUuid"
-                                  ]
-                                }
-                              },
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": [
-                            "transformerType",
-                            "interpolation"
-                          ],
-                          "definition": [
-                            {
-                              "type": "uuid",
-                              "tag": {
-                                "value": {
-                                  "id": 2,
-                                  "defaultLabel": "Parent Uuid",
-                                  "display": {
-                                    "editable": false
-                                  },
-                                  "canBeTemplate": true,
-                                  "foreignKeyParams": {
-                                    "targetEntityApplicationSection": "model",
-                                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                    "targetEntityOrderInstancesBy": "name"
-                                  },
-                                  "initializeTo": {
-                                    "initializeToType": "transformer",
-                                    "transformer": {
-                                      "transformerType": "getFromParameters",
-                                      "interpolation": "build",
-                                      "referencePath": [
-                                        "rootObject",
-                                        "payload",
-                                        "parentUuid"
-                                      ]
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                              }
-                            }
-                          ]
-                        },
-                        "applicationSection": {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                          }
-                        },
-                        "instances": {
-                          "type": "array",
-                          "tag": {
-                            "value": {
-                              "defaultLabel": "Instances",
-                              "description": "instances to be created",
-                              "isTemplate": true
-                            }
-                          },
-                          "definition": {
-                            "type": "union",
-                            "tag": {
-                              "value": {
-                                "canBeTemplate": true,
-                                "ifThenElseMMLS": {
-                                  "mmlsReference": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "compositeActionTemplate"
-                                  }
-                                },
-                                "isTemplate": true
-                              }
-                            },
-                            "discriminator": [
-                              "transformerType",
-                              "interpolation"
-                            ],
-                            "definition": [
-                              {
-                                "type": "schemaReference",
-                                "tag": {
-                                  "value": {
-                                    "canBeTemplate": true,
-                                    "ifThenElseMMLS": {
-                                      "mmlsReference": {
-                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                        "relativePath": "compositeActionTemplate"
-                                      }
-                                    },
-                                    "isTemplate": true
-                                  }
-                                },
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                                },
-                                "context": {}
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction"
             }
           },
           {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
+            "type": "schemaReference",
             "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "deleteInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "includeInTransaction": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "deleteInstanceWithCascade"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "includeInTransaction": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to delete",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "updateInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "Application UUID",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section where instances will be updated",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "includeInTransaction": {
-                    "type": "boolean",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "description": "Set to true to include update in a transaction"
-                      }
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 3,
-                        "defaultLabel": "Entity Uuid",
-                        "description": "The Entity UUID of which instances will be updated",
-                        "foreignKeyParams": {
-                          "targetEntityApplicationSection": "model",
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "targetEntityOrderInstancesBy": "name"
-                        }
-                      }
-                    }
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to update",
-                        "description": "Array of entity instances to be updated",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "optional": false,
-                      "type": "union",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true,
-                          "isTemplate": true
-                        }
-                      },
-                      "discriminator": [
-                        "transformerType",
-                        "interpolation"
-                      ],
-                      "definition": [
-                        {
-                          "type": "schemaReference",
-                          "optional": false,
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true,
-                              "isTemplate": true
-                            }
-                          },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "loadNewInstancesInLocalCache"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "objects": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "Entity Instances to place in the local cache",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "getInstance"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "UUID of Application to query",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section to query (model or data)",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "UUID of Entity (parent entity)",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "uuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "UUID of Instance to retrieve",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "display": {
-                  "displayedAttributeValueWhenFolded": "actionLabel"
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "getInstances"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "ed520de4-55a9-4550-ac50-b1b713b72a89"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "description": "Application UUID to query",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "tag": {
-                      "value": {
-                        "description": "Section to query (model or data)",
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "Entity UUID to get all instances for",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction"
             }
           }
         ]
@@ -64679,6 +64712,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -65174,48 +65216,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "object",
             "definition": {
               "application": {
-                "type": "union",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true,
-                    "defaultLabel": "Application",
-                    "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                      "targetEntityOrderInstancesBy": "name"
-                    },
-                    "editable": false,
-                    "isTemplate": true
-                  }
-                },
-                "discriminator": [
-                  "transformerType",
-                  "interpolation"
-                ],
-                "definition": [
-                  {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                    }
-                  }
-                ]
+                "type": "uuid",
+                "optional": true
               },
               "templates": {
                 "type": "record",
@@ -65448,6 +65450,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     },
@@ -65470,6 +65481,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -65555,6 +65575,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     },
@@ -65577,6 +65606,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -65652,6 +65690,15 @@ export const miroirFundamentalJzodSchema = {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
                     "display": {
                       "editable": false
                     },
@@ -65674,6 +65721,15 @@ export const miroirFundamentalJzodSchema = {
                           "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
+                        },
+                        "initializeTo": {
+                          "initializeToType": "transformer",
+                          "transformer": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         },
                         "display": {
                           "editable": false
@@ -65741,311 +65797,296 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "testAssertion"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction": {
-        "type": "union",
-        "discriminator": "actionType",
-        "definition": [
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_createStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "deploymentUuid": {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Module Deployment Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "configuration": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_deleteStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "deploymentUuid": {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Module Deployment Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "configuration": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_resetAndInitApplicationDeployment"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "deployments": {
-                    "type": "array",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_openStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "deploymentUuid": {
-                    "type": "uuid",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Module Deployment Uuid",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  },
-                  "configuration": {
-                    "type": "record",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "storeManagementAction_closeStore"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "application": {
-                "type": "literal",
-                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": false,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "bundleAction"
+          "relativePath": "applicationSection"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
+        "type": "object",
+        "nonStrict": true,
+        "definition": {
+          "uuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "conceptLevel": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "enum",
+                "definition": [
+                  "MetaModel",
+                  "Model",
+                  "Data"
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Concept Level",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Concept Level",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
+          }
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection": {
+        "type": "object",
+        "definition": {
+          "parentName": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Parent Name",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Parent Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "parentUuid": {
+            "type": "union",
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Parent Name",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ],
+            "definition": [
+              {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Parent Name",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                }
+              }
+            ]
+          },
+          "applicationSection": {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+            }
+          },
+          "instances": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "tag": {
+                "value": {
+                  "canBeTemplate": true,
+                  "isTemplate": true
+                }
+              },
+              "discriminator": [
+                "transformerType",
+                "interpolation"
+              ],
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true,
+                      "isTemplate": true
+                    }
+                  },
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                  }
+                }
+              ]
+            }
+          }
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_metaModel": {
@@ -66232,165 +66273,6 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "selfApplication"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
-        "type": "object",
-        "nonStrict": true,
-        "definition": {
-          "uuid": {
-            "type": "union",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                }
-              }
-            ]
-          },
-          "parentName": {
-            "type": "union",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Entity Name",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                }
-              }
-            ]
-          },
-          "parentUuid": {
-            "type": "union",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "uuid",
-                "tag": {
-                  "value": {
-                    "id": 3,
-                    "defaultLabel": "Entity Uuid",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                }
-              }
-            ]
-          },
-          "conceptLevel": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "enum",
-                "definition": [
-                  "MetaModel",
-                  "Model",
-                  "Data"
-                ],
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 4,
-                    "defaultLabel": "Concept Level",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                }
-              }
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Concept Level",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ]
-          }
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement": {
@@ -66738,137 +66620,311 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeManagementAction": {
+        "type": "union",
+        "discriminator": "actionType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_createStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "configuration": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_deleteStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "configuration": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_resetAndInitApplicationDeployment"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "deployments": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_openStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Module Deployment Uuid",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  },
+                  "configuration": {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "storeManagementAction_closeStore"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "application": {
+                "type": "literal",
+                "definition": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "editable": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_bundleAction": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "applicationSection"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection": {
-        "type": "object",
-        "definition": {
-          "parentName": {
-            "type": "union",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Parent Name",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Parent Name",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                }
-              }
-            ]
-          },
-          "parentUuid": {
-            "type": "union",
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Parent Name",
-                "editable": false,
-                "canBeTemplate": true,
-                "isTemplate": true
-              }
-            },
-            "discriminator": [
-              "transformerType",
-              "interpolation"
-            ],
-            "definition": [
-              {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "id": 2,
-                    "defaultLabel": "Parent Name",
-                    "editable": false,
-                    "canBeTemplate": true
-                  }
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                }
-              }
-            ]
-          },
-          "applicationSection": {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-            }
-          },
-          "instances": {
-            "type": "array",
-            "definition": {
-              "type": "union",
-              "tag": {
-                "value": {
-                  "canBeTemplate": true,
-                  "isTemplate": true
-                }
-              },
-              "discriminator": [
-                "transformerType",
-                "interpolation"
-              ],
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true,
-                      "isTemplate": true
-                    }
-                  },
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                  },
-                  "context": {}
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
-                  }
-                }
-              ]
-            }
-          }
+          "relativePath": "bundleAction"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer": {
@@ -67180,192 +67236,6 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "storeUnitConfiguration"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment": {
-        "type": "object",
-        "definition": {
-          "uuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 1,
-                "defaultLabel": "Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 2,
-                "defaultLabel": "Entity Name",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 3,
-                "defaultLabel": "Entity Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 4,
-                "defaultLabel": "Entity Definition Version Uuid",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "name": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 5,
-                "defaultLabel": "Name",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "defaultLabel": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 6,
-                "defaultLabel": "Default Label",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "description": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 7,
-                "defaultLabel": "Description",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "selfApplication": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "id": 8,
-                "display": {
-                  "editable": false
-                },
-                "defaultLabel": "AdminApplication",
-                "description": "The AdminApplication of the Branch.",
-                "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                "foreignKeyParams": {
-                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "bundle": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 8,
-                "defaultLabel": "Bundle",
-                "description": "The deployed bundle.",
-                "targetEntity": "",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "configuration": {
-            "type": "schemaReference",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 9,
-                "defaultLabel": "Deployment Configuration",
-                "display": {
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
-            }
-          },
-          "model": {
-            "type": "schemaReference",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 9,
-                "defaultLabel": "SelfApplication Deployment Model",
-                "display": {
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
-            }
-          },
-          "data": {
-            "type": "schemaReference",
-            "optional": true,
-            "tag": {
-              "value": {
-                "id": 10,
-                "defaultLabel": "SelfApplication Deployment Data",
-                "display": {
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
-            }
-          }
-        }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationVersion": {
         "type": "schemaReference",
@@ -69837,6 +69707,192 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "miroirIcon"
         }
       },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storeUnitConfiguration"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_deployment": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Default Label",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 8,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "AdminApplication",
+                "description": "The AdminApplication of the Branch.",
+                "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                "foreignKeyParams": {
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "bundle": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Bundle",
+                "description": "The deployed bundle.",
+                "targetEntity": "",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "configuration": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "Deployment Configuration",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeUnitConfiguration"
+            }
+          },
+          "model": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication Deployment Model",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
+            }
+          },
+          "data": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "SelfApplication Deployment Data",
+                "display": {
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
+            }
+          }
+        }
+      },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox": {
         "type": "object",
         "definition": {
@@ -70626,13 +70682,6 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "transformerForBuildPlusRuntime_dataflowSequence"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "storeSectionConfiguration"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_actionsArray": {
@@ -71775,17 +71824,17 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "jzodAttributeStringValidations"
         }
       },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "storeSectionConfiguration"
+        }
+      },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner": {
         "type": "union",
         "discriminator": "extractorOrCombinerType",
         "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            }
-          },
           {
             "type": "schemaReference",
             "definition": {
@@ -71797,6 +71846,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObjectList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -72132,34 +72188,6 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_Abstract"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "indexedDbStoreSectionConfiguration"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "filesystemDbStoreSectionConfiguration"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "sqlDbStoreSectionConfiguration"
-        }
-      },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mongoDbStoreSectionConfiguration": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "mongoDbStoreSectionConfiguration"
-        }
-      },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_action": {
         "type": "object",
         "tag": {
@@ -72428,6 +72456,34 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "indexedDbStoreSectionConfiguration"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_filesystemDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "filesystemDbStoreSectionConfiguration"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_sqlDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "sqlDbStoreSectionConfiguration"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mongoDbStoreSectionConfiguration": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "mongoDbStoreSectionConfiguration"
+        }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerContextReference": {
         "type": "schemaReference",
@@ -74171,7 +74227,9 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Uuid",
                 "foreignKeyParams": {
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityOrderInstancesBy": "name"
                 },
                 "isTemplate": true
               }
@@ -74189,7 +74247,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Uuid",
                     "foreignKeyParams": {
-                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
                     }
                   }
                 }
@@ -75121,15 +75181,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
             }
           },
           {
@@ -75145,7 +75197,15 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
             }
           },
           {
@@ -75230,47 +75290,8 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "application": {
-                    "type": "union",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false,
-                        "isTemplate": true
-                      }
-                    },
-                    "discriminator": [
-                      "transformerType",
-                      "interpolation"
-                    ],
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "tag": {
-                          "value": {
-                            "canBeTemplate": true,
-                            "defaultLabel": "Application",
-                            "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                              "targetEntityOrderInstancesBy": "name"
-                            },
-                            "editable": false
-                          }
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime"
-                        }
-                      }
-                    ]
+                    "type": "uuid",
+                    "optional": true
                   },
                   "templates": {
                     "type": "record",
@@ -75475,15 +75496,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "optional": false,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
             }
           },
           {
@@ -75499,7 +75512,15 @@ export const miroirFundamentalJzodSchema = {
             "optional": false,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceAction"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_undoRedoAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeOrBundleAction"
             }
           },
           {
@@ -75584,47 +75605,8 @@ export const miroirFundamentalJzodSchema = {
                 "type": "object",
                 "definition": {
                   "application": {
-                    "type": "union",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "defaultLabel": "Application",
-                        "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                          "targetEntityOrderInstancesBy": "name"
-                        },
-                        "editable": false,
-                        "isTemplate": true
-                      }
-                    },
-                    "discriminator": [
-                      "transformerType",
-                      "interpolation"
-                    ],
-                    "definition": [
-                      {
-                        "type": "uuid",
-                        "tag": {
-                          "value": {
-                            "canBeTemplate": true,
-                            "defaultLabel": "Application",
-                            "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
-                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-                              "targetEntityOrderInstancesBy": "name"
-                            },
-                            "editable": false
-                          }
-                        }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime"
-                        }
-                      }
-                    ]
+                    "type": "uuid",
+                    "optional": true
                   },
                   "templates": {
                     "type": "record",
