@@ -319,9 +319,17 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
     currentDeploymentReportsEntitiesDefinitionsMapping,
   ]);
 
+  // Determine if this is an Endpoint entity to use full width dialog
+  const isEndpointEntity = entityDefinition.entityUuid === "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
+
   return (
-    <ThemedDialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
-      <ThemedDialogTitle>{label} add / edit Element</ThemedDialogTitle>
+    <ThemedDialog 
+      onClose={handleAddObjectDialogFormClose} 
+      open={formIsOpen}
+      fullWidth={true}
+      maxWidth={isEndpointEntity ? "xl" : "md"}
+    >
+      <ThemedDialogTitle>{label} add / edit Element {isEndpointEntity ? "(Endpoint)" : ""}</ThemedDialogTitle>
       <div>
         <ThemedOnScreenDebug
           label={"JsonObjectEditFormDialog formValueMLSchema"}

@@ -181,6 +181,21 @@
                       },
                       "application": {
                         "type": "schemaReference",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Application",
+                            "initializeTo": {
+                              "initializeToType": "transformer",
+                              "transformer": {
+                                "type": "literal",
+                                "definition": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": ["applicationUuid"]
+                                }
+                              }
+                            }
+                          }
+                        },
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                           "relativePath": "jzodLiteral"

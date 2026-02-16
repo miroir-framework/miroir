@@ -286,6 +286,22 @@ export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends Que
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+export function useDefaultValueParams(
+  applicationUuid: Uuid | undefined,
+  deploymentUuid: Uuid | undefined,
+): Record<string, any> {
+  const result = useMemo(
+    () =>
+      ({
+        applicationUuid,
+        deploymentUuid,
+      }),
+    [applicationUuid, deploymentUuid]
+  );
+
+  return result;
+}
+
 export function useCurrentModel(
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,

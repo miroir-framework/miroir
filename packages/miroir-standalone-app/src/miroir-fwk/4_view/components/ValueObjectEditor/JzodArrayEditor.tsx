@@ -34,7 +34,7 @@ import { cleanLevel } from "../../constants";
 import {
   useMiroirContextService
 } from "../../MiroirContextReactProvider";
-import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks";
+import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
@@ -423,6 +423,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     currentDeploymentUuid ?? selfApplicationMiroir.uuid,
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
+  const defaultValueParams = useDefaultValueParams(
+    props.currentApplication,
+    currentDeploymentUuid
+  );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
   //     miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as MlSchema),
@@ -589,8 +593,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       }
 
       // const newItemEntity:EntityDefinition  =  entityDefinitions[newItemEntityUuid];
-      
 
+      
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
         "build",
         newItemSchema, // TODO: not correct with runtimeTypes
@@ -603,7 +607,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
-        {}, // transformerParams
+        defaultValueParams, // transformerParams
         {}, // contextResults
         deploymentEntityState, // deploymentEntityState is not needed here
         {}, // relativeReferenceJzodContext

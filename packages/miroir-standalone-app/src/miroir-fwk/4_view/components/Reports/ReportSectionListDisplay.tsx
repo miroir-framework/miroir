@@ -58,6 +58,7 @@ import {
 import {
   useCurrentModel,
   useCurrentModelEnvironment,
+  useDefaultValueParams,
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
 } from "../../ReduxHooks.js";
 import { cleanLevel } from "../../constants.js";
@@ -459,6 +460,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.applicationDeploymentMap
   );
 
+  const defaultValueParams = useDefaultValueParams(
+    props.application,
+    props.deploymentUuid
+  );
   // // ##############################################################################################
   const onCreateFormObject = useCallback(
     async (data: any) => {
@@ -705,11 +710,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               props.applicationDeploymentMap,
               props.deploymentUuid,
               currentMiroirModelEnvironment,
-              {
-                applicationUuid: props.application,
-                deploymentUuid: props.deploymentUuid,
-                rootObject: undefined,
-              }, // transformerParams
+              defaultValueParams, // transformerParams
               {}, // contextResults
               deploymentEntityState,
             )

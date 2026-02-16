@@ -302,20 +302,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       <>
         {props.submitButton ?? <></>}
         JzodAnyEditor rendering as JzodElementEditorReactCodeMirror 1 format: {format}
-        {/* <JzodElementEditorReactCodeMirror
-          formikRootLessListKey={formikRootLessListKey}
-          initialValue={JSON.stringify(currentValueObjectAtKey, null, 2)}
-          codeMirrorValue={codeMirrorValue}
-          setCodeMirrorValue={setCodeMirrorValue}
-          codeMirrorIsValidJson={codeMirrorIsValidJson}
-          setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-          rootLessListKey={props.rootLessListKey}
-          rootLessListKeyArray={props.rootLessListKeyArray}
-          hidden={false}
-          insideAny={props.insideAny}
-          isUnderTest={false}
-          displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-        /> */}
       </>
     );
   }
@@ -329,56 +315,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
         initiallyUnfolded={false}
         useCodeBlock={true}
       />
-      {/* <div>
-        <ChangeValueTypeSelect
-          onChange={(type: JzodElement) => {
-            log.info(`JzodAnyEditor: Change value type to ${type} for ${rootLessListKey}`);
-            const defaultValue = getDefaultValueForJzodSchemaWithResolutionNonHook(
-              "build",
-              type,
-              // formik.values[reportSectionPathAsString],
-              currentValueObject,
-              rootLessListKey,
-              undefined, // currentDefaultValue is not known yet, this is what this call will determine
-              [], // currentPath on value is root
-              true, // force optional attributes to receive a default value
-              props.currentApplication,
-              props.applicationDeploymentMap,
-              currentDeploymentUuid,
-              currentMiroirModelEnvironment,
-              {}, // transformerParams
-              {}, // contextResults
-              deploymentEntityState,
-            );
-            // formik.setFieldValue(rootLessListKey, defaultValue, false);
-            formik.setFieldValue(formikRootLessListKey, defaultValue, false);
-          }}
-        />
-        {labelElement ?? <>No label</>}
-      </div> */}
-      {/* <div>
-        <JzodElementEditor
-          name={name}
-          valueObjectEditMode={props.valueObjectEditMode}
-          existingObject={props.existingObject}
-          listKey={listKey}
-          rootLessListKey={rootLessListKey}
-          rootLessListKeyArray={rootLessListKeyArray}
-          reportSectionPathAsString={reportSectionPathAsString}
-          currentApplication={props.currentApplication}
-          applicationDeploymentMap={props.applicationDeploymentMap}
-          currentDeploymentUuid={currentDeploymentUuid}
-          currentApplicationSection={currentApplicationSection}
-          resolvedElementJzodSchemaDEFUNCT={resolvedElementJzodSchema}
-          typeCheckKeyMap={typeCheckKeyMap}
-          labelElement={<>{name}</>}
-          foreignKeyObjects={foreignKeyObjects}
-          insideAny={true}
-          indentLevel={0}
-          returnsEmptyElement={resolvedElementJzodSchema?.type === "undefined" ? true : false}
-          readOnly={props.readOnly}
-        />
-      </div> */}
     </div>
   );
 };

@@ -22,7 +22,7 @@ import {
 
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useCurrentModelEnvironment } from "../../ReduxHooks";
+import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -50,6 +50,7 @@ const handleDiscriminatorChange = (
   currentApplication: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string | undefined,
+  defaultValueParams: ReturnType<typeof useDefaultValueParams>,
   modelEnvironment: MiroirModelEnvironment,
   ReduxDeploymentsState: ReduxDeploymentsState | undefined,
   formik: any,
@@ -218,6 +219,7 @@ const handleDiscriminatorChange = (
     : newJzodSchema;
 
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
+  
   const defaultValue = modelEnvironment
     ? {
       ...getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -233,7 +235,7 @@ const handleDiscriminatorChange = (
         applicationDeploymentMap,
         currentDeploymentUuid,
         modelEnvironment,
-        {}, // transformerParams
+        defaultValueParams, // transformerParams
         {}, // contextResult
         ReduxDeploymentsState,
       ),
@@ -312,6 +314,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     currentApplication,
     applicationDeploymentMap
   );
+  const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid);
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
   //     miroirFundamentalJzodSchema:
@@ -478,6 +481,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         currentApplication,
         applicationDeploymentMap,
         currentDeploymentUuid,
+        defaultValueParams,
         currentMiroirModelEnvironment,
         deploymentEntityState,
         formik,

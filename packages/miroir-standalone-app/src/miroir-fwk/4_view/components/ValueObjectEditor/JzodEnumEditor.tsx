@@ -18,7 +18,7 @@ import React, { FC, useCallback, useMemo } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModelEnvironment } from "../../ReduxHooks";
+import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -46,6 +46,7 @@ const handleDiscriminatorChange = (
   currentApplication: Uuid,
   appliationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid: string | undefined,
+  defaultValueParams: ReturnType<typeof useDefaultValueParams>,
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
   log: LoggerInterface,
@@ -53,12 +54,12 @@ const handleDiscriminatorChange = (
 ) => {
   if (!parentKeyMap) {
     throw new Error(
-      "handleDiscriminatorChange called but current object does not have information about the discriminated union type it must be part of!"
+      "handleDiscriminatorChange called but current object does not have information about the discriminated union type it must be part of!",
     );
   }
   if (!parentKeyMap.discriminator) {
     throw new Error(
-      "handleDiscriminatorChange called but current object does not have a discriminated union type!"
+      "handleDiscriminatorChange called but current object does not have a discriminated union type!",
     );
   }
   // if (typeof parentKeyMap.discriminator !== "string") {
@@ -71,30 +72,29 @@ const handleDiscriminatorChange = (
   if (Array.isArray(parentKeyMap.discriminator)) {
     if (!parentKeyMap.recursivelyUnfoldedUnionSchema) {
       throw new Error(
-        "handleDiscriminatorChange called but current object does not have a recursivelyUnfoldedUnionSchema, cannot proceed!"
+        "handleDiscriminatorChange called but current object does not have a recursivelyUnfoldedUnionSchema, cannot proceed!",
       );
     }
     if (parentKeyMap.resolvedSchema.type !== "object") {
       throw new Error(
-        "handleDiscriminatorChange called but current object is not of type object, cannot proceed!"
+        "handleDiscriminatorChange called but current object is not of type object, cannot proceed!",
       );
     }
     const discriminator: string | string[] = parentKeyMap.discriminator[0];
     const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as JzodObject).definition);
     localChosenDiscriminator = !Array.isArray(discriminator)
       ? discriminator
-      : parentKeyMap.discriminator.flat().find((d) =>
-            currentObjectKeys.includes(d)
-        );
+      : parentKeyMap.discriminator.flat().find((d) => currentObjectKeys.includes(d));
     if (!localChosenDiscriminator) {
       throw new Error(
-        `handleDiscriminatorChange could not find local chosen discriminator for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+        `handleDiscriminatorChange could not find local chosen discriminator for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`,
       );
     }
-    const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[localChosenDiscriminator]?.type;
+    const discriminatorTypeLocal =
+      parentKeyMap.resolvedSchema.definition[localChosenDiscriminator]?.type;
     if (!discriminatorTypeLocal) {
       throw new Error(
-        `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+        `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`,
       );
     }
     const newParentValue = {
@@ -108,7 +108,7 @@ const handleDiscriminatorChange = (
       parentKeyMap,
       rootLessListKeyArray[rootLessListKeyArray.length - 1],
       "selectedValue",
-      selectedValue
+      selectedValue,
     );
     const resolveUnionResult = jzodUnionResolvedTypeForObject(
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
@@ -126,41 +126,43 @@ const handleDiscriminatorChange = (
     );
     if (resolveUnionResult.status === "error") {
       throw new Error(
-        `handleDiscriminatorChange jzodUnionResolvedTypeForObject error: ${resolveUnionResult.error}`
+        `handleDiscriminatorChange jzodUnionResolvedTypeForObject error: ${resolveUnionResult.error}`,
       );
     }
     newJzodSchema = resolveUnionResult.resolvedJzodObjectSchema;
   } else {
     localChosenDiscriminator = parentKeyMap.discriminator as string;
-    newJzodSchema =
-      parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
-        if (a.type !== "object") return false;
-        const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
-        if (!discriminatorElement) return false;
-        
-        if (discriminatorElement.type === "literal") {
-          return (discriminatorElement as JzodLiteral).definition === selectedValue;
-        } else if (discriminatorElement.type === "enum") {
-          return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
-        } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
-          return (
-            typeof discriminatorElement.definition === "object" &&
-            discriminatorElement.definition.relativePath === selectedValue
-          );
+    newJzodSchema = parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
+      if (a.type !== "object") return false;
+      const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
+      if (!discriminatorElement) return false;
+
+      if (discriminatorElement.type === "literal") {
+        return (discriminatorElement as JzodLiteral).definition === selectedValue;
+      } else if (discriminatorElement.type === "enum") {
+        return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
+      } else if (
+        discriminatorType === "schemaReference" &&
+        discriminatorElement.type === "schemaReference"
+      ) {
+        return (
+          typeof discriminatorElement.definition === "object" &&
+          discriminatorElement.definition.relativePath === selectedValue
+        );
+      } else {
+        // fallback: try to match .definition directly if it exists, otherwise compare the element itself
+        if (typeof discriminatorElement === "object" && "definition" in discriminatorElement) {
+          return (discriminatorElement as any).definition === selectedValue;
         } else {
-          // fallback: try to match .definition directly if it exists, otherwise compare the element itself
-          if (typeof discriminatorElement === "object" && "definition" in discriminatorElement) {
-            return (discriminatorElement as any).definition === selectedValue;
-          } else {
-            return false; // unknown discriminator type, don't match
-          }
+          return false; // unknown discriminator type, don't match
         }
-      });
+      }
+    });
   }
 
   if (!newJzodSchema) {
     throw new Error(
-      `handleDiscriminatorChange could not find union branch for discriminator ${parentKeyMap.discriminator} with value ${selectedValue} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+      `handleDiscriminatorChange could not find union branch for discriminator ${parentKeyMap.discriminator} with value ${selectedValue} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`,
     );
   }
 
@@ -171,29 +173,38 @@ const handleDiscriminatorChange = (
       }
     : newJzodSchema;
 
-  log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
+  log.info(
+    `handleDiscriminatorChange (${discriminatorType})`,
+    "newJzodSchema",
+    JSON.stringify(newJzodSchema, null, 2),
+  );
   const defaultValue = modelEnvironment
     ? {
-      ...getDefaultValueForJzodSchemaWithResolutionNonHook(
-        "build",
-        newJzodSchemaWithOptional,
-        formik.values,
-        rootLessListKey,
-        undefined, // currentDefaultValue
-        [], // currentValuePath
-        true, // forceOptional
-        currentApplication,
-        appliationDeploymentMap,
-        currentDeploymentUuid,
-        modelEnvironment,
-      ),
-      // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
-      [localChosenDiscriminator]: selectedValue,
-    }
+        ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+          "build",
+          newJzodSchemaWithOptional,
+          formik.values,
+          rootLessListKey,
+          undefined, // currentDefaultValue
+          [], // currentValuePath
+          true, // forceOptional
+          currentApplication,
+          appliationDeploymentMap,
+          currentDeploymentUuid,
+          modelEnvironment,
+          defaultValueParams, // transformerParams
+        ),
+        // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+        [localChosenDiscriminator]: selectedValue,
+      }
     : undefined;
 
   // const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
-  const targetRootLessListKey = [reportSectionPathAsString,...rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1)].join(".")??"";
+  const targetRootLessListKey =
+    [
+      reportSectionPathAsString,
+      ...rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1),
+    ].join(".") ?? "";
   log.info(
     `handleDiscriminatorChange (${discriminatorType})`,
     "targetRootLessListKey",
@@ -202,7 +213,7 @@ const handleDiscriminatorChange = (
     JSON.stringify(defaultValue, null, 2),
     "formik.values",
     // JSON.stringify(formik.values, null, 2)
-    formik.values
+    formik.values,
   );
   // if (targetRootLessListKey.length === 0) {
   //   // If the target key is empty, we set the value directly on formik.values
@@ -210,15 +221,11 @@ const handleDiscriminatorChange = (
   //     defaultValue,
   //   );
   // } else {
-    // Invoke onChangeVector callback if registered for this field
-    if (onChangeCallback) {
-      onChangeCallback(defaultValue, rootLessListKey);
-    }
-    formik.setFieldValue(
-      targetRootLessListKey,
-      defaultValue,
-      false
-    );
+  // Invoke onChangeVector callback if registered for this field
+  if (onChangeCallback) {
+    onChangeCallback(defaultValue, rootLessListKey);
+  }
+  formik.setFieldValue(targetRootLessListKey, defaultValue, false);
   // }
 };
 
@@ -261,6 +268,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const currentReportSectionFormikValues = formik.values[reportSectionPathAsString] ?? formik.values;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
+
+  const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid);
 
   // Memoize the onChangeVector callback for this field to avoid repeated lookups
   const onChangeCallback = useMemo(
@@ -328,6 +337,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         currentApplication,
         appliationDeploymentMap,
         currentDeploymentUuid,
+        defaultValueParams,
         currentMiroirModelEnvironment,
         formik,
         log,
@@ -404,6 +414,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           currentApplication,
           appliationDeploymentMap,
           currentDeploymentUuid,
+          defaultValueParams,
           currentMiroirModelEnvironment,
           formik,
           log,

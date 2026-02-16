@@ -52,7 +52,6 @@ import {
   reportAuthorDetails,
   reportAuthorList,
   reportBookDetails,
-  reportBookInstance,
   reportBookList,
   reportCountryList,
   reportPublisherList,
@@ -66,8 +65,7 @@ import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueO
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks";
-import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Concept";
-// import { log } from "console";
+import { emptyObject } from "../../src/miroir-fwk/4_view/routes/TransformerBuilderPage.js";
 
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
@@ -741,7 +739,6 @@ export function getWrapperLoadingLocalCache(
               reportAuthorDetails as EntityInstance,
               reportBookList as EntityInstance,
               reportBookDetails as EntityInstance,
-              reportBookInstance as EntityInstance,
               reportCountryList as EntityInstance,
               reportPublisherList as EntityInstance,
           ],

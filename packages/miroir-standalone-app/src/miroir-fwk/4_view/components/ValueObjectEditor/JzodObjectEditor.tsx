@@ -56,6 +56,7 @@ import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, Jzo
 import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
+import { useDefaultValueParams } from "../../ReduxHooks";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -531,6 +532,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       )
   );
 
+  const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid);
+  
   // ##############################################################################################
   const foldableItemsCount = useMemo(() => {
     return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a JzodObject
@@ -668,7 +671,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           applicationDeploymentMap,
           currentDeploymentUuid,
           currentApplicationModelEnvironment,
-          {}, // transformerParams
+          defaultValueParams, // transformerParams
           {}, // contextResults
           deploymentEntityState,
           // Object.hasOwn(formik.values,"")?formik.values[""]:{}, // rootObject
@@ -756,7 +759,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             applicationDeploymentMap,
             currentDeploymentUuid,
             currentApplicationModelEnvironment,
-            {}, // transformerParams
+            defaultValueParams, // transformerParams
             {}, // contextResults
             deploymentEntityState,
           )
