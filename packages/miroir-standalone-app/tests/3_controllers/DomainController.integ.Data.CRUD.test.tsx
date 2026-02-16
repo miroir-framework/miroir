@@ -399,11 +399,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
+                  actionType: "compositeRunBoxedQueryAction",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
+                  queryTemplate: {
+                    actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
@@ -543,11 +543,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
+                  actionType: "compositeRunBoxedQueryAction",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
+                  queryTemplate: {
+                    actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
@@ -677,11 +677,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
+                  actionType: "compositeRunBoxedQueryAction",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
+                  queryTemplate: {
+                    actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     // deploymentUuid: testApplicationDeploymentUuid,
@@ -811,11 +811,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
+                  actionType: "compositeRunBoxedQueryAction",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
+                  queryTemplate: {
+                    actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
@@ -960,11 +960,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
+                  actionType: "compositeRunBoxedQueryAction",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
+                  queryTemplate: {
+                    actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {
@@ -1106,11 +1106,11 @@ const testActions: Record<string, TestCompositeActionParams> = {
                   },
                 },
                 {
-                  actionType: "compositeRunBoxedExtractorOrQueryAction",
+                  actionType: "compositeRunBoxedQueryAction",
                   actionLabel: "calculateNewEntityDefinionAndReports",
                   nameGivenToResult: "entityBookList",
-                  query: {
-                    actionType: "runBoxedExtractorOrQueryAction",
+                  queryTemplate: {
+                    actionType: "runBoxedQueryAction",
                     application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     payload: {

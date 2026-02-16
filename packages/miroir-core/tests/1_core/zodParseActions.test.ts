@@ -24,9 +24,8 @@ import {
   ZodParseError
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 import selfApplicationMiroir from "../../src/assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json";
 import menuDefaultMiroir from "../../src/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json";
 import entityEntity from "../../src/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
@@ -554,32 +553,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
   // ##############################################################################################
   // extractors and queries
   // ##############################################################################################
-  "runBoxedExtractorAction is parsable": {
-    zodSchema: persistenceAction,
-    action: {
-      actionType: "runBoxedExtractorAction",
-      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      payload: {
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        applicationSection: "data",
-        query: {
-          queryType: "boxedExtractorOrCombinerReturningObject",
-          application: selfApplicationLibrary.uuid,
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
-          select: {
-            extractorOrCombinerType: "extractorForObjectByDirectReference",
-            parentUuid: entityMenu.uuid,
-            parentName: entityMenu.name,
-            applicationSection: "model",
-            instanceUuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
-          },
-        },
-      },
-    },
-  },
   "runBoxedQueryAction is parsable": {
     zodSchema: persistenceAction,
     action: {
@@ -612,20 +585,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
   // ##############################################################################################
   // ExtractorTemplate, QueryTemplate #############################################################
   // ##############################################################################################
-  "extractorTemplateForObjectListByEntity is parsable": {
-    // zodSchema: extractorTemplateReturningObjectOrObjectList,
-    zodSchema: extractorOrCombinerTemplate,
-    action: {
-      extractorOrCombinerType: "extractorForObjectListByEntity",
-      parentUuid: {
-        transformerType: "getFromParameters",
-        interpolation: "build",
-        referenceName: entityMenu.uuid,
-      },
-      parentName: entityMenu.name,
-      applicationSection: "model",
-    },
-  },
   "combinerByRelationReturningObjectList is parsable": {
     zodSchema: extractorOrCombinerTemplate,
     action: {

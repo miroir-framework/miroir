@@ -13,11 +13,8 @@ import {
   ModelAction,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  RunBoxedExtractorAction,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplication,
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -87,28 +84,13 @@ export interface PersistenceStoreInstanceSectionAbstractInterface
   extends PersistenceStoreAbstractSectionInterface {
   getInstance(parentUuid: string, uuid: string): Promise<Action2EntityInstanceReturnType>;
   getInstances(parentUuid: string): Promise<Action2EntityInstanceCollectionOrFailure>;
-  handleBoxedExtractorTemplateActionForServerONLY(
-    query: RunBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleQueryTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
   handleBoxedQueryAction(
     query: RunBoxedQueryAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
-  handleBoxedExtractorAction(
-    query: RunBoxedExtractorAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>; // TODO: polymorphize function with return type depending on query type?
@@ -214,23 +196,8 @@ export interface PersistenceStoreControllerInterface
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
   // same interface as in PersistenceStoreInstanceSectionAbstractInterface; it implies that RunBoxedQueryTemplateOrBoxedExtractorTemplateAction includes applicationSection
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>;
   handleQueryTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>;
-  handleBoxedExtractorTemplateActionForServerONLY(
-    query: RunBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>;
-  handleBoxedExtractorAction(
-    query: RunBoxedExtractorAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;

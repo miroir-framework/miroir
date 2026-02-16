@@ -1,7 +1,5 @@
-import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import {
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedExtractorTemplateReturningObjectOrObjectList,
+  // BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   Extractor,
@@ -13,15 +11,14 @@ import {
   ExtractorTemplateReturningObjectOrObjectList,
   ExtractorWrapper,
   QueryFailed,
-  Transformer_contextOrParameterReferenceTO_REMOVE,
-  type MlSchema
+  Transformer_contextOrParameterReferenceTO_REMOVE
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
+import { transformer_extended_apply } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -388,8 +385,6 @@ export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrO
 
   const params = { ...pageParams, ...queryParams };
 
-  // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converting extractorTemplates:", boxedExtractorTemplateReturningObject);
-  
   const select = resolveExtractorTemplate(
     extractorTemplateReturningObjectOrObjectList,
     modelEnvironment,
@@ -398,42 +393,6 @@ export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrO
   ) as any;
   // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converted extractorTemplates, result:", select);
   return select as ExtractorOrCombinerReturningObjectOrObjectList;
-}
-
-// ################################################################################################
-export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(
-  boxedExtractorTemplateReturningObjectOrObjectList: BoxedExtractorTemplateReturningObjectOrObjectList,
-  modelEnvironment: MiroirModelEnvironment,
-): BoxedExtractorOrCombinerReturningObjectOrObjectList {
-
-  const params: Record<string, any> = {
-    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-    ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
-    ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
-  };
-
-  // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converting extractorTemplates:", boxedExtractorTemplateReturningObject);
-  
-  const select = resolveExtractorTemplate(
-    boxedExtractorTemplateReturningObjectOrObjectList.select,
-    modelEnvironment,
-    params,
-    boxedExtractorTemplateReturningObjectOrObjectList.contextResults ?? {}
-  ) as any;
-  // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converted extractorTemplates, result:", select);
-  return {
-    pageParams: boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
-    queryParams: boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
-    contextResults: boxedExtractorTemplateReturningObjectOrObjectList.contextResults ?? {},
-    // applicationDeploymentMap: boxedExtractorTemplateReturningObjectOrObjectList.applicationDeploymentMap,
-    application: boxedExtractorTemplateReturningObjectOrObjectList.application,
-    // deploymentUuid: boxedExtractorTemplateReturningObjectOrObjectList.deploymentUuid,
-    queryType:
-      boxedExtractorTemplateReturningObjectOrObjectList.queryType == "boxedExtractorTemplateReturningObjectList"
-        ? "boxedExtractorOrCombinerReturningObjectList"
-        : "boxedExtractorOrCombinerReturningObject",
-    select: select,
-  };
 }
 
 // ################################################################################################

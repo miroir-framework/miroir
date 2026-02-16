@@ -6,12 +6,12 @@ import { StoreApi } from "zustand/vanilla";
 
 import {
   ACTION_OK,
-  Action2ReturnType,
   Action2Error,
-  DomainState,
+  Action2ReturnType,
+  Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainElementSuccess,
-  Domain2ElementFailed,
+  DomainState,
   LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
@@ -19,21 +19,17 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
-  RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction,
+  defaultMetaModelEnvironment,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
-  defaultMetaModelEnvironment,
-  type MiroirModelEnvironment,
   type ApplicationDeploymentMap,
+  type MiroirModelEnvironment,
+  type RunBoxedQueryAction,
 } from "miroir-core";
 
-import {
-  createLocalCacheStore,
-  LocalCacheStore,
-} from "./localCache/UndoRedoStore.js";
 import {
   localCacheStateToDomainState,
 } from "./localCache/LocalCacheSlice.js";
@@ -41,6 +37,10 @@ import {
   ZustandStateWithUndoRedo,
 } from "./localCache/localCacheZustandInterface.js";
 import { currentModel, currentModelEnvironment } from "./localCache/Model.js";
+import {
+  LocalCacheStore,
+  createLocalCacheStore,
+} from "./localCache/UndoRedoStore.js";
 import { PersistenceAsyncStore } from "./persistence/PersistenceAsyncStore.js";
 
 const packageName = "miroir-localcache-zustand";
@@ -164,7 +164,7 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   runBoxedExtractorOrQueryAction(
-    action: RunBoxedExtractorOrQueryAction,
+    action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType {
     const domainState: DomainState = this.getDomainState();
@@ -176,19 +176,6 @@ export class LocalCache implements LocalCacheInterface {
       undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
       
     switch (action.payload.query.queryType) {
-      case "boxedExtractorOrCombinerReturningObject":
-      case "boxedExtractorOrCombinerReturningObjectList": {
-        queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-          domainState,
-          applicationDeploymentMap,
-          getExtractorRunnerParamsForDomainState(
-            action.payload.query,
-            extractorRunnerMapOnDomainState
-          ),
-          defaultMetaModelEnvironment
-        );
-        break;
-      }
       case "boxedQueryWithExtractorCombinerTransformer": {
         queryResult = extractorRunnerMapOnDomainState.runQuery(
           domainState,

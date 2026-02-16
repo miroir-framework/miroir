@@ -2,7 +2,6 @@
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
-  ApplicationSection,
   BoxedExtractorOrCombinerReturningObjectList,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
@@ -13,7 +12,6 @@ import {
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
-  ExtractorByEntityReturningObjectList,
   ExtractorOrCombiner,
   ExtractorOrCombinerContextReference,
   JzodElement,
@@ -23,11 +21,10 @@ import {
   QueryByQueryGetParamJzodSchema,
   QueryFailed,
   QueryJzodSchemaParams,
-  RunBoxedExtractorAction,
   RunBoxedQueryAction,
   TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { applyExtractorFilterAndOrderBy, instanceMatchesFilter } from "./ExtractorByEntityReturningObjectListTools";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
   Action2Error,
   Action2ReturnType,
@@ -45,15 +42,14 @@ import {
   SyncQueryRunnerExtractorAndParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { applyExtractorFilterAndOrderBy, instanceMatchesFilter } from "./ExtractorByEntityReturningObjectListTools";
 import { resolveExtractorTemplate } from "./Templates";
-import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { applyTransformer, transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
-import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -624,44 +620,6 @@ export const applyExtractorTransformerInMemory = (
   );
 };
 
-// ################################################################################################
-export async function handleBoxedExtractorAction(
-  origin: string,
-  runBoxedExtractorAction: RunBoxedExtractorAction,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
-  modelEnvironment: MiroirModelEnvironment
-): Promise<Action2ReturnType> {
-  log.info(
-    "handleBoxedExtractorAction for",
-    origin,
-    "start",
-    "runBoxedExtractorAction",
-    JSON.stringify(runBoxedExtractorAction, null, 2)
-  );
-  let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-  const extractor = runBoxedExtractorAction.payload.query;
-  queryResult = await selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-    {
-      extractorRunnerMap: selectorMap,
-      extractor,
-    },
-    applicationDeploymentMap,
-    modelEnvironment,
-  );
-  if (queryResult instanceof Domain2ElementFailed) {
-    return new Action2Error(
-      "FailedToGetInstances",
-      JSON.stringify(queryResult)
-    );
-    
-  } else {
-    // const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-    const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info("handleBoxedExtractorAction for", origin, "runBoxedExtractorAction", runBoxedExtractorAction, "result", JSON.stringify(result, null, 2));
-    return result;
-  }
-}
 
 // ################################################################################################
 export async function handleBoxedQueryAction(

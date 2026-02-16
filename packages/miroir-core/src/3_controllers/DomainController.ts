@@ -30,6 +30,7 @@ import {
   BuildPlusRuntimeCompositeAction,
   CompositeActionSequence,
   CompositeActionTemplate,
+  Deployment,
   DomainAction,
   Entity,
   EntityDefinition,
@@ -39,13 +40,8 @@ import {
   ModelAction,
   ModelActionResetModel,
   RestPersistenceAction,
-  RunBoxedExtractorOrQueryAction,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  // RuntimeCompositeAction,
-  Deployment,
   TestAssertion,
   TestBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
@@ -53,14 +49,11 @@ import {
   TestCompositeActionSuite,
   TestCompositeActionTemplateSuite,
   TestResult,
-  // TestRuntimeCompositeAction,
-  // TestRuntimeCompositeActionSuite,
   TransactionalInstanceAction,
-  // TransformerForRuntime,
   UndoRedoAction,
   type EndpointDefinition,
-  type TransformerForBuildPlusRuntime,
-  type ModelActionInitModel
+  type ModelActionInitModel,
+  type TransformerForBuildPlusRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -105,8 +98,8 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
-import { ConfigurationService } from './ConfigurationService.js';
 import { defaultApplicationSection, entityQueryVersion, entityRunner } from '../index.js';
+import { ConfigurationService } from './ConfigurationService.js';
 
 
 const autocommit = true;
@@ -660,7 +653,7 @@ export class DomainController implements DomainControllerInterface {
   // used in scripts.ts
   // used in tests
   async handleBoxedExtractorOrQueryAction(
-    runBoxedExtractorOrQueryAction: RunBoxedQueryAction | RunBoxedExtractorOrQueryAction,
+    runBoxedExtractorOrQueryAction: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
@@ -858,154 +851,6 @@ export class DomainController implements DomainControllerInterface {
     return ACTION_OK;
   }
 
-  // ##############################################################################################
-  // called only in server.ts to handle queries on the server side
-  // used in RootComponent to fetch data from the server
-  // used in Importer.tsx
-  // used in scripts.ts
-  // used in tests
-  async handleBoxedExtractorTemplateActionForServerONLY(
-    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Action2ReturnType> {
-    // let entityDomainAction:DomainAction | undefined = undefined;
-    // log.info(
-    //   "handleBoxedExtractorTemplateActionForServerONLY",
-    //   // "deploymentUuid",
-    //   // runBoxedQueryTemplateOrBoxedExtractorTemplateAction.deploymentUuid,
-    //   "actionType",
-    //   (runBoxedExtractorTemplateAction as any).actionType,
-    //   "actionType",
-    //   runBoxedExtractorTemplateAction?.actionType,
-    //   "objects",
-    //   JSON.stringify((runBoxedExtractorTemplateAction as any)["objects"], null, 2),
-    // );
-
-    // if (this.persistenceStoreAccessMode == "remote") {
-    if (this.persistenceStoreAccessMode == "local") {
-      /**
-       * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
-       */
-
-      const result: Action2ReturnType =
-        await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-          runBoxedExtractorTemplateAction,
-          applicationDeploymentMap,
-        );
-      // log.info(
-      //   "DomainController handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
-      //   result,
-      // );
-      return result;
-    } else {
-      // we're on the client, the query is sent to the server for execution.
-      // is it right? We're limiting querying for script execution to remote queries right there!
-      // principle: the scripts using transactional (thus Model) actions are limited to localCache access
-      // while non-transactional accesses are limited to persistence store access (does this make sense?)
-      // in both cases this enforces only the most up-to-date data is accessed.
-      // log.info(
-      //   "DomainController handleBoxedExtractorTemplateActionForServerONLY sending query to server for execution",
-      //   runBoxedExtractorTemplateAction,
-      // );
-      const result = await this.callUtil.callPersistenceAction(
-        // what if it is a REAL persistence store?? exception?
-        {}, // context
-        {
-          addResultToContextAsName: "dataEntitiesFromModelSection",
-          expectedDomainElementType: "entityInstanceCollection",
-        }, // continuation
-        applicationDeploymentMap,
-        runBoxedExtractorTemplateAction,
-      );
-      // log.info(
-      //   "handleBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
-      //   result,
-      // );
-      if (result instanceof Action2Error) {
-        return result;
-      }
-
-      return result["dataEntitiesFromModelSection"];
-    }
-
-    return ACTION_OK;
-  }
-
-  // ##############################################################################################
-  // called only in server.ts to handle queries on the server side
-  // used in RootComponent to fetch data from the server
-  // used in Importer.tsx
-  // used in scripts.ts
-  // used in tests
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Action2ReturnType> {
-    // log.info(
-    //   "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-    //   "persistenceStoreAccessMode=",
-    //   this.persistenceStoreAccessMode,
-    //   "actionType",
-    //   (runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any).actionType,
-    //   "actionType",
-    //   runBoxedQueryTemplateOrBoxedExtractorTemplateAction?.actionType,
-    //   "objects",
-    //   JSON.stringify(
-    //     (runBoxedQueryTemplateOrBoxedExtractorTemplateAction as any).payload.objects,
-    //     null,
-    //     2,
-    //   ),
-    // );
-
-    if (this.persistenceStoreAccessMode == "local") {
-      /**
-       * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
-       */
-
-      const result: Action2ReturnType =
-        await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-          runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-          applicationDeploymentMap,
-        );
-      // log.info(
-      //   "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
-      //   result,
-      // );
-      return result;
-    } else {
-      // we're on the client, the query is sent to the server for execution.
-      // is it right? We're limiting querying for script execution to remote queries right there!
-      // principle: the scripts using transactional (thus Model) actions are limited to localCache access
-      // while non-transactional accesses are limited to persistence store access (does this make sense?)
-      // in both cases this enforces only the most up-to-date data is accessed.
-      // log.info(
-      //   "DomainController handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY sending query to server for execution",
-      //   // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
-      //   runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      // );
-      const result = await this.callUtil.callPersistenceAction(
-        // what if it is a REAL persistence store?? exception?
-        {}, // context
-        {
-          addResultToContextAsName: "dataEntitiesFromModelSection",
-          expectedDomainElementType: "entityInstanceCollection",
-        }, // continuation
-        applicationDeploymentMap,
-        runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      );
-      // log.info(
-      //   "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY callPersistenceAction Result=",
-      //   result,
-      // );
-      if (result instanceof Action2Error) {
-        return result;
-      }
-
-      return result["dataEntitiesFromModelSection"];
-    }
-
-    return ACTION_OK;
-  }
 
   // ##############################################################################################
   // ACTION TEMPLATES
@@ -2541,15 +2386,6 @@ export class DomainController implements DomainControllerInterface {
 
             break;
           }
-          case "compositeRunBoxedExtractorOrQueryAction": {
-            actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
-              currentAction,
-              applicationDeploymentMap,
-              actionParamValues,
-              localContext,
-            );
-            break;
-          }
           case "compositeRunTestAssertion": {
             actionResult = await this.miroirContext.miroirActivityTracker.trackTestAssertion(
               currentAction.actionLabel || "unnamed assertion",
@@ -2564,7 +2400,7 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
-          case "compositeRunBoxedExtractorAction":
+          // case "compositeRunBoxedExtractorAction":
           default: {
             log.error("handleCompositeAction unknown actionType", currentAction);
             break;
@@ -2774,33 +2610,6 @@ export class DomainController implements DomainControllerInterface {
 
             break;
           }
-          case "compositeRunBoxedExtractorOrQueryAction": {
-            const resolvedActionWithProtectedRuntimeTranformers: {
-              actionType: "compositeRunBoxedExtractorOrQueryAction";
-              actionLabel?: string | undefined;
-              nameGivenToResult: string;
-              query: RunBoxedExtractorOrQueryAction;
-            } = transformer_extended_apply(
-              "build",
-              [],
-              currentAction.actionLabel,
-              currentAction as any as TransformerForBuildPlusRuntime,
-              "value",
-              modelEnvironment,
-              actionParamValues, // queryParams
-              localContext, // contextResults
-            );
-            actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
-              resolvedActionWithProtectedRuntimeTranformers,
-              applicationDeploymentMap,
-              actionParamValues,
-              localContext,
-            );
-            if (actionResult instanceof Action2Error) {
-              return actionResult;
-            }
-            break;
-          }
           case "compositeRunTestAssertion": {
             const resolvedAction = transformer_extended_apply(
               "runtime",
@@ -2839,7 +2648,6 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
-          case "compositeRunBoxedExtractorAction":
           default: {
             log.error("handleRuntimeCompositeAction unknown actionType", currentAction);
             break;
@@ -3191,10 +2999,10 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   private async handleCompositeRunBoxedExtractorOrQueryAction(
     currentAction: {
-      actionType: "compositeRunBoxedExtractorOrQueryAction";
+      actionType: "compositeRunBoxedQueryAction";
       actionLabel?: string | undefined;
       nameGivenToResult: string;
-      query: RunBoxedExtractorOrQueryAction;
+      query: RunBoxedQueryAction;
     },
     applicationDeploymentMap: ApplicationDeploymentMap,
     actionParamValues: Record<string, any>,
@@ -3520,51 +3328,6 @@ export class DomainController implements DomainControllerInterface {
           // return actionResult;
           break;
         }
-        case "compositeRunBoxedExtractorOrQueryAction": {
-          // const resolvedActionTemplate = transformer_extended_apply(
-          //   "runtime",
-          //   [],
-          //   currentAction.actionLabel ?? "NO NAME",
-          //   currentAction as any as TransformerForRuntime, // TODO: correct type
-          //   "value",
-          //   modelEnvironment,
-          //   localActionParams,
-          //   localContext
-          // ) as InstanceAction;
-          // log.info(
-          //   "handleCompositeActionTemplate compositeRunBoxedExtractorOrQueryAction",
-          //   currentAction.actionLabel ?? "without step name",
-          //   "resolved action Template",
-          //   JSON.stringify(resolvedActionTemplate, null, 2)
-          // );
-
-          // TODO: resolve runtime transformers here. Use the "main" case, since it's the same implementation?
-          const actionResult = await this.handleCompositeRunBoxedExtractorOrQueryAction(
-            resolvedActionTemplate,
-            applicationDeploymentMap,
-            actionParamValues,
-            localContext,
-          );
-          log.info(
-            "handleCompositeActionTemplate",
-            "'" + actionLabel + "'",
-            "handled compositeRunBoxedExtractorOrQueryAction",
-            "result is error",
-            actionResult instanceof Action2Error,
-            "action",
-            currentAction,
-            "with actionParamValues",
-            actionParamValues,
-            "resulting context",
-            localContext,
-          );
-          if (actionResult instanceof Action2Error) {
-            return actionResult;
-          }
-          // return actionResult;
-          break;
-        }
-        case "compositeRunBoxedExtractorAction":
         case "compositeRunTestAssertion": {
           log.error(
             "handleCompositeActionTemplate",

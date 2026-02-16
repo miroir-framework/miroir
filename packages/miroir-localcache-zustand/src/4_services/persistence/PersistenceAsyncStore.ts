@@ -272,21 +272,6 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         return localStoreResult;
         break;
       }
-      case "runBoxedExtractorAction": {
-        if (!localPersistenceStoreController) {
-          throw new Error(
-            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
-              deploymentUuid
-          );
-        }
-        const localStoreResult = await localPersistenceStoreController.handleBoxedExtractorAction(
-          action,
-          applicationDeploymentMap,
-          currentModel,
-        );
-        return localStoreResult;
-        break;
-      }
       case "runBoxedQueryAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
@@ -302,71 +287,6 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         return localStoreResult;
         break;
       }
-      case "runBoxedExtractorOrQueryAction": {
-        if (!localPersistenceStoreController) {
-          throw new Error(
-            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for" +
-              " application: " +
-              action.payload.application +
-              " applicationDeploymentMap: " +
-              JSON.stringify(applicationDeploymentMap, null, 2) +
-            " deployment: " +
-              deploymentUuid
-          );
-        }
-        switch (action.payload.query.queryType) {
-          case "boxedExtractorOrCombinerReturningObjectList":
-          case "boxedExtractorOrCombinerReturningObject": {
-            const localQuery: BoxedExtractorOrCombinerReturningObjectOrObjectList =
-              action.payload.query;
-            const localStoreResult = await localPersistenceStoreController.handleBoxedExtractorAction(
-                {
-                  actionType: "runBoxedExtractorAction",
-                  application: action.application,
-                  endpoint: action.endpoint,
-                  payload: {
-                    application: action.payload.application,
-                    // deploymentUuid: action.payload.deploymentUuid,
-                    applicationSection: action.payload.applicationSection,
-                    query: localQuery,
-                  },
-                },
-                applicationDeploymentMap,
-                currentModel
-            );
-            return localStoreResult;
-            break;
-          }
-          case "boxedQueryWithExtractorCombinerTransformer": {
-            const localQuery: BoxedQueryWithExtractorCombinerTransformer = action.payload.query;
-            const localStoreResult = await localPersistenceStoreController.handleBoxedQueryAction(
-                {
-                  actionType: "runBoxedQueryAction",
-                  application: action.application,
-                  endpoint: action.endpoint,
-                  payload: {
-                    application: action.payload.application,
-                    // deploymentUuid: action.payload.deploymentUuid,
-                    applicationSection: action.payload.applicationSection,
-                    query: localQuery,
-                  },
-                },
-                applicationDeploymentMap,
-                currentModel
-            );
-            return localStoreResult;
-            break;
-          }
-          default: {
-            throw new Error(
-              "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not handle action " +
-                JSON.stringify(action)
-            );
-            break;
-          }
-        }
-        break;
-      }
       case "runBoxedQueryTemplateAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
@@ -379,40 +299,6 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
           );
         }
         const localStoreResult = await localPersistenceStoreController.handleQueryTemplateActionForServerONLY(action, applicationDeploymentMap)
-        return localStoreResult;
-        break;
-      }
-      case "runBoxedExtractorTemplateAction": {
-        if (!localPersistenceStoreController) {
-          throw new Error(
-            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
-              action.payload.application +
-              " applicationDeploymentMap: " +
-              JSON.stringify(applicationDeploymentMap, null, 2) +
-              " deployment: " +
-              deploymentUuid,
-          );
-        }
-            const localStoreResult = await localPersistenceStoreController.handleBoxedExtractorTemplateActionForServerONLY(action, applicationDeploymentMap)
-        ;
-        return localStoreResult;
-        break;
-      }
-      case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-        if (!localPersistenceStoreController) {
-          throw new Error(
-            "PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore could not find controller for application: " +
-              action.payload.application +
-              " applicationDeploymentMap: " +
-              JSON.stringify(applicationDeploymentMap, null, 2) +
-              " deployment: " +
-              deploymentUuid,
-          );
-        }
-        const localStoreResult = await localPersistenceStoreController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-            action,
-            applicationDeploymentMap
-          );
         return localStoreResult;
         break;
       }
@@ -490,12 +376,9 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
           log.debug("handlePersistenceActionForRemoteStore received result", result.status);
           return result;
         }
-        case "runBoxedExtractorOrQueryAction":
-        case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction":
-        case "runBoxedExtractorAction":
         case "runBoxedQueryAction":
         case "runBoxedQueryTemplateAction":
-        case "runBoxedExtractorTemplateAction": {
+        {
           log.info("handlePersistenceActionForRemoteStore received query result", clientResult);
           return clientResult.data;
         }

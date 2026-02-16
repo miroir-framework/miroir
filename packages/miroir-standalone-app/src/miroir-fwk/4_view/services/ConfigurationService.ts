@@ -139,9 +139,10 @@ export function fetchMiroirAndAppConfigurations(
         },
       };
 
-      return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+      // return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+      return domainController.handleQueryTemplateActionForServerONLY(
         {
-          actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+          actionType: "runBoxedQueryTemplateAction",
           application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
           payload: {

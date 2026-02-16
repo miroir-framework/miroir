@@ -308,11 +308,11 @@
                 }
               },
               {
-                "actionType": "compositeRunBoxedExtractorOrQueryAction",
+                "actionType": "compositeRunBoxedQueryAction",
                 "actionLabel": "getListOfEntityDefinitions",
                 "nameGivenToResult": "newApplicationEntityDefinitionList",
                 "query": {
-                  "actionType": "runBoxedExtractorOrQueryAction",
+                  "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "application": {
                     "transformerType": "getFromParameters",
@@ -357,11 +357,11 @@
                 }
               },
               {
-                "actionType": "compositeRunBoxedExtractorOrQueryAction",
+                "actionType": "compositeRunBoxedQueryAction",
                 "actionLabel": "getListOfEntities",
                 "nameGivenToResult": "newApplicationEntityList",
-                "query": {
-                  "actionType": "runBoxedExtractorOrQueryAction",
+                "queryTemplate": {
+                  "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "application": {
                     "transformerType": "getFromParameters",
@@ -406,11 +406,11 @@
                 }
               },
               {
-                "actionType": "compositeRunBoxedExtractorOrQueryAction",
+                "actionType": "compositeRunBoxedQueryAction",
                 "actionLabel": "getListOfReports",
                 "nameGivenToResult": "newApplicationReportList",
                 "query": {
-                  "actionType": "runBoxedExtractorOrQueryAction",
+                  "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "application": {
                     "transformerType": "getFromParameters",

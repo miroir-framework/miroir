@@ -212,7 +212,7 @@ for (const c of Object.entries(configurations)) {
 
 
 const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
-  actionType: "runBoxedExtractorOrQueryAction",
+  actionType: "runBoxedQueryAction",
   application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   payload: {

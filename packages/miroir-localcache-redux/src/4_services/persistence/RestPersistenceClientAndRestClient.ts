@@ -159,10 +159,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       break;
     }
     case "runBoxedQueryAction":
-    case "runBoxedExtractorOrQueryAction":
-    case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction":
     case "runBoxedQueryTemplateAction":
-    case "runBoxedExtractorTemplateAction":
     case "storeManagementAction_createStore":
     case "storeManagementAction_deleteStore":
     case "storeManagementAction_resetAndInitApplicationDeployment":
@@ -185,7 +182,6 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     case "renameEntity":
     case "createEntity":
     case "dropEntity":
-    case "runBoxedExtractorAction":
     case "bundleAction": {
       networkActionUrlMap = {
             read: "/" + ((persistenceAction as any).uuid ?? ((persistenceAction as any).parentUuid + "/all")),
@@ -330,8 +326,6 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           "LocalPersistenceAction cannot be handled by RestPersistenceClientAndRestClient.handleNetworkPersistenceAction"
         );
       }
-      case "runBoxedExtractorAction":
-      case "runBoxedExtractorOrQueryAction":
       case "runBoxedQueryAction": {
         const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/query", applicationDeploymentMap);
         // log.info("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
@@ -340,9 +334,8 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         return result;
         break;
       }
-      case "runBoxedExtractorTemplateAction":
       case "runBoxedQueryTemplateAction":
-      case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
+        {
         const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/queryTemplate", applicationDeploymentMap);
         // log.debug("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
         const result = await callParams.operation(

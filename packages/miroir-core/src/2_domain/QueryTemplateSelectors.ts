@@ -1,11 +1,9 @@
 // ################################################################################################
 
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 import {
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  DomainElementSuccess,
   DomainModelQueryTemplateJzodSchemaParams,
   ExtractorOrCombinerTemplate,
   JzodElement,
@@ -13,38 +11,32 @@ import {
   QueryByEntityUuidGetEntityDefinition,
   QueryByQueryTemplateGetParamJzodSchema,
   QueryByTemplateGetParamJzodSchema,
-  RunBoxedExtractorAction,
-  RunBoxedExtractorTemplateAction,
-  RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+  RunBoxedQueryTemplateAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   ExtractorTemplateRunnerParamsForJzodSchema,
   RecordOfJzodElement,
   RecordOfJzodObject,
-  SyncBoxedExtractorTemplateRunnerParams,
+  // SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import {
-  extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
-  handleBoxedExtractorAction,
   handleBoxedQueryAction,
-  runQuery,
+  runQuery
 } from "./QuerySelectors";
 import {
-  resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
+  // resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer
 } from "./Templates";
-import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve} from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -97,172 +89,6 @@ export async function handleQueryTemplateAction(
     modelEnvironment
   );
 }
-
-// ################################################################################################
-export async function handleBoxedExtractorTemplateAction(
-  origin: string,
-  boxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
-  modelEnvironment: MiroirModelEnvironment
-): Promise<Action2ReturnType> {
-  log.info(
-    "handleBoxedExtractorTemplateAction for ",
-    origin,
-    "extractorTemplateAction",
-    JSON.stringify(boxedExtractorTemplateAction, null, 2)
-  );
-  const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-    boxedExtractorTemplateAction.payload.query,
-    modelEnvironment,
-  );
-
-  const extractorAction: RunBoxedExtractorAction = {
-    actionType: "runBoxedExtractorAction",
-    application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-    payload: {
-      application: boxedExtractorTemplateAction.payload.application,
-      applicationSection: boxedExtractorTemplateAction.payload.applicationSection ?? defaultApplicationSection,
-      query: resolvedQuery as any,
-    }
-  };
-
-  log.info(
-    "handleBoxedExtractorTemplateAction for ",
-    origin,
-    "extractorTemplateAction",
-    JSON.stringify(boxedExtractorTemplateAction, null, 2),
-    "resolvedQuery",
-    JSON.stringify(resolvedQuery, null, 2),
-    "extractorAction",
-    JSON.stringify(extractorAction, null, 2)
-  );
-
-
-  return handleBoxedExtractorAction(
-    origin,
-    extractorAction,
-    applicationDeploymentMap,
-    selectorMap,
-    modelEnvironment
-  );
-}
-
-// ################################################################################################
-export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
-  origin: string,
-  queryTemplateOrExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
-  modelEnvironment: MiroirModelEnvironment
-): Promise<Action2ReturnType> {
-  // log.info(
-  //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-  //   origin,
-  //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-  //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2)
-  // );
-
-  if ("queryType" in queryTemplateOrExtractorTemplateAction.payload.query) {
-    const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-      queryTemplateOrExtractorTemplateAction.payload.query as BoxedQueryTemplateWithExtractorCombinerTransformer,
-      modelEnvironment,
-    );
-    // log.info(
-    //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-    //   origin,
-    //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-    //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
-    //   "resolvedQuery",
-    //   JSON.stringify(resolvedQuery, null, 2)
-    // );
-    return handleBoxedQueryAction(
-      origin,
-      {
-        actionType: "runBoxedQueryAction",
-        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-        payload: {
-          application: queryTemplateOrExtractorTemplateAction.payload.application,
-          applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection ?? defaultApplicationSection,
-          query: resolvedQuery as any,
-        }
-      },
-      applicationDeploymentMap,
-      selectorMap,
-      modelEnvironment
-    );
-  } else {
-    const localQuery = queryTemplateOrExtractorTemplateAction.payload.query as BoxedExtractorTemplateReturningObjectOrObjectList;
-    const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-      localQuery,
-      modelEnvironment,
-    );
-    // log.info(
-    //   "handleBoxedExtractorTemplateOrQueryTemplateAction for",
-    //   origin,
-    //   "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-    //   JSON.stringify(queryTemplateOrExtractorTemplateAction, null, 2),
-    //   "resolvedQuery",
-    //   JSON.stringify(resolvedQuery, null, 2)
-    // );
-    const extractorAction: RunBoxedExtractorAction = {
-      actionType: "runBoxedExtractorAction",
-      application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      endpoint: queryTemplateOrExtractorTemplateAction.endpoint,
-      payload: {
-        application: queryTemplateOrExtractorTemplateAction.payload.application,
-        applicationSection: queryTemplateOrExtractorTemplateAction.payload.applicationSection ?? defaultApplicationSection,
-        query: resolvedQuery as any,
-      }
-    };
-    // log.info(
-    //   "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
-    //   origin,
-    //   "############################################# extractorAction",
-    //   JSON.stringify(extractorAction, null, 2),
-    // );
-    return handleBoxedExtractorAction(
-      origin,
-      extractorAction,
-      applicationDeploymentMap,
-      selectorMap,
-      modelEnvironment
-    );
-
-  }
-}
-
-// ################################################################################################
-export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRunner */= <StateType>(
-  state: StateType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: SyncBoxedExtractorTemplateRunnerParams<
-    BoxedExtractorTemplateReturningObjectOrObjectList,
-    StateType
-  >,
-  modelEnvironment: MiroirModelEnvironment
-): Domain2QueryReturnType<DomainElementSuccess> => {
-  if (!foreignKeyParams.extractorRunnerMap) {
-    throw new Error("extractWithBoxedExtractorTemplate requires extractorRunnerMap");
-  }
-  const resolvedExtractor: BoxedExtractorOrCombinerReturningObjectOrObjectList =
-    resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(
-      foreignKeyParams.extractorOrCombinerTemplate,
-      modelEnvironment
-    );
-
-  return extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-    state,
-    applicationDeploymentMap,
-    {
-      extractorRunnerMap: foreignKeyParams.extractorRunnerMap,
-      extractor: resolvedExtractor,
-    },
-    modelEnvironment
-  )
-};
 
 // ################################################################################################
 /**

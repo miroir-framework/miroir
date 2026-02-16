@@ -243,7 +243,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -269,7 +268,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {},
       queryParams: {},
@@ -787,7 +785,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -810,7 +807,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1230,7 +1226,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",
@@ -1744,7 +1739,6 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
     query: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: selfApplicationLibrary.uuid,
-      // deploymentUuid: deployment_Library_DO_NO_USE.uuid,
       contextResults: {},
       pageParams: {
         applicationSection: "data",

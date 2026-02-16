@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
+import type { Uuid } from "../1_core/EntityDefinition";
 import {
   CompositeActionSequence,
   CompositeActionTemplate,
@@ -8,21 +10,17 @@ import {
   EntityInstancesUuidIndex,
   MetaModel,
   ModelAction,
-  RunBoxedExtractorOrQueryAction,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   TestCompositeAction,
   TestCompositeActionSuite,
   TestCompositeActionTemplateSuite,
-  TransactionalInstanceAction
+  TransactionalInstanceAction,
+  type RunBoxedQueryAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { LocalCacheInterface } from "../4-services/LocalCacheInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
 import { Action2ReturnType, Action2VoidReturnType } from "./DomainElement";
-import type { MiroirModelEnvironment } from "../1_core/Transformer";
-import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
-import type { Uuid } from "../1_core/EntityDefinition";
 
 
 // #############################################################################################
@@ -86,22 +84,12 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   handleBoxedExtractorOrQueryAction(
-    action: RunBoxedExtractorOrQueryAction,
+    action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleQueryTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>;
-  handleBoxedExtractorTemplateActionForServerONLY(
-    action: RunBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel: MiroirModelEnvironment
-  ): Promise<Action2ReturnType>;
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;

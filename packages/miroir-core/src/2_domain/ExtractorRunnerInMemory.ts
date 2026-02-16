@@ -1,3 +1,4 @@
+import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 import {
   ApplicationSection,
   BoxedExtractorOrCombinerReturningObject,
@@ -5,21 +6,19 @@ import {
   EntityInstance,
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
-  RunBoxedExtractorAction,
   RunBoxedQueryAction,
   type CombinerForObjectByRelation,
   type ExtractorForObjectByDirectReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  Action2EntityInstanceCollection,
   Action2EntityInstanceCollectionOrFailure,
   Action2Error,
   Action2ReturnType,
   Domain2ElementFailed,
   Domain2QueryReturnType,
-  TransformerFailure,
+  TransformerFailure
 } from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -30,6 +29,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import {
@@ -46,11 +46,9 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors";
-import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors";
-import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
+import { handleBoxedQueryAction } from "./QuerySelectors";
 import { transformer_extended_apply } from "./TransformersForRuntime";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -94,20 +92,6 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     return handleBoxedQueryAction(
       "ExtractorRunnerInMemory",
       runBoxedQueryAction,
-      applicationDeploymentMap,
-      this.selectorMap,
-      modelEnvironment
-    );
-  }
-  // ################################################################################################
-  async handleBoxedExtractorAction(
-    runBoxedExtractorAction: RunBoxedExtractorAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    modelEnvironment: MiroirModelEnvironment
-  ): Promise<Action2ReturnType> {
-    return handleBoxedExtractorAction(
-      "ExtractorRunnerInMemory",
-      runBoxedExtractorAction,
       applicationDeploymentMap,
       this.selectorMap,
       modelEnvironment

@@ -3,11 +3,8 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
-  RunBoxedExtractorAction,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   Action2EntityInstanceCollection,
@@ -67,15 +64,6 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
     throw new Error("Method not implemented.");
   }
   handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
-    throw new Error("Method not implemented.");
-  }
-  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
-    throw new Error("Method not implemented.");
-  }
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
-    throw new Error("Method not implemented.");
-  }
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
     throw new Error("Method not implemented.");
   }
   handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {

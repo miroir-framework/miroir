@@ -1,9 +1,7 @@
 // ################################################################################################
 
 import {
-  BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
-  DomainElementSuccess,
   EntityDefinition,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition
@@ -15,8 +13,6 @@ import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncBoxedExtractorTemplateRunner,
-  SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
@@ -37,7 +33,6 @@ import { extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList } from "
 import {
   extractFetchQueryTemplateJzodSchema,
   extractJzodSchemaForDomainModelQueryTemplate,
-  extractWithBoxedExtractorTemplate,
   extractzodSchemaForSingleSelectQueryTemplate,
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
@@ -49,16 +44,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-// ################################################################################################
-// TODO: used in extractorTemplateRunnerForDomainState.unit.test and RestServer.ts, provide a better interface?
-export type ExtractorTemplateRunnerForDomainState = SyncBoxedExtractorTemplateRunner<
-  BoxedExtractorTemplateReturningObjectOrObjectList,
-  DomainState,
-  Domain2QueryReturnType<DomainElementSuccess>
->;
-
-export const extractorTemplateRunnerForDomainState: ExtractorTemplateRunnerForDomainState =
-  extractWithBoxedExtractorTemplate<DomainState>;
 
 export type QueryTemplateRunnerForDomainState = SyncQueryTemplateRunner<
   DomainState,
@@ -96,23 +81,6 @@ export function getSelectorMapForTemplate(): SyncBoxedExtractorOrQueryRunnerMap<
   };
 }
 
-// ################################################################################################
-export type GetSelectorParamsForExtractorTemplateOnDomainStateType=<ExtractorTemplateType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
-  query: ExtractorTemplateType,
-  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
-)=> SyncBoxedExtractorTemplateRunnerParams<ExtractorTemplateType, DomainState>;
-
-export const getExtractorTemplateRunnerParamsForDomainState: GetSelectorParamsForExtractorTemplateOnDomainStateType =
-<ExtractorTemplateType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
-    query: ExtractorTemplateType,
-    extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DomainState>
-  ) =>
-{
-  return {
-    extractorOrCombinerTemplate: query,
-    extractorRunnerMap: extractorRunnerMap ?? getSelectorMapForTemplate(),
-  };
-}
 
 // ################################################################################################
 export type GetSelectorParamsForQueryTemplateOnDomainStateType=<QueryTemplateType extends BoxedQueryTemplateWithExtractorCombinerTransformer>(

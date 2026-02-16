@@ -1,31 +1,24 @@
 import {
-  BoxedExtractorTemplateReturningObjectOrObjectList,
+  // BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   EntityDefinition,
   JzodObject,
   QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
   QueryTemplateRunnerMapForJzodSchema,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncBoxedExtractorTemplateRunnerParams,
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
-import {
-  selectEntityInstanceFromReduxDeploymentsState,
-  selectEntityInstanceListFromReduxDeploymentsState,
-  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
-} from "./ReduxDeploymentsStateQuerySelectors";
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
@@ -38,7 +31,13 @@ import {
   extractzodSchemaForSingleSelectQueryTemplate,
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
+import {
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+} from "./ReduxDeploymentsStateQuerySelectors";
+const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -82,22 +81,6 @@ export function getReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTe
   };
 }
 
-// ################################################################################################
-export type GetExtractorTemplateRunnerParamsForReduxDeploymentsState = <QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
-  query: QueryType,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
-) => SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState>;
-
-export function getExtractorTemplateRunnerParamsForReduxDeploymentsState<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
-  query: QueryType,
-  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
-): SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState> {
-  return {
-    extractorOrCombinerTemplate: query,
-    extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorTemplateMap(),
-  };
-}
 
 // ################################################################################################
 export type GetQueryTemplateRunnerParamsForReduxDeploymentsState = (

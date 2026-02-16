@@ -7,8 +7,8 @@ import {
   LocalCacheAction,
   MetaModel,
   ModelActionReplayableAction,
-  RunBoxedExtractorOrQueryAction,
-  TransactionalInstanceAction
+  TransactionalInstanceAction,
+  type RunBoxedQueryAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2ReturnType } from "../2_domain/DomainElement";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
@@ -47,7 +47,7 @@ export declare interface LocalCacheInterface {
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType;
   runBoxedExtractorOrQueryAction(
-    action: RunBoxedExtractorOrQueryAction,
+    action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType;
 }

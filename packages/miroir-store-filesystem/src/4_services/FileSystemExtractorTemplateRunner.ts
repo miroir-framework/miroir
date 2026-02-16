@@ -9,16 +9,12 @@ import {
   defaultMiroirModelEnvironment,
   DomainState,
   ExtractorTemplatePersistenceStoreRunner,
-  handleBoxedExtractorTemplateAction,
-  handleBoxedExtractorTemplateOrQueryTemplateAction,
   handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
   QueryTemplateRunnerMapForJzodSchema,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -79,45 +75,6 @@ export class FileSystemExtractorTemplateRunner implements ExtractorTemplatePersi
     );
   }
 
-  // ################################################################################################
-  async handleBoxedExtractorTemplateActionForServerONLY(
-    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Action2ReturnType> {
-    log.info(
-      this.logHeader,
-      "handleBoxedExtractorTemplateActionForServerONLY",
-      "runBoxedExtractorTemplateAction",
-      JSON.stringify(runBoxedExtractorTemplateAction, null, 2)
-    );
-    return handleBoxedExtractorTemplateAction(
-      "FileSystemExtractorTemplateRunner",
-      runBoxedExtractorTemplateAction,
-      applicationDeploymentMap,
-      this.selectorMap,
-      defaultMiroirModelEnvironment // TODO: use actual current deployment environment
-    );
-  }
-
-  // ################################################################################################
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Action2ReturnType> {
-    log.info(
-      this.logHeader,
-      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-      JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
-    );
-    return handleBoxedExtractorTemplateOrQueryTemplateAction(
-      "FileSystemExtractorTemplateRunner",
-      runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      applicationDeploymentMap,
-      this.selectorMap,
-      defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
-    );
-  }
 }
 
 export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {

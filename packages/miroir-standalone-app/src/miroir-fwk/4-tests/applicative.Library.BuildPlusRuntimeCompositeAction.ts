@@ -500,11 +500,11 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   },
                   // getListOfEntityDefinitions
                   {
-                    actionType: "compositeRunBoxedExtractorOrQueryAction",
+                    actionType: "compositeRunBoxedQueryAction",
                     actionLabel: "getListOfEntityDefinitions",
                     nameGivenToResult: "newApplicationEntityDefinitionList",
                     query: {
-                      actionType: "runBoxedExtractorOrQueryAction",
+                      actionType: "runBoxedQueryAction",
                       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                       payload: {
@@ -566,11 +566,11 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   },
                   // getListOfEntities
                   {
-                    actionType: "compositeRunBoxedExtractorOrQueryAction",
+                    actionType: "compositeRunBoxedQueryAction",
                     actionLabel: "getListOfEntities",
                     nameGivenToResult: "newApplicationEntityList",
                     query: {
-                      actionType: "runBoxedExtractorOrQueryAction",
+                      actionType: "runBoxedQueryAction",
                       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                       payload: {

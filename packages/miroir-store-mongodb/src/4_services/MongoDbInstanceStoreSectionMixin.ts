@@ -12,14 +12,11 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  RunBoxedExtractorAction,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   type ApplicationDeploymentMap
 } from "miroir-core";
-import { MongoDbStoreSection, MixableMongoDbStoreSection } from "./MongoDbStoreSection.js";
+import { MixableMongoDbStoreSection, MongoDbStoreSection } from "./MongoDbStoreSection.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -58,23 +55,6 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
     }
 
     // #############################################################################################
-    async handleBoxedExtractorAction(
-      query: RunBoxedExtractorAction,
-      applicationDeploymentMap: ApplicationDeploymentMap
-    ): Promise<Action2ReturnType> {
-      log.info(this.logHeader, "handleBoxedExtractorAction", "query", query);
-
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(
-        query,
-        applicationDeploymentMap,
-        defaultMetaModelEnvironment
-      );
-
-      log.info(this.logHeader, "handleBoxedExtractorAction", "query", query, "result", result);
-      return result;
-    }
-
-    // #############################################################################################
     async handleBoxedQueryAction(
       query: RunBoxedQueryAction,
       applicationDeploymentMap: ApplicationDeploymentMap
@@ -108,61 +88,6 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
       log.info(
         this.logHeader,
         "handleQueryTemplateActionForServerONLY",
-        "query",
-        query,
-        "result",
-        result
-      );
-      return result;
-    }
-
-    // #############################################################################################
-    async handleBoxedExtractorTemplateActionForServerONLY(
-      query: RunBoxedExtractorTemplateAction,
-      applicationDeploymentMap: ApplicationDeploymentMap
-    ): Promise<Action2ReturnType> {
-      log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", query);
-
-      const result: Action2ReturnType =
-        await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(
-          query,
-          applicationDeploymentMap,
-          defaultMetaModelEnvironment
-        );
-
-      log.info(
-        this.logHeader,
-        "handleBoxedExtractorTemplateActionForServerONLY",
-        "query",
-        query,
-        "result",
-        result
-      );
-      return result;
-    }
-
-    // #############################################################################################
-    async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-      query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      applicationDeploymentMap: ApplicationDeploymentMap
-    ): Promise<Action2ReturnType> {
-      log.info(
-        this.logHeader,
-        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-        "query",
-        query
-      );
-
-      const result: Action2ReturnType =
-        await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-          query,
-          applicationDeploymentMap,
-          defaultMetaModelEnvironment
-        );
-
-      log.info(
-        this.logHeader,
-        "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
         "query",
         query,
         "result",

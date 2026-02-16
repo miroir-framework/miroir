@@ -8,10 +8,13 @@ import {
 
 
 import {
-  ACTION_OK,
+  Action2Error,
   Action2ReturnType,
-  DomainElementSuccess,
+  ACTION_OK,
+  defaultMetaModelEnvironment,
+  Domain2ElementFailed,
   Domain2QueryReturnType,
+  DomainElementSuccess,
   DomainState,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
@@ -24,35 +27,28 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
-  RunBoxedExtractorOrQueryAction,
+  // RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction,
-  Domain2ElementFailed,
-  Action2Error,
-  miroirFundamentalJzodSchema,
-  defaultMiroirMetaModel,
-  type MlSchema,
-  defaultMetaModelEnvironment,
+  type ApplicationDeploymentMap,
   type MiroirModelEnvironment,
-  type ApplicationDeploymentMap
+  type RunBoxedQueryAction
 } from "miroir-core";
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
 import {
-  localCacheSliceInputActionNamesObject,
   ReduxReducerWithUndoRedoInterface,
-  ReduxStoreWithUndoRedo,
+  ReduxStoreWithUndoRedo
 } from "./localCache/localCacheReduxSliceInterface.js";
 import {
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
   localCacheStateToDomainState
 } from "./localCache/LocalCacheSlice.js";
+import { currentModel, currentModelEnvironment } from './localCache/Model.js';
 import {
   createUndoRedoReducer,
 } from "./localCache/UndoRedoReducer.js";
 import PersistenceReduxSaga from './persistence/PersistenceReduxSaga.js';
-import { currentModel, currentModelEnvironment } from './localCache/Model.js';
-import { aP } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -223,7 +219,8 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   runBoxedExtractorOrQueryAction(
-    action: RunBoxedExtractorOrQueryAction,
+    // action: RunBoxedExtractorOrQueryAction,
+    action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType {
     // const domainState: DomainState = domainController.getDomainState();
@@ -235,19 +232,6 @@ export class LocalCache implements LocalCacheInterface {
     let queryResult: Domain2QueryReturnType<DomainElementSuccess> =
       undefined as any as Domain2QueryReturnType<DomainElementSuccess>;
     switch (action.payload.query.queryType) {
-      case "boxedExtractorOrCombinerReturningObject":
-      case "boxedExtractorOrCombinerReturningObjectList": {
-        queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-          domainState,
-          applicationDeploymentMap,
-          getExtractorRunnerParamsForDomainState(
-            action.payload.query,
-            extractorRunnerMapOnDomainState
-          ),
-          defaultMetaModelEnvironment
-        );
-        break;
-      }
       case "boxedQueryWithExtractorCombinerTransformer": {
         queryResult = extractorRunnerMapOnDomainState.runQuery(
           domainState,

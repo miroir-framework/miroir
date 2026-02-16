@@ -628,7 +628,8 @@ const createEntityCompositeAction: CompositeActionSequence = {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
         payload: {
-          deploymentUuid: testAdminConfigurationDeploymentUuid,
+          application: testSelfApplicationUuid,
+          // deploymentUuid: testAdminConfigurationDeploymentUuid,
           entities: [
             {
               entity: createEntity_newEntity,
@@ -644,11 +645,11 @@ const createEntityCompositeAction: CompositeActionSequence = {
 const createEntityCompositeActionPrepActions: any[] = [
   // test preparation: newApplicationEntityDefinitionList
   {
-    actionType: "compositeRunBoxedExtractorOrQueryAction",
+    actionType: "compositeRunBoxedQueryAction",
     actionLabel: "getListOfEntityDefinitions",
     nameGivenToResult: "newApplicationEntityDefinitionList",
-    query: {
-      actionType: "runBoxedExtractorOrQueryAction",
+    queryTemplate: {
+      actionType: "runBoxedQueryAction",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -677,11 +678,11 @@ const createEntityCompositeActionPrepActions: any[] = [
   },
   // test preparation: newApplicationEntityList
   {
-    actionType: "compositeRunBoxedExtractorOrQueryAction",
+    actionType: "compositeRunBoxedQueryAction",
     actionLabel: "getListOfEntities",
     nameGivenToResult: "newApplicationEntityList",
-    query: {
-      actionType: "runBoxedExtractorOrQueryAction",
+    queryTemplate: {
+      actionType: "runBoxedQueryAction",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?
       deploymentUuid: testAdminConfigurationDeploymentUuid,
@@ -866,7 +867,8 @@ const createReportsCompositeAction: DomainAction = {
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
-        deploymentUuid: testAdminConfigurationDeploymentUuid,
+        application: testSelfApplicationUuid,
+        // deploymentUuid: testAdminConfigurationDeploymentUuid,
         applicationSection: "model",
         objects: [
           {
@@ -951,11 +953,11 @@ const createReportsCompositeAction: DomainAction = {
 const createReportsCompositeActionPrepActions: any[] = [
   // test preparation: newApplicationReportList
   {
-    actionType: "compositeRunBoxedExtractorOrQueryAction",
+    actionType: "compositeRunBoxedQueryAction",
     actionLabel: "getListOfReports",
     nameGivenToResult: "newApplicationReportList",
-    query: {
-      actionType: "runBoxedExtractorOrQueryAction",
+    queryTemplate: {
+      actionType: "runBoxedQueryAction",
       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
       applicationSection: "model", // TODO: give only selfApplication section in individual queries?

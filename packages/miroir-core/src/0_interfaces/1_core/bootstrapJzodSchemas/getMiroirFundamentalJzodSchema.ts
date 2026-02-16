@@ -2079,26 +2079,6 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        boxedExtractorTemplateReturningObjectOrObjectList: {
-          type: "union",
-          discriminator: "queryType",
-          definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedExtractorTemplateReturningObject",
-              },
-            },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedExtractorTemplateReturningObjectList",
-              },
-            },
-          ],
-        },
         boxedQueryTemplateWithExtractorCombinerTransformer: {
           type: "object",
           extend: {
@@ -2347,13 +2327,6 @@ export function getMiroirFundamentalJzodSchema(
           type: "union",
           discriminator: "queryType",
           definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "boxedExtractorTemplateReturningObjectOrObjectList",
-              },
-            },
             {
               type: "schemaReference",
               definition: {
@@ -2827,13 +2800,6 @@ export function getMiroirFundamentalJzodSchema(
             ),
           ],
         },
-        // localCacheAction: {
-        //   type: "union",
-        //   discriminator: "actionType",
-        //   definition: localCacheEndpointVersionV1.definition.actions.map(
-        //     (e: any) => e.actionParameters
-        //   ),
-        // },
         storeManagementAction: {
           type: "union",
           discriminator: "actionType",
@@ -2842,26 +2808,10 @@ export function getMiroirFundamentalJzodSchema(
             definition: e.actionParameters,
           })),
         },
-        // persistenceAction: {
-        //   type: "union",
-        //   discriminator: "actionType",
-        //   definition: persistenceEndpointVersionV1.definition.actions.map(
-        //     (e: any) => e.actionParameters
-        //   ),
-        // },
         persistenceAction: {
           type: "union",
           discriminator: "actionType",
           definition: [
-            // runBoxedExtractorAction
-            {
-              type: "schemaReference",
-              optional: false,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "runBoxedExtractorAction",
-              },
-            },
             // runBoxedQueryAction
             {
               type: "schemaReference",
@@ -2871,15 +2821,6 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "runBoxedQueryAction",
               },
             },
-            // runBoxedExtractorOrQueryAction
-            {
-              type: "schemaReference",
-              optional: false,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "runBoxedExtractorOrQueryAction",
-              },
-            },
             // runBoxedQueryTemplateAction
             {
               type: "schemaReference",
@@ -2887,24 +2828,6 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 relativePath: "runBoxedQueryTemplateAction",
-              },
-            },
-            // runBoxedExtractorTemplateAction
-            {
-              type: "schemaReference",
-              optional: false,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "runBoxedExtractorTemplateAction",
-              },
-            },
-            // runBoxedQueryTemplateOrBoxedExtractorTemplateAction
-            {
-              type: "schemaReference",
-              optional: false,
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
               },
             },
             // bundleAction
@@ -2967,29 +2890,17 @@ export function getMiroirFundamentalJzodSchema(
             definition: e.actionParameters,
           })),
         },
-        runBoxedQueryTemplateOrBoxedExtractorTemplateAction: {
+        runBoxedQueryTemplateAction: {
           type: "object",
           definition: queryEndpointVersionV1.definition.actions[0].actionParameters,
         },
-        runBoxedExtractorOrQueryAction: {
-          type: "object",
-          definition: queryEndpointVersionV1.definition.actions[1].actionParameters,
-        },
-        runBoxedQueryTemplateAction: {
-          type: "object",
-          definition: queryEndpointVersionV1.definition.actions[2].actionParameters,
-        },
-        runBoxedExtractorTemplateAction: {
-          type: "object",
-          definition: queryEndpointVersionV1.definition.actions[3].actionParameters,
-        },
+        // runBoxedExtractorTemplateAction: {
+        //   type: "object",
+        //   definition: queryEndpointVersionV1.definition.actions[3].actionParameters,
+        // },
         runBoxedQueryAction: {
           type: "object",
-          definition: queryEndpointVersionV1.definition.actions[4].actionParameters,
-        },
-        runBoxedExtractorAction: {
-          type: "object",
-          definition: queryEndpointVersionV1.definition.actions[5].actionParameters,
+          definition: queryEndpointVersionV1.definition.actions[1].actionParameters,
         },
         // ################################################################################
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
@@ -3014,11 +2925,6 @@ export function getMiroirFundamentalJzodSchema(
             actionType: { type: "literal", definition: "compositeActionSequence" },
             actionName: { type: "literal", definition: "sequence" },
             actionLabel: { type: "string", optional: true },
-            // deploymentUuid: {
-            //   type: "uuid",
-            //   optional: true,
-            //   tag: { value: { defaultLabel: "Module Deployment Uuid", editable: false } },
-            // },
             templates: {
               type: "record",
               optional: true,
@@ -3057,42 +2963,6 @@ export function getMiroirFundamentalJzodSchema(
                         definition: {
                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                           relativePath: "runBoxedQueryAction",
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: {
-                        type: "literal",
-                        definition: "compositeRunBoxedExtractorAction",
-                      },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      queryTemplate: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "runBoxedExtractorAction",
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: "object",
-                    definition: {
-                      actionType: {
-                        type: "literal",
-                        definition: "compositeRunBoxedExtractorOrQueryAction",
-                      },
-                      actionLabel: { type: "string", optional: true },
-                      nameGivenToResult: { type: "string" },
-                      query: {
-                        type: "schemaReference",
-                        definition: {
-                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          relativePath: "runBoxedExtractorOrQueryAction",
                         },
                       },
                     },
@@ -3256,10 +3126,6 @@ export function getMiroirFundamentalJzodSchema(
                 payload: {
                   type: "object",
                   definition: {
-                    // deploymentUuid: {
-                    //   type: "uuid",
-                    //   tag: { value: { defaultLabel: "Deployment", editable: false } },
-                    // },
                     application: {
                       type: "uuid",
                       tag: { value: { defaultLabel: "Application", editable: false } },
@@ -3286,10 +3152,6 @@ export function getMiroirFundamentalJzodSchema(
                 payload: {
                   type: "object",
                   definition: {
-                    // deploymentUuid: {
-                    //   type: "uuid",
-                    //   tag: { value: { defaultLabel: "Deployment", editable: false } },
-                    // },
                     application: {
                       type: "uuid",
                       tag: { value: { defaultLabel: "Application", editable: false } },

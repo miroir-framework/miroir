@@ -169,66 +169,6 @@
                               "canBeTemplate": false
                             }
                           },
-                          "definition": "compositeRunBoxedExtractorAction"
-                        },
-                        "actionLabel": { "type": "string", "optional": true },
-                        "nameGivenToResult": { "type": "string" },
-                        "queryTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "runBoxedExtractorAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "tag": {
-                        "value": {
-                          "display":{
-                            "displayedAttributeValueWhenFolded": "actionLabel"
-                          }
-                        }
-                      },
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": false
-                            }
-                          },
-                          "definition": "compositeRunBoxedExtractorOrQueryAction"
-                        },
-                        "actionLabel": { "type": "string", "optional": true },
-                        "nameGivenToResult": { "type": "string" },
-                        "query": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "runBoxedExtractorOrQueryAction"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "tag": {
-                        "value": {
-                          "display":{
-                            "displayedAttributeValueWhenFolded": "actionLabel"
-                          }
-                        }
-                      },
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": false
-                            }
-                          },
                           "definition": "compositeRunTestAssertion"
                         },
                         "actionLabel": { "type": "string", "optional": true },

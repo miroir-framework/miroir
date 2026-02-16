@@ -10,11 +10,8 @@ import {
   ModelActionInitModel,
   ModelActionInitModelParams,
   ModelActionRenameEntity,
-  RunBoxedExtractorAction,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   SelfApplication,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -111,40 +108,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleBoxedExtractorAction(
-    action: RunBoxedExtractorAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModelEnvironment?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType> {
-    // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleBoxedExtractorAction", "query", action);
-    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
-    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
-
-    // TODO: composite actions / queries could execute on different sections, how should this be dealt with?
-    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
-    const currentStore:
-      | PersistenceStoreDataSectionInterface
-      | PersistenceStoreModelSectionInterface =
-      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-    const result: Action2ReturnType = await currentStore.handleBoxedExtractorAction(
-      action,
-      applicationDeploymentMap,
-      currentModelEnvironment
-    );
-
-    log.info(
-      this.logHeader,
-      "handleBoxedExtractorAction",
-      "query",
-      action,
-      "result",
-      JSON.stringify(result)
-    );
-    return Promise.resolve(result);
-  }
-
-  // #############################################################################################
   async handleBoxedQueryAction(
     action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
@@ -184,42 +147,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  async handleBoxedExtractorTemplateActionForServerONLY(
-    action: RunBoxedExtractorTemplateAction,
-    appliationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType> {
-    // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "query", action);
-    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
-    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
-
-    // TODO: composite actions / queries could execute on different sections, how should this be dealt with?
-    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
-    const currentStore:
-      | PersistenceStoreDataSectionInterface
-      | PersistenceStoreModelSectionInterface =
-      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-
-    const result: Action2ReturnType =
-      await currentStore.handleBoxedExtractorTemplateActionForServerONLY(
-        action,
-        appliationDeploymentMap,
-        currentModel
-      );
-
-    log.info(
-      this.logHeader,
-      "handleBoxedExtractorTemplateActionForServerONLY",
-      "query",
-      action,
-      "result",
-      JSON.stringify(result)
-    );
-    return Promise.resolve(result);
-  }
-
-  // #############################################################################################
   async handleQueryTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateAction,
     appliationDeploymentMap: ApplicationDeploymentMap,
@@ -246,47 +173,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     log.info(
       this.logHeader,
       "handleQueryTemplateActionForServerONLY",
-      "query",
-      action,
-      "result",
-      JSON.stringify(result)
-    );
-    return Promise.resolve(result);
-  }
-
-  // #############################################################################################
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel?: MiroirModelEnvironment
-  ): Promise<Action2ReturnType> {
-    // TODO: fix applicationSection!!!
-    log.info(
-      this.logHeader,
-      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-      "query",
-      action
-    );
-    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
-    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
-
-    // TODO: composite actions / queries could execute on different sections, how should this be dealt with?
-    // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
-    const currentStore:
-      | PersistenceStoreDataSectionInterface
-      | PersistenceStoreModelSectionInterface =
-      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
-
-    const result: Action2ReturnType =
-      await currentStore.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-        action,
-        applicationDeploymentMap,
-        currentModel
-      );
-
-    log.info(
-      this.logHeader,
-      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
       "query",
       action,
       "result",

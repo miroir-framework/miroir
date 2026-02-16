@@ -8,15 +8,11 @@ import {
   asyncRunQuery,
   defaultMetaModelEnvironment,
   DomainState,
-  handleBoxedExtractorTemplateAction,
-  handleBoxedExtractorTemplateOrQueryTemplateAction,
   handleQueryTemplateAction,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryTemplateRunnerMapForJzodSchema,
-  RunBoxedExtractorTemplateAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   selectEntityJzodSchemaFromDomainStateNewForTemplate,
   selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
   selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
@@ -118,45 +114,6 @@ export class SqlDbExtractTemplateRunner {
     );
   }
 
-  // ##############################################################################################
-  async handleBoxedExtractorTemplateActionForServerONLY(
-    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Action2ReturnType> {
-    log.info(
-      this.logHeader,
-      "handleBoxedExtractorTemplateActionForServerONLY",
-      "runBoxedExtractorTemplateAction",
-      JSON.stringify(runBoxedExtractorTemplateAction, null, 2)
-    );
-    return handleBoxedExtractorTemplateAction(
-      "SqlDbQueryTemplateRunner",
-      runBoxedExtractorTemplateAction,
-      applicationDeploymentMap,
-      this.extractorRunnerMapForServerOnly,
-      defaultMetaModelEnvironment
-    );
-  }
-
-  // ##############################################################################################
-  async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Action2ReturnType> {
-    log.info(
-      this.logHeader,
-      "handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY",
-      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-      JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
-    );
-    return handleBoxedExtractorTemplateOrQueryTemplateAction(
-      "SqlDbQueryTemplateRunner",
-      runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      applicationDeploymentMap,
-      this.extractorRunnerMapForServerOnly,
-      defaultMetaModelEnvironment
-    );
-  }
 }
 
 export function getDomainStateJzodSchemaExtractorRunnerMap(): QueryTemplateRunnerMapForJzodSchema<DomainState> {

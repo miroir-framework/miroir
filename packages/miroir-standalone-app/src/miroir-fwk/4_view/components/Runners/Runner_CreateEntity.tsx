@@ -51,11 +51,11 @@ export function getCreateEntityActionTemplate(
       definition: [
         // Step 1: Query to get the deployment UUID from the selected application
         {
-          actionType: "compositeRunBoxedExtractorOrQueryAction",
+          actionType: "compositeRunBoxedQueryAction",
           actionLabel: "getDeploymentForApplication",
           nameGivenToResult: "deploymentInfo",
-          query: {
-            actionType: "runBoxedExtractorOrQueryAction",
+          queryTemplate: {
+            actionType: "runBoxedQueryAction",
             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
             payload: {
