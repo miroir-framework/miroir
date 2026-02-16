@@ -42,7 +42,7 @@
                     "defaultLabel": "Application",
                     "description": "Application UUID where instances will be created",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -221,7 +221,7 @@
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -300,7 +300,7 @@
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -380,7 +380,7 @@
                     "defaultLabel": "Application",
                     "description": "Application UUID",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -490,7 +490,7 @@
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -559,7 +559,7 @@
                     "defaultLabel": "Application",
                     "description": "UUID of Application to query",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -649,7 +649,7 @@
                     "defaultLabel": "Application",
                     "description": "Application UUID to query",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },

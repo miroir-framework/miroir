@@ -140,7 +140,7 @@ export function getMiroirFundamentalJzodSchema(
             // jzodSchemajzodMiroirBootstrapSchema.definition as JzodElement,
             jzodSchemajzodMiroirBootstrapSchema.definition as any,
             miroirFundamentalJzodSchemaUuid,
-            true
+            true,
           ) as any
         ).context,
         // miroirIcon: entityDefinitionEntityDefinitionV1.mlSchema.definition.icon,
@@ -274,7 +274,7 @@ export function getMiroirFundamentalJzodSchema(
         ...makeReferencesAbsolute(
           (transformerJzodSchema as any).definition,
           miroirFundamentalJzodSchemaUuid,
-          true
+          true,
         ).context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
         // jzodTypeCheck
         jzodUnion_RecursivelyUnfold_ReturnTypeOK: jzodUnion_RecursivelyUnfold_ReturnTypeOK,
@@ -289,13 +289,13 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersJzodSchemas.map((e: any) => [
             e.name,
             { type: "object", definition: e.transformerInterface.transformerParameterSchema },
-          ])
+          ]),
         ),
         // ########################################################################################
         ...makeReferencesAbsolute(
           zodParseErrorJzodSchema as any,
           miroirFundamentalJzodSchemaUuid,
-          true
+          true,
         ).context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
         // zodParseErrorIssue: zodParseError.context.zodParseErrorIssue as any,
         // zodParseError: zodParseError.context.zodParseError as any,
@@ -342,7 +342,7 @@ export function getMiroirFundamentalJzodSchema(
           Object.entries(mlsTransformers).map(([key, value]) => [
             key.replace("transformer_", "transformerForBuild_"),
             miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild],
-          ])
+          ]),
         ),
         //
         transformerForBuild: {
@@ -387,10 +387,8 @@ export function getMiroirFundamentalJzodSchema(
         //
         transformerForBuildPlusRuntime_ifThenElse:
           miroirTransformersForBuildPlusRuntime.transformer_ifThenElse,
-        transformerForBuildPlusRuntime_plus:
-          miroirTransformersForBuildPlusRuntime.transformer_plus,
-        transformerForBuildPlusRuntime_case:
-          miroirTransformersForBuildPlusRuntime.transformer_case,
+        transformerForBuildPlusRuntime_plus: miroirTransformersForBuildPlusRuntime.transformer_plus,
+        transformerForBuildPlusRuntime_case: miroirTransformersForBuildPlusRuntime.transformer_case,
         transformerForBuildPlusRuntime_returnValue:
           miroirTransformersForBuildPlusRuntime.transformer_returnValue,
         transformerForBuildPlusRuntime_constantAsExtractor:
@@ -436,7 +434,7 @@ export function getMiroirFundamentalJzodSchema(
             miroirTransformersForBuildPlusRuntime[
               key as keyof typeof miroirTransformersForBuildPlusRuntime
             ],
-          ])
+          ]),
         ),
         transformerForBuildPlusRuntime: {
           type: "union",
@@ -480,8 +478,8 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        ...entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface
-          .definition.inputOutput.context,
+        ...entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition
+          .inputOutput.context,
         // inputOutputObject: entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition.inputOutput as any,
         transformerDefinition: entityDefinitionTransformerDefinition.mlSchema as any,
         ______________________________________________miroirMetaModel_____________________________________________:
@@ -814,7 +812,7 @@ export function getMiroirFundamentalJzodSchema(
         ...makeReferencesAbsolute(
           entityDefinitionTransformerTest.mlSchema.definition.definition,
           miroirFundamentalJzodSchemaUuid,
-          true
+          true,
         ).context,
         transformerTestDefinition: entityDefinitionTransformerTest.mlSchema as any,
         // ########################################################################################
@@ -837,47 +835,48 @@ export function getMiroirFundamentalJzodSchema(
         testCompositeAction: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testCompositeAction"
+          (e: any) => e.definition.testType.definition == "testCompositeAction",
         ),
         testCompositeActionSuite: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testCompositeActionSuite"
+          (e: any) => e.definition.testType.definition == "testCompositeActionSuite",
         ),
         testBuildCompositeAction: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testBuildCompositeAction"
+          (e: any) => e.definition.testType.definition == "testBuildCompositeAction",
         ),
         testBuildCompositeActionSuite: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testBuildCompositeActionSuite"
+          (e: any) => e.definition.testType.definition == "testBuildCompositeActionSuite",
         ),
         testBuildPlusRuntimeCompositeAction: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testBuildPlusRuntimeCompositeAction"
+          (e: any) => e.definition.testType.definition == "testBuildPlusRuntimeCompositeAction",
         ),
         testBuildPlusRuntimeCompositeActionSuite: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testBuildPlusRuntimeCompositeActionSuite"
+          (e: any) =>
+            e.definition.testType.definition == "testBuildPlusRuntimeCompositeActionSuite",
         ),
         testCompositeActionTemplate: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testCompositeActionTemplate"
+          (e: any) => e.definition.testType.definition == "testCompositeActionTemplate",
         ),
         testCompositeActionTemplateSuite: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testCompositeActionTemplateSuite"
+          (e: any) => e.definition.testType.definition == "testCompositeActionTemplateSuite",
         ),
         testAssertion: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
-          (e: any) => e.definition.testType.definition == "testAssertion"
+          (e: any) => e.definition.testType.definition == "testAssertion",
         ),
         test: entityDefinitionTest.mlSchema as any,
         testCompositeActionParams,
@@ -907,14 +906,14 @@ export function getMiroirFundamentalJzodSchema(
             report: {
               type: "uuid",
               tag: { value: { defaultLabel: "Report", canBeTemplate: true } },
-            }
-          }
+            },
+          },
         },
         graphConfig: (entityDefinitionReportV1 as any).mlSchema.definition.definition.context
           .graphReportSection.definition.definition.definition.config,
         ...Object.fromEntries(
           Object.entries(
-            (entityDefinitionReportV1 as any).mlSchema.definition.definition.context
+            (entityDefinitionReportV1 as any).mlSchema.definition.definition.context,
           ).filter((e) =>
             [
               // TODO: remove this filter, this introduces unnecessary coupling
@@ -930,18 +929,18 @@ export function getMiroirFundamentalJzodSchema(
               "reportSection",
               "rootReport",
               "runStoredQuery",
-            ].includes(e[0])
-          )
+            ].includes(e[0]),
+          ),
         ),
-        jzodObjectOrReference: (entityDefinitionJzodSchemaV1 as any).mlSchema.definition
-          .definition.context.jzodObjectOrReference,
+        jzodObjectOrReference: (entityDefinitionJzodSchemaV1 as any).mlSchema.definition.definition
+          .context.jzodObjectOrReference,
         mlSchema: entityDefinitionJzodSchemaV1.mlSchema as any,
         // mlSchema: entityDefinitionJzodSchemaV1.mlSchema as JzodObject,
         report: (entityDefinitionReportV1 as any).mlSchema,
         dataSet: {
           type: "object",
           definition: {
-            "applicationUuid": {
+            applicationUuid: {
               type: "uuid",
             },
             instances: {
@@ -953,8 +952,8 @@ export function getMiroirFundamentalJzodSchema(
                   relativePath: "entityInstanceCollection",
                 },
               },
-            }
-          }
+            },
+          },
         },
         metaModel: {
           type: "object",
@@ -1096,9 +1095,9 @@ export function getMiroirFundamentalJzodSchema(
             runners: {
               type: "array",
               definition: {
-                type: "any"
+                type: "any",
                 /** runner creates a circular dependency on mlSchemaTemplate
-                 * the simpler solution is to not include runner in the metaModel, 
+                 * the simpler solution is to not include runner in the metaModel,
                  * MetaModel being used by ancillary tools, not by the user,
                  * the contents of a MetaModel will generally not be viewed directly by the user.
                  * Extra FIX: add the dependency to mlSchemaTemplate as a runtime type.
@@ -1763,22 +1762,6 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "domainElementInstanceUuid",
               },
             },
-            // {
-            //   type: "object",
-            //   definition: {
-            //     elementType: {
-            //       type: "literal",
-            //       definition: "instanceUuidIndexUuidIndex",
-            //     },
-            //     elementValue: {
-            //       type: "schemaReference",
-            //       definition: {
-            //         absolutePath: miroirFundamentalJzodSchemaUuid,
-            //         relativePath: "entityInstancesUuidIndex",
-            //       },
-            //     },
-            //   },
-            // },
             {
               type: "schemaReference",
               definition: {
@@ -1840,17 +1823,6 @@ export function getMiroirFundamentalJzodSchema(
                   type: "uuid",
                   tag: { value: { defaultLabel: "Uuid", editable: false } },
                 },
-                // applicationDeploymentMap: {
-                //   type: "record",
-                //   definition: {
-                //     type: "uuid",
-                //   }
-                // },
-                // deploymentUuid: {
-                //   type: "uuid",
-                //   optional: true,
-                //   tag: { value: { defaultLabel: "Uuid", editable: false } },
-                // },
                 applicationSection: {
                   type: "schemaReference",
                   optional: true,
@@ -1881,44 +1853,42 @@ export function getMiroirFundamentalJzodSchema(
               type: "uuid",
               tag: {
                 value: {
+                  id: 1,
                   canBeTemplate: true,
                   defaultLabel: "Application",
-                  editable: false,
+                  foreignKeyParams: {
+                    targetApplicationUuid: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                    targetEntity: "25d935e7-9e93-42c2-aade-0472b883492b",
+                    targetEntityOrderInstancesBy: "name",
+                  },
+                  initializeTo: {
+                    initializeToType: "transformer",
+                    transformer: {
+                      transformerType: "getFromParameters",
+                      referencePath: ["applicationUuid"],
+                    },
+                  },
+                  display: { editable: false },
                 },
               },
             },
-            // applicationDeploymentMap: {
-            //   type: "record",
-            //   definition: {
-            //     type: "uuid",
-            //   }
-            // },
-            // deploymentUuid: {
-            //   // TODO: REPLACE WITH APPLICATION UUID OR LEAVE IT OPTIONAL
-            //   type: "uuid",
-            //   optional: true,
-            //   tag: {
-            //     value: {
-            //       canBeTemplate: true,
-            //       defaultLabel: "Deployment Uuid",
-            //       editable: false,
-            //     },
-            //   },
-            // },
             pageParams: {
               type: "record",
+              optional: true,
               definition: {
                 type: "any",
               },
             },
             queryParams: {
               type: "record",
+              optional: true,
               definition: {
                 type: "any",
               },
             },
             contextResults: {
               type: "record",
+              optional: true,
               definition: {
                 type: "any",
               },
@@ -2685,65 +2655,65 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         modelActionInitModelParams: modelEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters.actionType.definition == "initModel"
+          (a: any) => a.actionParameters.actionType.definition == "initModel",
         )?.actionParameters.payload.definition.params,
         modelActionCommit: {
           type: "object",
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "commit"
+            (a: any) => a.actionParameters.actionType.definition == "commit",
           )?.actionParameters,
         },
         modelActionRollback: {
           type: "object",
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "rollback"
+            (a: any) => a.actionParameters.actionType.definition == "rollback",
           )?.actionParameters,
         },
         modelActionInitModel: {
           type: "object",
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "initModel"
+            (a: any) => a.actionParameters.actionType.definition == "initModel",
           )?.actionParameters,
         },
         modelActionResetModel: {
           type: "object",
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "resetModel"
+            (a: any) => a.actionParameters.actionType.definition == "resetModel",
           )?.actionParameters,
         },
         modelActionResetData: {
           type: "object",
-          tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "resetData"
+            (a: any) => a.actionParameters.actionType.definition == "resetData",
           )?.actionParameters,
         },
         modelActionAlterEntityAttribute: {
           type: "object",
-          tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "alterEntityAttribute"
+            (a: any) => a.actionParameters.actionType.definition == "alterEntityAttribute",
           )?.actionParameters,
         },
         modelActionCreateEntity: {
           type: "object",
-          tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "createEntity"
+            (a: any) => a.actionParameters.actionType.definition == "createEntity",
           )?.actionParameters,
         },
         modelActionDropEntity: {
           type: "object",
-          tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "dropEntity"
+            (a: any) => a.actionParameters.actionType.definition == "dropEntity",
           )?.actionParameters,
         },
         modelActionRenameEntity: {
           type: "object",
-          tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
           definition: modelEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "renameEntity"
+            (a: any) => a.actionParameters.actionType.definition == "renameEntity",
           )?.actionParameters,
         },
         modelAction: {
@@ -2751,20 +2721,20 @@ export function getMiroirFundamentalJzodSchema(
           discriminator: "actionType",
           definition: modelEndpointVersionV1.definition.actions.map((e: any) => ({
             type: "object",
-            tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+            tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
             definition: e.actionParameters,
           })),
         },
         testAction_runTestCompositeAction: {
           type: "object",
           definition: testEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "runTestCompositeAction"
+            (a: any) => a.actionParameters.actionType.definition == "runTestCompositeAction",
           )?.actionParameters,
         },
         testAction_runTestCase: {
           type: "object",
           definition: testEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters.actionType.definition == "runTestCase"
+            (a: any) => a.actionParameters.actionType.definition == "runTestCase",
           )?.actionParameters,
         },
         instanceCUDAction: {
@@ -2773,12 +2743,12 @@ export function getMiroirFundamentalJzodSchema(
           definition: instanceEndpointVersionV1.definition.actions
             .filter((e: any) =>
               ["createInstance", "updateInstance", "deleteInstance"].includes(
-                e.actionParameters.actionType.definition
-              )
+                e.actionParameters.actionType.definition,
+              ),
             )
             .map((e: any) => ({
               type: "object",
-              tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+              tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
               definition: e.actionParameters,
             })),
         },
@@ -2787,7 +2757,7 @@ export function getMiroirFundamentalJzodSchema(
           discriminator: "actionType",
           definition: instanceEndpointVersionV1.definition.actions.map((e: any) => ({
             type: "object",
-            tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+            tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
             definition: e.actionParameters,
           })),
         },
@@ -2796,17 +2766,17 @@ export function getMiroirFundamentalJzodSchema(
           discriminator: "actionType",
           definition: undoRedoEndpointVersionV1.definition.actions.map((e: any) => ({
             type: "object",
-            tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+            tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
             definition: e.actionParameters,
           })),
         },
         transactionalInstanceAction: {
           type: "object",
-          tag: { value: { display: {displayedAttributeValueWhenFolded: "actionLabel" } } },
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
           definition: domainEndpointVersionV1.definition.actions.find(
             (a: any) =>
               a.actionParameters.actionType &&
-              a.actionParameters.actionType.definition == "transactionalInstanceAction"
+              a.actionParameters.actionType.definition == "transactionalInstanceAction",
           )?.actionParameters,
         },
         localCacheAction: {
@@ -2853,7 +2823,7 @@ export function getMiroirFundamentalJzodSchema(
               (e: Record<string, JzodElement>) => ({
                 type: "object",
                 definition: e.actionParameters,
-              })
+              }),
             ),
           ],
         },
@@ -2977,7 +2947,7 @@ export function getMiroirFundamentalJzodSchema(
               (e: Record<string, JzodElement>) => ({
                 type: "object",
                 definition: e.actionParameters,
-              })
+              }),
             ),
           ],
         },
@@ -3023,12 +2993,12 @@ export function getMiroirFundamentalJzodSchema(
         },
         // ################################################################################
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
-          (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence"
+          (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
         )?.actionParameters.payload.definition.definition.definition,
         compositeActionSequence: {
           type: "object",
           definition: domainEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence"
+            (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
           )?.actionParameters,
         },
         // ################################################################################
@@ -3167,7 +3137,7 @@ export function getMiroirFundamentalJzodSchema(
         compositeRunTestAssertion: domainEndpointVersionV1.definition.actions
           .find((a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence")
           ?.actionParameters.payload.definition.definition.definition.definition.find(
-            (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion"
+            (a: any) => a.definition?.actionType?.definition == "compositeRunTestAssertion",
           ),
         domainAction: {
           type: "union",
@@ -3294,8 +3264,8 @@ export function getMiroirFundamentalJzodSchema(
                       type: "uuid",
                       tag: { value: { defaultLabel: "Application", editable: false } },
                     },
-                  }
-                }
+                  },
+                },
               },
             },
             {
@@ -3324,8 +3294,8 @@ export function getMiroirFundamentalJzodSchema(
                       type: "uuid",
                       tag: { value: { defaultLabel: "Application", editable: false } },
                     },
-                  }
-                }
+                  },
+                },
               },
             },
           ],

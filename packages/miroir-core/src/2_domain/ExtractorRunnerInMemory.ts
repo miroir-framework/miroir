@@ -137,7 +137,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
       // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
       modelEnvironment,
-      foreignKeyParams.extractor.queryParams,
+      foreignKeyParams.extractor.queryParams ?? {},
       foreignKeyParams.extractor.contextResults
     );
     log.info(
@@ -199,9 +199,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       "######### referenceObject",
       referenceObject,
       "######### queryParams",
-      JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams), undefined, 2),
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams ?? {}), undefined, 2),
       "######### contextResults",
-      JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults), undefined, 2)
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults ?? {}), undefined, 2)
     );
     if (querySelectorParams.applyTransformer) {
       const transformedResult = transformer_extended_apply(
@@ -212,8 +212,8 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         "value",
         // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
-        foreignKeyParams.extractor.queryParams,
-        {...foreignKeyParams.extractor.contextResults, referenceObject, foreignKeyObject: result.returnedDomainElement}
+        foreignKeyParams.extractor.queryParams ?? {},
+        {...(foreignKeyParams.extractor.contextResults ?? {}), referenceObject, foreignKeyObject: result.returnedDomainElement}
       );
       log.info(
         "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
@@ -283,9 +283,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       "######### context entityUuid",
       entityUuidReference,
       "######### queryParams",
-      JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams), undefined, 2),
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams ?? {}), undefined, 2),
       "######### contextResults",
-      JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults), undefined, 2)
+      JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults ?? {}), undefined, 2)
     );
     const referenceObject = getInstanceResult.returnedDomainElement;
     if (!querySelectorParams.applyTransformer) {
@@ -339,7 +339,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
       "value",
       // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
       modelEnvironment,
-      foreignKeyParams.extractor.queryParams,
+      foreignKeyParams.extractor.queryParams ?? {},
       {...foreignKeyParams.extractor.contextResults, referenceObject, foreignKeyObjects}
     );
     if (transformedResult instanceof TransformerFailure) {

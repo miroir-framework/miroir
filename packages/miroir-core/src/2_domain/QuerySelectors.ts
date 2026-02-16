@@ -207,7 +207,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
 
       const referenceObject =
         typeof relationQuery.objectReference === "string"
-          ? query.contextResults[relationQuery.objectReference]
+          ? (query.contextResults ?? {})[relationQuery.objectReference]
           : transformer_extended_apply(
               "runtime",
               [], // transformerPath
@@ -215,8 +215,8 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
               relationQuery.objectReference,
               "value",
               defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
-              query.queryParams,
-              query.contextResults
+              query.queryParams ?? {},
+              query.contextResults ?? {}
             );
       ;
       let otherIndex:string | undefined = undefined
@@ -251,7 +251,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         relationQuery.applyTransformer,
         "value",
         defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
-        query.queryParams,
+        query.queryParams ?? {},
         {...query.contextResults, referenceObject, foreignKeyObject: e} // newFetchedData
       )):finalInstanceList;
 
@@ -263,7 +263,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       // relationQuery.objectListReference is a queryContextReference
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList selectedInstancesList", selectedInstancesList)
       let otherList: Record<string, any> | undefined = undefined
-      otherList = ((query.contextResults[
+      otherList = (((query.contextResults ?? {})[
         relationQuery.objectListReference
       ]) ?? {});
       if (otherList) {
@@ -330,7 +330,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
                 relationQuery.applyTransformer,
                 "value",
                 defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
-                query.queryParams,
+                query.queryParams ?? {},
                 { ...query.contextResults, referenceObject, foreignKeyObject: selectedInstance } // newFetchedData
               );
             })
@@ -405,9 +405,9 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 
       let otherIndex:string | undefined = undefined
       if (
-        query.contextResults[relationQuery.objectReference]
+        ((query.contextResults ?? {})[relationQuery.objectReference])
       ) {
-        otherIndex = ((query.contextResults[
+        otherIndex = (((query.contextResults ?? {})[
           relationQuery.objectReference
         ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
       } else {
@@ -447,7 +447,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       // relationQuery.objectListReference is a queryContextReference
       // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList", selectedInstancesUuidIndex)
       let otherList: Record<string, any> | undefined = undefined
-      otherList = ((query.contextResults[
+      otherList = (((query.contextResults ?? {})[
         relationQuery.objectListReference
       ]) ?? {});
       if (otherList) {
@@ -507,7 +507,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
               relationQuery.applyTransformer,
               "value",
               defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
-              query.queryParams,
+              query.queryParams ?? {},
               {...query.contextResults, referenceObject, foreignKeyObject: selectedInstance} // newFetchedData
             );
 
@@ -998,10 +998,10 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
   const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application]?? "DEPLOYMENT_UUID_NOT_FOUND";
   const result = innerSelectDomainElementFromExtractorOrCombiner(
     state,
-    foreignKeyParams.extractor.contextResults,
-    foreignKeyParams.extractor.pageParams,
+    foreignKeyParams.extractor.contextResults ?? {},
+    foreignKeyParams.extractor.pageParams ?? {},
     modelEnvironment,
-    foreignKeyParams.extractor.queryParams,
+    foreignKeyParams.extractor.queryParams ?? {},
     localSelectorMap as any,
     foreignKeyParams.extractor.application,
     applicationDeploymentMap,
@@ -1052,12 +1052,12 @@ export const runQuery = <StateType>(
     let result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
-      extractorParams.extractor.pageParams,
+      extractorParams.extractor.pageParams ?? {},
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...extractorParams.extractor.pageParams,
-        ...extractorParams.extractor.queryParams,
+        ...extractorParams.extractor.pageParams ?? {},
+        ...extractorParams.extractor.queryParams ?? {},
       },
       localSelectorMap as any,
       extractorParams.extractor.application,
@@ -1107,11 +1107,11 @@ export const runQuery = <StateType>(
     let result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
-      extractorParams.extractor.pageParams,
+      extractorParams.extractor.pageParams ?? {},
       modelEnvironment,
       {
-        ...extractorParams.extractor.pageParams,
-        ...extractorParams.extractor.queryParams,
+        ...extractorParams.extractor.pageParams ?? {},
+        ...extractorParams.extractor.queryParams ?? {},
       },
       localSelectorMap as any,
       extractorParams.extractor.application,
@@ -1141,8 +1141,8 @@ export const runQuery = <StateType>(
       transformerForBuildPlusRuntime[1],
       modelEnvironment,
       {
-        ...extractorParams.extractor.pageParams,
-        ...extractorParams.extractor.queryParams,
+        ...extractorParams.extractor.pageParams ?? {},
+        ...extractorParams.extractor.queryParams ?? {},
       },
       context
     );

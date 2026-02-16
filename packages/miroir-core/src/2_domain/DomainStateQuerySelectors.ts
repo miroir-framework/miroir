@@ -364,8 +364,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         },
         "value", // TODO: not consistent with "runtime" evaluation, this has no influence on the result of "runtime" evaluations.
         modelEnvironment,
-        foreignKeyParams.extractor.queryParams,
-        foreignKeyParams.extractor.contextResults
+        foreignKeyParams.extractor.queryParams ?? {},
+        foreignKeyParams.extractor.contextResults ?? {}
       );
 
       if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
@@ -443,8 +443,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           querySelectorParams.applyTransformer,
           "value",
           modelEnvironment,
-          foreignKeyParams.extractor.queryParams,
-          { ...foreignKeyParams.extractor.contextResults, referenceObject, foreignKeyObject: result }
+          foreignKeyParams.extractor.queryParams ?? {},
+          { ...(foreignKeyParams.extractor.contextResults ?? {}), referenceObject, foreignKeyObject: result }
         );
         // log.info(
         //   "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, after applyTransformer",
@@ -526,7 +526,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         querySelectorParams.applyTransformer,
         "value",
         modelEnvironment,
-        foreignKeyParams.extractor.queryParams,
+        foreignKeyParams.extractor.queryParams ?? {},
         {
           ...foreignKeyParams.extractor.contextResults,
           foreignKeyObjects,

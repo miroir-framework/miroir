@@ -421,10 +421,10 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
   // const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
 
   const result = asyncInnerSelectElementFromQuery(
-    foreignKeyParams.extractor.contextResults,
-    foreignKeyParams.extractor.pageParams,
+    foreignKeyParams.extractor.contextResults ?? {},
+    foreignKeyParams.extractor.pageParams ?? {},
     modelEnvironment,
-    foreignKeyParams.extractor.queryParams,
+    foreignKeyParams.extractor.queryParams ?? {},
     localSelectorMap as any,
     foreignKeyParams.extractor.application,
     applicationDeploymentMap,
@@ -509,12 +509,12 @@ export const asyncRunQuery = async (
   for (const [key, extractor] of Object.entries(query.extractor.extractors ?? {})) {
     const result = await asyncInnerSelectElementFromQuery(
       context,
-      query.extractor.pageParams,
+      query.extractor.pageParams ?? {},
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...query.extractor.pageParams,
-        ...query.extractor.queryParams,
+        ...query.extractor.pageParams ?? {},
+        ...query.extractor.queryParams ?? {},
       },
       localSelectorMap as any,
       query.extractor.application,
@@ -539,12 +539,12 @@ export const asyncRunQuery = async (
   for (const [key, combiner] of Object.entries(query.extractor.combiners ?? {})) {
     const result = await asyncInnerSelectElementFromQuery(
       context,
-      query.extractor.pageParams,
+      query.extractor.pageParams ?? {},
       modelEnvironment,
       {
         // ...modelEnvironment,
-        ...query.extractor.pageParams,
-        ...query.extractor.queryParams,
+        ...query.extractor.pageParams ?? {},
+        ...query.extractor.queryParams ?? {},
       },
       localSelectorMap as any,
       query.extractor.application,
@@ -564,8 +564,8 @@ export const asyncRunQuery = async (
         transformer[1],
         modelEnvironment,
         {
-          ...query.extractor.pageParams,
-          ...query.extractor.queryParams,
+          ...query.extractor.pageParams ?? {},
+          ...query.extractor.queryParams ?? {},
         },
         context,
         query.extractor.extractors ?? ({} as any)

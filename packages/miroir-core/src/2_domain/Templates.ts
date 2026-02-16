@@ -320,7 +320,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     Object.entries(queryTemplate.extractorTemplates ?? {}).map(
       (e: [string, ExtractorOrCombinerTemplate]) => [
         e[0],
-        resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
+        resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults ?? {}), // TODO: generalize to ExtractorOrCombiner & check for failure!
       ]
     )
   );
@@ -342,7 +342,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     Object.entries(queryTemplate.combinerTemplates ?? {}).map(
       (e: [string, ExtractorOrCombinerTemplate]) => [
         e[0],
-        resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
+        resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults ?? {}), // TODO: generalize to ExtractorOrCombiner & check for failure!
       ]
     )
   );
@@ -418,13 +418,13 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
     boxedExtractorTemplateReturningObjectOrObjectList.select,
     modelEnvironment,
     params,
-    boxedExtractorTemplateReturningObjectOrObjectList.contextResults
+    boxedExtractorTemplateReturningObjectOrObjectList.contextResults ?? {}
   ) as any;
   // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converted extractorTemplates, result:", select);
   return {
     pageParams: boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
     queryParams: boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
-    contextResults: boxedExtractorTemplateReturningObjectOrObjectList.contextResults,
+    contextResults: boxedExtractorTemplateReturningObjectOrObjectList.contextResults ?? {},
     // applicationDeploymentMap: boxedExtractorTemplateReturningObjectOrObjectList.applicationDeploymentMap,
     application: boxedExtractorTemplateReturningObjectOrObjectList.application,
     // deploymentUuid: boxedExtractorTemplateReturningObjectOrObjectList.deploymentUuid,

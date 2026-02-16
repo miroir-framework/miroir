@@ -113,8 +113,8 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
         "value",
         // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
         modelEnvironment,
-        foreignKeyParams.extractor.queryParams,
-        foreignKeyParams.extractor.contextResults
+        foreignKeyParams.extractor.queryParams ?? {},
+        foreignKeyParams.extractor.contextResults ?? {}
       );
 
       if (referenceObject.elementType == "failure") {
@@ -132,9 +132,9 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           "referenceObject",
           referenceObject,
           "queryParams",
-          JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams), undefined, 2),
+          JSON.stringify(Object.keys(foreignKeyParams.extractor.queryParams ?? {}), undefined, 2),
           "######### contextResults",
-          JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults), undefined, 2)
+          JSON.stringify(Object.keys(foreignKeyParams.extractor.contextResults ?? {}), undefined, 2)
         );
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",
@@ -201,7 +201,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           "value",
           // {...modelEnvironment, ...foreignKeyParams.extractor.queryParams},
           modelEnvironment,
-          foreignKeyParams.extractor.queryParams,
+          foreignKeyParams.extractor.queryParams ?? {},
           {
             ...foreignKeyParams.extractor.contextResults,
             referenceObject: actualReferenceObject,

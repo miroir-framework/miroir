@@ -340,8 +340,8 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
           "value",
           // {...modelEnvironment, ...foreignKeyParams.query.queryParams},
           modelEnvironment,
-          foreignKeyParams.query.queryParams,
-          foreignKeyParams.query.contextResults
+          foreignKeyParams.query.queryParams ?? {},
+          foreignKeyParams.query.contextResults ?? {}
         );
 
   log.info(

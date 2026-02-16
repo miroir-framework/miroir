@@ -15607,26 +15607,46 @@ export const miroirFundamentalJzodSchema = {
             "type": "uuid",
             "tag": {
               "value": {
+                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
-                "editable": false
+                "foreignKeyParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "initializeTo": {
+                  "initializeToType": "transformer",
+                  "transformer": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "applicationUuid"
+                    ]
+                  }
+                },
+                "display": {
+                  "editable": false
+                }
               }
             }
           },
           "pageParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "queryParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "contextResults": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
@@ -16708,7 +16728,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -16756,7 +16776,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -16804,7 +16824,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -16906,7 +16926,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -16975,7 +16995,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -17030,7 +17050,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -17142,7 +17162,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -17238,7 +17258,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -17313,7 +17333,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -17399,7 +17419,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17508,7 +17528,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17563,7 +17583,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17618,7 +17638,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17673,7 +17693,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17742,7 +17762,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17797,7 +17817,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17909,7 +17929,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -17991,7 +18011,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -18087,7 +18107,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -18153,7 +18173,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -18209,7 +18229,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -18281,7 +18301,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -18466,7 +18486,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -18550,7 +18570,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -18671,7 +18691,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -18856,7 +18876,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -18939,7 +18959,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19023,7 +19043,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19137,7 +19157,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19210,7 +19230,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "UUID of Application to query",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19304,7 +19324,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID to query",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19390,7 +19410,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19443,7 +19463,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19498,7 +19518,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": false,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -19604,7 +19624,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19667,7 +19687,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19720,7 +19740,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19786,7 +19806,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19842,7 +19862,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -19974,7 +19994,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20079,7 +20099,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20184,7 +20204,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20289,7 +20309,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20394,7 +20414,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20499,7 +20519,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20604,7 +20624,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20709,7 +20729,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20820,7 +20840,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -20925,7 +20945,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -21030,7 +21050,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -21141,7 +21161,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -21246,7 +21266,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -21351,7 +21371,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -21456,7 +21476,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -21564,7 +21584,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -21651,7 +21671,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -21749,7 +21769,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -21819,7 +21839,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -21893,18 +21913,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "referencePath": [
-                          "applicationUuid"
-                        ]
-                      }
                     },
                     "display": {
                       "editable": false
@@ -21977,7 +21988,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -22649,7 +22660,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -23355,7 +23366,7 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                   "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                   "targetEntityOrderInstancesBy": "name"
                 },
@@ -35765,7 +35776,7 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -35789,7 +35800,7 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -46789,9 +46800,26 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
+                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
-                "editable": false,
+                "foreignKeyParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "initializeTo": {
+                  "initializeToType": "transformer",
+                  "transformer": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "applicationUuid"
+                    ]
+                  }
+                },
+                "display": {
+                  "editable": false
+                },
                 "isTemplate": true
               }
             },
@@ -46804,9 +46832,26 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
+                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
-                    "editable": false
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -46821,18 +46866,21 @@ export const miroirFundamentalJzodSchema = {
           },
           "pageParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "queryParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "contextResults": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
@@ -47352,7 +47400,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -47644,7 +47692,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -47935,7 +47983,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48020,7 +48068,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48106,7 +48154,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48248,7 +48296,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48323,7 +48371,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "UUID of Application to query",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48419,7 +48467,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID to query",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48507,7 +48555,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48529,7 +48577,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -48649,7 +48697,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48671,7 +48719,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -48736,7 +48784,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48758,7 +48806,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -48823,7 +48871,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48845,7 +48893,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -48910,7 +48958,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -48932,7 +48980,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -49012,7 +49060,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -49034,7 +49082,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -49099,7 +49147,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -49121,7 +49169,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -49243,7 +49291,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -49265,7 +49313,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -49357,7 +49405,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -49379,7 +49427,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -49533,7 +49581,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -49555,7 +49603,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -49718,7 +49766,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -50009,7 +50057,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -50095,7 +50143,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -50455,18 +50503,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "referencePath": [
-                          "applicationUuid"
-                        ]
-                      }
                     },
                     "display": {
                       "editable": false
@@ -50487,18 +50526,9 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "initializeTo": {
-                          "initializeToType": "transformer",
-                          "transformer": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": [
-                              "applicationUuid"
-                            ]
-                          }
                         },
                         "display": {
                           "editable": false
@@ -50580,7 +50610,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -50612,7 +50642,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -50695,7 +50725,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -50727,7 +50757,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -51677,7 +51707,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -51740,7 +51770,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -51793,7 +51823,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -51859,7 +51889,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -51915,7 +51945,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -52333,7 +52363,7 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                   "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                   "targetEntityOrderInstancesBy": "name"
                 },
@@ -54909,9 +54939,26 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
+                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
-                "editable": false,
+                "foreignKeyParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "initializeTo": {
+                  "initializeToType": "transformer",
+                  "transformer": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "applicationUuid"
+                    ]
+                  }
+                },
+                "display": {
+                  "editable": false
+                },
                 "isTemplate": true
               }
             },
@@ -54924,9 +54971,26 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
+                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
-                    "editable": false
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -54941,18 +55005,21 @@ export const miroirFundamentalJzodSchema = {
           },
           "pageParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "queryParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "contextResults": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
@@ -61780,9 +61847,26 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
+                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
-                "editable": false,
+                "foreignKeyParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "initializeTo": {
+                  "initializeToType": "transformer",
+                  "transformer": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "applicationUuid"
+                    ]
+                  }
+                },
+                "display": {
+                  "editable": false
+                },
                 "isTemplate": true
               }
             },
@@ -61795,9 +61879,26 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
+                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
-                    "editable": false
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -61812,18 +61913,21 @@ export const miroirFundamentalJzodSchema = {
           },
           "pageParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "queryParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "contextResults": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
@@ -62343,7 +62447,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -62635,7 +62739,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -62926,7 +63030,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63011,7 +63115,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63097,7 +63201,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63239,7 +63343,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63314,7 +63418,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "UUID of Application to query",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63410,7 +63514,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID to query",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63498,7 +63602,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63520,7 +63624,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -63640,7 +63744,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63662,7 +63766,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -63727,7 +63831,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63749,7 +63853,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -63814,7 +63918,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63836,7 +63940,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -63901,7 +64005,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -63923,7 +64027,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -64003,7 +64107,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -64025,7 +64129,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -64090,7 +64194,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -64112,7 +64216,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -64234,7 +64338,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -64256,7 +64360,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -64348,7 +64452,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -64370,7 +64474,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -64524,7 +64628,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -64546,7 +64650,7 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Application",
                             "foreignKeyParams": {
-                              "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
                             },
@@ -64709,7 +64813,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID where instances will be created",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -65000,7 +65104,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -65086,7 +65190,7 @@ export const miroirFundamentalJzodSchema = {
                         "defaultLabel": "Application",
                         "description": "Application UUID",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -65446,18 +65550,9 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "initializeTo": {
-                      "initializeToType": "transformer",
-                      "transformer": {
-                        "transformerType": "getFromParameters",
-                        "referencePath": [
-                          "applicationUuid"
-                        ]
-                      }
                     },
                     "display": {
                       "editable": false
@@ -65478,18 +65573,9 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "initializeTo": {
-                          "initializeToType": "transformer",
-                          "transformer": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": [
-                              "applicationUuid"
-                            ]
-                          }
                         },
                         "display": {
                           "editable": false
@@ -65571,7 +65657,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -65603,7 +65689,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -65686,7 +65772,7 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
                     "foreignKeyParams": {
-                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
                     },
@@ -65718,7 +65804,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -66668,7 +66754,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -66731,7 +66817,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -66784,7 +66870,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -66850,7 +66936,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -66906,7 +66992,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -67324,7 +67410,7 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "defaultLabel": "Application",
                 "foreignKeyParams": {
-                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                   "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                   "targetEntityOrderInstancesBy": "name"
                 },
@@ -69900,9 +69986,26 @@ export const miroirFundamentalJzodSchema = {
             "type": "union",
             "tag": {
               "value": {
+                "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Application",
-                "editable": false,
+                "foreignKeyParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "initializeTo": {
+                  "initializeToType": "transformer",
+                  "transformer": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "applicationUuid"
+                    ]
+                  }
+                },
+                "display": {
+                  "editable": false
+                },
                 "isTemplate": true
               }
             },
@@ -69915,9 +70018,26 @@ export const miroirFundamentalJzodSchema = {
                 "type": "uuid",
                 "tag": {
                   "value": {
+                    "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Application",
-                    "editable": false
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "initializeTo": {
+                      "initializeToType": "transformer",
+                      "transformer": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "applicationUuid"
+                        ]
+                      }
+                    },
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -69932,18 +70052,21 @@ export const miroirFundamentalJzodSchema = {
           },
           "pageParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "queryParams": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
           },
           "contextResults": {
             "type": "record",
+            "optional": true,
             "definition": {
               "type": "any"
             }
@@ -75242,7 +75365,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
@@ -75557,7 +75680,7 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": false,
                         "defaultLabel": "Application",
                         "foreignKeyParams": {
-                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
                         },
