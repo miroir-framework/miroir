@@ -292,12 +292,14 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
     // width: container && spacing > 0 ? `calc(100% + ${spacing * 8}px)` : undefined,
     // flex: item ? '1 1 0%' : undefined,
     // minWidth: '100%',
-    minHeight: '100%',
+    height: '100%',
     // padding: item ? `${spacing * 4}px` : undefined,
     // padding: padding !== undefined ? (typeof padding === 'number' ? `${padding}px` : padding) : undefined,
     // minWidth: zeroMinWidth ? 0 : undefined,
     // minHeight,
     backgroundColor,
+    // overflowX: 'scroll',
+    // overflowY: 'scroll',
     
     // Basic responsive grid system
     ...(xs && {
@@ -442,6 +444,7 @@ export const ThemedIndentedContainer: React.FC<ThemedComponentProps & {
   );
 };
 
+// #################################################################################################
 export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -497,13 +500,15 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
     display: 'flex',
     flexDirection: 'column' as const,
     flexGrow: 1,
+    
     // overflow: 'hidden', // Prevent main panel from scrolling, let content handle it
     minWidth: 0, // Allow shrinking
-    height: '100%',
+    // height: '100%',
     // padding: currentTheme.spacing.md,
     // width: `calc(100% - ${sidebarOpen ? sidebarWidth : 0}px - ${outlineOpen ? outlineWidth : 0}px)`,
     boxSizing: 'border-box' as const,
-    // minHeight: 0, // Allow shrinking
+    minHeight: 100,
+    // overflow: "scroll", 
     marginTop: 0, // Fix wide gap below the appbar
     paddingTop: 0,
     paddingLeft: 0,
@@ -544,8 +549,10 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
     // <div css={responsiveStyles} className={className} style={style}>
     //   {children}
     // </div>
-    <main css={responsiveStyles} className={className} style={style}>
-      {children}
-    </main>
+    <ThemedScrollableContent>
+      <main css={responsiveStyles} className={className} style={style}>
+        {children}
+      </main>
+    </ThemedScrollableContent>
   );
 };

@@ -753,7 +753,7 @@ export const RootComponent = (props: RootComponentProps) => {
         onThemeChange={handleAppThemeChange}
       >
         <ReportPageContextProvider>
-          <div style={{ display: "flex", flexDirection: "row", minHeight: "100vh" }}>
+          <div style={{ display: "flex", flexDirection: "row", height: "100vh", overflow: "hidden" }}>
             <Sidebar
               open={sidebarIsOpen}
               setOpen={setSidebarStatus}

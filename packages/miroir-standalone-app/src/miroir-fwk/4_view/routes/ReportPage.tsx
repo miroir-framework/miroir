@@ -84,13 +84,13 @@ export const ReportPage = () => {
         <PageContainer
           withSidebar={true}
           withDocumentOutline={true} // ReportPage has document outline
-          customSx={{
-            // ReportPage specific styling
-            "& .miroir-table-container": {
-              maxWidth: "100%",
-              overflow: "hidden",
-            },
-          }}
+          // customSx={{
+          //   // ReportPage specific styling
+          //   "& .miroir-table-container": {
+          //     maxWidth: "100%",
+          //     overflow: "hidden",
+          //   },
+          // }}
         >
           <ThemedOnScreenDebug
             label={`ReportPage Params`}

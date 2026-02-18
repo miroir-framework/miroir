@@ -63,7 +63,7 @@ export const useStyles = makeStyles((theme:any) => ({
   content: {
     flexGrow: 1,
     height: '100vh',
-    overflow: 'hidden',
+    // overflow: 'hidden',
   },
   container: {
     paddingTop: theme.spacing(4),
@@ -72,7 +72,7 @@ export const useStyles = makeStyles((theme:any) => ({
   paper: {
     padding: theme.spacing(2),
     display: 'flex',
-    overflow: 'hidden',
+    // overflow: 'hidden',
     flexDirection: 'column',
   },
   fixedHeight: {

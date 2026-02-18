@@ -7,7 +7,7 @@
 
 /* Root elements - allow scrolling and show scrollbars when needed */
 html, body {
-  margin: 0;
+  margin: 0!important;
   padding: 0;
   overflow-y: auto; /* Allow scrolling when content overflows */
 }

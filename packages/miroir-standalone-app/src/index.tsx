@@ -217,7 +217,7 @@ export const themeParams = {
     content: {
       flexGrow: 1,
       // height: '100vh',
-      overflowY: 'auto', // Allow scrolling when content overflows
+      // overflowY: 'auto', // Allow scrolling when content overflows
     },
     MuiList: {
       defaultProps:{
