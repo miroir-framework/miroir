@@ -51,20 +51,6 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 9,
-            "display": { "editable": false },
-            "defaultLabel": "AdminApplication",
-            "foreignKeyParams": {
-              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-              "targetEntityOrderInstancesBy": "name"
-            }
-          }
-        }
-      },
-      "selfApplication": {
-        "type": "uuid",
-        "tag": {
-          "value": {
             "display": { "editable": false },
             "defaultLabel": "SelfApplication",
             "foreignKeyParams": {

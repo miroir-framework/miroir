@@ -141,18 +141,34 @@
                   "optional": true,
                   "definition": {
                     "targetApplicationUuid": {
-                      "type": "uuid",
+                      "type": "union",
                       "optional": true,
-                      "tag": {
-                        "value": {
-                          "defaultLabel": "Foreign Key Application",
-                          "description": "The application where the Foreign Key entity is located."
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Foreign Key Application",
+                              "description": "The application where the Foreign Key entity is located."
+                            }
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
                         }
-                      }
-                    },
-                    "targetDeploymentUuid": {
-                      "type": "uuid",
-                      "optional": true
+                      ]
                     },
                     "targetEntityApplicationSection": {
                       "type": "enum",
@@ -553,18 +569,34 @@
                     "optional": true,
                     "definition": {
                       "targetApplicationUuid": {
-                        "type": "uuid",
+                        "type": "union",
                         "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Application",
-                            "description": "The application where the Foreign Key entity is located."
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Foreign Key Application",
+                                "description": "The application where the Foreign Key entity is located."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                "canBeTemplate": false
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            }
                           }
-                        }
-                      },
-                      "targetDeploymentUuid": {
-                        "type": "uuid",
-                        "optional": true
+                        ]
                       },
                       "targetEntityApplicationSection": {
                         "type": "enum",

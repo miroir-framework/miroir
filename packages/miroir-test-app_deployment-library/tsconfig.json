@@ -13,7 +13,8 @@
     "index.ts",
     "assets/**/*.json",
     "scripts/**/*.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules",

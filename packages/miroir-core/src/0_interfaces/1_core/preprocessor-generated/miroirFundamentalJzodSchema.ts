@@ -141,18 +141,34 @@ export const miroirFundamentalJzodSchema = {
                   "optional": true,
                   "definition": {
                     "targetApplicationUuid": {
-                      "type": "uuid",
+                      "type": "union",
                       "optional": true,
-                      "tag": {
-                        "value": {
-                          "defaultLabel": "Foreign Key Application",
-                          "description": "The application where the Foreign Key entity is located."
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Foreign Key Application",
+                              "description": "The application where the Foreign Key entity is located."
+                            }
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
                         }
-                      }
-                    },
-                    "targetDeploymentUuid": {
-                      "type": "uuid",
-                      "optional": true
+                      ]
                     },
                     "targetEntityApplicationSection": {
                       "type": "enum",
@@ -566,18 +582,35 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "targetApplicationUuid": {
-                        "type": "uuid",
+                        "type": "union",
                         "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Application",
-                            "description": "The application where the Foreign Key entity is located."
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Foreign Key Application",
+                                "description": "The application where the Foreign Key entity is located."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                "canBeTemplate": false
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
                           }
-                        }
-                      },
-                      "targetDeploymentUuid": {
-                        "type": "uuid",
-                        "optional": true
+                        ]
                       },
                       "targetEntityApplicationSection": {
                         "type": "enum",
@@ -8406,7 +8439,6 @@ export const miroirFundamentalJzodSchema = {
                 },
                 "defaultLabel": "Branch",
                 "description": "The Branch of this SelfApplication Version",
-                "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                 "foreignKeyParams": {
                   "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                   "targetEntityOrderInstancesBy": "name"
@@ -8425,7 +8457,6 @@ export const miroirFundamentalJzodSchema = {
                 },
                 "defaultLabel": "Previous SelfApplication Version",
                 "description": "Previous version of the selfApplication on this Branch.",
-                "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                 "foreignKeyParams": {
                   "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                   "targetEntityOrderInstancesBy": "name"
@@ -9601,9 +9632,13 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 9,
                 "defaultLabel": "SelfApplication",
-                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                "description": "The SelfApplication this Test belongs to",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
@@ -11531,7 +11566,6 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Uuid",
-                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     "foreignKeyParams": {
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       "targetEntityOrderInstancesBy": "name"
@@ -12302,7 +12336,6 @@ export const miroirFundamentalJzodSchema = {
                   "editable": true
                 },
                 "defaultLabel": "SelfApplication",
-                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "foreignKeyParams": {
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                   "targetEntityOrderInstancesBy": "name"
@@ -12764,7 +12797,6 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Uuid",
-                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                             "foreignKeyParams": {
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
@@ -13795,7 +13827,6 @@ export const miroirFundamentalJzodSchema = {
                   "editable": false
                 },
                 "defaultLabel": "Previous Commit",
-                "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
                 "foreignKeyParams": {
                   "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
                   "targetEntityOrderInstancesBy": "name"
@@ -16369,10 +16400,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 5,
-                "defaultLabel": "Name",
-                "display": {
-                  "editable": true
-                }
+                "defaultLabel": "Name"
               }
             }
           },
@@ -16381,10 +16409,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "id": 6,
-                "defaultLabel": "Default Label",
-                "display": {
-                  "editable": true
-                }
+                "defaultLabel": "Default Label"
               }
             }
           },
@@ -16393,10 +16418,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "defaultLabel": "Description",
-                "display": {
-                  "editable": true
-                }
+                "defaultLabel": "Description"
               }
             }
           },
@@ -16415,10 +16437,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "union",
                     "tag": {
                       "value": {
-                        "defaultLabel": "formMLSchema",
-                        "display": {
-                          "editable": true
-                        }
+                        "defaultLabel": "formMLSchema"
                       }
                     },
                     "discriminator": "formMLSchemaType",
@@ -16491,7 +16510,6 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "defaultLabel": "Endpoint",
-                        "editable": true,
                         "foreignKeyParams": {
                           "targetApplicationUuid": {
                             "transformerType": "getFromParameters",
@@ -22649,12 +22667,15 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "type": "literal",
+                        "transformerType": "createObject",
                         "definition": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": [
-                            "applicationUuid"
-                          ]
+                          "type": "literal",
+                          "definition": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         }
                       }
                     }
@@ -22982,12 +23003,15 @@ export const miroirFundamentalJzodSchema = {
                                 "initializeTo": {
                                   "initializeToType": "transformer",
                                   "transformer": {
-                                    "type": "literal",
+                                    "transformerType": "createObject",
                                     "definition": {
-                                      "transformerType": "getFromParameters",
-                                      "referencePath": [
-                                        "applicationUuid"
-                                      ]
+                                      "type": "literal",
+                                      "definition": {
+                                        "transformerType": "getFromParameters",
+                                        "referencePath": [
+                                          "applicationUuid"
+                                        ]
+                                      }
                                     }
                                   }
                                 }
@@ -23517,14 +23541,12 @@ export const miroirFundamentalJzodSchema = {
                         "targetApplicationUuid": {
                           "type": "union",
                           "optional": true,
-                          "tag": {
-                            "value": {
-                              "defaultLabel": "Foreign Key Application",
-                              "description": "The application where the Foreign Key entity is located.",
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": "transformerType",
+                          "discriminator": [
+                            [
+                              "transformerType",
+                              "transformerType"
+                            ]
+                          ],
                           "definition": [
                             {
                               "type": "uuid",
@@ -23538,21 +23560,16 @@ export const miroirFundamentalJzodSchema = {
                             },
                             {
                               "type": "schemaReference",
+                              "tag": {
+                                "value": {
+                                  "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                  "canBeTemplate": false
+                                }
+                              },
                               "definition": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuildCarryOnObject"
+                                "relativePath": "transformerForBuildPlusRuntime"
                               }
-                            }
-                          ]
-                        },
-                        "targetDeploymentUuid": {
-                          "type": "union",
-                          "optional": true,
-                          "discriminator": "transformerType",
-                          "definition": [
-                            {
-                              "type": "uuid",
-                              "optional": true
                             },
                             {
                               "type": "schemaReference",
@@ -24799,14 +24816,12 @@ export const miroirFundamentalJzodSchema = {
                                   "targetApplicationUuid": {
                                     "type": "union",
                                     "optional": true,
-                                    "tag": {
-                                      "value": {
-                                        "defaultLabel": "Foreign Key Application",
-                                        "description": "The application where the Foreign Key entity is located.",
-                                        "isTemplate": true
-                                      }
-                                    },
-                                    "discriminator": "transformerType",
+                                    "discriminator": [
+                                      [
+                                        "transformerType",
+                                        "transformerType"
+                                      ]
+                                    ],
                                     "definition": [
                                       {
                                         "type": "uuid",
@@ -24820,21 +24835,17 @@ export const miroirFundamentalJzodSchema = {
                                       },
                                       {
                                         "type": "schemaReference",
+                                        "tag": {
+                                          "value": {
+                                            "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                            "canBeTemplate": false
+                                          }
+                                        },
                                         "definition": {
                                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                          "relativePath": "transformerForBuildCarryOnObject"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  "targetDeploymentUuid": {
-                                    "type": "union",
-                                    "optional": true,
-                                    "discriminator": "transformerType",
-                                    "definition": [
-                                      {
-                                        "type": "uuid",
-                                        "optional": true
+                                          "relativePath": "transformerForBuildPlusRuntime"
+                                        },
+                                        "context": {}
                                       },
                                       {
                                         "type": "schemaReference",
@@ -28388,14 +28399,12 @@ export const miroirFundamentalJzodSchema = {
                         "targetApplicationUuid": {
                           "type": "union",
                           "optional": true,
-                          "tag": {
-                            "value": {
-                              "defaultLabel": "Foreign Key Application",
-                              "description": "The application where the Foreign Key entity is located.",
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": "transformerType",
+                          "discriminator": [
+                            [
+                              "transformerType",
+                              "transformerType"
+                            ]
+                          ],
                           "definition": [
                             {
                               "type": "uuid",
@@ -28409,21 +28418,16 @@ export const miroirFundamentalJzodSchema = {
                             },
                             {
                               "type": "schemaReference",
+                              "tag": {
+                                "value": {
+                                  "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                  "canBeTemplate": false
+                                }
+                              },
                               "definition": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "transformerForBuildCarryOnObject"
+                                "relativePath": "transformerForBuildPlusRuntime"
                               }
-                            }
-                          ]
-                        },
-                        "targetDeploymentUuid": {
-                          "type": "union",
-                          "optional": true,
-                          "discriminator": "transformerType",
-                          "definition": [
-                            {
-                              "type": "uuid",
-                              "optional": true
                             },
                             {
                               "type": "schemaReference",
@@ -29631,14 +29635,12 @@ export const miroirFundamentalJzodSchema = {
                             "targetApplicationUuid": {
                               "type": "union",
                               "optional": true,
-                              "tag": {
-                                "value": {
-                                  "defaultLabel": "Foreign Key Application",
-                                  "description": "The application where the Foreign Key entity is located.",
-                                  "isTemplate": true
-                                }
-                              },
-                              "discriminator": "transformerType",
+                              "discriminator": [
+                                [
+                                  "transformerType",
+                                  "transformerType"
+                                ]
+                              ],
                               "definition": [
                                 {
                                   "type": "uuid",
@@ -29652,21 +29654,16 @@ export const miroirFundamentalJzodSchema = {
                                 },
                                 {
                                   "type": "schemaReference",
+                                  "tag": {
+                                    "value": {
+                                      "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                      "canBeTemplate": false
+                                    }
+                                  },
                                   "definition": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "transformerForBuildCarryOnObject"
+                                    "relativePath": "transformerForBuildPlusRuntime"
                                   }
-                                }
-                              ]
-                            },
-                            "targetDeploymentUuid": {
-                              "type": "union",
-                              "optional": true,
-                              "discriminator": "transformerType",
-                              "definition": [
-                                {
-                                  "type": "uuid",
-                                  "optional": true
                                 },
                                 {
                                   "type": "schemaReference",
@@ -30913,14 +30910,12 @@ export const miroirFundamentalJzodSchema = {
                                       "targetApplicationUuid": {
                                         "type": "union",
                                         "optional": true,
-                                        "tag": {
-                                          "value": {
-                                            "defaultLabel": "Foreign Key Application",
-                                            "description": "The application where the Foreign Key entity is located.",
-                                            "isTemplate": true
-                                          }
-                                        },
-                                        "discriminator": "transformerType",
+                                        "discriminator": [
+                                          [
+                                            "transformerType",
+                                            "transformerType"
+                                          ]
+                                        ],
                                         "definition": [
                                           {
                                             "type": "uuid",
@@ -30934,21 +30929,17 @@ export const miroirFundamentalJzodSchema = {
                                           },
                                           {
                                             "type": "schemaReference",
+                                            "tag": {
+                                              "value": {
+                                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                                "canBeTemplate": false
+                                              }
+                                            },
                                             "definition": {
                                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                              "relativePath": "transformerForBuildCarryOnObject"
-                                            }
-                                          }
-                                        ]
-                                      },
-                                      "targetDeploymentUuid": {
-                                        "type": "union",
-                                        "optional": true,
-                                        "discriminator": "transformerType",
-                                        "definition": [
-                                          {
-                                            "type": "uuid",
-                                            "optional": true
+                                              "relativePath": "transformerForBuildPlusRuntime"
+                                            },
+                                            "context": {}
                                           },
                                           {
                                             "type": "schemaReference",
@@ -33894,7 +33885,6 @@ export const miroirFundamentalJzodSchema = {
                     },
                     "defaultLabel": "Branch",
                     "description": "The Branch of this SelfApplication Version",
-                    "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                     "foreignKeyParams": {
                       "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                       "targetEntityOrderInstancesBy": "name"
@@ -33914,7 +33904,6 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "defaultLabel": "Branch",
                         "description": "The Branch of this SelfApplication Version",
-                        "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                         "foreignKeyParams": {
                           "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                           "targetEntityOrderInstancesBy": "name"
@@ -33942,7 +33931,6 @@ export const miroirFundamentalJzodSchema = {
                     },
                     "defaultLabel": "Previous SelfApplication Version",
                     "description": "Previous version of the selfApplication on this Branch.",
-                    "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                     "foreignKeyParams": {
                       "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                       "targetEntityOrderInstancesBy": "name"
@@ -33963,7 +33951,6 @@ export const miroirFundamentalJzodSchema = {
                         },
                         "defaultLabel": "Previous SelfApplication Version",
                         "description": "Previous version of the selfApplication on this Branch.",
-                        "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                         "foreignKeyParams": {
                           "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                           "targetEntityOrderInstancesBy": "name"
@@ -35514,12 +35501,15 @@ export const miroirFundamentalJzodSchema = {
                                             "initializeTo": {
                                               "initializeToType": "transformer",
                                               "transformer": {
-                                                "type": "literal",
+                                                "transformerType": "createObject",
                                                 "definition": {
-                                                  "transformerType": "getFromParameters",
-                                                  "referencePath": [
-                                                    "applicationUuid"
-                                                  ]
+                                                  "type": "literal",
+                                                  "definition": {
+                                                    "transformerType": "getFromParameters",
+                                                    "referencePath": [
+                                                      "applicationUuid"
+                                                    ]
+                                                  }
                                                 }
                                               }
                                             }
@@ -36724,7 +36714,6 @@ export const miroirFundamentalJzodSchema = {
                       "editable": true
                     },
                     "defaultLabel": "SelfApplication",
-                    "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                     "foreignKeyParams": {
                       "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                       "targetEntityOrderInstancesBy": "name"
@@ -36744,7 +36733,6 @@ export const miroirFundamentalJzodSchema = {
                           "editable": true
                         },
                         "defaultLabel": "SelfApplication",
-                        "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "foreignKeyParams": {
                           "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                           "targetEntityOrderInstancesBy": "name"
@@ -37242,7 +37230,6 @@ export const miroirFundamentalJzodSchema = {
                                   "value": {
                                     "id": 2,
                                     "defaultLabel": "Entity Uuid",
-                                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                     "foreignKeyParams": {
                                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                       "targetEntityOrderInstancesBy": "name"
@@ -38577,12 +38564,15 @@ export const miroirFundamentalJzodSchema = {
                             "initializeTo": {
                               "initializeToType": "transformer",
                               "transformer": {
-                                "type": "literal",
+                                "transformerType": "createObject",
                                 "definition": {
-                                  "transformerType": "getFromParameters",
-                                  "referencePath": [
-                                    "applicationUuid"
-                                  ]
+                                  "type": "literal",
+                                  "definition": {
+                                    "transformerType": "getFromParameters",
+                                    "referencePath": [
+                                      "applicationUuid"
+                                    ]
+                                  }
                                 }
                               }
                             },
@@ -38601,12 +38591,15 @@ export const miroirFundamentalJzodSchema = {
                                 "initializeTo": {
                                   "initializeToType": "transformer",
                                   "transformer": {
-                                    "type": "literal",
+                                    "transformerType": "createObject",
                                     "definition": {
-                                      "transformerType": "getFromParameters",
-                                      "referencePath": [
-                                        "applicationUuid"
-                                      ]
+                                      "type": "literal",
+                                      "definition": {
+                                        "transformerType": "getFromParameters",
+                                        "referencePath": [
+                                          "applicationUuid"
+                                        ]
+                                      }
                                     }
                                   }
                                 },
@@ -40755,7 +40748,6 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Uuid",
-                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                             "foreignKeyParams": {
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
@@ -40771,7 +40763,6 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Uuid",
-                                "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "foreignKeyParams": {
                                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                   "targetEntityOrderInstancesBy": "name"
@@ -44686,18 +44677,34 @@ export const miroirFundamentalJzodSchema = {
                   "optional": true,
                   "definition": {
                     "targetApplicationUuid": {
-                      "type": "uuid",
+                      "type": "union",
                       "optional": true,
-                      "tag": {
-                        "value": {
-                          "defaultLabel": "Foreign Key Application",
-                          "description": "The application where the Foreign Key entity is located."
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Foreign Key Application",
+                              "description": "The application where the Foreign Key entity is located."
+                            }
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
                         }
-                      }
-                    },
-                    "targetDeploymentUuid": {
-                      "type": "uuid",
-                      "optional": true
+                      ]
                     },
                     "targetEntityApplicationSection": {
                       "type": "enum",
@@ -45161,18 +45168,35 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "targetApplicationUuid": {
-                        "type": "uuid",
+                        "type": "union",
                         "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Application",
-                            "description": "The application where the Foreign Key entity is located."
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Foreign Key Application",
+                                "description": "The application where the Foreign Key entity is located."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                "canBeTemplate": false
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
                           }
-                        }
-                      },
-                      "targetDeploymentUuid": {
-                        "type": "uuid",
-                        "optional": true
+                        ]
                       },
                       "targetEntityApplicationSection": {
                         "type": "enum",
@@ -52030,12 +52054,15 @@ export const miroirFundamentalJzodSchema = {
                                 "initializeTo": {
                                   "initializeToType": "transformer",
                                   "transformer": {
-                                    "type": "literal",
+                                    "transformerType": "createObject",
                                     "definition": {
-                                      "transformerType": "getFromParameters",
-                                      "referencePath": [
-                                        "applicationUuid"
-                                      ]
+                                      "type": "literal",
+                                      "definition": {
+                                        "transformerType": "getFromParameters",
+                                        "referencePath": [
+                                          "applicationUuid"
+                                        ]
+                                      }
                                     }
                                   }
                                 },
@@ -52517,7 +52544,6 @@ export const miroirFundamentalJzodSchema = {
                   "editable": true
                 },
                 "defaultLabel": "SelfApplication",
-                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "foreignKeyParams": {
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                   "targetEntityOrderInstancesBy": "name"
@@ -52985,7 +53011,6 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Uuid",
-                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                             "foreignKeyParams": {
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
@@ -55558,18 +55583,34 @@ export const miroirFundamentalJzodSchema = {
                   "optional": true,
                   "definition": {
                     "targetApplicationUuid": {
-                      "type": "uuid",
+                      "type": "union",
                       "optional": true,
-                      "tag": {
-                        "value": {
-                          "defaultLabel": "Foreign Key Application",
-                          "description": "The application where the Foreign Key entity is located."
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Foreign Key Application",
+                              "description": "The application where the Foreign Key entity is located."
+                            }
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
                         }
-                      }
-                    },
-                    "targetDeploymentUuid": {
-                      "type": "uuid",
-                      "optional": true
+                      ]
                     },
                     "targetEntityApplicationSection": {
                       "type": "enum",
@@ -56033,18 +56074,35 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "targetApplicationUuid": {
-                        "type": "uuid",
+                        "type": "union",
                         "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Application",
-                            "description": "The application where the Foreign Key entity is located."
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Foreign Key Application",
+                                "description": "The application where the Foreign Key entity is located."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                "canBeTemplate": false
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
                           }
-                        }
-                      },
-                      "targetDeploymentUuid": {
-                        "type": "uuid",
-                        "optional": true
+                        ]
                       },
                       "targetEntityApplicationSection": {
                         "type": "enum",
@@ -56830,12 +56888,15 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "type": "literal",
+                        "transformerType": "createObject",
                         "definition": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": [
-                            "applicationUuid"
-                          ]
+                          "type": "literal",
+                          "definition": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         }
                       }
                     },
@@ -58244,7 +58305,6 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Uuid",
-                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     "foreignKeyParams": {
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       "targetEntityOrderInstancesBy": "name"
@@ -59438,18 +59498,34 @@ export const miroirFundamentalJzodSchema = {
                   "optional": true,
                   "definition": {
                     "targetApplicationUuid": {
-                      "type": "uuid",
+                      "type": "union",
                       "optional": true,
-                      "tag": {
-                        "value": {
-                          "defaultLabel": "Foreign Key Application",
-                          "description": "The application where the Foreign Key entity is located."
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Foreign Key Application",
+                              "description": "The application where the Foreign Key entity is located."
+                            }
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
                         }
-                      }
-                    },
-                    "targetDeploymentUuid": {
-                      "type": "uuid",
-                      "optional": true
+                      ]
                     },
                     "targetEntityApplicationSection": {
                       "type": "enum",
@@ -59913,18 +59989,35 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "targetApplicationUuid": {
-                        "type": "uuid",
+                        "type": "union",
                         "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Application",
-                            "description": "The application where the Foreign Key entity is located."
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Foreign Key Application",
+                                "description": "The application where the Foreign Key entity is located."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                "canBeTemplate": false
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
                           }
-                        }
-                      },
-                      "targetDeploymentUuid": {
-                        "type": "uuid",
-                        "optional": true
+                        ]
                       },
                       "targetEntityApplicationSection": {
                         "type": "enum",
@@ -66782,12 +66875,15 @@ export const miroirFundamentalJzodSchema = {
                                 "initializeTo": {
                                   "initializeToType": "transformer",
                                   "transformer": {
-                                    "type": "literal",
+                                    "transformerType": "createObject",
                                     "definition": {
-                                      "transformerType": "getFromParameters",
-                                      "referencePath": [
-                                        "applicationUuid"
-                                      ]
+                                      "type": "literal",
+                                      "definition": {
+                                        "transformerType": "getFromParameters",
+                                        "referencePath": [
+                                          "applicationUuid"
+                                        ]
+                                      }
                                     }
                                   }
                                 },
@@ -67269,7 +67365,6 @@ export const miroirFundamentalJzodSchema = {
                   "editable": true
                 },
                 "defaultLabel": "SelfApplication",
-                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "foreignKeyParams": {
                   "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                   "targetEntityOrderInstancesBy": "name"
@@ -67737,7 +67832,6 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Uuid",
-                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                             "foreignKeyParams": {
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
@@ -70310,18 +70404,34 @@ export const miroirFundamentalJzodSchema = {
                   "optional": true,
                   "definition": {
                     "targetApplicationUuid": {
-                      "type": "uuid",
+                      "type": "union",
                       "optional": true,
-                      "tag": {
-                        "value": {
-                          "defaultLabel": "Foreign Key Application",
-                          "description": "The application where the Foreign Key entity is located."
+                      "discriminator": "transformerType",
+                      "definition": [
+                        {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Foreign Key Application",
+                              "description": "The application where the Foreign Key entity is located."
+                            }
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                              "canBeTemplate": false
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "transformerForBuildPlusRuntime"
+                          }
                         }
-                      }
-                    },
-                    "targetDeploymentUuid": {
-                      "type": "uuid",
-                      "optional": true
+                      ]
                     },
                     "targetEntityApplicationSection": {
                       "type": "enum",
@@ -70785,18 +70895,35 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "targetApplicationUuid": {
-                        "type": "uuid",
+                        "type": "union",
                         "optional": true,
-                        "tag": {
-                          "value": {
-                            "defaultLabel": "Foreign Key Application",
-                            "description": "The application where the Foreign Key entity is located."
+                        "discriminator": "transformerType",
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Foreign Key Application",
+                                "description": "The application where the Foreign Key entity is located."
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "description": "A transformer that resolves to a uuid indicating the application of the foreign key entity.",
+                                "canBeTemplate": false
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuildPlusRuntime"
+                            },
+                            "context": {}
                           }
-                        }
-                      },
-                      "targetDeploymentUuid": {
-                        "type": "uuid",
-                        "optional": true
+                        ]
                       },
                       "targetEntityApplicationSection": {
                         "type": "enum",
@@ -71582,12 +71709,15 @@ export const miroirFundamentalJzodSchema = {
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
-                        "type": "literal",
+                        "transformerType": "createObject",
                         "definition": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": [
-                            "applicationUuid"
-                          ]
+                          "type": "literal",
+                          "definition": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "applicationUuid"
+                            ]
+                          }
                         }
                       }
                     },
@@ -72996,7 +73126,6 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Uuid",
-                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     "foreignKeyParams": {
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       "targetEntityOrderInstancesBy": "name"

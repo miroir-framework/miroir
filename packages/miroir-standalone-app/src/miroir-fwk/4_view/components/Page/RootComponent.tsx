@@ -799,7 +799,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 sidebarWidth={sidebarWidth}
                 outlineOpen={isOutlineOpen}
                 outlineWidth={outlineWidth}
-                style={{padding: "0"}}
+                style={{padding: "1em"}}
               >
                 {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
                 <ThemedOnScreenDebug

@@ -30,7 +30,9 @@
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
     "build": "tsup",
     "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts",
-    "extract-library-model": "tsx ./scripts/extract-library-model.ts"
+    "extract-library-model": "tsx ./scripts/extract-library-model.ts",
+    "test": "vitest run --poolOptions.threads.singleThread -t",
+    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },
   "devDependencies": {
     "miroir-core": "*",
@@ -41,6 +43,8 @@
     "copyfiles": "^2.4.1",
     "tsup": "^8.3.5",
     "tsx": "^4.19.3",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
   }
 }

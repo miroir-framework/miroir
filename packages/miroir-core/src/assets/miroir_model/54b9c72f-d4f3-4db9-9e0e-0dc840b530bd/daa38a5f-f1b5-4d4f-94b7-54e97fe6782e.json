@@ -76,8 +76,7 @@
         "tag": {
           "value": {
             "id": 5,
-            "defaultLabel": "Name",
-            "display": { "editable": true }
+            "defaultLabel": "Name"
           }
         }
       },
@@ -86,8 +85,7 @@
         "tag": {
           "value": {
             "id": 6,
-            "defaultLabel": "Default Label",
-            "display": { "editable": true }
+            "defaultLabel": "Default Label"
           }
         }
       },
@@ -96,8 +94,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "defaultLabel": "Description",
-            "display": { "editable": true }
+            "defaultLabel": "Description"
           }
         }
       },
@@ -116,8 +113,7 @@
                 "type": "union",
                 "tag": {
                   "value": {
-                    "defaultLabel": "formMLSchema",
-                    "display": { "editable": true }
+                    "defaultLabel": "formMLSchema"
                   }
                 },
                 "discriminator": "formMLSchemaType",
@@ -190,7 +186,6 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Endpoint",
-                    "editable": true,
                     "foreignKeyParams": {
                       "targetApplicationUuid": {
                         "transformerType": "getFromParameters",

@@ -187,10 +187,13 @@
                             "initializeTo": {
                               "initializeToType": "transformer",
                               "transformer": {
-                                "type": "literal",
+                                "transformerType": "createObject",
                                 "definition": {
-                                  "transformerType": "getFromParameters",
-                                  "referencePath": ["applicationUuid"]
+                                  "type": "literal",
+                                  "definition": {
+                                    "transformerType": "getFromParameters",
+                                    "referencePath": ["applicationUuid"]
+                                  }
                                 }
                               }
                             }

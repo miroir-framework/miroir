@@ -52,7 +52,6 @@
             "id": 8,
             "display": { "editable": false },
             "defaultLabel": "Previous Commit",
-            "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
             "foreignKeyParams": {
               "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
               "targetEntityOrderInstancesBy": "name"

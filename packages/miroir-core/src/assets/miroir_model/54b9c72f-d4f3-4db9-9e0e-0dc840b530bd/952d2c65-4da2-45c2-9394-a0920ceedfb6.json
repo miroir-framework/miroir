@@ -122,7 +122,6 @@
             "id": 9,
             "display": { "editable": true },
             "defaultLabel": "SelfApplication",
-            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "foreignKeyParams": {
               "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "targetEntityOrderInstancesBy": "name"
@@ -550,7 +549,6 @@
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Uuid",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                         "foreignKeyParams": {
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"

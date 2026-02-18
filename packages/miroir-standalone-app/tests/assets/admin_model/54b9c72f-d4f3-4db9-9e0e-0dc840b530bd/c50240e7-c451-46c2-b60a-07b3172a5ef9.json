@@ -56,7 +56,6 @@
           "display": { "editable": false },
           "defaultLabel": "AdminApplication",
           "description": "The AdminApplication of the Branch.",
-          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
           "foreignKeyParams": {
             "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
             "targetEntityOrderInstancesBy": "name"
@@ -70,7 +69,6 @@
           "id": 8,
           "defaultLabel": "Bundle",
           "description": "The deployed bundle.",
-          "targetEntity": "",
           "display": { "editable": false }
         }}
       },
