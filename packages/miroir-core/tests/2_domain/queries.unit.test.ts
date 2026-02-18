@@ -91,14 +91,6 @@ export interface TestExtractorParams {
     Domain2QueryReturnType<Record<string,any>>
   >
 
-  // extractorRunnerForReduxDeploymentsState?: ExtractWithExtractorType<ReduxDeploymentsState>;
-  // extractorTemplateRunnerForReduxDeploymentsState?: SyncBoxedExtractorTemplateRunner<
-  //   BoxedExtractorTemplateReturningObjectOrObjectList,
-  //   ReduxDeploymentsState,
-  //   DomainElement
-  // >;
-  // getExtractorTemplateRunnerParamsForReduxDeploymentsState?: GetExtractorTemplateRunnerParamsForReduxDeploymentsState
-  //
   testAssertions: Record<
     string,
     {

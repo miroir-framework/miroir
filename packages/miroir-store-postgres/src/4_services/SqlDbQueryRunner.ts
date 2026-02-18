@@ -22,22 +22,17 @@ import {
   DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
-  ExtractorOrCombinerReturningObject,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryRunnerMapForJzodSchema,
-  // resolvePathOnObject,
-  RunBoxedExtractorAction,
   RunBoxedQueryAction,
   safeResolvePathOnObject,
   selectEntityJzodSchemaFromDomainStateNew,
   selectFetchQueryJzodSchemaFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
-  transformer_InnerReference_resolve,
   type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
-  type MetaModel,
   type MiroirModelEnvironment
 } from "miroir-core";
 import {
@@ -307,7 +302,6 @@ export class SqlDbQueryRunner {
             extractor: {
               queryType: "boxedExtractorOrCombinerReturningObjectList",
               application: foreignKeyParams.extractor.application,
-              // deploymentUuid: foreignKeyParams.extractor.deploymentUuid,
               contextResults: foreignKeyParams.extractor.contextResults,
               pageParams: foreignKeyParams.extractor.pageParams,
               queryParams: foreignKeyParams.extractor.queryParams,
@@ -315,8 +309,7 @@ export class SqlDbQueryRunner {
                 ? foreignKeyParams.extractor.select
                 : {
                     ...foreignKeyParams.extractor.select,
-                    applicationSection: foreignKeyParams.extractor.pageParams
-                      .applicationSection as ApplicationSection,
+                    applicationSection: foreignKeyParams.extractor.pageParams?.applicationSection ?? "data" as ApplicationSection,
                   },
             },
           },
@@ -379,8 +372,7 @@ export class SqlDbQueryRunner {
                 ? foreignKeyParams.extractor.select
                 : {
                     ...foreignKeyParams.extractor.select,
-                    applicationSection: foreignKeyParams.extractor.pageParams
-                      .applicationSection as ApplicationSection,
+                    applicationSection: foreignKeyParams.extractor.pageParams?.applicationSection ?? "data" as ApplicationSection,
                   },
             },
           },
@@ -401,53 +393,53 @@ export class SqlDbQueryRunner {
     }
   };
 
-  // ##############################################################################################
-  async handleBoxedExtractorAction(
-    runBoxedExtractorAction: RunBoxedExtractorAction,
-    applicationDeploymentMap: ApplicationDeploymentMap
-  ): Promise<Action2ReturnType> {
-    log.info(
-      this.logHeader,
-      "handleBoxedExtractorAction",
-      "runBoxedExtractorAction",
-      JSON.stringify(runBoxedExtractorAction, null, 2)
-    );
-    let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-    queryResult =
-      await this.inMemoryImplementationExtractorRunnerMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
-        {
-          extractor: runBoxedExtractorAction.payload.query,
-          extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
-        },
-        applicationDeploymentMap,
-        defaultMetaModelEnvironment
-      );
-    if (queryResult instanceof Domain2ElementFailed) {
-      log.info(
-        "handleBoxedExtractorAction failed to run extractor, failure:",
-        JSON.stringify(queryResult)
-      );
-      return Promise.resolve(
-        new Action2Error(
-          "FailedToGetInstances",
-          JSON.stringify(queryResult),
-          undefined,
-          queryResult as any
-        )
-      );
-    } else {
-      const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(
-        this.logHeader,
-        "handleBoxedExtractorAction",
-        "runBoxedExtractorAction",
-        runBoxedExtractorAction,
-        "result",
-        JSON.stringify(result, null, 2)
-      );
-      return result;
-    }
-  }
+  // // ##############################################################################################
+  // async handleBoxedExtractorAction(
+  //   runBoxedExtractorAction: RunBoxedExtractorAction,
+  //   applicationDeploymentMap: ApplicationDeploymentMap
+  // ): Promise<Action2ReturnType> {
+  //   log.info(
+  //     this.logHeader,
+  //     "handleBoxedExtractorAction",
+  //     "runBoxedExtractorAction",
+  //     JSON.stringify(runBoxedExtractorAction, null, 2)
+  //   );
+  //   let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
+  //   queryResult =
+  //     await this.inMemoryImplementationExtractorRunnerMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
+  //       {
+  //         extractor: runBoxedExtractorAction.payload.query,
+  //         extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+  //       },
+  //       applicationDeploymentMap,
+  //       defaultMetaModelEnvironment
+  //     );
+  //   if (queryResult instanceof Domain2ElementFailed) {
+  //     log.info(
+  //       "handleBoxedExtractorAction failed to run extractor, failure:",
+  //       JSON.stringify(queryResult)
+  //     );
+  //     return Promise.resolve(
+  //       new Action2Error(
+  //         "FailedToGetInstances",
+  //         JSON.stringify(queryResult),
+  //         undefined,
+  //         queryResult as any
+  //       )
+  //     );
+  //   } else {
+  //     const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
+  //     log.info(
+  //       this.logHeader,
+  //       "handleBoxedExtractorAction",
+  //       "runBoxedExtractorAction",
+  //       runBoxedExtractorAction,
+  //       "result",
+  //       JSON.stringify(result, null, 2)
+  //     );
+  //     return result;
+  //   }
+  // }
 
   // ##############################################################################################
   async handleBoxedQueryAction(

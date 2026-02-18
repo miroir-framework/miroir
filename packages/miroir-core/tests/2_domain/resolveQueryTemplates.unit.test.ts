@@ -2,11 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 // import { describe, expect } from 'vitest';
 
 import {
-  BoxedExtractorTemplateReturningObject,
   BoxedQueryTemplateWithExtractorCombinerTransformer
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList,
   resolveQueryTemplateWithExtractorCombinerTransformer,
 } from "../../src/2_domain/Templates";
 import { defaultMiroirModelEnvironment } from '../../src';
@@ -86,8 +84,8 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorOrCombinerType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
@@ -107,13 +105,13 @@ describe("resolveQueryTemplates.unit.test", () => {
             },
             instanceUuid: {
               transformerType: "returnValue",
-              mlSchema: { type: "record", definition: { type: "any"} },
+              mlSchema: { type: "record", definition: { type: "any" } },
               interpolation: "build",
               value: {
                 transformerType: "getFromContext",
                 interpolation: "runtime",
                 referenceName: "instanceUuid",
-              }
+              },
             },
           },
         },
@@ -122,8 +120,8 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorOrCombinerType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },
@@ -138,8 +136,8 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorOrCombinerType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
@@ -154,8 +152,8 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorOrCombinerType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
@@ -170,8 +168,8 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: {
-            transformerType: "returnValue",
-            mlSchema: { type: "uuid" },
+              transformerType: "returnValue",
+              mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
             },

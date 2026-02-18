@@ -1006,6 +1006,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         data={{
           rootLessListKey,
           itemsOrder,
+          formik: Object.keys(formik.values),
+          pageParams: formik.values.pageParams,
           formikRootLessListKey,
           rawSchema: currentTypeCheckKeyMap?.rawSchema,
           resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,

@@ -417,35 +417,29 @@ Use the following definition or seize its equivalent in the UI.
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "payload": {
-              "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
               "definition": [
                 {
-                  "actionType": "compositeRunBoxedQueryAction",
-                  "actionLabel": "getTargetBook",
+                  "actionType": "compositeRunBoxedQueryTemplateAction",
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   "nameGivenToResult": "targetBook",
-                  "queryTemplate": {
-                    "actionType": "runBoxedQueryAction",
+                  "actionLabel": "getTargetBook",
+                  "query": {
+                    "actionType": "runBoxedQueryTemplateAction",
                     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                     "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                     "payload": {
                       "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                      "applicationSection": "data",
                       "query": {
-                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
                         "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                        "pageParams": {},
-                        "queryParams": {},
-                        "contextResults": {},
-                        "extractors": {
+                        "queryType": "boxedQueryTemplateWithExtractorCombinerTransformer",
+                        "extractorTemplates": {
                           "targetBook": {
                             "label": "deployments of the application",
+                            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
                             "extractorOrCombinerType": "extractorForObjectByDirectReference",
-                            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                            "parentName": "Deployment",
-                            "applicationSection": "data",
                             "instanceUuid": {
                               "transformerType": "mustacheStringTemplate",
-                              "interpolation": "build",
                               "definition": "{{payload.book}}"
                             }
                           }

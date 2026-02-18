@@ -170,12 +170,20 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
     case "extractorByEntityReturningObjectList":
     case "combinerByRelationReturningObjectList":
     case "combinerByManyToManyRelationReturningObjectList": {
-      // log.info(
-      //   "############ asyncInnerSelectElementFromQuery",
-      //   extractorOrCombiner.extractorOrCombinerType,
-      //   "start, extractorOrCombiner",
-      //   JSON.stringify(extractorOrCombiner, null, 2)
-      // );
+      const applicationSection =
+        extractorOrCombiner.applicationSection ??
+        getApplicationSection(application, extractorOrCombiner.parentUuid);
+      log.info(
+        "############ asyncInnerSelectElementFromQuery",
+        extractorOrCombiner.extractorOrCombinerType,
+        "start",
+        "application",
+        application,
+        "applicationSection",
+        applicationSection,
+        "extractorOrCombiner",
+        JSON.stringify(extractorOrCombiner, null, 2)
+      );
       const result = await extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         {
           extractorRunnerMap,
@@ -189,9 +197,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  // applicationSection: pageParams.applicationSection ?? defaultApplicationSection as ApplicationSection,
-                  // applicationSection: defaultApplicationSection as ApplicationSection,
-                  applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
+                  applicationSection,
                 },
           },
         },
@@ -229,8 +235,6 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  // applicationSection: pageParams?.applicationSection ?? defaultApplicationSection as ApplicationSection,
-                  // applicationSection: defaultApplicationSection as ApplicationSection,
                   applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
                 },
           },
@@ -512,14 +516,12 @@ export const asyncRunQuery = async (
       query.extractor.pageParams ?? {},
       modelEnvironment,
       {
-        // ...modelEnvironment,
         ...query.extractor.pageParams ?? {},
         ...query.extractor.queryParams ?? {},
       },
       localSelectorMap as any,
       query.extractor.application,
       applicationDeploymentMap,
-      // deploymentUuid,
       query.extractor.extractors ?? {} as any,
       extractor
     );

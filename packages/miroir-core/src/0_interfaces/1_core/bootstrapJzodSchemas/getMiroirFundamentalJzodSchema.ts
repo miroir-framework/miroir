@@ -2026,60 +2026,14 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        boxedExtractorTemplateReturningObject: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "boxedExtractorTemplateReturningObject",
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorTemplateReturningObject", // TODO: is this still an extractor, while it includes extractorTemplateCombinerForObjectByRelation?
-              },
-            },
-          },
-        },
-        boxedExtractorTemplateReturningObjectList: {
-          type: "object",
-          extend: {
-            type: "schemaReference",
-            definition: {
-              eager: true,
-              absolutePath: miroirFundamentalJzodSchemaUuid,
-              relativePath: "shippingBox",
-            },
-          },
-          definition: {
-            queryType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "boxedExtractorTemplateReturningObjectList",
-            },
-            select: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorTemplateReturningObjectList",
-              },
-            },
-          },
-        },
         boxedQueryTemplateWithExtractorCombinerTransformer: {
+          /**
+           *  TODO:REMOVE?
+           * seems a duplicate of boxedQueryWithExtractorCombinerTransformer, but with extractorTemplates and combinerTemplates instead of extractors and combiners
+           * see "extractorOrCombinerTemplate" in `359f1f9b-7260-4d76-a864-72c839b9711b.json`
+           * is this used at all?
+           * */
+
           type: "object",
           extend: {
             type: "schemaReference",
@@ -2903,6 +2857,20 @@ export function getMiroirFundamentalJzodSchema(
           definition: queryEndpointVersionV1.definition.actions[1].actionParameters,
         },
         // ################################################################################
+        compositeRunBoxedQueryAction: {
+          type: "object",
+          definition: domainEndpointVersionV1.definition.actions.find(
+            (a: any) =>
+              a.actionParameters?.actionType?.definition == "compositeRunBoxedQueryAction",
+          )?.actionParameters,
+        },
+        compositeRunBoxedQueryTemplateAction: {
+          type: "object",
+          definition: domainEndpointVersionV1.definition.actions.find(
+            (a: any) =>
+              a.actionParameters?.actionType?.definition == "compositeRunBoxedQueryTemplateAction",
+          )?.actionParameters,
+        },
         compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
           (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
         )?.actionParameters.payload.definition.definition.definition,

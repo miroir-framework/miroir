@@ -244,7 +244,6 @@ export const selectEntityInstanceListFromDomainState: SyncBoxedExtractorRunner<
  */
 function selectEntityInstanceDomainState (
   domainState: DomainState,
-  // foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
   entityUuidReference: Uuid,

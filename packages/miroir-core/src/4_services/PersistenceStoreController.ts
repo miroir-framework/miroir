@@ -129,7 +129,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore:
       | PersistenceStoreDataSectionInterface
       | PersistenceStoreModelSectionInterface =
-      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      action.payload.applicationSection == "model" ? this.modelStoreSection : this.dataStoreSection;
     const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(
       action,
       applicationDeploymentMap,
@@ -153,7 +153,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", action);
     // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
     // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
 
@@ -162,7 +161,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const currentStore:
       | PersistenceStoreDataSectionInterface
       | PersistenceStoreModelSectionInterface =
-      action.payload.applicationSection == "data" ? this.dataStoreSection : this.modelStoreSection;
+      action.payload.applicationSection == "model" ? this.modelStoreSection : this.dataStoreSection;
+
+    log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", action, 
+      action.payload.applicationSection == "model" ? "modelStoreSection" : "dataStoreSection", currentStore.getStoreName());
 
     const result: Action2ReturnType = await currentStore.handleQueryTemplateActionForServerONLY(
       action,

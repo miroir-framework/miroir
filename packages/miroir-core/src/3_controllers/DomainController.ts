@@ -51,6 +51,8 @@ import {
   TestResult,
   TransactionalInstanceAction,
   UndoRedoAction,
+  type CompositeRunBoxedQueryAction,
+  type CompositeRunBoxedQueryTemplateAction,
   type EndpointDefinition,
   type ModelActionInitModel,
   type TransformerForBuildPlusRuntime
@@ -795,15 +797,15 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
-    // log.info(
-    //   "handleQueryTemplateActionForServerONLY",
-    //   "actionType",
-    //   (runBoxedQueryTemplateAction as any).actionType,
-    //   "actionType",
-    //   runBoxedQueryTemplateAction?.actionType,
-    //   "objects",
-    //   JSON.stringify((runBoxedQueryTemplateAction as any)["objects"], null, 2),
-    // );
+    log.info(
+      "handleQueryTemplateActionForServerONLY",
+      "actionType",
+      (runBoxedQueryTemplateAction as any).actionType,
+      "actionType",
+      runBoxedQueryTemplateAction?.actionType,
+      "objects",
+      JSON.stringify((runBoxedQueryTemplateAction as any)["objects"], null, 2),
+    );
 
     if (this.persistenceStoreAccessMode == "local") {
       /**
@@ -2004,22 +2006,24 @@ export class DomainController implements DomainControllerInterface {
   private async handleActionInternal(
     domainAction: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    // localContext: Record<string, any> = {},
     currentModel?: MiroirModelEnvironment,
   ): Promise<Action2VoidReturnType> {
+    log.info(
+      "handleActionInternal START for action",
+      domainAction,
+      // "deploymentUuid",
+      // domainAction.deploymentUuid,
+      // "actionType",
+      // (domainAction as any).actionType,
+      // "actionType",
+      // domainAction?.actionType,
+      // "objects",
+      // JSON.stringify((domainAction as any)["objects"], null, 2)
+    );
     const application = domainAction.payload.application ?? "APPLICATION_UUID_NOT_FOUND";
     const deploymentUuid = applicationDeploymentMap[application];
 
-    // log.info(
-    //   "handleAction",
-    //   "deploymentUuid",
-    //   domainAction.deploymentUuid,
-    //   "actionType",
-    //   (domainAction as any).actionType,
-    //   "actionType",
-    //   domainAction?.actionType,
-    //   "objects",
-    //   JSON.stringify((domainAction as any)["objects"], null, 2)
-    // );
 
     // if (
     //   domainAction.actionType != "initModel"
@@ -2037,13 +2041,6 @@ export class DomainController implements DomainControllerInterface {
       // Also set in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirActivityTracker.setAction(domainAction.actionType);
       switch (domainAction.actionType) {
-        case "compositeActionSequence": {
-          // old school, not used anymore (or should not be used anymore)
-          throw new Error(
-            "DomainController handleAction compositeActionSequence should not be used anymore",
-          );
-          break;
-        }
         // case "modelAction":
         case "initModel":
         case "commit":
@@ -2219,6 +2216,36 @@ export class DomainController implements DomainControllerInterface {
           return Promise.resolve(ACTION_OK);
           break;
         }
+        case "compositeRunBoxedQueryTemplateAction": {
+          return this.handleCompositeRunBoxedQueryTemplateAction(
+            domainAction,
+            applicationDeploymentMap,
+            {},
+            {},
+          );
+          throw new Error(
+            "DomainController handleAction compositeRunBoxedQueryTemplateAction is not implemented yet",
+          );
+        }
+        case 'compositeRunBoxedQueryAction':{
+          return this.handleCompositeRunBoxedQueryAction(domainAction, applicationDeploymentMap, {});
+          // throw new Error(
+          //   "DomainController handleAction compositeRunBoxedQueryAction is not implemented yet",
+          // );
+        }
+        case "compositeActionSequence": {
+          // old school, not used anymore (or should not be used anymore)
+          return this.handleCompositeAction(
+            domainAction,
+            applicationDeploymentMap,
+            currentModel ?? ({} as MiroirModelEnvironment),
+            {}, // actionParamValues, not used in the old compositeActionSequence, should be removed from the signature
+          );
+          // throw new Error(
+          //   "DomainController handleAction compositeActionSequence should not be used anymore",
+          // );
+          break;
+        }
         default:
           log.error(
             "DomainController handleAction action could not be taken into account, unkown action",
@@ -2307,11 +2334,11 @@ export class DomainController implements DomainControllerInterface {
             //   "handleCompositeAction compositeActionSequence action to handle",
             //   JSON.stringify(currentAction, null, 2),
             // );
-            actionResult = await this.handleCompositeAction(
+            actionResult = await this.handleCompositeActionTemplate(
               currentAction,
               applicationDeploymentMap,
               modelEnvironment,
-              actionParamValues,
+              localActionParams,
             );
             break;
           }
@@ -2378,11 +2405,14 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunBoxedQueryAction": {
-            actionResult = await this.handleCompositeRunBoxedQueryAction(
-              currentAction,
-              applicationDeploymentMap,
-              localContext,
+            throw new Error(
+              "DomainController handleCompositeAction compositeRunBoxedQueryAction should not be used in compositeActionSequence, it should be used in compositeActionTemplate instead",
             );
+            // actionResult = await this.handleCompositeRunBoxedQueryAction(
+            //   currentAction,
+            //   applicationDeploymentMap,
+            //   localContext,
+            // );
 
             break;
           }
@@ -2400,7 +2430,11 @@ export class DomainController implements DomainControllerInterface {
             );
             break;
           }
-          // case "compositeRunBoxedExtractorAction":
+          case 'compositeRunBoxedQueryTemplateAction': {
+            throw new Error(
+              "DomainController handleCompositeAction compositeRunBoxedQueryTemplateAction should not be used in compositeActionSequence, it should be used in compositeActionTemplate instead",
+            );
+          }
           default: {
             log.error("handleCompositeAction unknown actionType", currentAction);
             break;
@@ -2588,7 +2622,7 @@ export class DomainController implements DomainControllerInterface {
               actionType: "compositeRunBoxedQueryAction";
               actionLabel?: string | undefined;
               nameGivenToResult: string;
-              queryTemplate: RunBoxedQueryAction;
+              payload: RunBoxedQueryAction;
             } = transformer_extended_apply(
               "build",
               [],
@@ -2996,97 +3030,98 @@ export class DomainController implements DomainControllerInterface {
     return actionResult;
   }
 
-  // ##############################################################################################
-  private async handleCompositeRunBoxedExtractorOrQueryAction(
-    currentAction: {
-      actionType: "compositeRunBoxedQueryAction";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      query: RunBoxedQueryAction;
-    },
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    actionParamValues: Record<string, any>,
-    // actionResult: Action2ReturnType | undefined,
-    localContext: Record<string, any>,
-  ) {
-    log.info(
-      "handleCompositeAction runBoxedExtractorOrQueryAction to handle",
-      currentAction,
-      "with actionParamValues",
-      actionParamValues,
-    );
+  // // ##############################################################################################
+  // private async handleCompositeRunBoxedExtractorOrQueryAction(
+  //   currentAction: {
+  //     actionType: "compositeRunBoxedQueryAction";
+  //     actionLabel?: string | undefined;
+  //     nameGivenToResult: string;
+  //     query: RunBoxedQueryAction;
+  //   },
+  //   applicationDeploymentMap: ApplicationDeploymentMap,
+  //   actionParamValues: Record<string, any>,
+  //   // actionResult: Action2ReturnType | undefined,
+  //   localContext: Record<string, any>,
+  // ) {
+  //   log.info(
+  //     "handleCompositeAction runBoxedExtractorOrQueryAction to handle",
+  //     currentAction,
+  //     "with actionParamValues",
+  //     actionParamValues,
+  //   );
 
-    const actionResult = await this.handleBoxedExtractorOrQueryAction(
-      currentAction.query,
-      applicationDeploymentMap,
-    ); // TODO: pass the current model
-    if (actionResult.status == "error" /* actionResult instanceof Action2Error */) {
-      log.error(
-        "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
-        currentAction.nameGivenToResult,
-        "query=",
-        JSON.stringify(actionResult, null, 2),
-      );
-      return new Action2Error(
-        "FailedToRunBoxedExtractorOrQueryAction",
-        "handleCompositeRunBoxedExtractorOrQueryAction error: " +
-          JSON.stringify(actionResult, null, 2),
-        [currentAction.actionLabel ?? currentAction.actionType],
-        actionResult as any,
-      );
-    } else {
-      if ((actionResult as any).returnedDomainElement instanceof Domain2ElementFailed) {
-        log.error(
-          "Error on runBoxedExtractorOrQueryAction (Domain2ElementFailed) with nameGivenToResult",
-          currentAction.nameGivenToResult,
-          "query=",
-          JSON.stringify(actionResult, null, 2),
-        );
-        return new Action2Error(
-          "FailedToRunBoxedExtractorOrQueryAction",
-          "handleCompositeRunBoxedExtractorOrQueryAction error: " +
-            JSON.stringify(actionResult, null, 2),
-          [currentAction.actionLabel ?? currentAction.actionType],
-          actionResult as any,
-        );
-      } else {
-        log.info(
-          "handleCompositeAction runBoxedExtractorOrQueryAction adding result to context as",
-          currentAction.nameGivenToResult,
-          "value",
-          JSON.stringify(actionResult, null, 2),
-        );
-        localContext[currentAction.nameGivenToResult] = (actionResult as any).returnedDomainElement;
-      }
-    }
-    return actionResult;
-  }
+  //   const actionResult = await this.handleBoxedExtractorOrQueryAction(
+  //     currentAction.query,
+  //     applicationDeploymentMap,
+  //   ); // TODO: pass the current model
+  //   if (actionResult.status == "error" /* actionResult instanceof Action2Error */) {
+  //     log.error(
+  //       "Error on runBoxedExtractorOrQueryAction with nameGivenToResult",
+  //       currentAction.nameGivenToResult,
+  //       "query=",
+  //       JSON.stringify(actionResult, null, 2),
+  //     );
+  //     return new Action2Error(
+  //       "FailedToRunBoxedExtractorOrQueryAction",
+  //       "handleCompositeRunBoxedExtractorOrQueryAction error: " +
+  //         JSON.stringify(actionResult, null, 2),
+  //       [currentAction.actionLabel ?? currentAction.actionType],
+  //       actionResult as any,
+  //     );
+  //   } else {
+  //     if ((actionResult as any).returnedDomainElement instanceof Domain2ElementFailed) {
+  //       log.error(
+  //         "Error on runBoxedExtractorOrQueryAction (Domain2ElementFailed) with nameGivenToResult",
+  //         currentAction.nameGivenToResult,
+  //         "query=",
+  //         JSON.stringify(actionResult, null, 2),
+  //       );
+  //       return new Action2Error(
+  //         "FailedToRunBoxedExtractorOrQueryAction",
+  //         "handleCompositeRunBoxedExtractorOrQueryAction error: " +
+  //           JSON.stringify(actionResult, null, 2),
+  //         [currentAction.actionLabel ?? currentAction.actionType],
+  //         actionResult as any,
+  //       );
+  //     } else {
+  //       log.info(
+  //         "handleCompositeAction runBoxedExtractorOrQueryAction adding result to context as",
+  //         currentAction.nameGivenToResult,
+  //         "value",
+  //         JSON.stringify(actionResult, null, 2),
+  //       );
+  //       localContext[currentAction.nameGivenToResult] = (actionResult as any).returnedDomainElement;
+  //     }
+  //   }
+  //   return actionResult;
+  // }
 
   // ##############################################################################################
   private async handleCompositeRunBoxedQueryAction(
-    currentAction: {
-      actionType: "compositeRunBoxedQueryAction";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      queryTemplate: RunBoxedQueryAction;
-    },
+    currentAction: CompositeRunBoxedQueryAction,
+    // {
+    //   actionType: "compositeRunBoxedQueryAction";
+    //   actionLabel?: string | undefined;
+    //   nameGivenToResult: string;
+    //   queryTemplate: RunBoxedQueryAction;
+    // },
     applicationDeploymentMap: ApplicationDeploymentMap,
     localContext: Record<string, any>,
   ) {
-    if (currentAction.queryTemplate == undefined) {
-      throw new Error("handleCompositeAction currentAction.queryTemplate is undefined");
+    if (currentAction.payload == undefined) {
+      throw new Error("handleCompositeAction currentAction.payload is undefined");
     }
 
     // actionResult = await this.handleQueryTemplateActionForServerONLY(
     const actionResult = await this.handleBoxedExtractorOrQueryAction(
-      currentAction.queryTemplate,
+      currentAction.payload,
       applicationDeploymentMap,
     ); // TODO: pass the current model
     if (actionResult instanceof Action2Error) {
       log.error(
         "Error (Action2Error) on handleCompositeRunBoxedQueryAction with nameGivenToResult",
         currentAction.nameGivenToResult,
-        "query=",
+        "payload=",
         JSON.stringify(actionResult, null, 2),
       );
       return actionResult;
@@ -3095,7 +3130,7 @@ export class DomainController implements DomainControllerInterface {
         log.error(
           "Error (Domain2ElementFailed) on handleCompositeRunBoxedQueryAction with nameGivenToResult",
           currentAction.nameGivenToResult,
-          "query=",
+          "payload=",
           JSON.stringify(actionResult, null, 2),
         );
         return actionResult;
@@ -3162,55 +3197,58 @@ export class DomainController implements DomainControllerInterface {
   //   return actionResult;
   // }
 
-  // // ##############################################################################################
-  // private async handleCompositeRunBoxedQueryTemplateAction(
-  //   currentAction: {
-  //     actionType: "compositeRunBoxedQueryTemplateAction";
-  //     actionLabel?: string | undefined;
-  //     nameGivenToResult: string;
-  //     queryTemplate: RunBoxedQueryTemplateAction;
-  //   },
-  //   actionParamValues: Record<string, any>,
-  //   // actionResult: Action2ReturnType | undefined,
-  //   localContext: Record<string, any>
-  // ) {
-  //   log.info(
-  //     "handleCompositeRunBoxedQueryTemplateAction to handle",
-  //     currentAction,
-  //     "with actionParamValues",
-  //     actionParamValues
-  //   );
+  // ##############################################################################################
+  private async handleCompositeRunBoxedQueryTemplateAction(
+    currentAction: CompositeRunBoxedQueryTemplateAction,
+    // {
+    //   actionType: "compositeRunBoxedQueryTemplateAction";
+    //   actionLabel?: string | undefined;
+    //   nameGivenToResult: string;
+    //   queryTemplate: RunBoxedQueryTemplateAction;
+    // },
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    actionParamValues: Record<string, any>,
+    // actionResult: Action2ReturnType | undefined,
+    localContext: Record<string, any>
+  ) {
+    log.info(
+      "handleCompositeRunBoxedQueryTemplateAction to handle",
+      currentAction,
+      "with actionParamValues",
+      actionParamValues
+    );
 
-  //   const actionResult = await this.handleQueryTemplateActionForServerONLY(
-  //     currentAction.queryTemplate
-  //   );
-  //   if (actionResult instanceof Action2Error) {
-  //     log.error(
-  //       "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
-  //       currentAction.nameGivenToResult,
-  //       "query=",
-  //       JSON.stringify(actionResult, null, 2)
-  //     );
-  //   } else {
-  //     if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
-  //       log.error(
-  //         "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
-  //         currentAction.nameGivenToResult,
-  //         "query=",
-  //         JSON.stringify(actionResult, null, 2)
-  //       );
-  //     } else {
-  //       log.info(
-  //         "handleCompositeActionTemplate handleCompositeRunBoxedQueryTemplateAction adding result to context as",
-  //         currentAction.nameGivenToResult,
-  //         "value",
-  //         actionResult
-  //       );
-  //       localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
-  //     }
-  //   }
-  //   return actionResult;
-  // }
+    const actionResult = await this.handleQueryTemplateActionForServerONLY(
+      currentAction.payload,
+      applicationDeploymentMap,
+    );
+    if (actionResult instanceof Action2Error) {
+      log.error(
+        "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+        currentAction.nameGivenToResult,
+        "query=",
+        JSON.stringify(actionResult, null, 2)
+      );
+    } else {
+      if (actionResult.returnedDomainElement instanceof Domain2ElementFailed) {
+        log.error(
+          "Error on handleCompositeRunBoxedQueryTemplateAction with nameGivenToResult",
+          currentAction.nameGivenToResult,
+          "query=",
+          JSON.stringify(actionResult, null, 2)
+        );
+      } else {
+        log.info(
+          "handleCompositeRunBoxedQueryTemplateAction adding result to context as",
+          currentAction.nameGivenToResult,
+          "value",
+          actionResult
+        );
+        localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;
+      }
+    }
+    return actionResult;
+  }
 
   // ##############################################################################################
   async handleCompositeActionTemplate(
@@ -3328,6 +3366,18 @@ export class DomainController implements DomainControllerInterface {
           // return actionResult;
           break;
         }
+        case 'compositeRunBoxedQueryTemplateAction': {
+          const actionResult = await this.handleCompositeRunBoxedQueryTemplateAction(
+            resolvedActionTemplate,
+            applicationDeploymentMap,
+            actionParamValues,
+            localContext,
+          );
+          if (actionResult instanceof Action2Error) {
+            return actionResult;
+          }
+          break
+        }
         case "compositeRunTestAssertion": {
           log.error(
             "handleCompositeActionTemplate",
@@ -3381,7 +3431,7 @@ export class DomainController implements DomainControllerInterface {
         case "storeManagementAction_openStore":
         case "storeManagementAction_closeStore":
         //
-        case "bundleAction":
+        case "bundleAction": 
         default: {
           // case "domainAction": {
           // log.info(
@@ -3427,6 +3477,10 @@ export class DomainController implements DomainControllerInterface {
           }
           break;
         }
+        // default: {
+        //   log.error("handleCompositeActionTemplate unknown actionType", currentAction);
+        //   break;
+        // }
         // default: {
         //   log.error(
         //     "handleCompositeActionTemplate",

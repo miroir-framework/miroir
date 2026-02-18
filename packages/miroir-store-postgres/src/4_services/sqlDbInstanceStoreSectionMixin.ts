@@ -141,7 +141,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           log.info(
             this.logHeader,
             "sqlForExtractor",
-            "boxedExtractorTemplateReturningObject",
+            "boxedExtractorOrCombinerReturningObjectList",
             result
           );
           // return "SELECT * FROM domainModel WHERE uuid = " + extractor.deploymentUuid;

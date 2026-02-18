@@ -692,12 +692,6 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "extractorTemplateByExtractorWrapper"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
                   "relativePath": "extractorTemplateExtractorForObjectByDirectReference"
                 }
               },
@@ -717,6 +711,12 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "extractorTemplateByExtractorCombiner"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorTemplateByExtractorWrapper"
                 }
               },
               {

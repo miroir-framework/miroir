@@ -156,7 +156,7 @@ export type AsyncQueryTemplateRunner<ResultType> = (
 
 // ################################################################################################
 // ################################################################################################
-// QUERY OR EXTRACTOR  ############################################################################
+// QUERY OR EXTRACTOR RUNNER MAP ##################################################################
 export type ExtractorOrQueryRunnerMap<StateType> =
   | AsyncBoxedExtractorOrQueryRunnerMap
   | SyncBoxedExtractorOrQueryRunnerMap<StateType>;
@@ -290,7 +290,6 @@ export type QueryRunnerMapForJzodSchema<StateType> = {
 // ################################################################################################
 export interface ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> {
   extractorRunnerMap: QueryTemplateRunnerMapForJzodSchema<StateType>
-  // applicationDeploymentMap: ApplicationDeploymentMap,
   query: QueryTemplateType
 }
 

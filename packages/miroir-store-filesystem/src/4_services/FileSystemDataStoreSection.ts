@@ -32,7 +32,7 @@ export class FileSystemDataStoreSection extends MixedFileSystemInstanceStoreSect
       applicationSection,
       filesystemStoreName,
       directory,
-      'FileSystemDataStoreSection' + filesystemStoreName 
+      'FileSystemDataStoreSection (' + filesystemStoreName + ')' 
     );
   }
 

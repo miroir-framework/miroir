@@ -194,9 +194,9 @@
                     "foreignKeyParams": {
                       "targetApplicationUuid": {
                         "transformerType": "getFromParameters",
-                        "interpolation": "build",
                         "safe": true,
                         "referencePath": [
+                          "pageParams",
                           "application"
                         ]
                       },

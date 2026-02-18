@@ -693,6 +693,15 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
     case "extractorByEntityReturningObjectList":
     case "combinerByRelationReturningObjectList":
     case "combinerByManyToManyRelationReturningObjectList": {
+      const applicationSection =
+        extractorOrCombiner.applicationSection ??
+        getApplicationSection(application, extractorOrCombiner.parentUuid);
+      log.info(
+        "innerSelectDomainElementFromExtractorOrCombiner for",
+        "application", application,
+        "applicationSection", applicationSection,
+        "extractorOrCombiner", JSON.stringify(extractorOrCombiner, null, 2)
+      );
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         state,
         applicationDeploymentMap,
@@ -709,9 +718,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               ? extractorOrCombiner
               : {
                   ...extractorOrCombiner,
-                  // applicationSection: pageParams.applicationSection ?? defaultApplicationSection as ApplicationSection,
-                  // applicationSection: defaultApplicationSection as ApplicationSection,
-                  applicationSection: getApplicationSection(application, extractorOrCombiner.parentUuid),
+                  applicationSection: applicationSection,
                 },
           },
         },

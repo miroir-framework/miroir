@@ -1,5 +1,4 @@
 import {
-  // BoxedExtractorTemplateReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   Extractor,

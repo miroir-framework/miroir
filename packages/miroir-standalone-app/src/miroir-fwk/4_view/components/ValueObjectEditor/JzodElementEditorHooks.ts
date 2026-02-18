@@ -36,6 +36,7 @@ import { MiroirReactContext, useMiroirContextService } from "../../MiroirContext
 import {
   useCurrentModel,
   useCurrentModelEnvironment,
+  useDefaultValueParams,
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
 } from "../../ReduxHooks";
 
@@ -186,6 +187,11 @@ export function useJzodElementEditorHooks(
     applicationDeploymentMap
   );
 
+  const defaultValueParams = useDefaultValueParams(
+    currentApplication,
+    currentDeploymentUuid,
+  )
+
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
     typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
       ? typeCheckKeyMap[rootLessListKey]
@@ -235,10 +241,6 @@ export function useJzodElementEditorHooks(
         currentTypecheckKeyMap.resolvedSchema.type == "uuid" &&
         currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity &&
         currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity !== noValue.uuid
-        // currentTypecheckKeyMap.rawSchema &&
-        // currentTypecheckKeyMap.rawSchema.type == "uuid" &&
-        // currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity &&
-        // currentTypecheckKeyMap.rawSchema.tag?.value?.foreignKeyParams?.targetEntity !== noValue.uuid
       ) {
 
         let targetApplication: TransformerReturnType<any> =
@@ -250,8 +252,7 @@ export function useJzodElementEditorHooks(
 
         
         if (
-          typeof currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams
-            ?.targetApplicationUuid == "object"
+          typeof targetApplication == "object"
         ) {
           targetApplication = transformer_extended_apply_wrapper(
             context.miroirContext.miroirActivityTracker, // activityTracker
@@ -261,7 +262,7 @@ export function useJzodElementEditorHooks(
               currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams
                 ?.targetApplicationUuid as any
             )?.label ?? "evaluation of hidden property", // label
-            currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetApplicationUuid, // transformer
+            targetApplication, // transformer
             defaultMiroirModelEnvironment, // TODO: use the real environment
             formik.values, // queryParams
             formik.values, // contextResults - pass the instance to transform
