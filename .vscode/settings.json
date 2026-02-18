@@ -6,6 +6,7 @@
     "**/dist": true,
     "**/coverage": true
   },
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^@mui/[^/]+$"],
   "accessibility.signals.lineHasError": {
     "sound": "off"
   },

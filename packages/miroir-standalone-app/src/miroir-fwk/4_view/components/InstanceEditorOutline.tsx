@@ -525,15 +525,15 @@ export const InstanceEditorOutline: React.FC<DocumentOutlineProps> = ({
       sx={{
         width: currentWidth,
         flexShrink: 0,
-        '& .MuiDrawer-paper': {
+        "& .MuiDrawer-paper": {
           width: currentWidth,
-          boxSizing: 'border-box',
+          boxSizing: "border-box",
           borderLeft: `1px solid ${miroirTheme.currentTheme.colors.border}`,
           backgroundColor: miroirTheme.currentTheme.colors.surface,
           color: miroirTheme.currentTheme.colors.text,
-          position: 'fixed',
+          position: "fixed",
           top: 0, // Start from the very top
-          height: '100vh', // Full viewport height
+          height: "100vh", // Full viewport height
         },
       }}
     >
@@ -542,82 +542,87 @@ export const InstanceEditorOutline: React.FC<DocumentOutlineProps> = ({
         ref={resizeRef}
         onMouseDown={handleMouseDown}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           left: 0,
           top: 0,
           bottom: 0,
-          width: '4px',
-          backgroundColor: 'transparent',
-          cursor: 'ew-resize',
+          width: "4px",
+          backgroundColor: "transparent",
+          cursor: "ew-resize",
           zIndex: 1000,
-          '&:hover': {
+          "&:hover": {
             backgroundColor: miroirTheme.currentTheme.colors.hover,
           },
-          '&:active': {
+          "&:active": {
             backgroundColor: miroirTheme.currentTheme.colors.selected,
           },
         }}
       />
-      
-      <Box sx={{ padding: 1, paddingTop: '8px', backgroundColor: miroirTheme.currentTheme.colors.surface }}> {/* Minimal top padding */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              fontSize: '1rem', 
+
+      <Box
+        sx={{
+          padding: 1,
+          paddingTop: "8px",
+          backgroundColor: miroirTheme.currentTheme.colors.surface,
+        }}
+      >
+        {" "}
+        {/* Minimal top padding */}
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: "1rem",
               fontWeight: 600,
               color: miroirTheme.currentTheme.colors.text,
             }}
           >
             {outlineContext.outlineTitle}
           </Typography>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={onToggle}
             sx={{ color: miroirTheme.currentTheme.colors.text }}
           >
             <Close />
           </IconButton>
         </Box>
-        
-        <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-          <IconButton 
-            size="small" 
-            onClick={handleExpandAll} 
+        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+          <IconButton
+            size="small"
+            onClick={handleExpandAll}
             title="Expand All"
             sx={{ color: miroirTheme.currentTheme.colors.text }}
           >
             <ExpandMore />
           </IconButton>
-          <IconButton 
-            size="small" 
-            onClick={handleCollapseAll} 
+          <IconButton
+            size="small"
+            onClick={handleCollapseAll}
             title="Collapse All"
             sx={{ color: miroirTheme.currentTheme.colors.text }}
           >
             <ExpandLess />
           </IconButton>
         </Box>
-        
         {/* Instruction note */}
         <Box sx={{ mb: 1, px: 1 }}>
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              fontSize: '0.75rem', 
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: "0.75rem",
               color: miroirTheme.currentTheme.colors.textSecondary,
-              fontStyle: 'italic',
-              display: 'block',
-              lineHeight: 1.2
+              fontStyle: "italic",
+              display: "block",
+              lineHeight: 1.2,
             }}
           >
             Double-click any item to scroll to it in the editor
           </Typography>
         </Box>
-        
         <Divider sx={{ backgroundColor: miroirTheme.currentTheme.colors.divider }} />
       </Box>
-      
+
       {/* {outlineContext.reportInstance && (
         <Box sx={{ padding: 1, backgroundColor: miroirTheme.currentTheme.colors.surface }}>
           <Typography
@@ -636,7 +641,14 @@ export const InstanceEditorOutline: React.FC<DocumentOutlineProps> = ({
         </Box>
       )} */}
 
-      <List dense sx={{ flexGrow: 1, overflow: 'hidden', backgroundColor: miroirTheme.currentTheme.colors.surface }}>
+      <List
+        dense
+        sx={{
+          flexGrow: 1,
+          overflow: "hidden",
+          backgroundColor: miroirTheme.currentTheme.colors.surface,
+        }}
+      >
         {treeNodes.map((node) => (
           <TreeNodeComponent
             key={node.id}
@@ -648,13 +660,16 @@ export const InstanceEditorOutline: React.FC<DocumentOutlineProps> = ({
           />
         ))}
       </List>
-      
+
       {treeNodes.length === 0 && (
-        <Box sx={{ padding: 2, textAlign: 'center', backgroundColor: miroirTheme.currentTheme.colors.surface }}>
-          <Typography 
-            variant="body2" 
-            sx={{ color: miroirTheme.currentTheme.colors.textSecondary }}
-          >
+        <Box
+          sx={{
+            padding: 2,
+            textAlign: "center",
+            backgroundColor: miroirTheme.currentTheme.colors.surface,
+          }}
+        >
+          <Typography variant="body2" sx={{ color: miroirTheme.currentTheme.colors.textSecondary }}>
             No structure to display
           </Typography>
         </Box>

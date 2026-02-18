@@ -5,6 +5,7 @@ import React from 'react';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
 import type { CSSInterpolation } from '@mui/material';
+import { ThemedResizeHandleWidth } from './DrawerComponents';
 
 // ################################################################################################
 // Layout Components
@@ -225,6 +226,10 @@ export const ThemedInlineContainer: React.FC<ThemedComponentProps & {
 // #################################################################################################
 // A simple grid system inspired by Material-UI's Grid, using flexbox and media queries for responsiveness.
 export const ThemedGrid: React.FC<ThemedComponentProps & {
+  sidebarOpen?: boolean;
+  sidebarWidth?: number;
+  outlineOpen?: boolean;
+  outlineWidth?: number;
   container?: boolean;
   item?: boolean;
   xs?: number;
@@ -242,42 +247,56 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
   wrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
   zeroMinWidth?: boolean;
 }> = ({ 
+  sidebarOpen,
+  sidebarWidth,
+  outlineOpen,
+  outlineWidth,
   children, 
   className, 
   style,
   container = false,
-  item = false,
+  // item = false,
   xs,
   sm,
   md,
   lg,
   xl,
-  spacing = 1,
-  padding,
-  minHeight,
+  // spacing = 1,
+  // padding,
+  // minHeight,
   backgroundColor,
-  direction = 'row',
+  direction = 'column',
   justifyContent,
   alignItems,
-  wrap = 'wrap',
-  zeroMinWidth = false
+  // wrap = 'wrap',
+  // zeroMinWidth = false,
 }) => {
   const { currentTheme } = useMiroirTheme();
   
+  const totalSidebarWidth = sidebarOpen ? (sidebarWidth || 0) + ThemedResizeHandleWidth : 0;
+  const totalOutlineWidth = outlineOpen ? (outlineWidth || 0) : 0;
   const gridStyles = css({
-    display: container ? 'flex' : 'block',
+    display: 'flex',
+    position: 'relative',
+    left: sidebarOpen? `calc(${totalSidebarWidth}px)`: undefined,
+    width: `calc(100% - ${totalSidebarWidth}px - ${totalOutlineWidth}px)`,
+    // left: `calc(${sideBarWidth}px + 20px)`,
+    // display: container ? 'flex' : 'block',
     flexDirection: direction,
-    flexWrap: container ? wrap : 'nowrap',
-    justifyContent: container ? justifyContent : undefined,
+    // flexWrap: container ? wrap : 'nowrap',
+    justifyContent,
     alignItems: container ? alignItems : undefined,
+    // paddingLeft: sideBarWidth,
+    // margin: container ? sideBarWidth : undefined,
     // margin: container ? `-${spacing * 4}px` : undefined,
-    width: container && spacing > 0 ? `calc(100% + ${spacing * 8}px)` : undefined,
-    flex: item ? '1 1 0%' : undefined,
-    maxWidth: item ? '100%' : undefined,
+    // width: container && spacing > 0 ? `calc(100% + ${spacing * 8}px)` : undefined,
+    // flex: item ? '1 1 0%' : undefined,
+    // minWidth: '100%',
+    minHeight: '100%',
     // padding: item ? `${spacing * 4}px` : undefined,
-    padding: padding !== undefined ? (typeof padding === 'number' ? `${padding}px` : padding) : undefined,
-    minWidth: zeroMinWidth ? 0 : undefined,
-    minHeight,
+    // padding: padding !== undefined ? (typeof padding === 'number' ? `${padding}px` : padding) : undefined,
+    // minWidth: zeroMinWidth ? 0 : undefined,
+    // minHeight,
     backgroundColor,
     
     // Basic responsive grid system
@@ -458,16 +477,16 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
 // The main content area of the app, which adjusts its layout based on the state of the sidebar and outline.
 // #################################################################################################
 export const ThemedMainPanel: React.FC<ThemedComponentProps & {
-  sideBarOpen: boolean;
-  sideBarWidth: number;
+  sidebarOpen: boolean;
+  sidebarWidth: number;
   outlineOpen: boolean;
   outlineWidth: number;
 }> = ({ 
   children, 
   className, 
   style,
-  sideBarOpen: open,
-  sideBarWidth: width = 200, // SidebarWidth default
+  sidebarOpen,
+  sidebarWidth, // SidebarWidth default
   outlineOpen,
   outlineWidth = 300
 }) => {
@@ -482,6 +501,7 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
     minWidth: 0, // Allow shrinking
     height: '100%',
     // padding: currentTheme.spacing.md,
+    // width: `calc(100% - ${sidebarOpen ? sidebarWidth : 0}px - ${outlineOpen ? outlineWidth : 0}px)`,
     boxSizing: 'border-box' as const,
     // minHeight: 0, // Allow shrinking
     marginTop: 0, // Fix wide gap below the appbar
@@ -496,30 +516,34 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
   // Calculate responsive layout based on sidebar and outline states
   const responsiveStyles = css({
     ...baseStyles,
-    // When sidebar is open
-    ...(open && {
-      width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
-      marginLeft: `${width}px`,
-      marginRight: outlineOpen ? `${outlineWidth}px` : 0,
-      // Let the element naturally fill remaining space
-      // width: 'auto',
-    }),
-    // When sidebar is closed but outline is open
-    ...(!open && outlineOpen && {
-      width: `calc(100% - ${outlineWidth}px)`,
-      marginRight: `${outlineWidth}px`,
-      // width: 'auto',
-    }),
-    // When both sidebar and outline are closed
-    ...(!open && !outlineOpen && {
-      width: '100%',
-      marginLeft: 0,
-      marginRight: 0,
-      // width: 'auto',
-    }),
+    // // When sidebar is open
+    // ...(open && {
+    //   width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
+    //   marginLeft: `${width}px`,
+    //   marginRight: outlineOpen ? `${outlineWidth}px` : 0,
+    //   // Let the element naturally fill remaining space
+    //   // width: 'auto',
+    // }),
+    // // When sidebar is closed but outline is open
+    // ...(!open && outlineOpen && {
+    //   // width: `calc(100% - ${outlineWidth}px)`,
+    //   marginRight: `${outlineWidth}px`,
+    //   // width: 'auto',
+    // }),
+    // // When both sidebar and outline are closed
+    // ...(!open && !outlineOpen && {
+    //   width: '100%',
+    //   marginLeft: 0,
+    //   marginRight: 0,
+    //   // width: 'auto',
+    // }),
+    padding: 0,
   });
 
   return (
+    // <div css={responsiveStyles} className={className} style={style}>
+    //   {children}
+    // </div>
     <main css={responsiveStyles} className={className} style={style}>
       {children}
     </main>

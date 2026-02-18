@@ -753,148 +753,130 @@ export const RootComponent = (props: RootComponentProps) => {
         onThemeChange={handleAppThemeChange}
       >
         <ReportPageContextProvider>
-          <Sidebar
-            open={sidebarIsOpen}
-            setOpen={setSidebarStatus}
-            width={sidebarWidth}
-            onWidthChange={handleSidebarWidthChange}
-          />
-          <ThemedGrid
-            container
-            spacing={0}
-            padding={0}
-            direction="column"
-            id="mainPanel"
-            minHeight="100vh"
-            backgroundColor={theme.currentTheme.colors.background}
-          >
-            {/* <ThemedGrid item> */}
-            <AppBar
-              style={{padding: "0"}}
-              handleSidebarOpen={openSidebarCloseOutline}
-              sidebarIsOpen={sidebarIsOpen}
+          <div style={{ display: "flex", flexDirection: "row", minHeight: "100vh" }}>
+            <Sidebar
+              open={sidebarIsOpen}
+              setOpen={setSidebarStatus}
               width={sidebarWidth}
               onWidthChange={handleSidebarWidthChange}
-              setSidebarOpen={setSidebarStatus}
+            />
+            <ThemedGrid
+              container
+              spacing={0}
+              padding={0}
+              direction="column"
+              id="mainPanel"
+              minHeight="100%"
+              sidebarOpen={sidebarIsOpen}
+              sidebarWidth={sidebarWidth}
               outlineOpen={isOutlineOpen}
               outlineWidth={outlineWidth}
-              onOutlineToggle={handleToggleOutline}
-              gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
-              onGridTypeToggle={handleGridTypeToggle}
-              generalEditMode={context.viewParams.generalEditMode}
-              onEditModeToggle={() =>
-                context.viewParams.updateEditMode(!context.viewParams.generalEditMode)
-              }
+              backgroundColor={theme.currentTheme.colors.background}
             >
-              Bar! TODO: remove children
-            </AppBar>
-            <ThemedMainPanel
-              sideBarOpen={sidebarIsOpen}
-              sideBarWidth={sidebarWidth}
-              outlineOpen={isOutlineOpen}
-              outlineWidth={outlineWidth}
-              style={{padding: "0"}}
-            >
-              {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
-              <ThemedOnScreenDebug
-                label="RootComponent adminAppModel"
-                data={{ applicationDeploymentMap, adminAppModel }}
-                initiallyUnfolded={false}
-                useCodeBlock={true}
-                copyButton={true}
-              />
-              <ThemedOnScreenDebug
-                label="RootComponent applicationDeploymentMap"
-                data={applicationDeploymentMap}
-                initiallyUnfolded={false}
-                useCodeBlock={true}
-              />
-              <ThemedOnScreenDebug
-                label="RootComponent currentModel"
-                data={currentModel}
-                initiallyUnfolded={false}
-                useCodeBlock={true}
-              />
-              <ThemedOnScreenDebug
-                label="RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping"
-                data={deploymentUuidToReportsEntitiesDefinitionsMapping}
-                initiallyUnfolded={false}
-                useCodeBlock={true}
-                copyButton={true}
-              />
-              {/* <ThemedOnScreenDebug
-                  label="RootComponent applicationDeploymentMap2"
-                  data={applicationDeploymentMap2}
-                  initiallyUnfolded={false}
-                  useCodeBlock={true}
-                /> */}
-              {/* <ThemedOnScreenDebug
+              {/* sidebar: {sidebarIsOpen ? "open" : "closed"}, width: {sidebarWidth}px */}
+              {/* <ThemedGrid item> */}
+              <AppBar
+                style={{padding: "0"}}
+                handleSidebarOpen={openSidebarCloseOutline}
+                sidebarIsOpen={sidebarIsOpen}
+                width={sidebarWidth}
+                onWidthChange={handleSidebarWidthChange}
+                setSidebarOpen={setSidebarStatus}
+                outlineOpen={isOutlineOpen}
+                outlineWidth={outlineWidth}
+                onOutlineToggle={handleToggleOutline}
+                gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
+                onGridTypeToggle={handleGridTypeToggle}
+                generalEditMode={context.viewParams.generalEditMode}
+                onEditModeToggle={() =>
+                  context.viewParams.updateEditMode(!context.viewParams.generalEditMode)
+                }
+              >
+                Bar! TODO: remove children
+              </AppBar>
+              <ThemedMainPanel
+                sidebarOpen={sidebarIsOpen}
+                sidebarWidth={sidebarWidth}
+                outlineOpen={isOutlineOpen}
+                outlineWidth={outlineWidth}
+                style={{padding: "0"}}
+              >
+                {context.viewParams.generalEditMode && <ThemedText>uuid: {uuidv4()}</ThemedText>}
+                <ThemedOnScreenDebug
                   label="RootComponent adminAppModel"
-                  data={{applicationDeploymentMap, adminAppModel}}
+                  data={{ applicationDeploymentMap, adminAppModel }}
                   initiallyUnfolded={false}
                   useCodeBlock={true}
                   copyButton={true}
-                /> */}
-              <ThemedOnScreenDebug
-                label="RootComponent viewParams generalEditMode"
-                data={context.viewParams.generalEditMode}
-                initiallyUnfolded={false}
-                useCodeBlock={true}
-              />
-              <ThemedOnScreenDebug
-                label="RootComponent adminDeploymentsQueryResult"
-                data={adminDeploymentsQueryResult}
-                initiallyUnfolded={false}
-                useCodeBlock={true}
-              />
-              {transactions && transactions.length > 0 && (
-                <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
-              )}
-              {context.showPerformanceDisplay && (
-                <div>
-                  RootComponent renders: {navigationCount} (total: {totalCount})
-                </div>
-              )}
-              {/* commit */}
-              {/* <span>
-                  <ActionButtonWithSnackbar
-                    onAction={async () => {
-                      return domainController.handleAction(
-                        {
-                          actionType: "lendDocument",
-                          endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
-                          application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                          user: "054518f7-f626-4e76-8633-6b6ece7dcfc3",
-                          book: "394941f7-524b-4751-b0fb-cd1a4b7ea273",
-                          startDate: new Date().toISOString(),
-                          note: "Lent via RootComponent button",
-                          // deploymentUuid: noValue.uuid,
-                        } as any,
-                        // defaultMiroirModelEnvironment,
-                        libraryAppModelEnvironment,
-                      );
-                    }}
-                    successMessage="Lent book successfully"
-                    label="lend book"
-                    handleAsyncAction={handleAsyncAction}
-                    actionName="lendBook"
-                  />
-                </span> */}
-              {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
-              <Outlet></Outlet>
-            </ThemedMainPanel>
-          </ThemedGrid>
-          {/* Document Outline - Full height on right side */}
-          <InstanceEditorOutline
-            isOpen={isOutlineOpen}
-            onToggle={handleToggleOutline}
-            // data={outlineData}
-            // rootObjectKey={Object.keys(outlineData || {})[0] || ""}
-            onNavigate={handleNavigateToPath}
-            // title={outlineTitle}
-            width={outlineWidth}
-            onWidthChange={setOutlineWidth}
-          />
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent applicationDeploymentMap"
+                  data={applicationDeploymentMap}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent currentModel"
+                  data={currentModel}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping"
+                  data={deploymentUuidToReportsEntitiesDefinitionsMapping}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                  copyButton={true}
+                />
+                {/* <ThemedOnScreenDebug
+                    label="RootComponent applicationDeploymentMap2"
+                    data={applicationDeploymentMap2}
+                    initiallyUnfolded={false}
+                    useCodeBlock={true}
+                  /> */}
+                {/* <ThemedOnScreenDebug
+                    label="RootComponent adminAppModel"
+                    data={{applicationDeploymentMap, adminAppModel}}
+                    initiallyUnfolded={false}
+                    useCodeBlock={true}
+                    copyButton={true}
+                  /> */}
+                <ThemedOnScreenDebug
+                  label="RootComponent viewParams generalEditMode"
+                  data={context.viewParams.generalEditMode}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                <ThemedOnScreenDebug
+                  label="RootComponent adminDeploymentsQueryResult"
+                  data={adminDeploymentsQueryResult}
+                  initiallyUnfolded={false}
+                  useCodeBlock={true}
+                />
+                {transactions && transactions.length > 0 && (
+                  <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
+                )}
+                {context.showPerformanceDisplay && (
+                  <div>
+                    RootComponent renders: {navigationCount} (total: {totalCount})
+                  </div>
+                )}
+                {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
+                <Outlet></Outlet>
+              </ThemedMainPanel>
+            </ThemedGrid>
+            {/* Document Outline - Full height on right side */}
+            <InstanceEditorOutline
+              isOpen={isOutlineOpen}
+              onToggle={handleToggleOutline}
+              // data={outlineData}
+              // rootObjectKey={Object.keys(outlineData || {})[0] || ""}
+              onNavigate={handleNavigateToPath}
+              // title={outlineTitle}
+              width={outlineWidth}
+              onWidthChange={setOutlineWidth}
+            />
+          </div>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}

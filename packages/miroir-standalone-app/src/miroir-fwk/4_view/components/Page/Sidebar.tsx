@@ -185,24 +185,30 @@ export const Sidebar: FC<{
   ), [appSidebarSections, miroirSidebarSections]);
 
   return (
-    <ThemedDrawer open={props.open} width={props.width} style={{padding: "0"}}>
+    <ThemedDrawer
+      open={props.open}
+      width={props.width}
+      style={{ padding: "0" }}
+      onMouseDown={handleMouseDown}
+      isResizing={isResizing}
+      resizeHandle="right"
+    >
       <ThemedDrawerHeader>
-        <div
+        {/* <div
           style={{
-            position: "relative",
-            width: "calc(width)",
+            // position: "relative",
+            // width: "calc(width)",
             color: currentTheme.colors.text,
           }}
-        >
+        > */}
           <ApplicationSelector
             applicationUuid={currentApplication}
             onApplicationChange={setCurrentApplication}
           />
-        </div>
+        {/* </div> */}
       </ThemedDrawerHeader>
       <ThemedScrollableContent>{memoizedSidebarSections}</ThemedScrollableContent>
       {/* Resize handle - only show when sidebar is open */}
-      {props.open && <ThemedResizeHandle onMouseDown={handleMouseDown} isResizing={isResizing} />}
     </ThemedDrawer>
   );
 };

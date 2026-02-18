@@ -15,17 +15,25 @@ export const ThemedDrawer: React.FC<ThemedComponentProps & {
   open?: boolean; 
   width?: number; 
   variant?: string;
+  resizeHandle?: "left" | "right";
+  onMouseDown?: (e: React.MouseEvent) => void;
+  isResizing?: boolean;
 }> = ({ 
   children, 
   className, 
   style, 
   open, 
   width = 200,
-  variant = "permanent" 
+  variant = "permanent",
+  resizeHandle,
+  onMouseDown,
+  isResizing
 }) => {
   const { currentTheme } = useMiroirTheme();
   
   const drawerStyles = css({
+    display: open ? 'flex' : 'none',
+    position: 'fixed',
     width: open ? width : 0,
     flexShrink: 0,
     whiteSpace: 'nowrap',
@@ -33,70 +41,69 @@ export const ThemedDrawer: React.FC<ThemedComponentProps & {
     backgroundColor: currentTheme.colors.surface,
     borderRight: `1px solid ${currentTheme.colors.border}`,
     transition: 'width 0.2s ease',
-    display: open ? 'flex' : 'none',
     flexDirection: 'column',
-    position: 'fixed',
+    // position: 'sticky',
+    // position: 'absolute',
     top: 0,
     left: 0,
-    height: '100vh',
-    zIndex: 1200,
+    // height: '100vh',
+    height: '100%',
+    // zIndex: 1200,
     overflow: 'hidden',
-    maxWidth: open ? `${width}px` : '0px',
+    // maxWidth: open ? `${width}px` : '0px',
+    maxWidth: open ? `calc(${width}px + ${10}px)` : '0px',
   });
 
   return (
-    <div css={drawerStyles} className={className} style={style}>
-      {children}
+    <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
+      {open && onMouseDown && (
+        <ThemedResizeHandle
+          onMouseDown={onMouseDown}
+          isResizing={isResizing}
+          sidebarOpen={open}
+          sidebarWidth={width}
+        />
+      )}
+      <div css={drawerStyles} className={className} style={style}>
+        {children}
+      </div>
+      {/* {open && resizeHandle != "left" && onMouseDown && <ThemedResizeHandle onMouseDown={onMouseDown} isResizing={isResizing} />} */}
     </div>
   );
 };
 
-export const ThemedDrawerHeader: React.FC<ThemedComponentProps> = ({ 
-  children, 
-  className, 
-  style 
-}) => {
-  const { currentTheme } = useMiroirTheme();
-  
-  const headerStyles = css({
-    display: 'flex',
-    flexFlow: 'column nowrap',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    padding: currentTheme.spacing.sm,
-    minHeight: 'auto',
-    fontSize: currentTheme.typography.fontSize.md,
-    backgroundColor: currentTheme.colors.surface,
-    borderBottom: `1px solid ${currentTheme.colors.border}`,
-  });
-
-  return (
-    <div css={headerStyles} className={className} style={style}>
-      {children}
-    </div>
-  );
-};
-
+export const ThemedResizeHandleWidth = 6;
+// ################################################################################################
+// Theme Hooks
+// 
+// Hooks to access theme properties in drawer components
+// ################################################################################################
 export const ThemedResizeHandle: React.FC<ThemedComponentProps & {
+  sidebarOpen?: boolean;
+  sidebarWidth?: number;
   onMouseDown?: (e: React.MouseEvent) => void;
   isResizing?: boolean;
 }> = ({ 
+  sidebarWidth = 0,
+  sidebarOpen,
   className, 
   style, 
   onMouseDown,
-  isResizing 
+  isResizing,
 }) => {
   const { currentTheme } = useMiroirTheme();
   
   const handleStyles = css({
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: '6px',
+    width: `${ThemedResizeHandleWidth}px`,
+    position: 'fixed',
+    display: sidebarOpen ? 'flex' : 'none',
+    left: sidebarWidth,
+    // height: '100%',
+    height: '100vh',
+    flexShrink: 0,
     backgroundColor: currentTheme.colors.border,
     cursor: 'col-resize',
-    zIndex: 1000,
+    zIndex: 1200,
     transition: 'background-color 0.2s',
     borderLeft: `1px solid ${currentTheme.colors.borderLight || currentTheme.colors.border}`,
     '&:hover': {
@@ -131,6 +138,34 @@ export const ThemedResizeHandle: React.FC<ThemedComponentProps & {
   );
 };
 
+// ################################################################################################
+export const ThemedDrawerHeader: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const headerStyles = css({
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    padding: currentTheme.spacing.sm,
+    minHeight: 'auto',
+    fontSize: currentTheme.typography.fontSize.md,
+    backgroundColor: currentTheme.colors.surface,
+    borderBottom: `1px solid ${currentTheme.colors.border}`,
+  });
+
+  return (
+    <div css={headerStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+// ################################################################################################
 export const ThemedDivider: React.FC<ThemedComponentProps> = ({ 
   className, 
   style 
