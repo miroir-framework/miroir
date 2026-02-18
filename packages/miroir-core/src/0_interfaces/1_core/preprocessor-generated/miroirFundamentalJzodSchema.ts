@@ -7873,9 +7873,13 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 9,
                 "defaultLabel": "SelfApplication",
-                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                "description": "The SelfApplication this Test belongs to",
                 "display": {
                   "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
                 }
               }
             }
