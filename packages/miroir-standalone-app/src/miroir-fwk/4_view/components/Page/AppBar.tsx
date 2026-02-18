@@ -31,6 +31,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
   {
+    miroirMenuItemType: "miroirMenuItemLink",
     label: "Search",
     targetRoot: "search",
     section: "model",
@@ -41,21 +42,22 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
       name: "search",
     },
   },
-  {
-    label: "Transformer Builder",
-    targetRoot: "transformerBuilder",
-    section: "model",
-    selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
-    reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
-    icon: {
-      iconType: "mui",
-      name: "build",
-      superImpose: {
-        letter: "T",
-        color: "#FF0000",
-      },
-    },
-  },
+  // {
+  //   miroirMenuItemType: "miroirMenuItemLink",
+  //   label: "Transformer Builder",
+  //   targetRoot: "transformerBuilder",
+  //   section: "model",
+  //   selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", // not used
+  //   reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9", // not used
+  //   icon: {
+  //     iconType: "mui",
+  //     name: "build",
+  //     superImpose: {
+  //       letter: "T",
+  //       color: "#FF0000",
+  //     },
+  //   },
+  // },
   // {
   //   "label": "runners",
   //   "section": "model",
@@ -64,6 +66,7 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
   //   "icon": "directions_run"
   // },
   {
+    miroirMenuItemType: "miroirMenuItemLink",
     label: "events",
     section: "model",
     selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
@@ -71,6 +74,7 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
     // "icon": "event_note"
   },
   {
+    miroirMenuItemType: "miroirMenuItemLink",
     label: "error-logs",
     section: "model",
     selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
@@ -85,6 +89,7 @@ const appbarItems: (MiroirMenuItem & { targetRoot?: string })[] = [
   //   "icon": "engineering"
   // },
   {
+    miroirMenuItemType: "miroirMenuItemLink",
     label: "settings",
     section: "model",
     selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
@@ -214,6 +219,7 @@ export function AppBar(props:AppBarProps) {
   
   return (
     <StyledAppBar
+      style={{ padding: "0" }}
       open={props.sidebarIsOpen}
       width={props.width}
       outlineOpen={props.outlineOpen}
@@ -225,43 +231,44 @@ export function AppBar(props:AppBarProps) {
         boxShadow: miroirTheme.currentTheme.components.appBar.elevation,
       }}
     >
-      <>
-        <Toolbar disableGutters={false}>
-          {/* <Box sx={{display:"flex"}}> */}
-          {/* sidebar opener */}
-          {!props.sidebarIsOpen && (
-            <ThemedIconButton
-              aria-label="open sidebar"
-              title="Open sidebar"
-              onClick={props.handleSidebarOpen}
-            >
-              <ChevronRightIcon />
-            </ThemedIconButton>
-          )}
-          {/* sidebar closer */}
-          {props.sidebarIsOpen && (
-            <ThemedIconButton
-              style={{ padding: 0 }}
-              onClick={() => props.setSidebarOpen(false)}
-              aria-label="Close sidebar"
-              title="Close sidebar"
-            >
-              <ChevronLeftIcon />
-            </ThemedIconButton>
-          )}
-          {/* HOME */}
-          <Link to={`/home`}>
-            <Icon
-              sx={{
-                mr: 2,
-                color: miroirTheme.currentTheme.components.appBar.textColor,
-              }}
-            >
-              home
-            </Icon>
-          </Link>
-          {/* MENU, NOT WORKING */}
-          {/* <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "flex" } }}>
+      <Toolbar disableGutters>
+        {/* <Box sx={{display:"flex"}}> */}
+        {/* sidebar opener */}
+        {!props.sidebarIsOpen && (
+          <ThemedIconButton
+            aria-label="open sidebar"
+            title="Open sidebar"
+            onClick={props.handleSidebarOpen}
+          >
+            <ChevronRightIcon />
+          </ThemedIconButton>
+        )}
+        {/* sidebar closer */}
+        {props.sidebarIsOpen && (
+          <ThemedIconButton
+            style={{ padding: 0 }}
+            onClick={() => props.setSidebarOpen(false)}
+            aria-label="Close sidebar"
+            title="Close sidebar"
+          >
+            <ChevronLeftIcon />
+          </ThemedIconButton>
+        )}
+        {/* HOME */}
+        <Link to={`/home`}>
+          <Icon
+            sx={{
+              mr: 2,
+              color: miroirTheme.currentTheme.components.appBar.textColor,
+            }}
+          >
+            home
+          </Icon>
+        </Link>
+        <Box>
+
+        {/* MENU, NOT WORKING */}
+        {/* <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "flex" } }}>
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -287,8 +294,8 @@ export function AppBar(props:AppBarProps) {
               ))}
             </Menu>
           </Box> */}
-          {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
-          {/* <Typography
+        {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
+        {/* <Typography
             variant="h5"
             noWrap
             component="a"
@@ -306,51 +313,56 @@ export function AppBar(props:AppBarProps) {
           >
             LOGO
           </Typography> */}
-          {/* MAIN APPBAR ITEMS */}
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {appbarItems.map((item) => (
-              <Button
-                key={item.label}
-                onClick={(e: any) => goToLabelPage(e, item.targetRoot ?? item.label)}
-                sx={{
-                  my: 2,
-                  color: miroirTheme.currentTheme.components.appBar.textColor,
-                  display: "block",
-                }}
-              >
-                {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
-              </Button>
-            ))}
-          </Box>
-          {/* Edit Mode Toggle Button */}
-          {props.onEditModeToggle && (
-            <Tooltip
-              title={
-                props.generalEditMode
-                  ? "Edit Report Mode: ON (click to disable)"
-                  : "Edit Report Mode: OFF (click to enable)"
-              }
-            >
-              <IconButton
-                color="inherit"
-                onClick={props.onEditModeToggle}
-                sx={{
-                  mr: 1,
-                  color: props.generalEditMode
-                    ? miroirTheme.currentTheme.colors.warningLight || "orange"
-                    : miroirTheme.currentTheme.components.appBar.textColor,
-                  transition: "all 0.3s ease-in-out",
-                  "&:hover": {
-                    backgroundColor: miroirTheme.currentTheme.colors.hover,
-                  },
-                }}
-              >
-                {props.generalEditMode ? <EditOff /> : <Edit />}
-              </IconButton>
-            </Tooltip>
+        </Box>
+        {/* MAIN APPBAR ITEMS */}
+        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          {/* TODO: dividers are ignored  */}
+          {appbarItems.map(
+            (item) =>
+              item.miroirMenuItemType === "miroirMenuItemLink" && (
+                <Button
+                  key={item.label}
+                  onClick={(e: any) => goToLabelPage(e, item.targetRoot ?? item.label)}
+                  sx={{
+                    my: 2,
+                    color: miroirTheme.currentTheme.components.appBar.textColor,
+                    display: "block",
+                  }}
+                >
+                  {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
+                </Button>
+              ),
           )}
-          {/* useless menu */}
-          {/* <IconButton
+        </Box>
+        {/* Edit Mode Toggle Button */}
+        {props.onEditModeToggle && (
+          <Tooltip
+            title={
+              props.generalEditMode
+                ? "Edit Report Mode: ON (click to disable)"
+                : "Edit Report Mode: OFF (click to enable)"
+            }
+          >
+            <IconButton
+              color="inherit"
+              onClick={props.onEditModeToggle}
+              sx={{
+                mr: 1,
+                color: props.generalEditMode
+                  ? miroirTheme.currentTheme.colors.warningLight || "orange"
+                  : miroirTheme.currentTheme.components.appBar.textColor,
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  backgroundColor: miroirTheme.currentTheme.colors.hover,
+                },
+              }}
+            >
+              {props.generalEditMode ? <EditOff /> : <Edit />}
+            </IconButton>
+          </Tooltip>
+        )}
+        {/* useless menu */}
+        {/* <IconButton
             size="large"
             aria-label="account of current user"
             aria-controls="menu-appbar"
@@ -360,8 +372,9 @@ export function AppBar(props:AppBarProps) {
           >
             <MenuIcon />
           </IconButton> */}
-          <Box sx={{ flexGrow: 0, display: "flex" }}>
-            <ActionButtonWithSnackbar
+        <Box sx={{ flexGrow: 0, display: "flex" }}>
+          {/* Commit */}
+          {/* <ActionButtonWithSnackbar
               onAction={async () => {
                 return domainController.handleActionFromUI(
                   {
@@ -370,7 +383,6 @@ export function AppBar(props:AppBarProps) {
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     payload: {
                       application: noValue.uuid,
-                      // deploymentUuid: noValue.uuid,
                     },
                   },
                   defaultSelfApplicationDeploymentMap,
@@ -381,54 +393,54 @@ export function AppBar(props:AppBarProps) {
               label="Commit"
               handleAsyncAction={handleAsyncAction}
               actionName="commit"
-            />
-            {/* Fetch Configurations Button */}
-            <ThemedIconButton
-              onClick={fetchConfigurations}
-              aria-label="Fetch configurations"
-              title="Fetch Miroir & App configurations from database"
+            /> */}
+          {/* Fetch Configurations Button */}
+          <ThemedIconButton
+            onClick={fetchConfigurations}
+            aria-label="Fetch configurations"
+            title="Fetch Miroir & App configurations from database"
+          >
+            <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
+          </ThemedIconButton>
+          {/* Model Tools Indicator */}
+          {context.setShowModelTools && (
+            <Tooltip
+              title={
+                context.showModelTools
+                  ? "Model Tools: ON (click to disable)"
+                  : "Model Tools: OFF (click to enable)"
+              }
             >
-              <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
-            </ThemedIconButton>
-            {/* Model Tools Indicator */}
-            {context.setShowModelTools && (
-              <Tooltip
-                title={
-                  context.showModelTools
-                    ? "Model Tools: ON (click to disable)"
-                    : "Model Tools: OFF (click to enable)"
-                }
+              <ThemedIconButton
+                onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
+                aria-label="Model Tools"
               >
-                <ThemedIconButton
-                  onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
-                  aria-label="Model Tools"
-                >
-                  <ThemedIcon
-                    icon={
-                      context.showModelTools
-                        ? {
-                            iconType: "mui",
-                            // name: "architecture",
-                            name: "wbIncandescent",
-                            // name: "draw",
-                            color: {
-                              colorType: "themeColor",
-                              currentThemeColorPath: "colors.warning",
-                            },
-                          }
-                        : {
-                            iconType: "mui",
-                            // name: "architecture",
-                            name: "lightbulb",
-                            // name: "draw",
-                          }
-                    }
-                  />
-                </ThemedIconButton>
-              </Tooltip>
-            )}
-            {/* Action Timeline Indicator */}
-            {context.setShowActionTimeline && (
+                <ThemedIcon
+                  icon={
+                    context.showModelTools
+                      ? {
+                          iconType: "mui",
+                          // name: "architecture",
+                          name: "wbIncandescent",
+                          // name: "draw",
+                          color: {
+                            colorType: "themeColor",
+                            currentThemeColorPath: "colors.warning",
+                          },
+                        }
+                      : {
+                          iconType: "mui",
+                          // name: "architecture",
+                          name: "lightbulb",
+                          // name: "draw",
+                        }
+                  }
+                />
+              </ThemedIconButton>
+            </Tooltip>
+          )}
+          {/* Action Timeline Indicator */}
+          {/* {context.setShowActionTimeline && (
               <Tooltip
                 title={
                   context.showActionTimeline
@@ -452,42 +464,42 @@ export function AppBar(props:AppBarProps) {
                   />
                 </ThemedIconButton>
               </Tooltip>
-            )}
-            {/* Debug Info Indicator */}
-            {context.setShowDebugInfo && (
-              <Tooltip
-                title={
-                  context.showDebugInfo
-                    ? "Debug Info: ON (click to disable)"
-                    : "Debug Info: OFF (click to enable)"
-                }
+            )} */}
+          {/* Debug Info Indicator */}
+          {context.setShowDebugInfo && (
+            <Tooltip
+              title={
+                context.showDebugInfo
+                  ? "Debug Info: ON (click to disable)"
+                  : "Debug Info: OFF (click to enable)"
+              }
+            >
+              <ThemedIconButton
+                onClick={() => context.setShowDebugInfo?.(!context.showDebugInfo) as any}
+                aria-label="Debug Info"
               >
-                <ThemedIconButton
-                  onClick={() => context.setShowDebugInfo?.(!context.showDebugInfo) as any}
-                  aria-label="Debug Info"
-                >
-                  <ThemedIcon
-                    icon={
-                      context.showDebugInfo
-                        ? {
-                            iconType: "mui",
-                            name: "bug_report",
-                            color: {
-                              colorType: "themeColor",
-                              currentThemeColorPath: "colors.warning",
-                            },
-                          }
-                        : {
-                            iconType: "mui",
-                            name: "bug_report",
-                          }
-                    }
-                  />
-                </ThemedIconButton>
-              </Tooltip>
-            )}
-            {/* Performance Monitor Indicator */}
-            {context.setShowPerformanceDisplay && (
+                <ThemedIcon
+                  icon={
+                    context.showDebugInfo
+                      ? {
+                          iconType: "mui",
+                          name: "bug_report",
+                          color: {
+                            colorType: "themeColor",
+                            currentThemeColorPath: "colors.warning",
+                          },
+                        }
+                      : {
+                          iconType: "mui",
+                          name: "bug_report",
+                        }
+                  }
+                />
+              </ThemedIconButton>
+            </Tooltip>
+          )}
+          {/* Performance Monitor Indicator */}
+          {/* {context.setShowPerformanceDisplay && (
               <Tooltip
                 title={
                   context.showPerformanceDisplay
@@ -511,9 +523,9 @@ export function AppBar(props:AppBarProps) {
                   />
                 </ThemedIconButton>
               </Tooltip>
-            )}
-            {/* Document Outline Toggle */}
-            {/* {props.onOutlineToggle && (
+            )} */}
+          {/* Document Outline Toggle */}
+          {/* {props.onOutlineToggle && (
               <Tooltip
                 title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}
               >
@@ -522,13 +534,13 @@ export function AppBar(props:AppBarProps) {
                 </IconButton>
               </Tooltip>
             )} */}
-            {/* User settings menu */}
-            {/* <Tooltip title="Open settings">
+          {/* User settings menu */}
+          {/* <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip> */}
-            {/* <Menu
+          {/* <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
@@ -550,9 +562,8 @@ export function AppBar(props:AppBarProps) {
                 </MenuItem>
               ))}
             </Menu> */}
-          </Box>
-        </Toolbar>
-      </>
+        </Box>
+      </Toolbar>
     </StyledAppBar>
   );
 }

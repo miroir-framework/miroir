@@ -193,26 +193,27 @@ export const themeParams = {
       main: blue[500],
     },
   },
-  spacing: 2,
+  // spacing: 2,
+  spacing: 0,
   components: {
     toolbar: {
       paddingRight: 24, // keep right padding when drawer closed
     },
-    MuiContainer: { // no effect?
-      defaultProps: {
-        disableGutters: true,
-      },
-    },
-    MuiToolbar: { // no effect
-      defaultProps: {
-        disableGutters: true,
-      },
-    },
-    MuiGridContainer: { // no effect?
-      defaultProps: {
-        disableGutters: true,
-      },
-    },
+    // MuiContainer: { // no effect?
+    //   defaultProps: {
+    //     disableGutters: true,
+    //   },
+    // },
+    // MuiToolbar: { // no effect
+    //   defaultProps: {
+    //     disableGutters: true,
+    //   },
+    // },
+    // MuiGridContainer: { // no effect?
+    //   defaultProps: {
+    //     disableGutters: true,
+    //   },
+    // },
     content: {
       flexGrow: 1,
       // height: '100vh',

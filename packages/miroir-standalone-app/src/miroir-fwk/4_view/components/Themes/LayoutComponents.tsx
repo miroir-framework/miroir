@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, type CSSObject, type SerializedStyles } from '@emotion/react';
 import React from 'react';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import type { CSSInterpolation } from '@mui/material';
 
 // ################################################################################################
 // Layout Components
@@ -65,6 +66,7 @@ export const ThemedFlexColumn: React.FC<ThemedComponentProps & {
   );
 };
 
+// #################################################################################################
 export const ThemedBox: React.FC<ThemedComponentProps & {
   display?: 'flex' | 'inline-flex' | 'block' | 'inline-block';
   position?: 'static' | 'relative' | 'absolute' | 'fixed';
@@ -138,6 +140,7 @@ export const ThemedBox: React.FC<ThemedComponentProps & {
   );
 };
 
+// #################################################################################################
 export const ThemedFlexContainer: React.FC<ThemedComponentProps & {
   flexDirection?: 'row' | 'column';
   justifyContent?: string;
@@ -172,6 +175,7 @@ export const ThemedFlexContainer: React.FC<ThemedComponentProps & {
   );
 };
 
+// #################################################################################################
 export const ThemedInlineContainer: React.FC<ThemedComponentProps & {
   alignItems?: string;
   gap?: string;
@@ -218,6 +222,8 @@ export const ThemedInlineContainer: React.FC<ThemedComponentProps & {
   );
 };
 
+// #################################################################################################
+// A simple grid system inspired by Material-UI's Grid, using flexbox and media queries for responsiveness.
 export const ThemedGrid: React.FC<ThemedComponentProps & {
   container?: boolean;
   item?: boolean;
@@ -227,6 +233,9 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
   lg?: number;
   xl?: number;
   spacing?: number;
+  padding?: number | string;
+  minHeight?: string;
+  backgroundColor?: string;
   direction?: 'row' | 'column';
   justifyContent?: string;
   alignItems?: string;
@@ -244,6 +253,9 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
   lg,
   xl,
   spacing = 1,
+  padding,
+  minHeight,
+  backgroundColor,
   direction = 'row',
   justifyContent,
   alignItems,
@@ -258,12 +270,15 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
     flexWrap: container ? wrap : 'nowrap',
     justifyContent: container ? justifyContent : undefined,
     alignItems: container ? alignItems : undefined,
-    margin: container ? `-${spacing * 4}px` : undefined,
-    width: container ? `calc(100% + ${spacing * 8}px)` : undefined,
+    // margin: container ? `-${spacing * 4}px` : undefined,
+    width: container && spacing > 0 ? `calc(100% + ${spacing * 8}px)` : undefined,
     flex: item ? '1 1 0%' : undefined,
     maxWidth: item ? '100%' : undefined,
-    padding: item ? `${spacing * 4}px` : undefined,
+    // padding: item ? `${spacing * 4}px` : undefined,
+    padding: padding !== undefined ? (typeof padding === 'number' ? `${padding}px` : padding) : undefined,
     minWidth: zeroMinWidth ? 0 : undefined,
+    minHeight,
+    backgroundColor,
     
     // Basic responsive grid system
     ...(xs && {
@@ -307,6 +322,11 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
   );
 };
 
+// #################################################################################################
+// Context Providers
+// 
+// Layout-related context providers, e.g. for managing folded state of nodes in the outline.
+// #################################################################################################
 export const ThemedOptionalAttributeContainer: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -329,6 +349,7 @@ export const ThemedOptionalAttributeContainer: React.FC<ThemedComponentProps> = 
   );
 };
 
+// #################################################################################################
 export const ThemedOptionalAttributeItem: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -349,6 +370,7 @@ export const ThemedOptionalAttributeItem: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// #################################################################################################
 export const ThemedDeleteButtonContainer: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -373,6 +395,7 @@ export const ThemedDeleteButtonContainer: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ##################################################################################################
 export const ThemedIndentedContainer: React.FC<ThemedComponentProps & {
   indentLevel?: number;
   marginLeft?: string;
@@ -429,6 +452,11 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// #################################################################################################
+// Main Panel
+// 
+// The main content area of the app, which adjusts its layout based on the state of the sidebar and outline.
+// #################################################################################################
 export const ThemedMainPanel: React.FC<ThemedComponentProps & {
   sideBarOpen: boolean;
   sideBarWidth: number;
@@ -446,20 +474,22 @@ export const ThemedMainPanel: React.FC<ThemedComponentProps & {
   const { currentTheme } = useMiroirTheme();
   
   // Base styles for all conditions
-  const baseStyles = {
+  const baseStyles: CSSObject = {
     display: 'flex',
     flexDirection: 'column' as const,
     flexGrow: 1,
     // overflow: 'hidden', // Prevent main panel from scrolling, let content handle it
     minWidth: 0, // Allow shrinking
     height: '100%',
-    padding: currentTheme.spacing.md,
+    // padding: currentTheme.spacing.md,
     boxSizing: 'border-box' as const,
     // minHeight: 0, // Allow shrinking
     marginTop: 0, // Fix wide gap below the appbar
-    paddingTop: currentTheme.spacing.md,
+    paddingTop: 0,
+    paddingLeft: 0,
     // Simple transition for all properties
     transition: 'margin 300ms ease-out, width 300ms ease-out',
+    backgroundColor: currentTheme.colors.background,
     // Handle overflow - let content determine scrolling behavior
   };
 

@@ -12,9 +12,9 @@ html, body {
   overflow-y: auto; /* Allow scrolling when content overflows */
 }
 
-/* #root {
-  overflow-y: auto;
-} */
+#root {
+  min-height: 100vh;
+}
 
 /* Preserve functionality for form inputs */
 textarea, 

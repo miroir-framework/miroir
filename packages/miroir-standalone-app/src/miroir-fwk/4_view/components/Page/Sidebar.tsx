@@ -182,18 +182,6 @@ export const Sidebar: FC<{
       ...appSidebarSections,
       ...miroirSidebarSections,
     ]
-    // .map((section, index) => (
-    //   <>
-    //     {index > 0 && <ThemedDivider />}
-    //     <SidebarSection
-    //       key={section.menuUuid}
-    //       deploymentUuid={section.deploymentUuid}
-    //       menuUuid={section.menuUuid}
-    //       open={props.open}
-    //       setOpen={props.setOpen}
-    //     />
-    //   </>
-    // ))
   ), [appSidebarSections, miroirSidebarSections]);
 
   return (
