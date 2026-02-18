@@ -26,8 +26,7 @@
           "type":"objectInstanceReportSection",
           "definition": {
             "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
-            "fetchedDataReference": "application",
-            "sortByAttribute": "name"
+            "fetchedDataReference": "application"
           }
         }
       ]

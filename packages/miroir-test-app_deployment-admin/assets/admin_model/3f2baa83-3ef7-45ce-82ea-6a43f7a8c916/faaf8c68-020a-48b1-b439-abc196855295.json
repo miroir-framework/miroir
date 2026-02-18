@@ -27,8 +27,7 @@
           "definition": {
             "label": "My Bundle",
             "parentUuid": "9f9170da-538d-425c-8cb7-551640623eed",
-            "fetchedDataReference": "bundle",
-            "sortByAttribute": "name"
+            "fetchedDataReference": "bundle"
           }
         }
       ]

@@ -6,7 +6,6 @@
   "selfApplication":"55af124e-8c05-4bae-a3ef-0933d41daa92",
   "branch":"9034141b-0d0d-4beb-82af-dfc02be15c2d",
   "description": "Initial Admin selfApplication version",
-  "previousVersion": "",
   "modelStructureMigration":[],
   "modelCUDMigration":[]
 }

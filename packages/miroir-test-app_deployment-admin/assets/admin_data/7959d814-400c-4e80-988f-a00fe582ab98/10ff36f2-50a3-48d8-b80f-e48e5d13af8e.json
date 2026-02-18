@@ -6,8 +6,6 @@
   "defaultLabel": "Miroir SelfApplication Deployment Configuration declaring Miroir SelfApplication Deployment in Admin schema. Run-time-only / DEFUNCT?",
   "description": "The default Deployment for SelfApplication Miroir",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "applicationModelLevel": "Metamodel",
-  "type": "singleNode",
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",

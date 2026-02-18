@@ -6,7 +6,6 @@
   "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
   "branch":"9034141b-0d0d-4beb-82af-dfc02be15c2d",
   "description": "Initial Library selfApplication version",
-  "previousVersion": "",
   "modelStructureMigration":[],
   "modelCUDMigration":[]
 }
