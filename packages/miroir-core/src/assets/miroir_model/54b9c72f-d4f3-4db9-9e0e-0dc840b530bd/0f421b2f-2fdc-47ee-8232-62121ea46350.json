@@ -96,7 +96,7 @@
       "definition": {
         "type": "schemaReference",
         "context": {
-          "miroirMenuItem": {
+          "miroirMenuItemLink": {
             "type": "object",
             "tag": {
               "value": {
@@ -108,6 +108,10 @@
               }
             },
             "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuItemLink"
+              },
               "label": {
                 "type": "string"
               },
@@ -196,6 +200,85 @@
                 }
               }
             }
+          },
+          "miroirMenuItemDivider": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item Divider",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label",
+                  "editable": true
+                }
+              }
+            },
+            "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuItemDivider"
+              },
+              "label": {
+                "type": "string"
+              },
+              "selfApplication": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "SelfApplication",
+                    "display": { "editable": false }
+                  }
+                }
+              },
+              "hidden": {
+                "type": "boolean",
+                "optional": true
+              },
+              "menuItemScope": {
+                "type": "enum",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "display": { "editable": true },
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    }
+                  }
+                },
+                "definition": [
+                  "data",
+                  "model"
+                ]
+              }
+            }
+          },
+          "miroirMenuItem": {
+            "type": "union",
+            "discriminator": "miroirMenuItemType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirMenuItemLink"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirMenuItemDivider"
+                }
+              }
+            ]
           },
           "menuItemArray": {
             "type": "array",

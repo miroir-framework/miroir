@@ -13,6 +13,7 @@
         "label": "library",
         "items": [
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Application",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -22,6 +23,7 @@
             "instanceUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Entities",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -30,6 +32,7 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Entity Definitions",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -38,6 +41,7 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Queries",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -46,6 +50,7 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Reports",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -54,6 +59,7 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Menus",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -62,6 +68,7 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Endpoints",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -70,6 +77,7 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Runners",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -78,6 +86,13 @@
             "menuItemScope": "model"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemDivider",
+            "label": "Library Model-Data Divider",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Books",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -85,6 +100,7 @@
             "icon": "auto_stories"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Authors",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -92,6 +108,7 @@
             "icon": "star"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Publishers",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -99,6 +116,7 @@
             "icon": "account_balance"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library countries",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -106,6 +124,7 @@
             "icon": "flag"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Users",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -113,6 +132,7 @@
             "icon": "person"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Library Lending History",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",

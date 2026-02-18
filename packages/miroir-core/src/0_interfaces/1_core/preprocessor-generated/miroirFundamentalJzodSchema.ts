@@ -10267,7 +10267,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "miroirMenuItem": {
+      "miroirMenuItemLink": {
         "type": "object",
         "tag": {
           "value": {
@@ -10279,6 +10279,10 @@ export const miroirFundamentalJzodSchema = {
           }
         },
         "definition": {
+          "miroirMenuItemType": {
+            "type": "literal",
+            "definition": "miroirMenuItemLink"
+          },
           "label": {
             "type": "string"
           },
@@ -10375,6 +10379,89 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         }
+      },
+      "miroirMenuItemDivider": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Menu Item Divider",
+            "display": {
+              "displayedAttributeValueWhenFolded": "label",
+              "editable": true
+            }
+          }
+        },
+        "definition": {
+          "miroirMenuItemType": {
+            "type": "literal",
+            "definition": "miroirMenuItemDivider"
+          },
+          "label": {
+            "type": "string"
+          },
+          "selfApplication": {
+            "type": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "SelfApplication",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "hidden": {
+            "type": "boolean",
+            "optional": true
+          },
+          "menuItemScope": {
+            "type": "enum",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "display": {
+                  "editable": true
+                },
+                "description": "What elements this menu item targets (data or model)",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "data"
+                }
+              }
+            },
+            "definition": [
+              "data",
+              "model"
+            ]
+          }
+        }
+      },
+      "miroirMenuItem": {
+        "type": "union",
+        "discriminator": "miroirMenuItemType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirMenuItemLink"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirMenuItemDivider"
+            }
+          }
+        ]
       },
       "menuItemArray": {
         "type": "array",
@@ -10552,7 +10639,7 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "type": "schemaReference",
             "context": {
-              "miroirMenuItem": {
+              "miroirMenuItemLink": {
                 "type": "object",
                 "tag": {
                   "value": {
@@ -10564,6 +10651,10 @@ export const miroirFundamentalJzodSchema = {
                   }
                 },
                 "definition": {
+                  "miroirMenuItemType": {
+                    "type": "literal",
+                    "definition": "miroirMenuItemLink"
+                  },
                   "label": {
                     "type": "string"
                   },
@@ -10660,6 +10751,89 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 }
+              },
+              "miroirMenuItemDivider": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Menu Item Divider",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "label",
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": {
+                  "miroirMenuItemType": {
+                    "type": "literal",
+                    "definition": "miroirMenuItemDivider"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "selfApplication": {
+                    "type": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "SelfApplication",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "hidden": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "menuItemScope": {
+                    "type": "enum",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scope",
+                        "display": {
+                          "editable": true
+                        },
+                        "description": "What elements this menu item targets (data or model)",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "data"
+                        }
+                      }
+                    },
+                    "definition": [
+                      "data",
+                      "model"
+                    ]
+                  }
+                }
+              },
+              "miroirMenuItem": {
+                "type": "union",
+                "discriminator": "miroirMenuItemType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "miroirMenuItemLink"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "miroirMenuItemDivider"
+                    }
+                  }
+                ]
               },
               "menuItemArray": {
                 "type": "array",
@@ -35895,7 +36069,7 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "schemaReference",
                     "context": {
-                      "miroirMenuItem": {
+                      "miroirMenuItemLink": {
                         "type": "object",
                         "tag": {
                           "value": {
@@ -35907,6 +36081,10 @@ export const miroirFundamentalJzodSchema = {
                           }
                         },
                         "definition": {
+                          "miroirMenuItemType": {
+                            "type": "literal",
+                            "definition": "miroirMenuItemLink"
+                          },
                           "label": {
                             "type": "string"
                           },
@@ -36005,6 +36183,91 @@ export const miroirFundamentalJzodSchema = {
                             "context": {}
                           }
                         }
+                      },
+                      "miroirMenuItemDivider": {
+                        "type": "object",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Menu Item Divider",
+                            "display": {
+                              "displayedAttributeValueWhenFolded": "label",
+                              "editable": true
+                            }
+                          }
+                        },
+                        "definition": {
+                          "miroirMenuItemType": {
+                            "type": "literal",
+                            "definition": "miroirMenuItemDivider"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "selfApplication": {
+                            "type": "string",
+                            "validations": [
+                              {
+                                "type": "uuid"
+                              }
+                            ],
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "SelfApplication",
+                                "display": {
+                                  "editable": false
+                                }
+                              }
+                            }
+                          },
+                          "hidden": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "menuItemScope": {
+                            "type": "enum",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Scope",
+                                "display": {
+                                  "editable": true
+                                },
+                                "description": "What elements this menu item targets (data or model)",
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "data"
+                                }
+                              }
+                            },
+                            "definition": [
+                              "data",
+                              "model"
+                            ]
+                          }
+                        }
+                      },
+                      "miroirMenuItem": {
+                        "type": "union",
+                        "discriminator": "miroirMenuItemType",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "miroirMenuItemLink"
+                            },
+                            "context": {}
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "miroirMenuItemDivider"
+                            },
+                            "context": {}
+                          }
+                        ]
                       },
                       "menuItemArray": {
                         "type": "array",
@@ -38990,6 +39253,7 @@ export const miroirFundamentalJzodSchema = {
               "discriminator": [
                 [
                   "transformerType",
+                  "miroirMenuItemType",
                   "transformerType"
                 ]
               ],
@@ -41303,314 +41567,33 @@ export const miroirFundamentalJzodSchema = {
         ]
       },
       "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItem": {
-        "tag": {
-          "value": {
-            "defaultLabel": "Menu Item",
-            "display": {
-              "displayedAttributeValueWhenFolded": "label",
-              "editable": true
-            },
-            "isTemplate": true
-          }
-        },
         "type": "union",
-        "discriminator": "transformerType",
+        "discriminator": [
+          [
+            "miroirMenuItemType",
+            "transformerType"
+          ]
+        ],
         "definition": [
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildCarryOnObject"
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemLink"
             }
           },
           {
-            "type": "object",
-            "tag": {
-              "value": {
-                "defaultLabel": "Menu Item",
-                "display": {
-                  "displayedAttributeValueWhenFolded": "label",
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            },
+            "type": "schemaReference",
             "definition": {
-              "label": {
-                "type": "union",
-                "discriminator": "transformerType",
-                "definition": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "hidden": {
-                "type": "union",
-                "optional": true,
-                "discriminator": "transformerType",
-                "definition": [
-                  {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "menuItemScope": {
-                "type": "union",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Scope",
-                    "display": {
-                      "editable": true
-                    },
-                    "description": "What elements this menu item targets (data or model)",
-                    "initializeTo": {
-                      "initializeToType": "value",
-                      "value": "data"
-                    },
-                    "isTemplate": true
-                  }
-                },
-                "definition": [
-                  {
-                    "type": "enum",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Scope",
-                        "display": {
-                          "editable": true
-                        },
-                        "description": "What elements this menu item targets (data or model)",
-                        "initializeTo": {
-                          "initializeToType": "value",
-                          "value": "data"
-                        }
-                      }
-                    },
-                    "definition": [
-                      "data",
-                      "model"
-                    ]
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ],
-                "discriminator": "transformerType"
-              },
-              "section": {
-                "type": "union",
-                "discriminator": [
-                  [
-                    "transformerType",
-                    "transformerType"
-                  ]
-                ],
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
-                    },
-                    "context": {}
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "selfApplication": {
-                "type": "union",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "SelfApplication",
-                    "display": {
-                      "editable": false
-                    },
-                    "isTemplate": true
-                  }
-                },
-                "discriminator": "transformerType",
-                "definition": [
-                  {
-                    "type": "string",
-                    "validations": [
-                      {
-                        "type": "uuid"
-                      }
-                    ],
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "SelfApplication",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "reportUuid": {
-                "type": "union",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Report",
-                    "display": {
-                      "editable": false
-                    },
-                    "isTemplate": true
-                  }
-                },
-                "discriminator": "transformerType",
-                "definition": [
-                  {
-                    "type": "string",
-                    "validations": [
-                      {
-                        "type": "uuid"
-                      }
-                    ],
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Report",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "instanceUuid": {
-                "type": "union",
-                "optional": true,
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "tag": {
-                  "value": {
-                    "id": 1,
-                    "defaultLabel": "Instance",
-                    "display": {
-                      "editable": false
-                    },
-                    "isTemplate": true
-                  }
-                },
-                "discriminator": "transformerType",
-                "definition": [
-                  {
-                    "type": "string",
-                    "optional": true,
-                    "validations": [
-                      {
-                        "type": "uuid"
-                      }
-                    ],
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Instance",
-                        "display": {
-                          "editable": false
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
-              "icon": {
-                "optional": true,
-                "type": "union",
-                "discriminator": [
-                  [
-                    "transformerType",
-                    "iconType",
-                    "transformerType"
-                  ]
-                ],
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "optional": true,
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirIcon"
-                    },
-                    "context": {}
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemDivider"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
             }
           }
         ]
@@ -42320,46 +42303,492 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection": {
-        "type": "union",
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemLink": {
         "tag": {
           "value": {
-            "defaultLabel": "Application Section",
-            "description": "A section of the application (model or data)",
-            "initializeTo": {
-              "initializeToType": "value",
-              "value": "data"
+            "defaultLabel": "Menu Item",
+            "display": {
+              "displayedAttributeValueWhenFolded": "label",
+              "editable": true
             },
             "isTemplate": true
           }
         },
+        "type": "union",
+        "discriminator": "transformerType",
         "definition": [
-          {
-            "type": "enum",
-            "tag": {
-              "value": {
-                "defaultLabel": "Application Section",
-                "description": "A section of the application (model or data)",
-                "initializeTo": {
-                  "initializeToType": "value",
-                  "value": "data"
-                }
-              }
-            },
-            "definition": [
-              "model",
-              "data"
-            ]
-          },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuildCarryOnObject"
             }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label",
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuItemLink"
+              },
+              "label": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "hidden": {
+                "type": "union",
+                "optional": true,
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "menuItemScope": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "display": {
+                      "editable": true
+                    },
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "enum",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scope",
+                        "display": {
+                          "editable": true
+                        },
+                        "description": "What elements this menu item targets (data or model)",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "data"
+                        }
+                      }
+                    },
+                    "definition": [
+                      "data",
+                      "model"
+                    ]
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ],
+                "discriminator": "transformerType"
+              },
+              "section": {
+                "type": "union",
+                "discriminator": [
+                  [
+                    "transformerType",
+                    "transformerType"
+                  ]
+                ],
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "selfApplication": {
+                "type": "union",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "SelfApplication",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "SelfApplication",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "reportUuid": {
+                "type": "union",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Report",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Report",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "instanceUuid": {
+                "type": "union",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Instance",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true,
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Instance",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "icon": {
+                "optional": true,
+                "type": "union",
+                "discriminator": [
+                  [
+                    "transformerType",
+                    "iconType",
+                    "transformerType"
+                  ]
+                ],
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirIcon"
+                    },
+                    "context": {}
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
           }
-        ],
-        "discriminator": "transformerType"
+        ]
+      },
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemDivider": {
+        "tag": {
+          "value": {
+            "defaultLabel": "Menu Item Divider",
+            "display": {
+              "displayedAttributeValueWhenFolded": "label",
+              "editable": true
+            },
+            "isTemplate": true
+          }
+        },
+        "type": "union",
+        "discriminator": "transformerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item Divider",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label",
+                  "editable": true
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuItemDivider"
+              },
+              "label": {
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "selfApplication": {
+                "type": "union",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "SelfApplication",
+                    "display": {
+                      "editable": false
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "SelfApplication",
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "hidden": {
+                "type": "union",
+                "optional": true,
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "menuItemScope": {
+                "type": "union",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "display": {
+                      "editable": true
+                    },
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "enum",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scope",
+                        "display": {
+                          "editable": true
+                        },
+                        "description": "What elements this menu item targets (data or model)",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "data"
+                        }
+                      }
+                    },
+                    "definition": [
+                      "data",
+                      "model"
+                    ]
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ],
+                "discriminator": "transformerType"
+              }
+            }
+          }
+        ]
       },
       "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerRoot": {
         "type": "union",
@@ -44050,6 +44479,47 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection": {
+        "type": "union",
+        "tag": {
+          "value": {
+            "defaultLabel": "Application Section",
+            "description": "A section of the application (model or data)",
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": "data"
+            },
+            "isTemplate": true
+          }
+        },
+        "definition": [
+          {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "Application Section",
+                "description": "A section of the application (model or data)",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "data"
+                }
+              }
+            },
+            "definition": [
+              "model",
+              "data"
+            ]
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          }
+        ],
+        "discriminator": "transformerType"
       },
       "mlElementTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer": {
         "type": "schemaReference",
@@ -58796,6 +59266,20 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
         }
       },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemLink": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "miroirMenuItemLink"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemDivider": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "miroirMenuItemDivider"
+        }
+      },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes": {
         "type": "schemaReference",
         "definition": {
@@ -73532,6 +74016,20 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "transformer_contextOrParameterReferenceTO_REMOVE"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemLink": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "miroirMenuItemLink"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirMenuItemDivider": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "miroirMenuItemDivider"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodEnumAttributeTypes": {

@@ -57,6 +57,7 @@ export interface ResponsiveAppBarProps {
 
 const sideBarDefaultItems: MiroirMenuItem[] = [
   {
+    miroirMenuItemType: "miroirMenuItemLink",
     label: "A Menu will be displayed here!",
     section: "model",
     selfApplication: "noApplicationSpecified",
@@ -73,8 +74,8 @@ interface MenuItemProps {
   showPadding?: boolean;
 }
 
-const MenuItem: FC<MenuItemProps> = ({ menuItem, applicationDeploymentMap, keyValue, showPadding = false }) => {
-  return (
+const MenuItemDisplay: FC<MenuItemProps> = ({ menuItem, applicationDeploymentMap, keyValue, showPadding = false }) => {
+  return menuItem.miroirMenuItemType == "miroirMenuItemLink" ? (
     <ThemedListItem key={keyValue} disablePadding>
       <ThemedListItemButton
         sx={showPadding ? { padding: 0 } : undefined}
@@ -89,6 +90,8 @@ const MenuItem: FC<MenuItemProps> = ({ menuItem, applicationDeploymentMap, keyVa
         <ThemedListItemText primary={menuItem.label} />
       </ThemedListItemButton>
     </ThemedListItem>
+  ) : (
+    <ThemedDivider />
   );
 };
 
@@ -234,15 +237,14 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                         && (!curr.menuItemScope || curr.menuItemScope == "data" || context.viewParams.generalEditMode)
                       ) 
                   )
-                  .map((i: any, index: number) => (
-                    <MenuItem
+                  .map((i: MiroirMenuItem, index: number) => <MenuItemDisplay
                       key={i.label}
                       menuItem={i}
                       applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
                       keyValue={i.label}
                       showPadding={true}
                     />
-                  ))}
+                  )}
               </ThemedList>
             ) : (
               <ThemedList disablePadding dense>
@@ -264,7 +266,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                       ) 
                     )
                     .map((curr: any, index: number) => (
-                      <MenuItem
+                      <MenuItemDisplay
                         key={curr.label + index}
                         menuItem={curr}
                         applicationDeploymentMap={props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}

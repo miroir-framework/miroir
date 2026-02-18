@@ -2607,32 +2607,17 @@ export class DomainController implements DomainControllerInterface {
             break;
           }
           case "compositeRunBoxedQueryAction": {
-            // const resolvedActionWithProtectedRuntimeTranformers = currentAction.queryTemplate.query.runtimeTransformers?
-            //   {
-            //     ...resolvedAction,
-            //     queryTemplate: {
-            //       ...resolvedAction.queryTemplate,
-            //       query: {
-            //         ...resolvedAction.queryTemplate.query,
-            //         runtimeTransformers: currentAction.queryTemplate.query.runtimeTransformers,
-            //       },
-            //     },
-            //   }: resolvedAction;
-            const resolvedActionWithProtectedRuntimeTranformers: {
-              actionType: "compositeRunBoxedQueryAction";
-              actionLabel?: string | undefined;
-              nameGivenToResult: string;
-              payload: RunBoxedQueryAction;
-            } = transformer_extended_apply(
-              "build",
-              [],
-              currentAction.actionLabel,
-              currentAction as any as TransformerForBuildPlusRuntime,
-              "value",
-              modelEnvironment,
-              actionParamValues, // queryParams
-              localContext, // contextResults
-            );
+            const resolvedActionWithProtectedRuntimeTranformers: CompositeRunBoxedQueryAction =
+              transformer_extended_apply(
+                "build",
+                [],
+                currentAction.actionLabel,
+                currentAction as any as TransformerForBuildPlusRuntime,
+                "value",
+                modelEnvironment,
+                actionParamValues, // queryParams
+                localContext, // contextResults
+              );
             actionResult = await this.handleCompositeRunBoxedQueryAction(
               resolvedActionWithProtectedRuntimeTranformers,
               applicationDeploymentMap,

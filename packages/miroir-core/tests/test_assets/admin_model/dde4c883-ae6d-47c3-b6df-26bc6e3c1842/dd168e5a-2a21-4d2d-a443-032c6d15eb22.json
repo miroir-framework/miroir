@@ -13,6 +13,7 @@
         "label": "admin",
         "items": [
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Admin Entities",
             "section": "model",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -20,6 +21,7 @@
             "icon": "category"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Admin Entity Definitions",
             "section": "model",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -27,6 +29,7 @@
             "icon": "category"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Admin Applications",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -34,6 +37,7 @@
             "icon": "web_asset"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Admin Reports",
             "section": "model",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -41,6 +45,7 @@
             "icon": "dashboard"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Deployments",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -48,6 +53,7 @@
             "icon": "rocket_launch"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Bundles",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
@@ -55,6 +61,7 @@
             "icon": "inventory_2"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "ViewParams",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",

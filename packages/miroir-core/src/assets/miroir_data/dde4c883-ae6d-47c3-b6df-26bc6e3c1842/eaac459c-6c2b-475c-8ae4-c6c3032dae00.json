@@ -13,6 +13,7 @@
         "label": "miroir",
         "items": [
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Entities",
             "section": "model",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -20,6 +21,7 @@
             "icon": "category"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Entity Definitions",
             "section": "model",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -27,6 +29,7 @@
             "icon": "category"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Reports",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -34,6 +37,7 @@
             "icon": "dashboard"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Menus",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -41,6 +45,7 @@
             "icon": "menu"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Endpoints",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -48,6 +53,7 @@
             "icon": "api"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Runners",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -55,6 +61,7 @@
             "icon": "directions_run"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Queries",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -62,6 +69,7 @@
             "icon": "saved_search"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Transformers",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -69,6 +77,7 @@
             "icon": "transform"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Transformer Tests",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -79,6 +88,7 @@
             }
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Tests",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -86,6 +96,7 @@
             "icon": "fact_check"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Blobs",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -93,6 +104,7 @@
             "icon": "image"
           },
           {
+            "miroirMenuItemType": "miroirMenuItemLink",
             "label": "Miroir Documentation",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
