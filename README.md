@@ -13,8 +13,8 @@
 Miroir is a comprehensive development framework that transforms how you create web applications by:
 
 - **adopting a data-centric approach** - Describe the concepts manipulated by your application, Miroir enables any software development activity involving these concepts (creating business logic, testing, scripting, transferring data, etc.)
-- **providing end-to-end support** - in Miroir, described concepts and business logic become alive as Graphical User Interfaces (webapp), APIs (Rest), and database schemas, from the User to the persistent store
-- **enabling low-code description** - in Miroir the business logic is defined as block-like elements, not as code; these elements can be modified at run-time
+- **providing end-to-end support** - in Miroir, described concepts and business logic become alive as Graphical User Interfaces (webapp), APIs (Rest), and database schemas, end-to-end!
+- **enabling low-code description** - in Miroir the business logic is defined as block-like elements, not as code; these elements can be modified and tested interactively, at run-time.
 - **supporting AI agents** - business logic written in Miroir can automatically be exposed to AI agents using the Model Context Protocol (MCP)
 
 <!-- - **Unifying development and runtime** - Define concepts once, use everywhere (database, API, UI, business logic)
@@ -28,7 +28,7 @@ You need to manage a small library inventory, with Books, Authors, Publishers an
 
 - **deploy Miroir on a laptop** - available on a single machine in the library, perfect for a starting inventory
 - **create the necessary entities in Miroir** - create Book, Author, Publisher and Member entities, each Entity defining potential relations to others (for example a Book must have 1 or more Authors)
-- **create the wanted operations** - typically to lend / return a Book, checking a given set of conditions on the Book and User borrowing / returning the Book
+- **create the wanted operations** - typically for a User to borrow a Book, checking the necessary conditions to allow the operation, and also returning a Book
 - **create additional views** - monitor the inventory state, popularity of Books, punctuality of Users, etc.
 - **create (non-regression) tests** - evolve your application and ensure that improvements are safe, not breaking any existing feature
 - **evolve to a full-blown web application** - when a second computer arrives to the library, deploy your existing application on a third-party server and access it from anywhere!
@@ -236,21 +236,18 @@ This section gives a slightly simplified syntax for better understanding of the 
 
 ---
 
-## Current Status (v0.9 - Pre-Release)
+## Current Status (v0.5 - interactive demo)
 
 ### ✅ Available Now
 
-- ✅ Jzod meta-language and type generation
-- ✅ Entity and EntityDefinition meta-model
-- ✅ Multi-store connectors (PostgreSQL, IndexedDB, Filesystem, MongoDB)
+- ✅ meta-language for Entities, Reports, Actions, Endpoints...
 - ✅ Query, Transformer, Action, Report interpreters
 - ✅ Graph visualization (D3.js integration)
 - ✅ Use Markdown text in Reports
 - ✅ In-memory and SQL execution for business logic
-- ✅ Web application and Node.js server
+- ✅ Multi-store connectors (PostgreSQL, IndexedDB, Filesystem, MongoDB)
+- ✅ Node.js server (React GUI + backend)
 - ✅ Electron desktop application
-- ✅ Comprehensive test suite
-- ✅ Event system for monitoring and debugging
 - ✅ MCP server for AI integration (Proof of Concept)
 - ✅ Command Line Interface (Proof of Concept)
 
